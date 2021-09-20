@@ -1,10 +1,9 @@
 mod imp {
     use gtk4::{
-        gio, glib, glib::subclass::*, prelude::*, subclass::prelude::*, Align, Box,
+        gio, glib, prelude::*, subclass::prelude::*, Align, Box,
         CompositeTemplate, DirectoryList, Image, Label, ListBox, ListBoxRow, Orientation, Popover,
         TextView, ToggleButton, Widget,
     };
-    use once_cell::sync::Lazy;
 
     use crate::pens::brush;
 
@@ -129,18 +128,6 @@ mod imp {
                 child.unparent();
             }
         }
-
-        fn signals() -> &'static [glib::subclass::Signal] {
-            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
-                vec![Signal::builder(
-                    "add-valid-template",
-                    &[gio::File::static_type().into()],
-                    <()>::static_type().into(),
-                )
-                .build()]
-            });
-            SIGNALS.as_ref()
-        }
     }
 
     impl WidgetImpl for TemplateChooser {}
@@ -261,15 +248,6 @@ impl TemplateChooser {
                 }
             } ),
         );
-
-        self.connect_local(
-            "add-valid-template",
-            false,
-            clone!(@weak appwindow => @default-return None, move |_args| {
-                None
-            }),
-        )
-        .unwrap();
     }
 
     pub fn set_help_text(&self, text: &str) {

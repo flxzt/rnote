@@ -708,10 +708,7 @@ impl Canvas {
                     &mut self.sheet().strokes().borrow_mut(),
                 );
 
-                self.pens()
-                    .borrow_mut()
-                    .selector
-                    .clear_path();
+                self.pens().borrow_mut().selector.clear_path();
                 self.pens()
                     .borrow_mut()
                     .selector

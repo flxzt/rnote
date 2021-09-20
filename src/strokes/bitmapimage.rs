@@ -1,6 +1,10 @@
 use std::{error::Error, io, ops::Deref};
 
-use crate::{config, strokes, utils};
+use crate::{
+    config,
+    strokes::{compose, render},
+    utils,
+};
 use gtk4::{gio, gsk};
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};
@@ -77,7 +81,7 @@ impl StrokeBehaviour for BitmapImage {
             ],
         );
 
-        let svg = strokes::wrap_svg(
+        let svg = compose::wrap_svg(
             svg.as_str(),
             Some(bounds),
             Some(intrinsic_bounds),
@@ -97,10 +101,10 @@ impl StrokeBehaviour for BitmapImage {
     }
 
     fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
-        strokes::gen_caironode_for_svg(
+        render::gen_caironode_for_svg(
             self.bounds,
             scalefactor,
-            strokes::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
+            compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
         )
     }
 }

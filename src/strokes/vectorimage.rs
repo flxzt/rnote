@@ -1,6 +1,9 @@
 use std::error::Error;
 
-use crate::{strokes, utils};
+use crate::{
+    strokes::{compose, render},
+    utils,
+};
 
 use gtk4::gsk;
 use serde::{Deserialize, Serialize};
@@ -48,7 +51,7 @@ impl StrokeBehaviour for VectorImage {
             na::point![self.intrinsic_size[0], self.intrinsic_size[1]],
         );
 
-        let svg = strokes::wrap_svg(
+        let svg = compose::wrap_svg(
             self.svg_data.as_str(),
             Some(bounds),
             Some(intrinsic_bounds),
@@ -67,10 +70,10 @@ impl StrokeBehaviour for VectorImage {
     }
 
     fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
-        strokes::gen_caironode_for_svg(
+        render::gen_caironode_for_svg(
             self.bounds,
             scalefactor,
-            strokes::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
+            compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
         )
     }
 }
@@ -82,8 +85,8 @@ impl VectorImage {
     pub const OFFSET_Y_DEFAULT: f64 = 28.0;
 
     pub fn import_from_svg(svg: &str, pos: na::Vector2<f64>) -> Result<Self, Box<dyn Error>> {
-        let svg_data = strokes::remove_xml_header(svg);
-        let intrinsic_size = strokes::svg_intrinsic_size(svg).unwrap_or(na::vector![
+        let svg_data = compose::remove_xml_header(svg);
+        let intrinsic_size = compose::svg_intrinsic_size(svg).unwrap_or(na::vector![
             VectorImage::SIZE_X_DEFAULT,
             VectorImage::SIZE_Y_DEFAULT
         ]);

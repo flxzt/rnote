@@ -3,13 +3,18 @@ mod imp {
 
     use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 
-    use crate::{config, sheet::Sheet, ui::{
+    use crate::{
+        config,
+        sheet::Sheet,
+        ui::{
             appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvasmenu::CanvasMenu,
             colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
             mainheader::MainHeader, penssidebar::PensSideBar,
             selectionmodifier::modifiernode::ModifierNode, selectionmodifier::SelectionModifier,
             templatechooser::TemplateChooser, workspacebrowser::WorkspaceBrowser,
-        }, utils};
+        },
+        utils,
+    };
 
     #[derive(Debug, Default)]
     pub struct RnoteApp {
@@ -59,10 +64,9 @@ mod imp {
                 match utils::FileType::lookup_file_type(&file) {
                     utils::FileType::Unknown => {
                         log::warn!("tried to open unsupported file type");
-                    },
+                    }
                     _ => {
                         *self.input_file.borrow_mut() = Some(file.clone());
-
                     }
                 };
             }

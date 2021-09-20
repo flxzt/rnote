@@ -98,7 +98,7 @@ use std::{cell::RefCell, error::Error, rc::Rc};
 
 use crate::{
     pens::selector::Selector,
-    strokes::{self, StrokeBehaviour, StrokeStyle},
+    strokes::{self, compose, StrokeBehaviour, StrokeStyle},
     ui::appwindow::RnoteAppWindow,
 };
 use gtk4::{
@@ -699,7 +699,7 @@ impl Selection {
                     bounds.maxs[1] - bounds.mins[1]
                 ],
             );
-            data = strokes::wrap_svg(
+            data = compose::wrap_svg(
                 data.as_str(),
                 Some(wrapper_bounds),
                 Some(wrapper_bounds),

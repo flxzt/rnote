@@ -1,6 +1,10 @@
 use std::{error::Error, ops::Deref};
 
-use crate::{config, strokes, strokes::InputData, utils};
+use crate::{
+    config,
+    strokes::{compose, render, InputData},
+    utils,
+};
 
 use gtk4::{gdk, gio, gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
@@ -69,16 +73,15 @@ impl Selector {
 
     pub fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
         if let Some(bounds) = self.bounds {
-            let svg = strokes::wrap_svg(
+            let svg = compose::wrap_svg(
                 self.gen_svg_path(na::vector![0.0, 0.0]).as_str(),
                 None,
                 Some(bounds),
                 true,
                 false,
             );
-            strokes::gen_caironode_for_svg(bounds, scalefactor, svg.as_str())
+            render::gen_caironode_for_svg(bounds, scalefactor, svg.as_str())
         } else {
-            log::error!("tried gen_caironode when selector has no bounds.");
             Ok(utils::default_caironode())
         }
     }

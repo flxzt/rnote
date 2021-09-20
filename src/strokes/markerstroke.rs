@@ -1,6 +1,12 @@
 use std::error::Error;
 
-use crate::{pens::marker::Marker, strokes, strokes::Element, strokes::InputData, utils};
+use crate::{
+    pens::marker::Marker,
+    strokes,
+    strokes::InputData,
+    strokes::{compose, render, Element},
+    utils,
+};
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
@@ -139,14 +145,14 @@ impl StrokeBehaviour for MarkerStroke {
     }
 
     fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
-        let svg = strokes::wrap_svg(
+        let svg = compose::wrap_svg(
             self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
             Some(self.bounds),
             Some(self.bounds),
             true,
             false,
         );
-        strokes::gen_caironode_for_svg(self.bounds, scalefactor, svg.as_str())
+        render::gen_caironode_for_svg(self.bounds, scalefactor, svg.as_str())
     }
 }
 
@@ -296,7 +302,7 @@ impl MarkerStroke {
     }
 
     pub fn export_to_svg(&self, xml_header: bool) -> Result<String, Box<dyn Error>> {
-        let svg = strokes::wrap_svg(
+        let svg = compose::wrap_svg(
             Self::gen_svg_data(self, na::vector![0.0, 0.0])?.as_str(),
             Some(self.bounds),
             Some(self.bounds),

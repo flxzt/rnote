@@ -1,18 +1,20 @@
 pub mod bitmapimage;
 pub mod brushstroke;
+pub mod compose;
 pub mod markerstroke;
+pub mod render;
 pub mod vectorimage;
 
-use crate::{config, pens::PenStyle, pens::Pens};
+use crate::{pens::PenStyle, pens::Pens};
 
 use self::{
     bitmapimage::BitmapImage, brushstroke::BrushStroke, markerstroke::MarkerStroke,
     vectorimage::VectorImage,
 };
 
-use std::{error::Error, ops::Deref};
+use std::error::Error;
 
-use gtk4::{gio, glib, graphene, gsk, Snapshot};
+use gtk4::{gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
@@ -344,188 +346,4 @@ impl Element {
     pub fn set_inputdata(&mut self, inputdata: InputData) {
         self.inputdata = inputdata;
     }
-}
-
-#[allow(dead_code)]
-pub fn add_xml_header(svg: &str) -> String {
-    let re = regex::Regex::new(r#"<\?xml[^\?>]*\?>"#).unwrap();
-    if !re.is_match(svg) {
-        let mut string = String::from(r#"<?xml version="1.0" standalone="no"?>"#);
-        string.push_str("\n");
-        string.push_str(svg);
-        string
-    } else {
-        String::from(svg)
-    }
-}
-
-pub fn remove_xml_header(svg: &str) -> String {
-    let re = regex::Regex::new(r#"<\?xml[^\?>]*\?>"#).unwrap();
-    String::from(re.replace_all(svg, ""))
-}
-
-#[allow(dead_code)]
-pub fn strip_svg_root(svg: &str) -> String {
-    let re = regex::Regex::new(r#"<svg[^>]*>|<[^/svg]*/svg>"#).unwrap();
-    String::from(re.replace_all(svg, ""))
-}
-
-pub fn wrap_svg(
-    data: &str,
-    bounds: Option<p2d::bounding_volume::AABB>,
-    viewbox: Option<p2d::bounding_volume::AABB>,
-    xml_header: bool,
-    preserve_aspectratio: bool,
-) -> String {
-    let mut cx = tera::Context::new();
-
-    let (x, y, width, height) = if let Some(bounds) = bounds {
-        let x = format!("{}", bounds.mins[0].floor() as i32);
-        let y = format!("{}", bounds.mins[1].floor() as i32);
-        let width = format!("{}", (bounds.maxs[0] - bounds.mins[0]).ceil() as i32);
-        let height = format!("{}", (bounds.maxs[1] - bounds.mins[1]).ceil() as i32);
-
-        (x, y, width, height)
-    } else {
-        (
-            String::from("0"),
-            String::from("0"),
-            String::from("100%"),
-            String::from("100%"),
-        )
-    };
-
-    let viewbox = if let Some(viewbox) = viewbox {
-        format!(
-            "viewBox=\"{} {} {} {}\"",
-            viewbox.mins[0].floor() as i32,
-            viewbox.mins[1].floor() as i32,
-            (viewbox.maxs[0] - viewbox.mins[0]).ceil() as i32,
-            (viewbox.maxs[1] - viewbox.mins[1]).ceil() as i32
-        )
-    } else {
-        String::from("")
-    };
-    let preserve_aspectratio = if preserve_aspectratio {
-        String::from("xMidyMid")
-    } else {
-        String::from("none")
-    };
-
-    cx.insert("xml_header", &xml_header);
-    cx.insert("data", data);
-    cx.insert("x", &x);
-    cx.insert("y", &y);
-    cx.insert("width", &width);
-    cx.insert("height", &height);
-    cx.insert("viewbox", &viewbox);
-    cx.insert("preserve_aspectratio", &preserve_aspectratio);
-
-    let templ = String::from_utf8(
-        gio::resources_lookup_data(
-            (String::from(config::APP_IDPATH) + "templates/svg_wrap.svg.templ").as_str(),
-            gio::ResourceLookupFlags::NONE,
-        )
-        .unwrap()
-        .deref()
-        .to_vec(),
-    )
-    .unwrap();
-    let output = tera::Tera::one_off(templ.as_str(), &cx, false)
-        .expect("failed to create svg from template");
-
-    output
-}
-
-pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
-    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
-    if let Ok(handle) = librsvg::Loader::new()
-        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
-    {
-        let renderer = librsvg::CairoRenderer::new(&handle);
-
-        let intrinsic_size = if let Some(size) = renderer.intrinsic_size_in_pixels() {
-            Some(na::vector![size.0, size.1])
-        } else {
-            log::warn!("intrinsic_size_in_pixels() failed in svg_intrinsic_size()");
-            None
-        };
-
-        return intrinsic_size;
-    } else {
-        return None;
-    }
-}
-
-pub fn gen_caironode_for_svg(
-    bounds: p2d::bounding_volume::AABB,
-    scalefactor: f64,
-    svg: &str,
-) -> Result<gsk::CairoNode, Box<dyn Error>> {
-    let caironode_bounds = graphene::Rect::new(
-        (bounds.mins[0] * scalefactor).floor() as f32,
-        (bounds.mins[1] * scalefactor).floor() as f32,
-        ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as f32,
-        ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as f32,
-    );
-
-    let new_node = gsk::CairoNode::new(&caironode_bounds);
-    let cx = new_node
-        .draw_context()
-        .expect("failed to get cairo draw_context() from caironode");
-
-    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
-    let handle = librsvg::Loader::new()
-        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)?;
-    let renderer = librsvg::CairoRenderer::new(&handle);
-
-    renderer.render_document(
-        &cx,
-        &cairo::Rectangle {
-            x: (bounds.mins[0].floor() * scalefactor),
-            y: (bounds.mins[1].floor() * scalefactor),
-            width: ((bounds.maxs[0] - bounds.mins[0]).ceil() * scalefactor),
-            height: ((bounds.maxs[1] - bounds.mins[1]).ceil() * scalefactor),
-        },
-    )?;
-    Ok(new_node)
-}
-
-pub fn gen_cairosurface(
-    bounds: &p2d::bounding_volume::AABB,
-    scalefactor: f64,
-    svg: &str,
-) -> Result<cairo::ImageSurface, Box<dyn Error>> {
-    let width_scaled = (scalefactor * (bounds.maxs[0] - bounds.mins[0])).round() as i32;
-    let height_scaled = (scalefactor * (bounds.maxs[1] - bounds.mins[1])).round() as i32;
-
-    let surface =
-        cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled).unwrap();
-
-    // the ImageSurface has scaled size. Draw onto it in the unscaled, original coordinates, and will get scaled with this method .set_device_scale()
-    surface.set_device_scale(scalefactor, scalefactor);
-
-    let cx = cairo::Context::new(&surface).expect("Failed to create a cairo context");
-
-    cx.set_source_rgba(0.0, 0.0, 0.0, 0.0);
-
-    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
-    let handle = librsvg::Loader::new()
-        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
-        .expect("failed to parse xml into librsvg");
-    let renderer = librsvg::CairoRenderer::new(&handle);
-    renderer.render_document(
-        &cx,
-        &cairo::Rectangle {
-            x: 0.0,
-            y: 0.0,
-            width: bounds.maxs[0] - bounds.mins[0],
-            height: bounds.maxs[1] - bounds.mins[1],
-        },
-    )?;
-
-    cx.stroke()
-        .expect("failed to stroke() cairo context onto cairo surface.");
-
-    Ok(surface)
 }

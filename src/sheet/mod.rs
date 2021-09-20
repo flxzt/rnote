@@ -7,7 +7,7 @@ use std::{cell::RefCell, error::Error, rc::Rc};
 use crate::{
     pens::eraser::Eraser,
     sheet::selection::Selection,
-    strokes::{self, StrokeBehaviour, StrokeStyle},
+    strokes::{self, compose, StrokeBehaviour, StrokeStyle},
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     utils::{self, FileType},
 };
@@ -790,7 +790,6 @@ impl Sheet {
     }
 
     pub fn save_sheet(&self, file: &gio::File) -> Result<(), Box<dyn Error>> {
-
         match FileType::lookup_file_type(file) {
             FileType::Rnote => {
                 let json_output = serde_json::to_string(self)?;
@@ -829,7 +828,7 @@ impl Sheet {
             ],
         );
 
-        data = strokes::wrap_svg(
+        data = compose::wrap_svg(
             data.as_str(),
             Some(sheet_bounds),
             Some(sheet_bounds),

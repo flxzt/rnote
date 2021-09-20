@@ -114,8 +114,8 @@ mod imp {
 }
 
 use crate::{
-    config,
     app::RnoteApp,
+    config,
     pens::eraser::Eraser,
     pens::{brush::Brush, marker::Marker},
     ui::appwindow::RnoteAppWindow,

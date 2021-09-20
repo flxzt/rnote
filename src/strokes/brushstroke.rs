@@ -2,9 +2,8 @@ use std::error::Error;
 
 use crate::{
     pens::brush::{self, Brush},
-    strokes,
-    strokes::Element,
     strokes::InputData,
+    strokes::{compose, render, Element},
     utils,
 };
 use gtk4::gsk;
@@ -115,7 +114,7 @@ impl StrokeBehaviour for BrushStroke {
     }
 
     fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
-        let svg = strokes::wrap_svg(
+        let svg = compose::wrap_svg(
             self.gen_svg_data(na::vector![0.0, 0.0]).unwrap().as_str(),
             Some(self.bounds),
             Some(self.bounds),
@@ -123,7 +122,7 @@ impl StrokeBehaviour for BrushStroke {
             false,
         );
 
-        strokes::gen_caironode_for_svg(self.bounds, scalefactor, svg.as_str())
+        render::gen_caironode_for_svg(self.bounds, scalefactor, svg.as_str())
     }
 }
 

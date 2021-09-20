@@ -1,8 +1,7 @@
 mod imp {
     use gtk4::{
-        gio, glib, prelude::*, subclass::prelude::*, Align, Box,
-        CompositeTemplate, DirectoryList, Image, Label, ListBox, ListBoxRow, Orientation, Popover,
-        TextView, ToggleButton, Widget,
+        gio, glib, prelude::*, subclass::prelude::*, Align, Box, CompositeTemplate, DirectoryList,
+        Image, Label, ListBox, ListBoxRow, Orientation, Popover, TextView, ToggleButton, Widget,
     };
 
     use crate::pens::brush;

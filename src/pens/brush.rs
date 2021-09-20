@@ -7,7 +7,7 @@ use tera::Tera;
 
 use crate::{
     config, pens,
-    strokes::{self, brushstroke::BrushStroke, InputData, StrokeBehaviour},
+    strokes::{brushstroke::BrushStroke, compose, render, InputData, StrokeBehaviour},
     utils,
 };
 
@@ -170,7 +170,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
     for _i in 0..=strokes_uniform.sample(&mut rng) {
         let validation_stroke =
             BrushStroke::validation_stroke(&InputData::validation_data(bounds), &brush).unwrap();
-        let svg = strokes::wrap_svg(
+        let svg = compose::wrap_svg(
             validation_stroke
                 .gen_svg_data(na::vector![0.0, 0.0])?
                 .as_str(),
@@ -180,7 +180,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
             false,
         );
         //log::warn!("\n### validating file `{:?}`###, contents:\n {}", file.path(), svg);
-        let _caironode = strokes::gen_caironode_for_svg(bounds, 1.0, svg.as_str())?;
+        let _caironode = render::gen_caironode_for_svg(bounds, 1.0, svg.as_str())?;
     }
 
     Ok(())

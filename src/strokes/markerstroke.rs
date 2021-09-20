@@ -5,7 +5,6 @@ use crate::{
     strokes,
     strokes::InputData,
     strokes::{compose, render, Element},
-    utils,
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
@@ -20,8 +19,8 @@ pub struct MarkerStroke {
     pub bounds: p2d::bounding_volume::AABB,
     #[serde(skip)]
     pub hitbox: Vec<p2d::bounding_volume::AABB>,
-    #[serde(skip, default = "utils::default_caironode")]
-    pub caironode: gsk::CairoNode,
+    #[serde(skip, default = "render::default_rendernode")]
+    pub rendernode: gsk::RenderNode,
 }
 
 impl Default for MarkerStroke {
@@ -136,15 +135,15 @@ impl StrokeBehaviour for MarkerStroke {
         Ok(svg)
     }
 
-    fn update_caironode(&mut self, scalefactor: f64) {
-        if let Ok(caironode) = self.gen_caironode(scalefactor) {
-            self.caironode = caironode;
+    fn update_rendernode(&mut self, scalefactor: f64) {
+        if let Ok(rendernode) = self.gen_rendernode(scalefactor) {
+            self.rendernode = rendernode;
         } else {
-            log::error!("failed to gen_caironode() in update_caironode() of markerstroke");
+            log::error!("failed to gen_rendernode() in update_rendernode() of markerstroke");
         }
     }
 
-    fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
+    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
         let svg = compose::wrap_svg(
             self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
             Some(self.bounds),
@@ -152,7 +151,7 @@ impl StrokeBehaviour for MarkerStroke {
             true,
             false,
         );
-        render::gen_caironode_for_svg(self.bounds, scalefactor, svg.as_str())
+        render::gen_rendernode_for_svg(self.bounds, scalefactor, svg.as_str())
     }
 }
 
@@ -172,7 +171,7 @@ impl MarkerStroke {
             marker,
             bounds,
             hitbox,
-            caironode: utils::default_caironode(),
+            rendernode: render::default_rendernode(),
         };
 
         markerstroke.push_elem(inputdata);

@@ -113,11 +113,6 @@ pub fn app_config_base_dirpath() -> Option<PathBuf> {
     }
 }
 
-pub fn default_caironode() -> gsk::CairoNode {
-    let bounds = graphene::Rect::new(0.0, 0.0, 0.0, 0.0);
-    gsk::CairoNode::new(&bounds)
-}
-
 pub enum FileType {
     Folder,
     Rnote,

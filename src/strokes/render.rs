@@ -1,12 +1,18 @@
 use std::error::Error;
 
-use gtk4::{gio, glib, graphene, gsk};
+use gtk4::{gio, glib, graphene, gsk::{self, IsRenderNode}};
 
-pub fn gen_caironode_for_svg(
+
+pub fn default_rendernode() -> gsk::RenderNode {
+    let bounds = graphene::Rect::new(0.0, 0.0, 0.0, 0.0);
+    gsk::CairoNode::new(&bounds).upcast()
+}
+
+pub fn gen_rendernode_for_svg(
     bounds: p2d::bounding_volume::AABB,
     scalefactor: f64,
     svg: &str,
-) -> Result<gsk::CairoNode, Box<dyn Error>> {
+) -> Result<gsk::RenderNode, Box<dyn Error>> {
     let caironode_bounds = graphene::Rect::new(
         (bounds.mins[0] * scalefactor).floor() as f32,
         (bounds.mins[1] * scalefactor).floor() as f32,
@@ -14,10 +20,10 @@ pub fn gen_caironode_for_svg(
         ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as f32,
     );
 
-    let new_node = gsk::CairoNode::new(&caironode_bounds);
-    let cx = new_node
+    let new_caironode = gsk::CairoNode::new(&caironode_bounds);
+    let cx = new_caironode
         .draw_context()
-        .expect("failed to get cairo draw_context() from caironode");
+        .expect("failed to get cairo draw_context() from new_caironode");
 
     let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
     let handle = librsvg::Loader::new()
@@ -33,7 +39,7 @@ pub fn gen_caironode_for_svg(
             height: ((bounds.maxs[1] - bounds.mins[1]).ceil() * scalefactor),
         },
     )?;
-    Ok(new_node)
+    Ok(new_caironode.upcast())
 }
 
 pub fn gen_cairosurface(

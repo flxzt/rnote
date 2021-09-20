@@ -180,7 +180,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
             false,
         );
         //log::warn!("\n### validating file `{:?}`###, contents:\n {}", file.path(), svg);
-        let _caironode = render::gen_caironode_for_svg(bounds, 1.0, svg.as_str())?;
+        let _rendernode = render::gen_rendernode_for_svg(bounds, 1.0, svg.as_str())?;
     }
 
     Ok(())

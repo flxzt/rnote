@@ -572,11 +572,11 @@ impl RnoteAppWindow {
             utils::FileType::Rnote => {
                 self.canvas().sheet().open_sheet(&file)?;
 
-                StrokeStyle::update_all_caironodes(
+                StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
                 );
-                StrokeStyle::update_all_caironodes(
+                StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
                 );
@@ -597,11 +597,11 @@ impl RnoteAppWindow {
                 };
                 self.canvas().sheet().import_file_as_svg(pos, &file)?;
 
-                StrokeStyle::update_all_caironodes(
+                StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
                 );
-                StrokeStyle::update_all_caironodes(
+                StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
                 );
@@ -629,11 +629,11 @@ impl RnoteAppWindow {
                     .sheet()
                     .import_file_as_bitmapimage(pos, &file)?;
 
-                StrokeStyle::update_all_caironodes(
+                StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
                 );
-                StrokeStyle::update_all_caironodes(
+                StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
                 );

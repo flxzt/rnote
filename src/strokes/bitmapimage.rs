@@ -3,7 +3,6 @@ use std::{error::Error, io, ops::Deref};
 use crate::{
     config,
     strokes::{compose, render},
-    utils,
 };
 use gtk4::{gio, gsk};
 use image::{io::Reader, GenericImageView};
@@ -16,8 +15,8 @@ pub struct BitmapImage {
     pub data_base64: String,
     pub bounds: p2d::bounding_volume::AABB,
     pub intrinsic_size: na::Vector2<f64>,
-    #[serde(skip, default = "utils::default_caironode")]
-    pub caironode: gsk::CairoNode,
+    #[serde(skip, default = "render::default_rendernode")]
+    pub rendernode: gsk::RenderNode,
 }
 
 impl StrokeBehaviour for BitmapImage {
@@ -92,16 +91,16 @@ impl StrokeBehaviour for BitmapImage {
         Ok(svg)
     }
 
-    fn update_caironode(&mut self, scalefactor: f64) {
-        if let Ok(caironode) = self.gen_caironode(scalefactor) {
-            self.caironode = caironode;
+    fn update_rendernode(&mut self, scalefactor: f64) {
+        if let Ok(rendernode) = self.gen_rendernode(scalefactor) {
+            self.rendernode = rendernode;
         } else {
-            log::error!("failed to gen_caironode() in update_caironode() of markerstroke");
+            log::error!("failed to gen_rendernode() in update_renderonode() of markerstroke");
         }
     }
 
-    fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
-        render::gen_caironode_for_svg(
+    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
+        render::gen_rendernode_for_svg(
             self.bounds,
             scalefactor,
             compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
@@ -138,7 +137,7 @@ impl BitmapImage {
             data_base64,
             bounds,
             intrinsic_size,
-            caironode: utils::default_caironode(),
+            rendernode: render::default_rendernode(),
         })
     }
 

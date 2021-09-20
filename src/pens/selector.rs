@@ -3,7 +3,6 @@ use std::{error::Error, ops::Deref};
 use crate::{
     config,
     strokes::{compose, render, InputData},
-    utils,
 };
 
 use gtk4::{gdk, gio, gsk, Snapshot};
@@ -13,7 +12,7 @@ use p2d::bounding_volume::BoundingVolume;
 pub struct Selector {
     pub path: Vec<InputData>,
     pub bounds: Option<p2d::bounding_volume::AABB>,
-    pub caironode: gsk::CairoNode,
+    pub rendernode: gsk::RenderNode,
     shown: bool,
 }
 
@@ -36,7 +35,7 @@ impl Selector {
         Self {
             path: vec![],
             bounds: None,
-            caironode: utils::default_caironode(),
+            rendernode: render::default_rendernode(),
             shown: false,
         }
     }
@@ -65,13 +64,13 @@ impl Selector {
         self.path.clear();
     }
 
-    pub fn update_caironode(&mut self, scalefactor: f64) {
-        self.caironode = self
-            .gen_caironode(scalefactor)
-            .expect("failed to gen_caironode() in update_caironode() of selector");
+    pub fn update_rendernode(&mut self, scalefactor: f64) {
+        self.rendernode = self
+            .gen_rendernode(scalefactor)
+            .expect("failed to gen_rendernode() in update_rendernode() of selector");
     }
 
-    pub fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
+    pub fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
         if let Some(bounds) = self.bounds {
             let svg = compose::wrap_svg(
                 self.gen_svg_path(na::vector![0.0, 0.0]).as_str(),
@@ -80,9 +79,9 @@ impl Selector {
                 true,
                 false,
             );
-            render::gen_caironode_for_svg(bounds, scalefactor, svg.as_str())
+            render::gen_rendernode_for_svg(bounds, scalefactor, svg.as_str())
         } else {
-            Ok(utils::default_caironode())
+            Ok(render::default_rendernode())
         }
     }
 
@@ -164,7 +163,7 @@ impl Selector {
 
     pub fn draw(&self, snapshot: &Snapshot) {
         if self.shown {
-            snapshot.append_node(&self.caironode);
+            snapshot.append_node(&self.rendernode);
         }
     }
 }

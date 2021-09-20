@@ -570,19 +570,19 @@ impl Selection {
             match stroke {
                 strokes::StrokeStyle::MarkerStroke(markerstroke) => {
                     self.draw_selected_bounds(markerstroke.bounds, scalefactor, &snapshot);
-                    snapshot.append_node(&markerstroke.caironode);
+                    snapshot.append_node(&markerstroke.rendernode);
                 }
                 strokes::StrokeStyle::BrushStroke(brushstroke) => {
                     self.draw_selected_bounds(brushstroke.bounds, scalefactor, &snapshot);
-                    snapshot.append_node(&brushstroke.caironode);
+                    snapshot.append_node(&brushstroke.rendernode);
                 }
                 strokes::StrokeStyle::VectorImage(vector_image) => {
                     self.draw_selected_bounds(vector_image.bounds, scalefactor, &snapshot);
-                    snapshot.append_node(&vector_image.caironode);
+                    snapshot.append_node(&vector_image.rendernode);
                 }
                 strokes::StrokeStyle::BitmapImage(bitmapimage) => {
                     self.draw_selected_bounds(bitmapimage.bounds, scalefactor, &snapshot);
-                    snapshot.append_node(&bitmapimage.caironode);
+                    snapshot.append_node(&bitmapimage.rendernode);
                 }
             }
         }

@@ -24,8 +24,8 @@ pub trait StrokeBehaviour {
     fn translate(&mut self, offset: na::Vector2<f64>);
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB);
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>>;
-    fn update_caironode(&mut self, scalefactor: f64);
-    fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>>;
+    fn update_rendernode(&mut self, scalefactor: f64);
+    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>>;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -88,29 +88,29 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
-    fn update_caironode(&mut self, scalefactor: f64) {
+    fn update_rendernode(&mut self, scalefactor: f64) {
         match self {
             Self::MarkerStroke(markerstroke) => {
-                markerstroke.update_caironode(scalefactor);
+                markerstroke.update_rendernode(scalefactor);
             }
             Self::BrushStroke(brushstroke) => {
-                brushstroke.update_caironode(scalefactor);
+                brushstroke.update_rendernode(scalefactor);
             }
             Self::VectorImage(vectorimage) => {
-                vectorimage.update_caironode(scalefactor);
+                vectorimage.update_rendernode(scalefactor);
             }
             Self::BitmapImage(bitmapimage) => {
-                bitmapimage.update_caironode(scalefactor);
+                bitmapimage.update_rendernode(scalefactor);
             }
         }
     }
 
-    fn gen_caironode(&self, scalefactor: f64) -> Result<gsk::CairoNode, Box<dyn Error>> {
+    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
         match self {
-            Self::MarkerStroke(markerstroke) => markerstroke.gen_caironode(scalefactor),
-            Self::BrushStroke(brushstroke) => brushstroke.gen_caironode(scalefactor),
-            Self::VectorImage(vectorimage) => vectorimage.gen_caironode(scalefactor),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_caironode(scalefactor),
+            Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(scalefactor),
+            Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(scalefactor),
+            Self::VectorImage(vectorimage) => vectorimage.gen_rendernode(scalefactor),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_rendernode(scalefactor),
         }
     }
 }
@@ -226,9 +226,9 @@ impl StrokeStyle {
         }
     }
 
-    pub fn update_all_caironodes(strokes: &mut Vec<Self>, scalefactor: f64) {
+    pub fn update_all_rendernodes(strokes: &mut Vec<Self>, scalefactor: f64) {
         for stroke in strokes {
-            stroke.update_caironode(scalefactor);
+            stroke.update_rendernode(scalefactor);
         }
     }
 
@@ -250,16 +250,16 @@ impl StrokeStyle {
         for stroke in strokes.iter() {
             match stroke {
                 StrokeStyle::MarkerStroke(markerstroke) => {
-                    snapshot.append_node(&markerstroke.caironode);
+                    snapshot.append_node(&markerstroke.rendernode);
                 }
                 StrokeStyle::BrushStroke(brushstroke) => {
-                    snapshot.append_node(&brushstroke.caironode);
+                    snapshot.append_node(&brushstroke.rendernode);
                 }
                 StrokeStyle::VectorImage(vectorimage) => {
-                    snapshot.append_node(&vectorimage.caironode);
+                    snapshot.append_node(&vectorimage.rendernode);
                 }
                 StrokeStyle::BitmapImage(bitmapimage) => {
-                    snapshot.append_node(&bitmapimage.caironode);
+                    snapshot.append_node(&bitmapimage.rendernode);
                 }
             }
         }

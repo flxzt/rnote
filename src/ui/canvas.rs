@@ -124,11 +124,11 @@ mod imp {
                         .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
                     self.scalefactor.replace(scalefactor);
 
-                    StrokeStyle::update_all_caironodes(
+                    StrokeStyle::update_all_rendernodes(
                         &mut *obj.sheet().strokes().borrow_mut(),
                         scalefactor,
                     );
-                    StrokeStyle::update_all_caironodes(
+                    StrokeStyle::update_all_rendernodes(
                         &mut *obj.sheet().selection().strokes().borrow_mut(),
                         scalefactor,
                     );
@@ -445,7 +445,7 @@ impl Canvas {
                 clone!(@weak self as obj => @default-return None, move |_| {
                     let scalefactor = obj.property("scalefactor").unwrap().get::<f64>().unwrap();
 
-                    StrokeStyle::update_all_caironodes(
+                    StrokeStyle::update_all_rendernodes(
                         &mut *obj.sheet().selection().strokes().borrow_mut(),
                         scalefactor,
                     );
@@ -599,7 +599,7 @@ impl Canvas {
                         self.queue_resize();
                     }
                     if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {
-                        stroke.update_caironode(self.scalefactor());
+                        stroke.update_rendernode(self.scalefactor());
                     }
                 }
             }
@@ -629,7 +629,7 @@ impl Canvas {
                     self.pens()
                         .borrow_mut()
                         .selector
-                        .update_caironode(self.scalefactor());
+                        .update_rendernode(self.scalefactor());
                 }
 
                 self.processing_draw_motion(data_entries);
@@ -656,7 +656,7 @@ impl Canvas {
                         self.queue_resize();
                     }
                     if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {
-                        stroke.update_caironode(self.scalefactor());
+                        stroke.update_rendernode(self.scalefactor());
                     }
                 }
             }
@@ -680,7 +680,7 @@ impl Canvas {
                     self.pens()
                         .borrow_mut()
                         .selector
-                        .update_caironode(self.scalefactor());
+                        .update_rendernode(self.scalefactor());
                 }
             }
             PenStyle::Unkown => {}
@@ -712,7 +712,7 @@ impl Canvas {
                 self.pens()
                     .borrow_mut()
                     .selector
-                    .update_caironode(self.scalefactor());
+                    .update_rendernode(self.scalefactor());
             }
             PenStyle::Marker | PenStyle::Brush | PenStyle::Eraser | PenStyle::Unkown => {
                 self.pens().borrow_mut().eraser.set_shown(false);

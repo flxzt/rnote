@@ -163,6 +163,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
 
     let bounds = p2d::bounding_volume::AABB::new(na::point![0.0, 0.0], na::point![2000.0, 2000.0]);
     let mut brush = Brush::default();
+    let renderer = render::Renderer::default();
 
     brush.replace_custom_template(file)?;
     brush.current_template = TemplateType::Custom(utils::load_file_contents(file)?);
@@ -180,7 +181,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
             false,
         );
         //log::warn!("\n### validating file `{:?}`###, contents:\n {}", file.path(), svg);
-        let _rendernode = render::gen_rendernode_backend_librsvg(bounds, 1.0, svg.as_str())?;
+        let _rendernode = renderer.gen_rendernode_backend_resvg(bounds, 1.0, svg.as_str())?;
     }
 
     Ok(())

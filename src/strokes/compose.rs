@@ -120,6 +120,6 @@ pub fn css_color(color: &strokes::Color) -> String {
         (color.r * 255.0) as i32,
         (color.g * 255.0) as i32,
         (color.b * 255.0) as i32,
-        (color.a),
+        ((1000.0 * color.a).round() / 1000.0),
     )
 }

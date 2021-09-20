@@ -104,15 +104,19 @@ impl StrokeBehaviour for BrushStroke {
         }
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64) {
-        if let Ok(rendernode) = self.gen_rendernode(scalefactor) {
+    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
+        if let Ok(rendernode) = self.gen_rendernode(scalefactor, renderer) {
             self.rendernode = rendernode;
         } else {
             log::error!("failed to gen_rendernode() in update_rendernode() of brushstroke");
         }
     }
 
-    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    fn gen_rendernode(
+        &self,
+        scalefactor: f64,
+        renderer: &render::Renderer,
+    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
         let svg = compose::wrap_svg(
             self.gen_svg_data(na::vector![0.0, 0.0]).unwrap().as_str(),
             Some(self.bounds),
@@ -123,8 +127,7 @@ impl StrokeBehaviour for BrushStroke {
 
         //println!("{}", svg);
 
-        render::gen_rendernode_backend_librsvg(self.bounds, scalefactor, svg.as_str())
-        //render::gen_rendernode_backend_resvg(self.bounds, scalefactor, svg.as_str())
+        renderer.gen_rendernode_backend_resvg(self.bounds, scalefactor, svg.as_str())
     }
 }
 

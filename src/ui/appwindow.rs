@@ -575,10 +575,12 @@ impl RnoteAppWindow {
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
+                    &*self.canvas().renderer().borrow(),
                 );
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
+                    &*self.canvas().renderer().borrow(),
                 );
 
                 self.canvas().queue_resize();
@@ -600,10 +602,12 @@ impl RnoteAppWindow {
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
+                    &*self.canvas().renderer().borrow(),
                 );
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
+                    &*self.canvas().renderer().borrow(),
                 );
 
                 self.canvas()
@@ -632,10 +636,12 @@ impl RnoteAppWindow {
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
+                    &*self.canvas().renderer().borrow(),
                 );
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
                     self.canvas().scalefactor(),
+                    &*self.canvas().renderer().borrow(),
                 );
 
                 self.canvas()

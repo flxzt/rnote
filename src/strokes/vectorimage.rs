@@ -58,16 +58,20 @@ impl StrokeBehaviour for VectorImage {
         Ok(svg)
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64) {
-        if let Ok(rendernode) = self.gen_rendernode(scalefactor) {
+    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
+        if let Ok(rendernode) = self.gen_rendernode(scalefactor, renderer) {
             self.rendernode = rendernode;
         } else {
             log::error!("failed to gen_rendernode() in update_rendernode() of vectorimage");
         }
     }
 
-    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
-        render::gen_rendernode_backend_librsvg(
+    fn gen_rendernode(
+        &self,
+        scalefactor: f64,
+        renderer: &render::Renderer,
+    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+        renderer.gen_rendernode_backend_resvg(
             self.bounds,
             scalefactor,
             compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),

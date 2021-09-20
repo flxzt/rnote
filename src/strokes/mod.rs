@@ -48,12 +48,22 @@ impl Color {
 }
 
 pub trait StrokeBehaviour {
+    // returns the bounds of the type
     fn bounds(&self) -> p2d::bounding_volume::AABB;
+    // translates (as in moves) the type for offset
     fn translate(&mut self, offset: na::Vector2<f64>);
+    // resizes the type to the desired new_bounds
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB);
+    // gen_svg_data() generates the svg elements as a String, without the xml header or the svg root.
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>>;
-    fn update_rendernode(&mut self, scalefactor: f64);
-    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>>;
+    // updates the rendernodes for the type implementing this trait
+    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer);
+    // generates and returns the rendernode for this type
+    fn gen_rendernode(
+        &self,
+        scalefactor: f64,
+        renderer: &render::Renderer,
+    ) -> Result<gsk::RenderNode, Box<dyn Error>>;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -116,29 +126,33 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64) {
+    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
         match self {
             Self::MarkerStroke(markerstroke) => {
-                markerstroke.update_rendernode(scalefactor);
+                markerstroke.update_rendernode(scalefactor, renderer);
             }
             Self::BrushStroke(brushstroke) => {
-                brushstroke.update_rendernode(scalefactor);
+                brushstroke.update_rendernode(scalefactor, renderer);
             }
             Self::VectorImage(vectorimage) => {
-                vectorimage.update_rendernode(scalefactor);
+                vectorimage.update_rendernode(scalefactor, renderer);
             }
             Self::BitmapImage(bitmapimage) => {
-                bitmapimage.update_rendernode(scalefactor);
+                bitmapimage.update_rendernode(scalefactor, renderer);
             }
         }
     }
 
-    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    fn gen_rendernode(
+        &self,
+        scalefactor: f64,
+        renderer: &render::Renderer,
+    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
         match self {
-            Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(scalefactor),
-            Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(scalefactor),
-            Self::VectorImage(vectorimage) => vectorimage.gen_rendernode(scalefactor),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_rendernode(scalefactor),
+            Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(scalefactor, renderer),
+            Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(scalefactor, renderer),
+            Self::VectorImage(vectorimage) => vectorimage.gen_rendernode(scalefactor, renderer),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_rendernode(scalefactor, renderer),
         }
     }
 }
@@ -254,9 +268,13 @@ impl StrokeStyle {
         }
     }
 
-    pub fn update_all_rendernodes(strokes: &mut Vec<Self>, scalefactor: f64) {
+    pub fn update_all_rendernodes(
+        strokes: &mut Vec<Self>,
+        scalefactor: f64,
+        renderer: &render::Renderer,
+    ) {
         for stroke in strokes {
-            stroke.update_rendernode(scalefactor);
+            stroke.update_rendernode(scalefactor, renderer);
         }
     }
 

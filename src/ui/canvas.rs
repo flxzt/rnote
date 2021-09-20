@@ -5,7 +5,7 @@ mod imp {
     use super::debug;
     use crate::config;
     use crate::pens::{PenStyle, Pens};
-    use crate::strokes::StrokeStyle;
+    use crate::strokes::{render, StrokeStyle};
     use crate::{sheet::Sheet, strokes};
 
     use gtk4::{
@@ -25,6 +25,7 @@ mod imp {
         pub cursor: gdk::Cursor,             // is a property
         pub gesture_stylus: GestureStylus,
         pub gesture_drag: GestureDrag,
+        pub renderer: Rc<RefCell<render::Renderer>>,
     }
 
     impl Default for Canvas {
@@ -59,6 +60,7 @@ mod imp {
                 ),
                 gesture_stylus,
                 gesture_drag,
+                renderer: Rc::new(RefCell::new(render::Renderer::default())),
             }
         }
     }
@@ -127,10 +129,12 @@ mod imp {
                     StrokeStyle::update_all_rendernodes(
                         &mut *obj.sheet().strokes().borrow_mut(),
                         scalefactor,
+                        &*obj.renderer().borrow(),
                     );
                     StrokeStyle::update_all_rendernodes(
                         &mut *obj.sheet().selection().strokes().borrow_mut(),
                         scalefactor,
+                        &*obj.renderer().borrow(),
                     );
 
                     obj.queue_draw();
@@ -353,7 +357,7 @@ mod imp {
     }
 }
 
-use crate::strokes::StrokeStyle;
+use crate::strokes::{render, StrokeStyle};
 use crate::{
     pens::PenStyle, pens::Pens, sheet::Sheet, strokes::InputData, strokes::StrokeBehaviour,
     ui::appwindow::RnoteAppWindow,
@@ -426,6 +430,10 @@ impl Canvas {
         }
     }
 
+    pub fn renderer(&self) -> Rc<RefCell<render::Renderer>> {
+        imp::Canvas::from_instance(self).renderer.clone()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::Canvas::from_instance(self);
 
@@ -448,6 +456,7 @@ impl Canvas {
                     StrokeStyle::update_all_rendernodes(
                         &mut *obj.sheet().selection().strokes().borrow_mut(),
                         scalefactor,
+                        &*obj.renderer().borrow(),
                     );
 
                     obj.queue_draw();
@@ -599,7 +608,7 @@ impl Canvas {
                         self.queue_resize();
                     }
                     if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {
-                        stroke.update_rendernode(self.scalefactor());
+                        stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
                 }
             }
@@ -629,7 +638,7 @@ impl Canvas {
                     self.pens()
                         .borrow_mut()
                         .selector
-                        .update_rendernode(self.scalefactor());
+                        .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                 }
 
                 self.processing_draw_motion(data_entries);
@@ -656,7 +665,7 @@ impl Canvas {
                         self.queue_resize();
                     }
                     if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {
-                        stroke.update_rendernode(self.scalefactor());
+                        stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
                 }
             }
@@ -680,7 +689,7 @@ impl Canvas {
                     self.pens()
                         .borrow_mut()
                         .selector
-                        .update_rendernode(self.scalefactor());
+                        .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                 }
             }
             PenStyle::Unkown => {}
@@ -712,7 +721,7 @@ impl Canvas {
                 self.pens()
                     .borrow_mut()
                     .selector
-                    .update_rendernode(self.scalefactor());
+                    .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
             }
             PenStyle::Marker | PenStyle::Brush | PenStyle::Eraser | PenStyle::Unkown => {
                 self.pens().borrow_mut().eraser.set_shown(false);
@@ -786,7 +795,7 @@ impl Canvas {
 
         if with_backlog {
             if let Some(backlog) = gesture_stylus.backlog() {
-                dbg!(backlog.len());
+                //dbg!(backlog.len());
 
                 for logentry in backlog {
                     let axes = logentry.axes();

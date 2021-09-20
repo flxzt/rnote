@@ -37,10 +37,6 @@ impl StrokeBehaviour for BitmapImage {
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut cx = tera::Context::new();
 
-        /*         let x = self.bounds.mins[0] + offset[0];
-        let y = self.bounds.mins[1] + offset[1];
-        let width = self.bounds.maxs[0] - self.bounds.mins[0];
-        let height = self.bounds.maxs[1] - self.bounds.mins[1]; */
         let x = 0.0;
         let y = 0.0;
         let width = self.intrinsic_size[0];
@@ -91,16 +87,20 @@ impl StrokeBehaviour for BitmapImage {
         Ok(svg)
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64) {
-        if let Ok(rendernode) = self.gen_rendernode(scalefactor) {
+    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
+        if let Ok(rendernode) = self.gen_rendernode(scalefactor, renderer) {
             self.rendernode = rendernode;
         } else {
             log::error!("failed to gen_rendernode() in update_renderonode() of markerstroke");
         }
     }
 
-    fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
-        render::gen_rendernode_backend_librsvg(
+    fn gen_rendernode(
+        &self,
+        scalefactor: f64,
+        renderer: &render::Renderer,
+    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+        renderer.gen_rendernode_backend_resvg(
             self.bounds,
             scalefactor,
             compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),

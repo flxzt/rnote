@@ -30,6 +30,12 @@ impl Selector {
         b: 0.7,
         a: 0.7,
     };
+    pub const FILL_COLOR: strokes::Color = strokes::Color {
+        r: 0.9,
+        g: 0.9,
+        b: 0.9,
+        a: 0.05,
+    };
 
     pub fn new() -> Self {
         Self {
@@ -64,13 +70,17 @@ impl Selector {
         self.path.clear();
     }
 
-    pub fn update_rendernode(&mut self, scalefactor: f64) {
+    pub fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
         self.rendernode = self
-            .gen_rendernode(scalefactor)
+            .gen_rendernode(scalefactor, renderer)
             .expect("failed to gen_rendernode() in update_rendernode() of selector");
     }
 
-    pub fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    pub fn gen_rendernode(
+        &self,
+        scalefactor: f64,
+        renderer: &render::Renderer,
+    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
         if let Some(bounds) = self.bounds {
             let svg = compose::wrap_svg(
                 self.gen_svg_path(na::vector![0.0, 0.0]).as_str(),
@@ -79,7 +89,7 @@ impl Selector {
                 true,
                 false,
             );
-            render::gen_rendernode_backend_librsvg(bounds, scalefactor, svg.as_str())
+            renderer.gen_rendernode_backend_resvg(bounds, scalefactor, svg.as_str())
         } else {
             Ok(render::default_rendernode())
         }
@@ -136,7 +146,11 @@ impl Selector {
         cx.insert("path", &path);
         cx.insert(
             "attributes",
-            "fill=\"rgba(230, 230, 230, 0.15)\" stroke-dasharray=\"4 6\"",
+            &format!(
+                "
+            fill=\"{}\" stroke-dasharray=\"4 6\"",
+                compose::css_color(&Self::FILL_COLOR)
+            ),
         );
 
         let templ = String::from_utf8(

@@ -119,7 +119,15 @@ impl WorkspaceBrowser {
         primary_list_factory.connect_setup(move |_, list_item| {
             let label = Label::builder().halign(Align::Start).ellipsize(pango::EllipsizeMode::End).build();
             let image = Image::new();
-            let item_box = gtk4::Box::builder().orientation(Orientation::Horizontal).build();
+            let item_box = gtk4::Box::builder().
+                orientation(Orientation::Horizontal)
+                .halign(Align::Fill)
+                .valign(Align::Fill)
+                .hexpand(true)
+                .vexpand(true)
+                .build();
+
+            item_box.style_context().add_class("workspace_listitem");
             item_box.prepend(&image);
             item_box.append(&label);
             list_item.set_child(Some(&item_box));

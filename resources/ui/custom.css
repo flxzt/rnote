@@ -44,3 +44,11 @@
     background: #000000;
     box-shadow: 0 0 15px sienna;
 }
+
+.workspace_listitem {
+    transition: all 0.15s ease-out;
+}
+
+.workspace_listitem:hover {
+    text-shadow: 0 0 30px steelblue;
+}

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="AppMenu" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="GtkMenuButton" id="menubutton">
+        <property name="icon_name">open-menu</property>
+        <style>
+          <class name="flat" />
+        </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkPopoverMenu" id="popovermenu">
+        <property name="menu-model">menu_model</property>
+        <property name="width-request">200</property>
+        <property name="hexpand">true</property>
+        <menu id="menu_model">
+          <section>
+            <item>
+              <attribute name="custom">prefer_dark_theme_attr</attribute>
+            </item>
+          </section>
+          <section>
+            <item>
+              <attribute name="label">Debug mode</attribute>
+              <attribute name="toggle" />
+              <attribute name="action">app.debug</attribute>
+            </item>
+          </section>
+          <section>
+            <item>
+              <attribute name="label">Shortcuts</attribute>
+              <attribute name="action">win.show-help-overlay</attribute>
+            </item>
+            <item>
+              <attribute name="label">About Rnote</attribute>
+              <attribute name="action">app.about</attribute>
+            </item>
+          </section>
+        </menu>
+        <child type="prefer_dark_theme_attr">
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="halign">fill</property>
+            <property name="valign">fill</property>
+            <property name="height-request">120</property>
+            <property name="width-request">240</property>
+            <child>
+              <object class="GtkToggleButton" id="light_theme_toggle">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="width-request">90</property>
+                <property name="height-request">100</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-top">20</property>
+                <property name="margin-bottom">20</property>
+                <style>
+                  <class name="light_theme_toggle" />
+                  <class name="circular" />
+                </style>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="dark_theme_toggle">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="width-request">90</property>
+                <property name="height-request">100</property>
+                <property name="margin-start">10</property>
+                <property name="margin-end">10</property>
+                <property name="margin-top">20</property>
+                <property name="margin-bottom">20</property>
+                <style>
+                  <class name="dark_theme_toggle" />
+                  <class name="circular" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

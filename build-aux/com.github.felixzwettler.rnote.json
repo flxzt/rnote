@@ -1,0 +1,59 @@
+{
+    "app-id": "com.github.felixzwettler.rnote",
+    "runtime": "org.gnome.Platform",
+    "runtime-version": "40",
+    "sdk": "org.gnome.Sdk",
+    "sdk-extensions": [
+        "org.freedesktop.Sdk.Extension.rust-stable"
+    ],
+    "command": "rnote",
+    "finish-args": [
+        "--socket=wayland",
+        "--socket=fallback-x11",
+        "--device=dri",
+        "--share=ipc",
+        "--talk-name=org.a11y.Bus",
+        "--filesystem=home",
+        "--env=RUST_LOG=rnote=debug",
+        "--env=G_MESSAGES_DEBUG=all",
+        "--env=RUST_BACKTRACE=1"
+    ],
+    "build-options": {
+        "append-path": "/usr/lib/sdk/rust-stable/bin",
+        "build-args": [
+            "--share=network"
+        ],
+        "test-args": [
+            "--socket=x11",
+            "--share=network"
+        ]
+    },
+    "modules": [
+        {
+            "name": "libadwaita",
+            "buildsystem": "meson",
+            "builddir": true,
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/libadwaita.git",
+                    "branch": "main"
+                }
+            ]
+        },
+        {
+            "name": "rnote",
+            "buildsystem": "meson",
+            "run-tests": true,
+            "config-opts": [
+                "-Dprofile=default"
+            ],
+            "sources": [
+                {
+                    "type": "dir",
+                    "path": "../"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+[package]
+name = "rnote"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+[dependencies]
+rand = "0.8"
+serde = {version = "1.0", features = ["derive", "rc"]}
+serde_json = { version="1.0" }
+gtk4 = {version = "0.2"}
+adw = {version = "0.1.0-alpha-3", package="libadwaita"}
+cairo-rs = {version = "0.14", features = ["png", "svg"]}
+lazy_static ="1.4"
+once_cell = "1"
+base64 = "0.13"
+image = "0.23"
+tera = "1.12"
+librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
+log = "0.4"
+pretty_env_logger = "0.3"
+regex = "1.5"
+nalgebra = { version = "0.29", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.7", features = ["serde-serialize"] }

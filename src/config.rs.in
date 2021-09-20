@@ -1,0 +1,13 @@
+pub const APP_NAME: &str = @APP_NAME@;
+pub const APP_ID: &str = @APP_ID@;
+pub const APP_IDPATH: &str = @APP_IDPATH@;
+pub const APP_VERSION: &str = @VERSION@;
+pub const APP_AUTHORS: &[&str] = &["Felix Zwettler"];
+pub const APP_WEBSITE: &str = "https://github.com/felixzwettler/rnote";
+pub const APP_LICENSE: gtk4::License = gtk4::License::Gpl30;
+
+pub const RESOURCES_FILE: &str = @RESOURCES_FILE@;
+//pub const PROFILE: &str = @PROFILE@;
+
+#[allow(unused_macros)]
+macro_rules! identity { ($x:expr) => { $x }; }

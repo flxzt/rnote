@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- RnoteDialogs -->
+<interface>
+
+  <object class="GtkMessageDialog" id="dialog_new_sheet">
+    <property name="modal">true</property>
+    <property name="title">New Sheet</property>
+    <property name="text">Creating a new sheet erases any unsaved changes. Please confirm</property>
+    <child type="action">
+      <object class="GtkButton" id="new_sheet_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="new_sheet_button_save_as">
+        <property name="label">Save current sheet as</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="new_sheet_button_ok">
+        <property name="label">New</property>
+        <style>
+          <class name="destructive-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel" default="true">new_sheet_button_cancel</action-widget>
+      <action-widget response="ok">new_sheet_button_ok</action-widget>
+      <action-widget response="apply">new_sheet_button_save_as</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkMessageDialog" id="dialog_open_input_file">
+    <property name="modal">true</property>
+    <property name="title">Open File</property>
+    <property name="text">Opening this file erases any unsaved changes. Please confirm</property>
+    <child type="action">
+      <object class="GtkButton" id="open_input_file_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="open_input_file_button_save_as">
+        <property name="label">Save current sheet as</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="open_input_file_button_ok">
+        <property name="label">Open</property>
+        <style>
+          <class name="destructive-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel" default="true">open_input_file_button_cancel</action-widget>
+      <action-widget response="ok">open_input_file_button_ok</action-widget>
+      <action-widget response="apply">open_input_file_button_save_as</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkMessageDialog" id="dialog_clear_sheet">
+    <property name="modal">true</property>
+    <property name="title">Clear Sheet</property>
+    <property name="text">This clears the entire sheet. Please confirm.</property>
+    <child type="action">
+      <object class="GtkButton" id="clear_sheet_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="clear_sheet_button_ok">
+        <property name="label">Clear</property>
+        <style>
+          <class name="destructive-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel" default="true">clear_sheet_button_cancel</action-widget>
+      <action-widget response="ok">clear_sheet_button_ok</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkFileChooserDialog" id="dialog_open_file">
+    <property name="modal">true</property>
+    <property name="title">Open File</property>
+    <property name="action">open</property>
+    <child type="action">
+      <object class="GtkButton" id="open_file_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="open_file_button_ok">
+        <property name="label">Open</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">open_file_button_cancel</action-widget>
+      <action-widget response="ok" default="true">open_file_button_ok</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkFileChooserDialog" id="dialog_open_workspace">
+    <property name="modal">true</property>
+    <property name="title">Open Workspace</property>
+    <property name="action">GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER</property>
+    <child type="action">
+      <object class="GtkButton" id="open_workspace_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="open_workspace_button_ok">
+        <property name="label">Open</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">open_workspace_button_cancel</action-widget>
+      <action-widget response="ok" default="true">open_workspace_button_ok</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkFileChooserDialog" id="dialog_save_sheet">
+    <property name="modal">true</property>
+    <property name="title">Save Sheet</property>
+    <property name="action">save</property>
+    <child type="action">
+      <object class="GtkButton" id="save_sheet_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="save_sheet_button_ok">
+        <property name="label">Save</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">save_sheet_button_cancel</action-widget>
+      <action-widget response="ok" default="true">save_sheet_button_ok</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkFileChooserDialog" id="dialog_save_sheet_as">
+    <property name="modal">true</property>
+    <property name="title">Save Sheet As</property>
+    <property name="action">save</property>
+    <child type="action">
+      <object class="GtkButton" id="save_sheet_as_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="save_sheet_as_button_ok">
+        <property name="label">Save As</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">save_sheet_as_button_cancel</action-widget>
+      <action-widget response="ok" default="true">save_sheet_as_button_ok</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkFileChooserDialog" id="dialog_import_file">
+    <property name="modal">true</property>
+    <property name="title">Import File</property>
+    <property name="action">open</property>
+    <child type="action">
+      <object class="GtkButton" id="import_file_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="import_file_button_ok">
+        <property name="label">Import</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">import_file_button_cancel</action-widget>
+      <action-widget response="ok" default="true">import_file_button_ok</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkFileChooserDialog" id="dialog_export_selection">
+    <property name="modal">true</property>
+    <property name="title">Export Selection</property>
+    <property name="action">save</property>
+    <child type="action">
+      <object class="GtkButton" id="export_selection_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="export_selection_button_ok">
+        <property name="label">Export</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">export_selection_button_cancel</action-widget>
+      <action-widget response="ok" default="true">export_selection_button_ok</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkFileChooserDialog" id="dialog_export_sheet">
+    <property name="modal">true</property>
+    <property name="title">Export Sheet</property>
+    <property name="action">save</property>
+    <child type="action">
+      <object class="GtkButton" id="export_sheet_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="export_sheet_button_ok">
+        <property name="label">Export</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel">export_sheet_button_cancel</action-widget>
+      <action-widget response="ok" default="true">export_sheet_button_ok</action-widget>
+    </action-widgets>
+  </object>
+</interface>

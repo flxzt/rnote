@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="CanvasMenu" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="GtkMenuButton" id="menubutton">
+        <property name="icon_name">document-properties-symbolic</property>
+                    <style>
+                      <class name="flat" />
+                    </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkPopoverMenu" id="popovermenu">
+        <property name="menu-model">menu_model</property>
+        <property name="width-request">300</property>
+        <property name="hexpand">true</property>
+        <menu id="menu_model">
+          <section>
+            <item>
+              <attribute name="custom">zoomcontrols_attr</attribute>
+            </item>
+            <item>
+              <attribute name="custom">handedtoggle_attr</attribute>
+            </item>
+          </section>
+          <section>
+            <item>
+              <attribute name="label">Draw with mouse</attribute>
+              <attribute name="toggle" />
+              <attribute name="action">app.mouse-drawing</attribute>
+            </item>
+            <item>
+              <attribute name="label">Endless sheet</attribute>
+              <attribute name="toggle" />
+              <attribute name="action">app.autoexpand-height</attribute>
+            </item>
+            <item>
+              <attribute name="label">Show format borders</attribute>
+              <attribute name="toggle" />
+              <attribute name="action">app.format-borders</attribute>
+            </item>
+            <item>
+              <attribute name="label">Clear sheet</attribute>
+              <attribute name="action">app.clear-sheet</attribute>
+            </item>
+            <submenu>
+              <attribute name="label">Sheet format</attribute>
+              <section>
+                <item>
+                  <attribute name="label">A4 150DPI portrait</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">a4-150dpi-portrait</attribute>
+                </item>
+                <item>
+                  <attribute name="label">A4 150DPI landscape</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">a4-150dpi-landscape</attribute>
+                </item>
+                <item>
+                  <attribute name="label">A4 300DPI portrait</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">a4-300dpi-portrait</attribute>
+                </item>
+                <item>
+                  <attribute name="label">A4 300DPI landscape</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">a4-300dpi-landscape</attribute>
+                </item>
+                <item>
+                  <attribute name="label">A3 150DPI portrait</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">a3-150dpi-portrait</attribute>
+                </item>
+                <item>
+                  <attribute name="label">A3 150DPI landscape</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">a3-150dpi-landscape</attribute>
+                </item>
+                <item>
+                  <attribute name="label">A3 300DPI portrait</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">a3-300dpi-portrait</attribute>
+                </item>
+                <item>
+                  <attribute name="label">A3 300DPI landscape</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">a3-300dpi-landscape</attribute>
+                </item>
+              </section>
+              <section>
+                <submenu>
+                  <attribute name="label">Custom format</attribute>
+                  <section>
+                    <item>
+                      <attribute name="custom">custom_format_attr</attribute>
+                    </item>
+                  </section>
+                </submenu>
+              </section>
+            </submenu>
+          </section>
+          <section>
+            <attribute name="title">New / Open / Save</attribute>
+            <item>
+              <attribute name="label">New</attribute>
+              <attribute name="action">app.new-sheet</attribute>
+            </item>
+            <item>
+              <attribute name="label">Open</attribute>
+              <attribute name="action">app.open-sheet</attribute>
+            </item>
+            <item>
+              <attribute name="label">Save</attribute>
+              <attribute name="action">app.save-sheet</attribute>
+            </item>
+            <item>
+              <attribute name="label">Save As</attribute>
+              <attribute name="action">app.save-sheet-as</attribute>
+            </item>
+            <submenu>
+              <attribute name="label">Import ..</attribute>
+              <item>
+                <attribute name="label">Import file as SVG</attribute>
+                <attribute name="action">app.import-as-svg</attribute>
+              </item>
+            </submenu>
+            <submenu>
+              <attribute name="label">Export ..</attribute>
+              <item>
+                <attribute name="label">Export selection as SVG</attribute>
+                <attribute name="action">app.export-selection-as-svg</attribute>
+              </item>
+              <item>
+                <attribute name="label">Export sheet as SVG</attribute>
+                <attribute name="action">app.export-sheet-as-svg</attribute>
+              </item>
+            </submenu>
+          </section>
+        </menu>
+
+        <child type="custom_format_attr">
+          <object class="GtkGrid">
+            <property name="column-spacing">6</property>
+            <property name="row-spacing">0</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <property name="margin-top">12</property>
+            <property name="margin-bottom">6</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="halign">start</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">0</property>
+                </layout>
+                <property name="label">Width</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="custom_format_width_entry">
+              <property name="hexpand">false</property>
+              <property name="halign">end</property>
+                <property name="input-purpose">digits</property>
+                <property name="max-length">5</property>
+                <property name="placeholder-text">pixels..</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+              <property name="halign">start</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                </layout>
+                <property name="label">Height</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="custom_format_height_entry">
+              <property name="hexpand">false</property>
+              <property name="halign">end</property>
+                <property name="input-purpose">digits</property>
+                <property name="max-length">5</property>
+                <property name="placeholder-text">pixels..</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+              <property name="halign">start</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">2</property>
+                </layout>
+                <property name="label">DPI</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkEntry" id="custom_format_dpi_entry">
+              <property name="hexpand">false</property>
+              <property name="halign">end</property>
+                <property name="input-purpose">digits</property>
+                <property name="max-length">4</property>
+                <property name="placeholder-text">dots per inch..</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">2</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="custom_format_apply">
+                <property name="margin-top">12</property>
+                <property name="label">Apply</property>
+                <property name="hexpand">true</property>
+                <property name="halign">fill</property>
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">3</property>
+                  <property name="column-span">2</property>
+                </layout>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child type="zoomcontrols_attr">
+          <object class="GtkBox" id="zoomcontrols">
+            <property name="homogeneous">false</property>
+            <property name="hexpand">true</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <child>
+              <object class="GtkBox">
+                <property name="margin-start">0</property>
+                <property name="margin-end">6</property>
+                <style>
+                  <class name="linked" />
+                </style>
+                <property name="orientation">horizontal</property>
+                <property name="hexpand">true</property>
+                <child>
+                  <object class="GtkButton" id="zoomout_button">
+                    <property name="icon_name">zoom-out-symbolic</property>
+                    <property name="width_request">50</property>
+                    <property name="hexpand">false</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="zoomreset_button">
+                    <property name="hexpand">true</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="zoomin_button">
+                    <property name="icon_name">zoom-in-symbolic</property>
+                    <property name="width_request">50</property>
+                    <property name="hexpand">false</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <style>
+                  <class name="linked" />
+                </style>
+                <child>
+                  <object class="GtkButton" id="zoom_fit_width_button">
+                    <property name="icon_name">zoom-fit-width-symbolic</property>
+                    <property name="tooltip_text">Zoom to fit sheet width</property>
+                    <property name="hexpand">false</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child type="handedtoggle_attr">
+          <object class="GtkBox" id="handedtoggle_box">
+            <property name="homogeneous">True</property>
+            <property name="hexpand">true</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <style>
+              <class name="linked" />
+            </style>
+            <child>
+              <object class="GtkToggleButton" id="righthanded_toggle">
+                <property name="icon_name">dock-left-symbolic</property>
+                <property name="hexpand">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="lefthanded_toggle">
+                <property name="icon_name">dock-right-symbolic</property>
+                <property name="hexpand">true</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

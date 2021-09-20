@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="@APP_ID@" path="@APP_IDPATH@">
+    <key name="window-width" type="i">
+      <default>-1</default>
+      <summary>Default window width</summary>
+    </key>
+    <key name="window-height" type="i">
+      <default>-1</default>
+      <summary>Default window height</summary>
+    </key>
+    <key name="is-maximized" type="b">
+      <default>false</default>
+      <summary>Default window maximized behaviour</summary>
+    </key>
+    <key name="debug" type="b">
+      <default>false</default>
+      <summary>Enable debugging in the application</summary>
+    </key>
+    <key name="prefer-dark-theme" type="b">
+      <default>false</default>
+      <summary>Wether the dark theme is preferred</summary>
+    </key>
+    <key name="mouse-drawing" type="b">
+      <default>false</default>
+      <summary>Enable mouse input for drawing</summary>
+    </key>
+    <key name="righthanded" type="b">
+      <default>true</default>
+      <summary>user is right or left handed</summary>
+    </key>
+    <key name="autoexpand-height" type="b">
+      <default>false</default>
+      <summary>Autoexpand sheet height</summary>
+    </key>
+    <key name="sheet-format" type="(iii)">
+      <default>(1240, 1754, 150)</default>
+      <summary>The sheet format in (width, height, dpi)</summary>
+    </key>
+    <key name="format-borders" type="b">
+      <default>true</default>
+      <summary>Show sheet format borders</summary>
+    </key>
+    <key name="workspace-dir" type="s">
+      <default>"./"</default>
+      <summary>Workspace directory</summary>
+    </key>
+  </schema>
+</schemalist>

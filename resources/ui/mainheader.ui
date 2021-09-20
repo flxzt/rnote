@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### Headerbar ### -->
+<interface>
+  <template class="MainHeader" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="GtkLabel" id="main_title">
+        <property name="label"></property>
+      </object>
+      <object class="AdwHeaderBar" id="headerbar">
+        <property name="title-widget">main_title</property>
+        <property name="vexpand">false</property>
+        <child type="start">
+          <object class="GtkBox">
+            <property name="width_request">48</property>
+            <property name="margin-start">0</property>
+            <property name="margin-end">0</property>
+            <property name="margin-top">0</property>
+            <property name="margin-bottom">0</property>
+            <child>
+              <object class="GtkImage" id="header_icon_image">
+                <property name="visible">true</property>
+                <property name="margin-start">12</property>
+                <property name="margin-end">6</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
+                <property name="pixel-size">24</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="start">
+          <object class="GtkBox" id="quickactions_box">
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <child>
+              <object class="GtkRevealer" id="pageedit_revealer">
+                <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>
+                <property name="transition_duration">300</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="homogeneous">True</property>
+                    <child>
+                      <object class="GtkButton" id="add_page_button">
+                        <property name="icon_name">add-page-symbolic</property>
+                        <property name="tooltip_text">add page</property>
+                        <property name="margin-start">0</property>
+                        <property name="margin-end">3</property>
+                        <style>
+                          <class name="flat" />
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="fit_to_format_button">
+                        <property name="icon_name">fit-to-format-symbolic</property>
+                        <property name="tooltip_text">fit to format</property>
+                        <property name="margin-start">3</property>
+                        <property name="margin-end">6</property>
+                        <style>
+                          <class name="flat" />
+                        </style>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="homogeneous">True</property>
+                <property name="margin-start">0</property>
+                <property name="margin-end">0</property>
+                <style>
+                  <class name="linked" />
+                </style>
+                <child>
+                  <object class="GtkButton" id="undo_button">
+                    <property name="icon_name">edit-undo-symbolic</property>
+                    <property name="tooltip_text">undo last stroke</property>
+                    <style>
+                      <class name="flat" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="redo_button">
+                    <property name="icon_name">edit-redo-symbolic</property>
+                    <property name="tooltip_text">redo last stroke</property>
+                    <style>
+                      <class name="flat" />
+                    </style>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkBox" id="menus_box">
+            <property name="spacing">6</property>
+            <property name="margin-top">0</property>
+            <property name="margin-bottom">0</property>
+            <property name="margin-start">48</property>
+            <property name="margin-end">6</property>
+            <child>
+              <object class="CanvasMenu" id="canvasmenu"></object>
+            </child>
+            <child>
+              <object class="AppMenu" id="appmenu"></object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkBox" id="pens_togglebox">
+            <property name="homogeneous">true</property>
+            <property name="width_request">400</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <style>
+              <class name="linked" />
+            </style>
+            <child>
+              <object class="GtkToggleButton" id="marker_toggle">
+                <property name="icon_name">marker-symbolic</property>
+                <property name="tooltip_text">Marker</property>
+                <property name="hexpand">true</property>
+                <property name="active">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="brush_toggle">
+                <property name="icon_name">brush-symbolic</property>
+                <property name="tooltip_text">Brush</property>
+                <property name="hexpand">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="eraser_toggle">
+                <property name="icon_name">eraser-symbolic</property>
+                <property name="tooltip_text">Eraser</property>
+                <property name="hexpand">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="selector_toggle">
+                <property name="icon_name">selector-symbolic</property>
+                <property name="tooltip_text">Selector</property>
+                <property name="hexpand">true</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

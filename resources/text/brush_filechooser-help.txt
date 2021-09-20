@@ -1,0 +1,10 @@
+This brush template chooser lets you choose brush templates used to render brush strokes. There are a couple of predefined ones, but you can also add some under `~/.config/rnote/brush_templates/`.
+
+In there is also a commented copy of the default template named "brushstroke-cubicbezier.svg.templ" which can be used as a starting point for creating custom templates. You can modify and rename this template. The file ending `.svg.templ` must be retained though. Your custom templates will then show up in the template chooser list. If you delete or rename the default template, another copy will be created on the next application startup. All predefined templates are also located in '/usr/share/rnote/templates/`.
+The icon next to the custom templates indicates if the template is valid.
+
+Hint:
+A lot of times the SVG renderer just ignores tags or attributes that it doesn't understand. If your template appears valid in the list, but nothing gets drawn its very likely that there still is an error in your template.
+
+
+The used template engine is Tera and documentation how to use it can be found here: https://tera.netlify.app/docs/#introduction

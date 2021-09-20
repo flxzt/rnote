@@ -1,0 +1,46 @@
+.canvas-scroller {
+    background-color: rgba(120, 120, 130, 0.2);
+}
+
+.modifiernode {
+    color: rgba(0, 0, 0, 255);
+    transition: color 0.15s;
+}
+
+.modifiernode:hover {
+    color: rgba(0, 200, 20, 255);
+}
+
+.files_grid {
+    background-color: @theme_bg_color;
+}
+
+.light_theme_toggle {
+    background: #ffffff;
+    box-shadow: 0 0 15px darkgray;
+    transition: all 0.2s ease-out;
+}
+
+.light_theme_toggle:hover {
+    background: #d2d2d2;
+}
+
+.light_theme_toggle:checked {
+    background: #ffffff;
+    box-shadow: 0 0 15px steelblue;
+}
+
+.dark_theme_toggle {
+    background: #000000;
+    box-shadow: 0 0 15px darkgray;
+    transition: all 0.2s ease-out;
+}
+
+.dark_theme_toggle:hover {
+    background: #2e2e2e;
+}
+
+.dark_theme_toggle:checked {
+    background: #000000;
+    box-shadow: 0 0 15px sienna;
+}

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="@APP_IDPATH@">
+        <file>ui/custom.css</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/appwindow.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks" alias="gtk/help-overlay.ui">ui/shortcuts.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/appmenu.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/selectionmodifier.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/templatechooser.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
+        <file preprocess="xml-stripblanks">ui/dialogs.ui</file>
+        <file compressed="true">icons/scalable/apps/app.svg</file>
+        <file compressed="true">icons/scalable/apps/app-devel.svg</file>
+        <file compressed="true">icons/scalable/actions/function-linear-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/function-third-order-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/function-experimental-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-translate-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/canvas-cursor-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/reset-pen-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/marker-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/brush-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/brush-templates-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/templatechooser-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/eraser-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selector-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/add-page-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/fit-to-format-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/zoom-fit-width-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/padlock-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/padlock-open-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/leaflet-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/flap-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/arrow1-left-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/arrow1-right-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/arrow1-up-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/arrow1-down-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/question-round-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/preferences-color-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/test-valid-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/test-invalid-symbolic.svg</file>
+        <file>templates/markerstroke.svg.templ</file>
+        <file>templates/brushstroke-linear.svg.templ</file>
+        <file>templates/brushstroke-cubicbezier.svg.templ</file>
+        <file>templates/selectorstroke.svg.templ</file>
+        <file>templates/bitmapimage.svg.templ</file>
+        <file>templates/svg_wrap.svg.templ</file>
+        <file>text/brush_filechooser-help.txt</file>
+    </gresource>
+</gresources>

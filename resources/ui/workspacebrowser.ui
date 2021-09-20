@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="WorkspaceBrowser" parent="GtkWidget">
+    <property name="hexpand">false</property>
+    <property name="vexpand">true</property>
+    <property name="valign">fill</property>
+    <property name="halign">fill</property>
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="GtkGrid" id="browser_grid">
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="propagate-natural-width">true</property>
+            <property name="propagate-natural-height">false</property>
+            <property name="hexpand">false</property>
+            <property name="vexpand">true</property>
+            <property name="valign">fill</property>
+            <property name="halign">fill</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+            <property name="hscrollbar-policy">never</property>
+            <property name="min-content-width">200</property>
+            <child>
+              <object class="GtkListView" id="primary_list">
+                <style>
+                  <class name="rich-list"></class>
+                  <class name="separators"></class>
+                </style>
+                <property name="width-request">470</property>
+                <property name="hexpand">false</property>
+                <property name="vexpand">true</property>
+                <property name="valign">fill</property>
+                <property name="halign">fill</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Rnote
+Comment=A simple note taking application
+Icon=@APP_ID@
+#DBusActivatable=true
+Exec=@APP_NAME@ %f
+Terminal=false
+MimeType=image/svg+xml;image/png;
+Type=Application
+Categories=GNOME;GTK;Graphics;
+Keywords=Gnome;GTK;Office;Graphics;Notes;
+StartupNotify=true

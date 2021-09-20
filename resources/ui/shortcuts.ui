@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <object class="GtkShortcutsWindow" id="help_overlay">
+    <property name="modal">true</property>
+    <child>
+      <object class="GtkShortcutsSection">
+        <property name="section-name">shortcuts</property>
+        <property name="max-height">10</property>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" context="shortcut window">General</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Show Shortcuts</property>
+                <property name="action-name">win.show-help-overlay</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Quit the application</property>
+                <property name="action-name">app.quit</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Open the appmenu</property>
+                <property name="action-name">app.open-appmenu</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" context="shortcut window">Sheet</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Clear sheet</property>
+                <property name="action-name">app.clear-sheet</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Delete current selection</property>
+                <property name="action-name">app.delete-selection</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Zoom in</property>
+                <property name="action-name">app.zoomin</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Zoom out</property>
+                <property name="action-name">app.zoomout</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkShortcutsGroup">
+            <property name="title" context="shortcut window">Pens</property>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Enable temporary Eraser</property>
+                <property name="action-name">app.tmperaser(true)</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

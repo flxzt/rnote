@@ -127,7 +127,7 @@ impl StrokeBehaviour for BrushStroke {
 
         //println!("{}", svg);
 
-        renderer.gen_rendernode_backend_resvg(self.bounds, scalefactor, svg.as_str())
+        renderer.gen_rendernode(self.bounds, scalefactor, svg.as_str())
     }
 }
 

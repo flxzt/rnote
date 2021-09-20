@@ -25,9 +25,9 @@
           </section>
           <section>
             <item>
-              <attribute name="label">Debug mode</attribute>
+              <attribute name="label">Developer mode</attribute>
               <attribute name="toggle" />
-              <attribute name="action">app.debug</attribute>
+              <attribute name="action">app.devel</attribute>
             </item>
           </section>
           <section>

@@ -181,7 +181,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
             false,
         );
         //log::warn!("\n### validating file `{:?}`###, contents:\n {}", file.path(), svg);
-        let _rendernode = renderer.gen_rendernode_backend_resvg(bounds, 1.0, svg.as_str())?;
+        let _rendernode = renderer.gen_rendernode(bounds, 1.0, svg.as_str())?;
     }
 
     Ok(())

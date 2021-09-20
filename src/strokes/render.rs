@@ -5,7 +5,12 @@ use gtk4::{
     gsk::{self, IsRenderNode},
 };
 
+pub enum RendererBackend {
+    LIBRSVG,
+    RESVG,
+}
 pub struct Renderer {
+    pub backend: RendererBackend,
     pub usvg_options: usvg::Options,
 }
 
@@ -14,11 +19,28 @@ impl Default for Renderer {
         let mut usvg_options = usvg::Options::default();
         usvg_options.fontdb.load_system_fonts();
 
-        Self { usvg_options }
+        Self {
+            usvg_options,
+            backend: RendererBackend::RESVG,
+        }
     }
 }
 
 impl Renderer {
+    pub fn gen_rendernode(
+        &self,
+        bounds: p2d::bounding_volume::AABB,
+        scalefactor: f64,
+        svg: &str,
+    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+        match self.backend {
+            RendererBackend::LIBRSVG => {
+                self.gen_rendernode_backend_librsvg(bounds, scalefactor, svg)
+            }
+            RendererBackend::RESVG => self.gen_rendernode_backend_resvg(bounds, scalefactor, svg),
+        }
+    }
+
     pub fn gen_rendernode_backend_resvg(
         &self,
         bounds: p2d::bounding_volume::AABB,

@@ -89,7 +89,7 @@ impl Selector {
                 true,
                 false,
             );
-            renderer.gen_rendernode_backend_resvg(bounds, scalefactor, svg.as_str())
+            renderer.gen_rendernode(bounds, scalefactor, svg.as_str())
         } else {
             Ok(render::default_rendernode())
         }

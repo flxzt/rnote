@@ -550,13 +550,13 @@ impl RnoteAppWindow {
 
         // Debug
         self.app_settings()
-            .bind("debug", &self.canvas(), "visual-debug")
+            .bind("devel", &self.canvas(), "visual-debug")
             .flags(gio::SettingsBindFlags::DEFAULT)
             .build();
 
         self.app_settings()
             .bind(
-                "debug",
+                "devel",
                 &self
                     .penssidebar()
                     .brush_templatechooser()

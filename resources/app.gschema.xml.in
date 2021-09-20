@@ -13,9 +13,9 @@
       <default>false</default>
       <summary>Default window maximized behaviour</summary>
     </key>
-    <key name="debug" type="b">
+    <key name="devel" type="b">
       <default>false</default>
-      <summary>Enable debugging in the application</summary>
+      <summary>Enable the developer mode in the application</summary>
     </key>
     <key name="prefer-dark-theme" type="b">
       <default>false</default>

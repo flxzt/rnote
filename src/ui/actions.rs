@@ -57,7 +57,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     let action_sheet_format = appwindow.app_settings().create_action("sheet-format");
     let action_sheet_format_borders = appwindow.app_settings().create_action("format-borders");
-    let action_debug = appwindow.app_settings().create_action("debug");
+    let action_devel = appwindow.app_settings().create_action("devel");
     let action_mouse_drawing = appwindow.app_settings().create_action("mouse-drawing");
     let action_autoexpand_height = appwindow.app_settings().create_action("autoexpand-height");
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
@@ -82,8 +82,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     }));
     appwindow.application().unwrap().add_action(&action_error);
 
-    // Debug
-    appwindow.application().unwrap().add_action(&action_debug);
+    // Devel
+    appwindow.application().unwrap().add_action(&action_devel);
 
     // Mouse drawing
     appwindow

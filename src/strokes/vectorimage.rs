@@ -71,7 +71,7 @@ impl StrokeBehaviour for VectorImage {
         scalefactor: f64,
         renderer: &render::Renderer,
     ) -> Result<gsk::RenderNode, Box<dyn Error>> {
-        renderer.gen_rendernode_backend_resvg(
+        renderer.gen_rendernode(
             self.bounds,
             scalefactor,
             compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),

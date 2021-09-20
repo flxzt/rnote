@@ -1,7 +1,7 @@
 use gtk4::{gio, glib};
 use std::ops::Deref;
 
-use crate::config;
+use crate::{config, strokes};
 
 #[allow(dead_code)]
 pub fn add_xml_header(svg: &str) -> String {
@@ -112,4 +112,14 @@ pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
     } else {
         return None;
     }
+}
+
+pub fn css_color(color: &strokes::Color) -> String {
+    format!(
+        "rgb({:03},{:03},{:03},{:.3})",
+        (color.r * 255.0) as i32,
+        (color.g * 255.0) as i32,
+        (color.b * 255.0) as i32,
+        (color.a),
+    )
 }

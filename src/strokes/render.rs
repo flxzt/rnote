@@ -1,14 +1,65 @@
-use std::error::Error;
+use std::{error::Error};
 
-use gtk4::{gio, glib, graphene, gsk::{self, IsRenderNode}};
-
+use gtk4::{
+    gdk, gdk_pixbuf, gio, glib, graphene,
+    gsk::{self, IsRenderNode},
+};
 
 pub fn default_rendernode() -> gsk::RenderNode {
     let bounds = graphene::Rect::new(0.0, 0.0, 0.0, 0.0);
     gsk::CairoNode::new(&bounds).upcast()
 }
 
-pub fn gen_rendernode_for_svg(
+pub fn gen_rendernode_backend_resvg(
+    bounds: p2d::bounding_volume::AABB,
+    scalefactor: f64,
+    svg: &str,
+) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    let node_bounds = graphene::Rect::new(
+        (bounds.mins[0] * scalefactor).floor() as f32,
+        (bounds.mins[1] * scalefactor).floor() as f32,
+        ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as f32,
+        ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as f32,
+    );
+
+    let mut opt = usvg::Options::default();
+    opt.fontdb.load_system_fonts();
+
+    let rtree = usvg::Tree::from_data(svg.as_bytes(), &opt.to_ref())?;
+
+    //let pixmap_size = rtree.svg_node().size.to_screen_size();
+    let mut pixmap = tiny_skia::Pixmap::new(
+        node_bounds.width().floor() as u32,
+        node_bounds.height().floor() as u32,
+    )
+    .unwrap();
+
+    resvg::render(
+        &rtree,
+        usvg::FitTo::Size(
+            node_bounds.width().floor() as u32,
+            node_bounds.height().floor() as u32,
+        ),
+        pixmap.as_mut(),
+    )
+    .unwrap();
+
+    //pixmap.save_png(&PathBuf::from("./tests/output/stroke_resvg.png"))?;
+    let pixbuf = gdk_pixbuf::Pixbuf::from_bytes(
+        &glib::Bytes::from(pixmap.data()),
+        gdk_pixbuf::Colorspace::Rgb,
+        true,
+        8,
+        node_bounds.width().floor() as i32,
+        node_bounds.height().floor() as i32,
+        4 * node_bounds.width().floor() as i32,
+    );
+    let texture = gdk::Texture::for_pixbuf(&pixbuf);
+
+    Ok(gsk::TextureNode::new(&texture, &node_bounds).upcast())
+}
+
+pub fn gen_rendernode_backend_librsvg(
     bounds: p2d::bounding_volume::AABB,
     scalefactor: f64,
     svg: &str,

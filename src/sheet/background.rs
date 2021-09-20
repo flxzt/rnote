@@ -1,16 +1,16 @@
 use gtk4::{graphene, Snapshot};
 use serde::{Deserialize, Serialize};
 
-use crate::pens;
+use crate::strokes;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Background {
-    Solid(pens::Color),
+    Solid(strokes::Color),
 }
 
 impl Default for Background {
     fn default() -> Self {
-        Self::Solid(pens::Color {
+        Self::Solid(strokes::Color {
             r: 1.0,
             g: 1.0,
             b: 1.0,

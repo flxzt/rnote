@@ -14,10 +14,38 @@ use self::{
 
 use std::error::Error;
 
-use gtk4::{gsk, Snapshot};
+use gtk4::{gdk, gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct Color {
+    pub r: f32, // between 0.0 and 1.0
+    pub g: f32, // between 0.0 and 1.0
+    pub b: f32, // between 0.0 and 1.0
+    pub a: f32, // between 0.0 and 1.0
+}
+
+impl Color {
+    pub fn from_gdk(gdk_color: gdk::RGBA) -> Self {
+        Self {
+            r: gdk_color.red,
+            g: gdk_color.green,
+            b: gdk_color.blue,
+            a: gdk_color.alpha,
+        }
+    }
+
+    pub fn to_gdk(&self) -> gdk::RGBA {
+        gdk::RGBA {
+            red: self.r,
+            green: self.g,
+            blue: self.b,
+            alpha: self.a,
+        }
+    }
+}
 
 pub trait StrokeBehaviour {
     fn bounds(&self) -> p2d::bounding_volume::AABB;

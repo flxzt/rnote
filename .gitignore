@@ -9,3 +9,4 @@ Cargo.lock
 /.editorconfig
 /.vscode
 src/config.rs
+/tests/output

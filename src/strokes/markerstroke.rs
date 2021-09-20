@@ -89,13 +89,7 @@ impl StrokeBehaviour for MarkerStroke {
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut cx = tera::Context::new();
 
-        let color = format!(
-            "#{:02x}{:02x}{:02x}{:02x}",
-            (self.marker.color().red * 255.0) as i32,
-            (self.marker.color().green * 255.0) as i32,
-            (self.marker.color().blue * 255.0) as i32,
-            (self.marker.color().alpha * 255.0) as i32,
-        );
+        let color = compose::css_color(&self.marker.color());
         let width = self.marker.width().round() as i32;
 
         let path = self
@@ -151,7 +145,7 @@ impl StrokeBehaviour for MarkerStroke {
             true,
             false,
         );
-        render::gen_rendernode_for_svg(self.bounds, scalefactor, svg.as_str())
+        render::gen_rendernode_backend_librsvg(self.bounds, scalefactor, svg.as_str())
     }
 }
 

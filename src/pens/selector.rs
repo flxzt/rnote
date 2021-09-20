@@ -2,10 +2,10 @@ use std::{error::Error, ops::Deref};
 
 use crate::{
     config,
-    strokes::{compose, render, InputData},
+    strokes::{self, compose, render, InputData},
 };
 
-use gtk4::{gdk, gio, gsk, Snapshot};
+use gtk4::{gio, gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 
 #[derive(Clone, Debug)]
@@ -24,11 +24,11 @@ impl Default for Selector {
 
 impl Selector {
     pub const PATH_WIDTH: f64 = 2.0;
-    pub const PATH_COLOR: gdk::RGBA = gdk::RGBA {
-        red: 0.7,
-        green: 0.7,
-        blue: 0.7,
-        alpha: 0.7,
+    pub const PATH_COLOR: strokes::Color = strokes::Color {
+        r: 0.7,
+        g: 0.7,
+        b: 0.7,
+        a: 0.7,
     };
 
     pub fn new() -> Self {
@@ -79,7 +79,7 @@ impl Selector {
                 true,
                 false,
             );
-            render::gen_rendernode_for_svg(bounds, scalefactor, svg.as_str())
+            render::gen_rendernode_backend_librsvg(bounds, scalefactor, svg.as_str())
         } else {
             Ok(render::default_rendernode())
         }
@@ -104,14 +104,8 @@ impl Selector {
     pub fn gen_svg_path(&self, offset: na::Vector2<f64>) -> String {
         let mut cx = tera::Context::new();
 
+        let color = compose::css_color(&Self::PATH_COLOR);
         let padding = 2;
-        let color = format!(
-            "#{:02x}{:02x}{:02x}{:02x}",
-            (Self::PATH_COLOR.red * 255.0) as i32,
-            (Self::PATH_COLOR.green * 255.0) as i32,
-            (Self::PATH_COLOR.blue * 255.0) as i32,
-            (Self::PATH_COLOR.alpha * 255.0) as i32,
-        );
 
         let path = self
             .path

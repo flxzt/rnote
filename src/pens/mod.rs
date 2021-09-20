@@ -5,36 +5,7 @@ pub mod selector;
 
 use self::{brush::Brush, eraser::Eraser, marker::Marker, selector::Selector};
 
-use gtk4::{gdk, Snapshot};
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-pub struct Color {
-    pub r: f32, // between 0.0 and 1.0
-    pub g: f32, // between 0.0 and 1.0
-    pub b: f32, // between 0.0 and 1.0
-    pub a: f32, // between 0.0 and 1.0
-}
-
-impl Color {
-    pub fn from_gdk(gdk_color: gdk::RGBA) -> Self {
-        Self {
-            r: gdk_color.red,
-            g: gdk_color.green,
-            b: gdk_color.blue,
-            a: gdk_color.alpha,
-        }
-    }
-
-    pub fn to_gdk(&self) -> gdk::RGBA {
-        gdk::RGBA {
-            red: self.r,
-            green: self.g,
-            blue: self.b,
-            alpha: self.a,
-        }
-    }
-}
+use gtk4::Snapshot;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum PenStyle {

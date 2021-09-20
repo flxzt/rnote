@@ -6,8 +6,8 @@ use serde::{Deserialize, Serialize};
 use tera::Tera;
 
 use crate::{
-    config, pens,
-    strokes::{brushstroke::BrushStroke, compose, render, InputData, StrokeBehaviour},
+    config,
+    strokes::{self, brushstroke::BrushStroke, compose, render, InputData, StrokeBehaviour},
     utils,
 };
 
@@ -41,7 +41,7 @@ impl TemplateType {
 pub struct Brush {
     width: f64,
     sensitivity: f64,
-    color: pens::Color,
+    color: strokes::Color,
     // Templates get Rc::clone()'d into the individual strokes so overwriting templates does not affect existing strokes.
     #[serde(skip, default = "Brush::default_brush_templates")]
     pub templates: Rc<RefCell<Tera>>,
@@ -53,7 +53,7 @@ impl Default for Brush {
         Self {
             width: Self::WIDTH_DEFAULT,
             sensitivity: Self::SENSITIVITY_DEFAULT,
-            color: pens::Color::from_gdk(Self::COLOR_DEFAULT),
+            color: strokes::Color::from_gdk(Self::COLOR_DEFAULT),
             templates: Self::default_brush_templates(),
             current_template: TemplateType::default(),
         }
@@ -91,12 +91,12 @@ impl Brush {
         self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
     }
 
-    pub fn color(&self) -> gdk::RGBA {
-        self.color.to_gdk()
+    pub fn color(&self) -> strokes::Color {
+        self.color
     }
 
-    pub fn set_color(&mut self, color: gdk::RGBA) {
-        self.color = pens::Color::from_gdk(color);
+    pub fn set_color(&mut self, color: strokes::Color) {
+        self.color = color;
     }
 
     pub fn replace_custom_template(&self, file: &gio::File) -> Result<(), Box<dyn Error>> {
@@ -180,7 +180,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
             false,
         );
         //log::warn!("\n### validating file `{:?}`###, contents:\n {}", file.path(), svg);
-        let _rendernode = render::gen_rendernode_for_svg(bounds, 1.0, svg.as_str())?;
+        let _rendernode = render::gen_rendernode_backend_librsvg(bounds, 1.0, svg.as_str())?;
     }
 
     Ok(())

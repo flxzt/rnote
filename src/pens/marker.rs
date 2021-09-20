@@ -1,15 +1,14 @@
 use std::{cell::RefCell, rc::Rc};
 
-use gtk4::gdk;
 use serde::{Deserialize, Serialize};
 use tera::Tera;
 
-use crate::{config, pens, utils};
+use crate::{config, strokes, utils};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Marker {
     width: f64,
-    color: pens::Color,
+    color: strokes::Color,
     #[serde(skip, default = "Marker::default_marker_templates")]
     pub template: Rc<RefCell<Tera>>,
 }
@@ -18,7 +17,7 @@ impl Default for Marker {
     fn default() -> Self {
         Self {
             width: Self::WIDTH_DEFAULT,
-            color: pens::Color::from_gdk(Self::COLOR_DEFAULT),
+            color: Self::COLOR_DEFAULT,
             template: Self::default_marker_templates(),
         }
     }
@@ -29,11 +28,11 @@ impl Marker {
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 5.0;
 
-    pub const COLOR_DEFAULT: gdk::RGBA = gdk::RGBA {
-        red: 0.0,
-        green: 0.0,
-        blue: 0.0,
-        alpha: 1.0,
+    pub const COLOR_DEFAULT: strokes::Color = strokes::Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
     };
 
     pub fn width(&self) -> f64 {
@@ -44,12 +43,12 @@ impl Marker {
         self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
     }
 
-    pub fn color(&self) -> gdk::RGBA {
-        self.color.to_gdk()
+    pub fn color(&self) -> strokes::Color {
+        self.color
     }
 
-    pub fn set_color(&mut self, color: gdk::RGBA) {
-        self.color = pens::Color::from_gdk(color);
+    pub fn set_color(&mut self, color: strokes::Color) {
+        self.color = color;
     }
 
     pub fn default_marker_templates() -> Rc<RefCell<Tera>> {

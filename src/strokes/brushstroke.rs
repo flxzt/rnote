@@ -121,7 +121,10 @@ impl StrokeBehaviour for BrushStroke {
             false,
         );
 
-        render::gen_rendernode_for_svg(self.bounds, scalefactor, svg.as_str())
+        //println!("{}", svg);
+
+        render::gen_rendernode_backend_librsvg(self.bounds, scalefactor, svg.as_str())
+        //render::gen_rendernode_backend_resvg(self.bounds, scalefactor, svg.as_str())
     }
 }
 
@@ -284,13 +287,7 @@ impl BrushStroke {
     pub fn templates_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut cx = tera::Context::new();
 
-        let color = format!(
-            "#{:02x}{:02x}{:02x}{:02x}",
-            (self.brush.color().red * 255.0) as i32,
-            (self.brush.color().green * 255.0) as i32,
-            (self.brush.color().blue * 255.0) as i32,
-            (self.brush.color().alpha * 255.0) as i32,
-        );
+        let color = compose::css_color(&self.brush.color());
         let width = self.brush.width();
         let sensitivity = self.brush.sensitivity();
 
@@ -341,7 +338,9 @@ impl BrushStroke {
         Ok(svg)
     }
 
-    pub fn experimental_svg_data(&self, offset: na::Vector2<f64>) -> String {
-        String::from("")
+    pub fn experimental_svg_data(&self, _offset: na::Vector2<f64>) -> String {
+        let svg = String::from("");
+
+        svg
     }
 }

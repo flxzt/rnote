@@ -100,7 +100,7 @@ impl StrokeBehaviour for BitmapImage {
     }
 
     fn gen_rendernode(&self, scalefactor: f64) -> Result<gsk::RenderNode, Box<dyn Error>> {
-        render::gen_rendernode_for_svg(
+        render::gen_rendernode_backend_librsvg(
             self.bounds,
             scalefactor,
             compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),

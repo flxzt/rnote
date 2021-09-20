@@ -118,6 +118,7 @@ use crate::{
     config,
     pens::eraser::Eraser,
     pens::{brush::Brush, marker::Marker},
+    strokes,
     ui::appwindow::RnoteAppWindow,
     ui::colorpicker::ColorPicker,
     ui::templatechooser::TemplateChooser,
@@ -302,7 +303,7 @@ impl PensSideBar {
 
         priv_.marker_colorpicker.get().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |marker_colorpicker, _paramspec| {
             let color = marker_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().marker.set_color(color);
+            appwindow.canvas().pens().borrow_mut().marker.set_color(strokes::Color::from_gdk(color));
         }));
 
         priv_.marker_widthreset.get().connect_clicked(
@@ -331,7 +332,7 @@ impl PensSideBar {
 
         priv_.brush_colorpicker.get().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |brush_colorpicker, _paramspec| {
             let color = brush_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().brush.set_color(color);
+            appwindow.canvas().pens().borrow_mut().brush.set_color(strokes::Color::from_gdk(color));
         }));
 
         priv_.brush_widthreset.get().connect_clicked(

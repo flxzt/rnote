@@ -544,7 +544,7 @@ impl Canvas {
 
                 // Backlog pressure and coords seem to be broken, so its disabled for now
                 let data_entries: VecDeque<InputData> = Canvas::retreive_stylus_inputdata(gesture_stylus, false, x, y);
-                let data_entries = appwindow.canvas().map_inputdata(data_entries, na::vector![0.0, 0.0]);
+                let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
                 canvas.processing_draw_motion(data_entries);
             }
@@ -650,7 +650,6 @@ impl Canvas {
     }
 
     fn processing_draw_motion(&self, data_entries: VecDeque<InputData>) {
-        let data_entries = self.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush => {

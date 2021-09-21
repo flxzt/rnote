@@ -650,7 +650,6 @@ impl Canvas {
     }
 
     fn processing_draw_motion(&self, data_entries: VecDeque<InputData>) {
-
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush => {
                 let data_entries = self.filter_inputdata(data_entries);

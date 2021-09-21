@@ -4,6 +4,7 @@ use crate::{
     app::RnoteApp,
     config,
     pens::PenStyle,
+    strokes::{render, StrokeStyle},
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
 };
@@ -30,6 +31,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_import_as_svg = gio::SimpleAction::new("import-as-svg", None);
     let action_export_selection_as_svg = gio::SimpleAction::new("export-selection-as-svg", None);
     let action_export_sheet_as_svg = gio::SimpleAction::new("export-sheet-as-svg", None);
+    let action_shortcuts_dialog = gio::SimpleAction::new("shortcuts", None);
     let action_warning =
         gio::SimpleAction::new("warning", Some(&glib::VariantType::new("s").unwrap()));
     let action_error = gio::SimpleAction::new("error", Some(&glib::VariantType::new("s").unwrap()));
@@ -55,12 +57,24 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         &"custom".to_variant(),
     );
 
+    let action_renderer_backend = appwindow.app_settings().create_action("renderer-backend");
     let action_sheet_format = appwindow.app_settings().create_action("sheet-format");
     let action_sheet_format_borders = appwindow.app_settings().create_action("format-borders");
     let action_devel = appwindow.app_settings().create_action("devel");
     let action_mouse_drawing = appwindow.app_settings().create_action("mouse-drawing");
     let action_autoexpand_height = appwindow.app_settings().create_action("autoexpand-height");
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
+
+    // Shortcuts help overlay
+    action_shortcuts_dialog.connect_activate(
+        clone!(@weak appwindow => move |_action_shortcuts_dialog, _parameter| {
+            dialogs::dialog_shortcuts(&appwindow);
+        }),
+    );
+    appwindow
+        .application()
+        .unwrap()
+        .add_action(&action_shortcuts_dialog);
 
     // Warning
     action_warning.connect_activate(
@@ -82,8 +96,40 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     }));
     appwindow.application().unwrap().add_action(&action_error);
 
-    // Devel
+    // Developer mode
     appwindow.application().unwrap().add_action(&action_devel);
+
+    // Renderer Backend
+    action_renderer_backend.connect_state_notify(clone!(@weak appwindow => move |action_renderer_backend| {
+        let state = action_renderer_backend.state().unwrap().get::<String>().unwrap();
+        match state.as_str() {
+            "librsvg" => {
+                appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Librsvg;
+            },
+            "resvg" => {
+                appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Resvg;
+            },
+            _ => {
+                log::error!("invalid state of action_renderer_backend");
+            }
+        }
+
+        StrokeStyle::update_all_rendernodes(
+            &mut *appwindow.canvas().sheet().strokes().borrow_mut(),
+            appwindow.canvas().scalefactor(),
+            &*appwindow.canvas().renderer().borrow(),
+        );
+        StrokeStyle::update_all_rendernodes(
+            &mut *appwindow.canvas().sheet().selection().strokes().borrow_mut(),
+            appwindow.canvas().scalefactor(),
+            &*appwindow.canvas().renderer().borrow(),
+        );
+        appwindow.canvas().queue_draw()
+    }));
+    appwindow
+        .application()
+        .unwrap()
+        .add_action(&action_renderer_backend);
 
     // Mouse drawing
     appwindow

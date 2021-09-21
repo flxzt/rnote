@@ -7,9 +7,9 @@
     <child>
       <object class="GtkMenuButton" id="menubutton">
         <property name="icon_name">document-properties-symbolic</property>
-                    <style>
-                      <class name="flat" />
-                    </style>
+        <style>
+          <class name="flat" />
+        </style>
       </object>
     </child>
     <child>
@@ -103,7 +103,6 @@
             </submenu>
           </section>
           <section>
-            <attribute name="title">New / Open / Save</attribute>
             <item>
               <attribute name="label">New</attribute>
               <attribute name="action">app.new-sheet</attribute>
@@ -161,8 +160,8 @@
             </child>
             <child>
               <object class="GtkEntry" id="custom_format_width_entry">
-              <property name="hexpand">false</property>
-              <property name="halign">end</property>
+                <property name="hexpand">false</property>
+                <property name="halign">end</property>
                 <property name="input-purpose">digits</property>
                 <property name="max-length">5</property>
                 <property name="placeholder-text">pixels..</property>
@@ -174,7 +173,7 @@
             </child>
             <child>
               <object class="GtkLabel">
-              <property name="halign">start</property>
+                <property name="halign">start</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">1</property>
@@ -184,8 +183,8 @@
             </child>
             <child>
               <object class="GtkEntry" id="custom_format_height_entry">
-              <property name="hexpand">false</property>
-              <property name="halign">end</property>
+                <property name="hexpand">false</property>
+                <property name="halign">end</property>
                 <property name="input-purpose">digits</property>
                 <property name="max-length">5</property>
                 <property name="placeholder-text">pixels..</property>
@@ -197,7 +196,7 @@
             </child>
             <child>
               <object class="GtkLabel">
-              <property name="halign">start</property>
+                <property name="halign">start</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">2</property>
@@ -207,8 +206,8 @@
             </child>
             <child>
               <object class="GtkEntry" id="custom_format_dpi_entry">
-              <property name="hexpand">false</property>
-              <property name="halign">end</property>
+                <property name="hexpand">false</property>
+                <property name="halign">end</property>
                 <property name="input-purpose">digits</property>
                 <property name="max-length">4</property>
                 <property name="placeholder-text">dots per inch..</property>
@@ -225,7 +224,7 @@
                 <property name="hexpand">true</property>
                 <property name="halign">fill</property>
                 <style>
-                  <class name="suggested-action"/>
+                  <class name="suggested-action" />
                 </style>
                 <layout>
                   <property name="column">0</property>

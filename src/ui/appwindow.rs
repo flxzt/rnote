@@ -548,7 +548,7 @@ impl RnoteAppWindow {
             .pageedit_revealer()
             .set_reveal_child(!autoexpand_height);
 
-        // Debug
+        // Developer mode
         self.app_settings()
             .bind("devel", &self.canvas(), "visual-debug")
             .flags(gio::SettingsBindFlags::DEFAULT)

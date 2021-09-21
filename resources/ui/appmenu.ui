@@ -29,11 +29,27 @@
               <attribute name="toggle" />
               <attribute name="action">app.devel</attribute>
             </item>
+            <submenu>
+              <attribute name="label">Developer settings</attribute>
+              <section>
+                <attribute name="label">Renderer backend</attribute>
+                <item>
+                  <attribute name="label">librsvg</attribute>
+                  <attribute name="action">app.renderer-backend</attribute>
+                  <attribute name="target">librsvg</attribute>
+                </item>
+                <item>
+                  <attribute name="label">resvg</attribute>
+                  <attribute name="action">app.renderer-backend</attribute>
+                  <attribute name="target">resvg</attribute>
+                </item>
+              </section>
+            </submenu>
           </section>
           <section>
             <item>
               <attribute name="label">Shortcuts</attribute>
-              <attribute name="action">win.show-help-overlay</attribute>
+              <attribute name="action">app.shortcuts</attribute>
             </item>
             <item>
               <attribute name="label">About Rnote</attribute>
@@ -41,6 +57,7 @@
             </item>
           </section>
         </menu>
+
         <child type="prefer_dark_theme_attr">
           <object class="GtkBox">
             <property name="orientation">horizontal</property>

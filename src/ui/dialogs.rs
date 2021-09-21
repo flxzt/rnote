@@ -1,9 +1,18 @@
 use gtk4::{glib, glib::clone, prelude::*, Builder};
-use gtk4::{FileChooserDialog, FileFilter, MessageDialog, ResponseType};
+use gtk4::{FileChooserDialog, FileFilter, MessageDialog, ResponseType, ShortcutsWindow};
 
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::utils;
 use crate::{app::RnoteApp, config};
+
+pub fn dialog_shortcuts(appwindow: &RnoteAppWindow) {
+    let builder =
+        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
+    let dialog_shortcuts: ShortcutsWindow = builder.object("dialog_shortcuts").unwrap();
+
+    dialog_shortcuts.set_transient_for(Some(appwindow));
+    dialog_shortcuts.show();
+}
 
 pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
     let builder =

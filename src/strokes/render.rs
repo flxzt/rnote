@@ -6,8 +6,8 @@ use gtk4::{
 };
 
 pub enum RendererBackend {
-    LIBRSVG,
-    RESVG,
+    Librsvg,
+    Resvg,
 }
 pub struct Renderer {
     pub backend: RendererBackend,
@@ -21,7 +21,7 @@ impl Default for Renderer {
 
         Self {
             usvg_options,
-            backend: RendererBackend::RESVG,
+            backend: RendererBackend::Librsvg,
         }
     }
 }
@@ -34,10 +34,10 @@ impl Renderer {
         svg: &str,
     ) -> Result<gsk::RenderNode, Box<dyn Error>> {
         match self.backend {
-            RendererBackend::LIBRSVG => {
+            RendererBackend::Librsvg => {
                 self.gen_rendernode_backend_librsvg(bounds, scalefactor, svg)
             }
-            RendererBackend::RESVG => self.gen_rendernode_backend_resvg(bounds, scalefactor, svg),
+            RendererBackend::Resvg => self.gen_rendernode_backend_resvg(bounds, scalefactor, svg),
         }
     }
 

@@ -105,17 +105,11 @@ impl AppMenu {
     }
 
     pub fn light_theme_toggle(&self) -> ToggleButton {
-        imp::AppMenu::from_instance(self)
-            .light_theme_toggle
-            .get()
-            .clone()
+        imp::AppMenu::from_instance(self).light_theme_toggle.get()
     }
 
     pub fn dark_theme_toggle(&self) -> ToggleButton {
-        imp::AppMenu::from_instance(self)
-            .dark_theme_toggle
-            .get()
-            .clone()
+        imp::AppMenu::from_instance(self).dark_theme_toggle.get()
     }
 
     pub fn init(&self, _appwindow: &RnoteAppWindow) {

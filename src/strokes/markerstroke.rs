@@ -100,13 +100,13 @@ impl StrokeBehaviour for MarkerStroke {
             .map(|(i, element)| {
                 if i == 0 {
                     format!(
-                        "M {0} {1}",
+                        "M {:.03} {:.03}",
                         element.inputdata.pos()[0] + offset[0],
                         element.inputdata.pos()[1] + offset[1]
                     )
                 } else {
                     format!(
-                        "L {} {}",
+                        "L {:.03} {:.03}",
                         element.inputdata.pos()[0] + offset[0],
                         element.inputdata.pos()[1] + offset[1]
                     )

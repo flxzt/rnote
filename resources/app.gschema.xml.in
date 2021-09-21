@@ -17,6 +17,10 @@
       <default>false</default>
       <summary>Enable the developer mode in the application</summary>
     </key>
+    <key name="renderer-backend" type="s">
+      <default>"librsvg"</default>
+      <summary>the renderer backend</summary>
+    </key>
     <key name="prefer-dark-theme" type="b">
       <default>false</default>
       <summary>Wether the dark theme is preferred</summary>

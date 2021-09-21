@@ -114,7 +114,7 @@ pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
     }
 }
 
-pub fn css_color(color: &strokes::Color) -> String {
+pub fn to_css_color(color: &strokes::Color) -> String {
     format!(
         "rgb({:03},{:03},{:03},{:.3})",
         (color.r * 255.0) as i32,

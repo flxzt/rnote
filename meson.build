@@ -65,6 +65,7 @@ cargo_sources= files(
 )
 
 subdir('resources')
+subdir('rough-rs/src')
 subdir('src')
 
 meson.add_install_script('build-aux/meson_post_install.py')

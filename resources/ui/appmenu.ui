@@ -43,6 +43,10 @@
                   <attribute name="action">app.renderer-backend</attribute>
                   <attribute name="target">resvg</attribute>
                 </item>
+                <item>
+                  <attribute name="label">Visual Debugging</attribute>
+                  <attribute name="action">app.visual-debug</attribute>
+                </item>
               </section>
             </submenu>
           </section>

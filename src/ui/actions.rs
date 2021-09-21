@@ -64,6 +64,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_mouse_drawing = appwindow.app_settings().create_action("mouse-drawing");
     let action_autoexpand_height = appwindow.app_settings().create_action("autoexpand-height");
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
+    let action_visual_debug = appwindow.app_settings().create_action("visual-debug");
 
     // Shortcuts help overlay
     action_shortcuts_dialog.connect_activate(
@@ -98,6 +99,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Developer mode
     appwindow.application().unwrap().add_action(&action_devel);
+
+    // Visual Debug
+    appwindow.application().unwrap().add_action(&action_visual_debug);
 
     // Renderer Backend
     action_renderer_backend.connect_state_notify(clone!(@weak appwindow => move |action_renderer_backend| {

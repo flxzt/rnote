@@ -7,6 +7,8 @@ edition = "2018"
 
 
 [dependencies]
+rough-rs = { path = "./rough-rs" } 
+svg = "0.10.0"
 rand = "0.8"
 log = "0.4"
 pretty_env_logger = "0.3"

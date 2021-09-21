@@ -60,7 +60,7 @@ rust_sources = files(
     'ui/colorpicker/colorsetter.rs',
 )
 
-sources = [rust_sources, cargo_sources]
+sources = [rust_sources, rough_rs_rust_sources, cargo_sources]
 
 custom_target(
   'cargo-build',

@@ -114,7 +114,7 @@ impl Selector {
     pub fn gen_svg_path(&self, offset: na::Vector2<f64>) -> String {
         let mut cx = tera::Context::new();
 
-        let color = compose::css_color(&Self::PATH_COLOR);
+        let color = compose::to_css_color(&Self::PATH_COLOR);
         let padding = 2;
 
         let path = self
@@ -149,7 +149,7 @@ impl Selector {
             &format!(
                 "
             fill=\"{}\" stroke-dasharray=\"4 6\"",
-                compose::css_color(&Self::FILL_COLOR)
+                compose::to_css_color(&Self::FILL_COLOR)
             ),
         );
 

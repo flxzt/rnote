@@ -7,6 +7,7 @@ use crate::{
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
+use rough_rs::generator::RoughGenerator;
 use serde::{Deserialize, Serialize};
 
 use super::StrokeBehaviour;
@@ -290,7 +291,7 @@ impl BrushStroke {
     pub fn templates_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut cx = tera::Context::new();
 
-        let color = compose::css_color(&self.brush.color());
+        let color = compose::to_css_color(&self.brush.color());
         let width = self.brush.width();
         let sensitivity = self.brush.sensitivity();
 
@@ -342,7 +343,19 @@ impl BrushStroke {
     }
 
     pub fn experimental_svg_data(&self, _offset: na::Vector2<f64>) -> String {
-        let svg = String::from("");
+        let mut rough_generator = RoughGenerator::new(None);
+
+        let mut svg = String::from("");
+
+        for (element_one, element_two) in self.elements.iter().zip(self.elements.iter().skip(1)) {
+            let path_one =
+                rough_generator.line(element_one.inputdata.pos(), element_two.inputdata.pos());
+            let path_two =
+                rough_generator.line(element_one.inputdata.pos(), element_two.inputdata.pos());
+
+            svg += rough_rs::node_to_string(&path_one).expect("failed to write node as String").as_str();
+            svg += rough_rs::node_to_string(&path_two).expect("failed to write node as String").as_str();
+        }
 
         svg
     }

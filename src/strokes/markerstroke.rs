@@ -89,7 +89,7 @@ impl StrokeBehaviour for MarkerStroke {
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut cx = tera::Context::new();
 
-        let color = compose::css_color(&self.marker.color());
+        let color = compose::to_css_color(&self.marker.color());
         let width = self.marker.width().round() as i32;
 
         let path = self

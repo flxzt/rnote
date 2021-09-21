@@ -133,7 +133,7 @@ impl FileType {
                             "image/svg+xml" => {
                                 return Self::Svg;
                             }
-                            "image/png" => {
+                            "image/png" | "image/jpeg" => {
                                 return Self::BitmapImage;
                             }
                             _ => {}

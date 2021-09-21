@@ -1,7 +1,8 @@
 mod imp {
     use gtk4::{
         gio, glib, prelude::*, subclass::prelude::*, Align, Box, CompositeTemplate, DirectoryList,
-        Image, Label, ListBox, ListBoxRow, Orientation, Popover, TextView, ToggleButton, Widget,
+        FileFilter, FilterListModel, Image, Label, ListBox, ListBoxRow, Orientation, Popover,
+        TextView, ToggleButton, Widget,
     };
 
     use crate::pens::brush;
@@ -69,9 +70,14 @@ mod imp {
 
     impl ObjectImpl for TemplateChooser {
         fn constructed(&self, _obj: &Self::Type) {
-            self.custom_templates_list.get().bind_model(
-                Some(&self.templates_dirlist),
-                move |fileinfo| {
+            let filefilter = FileFilter::new();
+            filefilter.add_pattern("*.svg.templ");
+            let filefilter_model =
+                FilterListModel::new(Some(&self.templates_dirlist), Some(&filefilter));
+
+            self.custom_templates_list
+                .get()
+                .bind_model(Some(&filefilter_model), move |fileinfo| {
                     let fileinfo = fileinfo.clone().downcast::<gio::FileInfo>().unwrap();
                     // Unwrap because DirectoryList always has the standard::file attribute set on its FileInfo's
                     let file = fileinfo
@@ -118,8 +124,7 @@ mod imp {
                     item_box.append(&item_icon);
                     item_listboxrow.set_child(Some(&item_box));
                     item_listboxrow.upcast::<Widget>()
-                },
-            );
+                });
         }
 
         fn dispose(&self, obj: &Self::Type) {

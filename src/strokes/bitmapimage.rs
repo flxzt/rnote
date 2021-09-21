@@ -10,9 +10,25 @@ use serde::{Deserialize, Serialize};
 
 use super::StrokeBehaviour;
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum Format {
+    Png,
+    Jpeg,
+}
+
+impl Format {
+    pub fn as_mime_type(&self) -> String {
+        match self {
+            Format::Png => String::from("image/png"),
+            Format::Jpeg => String::from("image/jpeg"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BitmapImage {
     pub data_base64: String,
+    pub format: Format,
     pub bounds: p2d::bounding_volume::AABB,
     pub intrinsic_size: na::Vector2<f64>,
     #[serde(skip, default = "render::default_rendernode")]
@@ -47,6 +63,7 @@ impl StrokeBehaviour for BitmapImage {
         cx.insert("width", &width);
         cx.insert("height", &height);
         cx.insert("data_base64", &self.data_base64);
+        cx.insert("mime_type", &self.format.as_mime_type());
 
         let templ = String::from_utf8(
             gio::resources_lookup_data(
@@ -122,6 +139,13 @@ impl BitmapImage {
         P: AsRef<[u8]>,
     {
         let reader = Reader::new(io::Cursor::new(&to_be_read)).with_guessed_format()?;
+        let format = match reader.format() {
+            Some(image::ImageFormat::Png) => Format::Png,
+            Some(image::ImageFormat::Jpeg) => Format::Jpeg,
+            _ => {
+                return Err("unsupported format.")?;
+            }
+        };
 
         let bitmap_data = reader.decode()?;
         let dimensions = bitmap_data.dimensions();
@@ -135,6 +159,7 @@ impl BitmapImage {
 
         Ok(Self {
             data_base64,
+            format,
             bounds,
             intrinsic_size,
             rendernode: render::default_rendernode(),

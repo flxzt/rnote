@@ -46,7 +46,7 @@ Building the app with flatpak is done with:
 flatpak-builder --user flatpak-app build-aux/com.github.felixzwettler.rnote.json
 ```
 
-Creating a repo to avoid always rebuilding from scratch can be done with:
+Creating a repo:
 
 ```
 flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.felixzwettler.rnote.json

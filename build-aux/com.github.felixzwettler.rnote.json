@@ -20,15 +20,34 @@
         "build-args": [
             "--share=network"
         ],
-        "env": {
-            "CARGO_HOME": "/run/build/rust-flatpak/cargo"
-        },
         "test-args": [
             "--socket=x11",
             "--share=network"
         ]
     },
     "modules": [
+        {
+            "name": "libsass",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/lazka/libsass.git",
+                    "branch": "meson"
+                }
+            ]
+        },
+        {
+            "name": "sassc",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/lazka/sassc.git",
+                    "branch": "meson"
+                }
+            ]
+        },
         {
             "name": "libadwaita",
             "buildsystem": "meson",

@@ -99,13 +99,13 @@ impl Options {
         path = if let Some(stroke) = self.stroke {
             path.set("stroke", stroke.to_css_color())
         } else {
-            path.set("stroke", "None")
+            path.set("stroke", "none")
         };
         path = path.set("stroke-width", self.stroke_width);
         path = if let Some(fill) = self.fill {
             path.set("fill", fill.to_css_color())
         } else {
-            path.set("fill", "None")
+            path.set("fill", "none")
         };
         path = path.set(
             "stroke-dasharray",

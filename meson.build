@@ -58,14 +58,14 @@ cargo_sources= files(
   meson.project_source_root() + '/' + 'Cargo.lock',
 )
 
-subdir('resources')
-subdir('rough-rs/src')
-subdir('src')
-
-meson.add_install_script('build-aux/meson_post_install.py')
-
 meson.add_dist_script(
   'build-aux/dist-vendor.sh',
   meson.project_build_root() / 'meson-dist' / app_name + '-' + version,
   meson.project_source_root()
 )
+
+subdir('resources')
+subdir('rough-rs/src')
+subdir('src')
+
+meson.add_install_script('build-aux/meson_post_install.py')

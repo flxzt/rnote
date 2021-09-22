@@ -45,6 +45,16 @@ impl Color {
             alpha: self.a,
         }
     }
+
+    pub fn to_css_color(self) -> String {
+        format!(
+            "rgb({:03},{:03},{:03},{:.3})",
+            (self.r * 255.0) as i32,
+            (self.g * 255.0) as i32,
+            (self.b * 255.0) as i32,
+            ((1000.0 * self.a).round() / 1000.0),
+        )
+    }
 }
 
 pub trait StrokeBehaviour {

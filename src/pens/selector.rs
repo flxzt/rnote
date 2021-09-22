@@ -1,12 +1,12 @@
-use std::{error::Error, ops::Deref};
+use std::{error::Error};
 
 use crate::{
-    config,
     strokes::{self, compose, render, InputData},
 };
 
-use gtk4::{gio, gsk, Snapshot};
+use gtk4::{gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
+use svg::node::element;
 
 #[derive(Clone, Debug)]
 pub struct Selector {
@@ -23,6 +23,7 @@ impl Default for Selector {
 }
 
 impl Selector {
+    pub const STROKE_DASHARRAY: &'static str = "4 6";
     pub const PATH_WIDTH: f64 = 2.0;
     pub const PATH_COLOR: strokes::Color = strokes::Color {
         r: 0.7,
@@ -83,7 +84,7 @@ impl Selector {
     ) -> Result<gsk::RenderNode, Box<dyn Error>> {
         if let Some(bounds) = self.bounds {
             let svg = compose::wrap_svg(
-                self.gen_svg_path(na::vector![0.0, 0.0]).as_str(),
+                self.gen_svg_path(na::vector![0.0, 0.0])?.as_str(),
                 None,
                 Some(bounds),
                 true,
@@ -111,62 +112,35 @@ impl Selector {
         }
     }
 
-    pub fn gen_svg_path(&self, offset: na::Vector2<f64>) -> String {
-        let mut cx = tera::Context::new();
+    pub fn gen_svg_path(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
+        let mut svg = String::new();
+        let mut data = element::path::Data::new();
 
-        let color = compose::to_css_color(&Self::PATH_COLOR);
-        let padding = 2;
+        for (i, element) in self.path.iter().enumerate() {
+            if i == 0 {
+                data = data.move_to((
+                    element.pos()[0] + offset[0],
+                    element.pos()[1] + offset[1],
+                ));
+            } else {
+                data = data.line_to((
+                    element.pos()[0] + offset[0],
+                    element.pos()[1] + offset[1],
+                ));
+            }
+        }
+        data = data.close();
 
-        let path = self
-            .path
-            .iter()
-            .peekable()
-            .enumerate()
-            .map(|(i, element)| {
-                if i == 0 {
-                    format!(
-                        "M {0} {1}",
-                        element.pos()[0] + offset[0],
-                        element.pos()[1] + offset[1]
-                    )
-                } else {
-                    format!(
-                        "L {} {}",
-                        element.pos()[0] + offset[0],
-                        element.pos()[1] + offset[1]
-                    )
-                }
-            })
-            .collect::<Vec<String>>()
-            .join(" ");
+        let svg_path = element::Path::new()
+            .set("d", data)
+            .set("stroke", Self::PATH_COLOR.to_css_color())
+            .set("stroke-width", Self::PATH_WIDTH)
+            .set("stroke-dasharray", "4 6")
+            .set("fill", Self::FILL_COLOR.to_css_color());
 
-        cx.insert("padding", &padding);
-        cx.insert("color", &color);
-        cx.insert("strokewidth", &Self::PATH_WIDTH);
-        cx.insert("path", &path);
-        cx.insert(
-            "attributes",
-            &format!(
-                "
-            fill=\"{}\" stroke-dasharray=\"4 6\"",
-                compose::to_css_color(&Self::FILL_COLOR)
-            ),
-        );
+        svg += rough_rs::node_to_string(&svg_path)?.as_str();
 
-        let templ = String::from_utf8(
-            gio::resources_lookup_data(
-                (String::from(config::APP_IDPATH) + "templates/selectorstroke.svg.templ").as_str(),
-                gio::ResourceLookupFlags::NONE,
-            )
-            .unwrap()
-            .deref()
-            .to_vec(),
-        )
-        .unwrap();
-        let svg =
-            tera::Tera::one_off(templ.as_str(), &cx, false).expect("create svg for selectorstorke");
-
-        svg
+        Ok(svg)
     }
 
     pub fn draw(&self, snapshot: &Snapshot) {

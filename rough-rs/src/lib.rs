@@ -1,9 +1,20 @@
+#![warn(missing_docs)]
+
+//! The rough-rs crate.
+//!
+//! This is a port of the [Rough.js](https://roughjs.com/) javascript library to Rust.
+//!
+//! Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
+//! The library defines primitives to draw lines, curves, arcs, polygons, circles, and ellipses. It also supports drawing SVG paths.
 use std::{error::Error, io};
 
+/// The generator module
 pub mod generator;
-pub mod math;
+pub(crate) mod math;
+/// The options module
 pub mod options;
-pub mod renderer;
+pub(crate) mod renderer;
+/// The utils module
 pub mod utils;
 
 extern crate nalgebra as na;

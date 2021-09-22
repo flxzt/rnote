@@ -10,3 +10,4 @@ Cargo.lock
 /.vscode
 src/config.rs
 /tests/output
+/rough-rs/target

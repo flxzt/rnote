@@ -1,16 +1,11 @@
-use std::{cell::RefCell, rc::Rc};
-
 use serde::{Deserialize, Serialize};
-use tera::Tera;
 
-use crate::{config, strokes, utils};
+use crate::{strokes};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Marker {
     width: f64,
     color: strokes::Color,
-    #[serde(skip, default = "Marker::default_marker_templates")]
-    pub template: Rc<RefCell<Tera>>,
 }
 
 impl Default for Marker {
@@ -18,7 +13,6 @@ impl Default for Marker {
         Self {
             width: Self::WIDTH_DEFAULT,
             color: Self::COLOR_DEFAULT,
-            template: Self::default_marker_templates(),
         }
     }
 }
@@ -49,26 +43,5 @@ impl Marker {
 
     pub fn set_color(&mut self, color: strokes::Color) {
         self.color = color;
-    }
-
-    pub fn default_marker_templates() -> Rc<RefCell<Tera>> {
-        let markerstroke_template_path = String::from(config::APP_IDPATH)
-            + "templates/"
-            + Self::template_name().as_str()
-            + ".svg.templ";
-        let mut templates = Tera::default();
-        templates
-            .add_raw_template(
-                Self::template_name().as_str(),
-                utils::load_string_from_resource(markerstroke_template_path.as_str())
-                    .expect("failed to load string from resource")
-                    .as_str(),
-            )
-            .expect("Failed to add default template for markerstroke to `templates`");
-        Rc::new(RefCell::new(templates))
-    }
-
-    pub fn template_name() -> String {
-        String::from("markerstroke")
     }
 }

@@ -9,6 +9,7 @@ use crate::{
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
+use svg::node::element;
 
 use super::StrokeBehaviour;
 
@@ -81,50 +82,35 @@ impl StrokeBehaviour for MarkerStroke {
             .collect();
 
         self.elements = new_elements;
-        //self.update_bounds();
         self.bounds = new_bounds.clone();
         self.hitbox = self.gen_hitbox();
     }
 
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
-        let mut cx = tera::Context::new();
+        let mut svg = String::new();
+        let mut data = element::path::Data::new();
 
-        let color = compose::to_css_color(&self.marker.color());
-        let width = self.marker.width().round() as i32;
+        for (i, element) in self.elements.iter().enumerate() {
+            if i == 0 {
+                data = data.move_to((
+                    element.inputdata.pos()[0] + offset[0],
+                    element.inputdata.pos()[1] + offset[1],
+                ));
+            } else {
+                data = data.line_to((
+                    element.inputdata.pos()[0] + offset[0],
+                    element.inputdata.pos()[1] + offset[1],
+                ));
+            }
+        }
 
-        let path = self
-            .elements
-            .iter()
-            .peekable()
-            .enumerate()
-            .map(|(i, element)| {
-                if i == 0 {
-                    format!(
-                        "M {:.03} {:.03}",
-                        element.inputdata.pos()[0] + offset[0],
-                        element.inputdata.pos()[1] + offset[1]
-                    )
-                } else {
-                    format!(
-                        "L {:.03} {:.03}",
-                        element.inputdata.pos()[0] + offset[0],
-                        element.inputdata.pos()[1] + offset[1]
-                    )
-                }
-            })
-            .collect::<Vec<String>>()
-            .join(" ");
+        let svg_path = element::Path::new()
+            .set("d", data)
+            .set("stroke", self.marker.color().to_css_color())
+            .set("stroke-width", self.marker.width())
+            .set("fill", "None");
 
-        cx.insert("color", &color);
-        cx.insert("width", &width);
-        cx.insert("path", &path);
-        cx.insert("attributes", "");
-
-        let svg = self
-            .marker
-            .template
-            .borrow()
-            .render(Marker::template_name().as_str(), &cx)?;
+        svg += rough_rs::node_to_string(&svg_path)?.as_str();
 
         Ok(svg)
     }

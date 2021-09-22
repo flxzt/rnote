@@ -1,14 +1,23 @@
 use crate::{math, options::Options};
 use svg::node::element::{self};
 
-/// A line from the start to stop coordinates, in absolute values.
-fn line(
+fn offset(min: f64, max: f64, options: &Options, _roughness_gain: f64) -> f64 {
+    let roughness_gain = 1.0;
+    options.roughness * roughness_gain * (math::random_f64_0to1(options.seed) * (max - min) + min)
+}
+
+fn offset_opt(x: f64, options: &Options, _roughness_gain: f64) -> f64 {
+    let roughness_gain = 1.0;
+    offset(-x, x, options, roughness_gain)
+}
+
+pub(crate) fn line(
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,
     options: &Options,
-    move_: bool,
+    move_to: bool,
     overlay: bool,
-) -> element::path::Data {
+) -> element::Path {
     let len = (end - start).magnitude();
 
     let roughness_gain = if len < 200.0 {
@@ -19,20 +28,16 @@ fn line(
         -0.0016668 * len + 1.233334
     };
 
-    let mut offset = options.max_randomness_offset.unwrap_or(0.0);
+    let mut offset = options.max_randomness_offset;
     if offset * offset * 100.0 > len.sqrt() {
         offset = len / 10.0;
     };
     let half_offset = offset / 2.0;
 
-    let diverge_point = 0.2 + math::random_f64_0to1() * 0.2;
+    let diverge_point = 0.2 + math::random_f64_0to1(options.seed) * 0.2;
 
-    let mid_disp_x =
-        options.bowing.unwrap() * options.max_randomness_offset.unwrap() * (end[1] - start[1])
-            / 200.0;
-    let mid_disp_y =
-        options.bowing.unwrap() * options.max_randomness_offset.unwrap() * (end[0] - start[0])
-            / 200.0;
+    let mid_disp_x = options.bowing * options.max_randomness_offset * (end[1] - start[1]) / 200.0;
+    let mid_disp_y = options.bowing * options.max_randomness_offset * (start[0] - end[0]) / 200.0;
     let mid_disp_x = offset_opt(mid_disp_x, options, roughness_gain);
     let mid_disp_y = offset_opt(mid_disp_y, options, roughness_gain);
 
@@ -41,16 +46,16 @@ fn line(
 
     let mut data = element::path::Data::new();
 
-    if move_ {
+    if move_to {
         if overlay {
             let x = start[0]
-                + if options.preserve_vertices.unwrap() {
+                + if options.preserve_vertices {
                     0.0
                 } else {
                     random_half()
                 };
             let y = start[1]
-                + if options.preserve_vertices.unwrap() {
+                + if options.preserve_vertices {
                     0.0
                 } else {
                     random_half()
@@ -59,13 +64,13 @@ fn line(
             data = data.move_to((x, y));
         } else {
             let x = start[0]
-                + if options.preserve_vertices.unwrap() {
+                + if options.preserve_vertices {
                     0.0
                 } else {
                     offset_opt(offset, options, roughness_gain)
                 };
             let y = start[1]
-                + if options.preserve_vertices.unwrap() {
+                + if options.preserve_vertices {
                     0.0
                 } else {
                     offset_opt(offset, options, roughness_gain)
@@ -77,13 +82,13 @@ fn line(
 
     if overlay {
         let x2 = end[0]
-            + if options.preserve_vertices.unwrap() {
+            + if options.preserve_vertices {
                 0.0
             } else {
                 random_half()
             };
         let y2 = end[1]
-            + if options.preserve_vertices.unwrap() {
+            + if options.preserve_vertices {
                 0.0
             } else {
                 random_half()
@@ -102,13 +107,13 @@ fn line(
         ));
     } else {
         let x2 = end[0]
-            + if options.preserve_vertices.unwrap() {
+            + if options.preserve_vertices {
                 0.0
             } else {
                 random_full()
             };
         let y2 = end[1]
-            + if options.preserve_vertices.unwrap() {
+            + if options.preserve_vertices {
                 0.0
             } else {
                 random_full()
@@ -127,28 +132,68 @@ fn line(
         ));
     }
 
-    data
+    let path = element::Path::new().set("d", data);
+    path
 }
 
-pub(crate) fn double_line(start: na::Vector2<f64>, end: na::Vector2<f64>, options: &Options, _filling: bool) -> element::path::Data {
-    let filling = false;
+pub(crate) fn cubic_bezier(
+    start: na::Vector2<f64>,
+    first: na::Vector2<f64>,
+    second: na::Vector2<f64>,
+    end: na::Vector2<f64>,
+    options: &Options,
+) -> element::Path {
+    let mut data = element::path::Data::new();
 
-    let single_stroke = if filling { options.disable_multistroke_fill.unwrap() } else { options.disable_multistroke.unwrap() };
+    let ros = na::vector![
+        options.max_randomness_offset,
+        options.max_randomness_offset + 0.3
+    ];
+    let roughness_gain = 1.0;
 
-    let first_stroke = line(start, end, options, true, false);
-    if single_stroke {
-        return first_stroke;
+    let iterations = if options.disable_multistroke {
+        1 as usize
+    } else {
+        2 as usize
+    };
+    for i in 0..iterations {
+        if i == 0 {
+            data = data.move_to((start[0], start[1]));
+        } else {
+            let delta = if options.preserve_vertices {
+                na::vector![0.0, 0.0]
+            } else {
+                na::vector![
+                    offset_opt(ros[0], options, roughness_gain),
+                    offset_opt(ros[0], options, roughness_gain)
+                ]
+            };
+
+            data = data.move_to((start[0] + delta[0], start[1] + delta[1]));
+        }
+
+        let end_ = if options.preserve_vertices {
+            na::vector![end[0], end[1]]
+        } else {
+            na::vector![
+                end[0] + offset_opt(ros[i], options, roughness_gain),
+                end[1] + offset_opt(ros[i], options, roughness_gain)
+            ]
+        };
+
+        data = data.cubic_curve_to((
+            (
+                first[0] + offset_opt(ros[i], options, roughness_gain),
+                first[1] + offset_opt(ros[i], options, roughness_gain),
+            ),
+            (
+                second[0] + offset_opt(ros[i], options, roughness_gain),
+                second[1] + offset_opt(ros[i], options, roughness_gain),
+            ),
+            (end_[0], end_[1]),
+        ))
     }
-    let _second_stroke = line(start, end, options, true, false);
 
-    // TODO ADD SECOND STROKE
-    return first_stroke;
-}
-
-fn offset(min: f64, max: f64, options: &Options, roughness_gain: f64) -> f64 {
-    options.roughness.unwrap() * roughness_gain * (math::random_f64_0to1() * (max - min) + min)
-}
-
-fn offset_opt(x: f64, options: &Options, roughness_gain: f64) -> f64 {
-    offset(-x, x, options, roughness_gain)
+    let path = element::Path::new().set("d", data);
+    path
 }

@@ -101,7 +101,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     appwindow.application().unwrap().add_action(&action_devel);
 
     // Visual Debug
-    appwindow.application().unwrap().add_action(&action_visual_debug);
+    appwindow
+        .application()
+        .unwrap()
+        .add_action(&action_visual_debug);
 
     // Renderer Backend
     action_renderer_backend.connect_state_notify(clone!(@weak appwindow => move |action_renderer_backend| {

@@ -101,7 +101,7 @@ impl StrokeBehaviour for BrushStroke {
             brush::TemplateType::Linear
             | brush::TemplateType::CubicBezier
             | brush::TemplateType::Custom(_) => self.templates_svg_data(offset),
-            brush::TemplateType::Experimental => Ok(self.experimental_svg_data(offset)),
+            brush::TemplateType::Experimental => self.experimental_svg_data(offset),
         }
     }
 
@@ -291,7 +291,7 @@ impl BrushStroke {
     pub fn templates_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut cx = tera::Context::new();
 
-        let color = compose::to_css_color(&self.brush.color());
+        let color = self.brush.color().to_css_color();
         let width = self.brush.width();
         let sensitivity = self.brush.sensitivity();
 
@@ -342,21 +342,46 @@ impl BrushStroke {
         Ok(svg)
     }
 
-    pub fn experimental_svg_data(&self, _offset: na::Vector2<f64>) -> String {
+    pub fn experimental_svg_data(
+        &self,
+        offset: na::Vector2<f64>,
+    ) -> Result<String, Box<dyn Error>> {
         let mut rough_generator = RoughGenerator::new(None);
+        rough_generator.config.roughness = 0.4;
+        rough_generator.config.seed = Some(1);
+        rough_generator.config.preserve_vertices = true;
+        rough_generator.config.stroke = Some(rough_rs::utils::Color::new(
+            self.brush.color().r,
+            self.brush.color().g,
+            self.brush.color().b,
+            self.brush.color().a,
+        ));
 
-        let mut svg = String::from("");
+        let mut svg = String::new();
 
-        for (element_one, element_two) in self.elements.iter().zip(self.elements.iter().skip(1)) {
-            let path_one =
-                rough_generator.line(element_one.inputdata.pos(), element_two.inputdata.pos());
-            let path_two =
-                rough_generator.line(element_one.inputdata.pos(), element_two.inputdata.pos());
+        for (((element_start, element_one), element_two), element_end) in self
+            .elements
+            .iter()
+            .zip(self.elements.iter().skip(1))
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
+            // Overlapping the elements make the strokes actually look nicer
+            .step_by(1)
+        {
+            rough_generator.config.stroke_width =
+                self.brush.width() * element_one.inputdata.pressure();
 
-            svg += rough_rs::node_to_string(&path_one).expect("failed to write node as String").as_str();
-            svg += rough_rs::node_to_string(&path_two).expect("failed to write node as String").as_str();
+            let svg_path = rough_generator.cubic_bezier(
+                element_start.inputdata.pos() + offset,
+                (element_one.inputdata.pos().scale(2.0) - element_start.inputdata.pos()) + offset,
+                element_two.inputdata.pos() + offset,
+                element_end.inputdata.pos() + offset,
+                None,
+            );
+            svg += rough_rs::node_to_string(&svg_path)?.as_str();
         }
 
-        svg
+        //println!("{}", svg);
+        Ok(svg)
     }
 }

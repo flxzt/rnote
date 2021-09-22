@@ -15,6 +15,7 @@ mod imp {
 
     use once_cell::sync::Lazy;
 
+    #[derive(Debug)]
     pub struct Canvas {
         pub pens: Rc<RefCell<Pens>>,         // accessed via pens()
         pub current_pen: Rc<Cell<PenStyle>>, // accessed via current_pen()
@@ -22,6 +23,7 @@ mod imp {
         pub scalefactor: Cell<f64>,          // is a property
         pub visual_debug: Cell<bool>,        // is a property
         pub mouse_drawing: Cell<bool>,       // is a property
+        pub unsaved_changes: Cell<bool>,     // is a property
         pub cursor: gdk::Cursor,             // is a property
         pub gesture_stylus: GestureStylus,
         pub gesture_drag: GestureDrag,
@@ -48,6 +50,7 @@ mod imp {
                 scalefactor: Cell::new(super::Canvas::SCALE_DEFAULT),
                 visual_debug: Cell::new(false),
                 mouse_drawing: Cell::new(false),
+                unsaved_changes: Cell::new(false),
                 cursor: gdk::Cursor::from_texture(
                     &gdk::Texture::from_resource(
                         (String::from(config::APP_IDPATH)
@@ -103,6 +106,13 @@ mod imp {
                         "mouse-drawing",
                         "mouse-drawing",
                         "mouse-drawing",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    glib::ParamSpec::new_boolean(
+                        "unsaved-changes",
+                        "unsaved-changes",
+                        "unsaved-changes",
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
@@ -162,6 +172,11 @@ mod imp {
                             .set_propagation_phase(PropagationPhase::None);
                     }
                 }
+                "unsaved-changes" => {
+                    let unsaved_changes: bool =
+                        value.get().expect("The value needs to be of type `bool`.");
+                    self.unsaved_changes.replace(unsaved_changes);
+                }
                 _ => unimplemented!(),
             }
         }
@@ -171,6 +186,7 @@ mod imp {
                 "scalefactor" => self.scalefactor.get().to_value(),
                 "visual-debug" => self.visual_debug.get().to_value(),
                 "mouse-drawing" => self.mouse_drawing.get().to_value(),
+                "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -359,8 +375,8 @@ mod imp {
 
 use crate::strokes::{render, StrokeStyle};
 use crate::{
-    pens::PenStyle, pens::Pens, sheet::Sheet, strokes::InputData, strokes::StrokeBehaviour,
-    ui::appwindow::RnoteAppWindow,
+    app::RnoteApp, pens::PenStyle, pens::Pens, sheet::Sheet, strokes::InputData,
+    strokes::StrokeBehaviour, ui::appwindow::RnoteAppWindow,
 };
 
 use std::cell::Cell;
@@ -425,7 +441,26 @@ impl Canvas {
         match self.set_property("scalefactor", scalefactor.to_value()) {
             Ok(_) => {}
             Err(e) => {
-                log::error!("failed to set scalefactor of canvas, {}", e)
+                log::error!("failed to set property `scalefactor` of `Canvas`, {}", e)
+            }
+        }
+    }
+
+    pub fn unsaved_changes(&self) -> bool {
+        self.property("unsaved-changes")
+            .unwrap()
+            .get::<bool>()
+            .unwrap()
+    }
+
+    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
+        match self.set_property("unsaved-changes", unsaved_changes.to_value()) {
+            Ok(_) => {}
+            Err(e) => {
+                log::error!(
+                    "failed to set property `unsaved-changes` of `Canvas`, {}",
+                    e
+                )
             }
         }
     }
@@ -436,6 +471,18 @@ impl Canvas {
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::Canvas::from_instance(self);
+
+        self.bind_property(
+            "unsaved-changes",
+            &appwindow
+                .application()
+                .unwrap()
+                .downcast::<RnoteApp>()
+                .unwrap(),
+            "unsaved-changes",
+        )
+        .flags(glib::BindingFlags::DEFAULT)
+        .build();
 
         self.bind_property(
             "scalefactor",
@@ -586,6 +633,8 @@ impl Canvas {
     }
 
     fn processing_draw_begin(&self, mut data_entries: VecDeque<InputData>) {
+        self.set_unsaved_changes(true);
+
         if !self.sheet().selection().strokes().borrow().is_empty() {
             let mut strokes = self.sheet().selection().remove_strokes();
             self.sheet().strokes().borrow_mut().append(&mut strokes);
@@ -650,6 +699,8 @@ impl Canvas {
     }
 
     fn processing_draw_motion(&self, data_entries: VecDeque<InputData>) {
+        self.set_unsaved_changes(true);
+
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush => {
                 let data_entries = self.filter_inputdata(data_entries);
@@ -697,6 +748,7 @@ impl Canvas {
     }
 
     fn processing_draw_end(&self, appwindow: &RnoteAppWindow, _data_entries: VecDeque<InputData>) {
+        self.set_unsaved_changes(true);
         self.set_cursor(Some(&self.cursor()));
 
         appwindow

@@ -113,6 +113,7 @@ pub fn app_config_base_dirpath() -> Option<PathBuf> {
     }
 }
 
+#[derive(Debug)]
 pub enum FileType {
     Folder,
     Rnote,
@@ -138,26 +139,32 @@ impl FileType {
                             }
                             _ => {}
                         }
-                        if let Some(path) = file.path() {
-                            if let Some(extension_str) = path.extension() {
-                                match &*extension_str.to_string_lossy() {
-                                    "rnote" => {
-                                        return Self::Rnote;
-                                    }
-                                    _ => {}
-                                }
-                            }
-                        };
                     }
                 }
                 gio::FileType::Directory => {
                     return Self::Folder;
                 }
                 _ => {
+                    log::debug!("unkown file type");
                     return Self::Unknown;
                 }
             }
+        } else {
+            log::debug!("failed to query FileInfo from file");
         }
+
+        if let Some(path) = file.path() {
+            if let Some(extension_str) = path.extension() {
+                match &*extension_str.to_string_lossy() {
+                    "rnote" => {
+                        return Self::Rnote;
+                    }
+                    _ => {}
+                }
+            }
+        } else {
+            log::warn!("no path for file");
+        };
 
         Self::Unknown
     }

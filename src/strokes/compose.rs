@@ -1,7 +1,7 @@
 use gtk4::{gio, glib};
 use std::ops::Deref;
 
-use crate::{config};
+use crate::config;
 
 #[allow(dead_code)]
 pub fn add_xml_header(svg: &str) -> String {

@@ -145,9 +145,9 @@ pub(crate) fn cubic_bezier(
 ) -> element::Path {
     let mut data = element::path::Data::new();
 
-    let ros = na::vector![
+    let ros = [
         options.max_randomness_offset,
-        options.max_randomness_offset + 0.3
+        options.max_randomness_offset + 0.3,
     ];
     let roughness_gain = 1.0;
 

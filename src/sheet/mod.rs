@@ -804,7 +804,7 @@ impl Sheet {
                 output_stream.close::<gio::Cancellable>(None)?;
             }
             _ => {
-                log::error!("invalid output file type for saving sheet in native format");
+                log::error!("invalid file type for saving sheet in native format");
             }
         }
         Ok(())

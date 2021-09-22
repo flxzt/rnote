@@ -108,14 +108,15 @@ impl Options {
             path.set("fill", "None")
         };
         path = path.set(
-        "stroke-dasharray",
-        self.stroke_line_dash
-            .iter()
-            .map(|&no| {
-                format! {"{}", no}
-            })
-            .collect::<Vec<String>>()
-            .join(" "));
+            "stroke-dasharray",
+            self.stroke_line_dash
+                .iter()
+                .map(|&no| {
+                    format! {"{}", no}
+                })
+                .collect::<Vec<String>>()
+                .join(" "),
+        );
         path = path.set("stroke-dashoffset", self.stroke_line_dash_offset);
 
         path

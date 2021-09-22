@@ -120,6 +120,8 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                     if let Some(input_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().borrow().to_owned() {
                         if let Err(e) = appwindow.load_in_file(&input_file) {
                             log::error!("failed to load in input file, {}", e);
+                        } else {
+                            appwindow.canvas().set_unsaved_changes(false);
                         }
                     }
                 },
@@ -190,6 +192,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                             *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow_mut() = None;
                         } else {
                             *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow_mut() = Some(file.clone());
+                            appwindow.canvas().set_unsaved_changes(false);
                         }
                     },
                     None => { log::error!("Can't save file as. No file selected.")},

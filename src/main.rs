@@ -1,3 +1,4 @@
+#![warn(missing_debug_implementations)]
 pub mod app;
 pub mod config;
 pub mod globals;

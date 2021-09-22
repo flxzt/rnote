@@ -9,6 +9,7 @@ mod imp {
     };
     use once_cell::sync::Lazy;
 
+    #[derive(Debug)]
     pub struct ColorSetter {
         pub css: CssProvider,
         pub color: Cell<gdk::RGBA>,

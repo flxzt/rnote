@@ -5,10 +5,13 @@ use gtk4::{
     gsk::{self, IsRenderNode},
 };
 
+#[derive(Debug)]
 pub enum RendererBackend {
     Librsvg,
     Resvg,
 }
+
+#[derive(Debug)]
 pub struct Renderer {
     pub backend: RendererBackend,
     pub usvg_options: usvg::Options,
@@ -39,6 +42,44 @@ impl Renderer {
             }
             RendererBackend::Resvg => self.gen_rendernode_backend_resvg(bounds, scalefactor, svg),
         }
+    }
+
+    pub fn gen_rendernode_backend_librsvg(
+        &self,
+        bounds: p2d::bounding_volume::AABB,
+        scalefactor: f64,
+        svg: &str,
+    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+        let caironode_bounds = graphene::Rect::new(
+            (bounds.mins[0] * scalefactor).floor() as f32,
+            (bounds.mins[1] * scalefactor).floor() as f32,
+            ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as f32,
+            ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as f32,
+        );
+
+        let new_caironode = gsk::CairoNode::new(&caironode_bounds);
+        let cx = new_caironode
+            .draw_context()
+            .expect("failed to get cairo draw_context() from new_caironode");
+
+        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
+
+        let librsvg_handle = librsvg::Loader::new()
+            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
+                &stream, None, None,
+            )?;
+
+        let librsvg_renderer = librsvg::CairoRenderer::new(&librsvg_handle);
+        librsvg_renderer.render_document(
+            &cx,
+            &cairo::Rectangle {
+                x: (bounds.mins[0].floor() * scalefactor),
+                y: (bounds.mins[1].floor() * scalefactor),
+                width: ((bounds.maxs[0] - bounds.mins[0]).ceil() * scalefactor),
+                height: ((bounds.maxs[1] - bounds.mins[1]).ceil() * scalefactor),
+            },
+        )?;
+        Ok(new_caironode.upcast())
     }
 
     pub fn gen_rendernode_backend_resvg(
@@ -86,44 +127,6 @@ impl Renderer {
         let texture = gdk::Texture::for_pixbuf(&pixbuf);
 
         Ok(gsk::TextureNode::new(&texture, &node_bounds).upcast())
-    }
-
-    pub fn gen_rendernode_backend_librsvg(
-        &self,
-        bounds: p2d::bounding_volume::AABB,
-        scalefactor: f64,
-        svg: &str,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
-        let caironode_bounds = graphene::Rect::new(
-            (bounds.mins[0] * scalefactor).floor() as f32,
-            (bounds.mins[1] * scalefactor).floor() as f32,
-            ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as f32,
-            ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as f32,
-        );
-
-        let new_caironode = gsk::CairoNode::new(&caironode_bounds);
-        let cx = new_caironode
-            .draw_context()
-            .expect("failed to get cairo draw_context() from new_caironode");
-
-        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
-
-        let librsvg_handle = librsvg::Loader::new()
-            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
-                &stream, None, None,
-            )?;
-
-        let librsvg_renderer = librsvg::CairoRenderer::new(&librsvg_handle);
-        librsvg_renderer.render_document(
-            &cx,
-            &cairo::Rectangle {
-                x: (bounds.mins[0].floor() * scalefactor),
-                y: (bounds.mins[1].floor() * scalefactor),
-                width: ((bounds.maxs[0] - bounds.mins[0]).ceil() * scalefactor),
-                height: ((bounds.maxs[1] - bounds.mins[1]).ceil() * scalefactor),
-            },
-        )?;
-        Ok(new_caironode.upcast())
     }
 }
 

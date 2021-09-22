@@ -347,7 +347,7 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
     ) -> Result<String, Box<dyn Error>> {
         let mut rough_generator = RoughGenerator::new(None);
-        rough_generator.config.roughness = 0.4;
+        rough_generator.config.roughness = 0.6;
         rough_generator.config.seed = Some(1);
         rough_generator.config.preserve_vertices = true;
         rough_generator.config.stroke = Some(rough_rs::utils::Color::new(

@@ -48,7 +48,8 @@ impl RoughGenerator {
         end: na::Vector2<f64>,
         options: Option<&Options>,
     ) -> element::Path {
-        let svg_path = renderer::cubic_bezier(start, first, second, end, options.unwrap_or(&self.config));
+        let svg_path =
+            renderer::cubic_bezier(start, first, second, end, options.unwrap_or(&self.config));
 
         self.config.apply_to_path(svg_path)
     }

@@ -108,7 +108,7 @@ impl StrokeBehaviour for MarkerStroke {
             .set("d", data)
             .set("stroke", self.marker.color().to_css_color())
             .set("stroke-width", self.marker.width())
-            .set("fill", "None");
+            .set("fill", "none");
 
         svg += rough_rs::node_to_string(&svg_path)?.as_str();
 

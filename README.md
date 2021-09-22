@@ -25,6 +25,7 @@ This is my first Rust and GTK project and I am learning as I go along. Expect bu
 - [ ] PDF Import, Export and printing option
 - [ ] PNG Import, Export
 - [ ] Implement bezier curve stroke with variable stroke width (see this paper: [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf))
+- [ ]
 
 ## Screenshots
 Rnote is a very early WIP project, so don't expect too much. :)

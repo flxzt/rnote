@@ -268,40 +268,32 @@ impl WorkspaceBrowser {
             if let Some(file) = fileinfo.attribute_object("standard::file") {
                 let file = file.downcast::<gio::File>().unwrap();
 
-                *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().borrow_mut() = Some(file.clone());
+                match utils::FileType::lookup_file_type(&file) {
+                    utils::FileType::Rnote => {
+                        *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().borrow_mut() = Some(file.clone());
+                        *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow_mut() = Some(file.clone());
 
-                if let Some(file) = &*appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().borrow() {
-                    match utils::FileType::lookup_file_type(&file) {
-                        utils::FileType::Rnote => {
-                            *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow_mut() = Some(file.clone());
+                        if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().unsaved_changes() {
                             dialogs::dialog_open_overwrite(&appwindow);
-                        },
-                        utils::FileType::Svg | utils::FileType::BitmapImage => {
-                            if let Some(input_file) = appwindow
-                                .application()
-                                .unwrap()
-                                .downcast::<RnoteApp>()
-                                .unwrap()
-                                .input_file()
-                                .borrow()
-                                .to_owned()
-                            {
-                                if let Err(e) = appwindow.load_in_file(&input_file) {
-                                    log::error!("failed to load in input file, {}", e);
-                                }
+                        } else {
+                            if let Err(e) = appwindow.load_in_file(&file) {
+                                log::error!("failed to load in input file, {}", e);
                             }
-                        },
-                        utils::FileType::Folder => {
-                            if let Some(path) = file.path() {
-                                appwindow.workspacebrowser().set_primary_path(&path);
-                            }
-                        },
-                        utils::FileType::Unknown => {
-                                log::warn!("tried to open unsupported file type.");
                         }
+                    },
+                    utils::FileType::Svg | utils::FileType::BitmapImage => {
+                        if let Err(e) = appwindow.load_in_file(&file) {
+                            log::error!("failed to load in input file, {}", e);
+                        }
+                    },
+                    utils::FileType::Folder => {
+                        if let Some(path) = file.path() {
+                            appwindow.workspacebrowser().set_primary_path(&path);
+                        }
+                    },
+                    utils::FileType::Unknown => {
+                            log::warn!("tried to open unsupported file type.");
                     }
-                } else {
-                    log::warn!("No input file to open.");
                 }
             };
 

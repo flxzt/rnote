@@ -9,8 +9,13 @@ mod imp {
     };
 
     use crate::{
-        config, ui::canvas::Canvas, ui::mainheader::MainHeader, ui::penssidebar::PensSideBar,
-        ui::selectionmodifier::SelectionModifier, ui::workspacebrowser::WorkspaceBrowser,
+        app::RnoteApp,
+        config,
+        ui::canvas::Canvas,
+        ui::penssidebar::PensSideBar,
+        ui::selectionmodifier::SelectionModifier,
+        ui::workspacebrowser::WorkspaceBrowser,
+        ui::{dialogs, mainheader::MainHeader},
     };
 
     #[derive(Debug, CompositeTemplate)]
@@ -229,6 +234,25 @@ mod imp {
             if let Err(err) = obj.save_window_size() {
                 log::error!("Failed to save window state, {}", &err);
             }
+
+            // Save current sheet
+            dbg!(obj
+                .application()
+                .unwrap()
+                .downcast::<RnoteApp>()
+                .unwrap()
+                .unsaved_changes());
+            if obj
+                .application()
+                .unwrap()
+                .downcast::<RnoteApp>()
+                .unwrap()
+                .unsaved_changes()
+            {
+                //obj.application().unwrap().activate_action("save-sheet", None);
+
+                dialogs::dialog_save_sheet_as(obj);
+            }
             // Do not inhibit the default handler
             Inhibit(false)
         }
@@ -250,9 +274,9 @@ use crate::{
     app::RnoteApp,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokeStyle},
     ui::canvas::Canvas,
-    ui::mainheader::MainHeader,
     ui::penssidebar::PensSideBar,
     ui::{actions, selectionmodifier::SelectionModifier, workspacebrowser::WorkspaceBrowser},
+    ui::{dialogs, mainheader::MainHeader},
     utils,
 };
 
@@ -413,8 +437,18 @@ impl RnoteAppWindow {
             .borrow()
             .to_owned()
         {
-            if let Err(e) = self.load_in_file(&input_file) {
-                log::error!("failed to load in input file, {}", e);
+            if self
+                .application()
+                .unwrap()
+                .downcast::<RnoteApp>()
+                .unwrap()
+                .unsaved_changes()
+            {
+                dialogs::dialog_open_overwrite(&self);
+            } else {
+                if let Err(e) = self.load_in_file(&input_file) {
+                    log::error!("failed to load in input file, {}", e);
+                }
             }
         }
 
@@ -585,6 +619,7 @@ impl RnoteAppWindow {
 
                 self.canvas().queue_resize();
                 self.canvas().queue_draw();
+                self.canvas().set_unsaved_changes(false);
 
                 Ok(())
             }
@@ -617,6 +652,7 @@ impl RnoteAppWindow {
                     .unwrap();
                 self.canvas().queue_draw();
 
+                self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
                 Ok(())
             }
@@ -651,6 +687,7 @@ impl RnoteAppWindow {
                     .unwrap();
                 self.canvas().queue_draw();
 
+                self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
 
                 Ok(())

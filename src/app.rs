@@ -1,7 +1,12 @@
 mod imp {
-    use std::{cell::RefCell, path, rc::Rc};
+    use std::{
+        cell::{Cell, RefCell},
+        path,
+        rc::Rc,
+    };
 
     use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+    use once_cell::sync::Lazy;
 
     use crate::{
         config,
@@ -20,6 +25,7 @@ mod imp {
     pub struct RnoteApp {
         pub input_file: Rc<RefCell<Option<gio::File>>>,
         pub output_file: Rc<RefCell<Option<gio::File>>>,
+        pub unsaved_changes: Cell<bool>,
     }
 
     #[glib::object_subclass]
@@ -29,7 +35,44 @@ mod imp {
         type ParentType = gtk4::Application;
     }
 
-    impl ObjectImpl for RnoteApp {}
+    impl ObjectImpl for RnoteApp {
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                vec![glib::ParamSpec::new_boolean(
+                    "unsaved-changes",
+                    "unsaved-changes",
+                    "unsaved-changes",
+                    false,
+                    glib::ParamFlags::READWRITE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "unsaved-changes" => self.unsaved_changes.get().to_value(),
+                _ => unimplemented!(),
+            }
+        }
+
+        fn set_property(
+            &self,
+            _obj: &Self::Type,
+            _id: usize,
+            value: &glib::Value,
+            pspec: &glib::ParamSpec,
+        ) {
+            match pspec.name() {
+                "unsaved-changes" => {
+                    let unsaved_changes: bool =
+                        value.get().expect("The value needs to be of type `bool`.");
+                    self.unsaved_changes.replace(unsaved_changes);
+                }
+                _ => unimplemented!(),
+            }
+        }
+    }
 
     impl ApplicationImpl for RnoteApp {
         fn activate(&self, application: &Self::Type) {
@@ -79,7 +122,7 @@ mod imp {
 
 use std::{cell::RefCell, rc::Rc};
 
-use gtk4::{gio, glib, subclass::prelude::*};
+use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::config;
 
@@ -112,5 +155,21 @@ impl RnoteApp {
     pub fn output_file(&self) -> Rc<RefCell<Option<gio::File>>> {
         let priv_ = imp::RnoteApp::from_instance(self);
         priv_.output_file.clone()
+    }
+
+    pub fn unsaved_changes(&self) -> bool {
+        self.property("unsaved-changes")
+            .unwrap()
+            .get::<bool>()
+            .unwrap()
+    }
+
+    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
+        match self.set_property("unsaved-changes", unsaved_changes.to_value()) {
+            Ok(_) => {}
+            Err(e) => {
+                log::error!("failed to set property `unsaved-changes` of `App`, {}", e)
+            }
+        }
     }
 }

@@ -1,8 +1,6 @@
-use std::{error::Error};
+use std::error::Error;
 
-use crate::{
-    strokes::{self, compose, render, InputData},
-};
+use crate::strokes::{self, compose, render, InputData};
 
 use gtk4::{gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
@@ -118,15 +116,9 @@ impl Selector {
 
         for (i, element) in self.path.iter().enumerate() {
             if i == 0 {
-                data = data.move_to((
-                    element.pos()[0] + offset[0],
-                    element.pos()[1] + offset[1],
-                ));
+                data = data.move_to((element.pos()[0] + offset[0], element.pos()[1] + offset[1]));
             } else {
-                data = data.line_to((
-                    element.pos()[0] + offset[0],
-                    element.pos()[1] + offset[1],
-                ));
+                data = data.line_to((element.pos()[0] + offset[0], element.pos()[1] + offset[1]));
             }
         }
         data = data.close();

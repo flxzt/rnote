@@ -1,7 +1,7 @@
 mod imp {
     use gtk4::{glib, subclass::prelude::*, LayoutManager};
 
-    #[derive(Default)]
+    #[derive(Debug, Default)]
     pub struct SelectionModifierLayout {}
 
     #[glib::object_subclass]

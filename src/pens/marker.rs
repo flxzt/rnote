@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::{strokes};
+use crate::strokes;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Marker {

@@ -1,6 +1,6 @@
 # Resources
 resource_conf = configuration_data()
-# Rust can't insert const's into nested macro values, so we have to use the base_idpath everywhere. Luckily it doesnt matter inside gresource
+# Rust can't insert const's into nested macro values, so the base_idpath is used everywhere in rust. Luckily it doesnt matter inside gresource
 resource_conf.set('APP_IDPATH', base_idpath)
 configure_file(
   input: 'resources.gresource.xml.in',

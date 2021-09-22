@@ -65,20 +65,17 @@
         <child type="prefer_dark_theme_attr">
           <object class="GtkBox">
             <property name="orientation">horizontal</property>
-            <property name="hexpand">true</property>
-            <property name="vexpand">true</property>
-            <property name="halign">fill</property>
-            <property name="valign">fill</property>
-            <property name="height-request">120</property>
-            <property name="width-request">240</property>
+            <property name="homogeneous">true</property>
+            <property name="halign">center</property>
+            <property name="valign">start</property>
             <child>
               <object class="GtkToggleButton" id="light_theme_toggle">
-                <property name="hexpand">true</property>
-                <property name="vexpand">true</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="width-request">90</property>
-                <property name="height-request">100</property>
+                <property name="hexpand">false</property>
+                <property name="vexpand">false</property>
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="width-request">80</property>
+                <property name="height-request">80</property>
                 <property name="margin-start">10</property>
                 <property name="margin-end">10</property>
                 <property name="margin-top">20</property>
@@ -91,12 +88,12 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="dark_theme_toggle">
-                <property name="hexpand">true</property>
-                <property name="vexpand">true</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="width-request">90</property>
-                <property name="height-request">100</property>
+                <property name="hexpand">false</property>
+                <property name="vexpand">false</property>
+                <property name="halign">fill</property>
+                <property name="valign">fill</property>
+                <property name="width-request">80</property>
+                <property name="height-request">80</property>
                 <property name="margin-start">10</property>
                 <property name="margin-end">10</property>
                 <property name="margin-top">20</property>

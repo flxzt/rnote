@@ -15,7 +15,7 @@ mod imp {
         ui::penssidebar::PensSideBar,
         ui::selectionmodifier::SelectionModifier,
         ui::workspacebrowser::WorkspaceBrowser,
-        ui::{dialogs, mainheader::MainHeader},
+        ui::{mainheader::MainHeader},
     };
 
     #[derive(Debug, CompositeTemplate)]
@@ -236,12 +236,6 @@ mod imp {
             }
 
             // Save current sheet
-            dbg!(obj
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .unsaved_changes());
             if obj
                 .application()
                 .unwrap()
@@ -251,7 +245,7 @@ mod imp {
             {
                 //obj.application().unwrap().activate_action("save-sheet", None);
 
-                dialogs::dialog_save_sheet_as(obj);
+                //dialogs::dialog_save_sheet_as(obj);
             }
             // Do not inhibit the default handler
             Inhibit(false)

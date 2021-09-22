@@ -9,8 +9,8 @@ gnome = import('gnome')
 fs = import('fs')
 
 app_name = meson.project_name()
-base_id = 'com.github.felixzwettler.rnote'
-base_idpath = '/com/github/felixzwettler/rnote/'
+base_id = 'com.github.felixzwettler.' + app_name
+base_idpath = '/com/github/felixzwettler/' + app_name + '/'
 
 if get_option('profile') == 'devel'
   profile = 'Devel'
@@ -18,7 +18,7 @@ if get_option('profile') == 'devel'
   app_id = base_id + '.' + profile
   app_idpath = base_idpath + profile + '/'
 else
-  profile = ''
+  profile = 'default'
   version_suffix = ''
   app_id = base_id
   app_idpath = base_idpath
@@ -53,12 +53,6 @@ glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
 
-meson.add_dist_script(
-  'build-aux/dist-vendor.sh',
-  meson.project_build_root() / 'meson-dist' / app_name + '-' + version,
-  meson.project_source_root()
-)
-
 cargo_sources= files(
   meson.project_source_root() + '/' + 'Cargo.toml',
   meson.project_source_root() + '/' + 'Cargo.lock',
@@ -69,3 +63,9 @@ subdir('rough-rs/src')
 subdir('src')
 
 meson.add_install_script('build-aux/meson_post_install.py')
+
+meson.add_dist_script(
+  'build-aux/dist-vendor.sh',
+  meson.project_build_root() / 'meson-dist' / app_name + '-' + version,
+  meson.project_source_root()
+)

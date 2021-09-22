@@ -46,6 +46,19 @@ Building the app with flatpak is done with:
 flatpak-builder --user flatpak-app build-aux/com.github.felixzwettler.rnote.json
 ```
 
+Creating a repo to avoid always rebuilding from scratch can be done with:
+
+```
+flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.felixzwettler.rnote.json
+
+```
+
+**Install**
+Install to the system as user with:
+```
+flatpak-builder --user --install flatpak-app build-aux/com.github.felixzwettler.rnote.json
+```
+
 **Run**  
 Then it can be run.
 From the build directory:
@@ -58,13 +71,10 @@ Or if it is installed:
 flatpak run com.github.felixzwettler.rnote
 ```
 
-**Install**
-And installed to the system with:
-```
-flatpak-builder --user --install flatpak-app build-aux/com.github.felixzwettler.rnote.json
-```
+### Build with Meson
+The flatpak manifest calls the meson build system to build the application.
+If a native build is wanted, meson can be called directly.
 
-### Build it yourself with Meson
 Make sure `rustc` and `cargo` are installed. Then run:
 
 ```

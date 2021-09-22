@@ -20,10 +20,7 @@
         <menu id="menu_model">
           <section>
             <item>
-              <attribute name="custom">zoomcontrols_attr</attribute>
-            </item>
-            <item>
-              <attribute name="custom">handedtoggle_attr</attribute>
+              <attribute name="custom">canvas_quickcontrols_attr</attribute>
             </item>
           </section>
           <section>
@@ -236,16 +233,23 @@
           </object>
         </child>
 
-        <child type="zoomcontrols_attr">
-          <object class="GtkBox" id="zoomcontrols">
-            <property name="homogeneous">false</property>
-            <property name="hexpand">true</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
+        <child type="canvas_quickcontrols_attr">
+          <object class="GtkGrid" id="zoomcontrols">
+            <property name="hexpand">false</property>
+            <property name="vexpand">false</property>
+            <property name="margin-top">6</property>
+            <property name="margin-bottom">6</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
+            <property name="row-spacing">6</property>
             <child>
               <object class="GtkBox">
                 <property name="margin-start">0</property>
                 <property name="margin-end">6</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">0</property>
+                </layout>
                 <style>
                   <class name="linked" />
                 </style>
@@ -273,41 +277,45 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox">
+              <object class="GtkButton" id="zoom_fit_width_button">
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">0</property>
+                </layout>
+                <property name="margin-start">6</property>
+                <property name="margin-end">0</property>
+                <property name="hexpand">false</property>
+                <property name="icon_name">zoom-fit-width-symbolic</property>
+                <property name="tooltip_text">Zoom to fit sheet width</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="handedtoggle_box">
+                <property name="homogeneous">true</property>
+                <property name="hexpand">true</property>
+                <property name="halign">fill</property>
+                <property name="margin-start">6</property>
+                <property name="margin-end">6</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                  <property name="column-span">2</property>
+                </layout>
                 <style>
                   <class name="linked" />
                 </style>
                 <child>
-                  <object class="GtkButton" id="zoom_fit_width_button">
-                    <property name="icon_name">zoom-fit-width-symbolic</property>
-                    <property name="tooltip_text">Zoom to fit sheet width</property>
-                    <property name="hexpand">false</property>
+                  <object class="GtkToggleButton" id="righthanded_toggle">
+                    <property name="icon_name">dock-left-symbolic</property>
+                    <property name="hexpand">true</property>
                   </object>
                 </child>
-              </object>
-            </child>
-          </object>
-        </child>
-
-        <child type="handedtoggle_attr">
-          <object class="GtkBox" id="handedtoggle_box">
-            <property name="homogeneous">True</property>
-            <property name="hexpand">true</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
-            <style>
-              <class name="linked" />
-            </style>
-            <child>
-              <object class="GtkToggleButton" id="righthanded_toggle">
-                <property name="icon_name">dock-left-symbolic</property>
-                <property name="hexpand">true</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="lefthanded_toggle">
-                <property name="icon_name">dock-right-symbolic</property>
-                <property name="hexpand">true</property>
+                <child>
+                  <object class="GtkToggleButton" id="lefthanded_toggle">
+                    <property name="icon_name">dock-right-symbolic</property>
+                    <property name="hexpand">true</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

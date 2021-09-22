@@ -13,16 +13,16 @@
         "--device=dri",
         "--share=ipc",
         "--talk-name=org.a11y.Bus",
-        "--filesystem=home",
-        "--env=RUST_LOG=rnote=debug",
-        "--env=G_MESSAGES_DEBUG=all",
-        "--env=RUST_BACKTRACE=1"
+        "--filesystem=home"
     ],
     "build-options": {
         "append-path": "/usr/lib/sdk/rust-stable/bin",
         "build-args": [
             "--share=network"
         ],
+        "env": {
+            "CARGO_HOME": "/run/build/rust-flatpak/cargo"
+        },
         "test-args": [
             "--socket=x11",
             "--share=network"

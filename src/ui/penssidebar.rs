@@ -102,7 +102,9 @@ mod imp {
     }
 
     impl ObjectImpl for PensSideBar {
-        fn constructed(&self, _obj: &Self::Type) {}
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+        }
 
         fn dispose(&self, obj: &Self::Type) {
             while let Some(child) = obj.first_child() {

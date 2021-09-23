@@ -239,13 +239,12 @@
             <property name="vexpand">false</property>
             <property name="margin-top">6</property>
             <property name="margin-bottom">6</property>
-            <property name="margin-start">6</property>
-            <property name="margin-end">6</property>
-            <property name="row-spacing">6</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="row-spacing">12</property>
+            <property name="column-spacing">6</property>
             <child>
               <object class="GtkBox">
-                <property name="margin-start">0</property>
-                <property name="margin-end">6</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>
@@ -278,12 +277,11 @@
             </child>
             <child>
               <object class="GtkButton" id="zoom_fit_width_button">
+                <property name="margin-start">6</property>
                 <layout>
                   <property name="column">1</property>
                   <property name="row">0</property>
                 </layout>
-                <property name="margin-start">6</property>
-                <property name="margin-end">0</property>
                 <property name="hexpand">false</property>
                 <property name="icon_name">zoom-fit-width-symbolic</property>
                 <property name="tooltip_text">Zoom to fit sheet width</property>
@@ -294,8 +292,6 @@
                 <property name="homogeneous">true</property>
                 <property name="hexpand">true</property>
                 <property name="halign">fill</property>
-                <property name="margin-start">6</property>
-                <property name="margin-end">6</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">1</property>

@@ -54,7 +54,6 @@ rust_sources = files(
     'ui/templatechooser.rs',
     'ui/workspacebrowser.rs',
     'ui/selectionmodifier/mod.rs',
-    'ui/selectionmodifier/selectionmodifier_layout.rs',
     'ui/selectionmodifier/modifiernode.rs',
     'ui/colorpicker/mod.rs',
     'ui/colorpicker/colorsetter.rs',

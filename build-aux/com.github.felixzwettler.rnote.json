@@ -12,8 +12,10 @@
         "--socket=fallback-x11",
         "--device=dri",
         "--share=ipc",
-        "--talk-name=org.a11y.Bus",
-        "--filesystem=home"
+        "--filesystem=home",
+        "--env=RUST_BACKTRACE=1",
+        "--env=RUST_LOG=rnote=info",
+        "--env=G_MESSAGES_DEBUG=all"
     ],
     "build-options": {
         "append-path": "/usr/lib/sdk/rust-stable/bin",

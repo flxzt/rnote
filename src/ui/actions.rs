@@ -9,8 +9,8 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, AboutDialog, Box, Grid, InfoBar, MessageType, PackType,
-    PositionType, ScrolledWindow,
+    gio, glib, glib::clone, prelude::*, AboutDialog, ArrowType, Box, Grid, PackType, PositionType,
+    ScrolledWindow,
 };
 
 /* Actions follow this principle:
@@ -80,20 +80,16 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     // Warning
     action_warning.connect_activate(
         clone!(@weak appwindow => move |_action_warning, parameter| {
-            let warning = parameter.unwrap().get::<String>().unwrap();
-            appwindow.infobar_label().set_label(warning.as_str());
-            appwindow.infobar().set_message_type(MessageType::Warning);
-            appwindow.infobar().set_revealed(true);
+             let warning = parameter.unwrap().get::<String>().unwrap();
+            log::warn!("{}", warning);
         }),
     );
     appwindow.application().unwrap().add_action(&action_warning);
 
     // Error
     action_error.connect_activate(clone!(@weak appwindow => move |_action_error, parameter| {
-        let error = parameter.unwrap().get::<String>().unwrap();
-        appwindow.infobar_label().set_label(error.as_str());
-        appwindow.infobar().set_message_type(MessageType::Error);
-        appwindow.infobar().set_revealed(true);
+         let error = parameter.unwrap().get::<String>().unwrap();
+            log::error!("{}", error);
     }));
     appwindow.application().unwrap().add_action(&action_error);
 
@@ -316,10 +312,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         if action_righthanded.state().unwrap().get::<bool>().unwrap() {
             appwindow.mainheader().canvasmenu().righthanded_toggle().set_active(true);
             appwindow.main_grid().remove::<Grid>(&appwindow.sidebar_grid());
-            appwindow.main_grid().remove::<InfoBar>(&appwindow.infobar());
             appwindow.main_grid().remove::<ScrolledWindow>(&appwindow.canvas_scroller());
             appwindow.main_grid().attach(&appwindow.sidebar_grid(), 0, 1 ,1, 2);
-            appwindow.main_grid().attach(&appwindow.infobar(), 2, 1 ,1, 1);
             appwindow.main_grid().attach(&appwindow.canvas_scroller(), 2, 2 ,1, 1);
 
             appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().quickactions_box());
@@ -337,15 +331,13 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.workspace_grid().attach(&appwindow.flaphide_box(), 0, 3, 1, 1);
             appwindow.workspace_grid().attach(&appwindow.workspace_controlbox(), 1, 3, 1, 1);
 
-            appwindow.penssidebar().brush_templatechooser().help_popover().set_position(PositionType::Right);
-            appwindow.penssidebar().brush_templatechooser().chooser_popover().set_position(PositionType::Right);
+            appwindow.penssidebar().brush_templatechooser().help_button().set_direction(ArrowType::Right);
+            appwindow.penssidebar().brush_templatechooser().chooser_button().set_direction(ArrowType::Right);
         } else {
             appwindow.mainheader().canvasmenu().lefthanded_toggle().set_active(true);
             appwindow.main_grid().remove::<Grid>(&appwindow.sidebar_grid());
-            appwindow.main_grid().remove::<InfoBar>(&appwindow.infobar());
             appwindow.main_grid().remove::<ScrolledWindow>(&appwindow.canvas_scroller());
             appwindow.main_grid().attach(&appwindow.sidebar_grid(), 2, 1 ,1, 2);
-            appwindow.main_grid().attach(&appwindow.infobar(), 0, 1 ,1, 1);
             appwindow.main_grid().attach(&appwindow.canvas_scroller(), 0, 2 ,1, 1);
 
             appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().pens_togglebox());
@@ -363,8 +355,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.workspace_grid().attach(&appwindow.flaphide_box(), 1, 3, 1, 1);
             appwindow.workspace_grid().attach(&appwindow.workspace_controlbox(), 0, 3, 1, 1);
 
-            appwindow.penssidebar().brush_templatechooser().help_popover().set_position(PositionType::Left);
-            appwindow.penssidebar().brush_templatechooser().chooser_popover().set_position(PositionType::Left);
+            appwindow.penssidebar().brush_templatechooser().help_button().set_direction(ArrowType::Left);
+            appwindow.penssidebar().brush_templatechooser().chooser_button().set_direction(ArrowType::Left);
         }
     }));
     appwindow

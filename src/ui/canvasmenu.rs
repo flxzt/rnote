@@ -75,6 +75,7 @@ mod imp {
     impl ObjectImpl for CanvasMenu {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+
             let custom_format_width_entry = self.custom_format_width_entry.get();
             let custom_format_height_entry = self.custom_format_height_entry.get();
             let custom_format_dpi_entry = self.custom_format_dpi_entry.get();
@@ -137,13 +138,13 @@ mod imp {
                 .get()
                 .buffer()
                 .connect_text_notify(clone!(@weak custom_format_dpi_entry => move |buffer| {
-                    if Format::try_parse_height(buffer.text().as_str()).is_some() {
-                        custom_format_dpi_entry.style_context().remove_class("error");
-                        custom_format_dpi_entry.style_context().add_class("plain");
-                    } else {
-                        custom_format_dpi_entry.style_context().remove_class("plain");
-                        custom_format_dpi_entry.style_context().add_class("error");
-                    }
+                        if Format::try_parse_height(buffer.text().as_str()).is_some() {
+                            custom_format_dpi_entry.style_context().remove_class("error");
+                            custom_format_dpi_entry.style_context().add_class("plain");
+                        } else {
+                            custom_format_dpi_entry.style_context().remove_class("plain");
+                            custom_format_dpi_entry.style_context().add_class("error");
+                        }
                 }));
         }
 
@@ -287,12 +288,8 @@ impl CanvasMenu {
             .righthanded_toggle
             .set_group(Some(&priv_.lefthanded_toggle.get()));
 
-        priv_.righthanded_toggle.connect_active_notify(clone!(@weak appwindow => move |_righthanded_toggle| {
-            appwindow.application().unwrap().change_action_state("righthanded", &true.to_variant());
-        }));
-
-        priv_.lefthanded_toggle.connect_active_notify(clone!(@weak appwindow => move |_lefthanded_toggle| {
-            appwindow.application().unwrap().change_action_state("righthanded", &false.to_variant());
+        priv_.righthanded_toggle.connect_toggled(clone!(@weak appwindow => move |righthanded_toggle| {
+            appwindow.application().unwrap().change_action_state("righthanded", &righthanded_toggle.is_active().to_variant());
         }));
 
         priv_.zoom_fit_width_button.connect_clicked(

@@ -1,8 +1,8 @@
 mod imp {
     use gtk4::{
         gio, glib, prelude::*, subclass::prelude::*, Align, Box, CompositeTemplate, DirectoryList,
-        FileFilter, FilterListModel, Image, Label, ListBox, ListBoxRow, Orientation, Popover,
-        TextView, ToggleButton, Widget,
+        FileFilter, FilterListModel, Image, Label, ListBox, ListBoxRow, MenuButton, Orientation,
+        Popover, TextView, Widget,
     };
 
     use crate::pens::brush;
@@ -11,11 +11,11 @@ mod imp {
     #[template(resource = "/com/github/felixzwettler/rnote/ui/templatechooser.ui")]
     pub struct TemplateChooser {
         #[template_child]
-        pub chooser_button: TemplateChild<ToggleButton>,
+        pub chooser_button: TemplateChild<MenuButton>,
         #[template_child]
         pub chooser_popover: TemplateChild<Popover>,
         #[template_child]
-        pub help_button: TemplateChild<ToggleButton>,
+        pub help_button: TemplateChild<MenuButton>,
         #[template_child]
         pub help_popover: TemplateChild<Popover>,
         #[template_child]
@@ -36,9 +36,9 @@ mod imp {
             templates_dirlist.set_monitored(true);
 
             Self {
-                chooser_button: TemplateChild::<ToggleButton>::default(),
+                chooser_button: TemplateChild::<MenuButton>::default(),
                 chooser_popover: TemplateChild::<Popover>::default(),
-                help_button: TemplateChild::<ToggleButton>::default(),
+                help_button: TemplateChild::<MenuButton>::default(),
                 help_popover: TemplateChild::<Popover>::default(),
                 help_text: TemplateChild::<TextView>::default(),
                 predefined_templates_list: TemplateChild::<ListBox>::default(),
@@ -69,7 +69,9 @@ mod imp {
     }
 
     impl ObjectImpl for TemplateChooser {
-        fn constructed(&self, _obj: &Self::Type) {
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+
             let filefilter = FileFilter::new();
             filefilter.add_pattern("*.svg.templ");
             let filefilter_model =
@@ -143,8 +145,8 @@ use std::path;
 
 use crate::{config, pens::brush, ui::appwindow::RnoteAppWindow, utils};
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, ListBoxRow, Popover, TextBuffer,
-    Widget,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, ListBoxRow, MenuButton, Popover,
+    TextBuffer, Widget,
 };
 
 glib::wrapper! {
@@ -165,8 +167,18 @@ impl TemplateChooser {
         template_chooser
     }
 
+    pub fn help_button(&self) -> MenuButton {
+        imp::TemplateChooser::from_instance(self).help_button.get()
+    }
+
     pub fn help_popover(&self) -> Popover {
         imp::TemplateChooser::from_instance(self).help_popover.get()
+    }
+
+    pub fn chooser_button(&self) -> MenuButton {
+        imp::TemplateChooser::from_instance(self)
+            .chooser_button
+            .get()
     }
 
     pub fn chooser_popover(&self) -> Popover {
@@ -259,6 +271,7 @@ impl TemplateChooser {
 
         let help_text_buffer = TextBuffer::builder().text(text).build();
         priv_.help_text.get().set_buffer(Some(&help_text_buffer));
+        priv_.help_text.get().queue_resize();
     }
 
     pub fn set_templates_path(&self, path: &path::PathBuf) -> Result<(), ()> {

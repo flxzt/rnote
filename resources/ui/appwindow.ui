@@ -174,26 +174,6 @@
               </object>
             </child>
             <child>
-              <object class="GtkInfoBar" id="infobar">
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">1</property>
-                </layout>
-                <style>
-                  <class name="info" />
-                </style>
-                <property name="name">infobar</property>
-                <property name="revealed">false</property>
-                <property name="show-close-button">true</property>
-                <child>
-                  <object class="GtkLabel" id="infobar_label">
-                    <property name="width-request">200</property>
-                    <property name="height-request">40</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
               <object class="GtkScrolledWindow" id="canvas_scroller">
                 <style>
                   <class name="canvas-scroller" />

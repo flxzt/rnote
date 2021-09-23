@@ -4,18 +4,14 @@ mod imp {
     use adw::{prelude::*, subclass::prelude::*};
     use gtk4::{
         gdk, gio, glib, glib::clone, subclass::prelude::*, Box, Button, CompositeTemplate,
-        CssProvider, Entry, Grid, InfoBar, Inhibit, Label, Overlay, PackType, ScrolledWindow,
-        StyleContext, ToggleButton,
+        CssProvider, Entry, Grid, Inhibit, Overlay, PackType, ScrolledWindow, StyleContext,
+        ToggleButton,
     };
 
     use crate::{
-        app::RnoteApp,
-        config,
-        ui::canvas::Canvas,
-        ui::penssidebar::PensSideBar,
-        ui::selectionmodifier::SelectionModifier,
+        app::RnoteApp, config, ui::canvas::Canvas, ui::mainheader::MainHeader,
+        ui::penssidebar::PensSideBar, ui::selectionmodifier::SelectionModifier,
         ui::workspacebrowser::WorkspaceBrowser,
-        ui::{mainheader::MainHeader},
     };
 
     #[derive(Debug, CompositeTemplate)]
@@ -24,10 +20,6 @@ mod imp {
         pub settings: gio::Settings,
         #[template_child]
         pub main_grid: TemplateChild<Grid>,
-        #[template_child]
-        pub infobar: TemplateChild<InfoBar>,
-        #[template_child]
-        pub infobar_label: TemplateChild<Label>,
         #[template_child]
         pub canvas_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
@@ -73,8 +65,6 @@ mod imp {
             Self {
                 settings: gio::Settings::new(config::APP_ID),
                 main_grid: TemplateChild::<Grid>::default(),
-                infobar: TemplateChild::<InfoBar>::default(),
-                infobar_label: TemplateChild::<Label>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
                 canvas_overlay: TemplateChild::<Overlay>::default(),
@@ -218,12 +208,6 @@ mod imp {
             // Load latest window state
             obj.load_window_size();
         }
-
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
-                child.unparent();
-            }
-        }
     }
 
     impl WidgetImpl for RnoteAppWindow {}
@@ -261,7 +245,7 @@ use std::{boxed, error::Error, path::PathBuf};
 
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Application, Box, Button, Entry,
-    Grid, InfoBar, Label, Overlay, ResponseType, ScrolledWindow,
+    Grid, Overlay, ScrolledWindow,
 };
 
 use crate::{
@@ -291,14 +275,6 @@ impl RnoteAppWindow {
 
     pub fn main_grid(&self) -> Grid {
         imp::RnoteAppWindow::from_instance(self).main_grid.get()
-    }
-
-    pub fn infobar(&self) -> InfoBar {
-        imp::RnoteAppWindow::from_instance(self).infobar.get()
-    }
-
-    pub fn infobar_label(&self) -> Label {
-        imp::RnoteAppWindow::from_instance(self).infobar_label.get()
     }
 
     pub fn canvas_scroller(&self) -> ScrolledWindow {
@@ -448,28 +424,17 @@ impl RnoteAppWindow {
 
         self.workspace_headerbar().connect_show_end_title_buttons_notify(clone!(@weak self as appwindow => move |_files_headerbar| {
             if appwindow.workspace_headerbar().shows_end_title_buttons() {
-                appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
+                 appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
                 appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
                 appwindow.menus_box().append(&appwindow.mainheader().canvasmenu());
                 appwindow.menus_box().append(&appwindow.mainheader().appmenu());
             } else {
-                appwindow.menus_box().remove(&appwindow.mainheader().canvasmenu());
+                 appwindow.menus_box().remove(&appwindow.mainheader().canvasmenu());
                 appwindow.menus_box().remove(&appwindow.mainheader().appmenu());
                 appwindow.mainheader().menus_box().append(&appwindow.mainheader().canvasmenu());
                 appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
             }
         }));
-
-        self.infobar().connect_response(
-            clone!(@weak self as appwindow => move |infobar, response| {
-                match response {
-                    ResponseType::Close => {
-                        infobar.set_revealed(false);
-                    },
-                    _ => {}
-                }
-            }),
-        );
 
         // This dictates the overlay children position and size
         self.canvas_overlay().connect_get_child_position(
@@ -512,7 +477,7 @@ impl RnoteAppWindow {
         let _priv_ = imp::RnoteAppWindow::from_instance(self);
 
         // overwriting theme so users can choose dark / light in appmenu
-        self.settings().set_gtk_theme_name(Some("Adwaita"));
+        //self.settings().set_gtk_theme_name(Some("Adwaita"));
 
         // Workspace directory
         self.workspacebrowser().set_primary_path(&PathBuf::from(
@@ -541,12 +506,12 @@ impl RnoteAppWindow {
         // Ui for right / left handed writers
         // Why isnt this working?
         //self.application().unwrap().change_action_state("righthanded", &self.app_settings().boolean("righthanded").to_variant());
-        self.application()
+        /*         self.application()
             .unwrap()
             .activate_action("righthanded", None);
         self.application()
             .unwrap()
-            .activate_action("righthanded", None);
+            .activate_action("righthanded", None); */
 
         // Mouse drawing
         self.app_settings()

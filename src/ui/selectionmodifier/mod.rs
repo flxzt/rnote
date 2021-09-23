@@ -1,5 +1,4 @@
 pub mod modifiernode;
-pub mod selectionmodifier_layout;
 
 mod imp {
     use std::cell::Cell;
@@ -58,7 +57,9 @@ mod imp {
     }
 
     impl ObjectImpl for SelectionModifier {
-        fn constructed(&self, _obj: &Self::Type) {
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+
             self.resize_tl
                 .image()
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);

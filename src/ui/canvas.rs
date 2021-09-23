@@ -76,6 +76,27 @@ mod imp {
     }
 
     impl ObjectImpl for Canvas {
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+
+            obj.set_hexpand(false);
+            obj.set_vexpand(false);
+            obj.set_can_target(true);
+            obj.set_focusable(true);
+            obj.set_can_focus(true);
+            obj.set_focus_on_click(true);
+            obj.set_cursor(Some(&self.cursor));
+
+            obj.add_controller(&self.gesture_stylus);
+            obj.add_controller(&self.gesture_drag);
+        }
+
+        fn dispose(&self, obj: &Self::Type) {
+            while let Some(child) = obj.first_child() {
+                child.unparent();
+            }
+        }
+
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
@@ -188,27 +209,6 @@ mod imp {
                 "mouse-drawing" => self.mouse_drawing.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 _ => unimplemented!(),
-            }
-        }
-
-        fn constructed(&self, obj: &Self::Type) {
-            self.parent_constructed(obj);
-
-            obj.set_hexpand(false);
-            obj.set_vexpand(false);
-            obj.set_can_target(true);
-            obj.set_focusable(true);
-            obj.set_can_focus(true);
-            obj.set_focus_on_click(true);
-            obj.set_cursor(Some(&self.cursor));
-
-            obj.add_controller(&self.gesture_stylus);
-            obj.add_controller(&self.gesture_drag);
-        }
-
-        fn dispose(&self, obj: &Self::Type) {
-            while let Some(child) = obj.first_child() {
-                child.unparent();
             }
         }
     }
@@ -523,10 +523,6 @@ impl Canvas {
         })
         .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE)
         .build();
-
-        /*         // Making sure property is initialized so that the bind updates the label of zoomreset_button
-        self.set_property("scalefactor", &Canvas::SCALE_DEFAULT)
-            .unwrap(); */
 
         let gesture_zoom = GestureZoom::builder()
             .name("gesture_zoom")

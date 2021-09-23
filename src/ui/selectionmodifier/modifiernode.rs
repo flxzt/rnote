@@ -36,7 +36,7 @@ mod imp {
 
     impl ObjectImpl for ModifierNode {
         fn constructed(&self, obj: &Self::Type) {
-            self.image.set_parent(obj);
+            self.parent_constructed(obj);
 
             obj.set_css_classes(&["modifiernode"]);
 

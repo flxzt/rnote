@@ -151,7 +151,6 @@ impl BrushStroke {
             rendernode: render::default_rendernode(),
         };
 
-        log::info!("current template: {:?}", brushstroke.brush.current_template);
         brushstroke.push_elem(inputdata);
 
         brushstroke

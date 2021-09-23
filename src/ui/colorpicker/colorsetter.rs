@@ -34,6 +34,18 @@ mod imp {
     }
 
     impl ObjectImpl for ColorSetter {
+        fn constructed(&self, obj: &Self::Type) {
+            self.parent_constructed(obj);
+
+            obj.set_css_classes(&["setter-button"]);
+            self.css.load_from_data(
+                self.parse_gdk_rgba(&super::ColorSetter::COLOR_DEFAULT, self.position.get())
+                    .as_bytes(),
+            );
+            obj.style_context()
+                .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
+        }
+
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
@@ -100,16 +112,6 @@ mod imp {
                 "position" => self.position.get().to_value(),
                 _ => panic!("invalid property name"),
             }
-        }
-
-        fn constructed(&self, obj: &Self::Type) {
-            obj.set_css_classes(&["setter-button"]);
-            self.css.load_from_data(
-                self.parse_gdk_rgba(&super::ColorSetter::COLOR_DEFAULT, self.position.get())
-                    .as_bytes(),
-            );
-            obj.style_context()
-                .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
     }
 

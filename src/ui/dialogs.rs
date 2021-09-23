@@ -105,10 +105,37 @@ pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
     dialog_open_file.show();
 }
 
+pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
+    let builder =
+        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let dialog_quit_save: MessageDialog = builder.object("dialog_quit_save").unwrap();
+
+    dialog_quit_save.set_transient_for(Some(appwindow));
+
+    dialog_quit_save.connect_response(
+        clone!(@weak appwindow => move |dialog_quit_save, responsetype| {
+            match responsetype {
+                ResponseType::Ok => {
+                    dialog_quit_save.close();
+                    appwindow.destroy();
+                },
+                ResponseType::Apply => {
+                    dialog_save_sheet_as(&appwindow);
+                }
+                _ => {
+                    dialog_quit_save.close();
+                }
+            }
+        }),
+    );
+
+    dialog_quit_save.show();
+}
+
 pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_open_input_file: MessageDialog = builder.object("dialog_open_input_file").unwrap();
+    let dialog_open_input_file: MessageDialog = builder.object("dialog_open_overwrite").unwrap();
 
     dialog_open_input_file.set_transient_for(Some(appwindow));
 

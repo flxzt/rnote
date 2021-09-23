@@ -34,17 +34,17 @@
     </action-widgets>
   </object>
 
-  <object class="GtkMessageDialog" id="dialog_open_input_file">
+  <object class="GtkMessageDialog" id="dialog_quit_save">
     <property name="modal">true</property>
-    <property name="title">Open File</property>
-    <property name="text">Opening this file erases any unsaved changes. Please confirm</property>
+    <property name="title">Quit Application</property>
+    <property name="text">Any unsaved changes will be lost. Do you want to quit anyways?</property>
     <child type="action">
-      <object class="GtkButton" id="open_input_file_button_cancel">
+      <object class="GtkButton" id="quit_save_button_cancel">
         <property name="label">Cancel</property>
       </object>
     </child>
     <child type="action">
-      <object class="GtkButton" id="open_input_file_button_save_as">
+      <object class="GtkButton" id="quit_save_button_save_as">
         <property name="label">Save current sheet as</property>
         <style>
           <class name="suggested-action" />
@@ -52,7 +52,39 @@
       </object>
     </child>
     <child type="action">
-      <object class="GtkButton" id="open_input_file_button_ok">
+      <object class="GtkButton" id="quit_save_button_ok">
+        <property name="label">Quit</property>
+        <style>
+          <class name="destructive-action" />
+        </style>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="cancel" default="true">quit_save_button_cancel</action-widget>
+      <action-widget response="ok">quit_save_button_ok</action-widget>
+      <action-widget response="apply">quit_save_button_save_as</action-widget>
+    </action-widgets>
+  </object>
+
+  <object class="GtkMessageDialog" id="dialog_open_overwrite">
+    <property name="modal">true</property>
+    <property name="title">Open File</property>
+    <property name="text">Opening this file overwrites any unsaved changes.</property>
+    <child type="action">
+      <object class="GtkButton" id="open_overwrite_button_cancel">
+        <property name="label">Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="open_overwrite_button_save_as">
+        <property name="label">Save current sheet as</property>
+        <style>
+          <class name="suggested-action" />
+        </style>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="open_overwrite_button_ok">
         <property name="label">Open</property>
         <style>
           <class name="destructive-action" />
@@ -60,9 +92,9 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="cancel" default="true">open_input_file_button_cancel</action-widget>
-      <action-widget response="ok">open_input_file_button_ok</action-widget>
-      <action-widget response="apply">open_input_file_button_save_as</action-widget>
+      <action-widget response="cancel" default="true">open_overwrite_button_cancel</action-widget>
+      <action-widget response="ok">open_overwrite_button_ok</action-widget>
+      <action-widget response="apply">open_overwrite_button_save_as</action-widget>
     </action-widgets>
   </object>
 
@@ -135,7 +167,7 @@
     </action-widgets>
   </object>
 
-  <object class="GtkFileChooserDialog" id="dialog_save_sheet">
+  <object class="GtkFileChooserDialog" id="dialog_quit">
     <property name="modal">true</property>
     <property name="title">Save Sheet</property>
     <property name="action">save</property>

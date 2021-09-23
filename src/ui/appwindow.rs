@@ -9,7 +9,7 @@ mod imp {
     };
 
     use crate::{
-        app::RnoteApp, config, ui::canvas::Canvas, ui::mainheader::MainHeader,
+        app::RnoteApp, config, ui::canvas::Canvas, ui::dialogs, ui::mainheader::MainHeader,
         ui::penssidebar::PensSideBar, ui::selectionmodifier::SelectionModifier,
         ui::workspacebrowser::WorkspaceBrowser,
     };
@@ -227,12 +227,12 @@ mod imp {
                 .unwrap()
                 .unsaved_changes()
             {
-                //obj.application().unwrap().activate_action("save-sheet", None);
-
-                //dialogs::dialog_save_sheet_as(obj);
+                dialogs::dialog_quit_save(obj);
+            } else {
+                obj.destroy();
             }
-            // Do not inhibit the default handler
-            Inhibit(false)
+            // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
+            Inhibit(true)
         }
     }
 

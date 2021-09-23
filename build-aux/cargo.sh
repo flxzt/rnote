@@ -15,7 +15,7 @@ if [[ $PROFILE = "Devel" ]]
 then
     echo -e "\n--- DEVEL PROFILE ---\n"
     cargo build --manifest-path \
-        "$MESON_SOURCE_ROOT"/Cargo.toml --verbose && \
+        "$MESON_SOURCE_ROOT"/Cargo.toml && \
         cp "$CARGO_TARGET_DIR"/debug/"$APP_BIN" "$OUTPUT"
 else
     echo -e "\n--- RELEASE PROFILE ---\n"

@@ -35,6 +35,10 @@ Rnote is a very early WIP project, so don't expect too much. :)
 ### Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.felixzwettler.rnote.json`.
 
+Use Gnome Builder or vscode with the flatpak extension to build and run the application for you. **This is the easiest and recommended way.**
+
+Otherwise:
+
 First the Gnome 40 SDK is needed:
 ```
 flatpak install org.gnome.Sdk//40 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//40
@@ -53,7 +57,8 @@ flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.feli
 
 ```
 
-**Install**
+
+**Install**  
 Install to the system as user with:
 ```
 flatpak-builder --user --install flatpak-app build-aux/com.github.felixzwettler.rnote.json

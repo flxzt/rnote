@@ -5,7 +5,6 @@
 /flatpak-repo
 /flatpak-app
 /target
-Cargo.lock
 /.editorconfig
 /.vscode
 src/config.rs

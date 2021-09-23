@@ -55,7 +55,6 @@ appstream_util = find_program('appstream-util', required: false)
 
 cargo_sources= files(
   meson.project_source_root() + '/' + 'Cargo.toml',
-  meson.project_source_root() + '/' + 'Cargo.lock',
 )
 
 meson.add_dist_script(

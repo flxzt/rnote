@@ -6,7 +6,7 @@ mod imp {
     };
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/felixzwettler/rnote/ui/penssidebar.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar.ui")]
     pub struct PensSideBar {
         #[template_child]
         pub sidebar_stack: TemplateChild<Stack>,

@@ -1,6 +1,6 @@
 
 <div align="center">
-<img src="resources/icons/scalable/apps/app.svg" width="256"></img>
+<img src="resources/icons/scalable/apps/rnote.svg" width="256"></img>
 </div>
 
 # Rnote
@@ -32,13 +32,13 @@ Rnote is a very early WIP project, so don't expect too much. :)
 ![2021-08-10-rnote.jpg](./resources/screenshots/main-window.png)
 
 ### Building with Flatpak
-There is a flatpak manifest in `build-aux/com.github.felixzwettler.rnote.json`.
+There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.json`.
 
 Use Gnome Builder or vscode with the flatpak extension to build and run the application for you. **This is the easiest and recommended way.**
 
 **Bugs and workarounds**
 
-- If you encounter `bwrap: Can't find source path /run/user/1000/doc/by-app/com.github.felixzwettler.rnote.Devel: No such file or directory` when trying to run the flatpak, `xdg-document-portal` did not start yet. Starting it manually with `systemctl start --user xdg-document-portal` should fix it.
+- If you encounter `bwrap: Can't find source path /run/user/1000/doc/by-app/com.github.flxzt.rnote.Devel: No such file or directory` when trying to run the flatpak, `xdg-document-portal` did not start yet. Starting it manually with `systemctl start --user xdg-document-portal` should fix it.
 
 --- 
 
@@ -52,13 +52,13 @@ flatpak install org.gnome.Sdk//40 org.freedesktop.Sdk.Extension.rust-stable//21.
 **Build**  
 Building the app with flatpak is done with:
 ```
-flatpak-builder --user flatpak-app build-aux/com.github.felixzwettler.rnote.json
+flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.json
 ```
 
 Creating a repo:
 
 ```
-flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.felixzwettler.rnote.json
+flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.json
 
 ```
 
@@ -66,19 +66,19 @@ flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.feli
 **Install**  
 Install to the system as user with:
 ```
-flatpak-builder --user --install flatpak-app build-aux/com.github.felixzwettler.rnote.json
+flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.json
 ```
 
 **Run**  
 Then it can be run.
 From the build directory:
 ```
-flatpak-builder --run flatpak-app build-aux/com.github.felixzwettler.rnote.json rnote
+flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.json rnote
 ```
 
 Or if it is installed:
 ```
-flatpak run com.github.felixzwettler.rnote
+flatpak run com.github.flxzt.rnote
 ```
 
 ### Build with Meson

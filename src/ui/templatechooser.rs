@@ -8,7 +8,7 @@ mod imp {
     use crate::pens::brush;
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/felixzwettler/rnote/ui/templatechooser.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/templatechooser.ui")]
     pub struct TemplateChooser {
         #[template_child]
         pub chooser_button: TemplateChild<MenuButton>,

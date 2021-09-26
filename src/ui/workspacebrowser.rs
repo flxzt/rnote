@@ -5,7 +5,7 @@ mod imp {
     };
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/felixzwettler/rnote/ui/workspacebrowser.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
     pub struct WorkspaceBrowser {
         #[template_child]
         pub primary_list: TemplateChild<ListView>,

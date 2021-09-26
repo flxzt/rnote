@@ -5,7 +5,7 @@ mod imp {
     };
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/felixzwettler/rnote/ui/appmenu.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/appmenu.ui")]
     pub struct AppMenu {
         #[template_child]
         pub menubutton: TemplateChild<MenuButton>,

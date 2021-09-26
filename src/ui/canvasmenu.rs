@@ -7,7 +7,7 @@ mod imp {
     use crate::sheet::format::Format;
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/felixzwettler/rnote/ui/canvasmenu.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
     pub struct CanvasMenu {
         #[template_child]
         pub menubutton: TemplateChild<MenuButton>,

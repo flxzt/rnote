@@ -10,7 +10,7 @@ mod imp {
     use once_cell::sync::Lazy;
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/felixzwettler/rnote/ui/selectionmodifier.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/selectionmodifier.ui")]
     pub struct SelectionModifier {
         #[template_child]
         pub resize_tl: TemplateChild<ModifierNode>,

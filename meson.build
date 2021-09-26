@@ -9,8 +9,8 @@ gnome = import('gnome')
 fs = import('fs')
 
 app_name = meson.project_name()
-base_id = 'com.github.felixzwettler.' + app_name
-base_idpath = '/com/github/felixzwettler/' + app_name + '/'
+base_id = 'com.github.flxzt.' + app_name
+base_idpath = '/com/github/flxzt/' + app_name + '/'
 
 if get_option('profile') == 'devel'
   profile = 'Devel'

@@ -20,7 +20,7 @@
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/felixzwettler/rnote/main/resources/screenshots/main-window.png</image>
+      <image>https://raw.githubusercontent.com/flxzt/rnote/main/resources/screenshots/main-window.png</image>
       <caption>Main window</caption>
     </screenshot>
   </screenshots>
@@ -31,8 +31,8 @@
     <control>touch</control>
   </recommends>
 
-  <url type="homepage">https://github.com/felixzwettler/rnote</url>
-  <url type="bugtracker">https://github.com/felixzwettler/rnote/issues</url>
+  <url type="homepage">https://github.com/flxzt/rnote</url>
+  <url type="bugtracker">https://github.com/flxzt/rnote/issues</url>
   <developer_name>Felix Zwettler</developer_name>
   <update_contact>f.zwettler@posteo.de</update_contact>
   <content_rating type="oars-1.0" />

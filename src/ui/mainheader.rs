@@ -6,7 +6,7 @@ mod imp {
     };
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/felixzwettler/rnote/ui/mainheader.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/mainheader.ui")]
     pub struct MainHeader {
         #[template_child]
         pub headerbar: TemplateChild<adw::HeaderBar>,

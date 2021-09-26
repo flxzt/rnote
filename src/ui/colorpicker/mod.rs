@@ -17,7 +17,7 @@ mod imp {
     use once_cell::sync::Lazy;
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/felixzwettler/rnote/ui/colorpicker.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/colorpicker.ui")]
     pub struct ColorPicker {
         #[template_child]
         pub widgetbox: TemplateChild<Box>,

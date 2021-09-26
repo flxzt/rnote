@@ -485,14 +485,14 @@ impl RnoteAppWindow {
         ));
 
         // prefer dark / light theme
-        self.app_settings()
+/*         self.app_settings()
             .bind(
                 "prefer-dark-theme",
                 &self.settings(),
                 "gtk-application-prefer-dark-theme",
             )
             .flags(gio::SettingsBindFlags::DEFAULT)
-            .build();
+            .build(); */
 
         self.app_settings()
             .bind(

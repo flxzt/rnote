@@ -3,31 +3,42 @@
 <component type="desktop-application">
   <id>@APP_ID@</id>
   <metadata_license>CC0</metadata_license>
-  <!-- Insert your license of choice here -->
-  <!-- <project_license>GPL-3.0-or-later</project_license> -->
+  <project_license>GPL-3.0</project_license>
   <name>@APP_NAME@</name>
-  <summary>Write handwritten notes</summary>
+  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
+  <summary>Create handwritten notes</summary>
+
+  <categories>
+    <category>Gnome</category>
+    <category>GTK</category>
+    <category>Graphics</category>
+  </categories>
+
   <description>
     <p>Rnote is a simple note taking application for annotating documents and pictures.</p>
   </description>
+
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/felixzwettler/rnote/main/resources/screenshots/main-window.png</image>
       <caption>Main window</caption>
     </screenshot>
   </screenshots>
-  <url type="homepage">https://github.com/felixzwettler/rnote</url>
-  <url type="bugtracker">https://github.com/felixzwettler/rnote/issues</url>
-  <content_rating type="oars-1.0" />
+
   <recommends>
     <control>keyboard</control>
     <control>pointing</control>
     <control>touch</control>
   </recommends>
+
+  <url type="homepage">https://github.com/felixzwettler/rnote</url>
+  <url type="bugtracker">https://github.com/felixzwettler/rnote/issues</url>
+  <developer_name>Felix Zwettler</developer_name>
+  <update_contact>f.zwettler@posteo.de</update_contact>
+  <content_rating type="oars-1.0" />
+
   <releases>
     <release version="0.1.0" date="2021-08-31" />
   </releases>
-  <developer_name>Felix Zwettler</developer_name>
-  <update_contact>f.zwettler@posteo.de</update_contact>
-  <launchable type="desktop-id">@APP_ID@.desktop</launchable>
+
 </component>

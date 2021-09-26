@@ -99,13 +99,13 @@ endif
 # App-Icon
 if profile == 'devel'
   install_data(
-    'icons/scalable/apps/app-devel.svg',
+    'icons/scalable/apps/' + app_name + '-devel.svg',
     install_dir: iconsdir / 'hicolor' / 'scalable' / 'apps',
     rename: app_id + '.svg',
   )
 else
   install_data(
-    'icons/scalable/apps/app.svg',
+    'icons/scalable/apps/' + app_name + '.svg',
     install_dir: iconsdir / 'hicolor' / 'scalable' / 'apps',
     rename: app_id + '.svg',
   )

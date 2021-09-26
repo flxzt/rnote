@@ -13,8 +13,8 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/templatechooser.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs.ui</file>
-        <file compressed="true">icons/scalable/apps/app.svg</file>
-        <file compressed="true">icons/scalable/apps/app-devel.svg</file>
+        <file compressed="true">icons/scalable/apps/rnote.svg</file>
+        <file compressed="true">icons/scalable/apps/rnote-devel.svg</file>
         <file compressed="true">icons/scalable/actions/function-linear-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/function-third-order-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/function-experimental-symbolic.svg</file>

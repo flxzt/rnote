@@ -25,7 +25,6 @@ This is my first Rust and GTK project and I am learning as I go along. Expect bu
 - [ ] PDF Import, Export and printing option
 - [ ] PNG Import, Export
 - [ ] Implement bezier curve stroke with variable stroke width (see this paper: [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf))
-- [ ]
 
 ## Screenshots
 Rnote is a very early WIP project, so don't expect too much. :)
@@ -37,7 +36,13 @@ There is a flatpak manifest in `build-aux/com.github.felixzwettler.rnote.json`.
 
 Use Gnome Builder or vscode with the flatpak extension to build and run the application for you. **This is the easiest and recommended way.**
 
-Otherwise:
+**Bugs and workarounds**
+
+- If you encounter `bwrap: Can't find source path /run/user/1000/doc/by-app/com.github.felixzwettler.rnote.Devel: No such file or directory` when trying to run the flatpak, `xdg-document-portal` did not start yet. Starting it manually with `systemctl start --user xdg-document-portal` should fix it.
+
+--- 
+
+If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 
 First the Gnome 40 SDK is needed:
 ```

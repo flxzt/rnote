@@ -1,7 +1,10 @@
 {
     "app-id": "com.github.felixzwettler.rnote",
+    "tags": [
+        "development"
+    ],
     "runtime": "org.gnome.Platform",
-    "runtime-version": "40",
+    "runtime-version": "41",
     "sdk": "org.gnome.Sdk",
     "sdk-extensions": [
         "org.freedesktop.Sdk.Extension.rust-stable"
@@ -14,8 +17,9 @@
         "--share=ipc",
         "--filesystem=home",
         "--env=RUST_BACKTRACE=1",
-        "--env=RUST_LOG=rnote=info",
-        "--env=G_MESSAGES_DEBUG=all"
+        "--env=RUST_LOG=rnote=warning",
+        "--env=G_MESSAGES_DEBUG=none",
+        "--env=GDK_DEBUG=vulkan-disable"
     ],
     "build-options": {
         "append-path": "/usr/lib/sdk/rust-stable/bin",
@@ -54,6 +58,9 @@
             "name": "libadwaita",
             "buildsystem": "meson",
             "builddir": true,
+            "config-opts": [
+                "-Dexamples=false"
+            ],
             "sources": [
                 {
                     "type": "git",

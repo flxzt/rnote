@@ -44,23 +44,23 @@ Use Gnome Builder or vscode with the flatpak extension to build and run the appl
 
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 
-First the Gnome 40 SDK is needed:
+First the Gnome 41 SDK is needed:
 
 ```bash
-flatpak install org.gnome.Sdk//40 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//40
+flatpak install org.gnome.Sdk//40 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//41
 ```
 
 **Build**  
 Building the app with flatpak is done with:
 
 ```bash
-flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.json
+flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
 ```
 
 Creating a repo:
 
 ```bash
-flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.json
+flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
 ```
 
 
@@ -68,7 +68,7 @@ flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxz
 Install to the system as user with:
 
 ```bash
-flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.json
+flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
 ```
 
 **Run**  
@@ -76,7 +76,7 @@ Then it can be run.
 From the build directory:
 
 ```bash
-flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.json rnote
+flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.json rnote
 ```
 
 Or if it is installed:

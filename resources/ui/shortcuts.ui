@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <object class="GtkShortcutsWindow" id="dialog_shortcuts">
+    <property name="modal">true</property>
     <child>
       <object class="GtkShortcutsSection">
         <property name="section-name">shortcuts</property>
@@ -12,18 +13,21 @@
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Show Shortcuts</property>
                 <property name="action-name">app.shortcuts</property>
+                <property name="shortcut-type">accelerator</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Quit the application</property>
                 <property name="action-name">app.quit</property>
+                <property name="shortcut-type">accelerator</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Open the appmenu</property>
                 <property name="action-name">app.open-appmenu</property>
+                <property name="shortcut-type">accelerator</property>
               </object>
             </child>
           </object>
@@ -35,24 +39,28 @@
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Clear sheet</property>
                 <property name="action-name">app.clear-sheet</property>
+                <property name="shortcut-type">accelerator</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Delete current selection</property>
                 <property name="action-name">app.delete-selection</property>
+                <property name="shortcut-type">accelerator</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Zoom in</property>
                 <property name="action-name">app.zoomin</property>
+                <property name="shortcut-type">accelerator</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Zoom out</property>
                 <property name="action-name">app.zoomout</property>
+                <property name="shortcut-type">accelerator</property>
               </object>
             </child>
           </object>

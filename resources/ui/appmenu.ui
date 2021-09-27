@@ -31,6 +31,8 @@
             </item>
             <submenu>
               <attribute name="label">Developer settings</attribute>
+              <attribute name="action">app.devel-settings</attribute>
+              <attribute name="dden-when">action-disabled</attribute>
               <section>
                 <attribute name="label">Renderer backend</attribute>
                 <item>

@@ -40,6 +40,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_save_sheet_as = gio::SimpleAction::new("save-sheet-as", None);
     let action_open_sheet = gio::SimpleAction::new("open-sheet", None);
     let action_open_workspace = gio::SimpleAction::new("open-workspace", None);
+    let action_devel_settings = gio::SimpleAction::new("devel-settings", None);
 
     let action_tmperaser = gio::SimpleAction::new_stateful(
         "tmperaser",
@@ -57,10 +58,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         &"custom".to_variant(),
     );
 
+    let action_devel = appwindow.app_settings().create_action("devel");
     let action_renderer_backend = appwindow.app_settings().create_action("renderer-backend");
     let action_sheet_format = appwindow.app_settings().create_action("sheet-format");
     let action_sheet_format_borders = appwindow.app_settings().create_action("format-borders");
-    let action_devel = appwindow.app_settings().create_action("devel");
     let action_mouse_drawing = appwindow.app_settings().create_action("mouse-drawing");
     let action_autoexpand_height = appwindow.app_settings().create_action("autoexpand-height");
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
@@ -94,7 +95,19 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     appwindow.application().unwrap().add_action(&action_error);
 
     // Developer mode
+    action_devel.connect_state_notify(
+        clone!(@weak action_devel_settings => move |action_devel| {
+            let state = action_devel.state().unwrap().get::<bool>().unwrap();
+            action_devel_settings.set_enabled(state);
+            if state == false {
+
+            }
+        }),
+    );
     appwindow.application().unwrap().add_action(&action_devel);
+
+    // Developer settings menu
+    appwindow.application().unwrap().add_action(&action_devel_settings);
 
     // Visual Debug
     appwindow

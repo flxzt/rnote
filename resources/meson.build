@@ -1,7 +1,6 @@
 # Resources
 resource_conf = configuration_data()
-# Rust can't insert const's into nested macro values, so the base_idpath is used everywhere in rust. Luckily it doesnt matter inside gresource
-resource_conf.set('APP_IDPATH', base_idpath)
+resource_conf.set('APP_IDPATH', app_idpath)
 configure_file(
   input: 'resources.gresource.xml.in',
   output: 'resources.gresource.xml',
@@ -54,7 +53,7 @@ endif
 # Gschema
 gschema_conf = configuration_data()
 gschema_conf.set('APP_ID', app_id)
-gschema_conf.set('APP_IDPATH', base_idpath)
+gschema_conf.set('APP_IDPATH', app_idpath)
 gschema_conf.set('APP_NAME', app_name)
 gschema_file = configure_file(
   input: 'app.gschema.xml.in',

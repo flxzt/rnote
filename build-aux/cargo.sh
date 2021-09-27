@@ -11,7 +11,7 @@ export CARGO_HOME="$MESON_BUILD_ROOT"/cargo-home
 echo "CARGO_TARGET_DIR: $CARGO_TARGET_DIR"
 echo "CARGO_HOME: $CARGO_HOME"
 
-if [[ $PROFILE = "Devel" ]]
+if [[ $PROFILE = "devel" ]]
 then
     echo -e "\n--- DEVEL PROFILE ---\n"
     cargo build --manifest-path \

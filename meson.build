@@ -10,19 +10,18 @@ fs = import('fs')
 
 app_name = meson.project_name()
 base_id = 'com.github.flxzt.' + app_name
-base_idpath = '/com/github/flxzt/' + app_name + '/'
 
 if get_option('profile') == 'devel'
-  profile = 'Devel'
+  profile = 'devel'
   version_suffix = '-devel'
   app_id = base_id + '.' + profile
-  app_idpath = base_idpath + profile + '/'
 else
   profile = 'default'
   version_suffix = ''
   app_id = base_id
-  app_idpath = base_idpath
 endif
+
+app_idpath = '/com/github/flxzt/' + app_name + '/'
 
 version = meson.project_version()
 version_array = version.split('.')

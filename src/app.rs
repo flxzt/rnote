@@ -5,7 +5,7 @@ mod imp {
         rc::Rc,
     };
 
-    use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+    use gtk4::{IconTheme, gio, glib, prelude::*, subclass::prelude::*};
     use once_cell::sync::Lazy;
 
     use crate::{
@@ -98,6 +98,10 @@ mod imp {
 
             let appwindow = RnoteAppWindow::new(application.upcast_ref::<gtk4::Application>());
             appwindow.init();
+
+            // add icon theme resource path because automatic lookup does not work in Devel build.
+            let app_icon_theme = IconTheme::for_display(&appwindow.display()).expect("failed to get icon theme for appwindow");
+            app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
             appwindow.show();
         }

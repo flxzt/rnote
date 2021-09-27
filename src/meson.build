@@ -1,7 +1,7 @@
+
 global_conf = configuration_data()
 global_conf.set_quoted('APP_ID', app_id)
-# Rust can't insert const's into nested macro values, so the base_idpath is used everywhere in rust. Luckily it doesnt matter inside gresource
-global_conf.set_quoted('APP_IDPATH', base_idpath)
+global_conf.set_quoted('APP_IDPATH', app_idpath)
 global_conf.set_quoted('APP_NAME', app_name)
 global_conf.set_quoted('RESOURCES_FILE', pkgdatadir / 'resources.gresource')
 global_conf.set_quoted('PROFILE', profile)

@@ -1,5 +1,5 @@
 {
-    "app-id": "com.github.flxzt.rnote",
+    "app-id": "com.github.flxzt.rnote.Devel",
     "tags": [
         "development"
     ],
@@ -13,13 +13,13 @@
     "finish-args": [
         "--socket=wayland",
         "--socket=fallback-x11",
+        "--socket=session-bus",
         "--device=dri",
         "--share=ipc",
         "--filesystem=home",
         "--env=RUST_BACKTRACE=1",
-        "--env=RUST_LOG=rnote=warning",
-        "--env=G_MESSAGES_DEBUG=none",
-        "--env=GDK_DEBUG=vulkan-disable"
+        "--env=RUST_LOG=rnote=debug",
+        "--env=G_MESSAGES_DEBUG=all"
     ],
     "build-options": {
         "append-path": "/usr/lib/sdk/rust-stable/bin",
@@ -74,7 +74,7 @@
             "buildsystem": "meson",
             "run-tests": true,
             "config-opts": [
-                "-Dprofile=default"
+                "-Dprofile=devel"
             ],
             "sources": [
                 {

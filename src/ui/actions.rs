@@ -96,18 +96,21 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Developer mode
     action_devel.connect_state_notify(
-        clone!(@weak action_devel_settings => move |action_devel| {
+        clone!(@weak appwindow, @weak action_devel_settings => move |action_devel| {
             let state = action_devel.state().unwrap().get::<bool>().unwrap();
             action_devel_settings.set_enabled(state);
-            if state == false {
-
+            if !state {
+                appwindow.application().unwrap().change_action_state("visual-debug", &false.to_variant());
             }
         }),
     );
     appwindow.application().unwrap().add_action(&action_devel);
 
     // Developer settings menu
-    appwindow.application().unwrap().add_action(&action_devel_settings);
+    appwindow
+        .application()
+        .unwrap()
+        .add_action(&action_devel_settings);
 
     // Visual Debug
     appwindow

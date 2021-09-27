@@ -82,7 +82,7 @@ impl StrokeBehaviour for MarkerStroke {
             .collect();
 
         self.elements = new_elements;
-        self.bounds = new_bounds.clone();
+        self.bounds = new_bounds;
         self.hitbox = self.gen_hitbox();
     }
 

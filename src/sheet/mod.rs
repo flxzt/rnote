@@ -398,7 +398,7 @@ impl<'de> Deserialize<'de> for Sheet {
             }
         }
 
-        const FIELDS: &'static [&'static str] = &[
+        const FIELDS: &[&str] = &[
             "strokes",
             "strokes_trash",
             "selection",
@@ -717,16 +717,16 @@ impl Sheet {
         priv_
             .background
             .borrow()
-            .draw(&snapshot, &sheet_bounds_scaled);
+            .draw(snapshot, &sheet_bounds_scaled);
 
         if self.format_borders() {
             priv_
                 .format
                 .borrow()
-                .draw(self.height(), &snapshot, scalefactor);
+                .draw(self.height(), snapshot, scalefactor);
         }
 
-        StrokeStyle::draw_strokes(&priv_.strokes.borrow(), &snapshot);
+        StrokeStyle::draw_strokes(&priv_.strokes.borrow(), snapshot);
 
         snapshot.pop();
     }
@@ -766,15 +766,15 @@ impl Sheet {
     }
 
     pub fn open_sheet(&self, file: &gio::File) -> Result<(), Box<dyn Error>> {
-        let sheet: Sheet = serde_json::from_str(&utils::load_file_contents(&file)?)?;
+        let sheet: Sheet = serde_json::from_str(&utils::load_file_contents(file)?)?;
 
         *self.strokes().borrow_mut() = sheet.strokes().borrow().clone();
         *self.strokes_trash().borrow_mut() = sheet.strokes().borrow_mut().clone();
         *self.selection().strokes().borrow_mut() = sheet.selection().strokes().borrow().clone();
         *self.selection().bounds().borrow_mut() = *sheet.selection().bounds().borrow();
         self.selection().set_shown(sheet.selection().shown());
-        *self.format().borrow_mut() = sheet.format().borrow().clone();
-        *self.background().borrow_mut() = sheet.background().borrow().clone();
+        *self.format().borrow_mut() = *sheet.format().borrow();
+        *self.background().borrow_mut() = *sheet.background().borrow();
         self.set_x(sheet.x());
         self.set_y(sheet.y());
         self.set_width(sheet.width());
@@ -855,7 +855,7 @@ impl Sheet {
     ) -> Result<(), Box<dyn Error>> {
         let priv_ = imp::Sheet::from_instance(self);
 
-        let svg = utils::load_file_contents(&file)?;
+        let svg = utils::load_file_contents(file)?;
 
         priv_
             .strokes

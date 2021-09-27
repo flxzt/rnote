@@ -187,87 +187,61 @@ impl CanvasMenu {
     }
 
     pub fn menubutton(&self) -> MenuButton {
-        imp::CanvasMenu::from_instance(self)
-            .menubutton
-            .get()
-            .clone()
+        imp::CanvasMenu::from_instance(self).menubutton.get()
     }
 
     pub fn popovermenu(&self) -> PopoverMenu {
-        imp::CanvasMenu::from_instance(self)
-            .popovermenu
-            .get()
-            .clone()
+        imp::CanvasMenu::from_instance(self).popovermenu.get()
     }
 
     pub fn menu_model(&self) -> gio::MenuModel {
-        imp::CanvasMenu::from_instance(self)
-            .menu_model
-            .get()
-            .clone()
+        imp::CanvasMenu::from_instance(self).menu_model.get()
     }
 
     pub fn zoomin_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self)
-            .zoomin_button
-            .get()
-            .clone()
+        imp::CanvasMenu::from_instance(self).zoomin_button.get()
     }
 
     pub fn zoomout_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self)
-            .zoomout_button
-            .get()
-            .clone()
+        imp::CanvasMenu::from_instance(self).zoomout_button.get()
     }
 
     pub fn zoomreset_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self)
-            .zoomreset_button
-            .get()
-            .clone()
+        imp::CanvasMenu::from_instance(self).zoomreset_button.get()
     }
 
     pub fn zoom_fit_width_button(&self) -> Button {
         imp::CanvasMenu::from_instance(self)
             .zoom_fit_width_button
             .get()
-            .clone()
     }
 
     pub fn lefthanded_toggle(&self) -> ToggleButton {
-        imp::CanvasMenu::from_instance(self)
-            .lefthanded_toggle
-            .get()
-            .clone()
+        imp::CanvasMenu::from_instance(self).lefthanded_toggle.get()
     }
 
     pub fn righthanded_toggle(&self) -> ToggleButton {
         imp::CanvasMenu::from_instance(self)
             .righthanded_toggle
             .get()
-            .clone()
     }
 
     pub fn custom_format_width_entry(&self) -> Entry {
         imp::CanvasMenu::from_instance(self)
             .custom_format_width_entry
             .get()
-            .clone()
     }
 
     pub fn custom_format_height_entry(&self) -> Entry {
         imp::CanvasMenu::from_instance(self)
             .custom_format_height_entry
             .get()
-            .clone()
     }
 
     pub fn custom_format_dpi_entry(&self) -> Entry {
         imp::CanvasMenu::from_instance(self)
             .custom_format_dpi_entry
             .get()
-            .clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

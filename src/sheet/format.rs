@@ -71,7 +71,7 @@ impl Format {
 
     pub fn try_parse_width(text: &str) -> Option<i32> {
         let width_range = Format::WIDTH_MIN..=Format::WIDTH_MAX;
-        let no = if let Ok(parsed_no) = text.parse::<i32>() {
+        if let Ok(parsed_no) = text.parse::<i32>() {
             if width_range.contains(&parsed_no) {
                 Some(parsed_no)
             } else {
@@ -79,14 +79,12 @@ impl Format {
             }
         } else {
             None
-        };
-
-        no
+        }
     }
 
     pub fn try_parse_height(text: &str) -> Option<i32> {
         let width_range = Format::HEIGHT_MIN..=Format::HEIGHT_MAX;
-        let no = if let Ok(parsed_no) = text.parse::<i32>() {
+        if let Ok(parsed_no) = text.parse::<i32>() {
             if width_range.contains(&parsed_no) {
                 Some(parsed_no)
             } else {
@@ -94,14 +92,12 @@ impl Format {
             }
         } else {
             None
-        };
-
-        no
+        }
     }
 
     pub fn try_parse_dpi(text: &str) -> Option<i32> {
         let width_range = Format::DPI_MIN..=Format::DPI_MAX;
-        let no = if let Ok(parsed_no) = text.parse::<i32>() {
+        if let Ok(parsed_no) = text.parse::<i32>() {
             if width_range.contains(&parsed_no) {
                 Some(parsed_no)
             } else {
@@ -109,9 +105,7 @@ impl Format {
             }
         } else {
             None
-        };
-
-        no
+        }
     }
 
     pub fn draw(&self, total_height: i32, snapshot: &Snapshot, scalefactor: f64) {

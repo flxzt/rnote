@@ -14,15 +14,13 @@ pub struct BoxedPos {
 }
 
 pub fn now() -> String {
-    let now = match glib::DateTime::new_now_local() {
+    match glib::DateTime::new_now_local() {
         Ok(datetime) => match datetime.format("%F_%T") {
             Ok(s) => s.to_string(),
             Err(_) => String::from("1970-01-01_12:00::00"),
         },
         Err(_) => String::from("1970-01-01_12:00:00"),
-    };
-
-    now
+    }
 }
 
 pub fn aabb_new_positive(

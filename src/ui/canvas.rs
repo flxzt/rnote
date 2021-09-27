@@ -244,15 +244,15 @@ mod imp {
         fn snapshot(&self, _widget: &Self::Type, snapshot: &gtk4::Snapshot) {
             let scalefactor = self.scalefactor.get();
 
-            self.sheet.draw(scalefactor, &snapshot);
+            self.sheet.draw(scalefactor, snapshot);
 
-            self.sheet.selection().draw(scalefactor, &snapshot);
+            self.sheet.selection().draw(scalefactor, snapshot);
 
             self.pens
                 .borrow()
-                .draw_pens(self.current_pen.get(), &snapshot, scalefactor);
+                .draw_pens(self.current_pen.get(), snapshot, scalefactor);
 
-            self.draw_debug(&snapshot);
+            self.draw_debug(snapshot);
         }
     }
 
@@ -297,7 +297,7 @@ mod imp {
                     ),
                     debug::COLOR_SHEET_BOUNDS,
                     scalefactor,
-                    &snapshot,
+                    snapshot,
                 );
 
                 for stroke in self.sheet.strokes().borrow().iter() {
@@ -645,7 +645,7 @@ impl Canvas {
 
                     StrokeStyle::new_stroke(
                         &mut *self.sheet().strokes().borrow_mut(),
-                        inputdata.clone(),
+                        inputdata,
                         self.current_pen().get(),
                         &self.pens().borrow(),
                     );
@@ -660,7 +660,7 @@ impl Canvas {
             PenStyle::Eraser => {
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("none", None).as_ref());
-                    self.pens().borrow_mut().eraser.current_input = inputdata.clone();
+                    self.pens().borrow_mut().eraser.current_input = inputdata;
                     self.pens().borrow_mut().eraser.set_shown(true);
 
                     if self
@@ -676,10 +676,7 @@ impl Canvas {
                     self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
 
                     self.pens().borrow_mut().selector.set_shown(true);
-                    self.pens()
-                        .borrow_mut()
-                        .selector
-                        .new_path(inputdata.clone());
+                    self.pens().borrow_mut().selector.new_path(inputdata);
                     self.pens()
                         .borrow_mut()
                         .selector
@@ -787,12 +784,10 @@ impl Canvas {
         let data_entries: VecDeque<InputData> = data_entries
             .iter()
             .map(|inputdata| {
-                let inputdata = InputData::new(
+                InputData::new(
                     (inputdata.pos() + offset).scale(1.0 / self.scalefactor()),
                     inputdata.pressure(),
-                );
-
-                inputdata
+                )
             })
             .collect();
 
@@ -922,7 +917,7 @@ mod debug {
 
         let border_width = 1.5;
         let rounded_rect = gsk::RoundedRect::new(
-            bounds.clone().scale(scalefactor as f32, scalefactor as f32),
+            bounds.scale(scalefactor as f32, scalefactor as f32),
             graphene::Size::zero(),
             graphene::Size::zero(),
             graphene::Size::zero(),

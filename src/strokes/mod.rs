@@ -193,7 +193,7 @@ impl StrokeStyle {
         }
     }
 
-    pub fn gen_bounds(strokes: &Vec<Self>) -> Option<p2d::bounding_volume::AABB> {
+    pub fn gen_bounds(strokes: &[Self]) -> Option<p2d::bounding_volume::AABB> {
         let mut strokes_iter = strokes.iter();
 
         if let Some(first) = strokes_iter.next() {
@@ -262,17 +262,17 @@ impl StrokeStyle {
         if let Some(strokes) = strokes.last_mut() {
             match strokes {
                 StrokeStyle::MarkerStroke(ref mut markerstroke) => {
-                    markerstroke.push_elem(inputdata.clone());
+                    markerstroke.push_elem(inputdata);
                 }
                 StrokeStyle::BrushStroke(ref mut brushstroke) => {
-                    brushstroke.push_elem(inputdata.clone());
+                    brushstroke.push_elem(inputdata);
                 }
                 StrokeStyle::VectorImage(_vectorimage) => {}
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
             }
         } else {
             strokes.push(StrokeStyle::BrushStroke(BrushStroke::new(
-                inputdata.clone(),
+                inputdata,
                 pens.brush.clone(),
             )));
         }
@@ -302,7 +302,7 @@ impl StrokeStyle {
         Ok(())
     }
 
-    pub fn draw_strokes(strokes: &Vec<Self>, snapshot: &Snapshot) {
+    pub fn draw_strokes(strokes: &[Self], snapshot: &Snapshot) {
         for stroke in strokes.iter() {
             match stroke {
                 StrokeStyle::MarkerStroke(markerstroke) => {

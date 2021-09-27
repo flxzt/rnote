@@ -93,15 +93,15 @@ impl AppMenu {
     }
 
     pub fn menubutton(&self) -> MenuButton {
-        imp::AppMenu::from_instance(self).menubutton.get().clone()
+        imp::AppMenu::from_instance(self).menubutton.get()
     }
 
     pub fn popovermenu(&self) -> PopoverMenu {
-        imp::AppMenu::from_instance(self).popovermenu.get().clone()
+        imp::AppMenu::from_instance(self).popovermenu.get()
     }
 
     pub fn menu_model(&self) -> gio::MenuModel {
-        imp::AppMenu::from_instance(self).menu_model.get().clone()
+        imp::AppMenu::from_instance(self).menu_model.get()
     }
 
     pub fn light_theme_toggle(&self) -> ToggleButton {

@@ -274,7 +274,7 @@ impl TemplateChooser {
         priv_.help_text.get().queue_resize();
     }
 
-    pub fn set_templates_path(&self, path: &path::PathBuf) -> Result<(), ()> {
+    pub fn set_templates_path(&self, path: &path::Path) -> Result<(), ()> {
         let priv_ = imp::TemplateChooser::from_instance(self);
 
         log::debug!("setting path for brush templates_dirlist: `{:?}`", path);
@@ -286,10 +286,10 @@ impl TemplateChooser {
         }
     }
 
-    pub fn create_populate_templates_dir(&self, path: &path::PathBuf) -> Option<gio::File> {
+    pub fn create_populate_templates_dir(&self, path: &path::Path) -> Option<gio::File> {
         let priv_ = imp::TemplateChooser::from_instance(self);
 
-        let templates_dir = gio::File::for_path(path.clone());
+        let templates_dir = gio::File::for_path(path.to_path_buf());
 
         let templates_dir_opt =
             match templates_dir.make_directory_with_parents::<gio::Cancellable>(None) {
@@ -304,7 +304,7 @@ impl TemplateChooser {
             };
 
         for template_name in priv_.predefined_templates_to_confdir.iter() {
-            let mut template_path = path.clone();
+            let mut template_path = path.to_path_buf();
             template_path.push(template_name);
             let template_file = gio::File::for_path(template_path.clone());
 

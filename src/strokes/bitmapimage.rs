@@ -143,7 +143,7 @@ impl BitmapImage {
             Some(image::ImageFormat::Png) => Format::Png,
             Some(image::ImageFormat::Jpeg) => Format::Jpeg,
             _ => {
-                return Err("unsupported format.")?;
+                return Err("unsupported format.".into());
             }
         };
 

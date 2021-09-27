@@ -5,7 +5,7 @@ mod imp {
         rc::Rc,
     };
 
-    use gtk4::{IconTheme, gio, glib, prelude::*, subclass::prelude::*};
+    use gtk4::{gio, glib, prelude::*, subclass::prelude::*, IconTheme};
     use once_cell::sync::Lazy;
 
     use crate::{
@@ -100,7 +100,8 @@ mod imp {
             appwindow.init();
 
             // add icon theme resource path because automatic lookup does not work in Devel build.
-            let app_icon_theme = IconTheme::for_display(&appwindow.display()).expect("failed to get icon theme for appwindow");
+            let app_icon_theme = IconTheme::for_display(&appwindow.display())
+                .expect("failed to get icon theme for appwindow");
             app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
             appwindow.show();
@@ -108,7 +109,7 @@ mod imp {
 
         fn open(&self, application: &Self::Type, files: &[gio::File], _hint: &str) {
             for file in files {
-                match utils::FileType::lookup_file_type(&file) {
+                match utils::FileType::lookup_file_type(file) {
                     utils::FileType::Unknown => {
                         log::warn!("tried to open unsupported file type");
                     }

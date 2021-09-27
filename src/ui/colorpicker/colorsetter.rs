@@ -53,7 +53,7 @@ mod imp {
                         "color",
                         "color",
                         "color",
-                        gdk::RGBA::static_type().into(),
+                        gdk::RGBA::static_type(),
                         glib::ParamFlags::READWRITE,
                     ),
                     glib::ParamSpec::new_enum(

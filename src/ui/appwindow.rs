@@ -414,11 +414,9 @@ impl RnoteAppWindow {
                 .unwrap()
                 .unsaved_changes()
             {
-                dialogs::dialog_open_overwrite(&self);
-            } else {
-                if let Err(e) = self.load_in_file(&input_file) {
-                    log::error!("failed to load in input file, {}", e);
-                }
+                dialogs::dialog_open_overwrite(self);
+            } else if let Err(e) = self.load_in_file(&input_file) {
+                log::error!("failed to load in input file, {}", e);
             }
         }
 
@@ -504,8 +502,11 @@ impl RnoteAppWindow {
             .build();
 
         // Ui for right / left handed writers
-        self.application().unwrap().change_action_state("righthanded", &self.app_settings().boolean("righthanded").to_variant());
-                 self.application()
+        self.application().unwrap().change_action_state(
+            "righthanded",
+            &self.app_settings().boolean("righthanded").to_variant(),
+        );
+        self.application()
             .unwrap()
             .activate_action("righthanded", None);
         self.application()
@@ -560,9 +561,9 @@ impl RnoteAppWindow {
     }
 
     pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn Error>> {
-        match utils::FileType::lookup_file_type(&file) {
+        match utils::FileType::lookup_file_type(file) {
             utils::FileType::Rnote => {
-                self.canvas().sheet().open_sheet(&file)?;
+                self.canvas().sheet().open_sheet(file)?;
 
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
@@ -590,7 +591,7 @@ impl RnoteAppWindow {
                 } else {
                     na::vector![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]
                 };
-                self.canvas().sheet().import_file_as_svg(pos, &file)?;
+                self.canvas().sheet().import_file_as_svg(pos, file)?;
 
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
@@ -625,7 +626,7 @@ impl RnoteAppWindow {
                 };
                 self.canvas()
                     .sheet()
-                    .import_file_as_bitmapimage(pos, &file)?;
+                    .import_file_as_bitmapimage(pos, file)?;
 
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),

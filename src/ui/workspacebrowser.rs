@@ -180,7 +180,7 @@ impl WorkspaceBrowser {
 
                     String::from(".")
                 }),
-                &[fileinfo_expression.clone().upcast()]
+                &[fileinfo_expression.upcast()]
             );
 
             basename_expression.bind(&label, "label", Some(&label));
@@ -210,7 +210,7 @@ impl WorkspaceBrowser {
                 .expect("failed to downcast obj2");
             let second_filetype = second_fileinfo.file_type();
 
-            let ordering = if first_filetype == gio::FileType::Directory
+            if first_filetype == gio::FileType::Directory
                 && second_filetype != gio::FileType::Directory
             {
                 gtk4::Ordering::Smaller
@@ -220,9 +220,7 @@ impl WorkspaceBrowser {
                 gtk4::Ordering::Larger
             } else {
                 gtk4::Ordering::Equal
-            };
-
-            ordering
+            }
         });
 
         let alphanumeric_sorter = CustomSorter::new(move |obj1, obj2| {
@@ -244,7 +242,7 @@ impl WorkspaceBrowser {
             let second_display_name = second_file.basename().unwrap();
             let second_display_name = second_display_name.to_str().unwrap();
 
-            first_display_name.cmp(&second_display_name).into()
+            first_display_name.cmp(second_display_name).into()
         });
 
         let multisorter = MultiSorter::new();
@@ -277,10 +275,8 @@ impl WorkspaceBrowser {
 
                         if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().unsaved_changes() {
                             dialogs::dialog_open_overwrite(&appwindow);
-                        } else {
-                            if let Err(e) = appwindow.load_in_file(&file) {
-                                log::error!("failed to load in input file, {}", e);
-                            }
+                        } else if let Err(e) = appwindow.load_in_file(&file) {
+                            log::error!("failed to load in input file, {}", e);
                         }
                     },
                     utils::FileType::Svg | utils::FileType::BitmapImage => {
@@ -316,7 +312,7 @@ impl WorkspaceBrowser {
         let priv_ = imp::WorkspaceBrowser::from_instance(self);
 
         if let Some(file) = priv_.primary_dirlist.file() {
-            return file.path();
+            file.path()
         } else {
             None
         }

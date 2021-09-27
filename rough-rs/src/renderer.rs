@@ -132,8 +132,7 @@ pub(crate) fn line(
         ));
     }
 
-    let path = element::Path::new().set("d", data);
-    path
+    element::Path::new().set("d", data)
 }
 
 pub(crate) fn cubic_bezier(
@@ -152,9 +151,9 @@ pub(crate) fn cubic_bezier(
     let roughness_gain = 1.0;
 
     let iterations = if options.disable_multistroke {
-        1 as usize
+        1_usize
     } else {
-        2 as usize
+        2_usize
     };
     for i in 0..iterations {
         if i == 0 {
@@ -194,6 +193,5 @@ pub(crate) fn cubic_bezier(
         ))
     }
 
-    let path = element::Path::new().set("d", data);
-    path
+    element::Path::new().set("d", data)
 }

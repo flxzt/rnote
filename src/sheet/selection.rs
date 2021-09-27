@@ -216,7 +216,7 @@ impl<'de> Deserialize<'de> for Selection {
             }
         }
 
-        const FIELDS: &'static [&'static str] = &["strokes", "bounds", "shown"];
+        const FIELDS: &[&str] = &["strokes", "bounds", "shown"];
         deserializer.deserialize_struct("Selection", FIELDS, SelectionVisitor)
     }
 }
@@ -282,7 +282,7 @@ impl Selection {
                         let mut contains_all = true;
                         'selection_markerstroke_check: for hitbox_elem in markerstroke.hitbox.iter()
                         {
-                            if !path_bounds.contains(&hitbox_elem) {
+                            if !path_bounds.contains(hitbox_elem) {
                                 contains_all = false;
                                 break 'selection_markerstroke_check;
                             }
@@ -298,7 +298,7 @@ impl Selection {
                     if selector_bounds.intersects(&brushstroke.bounds) {
                         let mut contains_all = true;
                         'selection_brushstroke_check: for hitbox_elem in brushstroke.hitbox.iter() {
-                            if !path_bounds.contains(&hitbox_elem) {
+                            if !path_bounds.contains(hitbox_elem) {
                                 contains_all = false;
                                 break 'selection_brushstroke_check;
                             }
@@ -351,7 +351,7 @@ impl Selection {
                     if selector_bounds.intersects(&markerstroke.bounds) {
                         let mut contains_all = true;
                         'strokes_markerstroke_check: for hitbox_elem in markerstroke.hitbox.iter() {
-                            if !path_bounds.contains(&hitbox_elem) {
+                            if !path_bounds.contains(hitbox_elem) {
                                 contains_all = false;
                                 break 'strokes_markerstroke_check;
                             }
@@ -367,7 +367,7 @@ impl Selection {
                     if selector_bounds.intersects(&brushstroke.bounds) {
                         let mut contains_all = true;
                         'strokes_brushstroke_check: for hitbox_elem in brushstroke.hitbox.iter() {
-                            if !path_bounds.contains(&hitbox_elem) {
+                            if !path_bounds.contains(hitbox_elem) {
                                 contains_all = false;
                                 break 'strokes_brushstroke_check;
                             }
@@ -569,19 +569,19 @@ impl Selection {
         for stroke in priv_.strokes.borrow().iter() {
             match stroke {
                 strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                    self.draw_selected_bounds(markerstroke.bounds, scalefactor, &snapshot);
+                    self.draw_selected_bounds(markerstroke.bounds, scalefactor, snapshot);
                     snapshot.append_node(&markerstroke.rendernode);
                 }
                 strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                    self.draw_selected_bounds(brushstroke.bounds, scalefactor, &snapshot);
+                    self.draw_selected_bounds(brushstroke.bounds, scalefactor, snapshot);
                     snapshot.append_node(&brushstroke.rendernode);
                 }
                 strokes::StrokeStyle::VectorImage(vector_image) => {
-                    self.draw_selected_bounds(vector_image.bounds, scalefactor, &snapshot);
+                    self.draw_selected_bounds(vector_image.bounds, scalefactor, snapshot);
                     snapshot.append_node(&vector_image.rendernode);
                 }
                 strokes::StrokeStyle::BitmapImage(bitmapimage) => {
-                    self.draw_selected_bounds(bitmapimage.bounds, scalefactor, &snapshot);
+                    self.draw_selected_bounds(bitmapimage.bounds, scalefactor, snapshot);
                     snapshot.append_node(&bitmapimage.rendernode);
                 }
             }

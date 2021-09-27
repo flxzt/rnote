@@ -8,7 +8,7 @@ pub fn add_xml_header(svg: &str) -> String {
     let re = regex::Regex::new(r#"<\?xml[^\?>]*\?>"#).unwrap();
     if !re.is_match(svg) {
         let mut string = String::from(r#"<?xml version="1.0" standalone="no"?>"#);
-        string.push_str("\n");
+        string.push('\n');
         string.push_str(svg);
         string
     } else {
@@ -108,8 +108,8 @@ pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
             None
         };
 
-        return intrinsic_size;
+        intrinsic_size
     } else {
-        return None;
+        None
     }
 }

@@ -87,10 +87,9 @@ impl VectorImage {
 
     pub fn import_from_svg(svg: &str, pos: na::Vector2<f64>) -> Result<Self, Box<dyn Error>> {
         let svg_data = compose::remove_xml_header(svg);
-        let intrinsic_size = compose::svg_intrinsic_size(svg).unwrap_or(na::vector![
-            VectorImage::SIZE_X_DEFAULT,
-            VectorImage::SIZE_Y_DEFAULT
-        ]);
+        let intrinsic_size = compose::svg_intrinsic_size(svg).unwrap_or_else(|| {
+            na::vector![VectorImage::SIZE_X_DEFAULT, VectorImage::SIZE_Y_DEFAULT]
+        });
 
         let bounds = p2d::bounding_volume::AABB::new(
             na::Point2::from(pos),

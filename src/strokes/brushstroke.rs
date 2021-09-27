@@ -92,7 +92,7 @@ impl StrokeBehaviour for BrushStroke {
 
         self.elements = new_elements;
         //self.update_bounds();
-        self.bounds = new_bounds.clone();
+        self.bounds = new_bounds;
         self.hitbox = self.gen_hitbox();
     }
 
@@ -156,7 +156,7 @@ impl BrushStroke {
         brushstroke
     }
 
-    pub fn validation_stroke(data_entries: &Vec<InputData>, brush: &Brush) -> Option<Self> {
+    pub fn validation_stroke(data_entries: &[InputData], brush: &Brush) -> Option<Self> {
         let mut data_entries_iter = data_entries.iter();
         let mut stroke = if let Some(first_entry) = data_entries_iter.next() {
             Self::new(first_entry.clone(), brush.clone())
@@ -304,23 +304,23 @@ impl BrushStroke {
                 (
                     TeraElement {
                         pressure: first.inputdata.pressure(),
-                        x: f64::from(first.inputdata.pos()[0] + offset[0]),
-                        y: f64::from(first.inputdata.pos()[1] + offset[1]),
+                        x: first.inputdata.pos()[0] + offset[0],
+                        y: first.inputdata.pos()[1] + offset[1],
                     },
                     TeraElement {
                         pressure: second.inputdata.pressure(),
-                        x: f64::from(second.inputdata.pos()[0] + offset[0]),
-                        y: f64::from(second.inputdata.pos()[1] + offset[1]),
+                        x: second.inputdata.pos()[0] + offset[0],
+                        y: second.inputdata.pos()[1] + offset[1],
                     },
                     TeraElement {
                         pressure: third.inputdata.pressure(),
-                        x: f64::from(third.inputdata.pos()[0] + offset[0]),
-                        y: f64::from(third.inputdata.pos()[1] + offset[1]),
+                        x: third.inputdata.pos()[0] + offset[0],
+                        y: third.inputdata.pos()[1] + offset[1],
                     },
                     TeraElement {
                         pressure: fourth.inputdata.pressure(),
-                        x: f64::from(fourth.inputdata.pos()[0] + offset[0]),
-                        y: f64::from(fourth.inputdata.pos()[1] + offset[1]),
+                        x: fourth.inputdata.pos()[0] + offset[0],
+                        y: fourth.inputdata.pos()[1] + offset[1],
                     },
                 )
             })

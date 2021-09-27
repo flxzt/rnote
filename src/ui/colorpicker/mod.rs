@@ -170,7 +170,7 @@ mod imp {
                         "current-color",
                         "current-color",
                         "current-color",
-                        gdk::RGBA::static_type().into(),
+                        gdk::RGBA::static_type(),
                         glib::ParamFlags::READWRITE,
                     ),
                 ]
@@ -312,6 +312,12 @@ mod imp {
 
 glib::wrapper! {
     pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>) @extends Widget;
+}
+
+impl Default for ColorPicker {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ColorPicker {

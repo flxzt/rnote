@@ -23,7 +23,6 @@ impl RoughGenerator {
     pub fn new(config: Option<Options>) -> Self {
         Self {
             config: config.unwrap_or_default(),
-            ..Self::default()
         }
     }
 

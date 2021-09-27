@@ -3,11 +3,8 @@ use std::fmt::Debug;
 #[allow(dead_code)]
 pub(crate) fn merge<T>(this: Option<T>, other: Option<T>) -> Option<T> {
     match this {
-        Some(t) => return Some(t),
-        None => match other {
-            Some(o) => return Some(o),
-            None => return None,
-        },
+        Some(t) => Some(t),
+        None => other,
     }
 }
 

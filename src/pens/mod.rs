@@ -37,7 +37,7 @@ impl Pens {
                 self.eraser.draw(scalefactor, snapshot);
             }
             PenStyle::Selector => {
-                self.selector.draw(&snapshot);
+                self.selector.draw(snapshot);
             }
             PenStyle::Marker | PenStyle::Brush | PenStyle::Unkown => {}
         }

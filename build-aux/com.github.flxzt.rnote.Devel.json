@@ -17,6 +17,7 @@
         "--device=dri",
         "--share=ipc",
         "--filesystem=home",
+        "--filesystem=xdg-run/gvfsd",
         "--env=RUST_BACKTRACE=1",
         "--env=RUST_LOG=rnote=debug",
         "--env=G_MESSAGES_DEBUG=all"

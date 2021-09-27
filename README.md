@@ -38,46 +38,50 @@ Use Gnome Builder or vscode with the flatpak extension to build and run the appl
 
 **Bugs and workarounds**
 
-- If you encounter `bwrap: Can't find source path /run/user/1000/doc/by-app/com.github.flxzt.rnote.Devel: No such file or directory` when trying to run the flatpak, `xdg-document-portal` did not start yet. Starting it manually with `systemctl start --user xdg-document-portal` should fix it.
+- If you encounter `bwrap: Can't find source path /run/user/1000/doc/by-app/com.github.flxzt.rnote: No such file or directory` when trying to run the flatpak, `xdg-document-portal` did not start yet. Starting it manually with `systemctl start --user xdg-document-portal` should fix it.
 
 --- 
 
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 
 First the Gnome 40 SDK is needed:
-```
+
+```bash
 flatpak install org.gnome.Sdk//40 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//40
 ```
 
 **Build**  
 Building the app with flatpak is done with:
-```
+
+```bash
 flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.json
 ```
 
 Creating a repo:
 
-```
+```bash
 flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.json
-
 ```
 
 
 **Install**  
 Install to the system as user with:
-```
+
+```bash
 flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.json
 ```
 
 **Run**  
 Then it can be run.
 From the build directory:
-```
+
+```bash
 flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.json rnote
 ```
 
 Or if it is installed:
-```
+
+```bash
 flatpak run com.github.flxzt.rnote
 ```
 
@@ -87,8 +91,8 @@ If a native build is wanted, meson can be called directly.
 
 Make sure `rustc` and `cargo` are installed. Then run:
 
-```
-meson setup --prefix=/usr _build
+```bash
+meson setup --prefix=/usr _mesonbuild
 ```
 Meson will ask for the user password when needed.
 
@@ -97,8 +101,8 @@ To enable the development profile, set `-Dprofile=devel` as a parameter. Else th
 **Compile**  
 Once the project is configured, it can be compiled with:
 
-```
-meson compile -C _build
+```bash
+meson compile -C _mesonbuild
 ```
 
 The compiled binary should now be here: `./build/target/release/rnote`.
@@ -106,14 +110,15 @@ The compiled binary should now be here: `./build/target/release/rnote`.
 **Install**  
 Installing the binary into the system can be done with:
 
-```
-meson install -C _build
+```bash
+meson install -C _mesonbuild
 ```
 
 **Test**  
 Meson has some tests to validate the desktop, gresources, ... files.
-```
-meson test -v -C _build
+
+```bash
+meson test -v -C _mesonbuild
 ```
 
 This places the files in the specified prefix and their subpaths. The binary should now be in `/usr/bin` (and therefore in PATH)
@@ -121,8 +126,8 @@ This places the files in the specified prefix and their subpaths. The binary sho
 **Reconfigure**  
 reconfiguring the meson build files can be done with:
 
-```
-meson configure -Dprofile=default _build
+```bash
+meson configure -Dprofile=default _mesonbuild
 ```
 
 For example if the profile needs to be changed.
@@ -131,6 +136,6 @@ For example if the profile needs to be changed.
 **Uninstall**  
 If you don't like rnote, or decided that is not worth your precious disk space, you can always uninstall it with:
 
-```
-sudo ninja uninstall -C _build
+```bash
+sudo ninja uninstall -C _mesonbuild
 ```

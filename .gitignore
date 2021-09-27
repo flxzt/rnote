@@ -1,5 +1,6 @@
 /build
 /_build
+/_mesonbuild
 /.flatpak
 /.flatpak-builder
 /flatpak-repo

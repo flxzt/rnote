@@ -485,14 +485,14 @@ impl RnoteAppWindow {
         ));
 
         // prefer dark / light theme
-/*         self.app_settings()
+        self.app_settings()
             .bind(
                 "prefer-dark-theme",
                 &self.settings(),
                 "gtk-application-prefer-dark-theme",
             )
             .flags(gio::SettingsBindFlags::DEFAULT)
-            .build(); */
+            .build();
 
         self.app_settings()
             .bind(
@@ -504,14 +504,13 @@ impl RnoteAppWindow {
             .build();
 
         // Ui for right / left handed writers
-        // Why isnt this working?
-        //self.application().unwrap().change_action_state("righthanded", &self.app_settings().boolean("righthanded").to_variant());
-        /*         self.application()
+        self.application().unwrap().change_action_state("righthanded", &self.app_settings().boolean("righthanded").to_variant());
+                 self.application()
             .unwrap()
             .activate_action("righthanded", None);
         self.application()
             .unwrap()
-            .activate_action("righthanded", None); */
+            .activate_action("righthanded", None);
 
         // Mouse drawing
         self.app_settings()

@@ -63,15 +63,22 @@ mod imp {
             self.resize_tl
                 .image()
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
+
             self.resize_tr
                 .image()
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
+
             self.resize_bl
                 .image()
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
+
             self.resize_br
                 .image()
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
+
+            self.translate_node
+                .image()
+                .set_icon_name(Some("selection-translate-symbolic"));
 
             self.translate_node
                 .get()

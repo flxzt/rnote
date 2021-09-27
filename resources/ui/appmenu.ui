@@ -64,6 +64,7 @@
 
         <child type="prefer_dark_theme_attr">
           <object class="GtkBox">
+            <property name="visible">false</property>
             <property name="orientation">horizontal</property>
             <property name="homogeneous">true</property>
             <property name="halign">center</property>

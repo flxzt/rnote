@@ -243,9 +243,10 @@ mod imp {
 
 use std::{boxed, error::Error, path::PathBuf};
 
+use adw::prelude::*;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Application, Box, Button, Entry,
-    Grid, Overlay, ScrolledWindow,
+    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, Entry, Grid,
+    Overlay, ScrolledWindow,
 };
 
 use crate::{
@@ -357,6 +358,39 @@ impl RnoteAppWindow {
 
     pub fn penssidebar(&self) -> PensSideBar {
         imp::RnoteAppWindow::from_instance(self).penssidebar.get()
+    }
+
+    pub fn set_color_scheme(&self, color_scheme: adw::ColorScheme) {
+        self.application()
+            .unwrap()
+            .downcast::<RnoteApp>()
+            .unwrap()
+            .style_manager()
+            .set_color_scheme(color_scheme);
+
+        match color_scheme {
+            adw::ColorScheme::Default => {
+                self.app_settings()
+                    .set_string("color-scheme", "default")
+                    .unwrap();
+                self.mainheader().appmenu().default_theme_toggle().set_active(true);
+            }
+            adw::ColorScheme::PreferLight => {
+                self.app_settings()
+                    .set_string("color-scheme", "prefer-light")
+                    .unwrap();
+                self.mainheader().appmenu().light_theme_toggle().set_active(true);
+            }
+            adw::ColorScheme::PreferDark => {
+                self.app_settings()
+                    .set_string("color-scheme", "prefer-dark")
+                    .unwrap();
+                self.mainheader().appmenu().dark_theme_toggle().set_active(true);
+            }
+            _ => {
+                log::error!("unsupported color_scheme in set_color_scheme()");
+            }
+        }
     }
 
     pub fn save_window_size(&self) -> Result<(), glib::BoolError> {
@@ -483,23 +517,12 @@ impl RnoteAppWindow {
         ));
 
         // prefer dark / light theme
-        self.app_settings()
-            .bind(
-                "prefer-dark-theme",
-                &self.settings(),
-                "gtk-application-prefer-dark-theme",
-            )
-            .flags(gio::SettingsBindFlags::DEFAULT)
-            .build();
-
-        self.app_settings()
-            .bind(
-                "prefer-dark-theme",
-                &self.mainheader().appmenu().dark_theme_toggle(),
-                "active",
-            )
-            .flags(gio::SettingsBindFlags::DEFAULT)
-            .build();
+        match self.app_settings().string("color-scheme").as_str() {
+            "default" => { self.set_color_scheme(adw::ColorScheme::Default)},
+            "prefer-light" => { self.set_color_scheme(adw::ColorScheme::PreferLight)},
+            "prefer-dark" => { self.set_color_scheme(adw::ColorScheme::PreferDark)},
+            _ => { log::error!("failed to load setting color-scheme, unsupported string as value")},
+        }
 
         // Ui for right / left handed writers
         self.application().unwrap().change_action_state(

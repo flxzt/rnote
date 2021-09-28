@@ -14,6 +14,8 @@ mod imp {
         #[template_child]
         pub menu_model: TemplateChild<MenuModel>,
         #[template_child]
+        pub default_theme_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub light_theme_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub dark_theme_toggle: TemplateChild<ToggleButton>,
@@ -25,6 +27,7 @@ mod imp {
                 menubutton: TemplateChild::<MenuButton>::default(),
                 popovermenu: TemplateChild::<PopoverMenu>::default(),
                 menu_model: TemplateChild::<MenuModel>::default(),
+                default_theme_toggle: TemplateChild::<ToggleButton>::default(),
                 light_theme_toggle: TemplateChild::<ToggleButton>::default(),
                 dark_theme_toggle: TemplateChild::<ToggleButton>::default(),
             }
@@ -72,7 +75,7 @@ mod imp {
 
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{
-    gio, glib, prelude::*, subclass::prelude::*, MenuButton, PopoverMenu, ToggleButton, Widget,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, MenuButton, PopoverMenu, ToggleButton, Widget,
 };
 
 glib::wrapper! {
@@ -104,6 +107,10 @@ impl AppMenu {
         imp::AppMenu::from_instance(self).menu_model.get()
     }
 
+    pub fn default_theme_toggle(&self) -> ToggleButton {
+        imp::AppMenu::from_instance(self).default_theme_toggle.get()
+    }
+
     pub fn light_theme_toggle(&self) -> ToggleButton {
         imp::AppMenu::from_instance(self).light_theme_toggle.get()
     }
@@ -112,8 +119,29 @@ impl AppMenu {
         imp::AppMenu::from_instance(self).dark_theme_toggle.get()
     }
 
-    pub fn init(&self, _appwindow: &RnoteAppWindow) {
+    pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.light_theme_toggle()
+            .set_group(Some(&self.default_theme_toggle()));
+
         self.dark_theme_toggle()
-            .set_group(Some(&self.light_theme_toggle()));
+            .set_group(Some(&self.default_theme_toggle()));
+
+        self.default_theme_toggle().connect_toggled(clone!(@weak appwindow => move |default_theme_toggle| {
+            if default_theme_toggle.is_active() {
+                appwindow.set_color_scheme(adw::ColorScheme::Default);
+            }
+        }));
+
+        self.light_theme_toggle().connect_toggled(clone!(@weak appwindow => move |light_theme_toggle| {
+            if light_theme_toggle.is_active() {
+                appwindow.set_color_scheme(adw::ColorScheme::PreferLight);
+            }
+        }));
+
+        self.dark_theme_toggle().connect_active_notify(clone!(@weak appwindow => move |dark_theme_toggle| {
+            if dark_theme_toggle.is_active() {
+                appwindow.set_color_scheme(adw::ColorScheme::PreferDark);
+            }
+        }));
     }
 }

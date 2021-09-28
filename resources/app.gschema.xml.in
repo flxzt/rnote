@@ -25,9 +25,9 @@
       <default>"librsvg"</default>
       <summary>the renderer backend</summary>
     </key>
-    <key name="prefer-dark-theme" type="b">
-      <default>false</default>
-      <summary>Wether the dark theme is preferred</summary>
+    <key name="color-scheme" type="s">
+      <default>"default"</default>
+      <summary>Color scheme preference</summary>
     </key>
     <key name="mouse-drawing" type="b">
       <default>false</default>

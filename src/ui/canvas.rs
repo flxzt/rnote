@@ -284,7 +284,7 @@ mod imp {
                             }
                         }
                     }
-                    PenStyle::Marker | PenStyle::Brush | PenStyle::Unkown => {}
+                    PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unkown => {}
                 }
 
                 debug::draw_bounds(
@@ -345,6 +345,14 @@ mod imp {
                             }
                             debug::draw_bounds(
                                 brushstroke.bounds,
+                                debug::COLOR_STROKE_BOUNDS,
+                                scalefactor,
+                                snapshot,
+                            );
+                        }
+                        strokes::StrokeStyle::ShapeStroke(shapestroke) => {
+                            debug::draw_bounds(
+                                shapestroke.bounds,
                                 debug::COLOR_STROKE_BOUNDS,
                                 scalefactor,
                                 snapshot,
@@ -637,7 +645,7 @@ impl Canvas {
         }
 
         match self.current_pen().get() {
-            PenStyle::Marker | PenStyle::Brush => {
+            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
                 let mut data_entries = self.filter_inputdata(data_entries);
 
                 if let Some(inputdata) = data_entries.pop_front() {
@@ -695,7 +703,7 @@ impl Canvas {
         self.set_unsaved_changes(true);
 
         match self.current_pen().get() {
-            PenStyle::Marker | PenStyle::Brush => {
+            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
                 let data_entries = self.filter_inputdata(data_entries);
                 for inputdata in data_entries {
                     StrokeStyle::add_to_last_stroke(
@@ -766,7 +774,7 @@ impl Canvas {
                     .selector
                     .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
             }
-            PenStyle::Marker | PenStyle::Brush | PenStyle::Eraser | PenStyle::Unkown => {
+            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Unkown => {
                 self.pens().borrow_mut().eraser.set_shown(false);
                 self.pens().borrow_mut().selector.set_shown(false);
             }

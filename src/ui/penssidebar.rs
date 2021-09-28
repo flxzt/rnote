@@ -37,6 +37,18 @@ mod imp {
         #[template_child]
         pub brush_templatechooser: TemplateChild<TemplateChooser>,
         #[template_child]
+        pub shaper_stackpage: TemplateChild<StackPage>,
+        #[template_child]
+        pub shaper_grid: TemplateChild<Grid>,
+        #[template_child]
+        pub shaper_widthreset: TemplateChild<Button>,
+        #[template_child]
+        pub shaper_widthscale_adj: TemplateChild<Adjustment>,
+        #[template_child]
+        pub shaper_spinbutton: TemplateChild<SpinButton>,
+        #[template_child]
+        pub shaper_colorpicker: TemplateChild<ColorPicker>,
+        #[template_child]
         pub eraser_stackpage: TemplateChild<StackPage>,
         #[template_child]
         pub eraser_grid: TemplateChild<Grid>,
@@ -71,6 +83,12 @@ mod imp {
                 brush_spinbutton: TemplateChild::<SpinButton>::default(),
                 brush_colorpicker: TemplateChild::<ColorPicker>::default(),
                 brush_templatechooser: TemplateChild::<TemplateChooser>::default(),
+                shaper_stackpage: TemplateChild::<StackPage>::default(),
+                shaper_grid: TemplateChild::<Grid>::default(),
+                shaper_widthreset: TemplateChild::<Button>::default(),
+                shaper_widthscale_adj: TemplateChild::<Adjustment>::default(),
+                shaper_spinbutton: TemplateChild::<SpinButton>::default(),
+                shaper_colorpicker: TemplateChild::<ColorPicker>::default(),
                 eraser_stackpage: TemplateChild::<StackPage>::default(),
                 eraser_grid: TemplateChild::<Grid>::default(),
                 eraser_widthreset: TemplateChild::<Button>::default(),
@@ -119,7 +137,7 @@ use crate::{
     app::RnoteApp,
     config,
     pens::eraser::Eraser,
-    pens::{brush::Brush, marker::Marker},
+    pens::{brush::Brush, marker::Marker, shaper::Shaper},
     strokes,
     ui::appwindow::RnoteAppWindow,
     ui::colorpicker::ColorPicker,
@@ -220,6 +238,12 @@ impl PensSideBar {
             .get()
     }
 
+    pub fn shaper_colorpicker(&self) -> ColorPicker {
+        imp::PensSideBar::from_instance(self)
+            .shaper_colorpicker
+            .get()
+    }
+
     pub fn eraser_stackpage(&self) -> StackPage {
         imp::PensSideBar::from_instance(self).eraser_stackpage.get()
     }
@@ -269,6 +293,9 @@ impl PensSideBar {
                         "brush_page" => {
                             appwindow.application().unwrap().activate_action("current-pen", Some(&"brush".to_variant()));
                         },
+                        "shaper_page" => {
+                            appwindow.application().unwrap().activate_action("current-pen", Some(&"shaper".to_variant()));
+                        },
                         "eraser_page" => {
                             appwindow.application().unwrap().activate_action("current-pen", Some(&"eraser".to_variant()));
                         }
@@ -283,12 +310,14 @@ impl PensSideBar {
 
         self.init_marker_page(appwindow);
         self.init_brush_page(appwindow);
+        self.init_shaper_page(appwindow);
         self.init_eraser_page(appwindow);
         self.init_selector_page(appwindow);
     }
 
     fn init_marker_page(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::PensSideBar::from_instance(self);
+        let marker_widthscale_adj = priv_.marker_widthscale_adj.get();
 
         priv_
             .marker_widthscale_adj
@@ -309,9 +338,9 @@ impl PensSideBar {
         }));
 
         priv_.marker_widthreset.get().connect_clicked(
-            clone!(@weak appwindow => move |_marker_widthreset| {
+            clone!(@weak marker_widthscale_adj, @weak appwindow => move |_marker_widthreset| {
                 appwindow.canvas().pens().borrow_mut().marker.set_width(Marker::WIDTH_DEFAULT);
-                appwindow.penssidebar().marker_widthscale_adj().set_value(Marker::WIDTH_DEFAULT);
+                marker_widthscale_adj.set_value(Marker::WIDTH_DEFAULT);
             }),
         );
 
@@ -324,6 +353,7 @@ impl PensSideBar {
 
     fn init_brush_page(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::PensSideBar::from_instance(self);
+        let brush_widthscale_adj = priv_.brush_widthscale_adj.get();
 
         priv_.brush_widthscale_adj.get().set_lower(Brush::WIDTH_MIN);
         priv_.brush_widthscale_adj.get().set_upper(Brush::WIDTH_MAX);
@@ -338,9 +368,9 @@ impl PensSideBar {
         }));
 
         priv_.brush_widthreset.get().connect_clicked(
-            clone!(@weak appwindow => move |_brush_widthreset| {
+            clone!(@weak brush_widthscale_adj, @weak appwindow => move |_brush_widthreset| {
                 appwindow.canvas().pens().borrow_mut().brush.set_width(Brush::WIDTH_DEFAULT);
-                appwindow.penssidebar().brush_widthscale_adj().set_value(Brush::WIDTH_DEFAULT);
+                brush_widthscale_adj.set_value(Brush::WIDTH_DEFAULT);
             }),
         );
 
@@ -372,6 +402,42 @@ impl PensSideBar {
                 )
             };
         }
+    }
+
+    fn init_shaper_page(&self, appwindow: &RnoteAppWindow) {
+        let priv_ = imp::PensSideBar::from_instance(self);
+        let shaper_widthscale_adj = priv_.shaper_widthscale_adj.get();
+
+        priv_
+            .shaper_widthscale_adj
+            .get()
+            .set_lower(Shaper::WIDTH_MIN);
+        priv_
+            .shaper_widthscale_adj
+            .get()
+            .set_upper(Shaper::WIDTH_MAX);
+        priv_
+            .shaper_widthscale_adj
+            .get()
+            .set_value(Shaper::WIDTH_DEFAULT);
+
+        priv_.shaper_colorpicker.get().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |shaper_colorpicker, _paramspec| {
+            let color = shaper_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
+            appwindow.canvas().pens().borrow_mut().shaper.set_color(strokes::Color::from_gdk(color));
+        }));
+
+        priv_.shaper_widthreset.get().connect_clicked(
+            clone!(@weak shaper_widthscale_adj, @weak appwindow => move |_shaper_widthreset| {
+                appwindow.canvas().pens().borrow_mut().shaper.set_width(Shaper::WIDTH_DEFAULT);
+                shaper_widthscale_adj.set_value(Shaper::WIDTH_DEFAULT);
+            }),
+        );
+
+        priv_.shaper_widthscale_adj.get().connect_value_changed(
+            clone!(@weak appwindow => move |shaper_widthscale_adj| {
+                appwindow.canvas().pens().borrow_mut().shaper.set_width(shaper_widthscale_adj.value());
+            }),
+        );
     }
 
     fn init_eraser_page(&self, appwindow: &RnoteAppWindow) {

@@ -573,6 +573,12 @@ impl Sheet {
                         }
                     }
                 }
+                strokes::StrokeStyle::ShapeStroke(shapestroke) => {
+                    if eraser_bounds.intersects(&shapestroke.bounds) {
+                        removed_strokes.push(stroke.clone());
+                        return false;
+                    }
+                }
                 strokes::StrokeStyle::VectorImage(vectorimage) => {
                     if eraser_bounds.intersects(&vectorimage.bounds) {
                         removed_strokes.push(stroke.clone());

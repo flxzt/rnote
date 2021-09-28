@@ -310,6 +310,20 @@ impl Selection {
                         }
                     }
                 }
+                strokes::StrokeStyle::ShapeStroke(shapestroke) => {
+                    if selector_bounds.intersects(&shapestroke.bounds) {
+                        let mut contains_all = true;
+
+                        if !path_bounds.contains(&shapestroke.bounds) {
+                            contains_all = false;
+                        }
+
+                        if contains_all {
+                            other_strokes.push(self.strokes().borrow()[i].clone());
+                            to_remove_from_selection.push(i);
+                        }
+                    }
+                }
                 strokes::StrokeStyle::VectorImage(vector_image) => {
                     if selector_bounds.intersects(&vector_image.bounds) {
                         let mut contains_all = true;
@@ -374,6 +388,20 @@ impl Selection {
                         }
 
                         if contains_all {
+                            self.push_to_selection(other_strokes[i].clone());
+                            to_remove_from_strokes.push(i);
+                        }
+                    }
+                }
+                strokes::StrokeStyle::ShapeStroke(shapestroke) => {
+                    if selector_bounds.intersects(&shapestroke.bounds) {
+                        let mut contains_bounds = true;
+
+                        if !path_bounds.contains(&shapestroke.bounds) {
+                            contains_bounds = false;
+                        }
+
+                        if contains_bounds {
                             self.push_to_selection(other_strokes[i].clone());
                             to_remove_from_strokes.push(i);
                         }
@@ -575,6 +603,10 @@ impl Selection {
                 strokes::StrokeStyle::BrushStroke(brushstroke) => {
                     self.draw_selected_bounds(brushstroke.bounds, scalefactor, snapshot);
                     snapshot.append_node(&brushstroke.rendernode);
+                }
+                strokes::StrokeStyle::ShapeStroke(shapestroke) => {
+                    self.draw_selected_bounds(shapestroke.bounds, scalefactor, snapshot);
+                    snapshot.append_node(&shapestroke.rendernode);
                 }
                 strokes::StrokeStyle::VectorImage(vector_image) => {
                     self.draw_selected_bounds(vector_image.bounds, scalefactor, snapshot);

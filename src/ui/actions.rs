@@ -177,6 +177,11 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().current_pen().set(PenStyle::Brush);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
                 },
+                "shaper" => {
+                    appwindow.mainheader().shaper_toggle().set_active(true);
+                    appwindow.canvas().current_pen().set(PenStyle::Shaper);
+                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
+                },
                 "eraser" => {
                     appwindow.mainheader().eraser_toggle().set_active(true);
                     appwindow.canvas().current_pen().set(PenStyle::Eraser);
@@ -339,6 +344,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             appwindow.penssidebar().marker_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().brush_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
+            appwindow.penssidebar().shaper_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
 
             appwindow.flap().set_flap_position(PackType::Start);
             appwindow.flaphide_button().set_icon_name("arrow1-left-symbolic");
@@ -363,6 +369,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             appwindow.penssidebar().marker_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().brush_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
 
             appwindow.flap().set_flap_position(PackType::End);
             appwindow.flaphide_button().set_icon_name("arrow1-right-symbolic");

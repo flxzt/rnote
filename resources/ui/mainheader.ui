@@ -138,6 +138,13 @@
               </object>
             </child>
             <child>
+              <object class="GtkToggleButton" id="shaper_toggle">
+                <property name="icon_name">shaper-symbolic</property>
+                <property name="tooltip_text">Shaper</property>
+                <property name="hexpand">true</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkToggleButton" id="eraser_toggle">
                 <property name="icon_name">eraser-symbolic</property>
                 <property name="tooltip_text">Eraser</property>

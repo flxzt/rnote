@@ -33,6 +33,8 @@ mod imp {
         #[template_child]
         pub brush_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub shaper_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub eraser_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub selector_toggle: TemplateChild<ToggleButton>,
@@ -57,6 +59,7 @@ mod imp {
                 pens_togglebox: TemplateChild::<Box>::default(),
                 marker_toggle: TemplateChild::<ToggleButton>::default(),
                 brush_toggle: TemplateChild::<ToggleButton>::default(),
+                shaper_toggle: TemplateChild::<ToggleButton>::default(),
                 eraser_toggle: TemplateChild::<ToggleButton>::default(),
                 selector_toggle: TemplateChild::<ToggleButton>::default(),
                 canvasmenu: TemplateChild::<CanvasMenu>::default(),
@@ -173,6 +176,10 @@ impl MainHeader {
         imp::MainHeader::from_instance(self).brush_toggle.get()
     }
 
+    pub fn shaper_toggle(&self) -> ToggleButton {
+        imp::MainHeader::from_instance(self).shaper_toggle.get()
+    }
+
     pub fn eraser_toggle(&self) -> ToggleButton {
         imp::MainHeader::from_instance(self).eraser_toggle.get()
     }
@@ -199,6 +206,10 @@ impl MainHeader {
 
         priv_
             .brush_toggle
+            .get()
+            .set_group(Some(&priv_.marker_toggle.get()));
+        priv_
+            .shaper_toggle
             .get()
             .set_group(Some(&priv_.marker_toggle.get()));
         priv_
@@ -249,6 +260,12 @@ impl MainHeader {
         priv_.brush_toggle.get().connect_active_notify(clone!(@weak appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
                 appwindow.application().unwrap().activate_action("current-pen", Some(&"brush".to_variant()));
+            }
+        }));
+
+        priv_.shaper_toggle.get().connect_active_notify(clone!(@weak appwindow => move |shaper_toggle| {
+            if shaper_toggle.is_active() {
+                appwindow.application().unwrap().activate_action("current-pen", Some(&"shaper".to_variant()));
             }
         }));
 

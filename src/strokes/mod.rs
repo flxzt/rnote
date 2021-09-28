@@ -1,14 +1,15 @@
+pub mod compose;
+pub mod render;
 pub mod bitmapimage;
 pub mod brushstroke;
-pub mod compose;
 pub mod markerstroke;
-pub mod render;
+pub mod shapestroke;
 pub mod vectorimage;
 
 use crate::{pens::PenStyle, pens::Pens};
 
 use self::{
-    bitmapimage::BitmapImage, brushstroke::BrushStroke, markerstroke::MarkerStroke,
+    bitmapimage::BitmapImage, brushstroke::BrushStroke, shapestroke::ShapeStroke, markerstroke::MarkerStroke,
     vectorimage::VectorImage,
 };
 
@@ -80,6 +81,7 @@ pub trait StrokeBehaviour {
 pub enum StrokeStyle {
     MarkerStroke(MarkerStroke),
     BrushStroke(BrushStroke),
+    ShapeStroke(ShapeStroke),
     VectorImage(VectorImage),
     BitmapImage(BitmapImage),
 }
@@ -89,6 +91,7 @@ impl StrokeBehaviour for StrokeStyle {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.bounds,
             Self::BrushStroke(brushstroke) => brushstroke.bounds,
+            Self::ShapeStroke(shapestroke) => shapestroke.bounds,
             Self::VectorImage(vectorimage) => vectorimage.bounds,
             Self::BitmapImage(bitmapimage) => bitmapimage.bounds,
         }
@@ -100,6 +103,9 @@ impl StrokeBehaviour for StrokeStyle {
             }
             Self::BrushStroke(brushstroke) => {
                 brushstroke.translate(offset);
+            }
+            Self::ShapeStroke(shapestroke) => {
+                shapestroke.translate(offset);
             }
             Self::VectorImage(vectorimage) => {
                 vectorimage.translate(offset);
@@ -118,6 +124,9 @@ impl StrokeBehaviour for StrokeStyle {
             Self::BrushStroke(brushstroke) => {
                 brushstroke.resize(new_bounds);
             }
+            Self::ShapeStroke(shapestroke) => {
+                shapestroke.resize(new_bounds);
+            }
             Self::VectorImage(vectorimage) => {
                 vectorimage.resize(new_bounds);
             }
@@ -131,6 +140,7 @@ impl StrokeBehaviour for StrokeStyle {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.gen_svg_data(offset),
             Self::BrushStroke(brushstroke) => brushstroke.gen_svg_data(offset),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_svg_data(offset),
             Self::VectorImage(vectorimage) => vectorimage.gen_svg_data(offset),
             Self::BitmapImage(bitmapimage) => bitmapimage.gen_svg_data(offset),
         }
@@ -143,6 +153,9 @@ impl StrokeBehaviour for StrokeStyle {
             }
             Self::BrushStroke(brushstroke) => {
                 brushstroke.update_rendernode(scalefactor, renderer);
+            }
+            Self::ShapeStroke(shapestroke) => {
+                shapestroke.update_rendernode(scalefactor, renderer);
             }
             Self::VectorImage(vectorimage) => {
                 vectorimage.update_rendernode(scalefactor, renderer);
@@ -161,6 +174,7 @@ impl StrokeBehaviour for StrokeStyle {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(scalefactor, renderer),
             Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(scalefactor, renderer),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_rendernode(scalefactor, renderer),
             Self::VectorImage(vectorimage) => vectorimage.gen_rendernode(scalefactor, renderer),
             Self::BitmapImage(bitmapimage) => bitmapimage.gen_rendernode(scalefactor, renderer),
         }
@@ -182,6 +196,9 @@ impl StrokeStyle {
             StrokeStyle::BrushStroke(brushstroke) => {
                 brushstroke.complete_stroke();
             }
+            StrokeStyle::ShapeStroke(shapestroke) => {
+                shapestroke.complete_stroke();
+            }
             StrokeStyle::VectorImage(_vectorimage) => {}
             StrokeStyle::BitmapImage(_bitmapimage) => {}
         }
@@ -200,6 +217,7 @@ impl StrokeStyle {
             let mut bounds = match first {
                 StrokeStyle::MarkerStroke(markerstroke) => markerstroke.bounds,
                 StrokeStyle::BrushStroke(brushstroke) => brushstroke.bounds,
+                StrokeStyle::ShapeStroke(shapestroke) => shapestroke.bounds,
                 StrokeStyle::VectorImage(vectorimage) => vectorimage.bounds,
                 StrokeStyle::BitmapImage(bitmapimage) => bitmapimage.bounds,
             };
@@ -211,6 +229,9 @@ impl StrokeStyle {
                     }
                     StrokeStyle::BrushStroke(brushstroke) => {
                         bounds.merge(&brushstroke.bounds);
+                    }
+                    StrokeStyle::ShapeStroke(shapestroke) => {
+                        bounds.merge(&shapestroke.bounds);
                     }
                     StrokeStyle::VectorImage(vectorimage) => {
                         bounds.merge(&vectorimage.bounds);
@@ -239,13 +260,19 @@ impl StrokeStyle {
                     inputdata,
                     pens.marker.clone(),
                 )));
-            }
+            },
             PenStyle::Brush => {
                 strokes.push(StrokeStyle::BrushStroke(BrushStroke::new(
                     inputdata,
                     pens.brush.clone(),
                 )));
-            }
+            },
+            PenStyle::Shaper => {
+                strokes.push(StrokeStyle::ShapeStroke(ShapeStroke::new(
+                    inputdata,
+                    pens.shaper.clone(),
+                )));
+            },
             PenStyle::Eraser | PenStyle::Selector | PenStyle::Unkown => {}
         }
     }
@@ -266,6 +293,9 @@ impl StrokeStyle {
                 }
                 StrokeStyle::BrushStroke(ref mut brushstroke) => {
                     brushstroke.push_elem(inputdata);
+                }
+                StrokeStyle::ShapeStroke(ref mut shapestroke) => {
+                    shapestroke.update_shape(inputdata);
                 }
                 StrokeStyle::VectorImage(_vectorimage) => {}
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
@@ -295,6 +325,7 @@ impl StrokeStyle {
                 StrokeStyle::BrushStroke(brushstroke) => {
                     brushstroke.brush.register_custom_template()?;
                 }
+                StrokeStyle::ShapeStroke(_shapestroke) => {}
                 StrokeStyle::VectorImage(_vectorimage) => {}
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
             }
@@ -310,6 +341,9 @@ impl StrokeStyle {
                 }
                 StrokeStyle::BrushStroke(brushstroke) => {
                     snapshot.append_node(&brushstroke.rendernode);
+                }
+                StrokeStyle::ShapeStroke(shapestroke) => {
+                    snapshot.append_node(&shapestroke.rendernode);
                 }
                 StrokeStyle::VectorImage(vectorimage) => {
                     snapshot.append_node(&vectorimage.rendernode);

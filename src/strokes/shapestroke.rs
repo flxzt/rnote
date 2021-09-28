@@ -44,13 +44,13 @@ impl StrokeBehaviour for ShapeStroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self.shape_style {
             ShapeStyle::Rectangle {
-                ref shape,
+                shape: _,
                 ref mut pos,
             } => {
                 *pos = *pos + offset;
             }
             ShapeStyle::Ellipse {
-                ref shape,
+                shape: _,
                 ref mut pos,
             } => {
                 *pos = *pos + offset;
@@ -75,15 +75,10 @@ impl StrokeBehaviour for ShapeStroke {
                 ref mut shape,
                 ref mut pos,
             } => {
-/*                 let offset = na::vector![
-                    new_bounds.mins[0] - self.bounds.mins[0],
-                    new_bounds.mins[1] - self.bounds.mins[1]
-                ];
-                *pos = *pos + offset.scale(0.5);
-                shape.radius = (na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                    - na::vector![new_bounds.mins[0], new_bounds.mins[1]])
-                .scale(0.5)
-                .norm(); */
+                let center = na::vector![ new_bounds.mins[0] + (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0, new_bounds.mins[1] + (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0];
+                *pos = center;
+
+                shape.radius = (new_bounds.maxs[0] - new_bounds.mins[0]).min( new_bounds.maxs[1] - new_bounds.mins[1] ) / 2.0 - self.shaper.width();
             }
         }
 
@@ -195,13 +190,17 @@ impl ShapeStroke {
     pub fn update_bounds(&mut self) {
         match self.shape_style {
             ShapeStyle::Rectangle { ref shape, ref pos } => {
-                self.bounds = shape.aabb(&na::geometry::Isometry2::new(
-                    *pos + shape.half_extents,
-                    0.0,
-                )).loosened(self.shaper.width());
+                self.bounds = shape
+                    .aabb(&na::geometry::Isometry2::new(
+                        *pos + shape.half_extents,
+                        0.0,
+                    ))
+                    .loosened(self.shaper.width());
             }
             ShapeStyle::Ellipse { ref shape, ref pos } => {
-                self.bounds = shape.aabb(&na::geometry::Isometry2::new(*pos, 0.0)).loosened(self.shaper.width());
+                self.bounds = shape
+                    .aabb(&na::geometry::Isometry2::new(*pos, 0.0))
+                    .loosened(self.shaper.width());
             }
         }
     }

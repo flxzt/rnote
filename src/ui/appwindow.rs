@@ -521,7 +521,7 @@ impl RnoteAppWindow {
             "default" => { self.set_color_scheme(adw::ColorScheme::Default)},
             "prefer-light" => { self.set_color_scheme(adw::ColorScheme::PreferLight)},
             "prefer-dark" => { self.set_color_scheme(adw::ColorScheme::PreferDark)},
-            _ => { log::error!("failed to load setting color-scheme, unsupported string as value")},
+            _ => { log::error!("failed to load setting color-scheme, unsupported string as key")},
         }
 
         // Ui for right / left handed writers

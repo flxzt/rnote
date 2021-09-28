@@ -5,6 +5,7 @@ mod imp {
         rc::Rc,
     };
 
+    use adw::subclass::prelude::AdwApplicationImpl;
     use gtk4::{gio, glib, prelude::*, subclass::prelude::*, IconTheme};
     use once_cell::sync::Lazy;
 
@@ -32,7 +33,7 @@ mod imp {
     impl ObjectSubclass for RnoteApp {
         const NAME: &'static str = "RnoteApp";
         type Type = super::RnoteApp;
-        type ParentType = gtk4::Application;
+        type ParentType = adw::Application;
     }
 
     impl ObjectImpl for RnoteApp {
@@ -123,6 +124,7 @@ mod imp {
     }
 
     impl GtkApplicationImpl for RnoteApp {}
+    impl AdwApplicationImpl for RnoteApp {}
 }
 
 use std::{cell::RefCell, rc::Rc};
@@ -133,7 +135,7 @@ use crate::config;
 
 glib::wrapper! {
     pub struct RnoteApp(ObjectSubclass<imp::RnoteApp>)
-        @extends gio::Application, gtk4::Application,
+        @extends gio::Application, gtk4::Application, adw::Application,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 

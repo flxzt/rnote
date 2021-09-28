@@ -1097,9 +1097,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libadwaita"
-version = "0.1.0-alpha-5"
+version = "0.1.0-alpha-6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83a079dd239381a4c94de881b8b85b92c5196c28d27c63c317aab072f5e5d561"
+checksum = "d8d01ba5036df1c3e09be88b4b8e0906af977bb7ec28d5faec81a1de94bc775c"
 dependencies = [
  "gdk-pixbuf",
  "gdk4",
@@ -1114,9 +1114,9 @@ dependencies = [
 
 [[package]]
 name = "libadwaita-sys"
-version = "0.1.0-alpha-5"
+version = "0.1.0-alpha-6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea698ef2a5e667fd29901658d375f982b1faff9dccedebd64407393fb53e9bf1"
+checksum = "3127d83c55f64c466925b9d1e27a964187f193e94c7c8820ad6b29d6e5f487d8"
 dependencies = [
  "gdk-pixbuf-sys",
  "gdk4-sys",
@@ -1980,6 +1980,7 @@ dependencies = [
  "image",
  "lazy_static",
  "libadwaita",
+ "libadwaita-sys",
  "librsvg",
  "log",
  "nalgebra 0.29.0",

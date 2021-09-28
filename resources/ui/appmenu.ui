@@ -74,6 +74,7 @@
             <property name="margin-end">12</property>
             <child>
               <object class="GtkToggleButton" id="default_theme_toggle">
+                    <property name="tooltip_text">Use system colors preference</property>
                 <property name="halign">center</property>
                 <property name="valign">start</property>
                 <style>
@@ -84,6 +85,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="light_theme_toggle">
+                    <property name="tooltip_text">Prefer light colors</property>
                 <property name="halign">center</property>
                 <property name="valign">start</property>
                 <style>
@@ -94,6 +96,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="dark_theme_toggle">
+                    <property name="tooltip_text">Prefer dark colors</property>
                 <property name="halign">center</property>
                 <property name="valign">start</property>
                 <style>

@@ -11,7 +11,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ShapeStyle {
     Line {
-        pos: na::Vector2<f64>, // The position of the line start
+        start: na::Vector2<f64>, // The position of the line start
+        end: na::Vector2<f64>,   // The position of the line end
     },
     Rectangle {
         shape: p2d::shape::Cuboid,
@@ -45,7 +46,13 @@ impl StrokeBehaviour for ShapeStroke {
 
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self.shape_style {
-            ShapeStyle::Line { ref mut pos } => {}
+            ShapeStyle::Line {
+                ref mut start,
+                ref mut end,
+            } => {
+                *start = *start + offset;
+                *end = *end + offset;
+            }
             ShapeStyle::Rectangle {
                 shape: _,
                 ref mut pos,
@@ -65,7 +72,26 @@ impl StrokeBehaviour for ShapeStroke {
 
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
         match self.shape_style {
-            ShapeStyle::Line { ref mut pos } => {}
+            ShapeStyle::Line {
+                ref mut start,
+                ref mut end,
+            } => {
+                let offset = na::vector![
+                    new_bounds.mins[0] - self.bounds.mins[0],
+                    new_bounds.mins[1] - self.bounds.mins[1]
+                ];
+
+                let scalevector = na::vector![
+                    (new_bounds.maxs[0] - new_bounds.mins[0])
+                        / (self.bounds.maxs[0] - self.bounds.mins[0]),
+                    (new_bounds.maxs[1] - new_bounds.mins[1])
+                        / (self.bounds.maxs[1] - self.bounds.mins[1])
+                ];
+                let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
+
+                *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
+                *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
+            }
             ShapeStyle::Rectangle {
                 ref mut shape,
                 ref mut pos,
@@ -99,7 +125,28 @@ impl StrokeBehaviour for ShapeStroke {
         let mut svg = String::new();
 
         let element: svg::node::element::Element = match self.shape_style {
-            ShapeStyle::Line { ref pos } => svg::node::element::Rectangle::new().into(),
+            ShapeStyle::Line { ref start, ref end } => {
+                let color = if let Some(color) = self.shaper.line_config.color {
+                    color.to_css_color()
+                } else {
+                    String::from("none")
+                };
+                let fill = if let Some(fill) = self.shaper.line_config.fill {
+                    fill.to_css_color()
+                } else {
+                    String::from("none")
+                };
+
+                svg::node::element::Line::new()
+                    .set("x1", start[0])
+                    .set("y1", start[1])
+                    .set("x2", end[0])
+                    .set("y2", end[1])
+                    .set("stroke", color)
+                    .set("stroke-width", self.shaper.line_config.width())
+                    .set("fill", fill)
+                    .into()
+            }
             ShapeStyle::Rectangle { ref shape, ref pos } => {
                 let color = if let Some(color) = self.shaper.rectangle_config.color {
                     color.to_css_color()
@@ -184,7 +231,8 @@ impl ShapeStroke {
 
         let shape_style = match shaper.current_shape {
             CurrentShape::Line => ShapeStyle::Line {
-                pos: inputdata.pos(),
+                start: inputdata.pos(),
+                end: inputdata.pos(),
             },
             CurrentShape::Rectangle => ShapeStyle::Rectangle {
                 shape: p2d::shape::Cuboid::new(na::vector![0.0, 0.0]),
@@ -210,7 +258,12 @@ impl ShapeStroke {
 
     pub fn update_shape(&mut self, inputdata: InputData) {
         match self.shape_style {
-            ShapeStyle::Line { ref mut pos } => {}
+            ShapeStyle::Line {
+                start: _,
+                ref mut end,
+            } => {
+                *end = inputdata.pos();
+            }
             ShapeStyle::Rectangle {
                 ref mut shape,
                 ref mut pos,
@@ -232,7 +285,31 @@ impl ShapeStroke {
 
     pub fn update_bounds(&mut self) {
         match self.shape_style {
-            ShapeStyle::Line { ref pos } => {}
+            ShapeStyle::Line { ref start, ref end } => {
+                let line_bounds = if start[0] <= end[0] && start[1] <= end[1] {
+                    p2d::bounding_volume::AABB::new(
+                        na::point![start[0], start[1]],
+                        na::point![end[0], end[1]],
+                    )
+                } else if start[0] > end[0] && start[1] <= end[1] {
+                    p2d::bounding_volume::AABB::new(
+                        na::point![end[0], start[1]],
+                        na::point![start[0], end[1]],
+                    )
+                } else if start[0] <= end[0] && start[1] > end[1] {
+                    p2d::bounding_volume::AABB::new(
+                        na::point![start[0], end[1]],
+                        na::point![end[0], start[1]],
+                    )
+                } else {
+                    p2d::bounding_volume::AABB::new(
+                        na::point![end[0], end[1]],
+                        na::point![start[0], start[1]],
+                    )
+                };
+
+                self.bounds = line_bounds.loosened(self.shaper.line_config.width());
+            }
             ShapeStyle::Rectangle { ref shape, ref pos } => {
                 self.bounds = shape
                     .aabb(&na::geometry::Isometry2::new(

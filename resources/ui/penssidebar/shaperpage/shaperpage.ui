@@ -39,7 +39,7 @@
     <child>
       <object class="GtkBox" id="shapes_togglebox">
         <property name="orientation">vertical</property>
-        <property name="height_request">200</property>
+        <property name="height_request">150</property>
         <property name="homogeneous">true</property>
         <property name="vexpand">false</property>
         <style>
@@ -78,7 +78,7 @@
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
         <property name="margin_top">20</property>
-        <property name="margin_bottom">0</property>
+        <property name="margin_bottom">20</property>
         <layout>
           <property name="column">0</property>
           <property name="row">3</property>

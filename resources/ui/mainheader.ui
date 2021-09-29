@@ -47,7 +47,7 @@
                         <property name="icon_name">add-page-symbolic</property>
                         <property name="tooltip_text">add page</property>
                         <property name="margin-start">0</property>
-                        <property name="margin-end">3</property>
+                        <property name="margin-end">0</property>
                         <style>
                           <class name="flat" />
                         </style>
@@ -57,7 +57,7 @@
                       <object class="GtkButton" id="fit_to_format_button">
                         <property name="icon_name">fit-to-format-symbolic</property>
                         <property name="tooltip_text">fit to format</property>
-                        <property name="margin-start">3</property>
+                        <property name="margin-start">6</property>
                         <property name="margin-end">6</property>
                         <style>
                           <class name="flat" />

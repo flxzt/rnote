@@ -1,7 +1,5 @@
 pub mod colorsetter;
 
-use gtk4::{gdk, glib, Widget};
-
 mod imp {
     use super::colorsetter::ColorSetter;
 
@@ -13,14 +11,13 @@ mod imp {
         Button, ColorChooserWidget, CompositeTemplate, MenuButton, Orientation, Popover,
         PositionType, Widget,
     };
+    use gtk4::{Align, BoxLayout};
 
     use once_cell::sync::Lazy;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/colorpicker.ui")]
     pub struct ColorPicker {
-        #[template_child]
-        pub widgetbox: TemplateChild<Box>,
         #[template_child]
         pub setterbox: TemplateChild<Box>,
         #[template_child]
@@ -45,7 +42,6 @@ mod imp {
             ColorSetter::static_type();
 
             Self {
-                widgetbox: TemplateChild::<Box>::default(),
                 setterbox: TemplateChild::<Box>::default(),
                 currentcolor_setter1: TemplateChild::<ColorSetter>::default(),
                 colorpicker_button: TemplateChild::<MenuButton>::default(),
@@ -69,7 +65,7 @@ mod imp {
         type ParentType = Widget;
 
         fn class_init(klass: &mut Self::Class) {
-            Self::bind_template(klass)
+            Self::bind_template(klass);
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {
@@ -187,6 +183,12 @@ mod imp {
         ) {
             match pspec.name() {
                 "position" => {
+                    let layout_manager = obj
+                        .layout_manager()
+                        .unwrap()
+                        .downcast::<BoxLayout>()
+                        .unwrap();
+
                     let position = value
                         .get::<PositionType>()
                         .expect("value not of type `PositionType`");
@@ -195,30 +197,46 @@ mod imp {
                     self.currentcolor_setter1
                         .set_property("position", position)
                         .unwrap();
-                    for setter_button in &*self.currentcolor_setters.borrow() {
+                    for setter_button in self.currentcolor_setters.borrow().iter() {
                         setter_button.set_property("position", position).unwrap();
                     }
 
                     match position {
                         PositionType::Left => {
                             self.colorpicker_popover.set_position(PositionType::Right);
-                            self.widgetbox.set_orientation(Orientation::Vertical);
+                            layout_manager.set_orientation(Orientation::Vertical);
                             self.setterbox.set_orientation(Orientation::Vertical);
+                            self.colorpicker_button.set_margin_start(0);
+                            self.colorpicker_button.set_margin_end(0);
+                            self.colorpicker_button.set_margin_top(6);
+                            self.colorpicker_button.set_margin_bottom(6);
                         }
                         PositionType::Right => {
                             self.colorpicker_popover.set_position(PositionType::Left);
-                            self.widgetbox.set_orientation(Orientation::Vertical);
+                            layout_manager.set_orientation(Orientation::Vertical);
                             self.setterbox.set_orientation(Orientation::Vertical);
+                            self.colorpicker_button.set_margin_start(0);
+                            self.colorpicker_button.set_margin_end(0);
+                            self.colorpicker_button.set_margin_top(6);
+                            self.colorpicker_button.set_margin_bottom(6);
                         }
                         PositionType::Top => {
                             self.colorpicker_popover.set_position(PositionType::Bottom);
-                            self.widgetbox.set_orientation(Orientation::Horizontal);
+                            layout_manager.set_orientation(Orientation::Horizontal);
                             self.setterbox.set_orientation(Orientation::Horizontal);
+                            self.colorpicker_button.set_margin_start(6);
+                            self.colorpicker_button.set_margin_end(6);
+                            self.colorpicker_button.set_margin_top(0);
+                            self.colorpicker_button.set_margin_bottom(0);
                         }
                         PositionType::Bottom => {
                             self.colorpicker_popover.set_position(PositionType::Top);
-                            self.widgetbox.set_orientation(Orientation::Horizontal);
+                            layout_manager.set_orientation(Orientation::Horizontal);
                             self.setterbox.set_orientation(Orientation::Horizontal);
+                            self.colorpicker_button.set_margin_start(6);
+                            self.colorpicker_button.set_margin_end(6);
+                            self.colorpicker_button.set_margin_top(0);
+                            self.colorpicker_button.set_margin_bottom(0);
                         }
                         _ => {}
                     }
@@ -265,7 +283,10 @@ mod imp {
                 let setter_button = ColorSetter::new();
 
                 setter_button.set_hexpand(true);
-                setter_button.set_hexpand(true);
+                setter_button.set_vexpand(true);
+                setter_button.set_halign(Align::Fill);
+                setter_button.set_valign(Align::Fill);
+                setter_button.set_position(obj.position());
                 setter_button.set_group(Some(currentcolor_setter1));
                 setterbox.append(&setter_button);
 
@@ -310,8 +331,10 @@ mod imp {
     }
 }
 
+use gtk4::{gdk, glib, prelude::*, Orientable, PositionType, Widget};
+
 glib::wrapper! {
-    pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>) @extends Widget;
+    pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>) @extends Widget, @implements Orientable;
 }
 
 impl Default for ColorPicker {
@@ -335,5 +358,16 @@ impl ColorPicker {
         let color_picker: ColorPicker =
             glib::Object::new(&[]).expect("Failed to create ColorPicker");
         color_picker
+    }
+
+    pub fn position(&self) -> PositionType {
+        self.property("position")
+            .unwrap()
+            .get::<PositionType>()
+            .expect("value not of type `PositionType`")
+    }
+
+    pub fn set_position(&self, position: PositionType) {
+        self.set_property("position", position.to_value()).unwrap();
     }
 }

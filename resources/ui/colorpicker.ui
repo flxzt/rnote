@@ -2,37 +2,32 @@
 <interface>
   <template class="ColorPicker" parent="GtkWidget">
     <property name="layout-manager">
-      <object class="GtkBinLayout" />
+      <object class="GtkBoxLayout">
+        <property name="orientation">vertical</property>
+      </object>
     </property>
     <child>
-      <object class="GtkBox" id="widgetbox">
-        <property name="vexpand">true</property>
+      <object class="GtkBox" id="setterbox">
         <property name="orientation">vertical</property>
+        <property name="homogeneous">true</property>
+        <style>
+          <class name="linked" />
+        </style>
         <child>
-          <object class="GtkBox" id="setterbox">
+          <object class="ColorSetter" id="currentcolor_setter1">
+            <property name="hexpand">true</property>
             <property name="vexpand">true</property>
-            <property name="orientation">vertical</property>
-            <property name="homogeneous">true</property>
-            <style>
-              <class name="linked" />
-            </style>
-            <child>
-              <object class="ColorSetter" id="currentcolor_setter1">
-                <property name="hexpand">false</property>
-                <property name="vexpand">true</property>
-              </object>
-            </child>
+            <property name="halign">fill</property>
+            <property name="valign">fill</property>
           </object>
         </child>
-        <child>
-          <object class="GtkMenuButton" id="colorpicker_button">
-            <property name="icon-name">preferences-color-symbolic</property>
-          <property name="margin_top">6</property>
-          <property name="margin_bottom">6</property>
-          <property name="margin_start">0</property>
-          <property name="margin_end">0</property>
-          </object>
-        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuButton" id="colorpicker_button">
+        <property name="icon-name">preferences-color-symbolic</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
       </object>
     </child>
     <object class="GtkPopover" id="colorpicker_popover">
@@ -51,6 +46,10 @@
               <property name="hexpand">false</property>
               <property name="vexpand">false</property>
               <property name="visible">false</property>
+              <property name="margin_top">3</property>
+              <property name="margin_bottom">3</property>
+              <property name="margin_start">6</property>
+              <property name="margin_end">6</property>
               <style>
                 <class name="suggested-action" />
               </style>

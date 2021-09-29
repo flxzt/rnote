@@ -1,4 +1,3 @@
-use gtk4::{gdk, glib, Button, ToggleButton, Widget};
 
 mod imp {
     use std::cell::Cell;
@@ -39,7 +38,7 @@ mod imp {
 
             obj.set_css_classes(&["setter-button"]);
             self.css.load_from_data(
-                self.parse_gdk_rgba(&super::ColorSetter::COLOR_DEFAULT, self.position.get())
+                self.generate_css_string(&super::ColorSetter::COLOR_DEFAULT, self.position.get())
                     .as_bytes(),
             );
             obj.style_context()
@@ -89,7 +88,7 @@ mod imp {
                         .expect("value not of type `gdk::RGBA`");
                     self.color.set(color);
                     self.css.load_from_data(
-                        self.parse_gdk_rgba(&color, self.position.get()).as_bytes(),
+                        self.generate_css_string(&color, self.position.get()).as_bytes(),
                     );
                 }
                 "position" => {
@@ -100,7 +99,7 @@ mod imp {
 
                     self.position.replace(position);
                     self.css
-                        .load_from_data(self.parse_gdk_rgba(&color, position).as_bytes());
+                        .load_from_data(self.generate_css_string(&color, position).as_bytes());
                 }
                 _ => panic!("invalid property name"),
             }
@@ -122,26 +121,26 @@ mod imp {
     impl ToggleButtonImpl for ColorSetter {}
 
     impl ColorSetter {
-        fn parse_gdk_rgba(&self, rgba: &gdk::RGBA, position: PositionType) -> String {
+        fn generate_css_string(&self, rgba: &gdk::RGBA, position: PositionType) -> String {
             let pos_string: String = String::from(match position {
-                PositionType::Left => "right",
-                PositionType::Right => "left",
-                PositionType::Top => "bottom",
-                PositionType::Bottom => "top",
-                _ => "left",
+                PositionType::Left => "-right",
+                PositionType::Right => "-left",
+                PositionType::Top => "-bottom",
+                PositionType::Bottom => "-top",
+                _ => "",
             });
             let parsed = format!(
                 "
 .setter-button {{
     padding: 0 0 0 0;
-    margin-{0}: 10px;
-    background: rgba({1}, {2}, {3}, {4:.2});
+    margin{0}: 10px;
+    background: rgba({1}, {2}, {3}, {4:.3});
 
-    transition: margin-{0} 0.3s;
+    transition: margin{0} 0.3s;
 }}
 
 .setter-button:checked {{
-    margin-{0}: 0px;
+    margin{0}: 0px;
 }}
 ",
                 pos_string,
@@ -155,9 +154,17 @@ mod imp {
     }
 }
 
+use gtk4::{Button, PositionType, ToggleButton, Widget, gdk, glib, prelude::*};
+
 glib::wrapper! {
     pub struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
         @extends ToggleButton, Button, Widget;
+}
+
+impl Default for ColorSetter {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ColorSetter {
@@ -170,10 +177,15 @@ impl ColorSetter {
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("failed to create `ColorSetter")
     }
-}
 
-impl Default for ColorSetter {
-    fn default() -> Self {
-        Self::new()
+    pub fn position(&self) -> PositionType {
+        self.property("position")
+            .unwrap()
+            .get::<PositionType>()
+            .expect("value not of type `PositionType`")
+    }
+
+    pub fn set_position(&self, position: PositionType) {
+        self.set_property("position", position.to_value()).unwrap();
     }
 }

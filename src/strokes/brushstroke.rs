@@ -290,7 +290,7 @@ impl BrushStroke {
     pub fn templates_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut cx = tera::Context::new();
 
-        let color = self.brush.color().to_css_color();
+        let color = self.brush.color.to_css_color();
         let width = self.brush.width();
         let sensitivity = self.brush.sensitivity();
 
@@ -350,10 +350,10 @@ impl BrushStroke {
         rough_generator.config.seed = Some(1);
         rough_generator.config.preserve_vertices = true;
         rough_generator.config.stroke = Some(rough_rs::utils::Color::new(
-            self.brush.color().r,
-            self.brush.color().g,
-            self.brush.color().b,
-            self.brush.color().a,
+            self.brush.color.r,
+            self.brush.color.g,
+            self.brush.color.b,
+            self.brush.color.a,
         ));
 
         let mut svg = String::new();

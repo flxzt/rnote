@@ -1,4 +1,3 @@
-
 mod imp {
     use std::cell::Cell;
 
@@ -88,7 +87,8 @@ mod imp {
                         .expect("value not of type `gdk::RGBA`");
                     self.color.set(color);
                     self.css.load_from_data(
-                        self.generate_css_string(&color, self.position.get()).as_bytes(),
+                        self.generate_css_string(&color, self.position.get())
+                            .as_bytes(),
                     );
                 }
                 "position" => {
@@ -154,7 +154,7 @@ mod imp {
     }
 }
 
-use gtk4::{Button, PositionType, ToggleButton, Widget, gdk, glib, prelude::*};
+use gtk4::{gdk, glib, prelude::*, Button, PositionType, ToggleButton, Widget};
 
 glib::wrapper! {
     pub struct ColorSetter(ObjectSubclass<imp::ColorSetter>)

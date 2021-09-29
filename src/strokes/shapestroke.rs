@@ -75,10 +75,16 @@ impl StrokeBehaviour for ShapeStroke {
                 ref mut shape,
                 ref mut pos,
             } => {
-                let center = na::vector![ new_bounds.mins[0] + (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0, new_bounds.mins[1] + (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0];
+                let center = na::vector![
+                    new_bounds.mins[0] + (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0,
+                    new_bounds.mins[1] + (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
+                ];
                 *pos = center;
 
-                shape.radius = (new_bounds.maxs[0] - new_bounds.mins[0]).min( new_bounds.maxs[1] - new_bounds.mins[1] ) / 2.0 - self.shaper.width();
+                shape.radius = (new_bounds.maxs[0] - new_bounds.mins[0])
+                    .min(new_bounds.maxs[1] - new_bounds.mins[1])
+                    / 2.0
+                    - self.shaper.width();
             }
         }
 
@@ -104,7 +110,7 @@ impl StrokeBehaviour for ShapeStroke {
         };
 
         element.assign("fill", "none");
-        element.assign("stroke", self.shaper.color().to_css_color());
+        element.assign("stroke", self.shaper.color.to_css_color());
         element.assign("stroke-width", self.shaper.width());
 
         svg += rough_rs::node_to_string(&element)?.as_str();

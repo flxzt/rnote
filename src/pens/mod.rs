@@ -1,10 +1,10 @@
-pub mod marker;
 pub mod brush;
-pub mod shaper;
 pub mod eraser;
+pub mod marker;
 pub mod selector;
+pub mod shaper;
 
-use self::{brush::Brush, shaper::Shaper, eraser::Eraser, marker::Marker, selector::Selector};
+use self::{brush::Brush, eraser::Eraser, marker::Marker, selector::Selector, shaper::Shaper};
 
 use gtk4::Snapshot;
 

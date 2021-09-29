@@ -540,10 +540,12 @@ impl Sheet {
 
         let eraser_bounds = p2d::bounding_volume::AABB::new(
             na::Point2::from(
-                eraser.current_input.pos() - na::vector![eraser.width / 2.0, eraser.width / 2.0],
+                eraser.current_input.pos()
+                    - na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
             ),
             na::Point2::from(
-                eraser.current_input.pos() + na::vector![eraser.width / 2.0, eraser.width / 2.0],
+                eraser.current_input.pos()
+                    + na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
             ),
         );
 

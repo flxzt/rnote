@@ -774,7 +774,11 @@ impl Canvas {
                     .selector
                     .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
             }
-            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Eraser | PenStyle::Unkown => {
+            PenStyle::Marker
+            | PenStyle::Brush
+            | PenStyle::Shaper
+            | PenStyle::Eraser
+            | PenStyle::Unkown => {
                 self.pens().borrow_mut().eraser.set_shown(false);
                 self.pens().borrow_mut().selector.set_shown(false);
             }

@@ -5,7 +5,7 @@ use crate::strokes;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Marker {
     width: f64,
-    color: strokes::Color,
+    pub color: strokes::Color,
 }
 
 impl Default for Marker {
@@ -35,13 +35,5 @@ impl Marker {
 
     pub fn set_width(&mut self, width: f64) {
         self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
-    }
-
-    pub fn color(&self) -> strokes::Color {
-        self.color
-    }
-
-    pub fn set_color(&mut self, color: strokes::Color) {
-        self.color = color;
     }
 }

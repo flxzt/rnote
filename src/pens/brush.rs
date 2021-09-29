@@ -41,7 +41,7 @@ impl TemplateType {
 pub struct Brush {
     width: f64,
     sensitivity: f64,
-    color: strokes::Color,
+    pub color: strokes::Color,
     // Templates get Rc::clone()'d into the individual strokes so overwriting templates does not affect existing strokes.
     #[serde(skip, default = "Brush::default_brush_templates")]
     pub templates: Rc<RefCell<Tera>>,
@@ -89,14 +89,6 @@ impl Brush {
 
     pub fn set_sensitivity(&mut self, sensitivity: f64) {
         self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
-    }
-
-    pub fn color(&self) -> strokes::Color {
-        self.color
-    }
-
-    pub fn set_color(&mut self, color: strokes::Color) {
-        self.color = color;
     }
 
     pub fn replace_custom_template(&self, file: &gio::File) -> Result<(), Box<dyn Error>> {

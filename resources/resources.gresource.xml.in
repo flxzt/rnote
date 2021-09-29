@@ -12,6 +12,11 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/selectionmodifier.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/templatechooser.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/markerpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/brushpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/shaperpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/eraserpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/selectorpage.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs.ui</file>
         <file compressed="true">icons/scalable/apps/rnote.svg</file>
         <file compressed="true">icons/scalable/apps/rnote-devel.svg</file>

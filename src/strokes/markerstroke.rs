@@ -106,7 +106,7 @@ impl StrokeBehaviour for MarkerStroke {
 
         let svg_path = element::Path::new()
             .set("d", data)
-            .set("stroke", self.marker.color().to_css_color())
+            .set("stroke", self.marker.color.to_css_color())
             .set("stroke-width", self.marker.width())
             .set("fill", "none");
 

@@ -373,19 +373,28 @@ impl RnoteAppWindow {
                 self.app_settings()
                     .set_string("color-scheme", "default")
                     .unwrap();
-                self.mainheader().appmenu().default_theme_toggle().set_active(true);
+                self.mainheader()
+                    .appmenu()
+                    .default_theme_toggle()
+                    .set_active(true);
             }
             adw::ColorScheme::PreferLight => {
                 self.app_settings()
                     .set_string("color-scheme", "prefer-light")
                     .unwrap();
-                self.mainheader().appmenu().light_theme_toggle().set_active(true);
+                self.mainheader()
+                    .appmenu()
+                    .light_theme_toggle()
+                    .set_active(true);
             }
             adw::ColorScheme::PreferDark => {
                 self.app_settings()
                     .set_string("color-scheme", "prefer-dark")
                     .unwrap();
-                self.mainheader().appmenu().dark_theme_toggle().set_active(true);
+                self.mainheader()
+                    .appmenu()
+                    .dark_theme_toggle()
+                    .set_active(true);
             }
             _ => {
                 log::error!("unsupported color_scheme in set_color_scheme()");
@@ -427,7 +436,6 @@ impl RnoteAppWindow {
         priv_.mainheader.get().canvasmenu().init(self);
         priv_.mainheader.get().appmenu().init(self);
         priv_.penssidebar.get().init(self);
-        priv_.penssidebar.get().brush_templatechooser().init(self);
         priv_.canvas.get().sheet().selection().init(self);
         priv_.selection_modifier.get().init(self);
 
@@ -518,10 +526,12 @@ impl RnoteAppWindow {
 
         // prefer dark / light theme
         match self.app_settings().string("color-scheme").as_str() {
-            "default" => { self.set_color_scheme(adw::ColorScheme::Default)},
-            "prefer-light" => { self.set_color_scheme(adw::ColorScheme::PreferLight)},
-            "prefer-dark" => { self.set_color_scheme(adw::ColorScheme::PreferDark)},
-            _ => { log::error!("failed to load setting color-scheme, unsupported string as key")},
+            "default" => self.set_color_scheme(adw::ColorScheme::Default),
+            "prefer-light" => self.set_color_scheme(adw::ColorScheme::PreferLight),
+            "prefer-dark" => self.set_color_scheme(adw::ColorScheme::PreferDark),
+            _ => {
+                log::error!("failed to load setting color-scheme, unsupported string as key")
+            }
         }
 
         // Ui for right / left handed writers
@@ -575,7 +585,8 @@ impl RnoteAppWindow {
                 "devel",
                 &self
                     .penssidebar()
-                    .brush_templatechooser()
+                    .brush_page()
+                    .templatechooser()
                     .predefined_template_experimental_listboxrow(),
                 "visible",
             )

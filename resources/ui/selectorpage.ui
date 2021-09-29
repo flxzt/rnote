@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="SelectorPage" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkGridLayout">
+        <property name="column_homogeneous">true</property>
+        <property name="row_spacing">6</property>
+        <property name="column_spacing">6</property>
+
+      </object>
+    </property>
+    <property name="hexpand">false</property>
+    <property name="vexpand">false</property>
+    <property name="margin_top">6</property>
+    <property name="margin_bottom">6</property>
+    <property name="margin_start">6</property>
+    <property name="margin_end">6</property>
+    <child>
+      <object class="GtkImage">
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+        <property name="icon_name">selector-symbolic</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">0</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin_top">0</property>
+        <property name="margin_bottom">20</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="delete_button">
+        <layout>
+          <property name="column">0</property>
+          <property name="row">2</property>
+        </layout>
+        <property name="margin_top">0</property>
+        <property name="margin_bottom">6</property>
+        <property name="icon_name">edit-delete-symbolic</property>
+        <property name="tooltip_text">delete selection</property>
+        <style>
+          <class name="destructive-action" />
+        </style>
+      </object>
+    </child>
+  </template>
+</interface>

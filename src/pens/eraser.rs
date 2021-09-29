@@ -4,7 +4,7 @@ use gtk4::{gdk, graphene, gsk, Snapshot};
 
 #[derive(Clone, Debug)]
 pub struct Eraser {
-    pub width: f64,
+    width: f64,
     pub current_input: InputData,
     shown: bool,
 }
@@ -30,6 +30,14 @@ impl Eraser {
             current_input,
             shown: false,
         }
+    }
+
+    pub fn width(&self) -> f64 {
+        self.width
+    }
+
+    pub fn set_width(&mut self, width: f64) {
+        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
     }
 
     pub fn shown(&self) -> bool {

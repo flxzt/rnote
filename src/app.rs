@@ -15,9 +15,12 @@ mod imp {
         ui::{
             appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvasmenu::CanvasMenu,
             colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
-            mainheader::MainHeader, penssidebar::PensSideBar,
-            selectionmodifier::modifiernode::ModifierNode, selectionmodifier::SelectionModifier,
-            templatechooser::TemplateChooser, workspacebrowser::WorkspaceBrowser,
+            mainheader::MainHeader, penssidebar::brushpage::BrushPage,
+            penssidebar::eraserpage::EraserPage, penssidebar::markerpage::MarkerPage,
+            penssidebar::selectorpage::SelectorPage, penssidebar::shaperpage::ShaperPage,
+            penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
+            selectionmodifier::SelectionModifier, templatechooser::TemplateChooser,
+            workspacebrowser::WorkspaceBrowser,
         },
         utils,
     };
@@ -90,6 +93,11 @@ mod imp {
             MainHeader::static_type();
             TemplateChooser::static_type();
             PensSideBar::static_type();
+            MarkerPage::static_type();
+            BrushPage::static_type();
+            ShaperPage::static_type();
+            EraserPage::static_type();
+            SelectorPage::static_type();
             WorkspaceBrowser::static_type();
 
             application.set_resource_base_path(Some(config::APP_IDPATH));

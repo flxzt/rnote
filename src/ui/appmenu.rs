@@ -75,7 +75,8 @@ mod imp {
 
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, MenuButton, PopoverMenu, ToggleButton, Widget,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, MenuButton, PopoverMenu,
+    ToggleButton, Widget,
 };
 
 glib::wrapper! {
@@ -126,22 +127,28 @@ impl AppMenu {
         self.dark_theme_toggle()
             .set_group(Some(&self.default_theme_toggle()));
 
-        self.default_theme_toggle().connect_toggled(clone!(@weak appwindow => move |default_theme_toggle| {
-            if default_theme_toggle.is_active() {
-                appwindow.set_color_scheme(adw::ColorScheme::Default);
-            }
-        }));
+        self.default_theme_toggle().connect_toggled(
+            clone!(@weak appwindow => move |default_theme_toggle| {
+                if default_theme_toggle.is_active() {
+                    appwindow.set_color_scheme(adw::ColorScheme::Default);
+                }
+            }),
+        );
 
-        self.light_theme_toggle().connect_toggled(clone!(@weak appwindow => move |light_theme_toggle| {
-            if light_theme_toggle.is_active() {
-                appwindow.set_color_scheme(adw::ColorScheme::PreferLight);
-            }
-        }));
+        self.light_theme_toggle().connect_toggled(
+            clone!(@weak appwindow => move |light_theme_toggle| {
+                if light_theme_toggle.is_active() {
+                    appwindow.set_color_scheme(adw::ColorScheme::PreferLight);
+                }
+            }),
+        );
 
-        self.dark_theme_toggle().connect_active_notify(clone!(@weak appwindow => move |dark_theme_toggle| {
-            if dark_theme_toggle.is_active() {
-                appwindow.set_color_scheme(adw::ColorScheme::PreferDark);
-            }
-        }));
+        self.dark_theme_toggle().connect_active_notify(
+            clone!(@weak appwindow => move |dark_theme_toggle| {
+                if dark_theme_toggle.is_active() {
+                    appwindow.set_color_scheme(adw::ColorScheme::PreferDark);
+                }
+            }),
+        );
     }
 }

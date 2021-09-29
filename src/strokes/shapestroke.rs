@@ -138,10 +138,10 @@ impl StrokeBehaviour for ShapeStroke {
                 };
 
                 svg::node::element::Line::new()
-                    .set("x1", start[0])
-                    .set("y1", start[1])
-                    .set("x2", end[0])
-                    .set("y2", end[1])
+                    .set("x1", start[0] + offset[0])
+                    .set("y1", start[1] + offset[1])
+                    .set("x2", end[0] + offset[0])
+                    .set("y2", end[1] + offset[1])
                     .set("stroke", color)
                     .set("stroke-width", self.shaper.line_config.width())
                     .set("fill", fill)

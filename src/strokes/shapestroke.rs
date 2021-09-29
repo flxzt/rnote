@@ -96,9 +96,9 @@ impl StrokeBehaviour for ShapeStroke {
                 ref mut shape,
                 ref mut pos,
             } => {
-                *pos = na::vector![new_bounds.mins[0], new_bounds.mins[1]];
+                *pos = na::vector![new_bounds.mins[0], new_bounds.mins[1]] + na::Vector2::from_element( 0.5 * self.shaper.rectangle_config.width());
                 shape.half_extents = (na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                    - na::vector![new_bounds.mins[0], new_bounds.mins[1]])
+                    - na::vector![new_bounds.mins[0], new_bounds.mins[1]] - na::Vector2::from_element(self.shaper.rectangle_config.width()))
                 .scale(0.5);
             }
             ShapeStyle::Ellipse {
@@ -316,7 +316,7 @@ impl ShapeStroke {
                         *pos + shape.half_extents,
                         0.0,
                     ))
-                    .loosened(self.shaper.rectangle_config.width());
+                    .loosened(self.shaper.rectangle_config.width() * 0.5);
             }
             ShapeStyle::Ellipse { ref shape, ref pos } => {
                 self.bounds = shape

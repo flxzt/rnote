@@ -45,6 +45,7 @@
         <file compressed="true">icons/scalable/actions/preferences-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/test-valid-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/test-invalid-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pipette-symbolic.svg</file>
         <file>templates/brushstroke-linear.svg.templ</file>
         <file>templates/brushstroke-cubicbezier.svg.templ</file>
         <file>templates/bitmapimage.svg.templ</file>

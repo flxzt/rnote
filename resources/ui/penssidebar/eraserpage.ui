@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="BrushPage" parent="GtkWidget">
+  <template class="EraserPage" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkGridLayout">
         <property name="column_homogeneous">true</property>
@@ -17,9 +17,9 @@
     <property name="margin_end">6</property>
     <child>
       <object class="GtkImage">
+        <property name="icon_name">eraser-symbolic</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
-        <property name="icon_name">brush-symbolic</property>
         <layout>
           <property name="column">0</property>
           <property name="row">0</property>
@@ -43,8 +43,8 @@
           <property name="column">0</property>
           <property name="row">2</property>
         </layout>
-        <property name="icon_name">reset-pen-symbolic</property>
-        <property name="tooltip_text">reset brush width</property>
+        <property name="icon_name">reset-width-symbolic</property>
+        <property name="tooltip_text">reset eraser width</property>
       </object>
     </child>
     <child>
@@ -69,48 +69,6 @@
           <property name="column">0</property>
           <property name="row">4</property>
         </layout>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="colorpicker">
-        <property name="height_request">400</property>
-        <property name="amount-colorbuttons">8</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">5</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-        <property name="margin_top">20</property>
-        <property name="margin_bottom">0</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">6</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="GtkImage">
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
-        <property name="icon_name">brush-templates-symbolic</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">7</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="TemplateChooser" id="templatechooser">
-        <layout>
-          <property name="column">0</property>
-          <property name="row">8</property>
-        </layout>
-        <property name="margin_top">0</property>
-        <property name="margin_bottom">6</property>
       </object>
     </child>
   </template>

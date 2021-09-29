@@ -7,10 +7,12 @@ use crate::{
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
-use svg::Node;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ShapeStyle {
+    Line {
+        pos: na::Vector2<f64>, // The position of the line start
+    },
     Rectangle {
         shape: p2d::shape::Cuboid,
         pos: na::Vector2<f64>, // The position of the upper left corner
@@ -43,6 +45,7 @@ impl StrokeBehaviour for ShapeStroke {
 
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self.shape_style {
+            ShapeStyle::Line { ref mut pos } => {}
             ShapeStyle::Rectangle {
                 shape: _,
                 ref mut pos,
@@ -62,6 +65,7 @@ impl StrokeBehaviour for ShapeStroke {
 
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
         match self.shape_style {
+            ShapeStyle::Line { ref mut pos } => {}
             ShapeStyle::Rectangle {
                 ref mut shape,
                 ref mut pos,
@@ -84,7 +88,7 @@ impl StrokeBehaviour for ShapeStroke {
                 shape.radius = (new_bounds.maxs[0] - new_bounds.mins[0])
                     .min(new_bounds.maxs[1] - new_bounds.mins[1])
                     / 2.0
-                    - self.shaper.width();
+                    - self.shaper.rectangle_config.width();
             }
         }
 
@@ -94,24 +98,53 @@ impl StrokeBehaviour for ShapeStroke {
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
         let mut svg = String::new();
 
-        let mut element: svg::node::element::Element = match self.shape_style {
-            ShapeStyle::Rectangle { ref shape, ref pos } => svg::node::element::Rectangle::new()
-                .set("x", pos[0] + offset[0])
-                .set("y", pos[1] + offset[1])
-                .set("width", 2.0 * shape.half_extents[0])
-                .set("height", 2.0 * shape.half_extents[1])
-                .into(),
-            ShapeStyle::Ellipse { ref shape, ref pos } => svg::node::element::Ellipse::new()
-                .set("cx", pos[0] + offset[0])
-                .set("cy", pos[1] + offset[1])
-                .set("rx", shape.radius)
-                .set("ry", shape.radius)
-                .into(),
-        };
+        let element: svg::node::element::Element = match self.shape_style {
+            ShapeStyle::Line { ref pos } => svg::node::element::Rectangle::new().into(),
+            ShapeStyle::Rectangle { ref shape, ref pos } => {
+                let color = if let Some(color) = self.shaper.rectangle_config.color {
+                    color.to_css_color()
+                } else {
+                    String::from("none")
+                };
+                let fill = if let Some(fill) = self.shaper.rectangle_config.fill {
+                    fill.to_css_color()
+                } else {
+                    String::from("none")
+                };
 
-        element.assign("fill", "none");
-        element.assign("stroke", self.shaper.color.to_css_color());
-        element.assign("stroke-width", self.shaper.width());
+                svg::node::element::Rectangle::new()
+                    .set("x", pos[0] + offset[0])
+                    .set("y", pos[1] + offset[1])
+                    .set("width", 2.0 * shape.half_extents[0])
+                    .set("height", 2.0 * shape.half_extents[1])
+                    .set("stroke", color)
+                    .set("stroke-width", self.shaper.rectangle_config.width())
+                    .set("fill", fill)
+                    .into()
+            }
+            ShapeStyle::Ellipse { ref shape, ref pos } => {
+                let color = if let Some(color) = self.shaper.ellipse_config.color {
+                    color.to_css_color()
+                } else {
+                    String::from("none")
+                };
+                let fill = if let Some(fill) = self.shaper.ellipse_config.fill {
+                    fill.to_css_color()
+                } else {
+                    String::from("none")
+                };
+
+                svg::node::element::Ellipse::new()
+                    .set("cx", pos[0] + offset[0])
+                    .set("cy", pos[1] + offset[1])
+                    .set("rx", shape.radius)
+                    .set("ry", shape.radius)
+                    .set("stroke", color)
+                    .set("stroke-width", self.shaper.ellipse_config.width())
+                    .set("fill", fill)
+                    .into()
+            }
+        };
 
         svg += rough_rs::node_to_string(&element)?.as_str();
         //println!("{}", svg);
@@ -150,6 +183,9 @@ impl ShapeStroke {
         );
 
         let shape_style = match shaper.current_shape {
+            CurrentShape::Line => ShapeStyle::Line {
+                pos: inputdata.pos(),
+            },
             CurrentShape::Rectangle => ShapeStyle::Rectangle {
                 shape: p2d::shape::Cuboid::new(na::vector![0.0, 0.0]),
                 pos: inputdata.pos(),
@@ -174,6 +210,7 @@ impl ShapeStroke {
 
     pub fn update_shape(&mut self, inputdata: InputData) {
         match self.shape_style {
+            ShapeStyle::Line { ref mut pos } => {}
             ShapeStyle::Rectangle {
                 ref mut shape,
                 ref mut pos,
@@ -195,18 +232,19 @@ impl ShapeStroke {
 
     pub fn update_bounds(&mut self) {
         match self.shape_style {
+            ShapeStyle::Line { ref pos } => {}
             ShapeStyle::Rectangle { ref shape, ref pos } => {
                 self.bounds = shape
                     .aabb(&na::geometry::Isometry2::new(
                         *pos + shape.half_extents,
                         0.0,
                     ))
-                    .loosened(self.shaper.width());
+                    .loosened(self.shaper.rectangle_config.width());
             }
             ShapeStyle::Ellipse { ref shape, ref pos } => {
                 self.bounds = shape
                     .aabb(&na::geometry::Isometry2::new(*pos, 0.0))
-                    .loosened(self.shaper.width());
+                    .loosened(self.shaper.ellipse_config.width());
             }
         }
     }

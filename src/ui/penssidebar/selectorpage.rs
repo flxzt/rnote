@@ -2,7 +2,7 @@ mod imp {
     use gtk4::{glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate};
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/selectorpage.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/selectorpage.ui")]
     pub struct SelectorPage {
         #[template_child]
         pub delete_button: TemplateChild<Button>,

@@ -3,7 +3,7 @@ use std::{cell::Cell, rc::Rc};
 use crate::{
     app::RnoteApp,
     config,
-    pens::PenStyle,
+    pens::{shaper, PenStyle},
     strokes::{render, StrokeStyle},
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
@@ -51,6 +51,11 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         "current-pen",
         Some(&glib::VariantType::new("s").unwrap()),
         &"marker".to_variant(),
+    );
+    let action_current_shape = gio::SimpleAction::new_stateful(
+        "current-shape",
+        Some(&glib::VariantType::new("s").unwrap()),
+        &"rectangle".to_variant(),
     );
     let action_predefined_format = gio::SimpleAction::new_stateful(
         "predefined-format",
@@ -201,6 +206,42 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         .unwrap()
         .add_action(&action_current_pen);
 
+    // Current Shape
+    action_current_shape.connect_activate(move |action_current_shape, parameter| {
+        if action_current_shape.state().unwrap().str().unwrap() != parameter.unwrap().str().unwrap()
+        {
+            action_current_shape.change_state(parameter.unwrap());
+        }
+    });
+    action_current_shape.connect_change_state(
+        clone!(@weak appwindow => move |action_current_shape, value| {
+            action_current_shape.set_state(value.unwrap());
+
+            match action_current_shape.state().unwrap().str().unwrap() {
+                "line" => {
+                    appwindow.penssidebar().shaper_page().line_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().shaper.current_shape = shaper::CurrentShape::Line;
+                    appwindow.penssidebar().shaper_page().shaperconfig_stack().set_visible_child_name("lineconfig_page");
+                },
+                "rectangle" => {
+                    appwindow.penssidebar().shaper_page().rectangle_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().shaper.current_shape = shaper::CurrentShape::Rectangle;
+                    appwindow.penssidebar().shaper_page().shaperconfig_stack().set_visible_child_name("rectangleconfig_page");
+                },
+                "ellipse" => {
+                    appwindow.penssidebar().shaper_page().ellipse_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().shaper.current_shape = shaper::CurrentShape::Ellipse;
+                    appwindow.penssidebar().shaper_page().shaperconfig_stack().set_visible_child_name("ellipseconfig_page");
+                },
+                _ => { log::error!("set invalid state of action `current-shape`")}
+            }
+        }),
+    );
+    appwindow
+        .application()
+        .unwrap()
+        .add_action(&action_current_shape);
+
     // Delete Selection
     action_delete_selection.connect_activate(
         clone!(@weak appwindow => move |_action_delete_selection, _| {
@@ -344,7 +385,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
-            appwindow.penssidebar().shaper_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().lineconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().rectangleconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().ellipseconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
 
             appwindow.flap().set_flap_position(PackType::Start);
             appwindow.flaphide_button().set_icon_name("arrow1-left-symbolic");
@@ -369,7 +412,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
-            appwindow.penssidebar().shaper_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().lineconfig_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().rectangleconfig_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().ellipseconfig_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
 
             appwindow.flap().set_flap_position(PackType::End);
             appwindow.flaphide_button().set_icon_name("arrow1-right-symbolic");

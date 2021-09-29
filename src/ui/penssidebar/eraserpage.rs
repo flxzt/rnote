@@ -4,7 +4,7 @@ mod imp {
     };
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/eraserpage.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
     pub struct EraserPage {
         #[template_child]
         pub width_resetbutton: TemplateChild<Button>,

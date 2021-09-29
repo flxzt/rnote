@@ -1,7 +1,7 @@
 mod imp {
     use crate::ui::{appmenu::AppMenu, canvasmenu::CanvasMenu};
     use gtk4::{
-        glib, prelude::*, subclass::prelude::*, Box, Button, CompositeTemplate, Image, Revealer,
+        glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Image, Revealer,
         ToggleButton, Widget,
     };
 
@@ -13,9 +13,9 @@ mod imp {
         #[template_child]
         pub header_icon_image: TemplateChild<Image>,
         #[template_child]
-        pub menus_box: TemplateChild<Box>,
+        pub menus_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub quickactions_box: TemplateChild<Box>,
+        pub quickactions_box: TemplateChild<gtk4::Box>,
         #[template_child]
         pub pageedit_revealer: TemplateChild<Revealer>,
         #[template_child]
@@ -27,7 +27,7 @@ mod imp {
         #[template_child]
         pub redo_button: TemplateChild<Button>,
         #[template_child]
-        pub pens_togglebox: TemplateChild<Box>,
+        pub pens_togglebox: TemplateChild<gtk4::Box>,
         #[template_child]
         pub marker_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -49,14 +49,14 @@ mod imp {
             Self {
                 headerbar: TemplateChild::<adw::HeaderBar>::default(),
                 header_icon_image: TemplateChild::<Image>::default(),
-                menus_box: TemplateChild::<Box>::default(),
-                quickactions_box: TemplateChild::<Box>::default(),
+                menus_box: TemplateChild::<gtk4::Box>::default(),
+                quickactions_box: TemplateChild::<gtk4::Box>::default(),
                 pageedit_revealer: TemplateChild::<Revealer>::default(),
                 add_page_button: TemplateChild::<Button>::default(),
                 fit_to_format_button: TemplateChild::<Button>::default(),
                 undo_button: TemplateChild::<Button>::default(),
                 redo_button: TemplateChild::<Button>::default(),
-                pens_togglebox: TemplateChild::<Box>::default(),
+                pens_togglebox: TemplateChild::<gtk4::Box>::default(),
                 marker_toggle: TemplateChild::<ToggleButton>::default(),
                 brush_toggle: TemplateChild::<ToggleButton>::default(),
                 shaper_toggle: TemplateChild::<ToggleButton>::default(),
@@ -105,8 +105,8 @@ use crate::{
 };
 
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Box, Button, Image, Revealer,
-    ToggleButton, Widget,
+    glib, glib::clone, prelude::*, subclass::prelude::*, Button, Image, Revealer, ToggleButton,
+    Widget,
 };
 
 glib::wrapper! {
@@ -134,11 +134,11 @@ impl MainHeader {
         imp::MainHeader::from_instance(self).header_icon_image.get()
     }
 
-    pub fn menus_box(&self) -> Box {
+    pub fn menus_box(&self) -> gtk4::Box {
         imp::MainHeader::from_instance(self).menus_box.get()
     }
 
-    pub fn quickactions_box(&self) -> Box {
+    pub fn quickactions_box(&self) -> gtk4::Box {
         imp::MainHeader::from_instance(self).quickactions_box.get()
     }
 
@@ -164,7 +164,7 @@ impl MainHeader {
         imp::MainHeader::from_instance(self).redo_button.get()
     }
 
-    pub fn pens_togglebox(&self) -> Box {
+    pub fn pens_togglebox(&self) -> gtk4::Box {
         imp::MainHeader::from_instance(self).pens_togglebox.get()
     }
 

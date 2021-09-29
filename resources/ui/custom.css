@@ -16,7 +16,7 @@
 }
 
 .light_theme_toggle {
-    background: #ffffff;
+    background: white;
     box-shadow: 0 0 15px darkgray;
     transition: all 0.2s ease-out;
 }
@@ -26,12 +26,12 @@
 }
 
 .light_theme_toggle:checked {
-    background: #ffffff;
+    background: white;
     box-shadow: 0 0 15px steelblue;
 }
 
 .dark_theme_toggle {
-    background: #000000;
+    background: black;
     box-shadow: 0 0 15px darkgray;
     transition: all 0.2s ease-out;
 }
@@ -41,7 +41,7 @@
 }
 
 .dark_theme_toggle:checked {
-    background: #000000;
+    background: black;
     box-shadow: 0 0 15px sienna;
 }
 
@@ -51,4 +51,9 @@
 
 .workspace_listitem:hover {
     text-shadow: 0 0 30px steelblue;
+}
+
+.shaperconfig_stack {
+    border: 1px solid darker(@theme_bg_color);
+    border-radius: 6px;
 }

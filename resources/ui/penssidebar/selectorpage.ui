@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="EraserPage" parent="GtkWidget">
+  <template class="SelectorPage" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkGridLayout">
         <property name="column_homogeneous">true</property>
@@ -17,9 +17,9 @@
     <property name="margin_end">6</property>
     <child>
       <object class="GtkImage">
+        <property name="icon_name">selector-symbolic</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
-        <property name="icon_name">eraser-symbolic</property>
         <layout>
           <property name="column">0</property>
           <property name="row">0</property>
@@ -38,37 +38,16 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="width_resetbutton">
+      <object class="GtkButton" id="delete_button">
         <layout>
           <property name="column">0</property>
           <property name="row">2</property>
         </layout>
-        <property name="icon_name">reset-pen-symbolic</property>
-        <property name="tooltip_text">reset eraser width</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAdjustment" id="width_adj">
-        <property name="step-increment">1</property>
-      </object>
-      <object class="GtkSpinButton" id="width_spinbutton">
-        <layout>
-          <property name="column">0</property>
-          <property name="row">3</property>
-        </layout>
-        <property name="adjustment">width_adj</property>
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-        <property name="margin_top">20</property>
-        <property name="margin_bottom">20</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">4</property>
-        </layout>
+        <property name="icon_name">edit-delete-symbolic</property>
+        <property name="tooltip_text">delete selection</property>
+        <style>
+          <class name="destructive-action" />
+        </style>
       </object>
     </child>
   </template>

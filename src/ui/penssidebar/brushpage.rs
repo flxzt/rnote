@@ -5,7 +5,7 @@ mod imp {
     };
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/brushpage.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
     pub struct BrushPage {
         #[template_child]
         pub width_resetbutton: TemplateChild<Button>,

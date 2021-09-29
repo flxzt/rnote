@@ -5,8 +5,8 @@ mod imp {
     };
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/markerpage.ui")]
-    pub struct MarkerPage {
+    #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage/ellipseconfigpage.ui")]
+    pub struct EllipseConfigPage {
         #[template_child]
         pub width_resetbutton: TemplateChild<Button>,
         #[template_child]
@@ -14,24 +14,24 @@ mod imp {
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub colorpicker: TemplateChild<ColorPicker>,
+        pub stroke_colorpicker: TemplateChild<ColorPicker>,
     }
 
-    impl Default for MarkerPage {
+    impl Default for EllipseConfigPage {
         fn default() -> Self {
             Self {
                 width_resetbutton: TemplateChild::<Button>::default(),
                 width_adj: TemplateChild::<Adjustment>::default(),
                 width_spinbutton: TemplateChild::<SpinButton>::default(),
-                colorpicker: TemplateChild::<ColorPicker>::default(),
+                stroke_colorpicker: TemplateChild::<ColorPicker>::default(),
             }
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for MarkerPage {
-        const NAME: &'static str = "MarkerPage";
-        type Type = super::MarkerPage;
+    impl ObjectSubclass for EllipseConfigPage {
+        const NAME: &'static str = "EllipseConfigPage";
+        type Type = super::EllipseConfigPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -43,7 +43,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for MarkerPage {
+    impl ObjectImpl for EllipseConfigPage {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
         }
@@ -55,73 +55,80 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for MarkerPage {}
+    impl WidgetImpl for EllipseConfigPage {}
 }
 
-use crate::pens::marker::Marker;
+use crate::pens::shaper::EllipseConfig;
 use crate::strokes;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use gtk4::gdk;
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
+    glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
     SpinButton, Widget,
 };
 
 glib::wrapper! {
-    pub struct MarkerPage(ObjectSubclass<imp::MarkerPage>)
+    pub struct EllipseConfigPage(ObjectSubclass<imp::EllipseConfigPage>)
         @extends Widget, @implements Orientable;
 }
 
-impl Default for MarkerPage {
+impl Default for EllipseConfigPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl MarkerPage {
+impl EllipseConfigPage {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create MarkerPage")
+        glib::Object::new(&[]).expect("Failed to create EllipseConfigPage")
     }
 
     pub fn width_resetbutton(&self) -> Button {
-        imp::MarkerPage::from_instance(self).width_resetbutton.get()
+        imp::EllipseConfigPage::from_instance(self)
+            .width_resetbutton
+            .get()
     }
 
     pub fn width_adj(&self) -> Adjustment {
-        imp::MarkerPage::from_instance(self).width_adj.get()
+        imp::EllipseConfigPage::from_instance(self).width_adj.get()
     }
 
     pub fn width_spinbutton(&self) -> SpinButton {
-        imp::MarkerPage::from_instance(self).width_spinbutton.get()
+        imp::EllipseConfigPage::from_instance(self)
+            .width_spinbutton
+            .get()
     }
 
-    pub fn colorpicker(&self) -> ColorPicker {
-        imp::MarkerPage::from_instance(self).colorpicker.get()
+    pub fn stroke_colorpicker(&self) -> ColorPicker {
+        imp::EllipseConfigPage::from_instance(self)
+            .stroke_colorpicker
+            .get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let width_adj = self.width_adj();
 
-        self.width_adj().set_lower(Marker::WIDTH_MIN);
+        self.width_adj().set_lower(EllipseConfig::WIDTH_MIN);
 
-        self.width_adj().set_upper(Marker::WIDTH_MAX);
+        self.width_adj().set_upper(EllipseConfig::WIDTH_MAX);
 
-        self.width_adj().set_value(Marker::WIDTH_DEFAULT);
+        self.width_adj().set_value(EllipseConfig::WIDTH_DEFAULT);
 
-        self.colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |colorpicker, _paramspec| {
-            let color = colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().marker.color = strokes::Color::from_gdk(color);
+        self.stroke_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
+            let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
+            appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.color = Some(strokes::Color::from_gdk(color));
         }));
 
         self.width_resetbutton().connect_clicked(
             clone!(@weak width_adj, @weak appwindow => move |_| {
-                appwindow.canvas().pens().borrow_mut().marker.set_width(Marker::WIDTH_DEFAULT);
-                width_adj.set_value(Marker::WIDTH_DEFAULT);
+                appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.set_width(EllipseConfig::WIDTH_DEFAULT);
+                width_adj.set_value(EllipseConfig::WIDTH_DEFAULT);
             }),
         );
 
         self.width_adj()
             .connect_value_changed(clone!(@weak appwindow => move |width_adj| {
-                appwindow.canvas().pens().borrow_mut().marker.set_width(width_adj.value());
+                appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.set_width(width_adj.value());
             }));
     }
 }

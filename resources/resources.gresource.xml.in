@@ -8,15 +8,18 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/selectionmodifier.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/templatechooser.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/markerpage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/brushpage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/shaperpage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/eraserpage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/selectorpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/penssidebar.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/markerpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/brushpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage/shaperpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage/lineconfigpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage/rectangleconfigpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage/ellipseconfigpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/eraserpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/selectorpage.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs.ui</file>
         <file compressed="true">icons/scalable/apps/rnote.svg</file>
         <file compressed="true">icons/scalable/apps/rnote-devel.svg</file>
@@ -25,7 +28,7 @@
         <file compressed="true">icons/scalable/actions/function-experimental-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-translate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvas-cursor-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/reset-pen-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/reset-width-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/marker-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/brush-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/brush-templates-symbolic.svg</file>
@@ -51,6 +54,9 @@
         <file compressed="true">icons/scalable/actions/test-valid-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/test-invalid-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pipette-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-line-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-rectangle-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-ellipse-symbolic.svg</file>
         <file>templates/brushstroke-linear.svg.templ</file>
         <file>templates/brushstroke-cubicbezier.svg.templ</file>
         <file>templates/bitmapimage.svg.templ</file>

@@ -5,8 +5,10 @@ mod imp {
     };
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/shaperpage.ui")]
-    pub struct ShaperPage {
+    #[template(
+        resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage/rectangleconfigpage.ui"
+    )]
+    pub struct RectangleConfigPage {
         #[template_child]
         pub width_resetbutton: TemplateChild<Button>,
         #[template_child]
@@ -14,24 +16,24 @@ mod imp {
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub colorpicker: TemplateChild<ColorPicker>,
+        pub stroke_colorpicker: TemplateChild<ColorPicker>,
     }
 
-    impl Default for ShaperPage {
+    impl Default for RectangleConfigPage {
         fn default() -> Self {
             Self {
                 width_resetbutton: TemplateChild::<Button>::default(),
                 width_adj: TemplateChild::<Adjustment>::default(),
                 width_spinbutton: TemplateChild::<SpinButton>::default(),
-                colorpicker: TemplateChild::<ColorPicker>::default(),
+                stroke_colorpicker: TemplateChild::<ColorPicker>::default(),
             }
         }
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ShaperPage {
-        const NAME: &'static str = "ShaperPage";
-        type Type = super::ShaperPage;
+    impl ObjectSubclass for RectangleConfigPage {
+        const NAME: &'static str = "RectangleConfigPage";
+        type Type = super::RectangleConfigPage;
         type ParentType = gtk4::Widget;
 
         fn class_init(klass: &mut Self::Class) {
@@ -43,7 +45,7 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for ShaperPage {
+    impl ObjectImpl for RectangleConfigPage {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
         }
@@ -55,10 +57,10 @@ mod imp {
         }
     }
 
-    impl WidgetImpl for ShaperPage {}
+    impl WidgetImpl for RectangleConfigPage {}
 }
 
-use crate::pens::shaper::Shaper;
+use crate::pens::shaper::RectangleConfig;
 use crate::strokes;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use gtk4::gdk;
@@ -68,61 +70,69 @@ use gtk4::{
 };
 
 glib::wrapper! {
-    pub struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
+    pub struct RectangleConfigPage(ObjectSubclass<imp::RectangleConfigPage>)
         @extends Widget, @implements Orientable;
 }
 
-impl Default for ShaperPage {
+impl Default for RectangleConfigPage {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl ShaperPage {
+impl RectangleConfigPage {
     pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create ShaperPage")
+        glib::Object::new(&[]).expect("Failed to create RectangleConfigPage")
     }
 
     pub fn width_resetbutton(&self) -> Button {
-        imp::ShaperPage::from_instance(self).width_resetbutton.get()
+        imp::RectangleConfigPage::from_instance(self)
+            .width_resetbutton
+            .get()
     }
 
     pub fn width_adj(&self) -> Adjustment {
-        imp::ShaperPage::from_instance(self).width_adj.get()
+        imp::RectangleConfigPage::from_instance(self)
+            .width_adj
+            .get()
     }
 
     pub fn width_spinbutton(&self) -> SpinButton {
-        imp::ShaperPage::from_instance(self).width_spinbutton.get()
+        imp::RectangleConfigPage::from_instance(self)
+            .width_spinbutton
+            .get()
     }
 
-    pub fn colorpicker(&self) -> ColorPicker {
-        imp::ShaperPage::from_instance(self).colorpicker.get()
+    pub fn stroke_colorpicker(&self) -> ColorPicker {
+        imp::RectangleConfigPage::from_instance(self)
+            .stroke_colorpicker
+            .get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let width_adj = self.width_adj();
 
-        self.width_adj().set_lower(Shaper::WIDTH_MIN);
+        self.width_adj().set_lower(RectangleConfig::WIDTH_MIN);
 
-        self.width_adj().set_upper(Shaper::WIDTH_MAX);
+        self.width_adj().set_upper(RectangleConfig::WIDTH_MAX);
 
-        self.width_adj().set_value(Shaper::WIDTH_DEFAULT);
+        self.width_adj().set_value(RectangleConfig::WIDTH_DEFAULT);
 
-        self.colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |shaper_colorpicker, _paramspec| {
-            let color = shaper_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().shaper.color = strokes::Color::from_gdk(color);
+        self.stroke_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
+            let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
+            appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.color = Some(strokes::Color::from_gdk(color));
         }));
 
         self.width_resetbutton().connect_clicked(
             clone!(@weak width_adj, @weak appwindow => move |_| {
-                appwindow.canvas().pens().borrow_mut().shaper.set_width(Shaper::WIDTH_DEFAULT);
-                width_adj.set_value(Shaper::WIDTH_DEFAULT);
+                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(RectangleConfig::WIDTH_DEFAULT);
+                width_adj.set_value(RectangleConfig::WIDTH_DEFAULT);
             }),
         );
 
         self.width_adj()
             .connect_value_changed(clone!(@weak appwindow => move |width_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.set_width(width_adj.value());
+                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(width_adj.value());
             }));
     }
 }

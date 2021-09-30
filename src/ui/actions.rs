@@ -9,8 +9,8 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, AboutDialog, ArrowType, Box, Grid, PackType, PositionType,
-    ScrolledWindow,
+    gio, glib, glib::clone, graphene, prelude::*, AboutDialog, ArrowType, Box, Grid, PackType,
+    PositionType, PrintOperation, PrintOperationAction, ScrolledWindow, Snapshot, Unit,
 };
 
 /* Actions follow this principle:
@@ -40,6 +40,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_save_sheet_as = gio::SimpleAction::new("save-sheet-as", None);
     let action_open_sheet = gio::SimpleAction::new("open-sheet", None);
     let action_open_workspace = gio::SimpleAction::new("open-workspace", None);
+    let action_print_sheet = gio::SimpleAction::new("print-sheet", None);
     let action_devel_settings = gio::SimpleAction::new("devel-settings", None);
 
     let action_tmperaser = gio::SimpleAction::new_stateful(
@@ -560,6 +561,85 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         .unwrap()
         .add_action(&action_save_sheet_as);
 
+    // Print sheet
+    action_print_sheet.connect_activate(clone!(@weak appwindow => move |_, _| {
+        let print_op = PrintOperation::builder()
+            .unit(Unit::Points)
+            .n_pages(appwindow.canvas().sheet().calc_n_pages())
+            .build();
+
+/*         print_op.connect_begin_print(clone!(@weak appwindow => move |print_op, print_cx| {
+            print_op.set_n_pages(appwindow.canvas().sheet().calc_n_pages());
+        })); */
+
+        print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
+            log::warn!("begin draw-page");
+
+            let cx = match print_cx.cairo_context() {
+                None => { return; }
+                Some(cx) => { cx }
+            };
+
+            let (margin_top, margin_bottom, margin_left, margin_right) = print_cx.hard_margins().unwrap_or( (0.0, 0.0, 0.0, 0.0) );
+
+            let width_scale = (print_cx.width() + margin_left + margin_right) / f64::from(appwindow.canvas().sheet().format().borrow().width);
+            let height_scale = (print_cx.height() + margin_top + margin_bottom) / f64::from(appwindow.canvas().sheet().format().borrow().height);
+            let scalefactor = width_scale.min(height_scale);
+            let y_offset =  - (f64::from(page_nr * appwindow.canvas().sheet().format().borrow().height) * scalefactor);
+
+            // Cloning strokes out of sheet to change their rendernodes without affecting the original strokes
+            let mut strokes = (*appwindow.canvas().sheet().strokes().borrow_mut()).clone();
+
+            StrokeStyle::update_all_rendernodes(
+                &mut strokes,
+                scalefactor,
+                &*appwindow.canvas().renderer().borrow(),
+            );
+
+            let snapshot = Snapshot::new();
+            let sheet_bounds_scaled = graphene::Rect::new(
+                appwindow.canvas().sheet().x() as f32 * scalefactor as f32,
+                appwindow.canvas().sheet().y() as f32 * scalefactor as f32,
+                appwindow.canvas().sheet().width() as f32 * scalefactor as f32,
+                appwindow.canvas().sheet().height() as f32 * scalefactor as f32,
+            );
+            snapshot.push_clip(&sheet_bounds_scaled);
+
+            appwindow.canvas().sheet()
+                .background()
+                .borrow()
+                .draw(&snapshot, &sheet_bounds_scaled);
+
+            if appwindow.canvas().sheet().format_borders() {
+                appwindow.canvas().sheet()
+                    .format()
+                    .borrow()
+                    .draw(appwindow.canvas().sheet().calc_n_pages(), &snapshot, scalefactor);
+            }
+
+            StrokeStyle::draw_strokes(&strokes, &snapshot);
+
+            snapshot.pop();
+
+            cx.translate(0.0, y_offset);
+
+            if let Some(node) = snapshot.to_node() {
+                node.draw(&cx);
+            } else {
+                log::error!("failed to get rendernode for created snapshot while printing page no {}", page_nr);
+            };
+        }));
+
+        if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
+            log::error!("failed to print, {}", e);
+        };
+
+    }));
+    appwindow
+        .application()
+        .unwrap()
+        .add_action(&action_print_sheet);
+
     // Import as SVG
     action_import_as_svg.connect_activate(clone!(@weak appwindow => move |_,_| {
         dialogs::dialog_import_file(&appwindow);
@@ -594,6 +674,10 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
         .application()
         .unwrap()
         .set_accels_for_action("app.save-sheet", &["<Ctrl>s"]);
+    appwindow
+        .application()
+        .unwrap()
+        .set_accels_for_action("app.print-sheet", &["<Ctrl>p"]);
     appwindow
         .application()
         .unwrap()

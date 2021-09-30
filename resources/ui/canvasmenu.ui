@@ -116,6 +116,10 @@
               <attribute name="label">Save As</attribute>
               <attribute name="action">app.save-sheet-as</attribute>
             </item>
+            <item>
+              <attribute name="label">Print</attribute>
+              <attribute name="action">app.print-sheet</attribute>
+            </item>
             <submenu>
               <attribute name="label">Import ..</attribute>
               <item>

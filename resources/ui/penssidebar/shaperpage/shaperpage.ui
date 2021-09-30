@@ -12,8 +12,8 @@
     <property name="vexpand">false</property>
     <property name="margin_top">6</property>
     <property name="margin_bottom">6</property>
-    <property name="margin_start">6</property>
-    <property name="margin_end">6</property>
+    <property name="margin_start">3</property>
+    <property name="margin_end">3</property>
     <child>
       <object class="GtkImage">
         <property name="icon_name">shaper-symbolic</property>
@@ -90,8 +90,6 @@
       <object class="GtkStack" id="shaperconfig_stack">
         <property name="transition_duration">300</property>
         <property name="transition_type">GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT</property>
-        <property name="margin_top">3</property>
-        <property name="margin_bottom">3</property>
         <layout>
           <property name="column">0</property>
           <property name="row">4</property>

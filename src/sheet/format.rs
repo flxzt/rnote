@@ -108,12 +108,8 @@ impl Format {
         }
     }
 
-    pub fn calc_page_numbers(&self, sheet_height: i32) -> i32 {
-        sheet_height / self.height
-    }
-
-    pub fn draw(&self, sheet_height: i32, snapshot: &Snapshot, scalefactor: f64) {
-        for i in 0..=self.calc_page_numbers(sheet_height) {
+    pub fn draw(&self, n_pages: i32, snapshot: &Snapshot, scalefactor: f64) {
+        for i in 0..=n_pages {
             let border_radius = graphene::Size::new(0.0, 0.0);
             let border_width = 2.0;
             let border_bounds = graphene::Rect::new(

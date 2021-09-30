@@ -14,7 +14,7 @@ use crate::{
 
 use self::{background::Background, format::Format};
 
-use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, subclass::prelude::*, Snapshot};
+use gtk4::{gio, glib, graphene, prelude::*, subclass::prelude::*, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
@@ -417,7 +417,6 @@ impl<'de> Deserialize<'de> for Sheet {
 }
 
 impl Sheet {
-    pub const SHADOW_WIDTH: f64 = 15.0;
     pub fn new() -> Self {
         let sheet: Sheet = glib::Object::new(&[]).expect("Failed to create Sheet");
         sheet
@@ -683,6 +682,10 @@ impl Sheet {
         new_height
     }
 
+    pub fn calc_n_pages(&self) -> i32 {
+        self.height() / self.format().borrow().height
+    }
+
     pub fn remove_strokes(&self, indices: Vec<usize>) {
         let priv_ = imp::Sheet::from_instance(self);
 
@@ -705,20 +708,12 @@ impl Sheet {
     pub fn draw(&self, scalefactor: f64, snapshot: &Snapshot) {
         let priv_ = imp::Sheet::from_instance(self);
 
-        let sheet_bounds = graphene::Rect::new(
-            self.x() as f32,
-            self.y() as f32,
-            self.width() as f32,
-            self.height() as f32,
-        );
         let sheet_bounds_scaled = graphene::Rect::new(
             self.x() as f32 * scalefactor as f32,
             self.y() as f32 * scalefactor as f32,
             self.width() as f32 * scalefactor as f32,
             self.height() as f32 * scalefactor as f32,
         );
-
-        self.draw_shadow(&sheet_bounds, Self::SHADOW_WIDTH, scalefactor, snapshot);
 
         snapshot.push_clip(&sheet_bounds_scaled);
 
@@ -731,46 +726,12 @@ impl Sheet {
             priv_
                 .format
                 .borrow()
-                .draw(self.height(), snapshot, scalefactor);
+                .draw(self.calc_n_pages(), snapshot, scalefactor);
         }
 
         StrokeStyle::draw_strokes(&priv_.strokes.borrow(), snapshot);
 
         snapshot.pop();
-    }
-
-    pub fn draw_shadow(
-        &self,
-        bounds: &graphene::Rect,
-        width: f64,
-        scalefactor: f64,
-        snapshot: &Snapshot,
-    ) {
-        let width = width * scalefactor;
-        let shadow_color = gdk::RGBA {
-            red: 0.0,
-            green: 0.0,
-            blue: 0.0,
-            alpha: 0.5,
-        };
-        let corner_radius = graphene::Size::new(width as f32, width as f32);
-
-        let rounded_rect = gsk::RoundedRect::new(
-            bounds.clone().scale(scalefactor as f32, scalefactor as f32),
-            corner_radius.clone(),
-            corner_radius.clone(),
-            corner_radius.clone(),
-            corner_radius,
-        );
-
-        snapshot.append_outset_shadow(
-            &rounded_rect,
-            &shadow_color,
-            0.0,
-            0.0,
-            width as f32,
-            width as f32,
-        );
     }
 
     pub fn open_sheet(&self, file: &gio::File) -> Result<(), Box<dyn Error>> {

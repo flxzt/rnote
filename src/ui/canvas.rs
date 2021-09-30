@@ -12,6 +12,7 @@ mod imp {
         gdk, glib, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus, Orientation,
         PropagationPhase, SizeRequestMode, Snapshot,
     };
+    use gtk4::{graphene, gsk};
 
     use once_cell::sync::Lazy;
 
@@ -244,6 +245,19 @@ mod imp {
         fn snapshot(&self, _widget: &Self::Type, snapshot: &gtk4::Snapshot) {
             let scalefactor = self.scalefactor.get();
 
+            let sheet_bounds_scaled = graphene::Rect::new(
+                self.sheet.x() as f32 * scalefactor as f32,
+                self.sheet.y() as f32 * scalefactor as f32,
+                self.sheet.width() as f32 * scalefactor as f32,
+                self.sheet.height() as f32 * scalefactor as f32,
+            );
+
+            self.draw_shadow(
+                &sheet_bounds_scaled,
+                Self::SHADOW_WIDTH * scalefactor,
+                snapshot,
+            );
+
             self.sheet.draw(scalefactor, snapshot);
 
             self.sheet.selection().draw(scalefactor, snapshot);
@@ -257,6 +271,35 @@ mod imp {
     }
 
     impl Canvas {
+        pub const SHADOW_WIDTH: f64 = 15.0;
+
+        pub fn draw_shadow(&self, bounds: &graphene::Rect, width: f64, snapshot: &Snapshot) {
+            let shadow_color = gdk::RGBA {
+                red: 0.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 0.5,
+            };
+            let corner_radius = graphene::Size::new(width as f32, width as f32);
+
+            let rounded_rect = gsk::RoundedRect::new(
+                bounds.clone(),
+                corner_radius.clone(),
+                corner_radius.clone(),
+                corner_radius.clone(),
+                corner_radius,
+            );
+
+            snapshot.append_outset_shadow(
+                &rounded_rect,
+                &shadow_color,
+                0.0,
+                0.0,
+                width as f32,
+                width as f32,
+            );
+        }
+
         fn draw_debug(&self, snapshot: &Snapshot) {
             if self.visual_debug.get() {
                 let scalefactor = self.scalefactor.get();

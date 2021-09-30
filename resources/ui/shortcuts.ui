@@ -44,6 +44,20 @@
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Save sheet</property>
+                <property name="action-name">app.save-sheet</property>
+                <property name="shortcut-type">accelerator</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Print sheet</property>
+                <property name="action-name">app.print-sheet</property>
+                <property name="shortcut-type">accelerator</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Delete current selection</property>
                 <property name="action-name">app.delete-selection</property>
                 <property name="shortcut-type">accelerator</property>

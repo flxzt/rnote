@@ -172,7 +172,8 @@ impl ShaperPage {
         self.rectangle_toggle().set_group(Some(&self.line_toggle()));
         self.ellipse_toggle().set_group(Some(&self.line_toggle()));
 
-        self.shaperconfig_stack().set_visible_child_name("rectangleconfig_page");
+        self.shaperconfig_stack()
+            .set_visible_child_name("rectangleconfig_page");
 
         self.line_toggle().connect_active_notify(clone!(@weak appwindow => move |line_toggle| {
             if line_toggle.is_active() {

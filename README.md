@@ -10,7 +10,7 @@ My motivation for this project is to create a simple but functional note taking 
 One main consideration is that it is vector based, which should make it very flexible in editing and altering the contents.
 
 **Disclaimer**  
-This is my first Rust and GTK project and I am learning as I go along. Expect bugs and crashes. It also could blow up your computer. ;)
+This is my first Rust and GTK project and I am learning as I go along. Its not unlikely to blow up your computer. ;)
 
 ## Feature Ideas:
 * Stroke history list widget
@@ -22,12 +22,13 @@ This is my first Rust and GTK project and I am learning as I go along. Expect bu
 ## To-Do
 - [x] Switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
 - [ ] Template deduplication when loading in .rnote save files.
-- [ ] PDF Import, Export and printing option
-- [ ] PNG Import, Export
+- [x] ~~PDF Import~~, PDF Export and printing option
+- [x] Picture import
+- [] Picture export
 - [ ] Implement bezier curve stroke with variable stroke width (see this paper: [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf))
 
 ## Screenshots
-Rnote is a very early WIP project, so don't expect too much. :)
+Rnote is a WIP project, so don't expect too much. :)
 
 ![2021-08-10-rnote.jpg](./resources/screenshots/main-window.png)
 

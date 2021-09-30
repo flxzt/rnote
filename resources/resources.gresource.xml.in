@@ -27,6 +27,8 @@
         <file compressed="true">icons/scalable/actions/function-third-order-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/function-experimental-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-translate-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-delete-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvas-cursor-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/reset-width-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/marker-symbolic.svg</file>

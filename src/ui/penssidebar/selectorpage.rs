@@ -6,12 +6,15 @@ mod imp {
     pub struct SelectorPage {
         #[template_child]
         pub delete_button: TemplateChild<Button>,
+        #[template_child]
+        pub duplicate_button: TemplateChild<Button>,
     }
 
     impl Default for SelectorPage {
         fn default() -> Self {
             Self {
                 delete_button: TemplateChild::<Button>::default(),
+                duplicate_button: TemplateChild::<Button>::default(),
             }
         }
     }
@@ -70,9 +73,17 @@ impl SelectorPage {
         imp::SelectorPage::from_instance(self).delete_button.get()
     }
 
+    pub fn duplicate_button(&self) -> Button {
+        imp::SelectorPage::from_instance(self).duplicate_button.get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.delete_button().connect_clicked(clone!(@weak appwindow => move |_| {
             appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().activate_action("delete-selection", None);
+        }));
+
+        self.duplicate_button().connect_clicked(clone!(@weak appwindow => move |_| {
+            appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().activate_action("duplicate-selection", None);
         }));
     }
 }

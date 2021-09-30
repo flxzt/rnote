@@ -43,11 +43,21 @@
           <property name="column">0</property>
           <property name="row">2</property>
         </layout>
-        <property name="icon_name">edit-delete-symbolic</property>
+        <property name="icon_name">selection-delete-symbolic</property>
         <property name="tooltip_text">delete selection</property>
         <style>
           <class name="destructive-action" />
         </style>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="duplicate_button">
+        <layout>
+          <property name="column">0</property>
+          <property name="row">3</property>
+        </layout>
+        <property name="icon_name">selection-duplicate-symbolic</property>
+        <property name="tooltip_text">duplicate selection</property>
       </object>
     </child>
   </template>

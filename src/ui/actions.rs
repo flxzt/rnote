@@ -28,6 +28,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_zoomin = gio::SimpleAction::new("zoomin", None);
     let action_zoomout = gio::SimpleAction::new("zoomout", None);
     let action_delete_selection = gio::SimpleAction::new("delete-selection", None);
+    let action_duplicate_selection = gio::SimpleAction::new("duplicate-selection", None);
     let action_import_as_svg = gio::SimpleAction::new("import-as-svg", None);
     let action_export_selection_as_svg = gio::SimpleAction::new("export-selection-as-svg", None);
     let action_export_sheet_as_svg = gio::SimpleAction::new("export-sheet-as-svg", None);
@@ -255,6 +256,22 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         .application()
         .unwrap()
         .add_action(&action_delete_selection);
+
+    // Duplicate Selection
+    action_duplicate_selection.connect_activate(
+        clone!(@weak appwindow => move |_action_duplicate_selection, _| {
+                    let mut strokes = (*appwindow.canvas().sheet().selection().strokes().borrow()).clone();
+                    appwindow.canvas().sheet().strokes().borrow_mut().append(&mut strokes);
+
+                    let offset = na::vector![20.0, 20.0];
+                    appwindow.canvas().sheet().selection().translate_selection(offset);
+                    appwindow.canvas().queue_draw();
+        }),
+    );
+    appwindow
+        .application()
+        .unwrap()
+        .add_action(&action_duplicate_selection);
 
     // Format borders
     action_sheet_format_borders.connect_state_notify(
@@ -698,6 +715,10 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
         .application()
         .unwrap()
         .set_accels_for_action("app.delete-selection", &["Delete"]);
+    appwindow
+        .application()
+        .unwrap()
+        .set_accels_for_action("app.duplicate-selection", &["<Ctrl>v"]);
     appwindow
         .application()
         .unwrap()

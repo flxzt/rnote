@@ -16,6 +16,7 @@
         "--socket=session-bus",
         "--device=dri",
         "--share=ipc",
+        "--share=network",
         "--filesystem=home",
         "--filesystem=xdg-run/gvfsd",
         "--filesystem=xdg-config",

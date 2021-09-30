@@ -636,7 +636,7 @@ impl Canvas {
         priv_.gesture_stylus.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus, x, y| {
             if let Some(_device_tool) = gesture_stylus.device_tool() {
 
-                // Backlog pressure and coords seem to be broken, so its disabled for now
+                // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
                 let data_entries: VecDeque<InputData> = Canvas::retreive_stylus_inputdata(gesture_stylus, false, x, y);
                 let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
@@ -891,7 +891,7 @@ impl Canvas {
 
         if with_backlog {
             if let Some(backlog) = gesture_stylus.backlog() {
-                //dbg!(backlog.len());
+                log::debug!("{}", backlog.len());
 
                 for logentry in backlog {
                     let axes = logentry.axes();

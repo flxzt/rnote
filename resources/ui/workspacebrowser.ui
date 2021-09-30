@@ -14,7 +14,7 @@
           <object class="GtkScrolledWindow">
             <property name="propagate-natural-width">true</property>
             <property name="propagate-natural-height">false</property>
-            <property name="hexpand">false</property>
+            <property name="hexpand">true</property>
             <property name="vexpand">true</property>
             <property name="valign">fill</property>
             <property name="halign">fill</property>

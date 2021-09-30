@@ -20,7 +20,7 @@
         "--filesystem=xdg-run/gvfsd",
         "--filesystem=xdg-config",
         "--env=RUST_BACKTRACE=1",
-        "--env=RUST_LOG=rnote=info",
+        "--env=RUST_LOG=rnote=trace",
         "--env=G_MESSAGES_DEBUG=all"
     ],
     "build-options": {

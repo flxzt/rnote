@@ -99,17 +99,14 @@ impl Renderer {
 
         //let pixmap_size = rtree.svg_node().size.to_screen_size();
         let mut pixmap = tiny_skia::Pixmap::new(
-            node_bounds.width().floor() as u32,
-            node_bounds.height().floor() as u32,
+            node_bounds.width().round() as u32,
+            node_bounds.height().round() as u32,
         )
         .unwrap();
 
         resvg::render(
             &rtree,
-            usvg::FitTo::Size(
-                node_bounds.width().floor() as u32,
-                node_bounds.height().floor() as u32,
-            ),
+            usvg::FitTo::Original,
             pixmap.as_mut(),
         )
         .unwrap();

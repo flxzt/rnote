@@ -620,7 +620,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                 appwindow.canvas().sheet().width() as f32 * scalefactor as f32,
                 appwindow.canvas().sheet().height() as f32 * scalefactor as f32,
             );
-            snapshot.push_clip(&sheet_bounds_scaled);
 
             appwindow.canvas().sheet()
                 .background()
@@ -636,8 +635,14 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             StrokeStyle::draw_strokes(&strokes, &snapshot);
 
-            snapshot.pop();
 
+            cx.rectangle(
+                0.0,
+                0.0,
+                f64::from(appwindow.canvas().sheet().format().borrow().width) * scalefactor,
+                f64::from(appwindow.canvas().sheet().format().borrow().height) * scalefactor,
+            );
+            cx.clip();
             cx.translate(0.0, y_offset);
 
             if let Some(node) = snapshot.to_node() {
@@ -645,6 +650,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             } else {
                 log::error!("failed to get rendernode for created snapshot while printing page no {}", page_nr);
             };
+
         }));
 
         if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){

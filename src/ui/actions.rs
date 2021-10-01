@@ -29,7 +29,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_zoomout = gio::SimpleAction::new("zoomout", None);
     let action_delete_selection = gio::SimpleAction::new("delete-selection", None);
     let action_duplicate_selection = gio::SimpleAction::new("duplicate-selection", None);
-    let action_import_as_svg = gio::SimpleAction::new("import-as-svg", None);
+    let action_import_file = gio::SimpleAction::new("import-file", None);
     let action_export_selection_as_svg = gio::SimpleAction::new("export-selection-as-svg", None);
     let action_export_sheet_as_svg = gio::SimpleAction::new("export-sheet-as-svg", None);
     let action_shortcuts_dialog = gio::SimpleAction::new("shortcuts", None);
@@ -663,14 +663,14 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         .unwrap()
         .add_action(&action_print_sheet);
 
-    // Import as SVG
-    action_import_as_svg.connect_activate(clone!(@weak appwindow => move |_,_| {
+    // Import
+    action_import_file.connect_activate(clone!(@weak appwindow => move |_,_| {
         dialogs::dialog_import_file(&appwindow);
     }));
     appwindow
         .application()
         .unwrap()
-        .add_action(&action_import_as_svg);
+        .add_action(&action_import_file);
 
     // Export selection as SVG
     action_export_selection_as_svg.connect_activate(clone!(@weak appwindow => move |_,_| {
@@ -704,6 +704,10 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
     appwindow
         .application()
         .unwrap()
+        .set_accels_for_action("app.import-file", &["<Ctrl>i"]);
+    appwindow
+        .application()
+        .unwrap()
         .set_accels_for_action("app.quit", &["<Ctrl>q"]);
     appwindow
         .application()
@@ -733,8 +737,4 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
         .application()
         .unwrap()
         .set_accels_for_action("app.tmperaser(true)", &["d"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.warning::TEST", &["<Alt>w"]);
 }

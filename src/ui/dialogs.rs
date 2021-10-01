@@ -1,9 +1,11 @@
 use gtk4::{glib, glib::clone, prelude::*, Builder};
-use gtk4::{FileChooserDialog, FileFilter, MessageDialog, ResponseType, ShortcutsWindow};
+use gtk4::{FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType, ShortcutsWindow};
 
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::utils;
 use crate::{app::RnoteApp, config};
+
+// Message Dialogs
 
 pub fn dialog_shortcuts(appwindow: &RnoteAppWindow) {
     let builder =
@@ -74,40 +76,6 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
     dialog_new_sheet.show();
 }
 
-pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_open_file: FileChooserDialog = builder.object("dialog_open_file").unwrap();
-    let filter = FileFilter::new();
-    filter.add_pattern("*.rnote");
-
-    dialog_open_file.set_transient_for(Some(appwindow));
-    dialog_open_file.set_filter(&filter);
-
-    dialog_open_file.connect_response(clone!(@weak appwindow => move |dialog_open_file, responsetype| {
-            match responsetype {
-                ResponseType::Ok => {
-                    match dialog_open_file.file() {
-                        Some(file) => {
-                            *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().borrow_mut() = Some(file);
-                            appwindow.canvas().set_unsaved_changes(false);
-                            dialog_open_overwrite(&appwindow);
-                        },
-                        None => { log::error!("Can't open file. No file selected.")},
-                    }
-
-                    dialog_open_file.close();
-                },
-                _ => {
-                dialog_open_file.close();
-                }
-            }
-
-        }));
-
-    dialog_open_file.show();
-}
-
 pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
@@ -168,17 +136,65 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
     dialog_open_input_file.show();
 }
 
-pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_open_workspace: FileChooserDialog = builder.object("dialog_open_workspace").unwrap();
+// FileChooserNative Dialogs
 
-    dialog_open_workspace.set_transient_for(Some(appwindow));
+pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
+    let filter = FileFilter::new();
+    filter.add_pattern("*.rnote");
+    filter.set_name(Some(".rnote file"));
+
+    let dialog_open_file: FileChooserNative = FileChooserNative::builder()
+        .title("Open File")
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label("Open")
+        .cancel_label("Cancel")
+        .action(FileChooserAction::Open)
+        .select_multiple(false)
+        .build();
+
+    dialog_open_file.add_filter(&filter);
+
+     dialog_open_file.connect_response(clone!(@weak appwindow => move |dialog_open_file, responsetype| {
+            match responsetype {
+                ResponseType::Accept => {
+                    if let Some(file) = dialog_open_file.file() {
+                        dbg!("opening file");
+                        *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().borrow_mut() = Some(file);
+                        appwindow.canvas().set_unsaved_changes(false);
+
+                        dialog_open_overwrite(&appwindow);
+                    } else {
+                        log::error!("Can't open file. No file selected.");
+                    };
+                },
+                _ => {
+                }
+            }
+
+        }));
+
+    dialog_open_file.show();
+
+    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_open_file);
+}
+
+pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
+    let dialog_open_workspace: FileChooserNative = FileChooserNative::builder()
+        .title("Open Workspace")
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label("Open")
+        .cancel_label("Cancel")
+        .action(FileChooserAction::SelectFolder)
+        .select_multiple(false)
+        .build();
 
     dialog_open_workspace.connect_response(
         clone!(@weak appwindow => move |dialog_open_workspace, responsetype| {
             match responsetype {
-                ResponseType::Ok => {
+                ResponseType::Accept => {
                     match dialog_open_workspace.file() {
                         Some(file) => {
                             if let Some(workspace_path) = file.path() {
@@ -190,31 +206,41 @@ pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
                         None => { log::error!("Can't open workspace. Nothing selected.")},
                     }
 
-                    dialog_open_workspace.close();
                 }
                 _ => {
-                    dialog_open_workspace.close()
                 }
             }
         }),
     );
 
     dialog_open_workspace.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_open_workspace);
 }
 
 pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_save_sheet_as: FileChooserDialog = builder.object("dialog_save_sheet_as").unwrap();
+    let filter = FileFilter::new();
+    filter.add_pattern("*.rnote");
+    filter.set_name(Some(".rnote file"));
 
-    dialog_save_sheet_as.set_transient_for(Some(appwindow));
+    let dialog_save_sheet_as: FileChooserNative = FileChooserNative::builder()
+        .title("Save Sheet As")
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label("Save As")
+        .cancel_label("Cancel")
+        .action(FileChooserAction::Save)
+        .select_multiple(false)
+        .build();
+
+    dialog_save_sheet_as.add_filter(&filter);
 
     dialog_save_sheet_as
         .set_current_name(format!("{}_{}_sheet.rnote", utils::now(), config::APP_NAME).as_str());
 
     dialog_save_sheet_as.connect_response(clone!(@weak appwindow => move |dialog_save_sheet_as, responsetype| {
         match responsetype {
-            ResponseType::Ok => {
+            ResponseType::Accept => {
                 match dialog_save_sheet_as.file() {
                     Some(file) => {
                         if let Err(e) = appwindow.canvas().sheet().save_sheet(&file) {
@@ -227,35 +253,41 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                     },
                     None => { log::error!("Can't save file as. No file selected.")},
                 }
-
-                dialog_save_sheet_as.close();
             }
             _ => {
-                dialog_save_sheet_as.close()
             }
         }
     }));
 
     dialog_save_sheet_as.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_save_sheet_as);
 }
 
 pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_import_file: FileChooserDialog = builder.object("dialog_import_file").unwrap();
     let filter = FileFilter::new();
     filter.add_mime_type("image/svg+xml");
     filter.add_mime_type("image/png");
     filter.add_pattern("*.svg");
     filter.add_pattern("*.png");
+    filter.set_name(Some("PNG / SVG file"));
 
-    dialog_import_file.set_transient_for(Some(appwindow));
-    dialog_import_file.set_filter(&filter);
+    let dialog_import_file: FileChooserNative = FileChooserNative::builder()
+        .title("Import File")
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label("Import")
+        .cancel_label("Cancel")
+        .action(FileChooserAction::Open)
+        .select_multiple(false)
+        .build();
+
+    dialog_import_file.add_filter(&filter);
 
     dialog_import_file.connect_response(
         clone!(@weak appwindow => move |dialog_import_file, responsetype| {
             match responsetype {
-                ResponseType::Ok => {
+                ResponseType::Accept => {
                     match dialog_import_file.file() {
                         Some(file) => {
                             if appwindow.load_in_file(&file).is_err() {
@@ -264,37 +296,41 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
                         },
                         None => { log::error!("unable to import file. No file selected.")},
                     }
-
-                    dialog_import_file.close();
                 }
                 _ => {
-                    dialog_import_file.close()
                 }
             }
         }),
     );
 
     dialog_import_file.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_import_file);
 }
 
 pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_export_selection: FileChooserDialog =
-        builder.object("dialog_export_selection").unwrap();
     let filter = FileFilter::new();
     filter.add_mime_type("image/svg+xml");
     filter.add_pattern("*.svg");
+    filter.set_name(Some("SVG file"));
 
-    dialog_export_selection.set_transient_for(Some(appwindow));
-    dialog_export_selection.set_filter(&filter);
+    let dialog_export_selection: FileChooserNative = FileChooserNative::builder()
+        .title("Export Selection")
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label("Export")
+        .cancel_label("Cancel")
+        .action(FileChooserAction::Save)
+        .select_multiple(false)
+        .build();
+    dialog_export_selection.add_filter(&filter);
 
     dialog_export_selection
         .set_current_name(format!("{}_{}_selection.svg", utils::now(), config::APP_NAME).as_str());
 
     dialog_export_selection.connect_response(clone!(@weak appwindow => move |dialog_export_selection, responsetype| {
             match responsetype {
-                ResponseType::Ok => {
+                ResponseType::Accept => {
                     match dialog_export_selection.file() {
                         Some(file) => {
                             if let Err(e) = appwindow.canvas().sheet().selection().export_selection_as_svg(file) {
@@ -303,28 +339,33 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
                         },
                         None => { log::error!("Unable to export selection. No file selected.")},
                     }
-
-                    dialog_export_selection.close();
                 }
                 _ => {
-                    dialog_export_selection.close()
                 }
             }
         }));
 
     dialog_export_selection.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_selection);
 }
 
 pub fn dialog_export_sheet(appwindow: &RnoteAppWindow) {
-    let builder =
-        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
-    let dialog_export_sheet: FileChooserDialog = builder.object("dialog_export_sheet").unwrap();
     let filter = FileFilter::new();
     filter.add_mime_type("image/svg+xml");
     filter.add_pattern("*.svg");
+    filter.set_name(Some("SVG file"));
 
-    dialog_export_sheet.set_transient_for(Some(appwindow));
-    dialog_export_sheet.set_filter(&filter);
+    let dialog_export_sheet: FileChooserNative = FileChooserNative::builder()
+        .title("Export Sheet")
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label("Export")
+        .cancel_label("Cancel")
+        .action(FileChooserAction::Save)
+        .select_multiple(false)
+        .build();
+    dialog_export_sheet.add_filter(&filter);
 
     dialog_export_sheet
         .set_current_name(format!("{}_{}_sheet.svg", utils::now(), config::APP_NAME).as_str());
@@ -332,8 +373,7 @@ pub fn dialog_export_sheet(appwindow: &RnoteAppWindow) {
     dialog_export_sheet.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {
             match responsetype {
-                ResponseType::Ok => {
-                    dialog_export_sheet.close();
+                ResponseType::Accept => {
                     match dialog_export_sheet.file() {
                         Some(file) => {
                             if let Err(e) = appwindow.canvas().sheet().export_sheet_as_svg(file) {
@@ -344,11 +384,12 @@ pub fn dialog_export_sheet(appwindow: &RnoteAppWindow) {
                     }
                 }
                 _ => {
-                    dialog_export_sheet.close()
                 }
             }
         }),
     );
 
     dialog_export_sheet.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_sheet);
 }

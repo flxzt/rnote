@@ -1,7 +1,9 @@
 mod imp {
+    use std::cell::RefCell;
     use std::{cell::Cell, rc::Rc};
 
     use adw::{prelude::*, subclass::prelude::*};
+    use gtk4::FileChooserNative;
     use gtk4::{
         gdk, gio, glib, glib::clone, subclass::prelude::*, Box, Button, CompositeTemplate,
         CssProvider, Entry, Grid, Inhibit, Overlay, PackType, ScrolledWindow, StyleContext,
@@ -18,6 +20,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
     pub struct RnoteAppWindow {
         pub settings: gio::Settings,
+        pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
         #[template_child]
         pub main_grid: TemplateChild<Grid>,
         #[template_child]
@@ -64,6 +67,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 settings: gio::Settings::new(config::APP_ID),
+                filechoosernative: Rc::new(RefCell::new(None)),
                 main_grid: TemplateChild::<Grid>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
@@ -241,13 +245,10 @@ mod imp {
     impl AdwApplicationWindowImpl for RnoteAppWindow {}
 }
 
-use std::{boxed, error::Error, path::PathBuf};
+use std::{boxed, cell::RefCell, error::Error, path::PathBuf, rc::Rc};
 
 use adw::prelude::*;
-use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, Entry, Grid,
-    Overlay, ScrolledWindow,
-};
+use gtk4::{Application, Box, Button, Entry, FileChooserNative, Grid, Overlay, ScrolledWindow, gdk, gio, glib, glib::clone, subclass::prelude::*};
 
 use crate::{
     app::RnoteApp,
@@ -272,6 +273,10 @@ impl RnoteAppWindow {
 
     pub fn app_settings(&self) -> &gio::Settings {
         &imp::RnoteAppWindow::from_instance(self).settings
+    }
+
+    pub fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
+        imp::RnoteAppWindow::from_instance(self).filechoosernative.clone()
     }
 
     pub fn main_grid(&self) -> Grid {

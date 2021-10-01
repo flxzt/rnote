@@ -13,16 +13,14 @@
     "finish-args": [
         "--socket=wayland",
         "--socket=fallback-x11",
-        "--socket=session-bus",
+        "--own-name=com.github.flxzt.rnote.*",
         "--device=dri",
         "--share=ipc",
-        "--filesystem=xdg-run/gvfsd",
         "--filesystem=xdg-config",
+        "--filesystem=xdg-run/gvfsd",
         "--env=RUST_BACKTRACE=1",
         "--env=RUST_LOG=rnote=trace",
-        "--env=G_MESSAGES_DEBUG=all",
-        "--log-system-bus",
-        "--log-session-bus"
+        "--env=G_MESSAGES_DEBUG=all"
     ],
     "build-options": {
         "append-path": "/usr/lib/sdk/rust-stable/bin",

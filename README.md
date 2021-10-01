@@ -16,21 +16,21 @@ This is my first Rust and GTK project and I am learning as I go along. Its not u
 * Stroke history list widget
     * with the ability to move them up and down the history / layers
 * Stroke trash restorer
-    *  with a preview of the deleted strokes ( as gtk4::Textures )
-* Dual sheets (e.g. one for imported pdfs and one for extra notes)
+    *  with a preview of the deleted strokes
+* Dual sheet view (e.g. one for imported pdfs and one for extra notes)
 
 ## To-Do
 - [x] Switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
 - [ ] Template deduplication when loading in .rnote save files.
-- [x] ~~PDF Import~~, PDF Export and printing option
+- [x] printing / PDF export
+- [ ] PDF import
 - [x] Picture import
-- [] Picture export
+- [ ] export as picture
 - [ ] Implement bezier curve stroke with variable stroke width (see this paper: [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf))
 
 ## Screenshots
-Rnote is a WIP project, so don't expect too much. :)
 
-![2021-08-10-rnote.jpg](./resources/screenshots/main-window.png)
+![2021-08-10-rnote.jpg](./resources/screenshots/main_window_dark.png)
 
 ### Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.json`.

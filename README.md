@@ -12,6 +12,12 @@ One main consideration is that it is vector based, which should make it very fle
 **Disclaimer**  
 This is my first Rust and GTK project and I am learning as I go along. Its not unlikely to blow up your computer. ;)
 
+## Installation
+Rnote is available as flatpak on flathub:
+
+<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+
+
 ## Feature Ideas:
 * Stroke history list widget
     * with the ability to move them up and down the history / layers

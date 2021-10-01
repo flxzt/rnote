@@ -6,6 +6,7 @@
 /flatpak-repo
 /flatpak-app
 /target
+/vendor
 /.editorconfig
 /.vscode
 src/config.rs

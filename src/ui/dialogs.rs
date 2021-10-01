@@ -1,9 +1,26 @@
 use gtk4::{glib, glib::clone, prelude::*, Builder};
-use gtk4::{FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType, ShortcutsWindow};
+use gtk4::{AboutDialog, FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType, ShortcutsWindow};
 
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::utils;
 use crate::{app::RnoteApp, config};
+
+// About Dialog
+pub fn dialog_about(appwindow: &RnoteAppWindow) {
+        let aboutdialog = AboutDialog::builder()
+            .modal(true)
+            .transient_for(appwindow)
+            .program_name(config::APP_NAME)
+            .comments("Create handwritten notes")
+            .logo_icon_name(config::APP_ID)
+            .website(config::APP_WEBSITE)
+            .authors(config::APP_AUTHORS.iter().map(|&s| String::from(s)).collect())
+            .license_type(config::APP_LICENSE)
+            .version(config::APP_VERSION)
+            .build();
+
+    aboutdialog.show();
+}
 
 // Message Dialogs
 

@@ -2,14 +2,13 @@ use std::{cell::Cell, rc::Rc};
 
 use crate::{
     app::RnoteApp,
-    config,
     pens::{shaper, PenStyle},
     strokes::{render, StrokeStyle},
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gio, glib, glib::clone, graphene, prelude::*, AboutDialog, ArrowType, Box, Grid, PackType,
+    gio, glib, glib::clone, graphene, prelude::*, ArrowType, Box, Grid, PackType,
     PositionType, PrintOperation, PrintOperationAction, ScrolledWindow, Snapshot, Unit,
 };
 
@@ -354,19 +353,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // About Dialog
     action_about.connect_activate(clone!(@weak appwindow => move |_, _| {
-        let aboutdialog = AboutDialog::builder()
-            .modal(true)
-            .transient_for(&appwindow)
-            .program_name(config::APP_NAME)
-            .comments("A simple note taking application.")
-            .logo_icon_name(config::APP_ID)
-            .website(config::APP_WEBSITE)
-            .authors(config::APP_AUTHORS.iter().map(|&s| String::from(s)).collect())
-            .license_type(config::APP_LICENSE)
-            .version(config::APP_VERSION)
-            .build();
-
-    aboutdialog.show();
+        dialogs::dialog_about(&appwindow);
     }));
     appwindow.application().unwrap().add_action(&action_about);
 

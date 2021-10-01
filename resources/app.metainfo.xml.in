@@ -54,6 +54,11 @@
   </provides>
 
   <releases>
+    <release version="0.1.1" date="2021-10-01">
+      <description>
+        <p>using native filechooser dialogs</p>
+      </description>
+    </release>
     <release version="0.1.0" date="2021-09-30">
       <description>
         <p>The initial release</p>

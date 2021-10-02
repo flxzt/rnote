@@ -68,6 +68,7 @@
           <object class="GtkBox">
             <property name="orientation">horizontal</property>
             <property name="homogeneous">true</property>
+            <property name="spacing">24</property>
             <property name="margin-top">12</property>
             <property name="margin-bottom">12</property>
             <property name="margin-start">12</property>

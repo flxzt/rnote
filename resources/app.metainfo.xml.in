@@ -4,7 +4,7 @@
   <id>@APP_ID@</id>
   <metadata_license>CC0</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <name>@APP_NAME@</name>
+  <name>Rnote</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   <summary>Create handwritten notes</summary>
 

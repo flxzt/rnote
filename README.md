@@ -6,7 +6,7 @@
 # Rnote
 A simple note taking application written in Rust and GTK4.
 
-My motivation for this project is to create a simple but functional note taking application for freehand drawing or annotating pictures or documents. It eventually should be able to import / export various media file formats.  
+Rnote aims to be a simple but functional note taking application for freehand drawing or annotating pictures or documents. It eventually should be able to import / export various media file formats.  
 One main consideration is that it is vector based, which should make it very flexible in editing and altering the contents.
 
 **Disclaimer**  
@@ -36,7 +36,10 @@ Rnote is available as  a flatpak on Flathub:
 
 ## Screenshots
 
-![2021-08-10-rnote.jpg](./resources/screenshots/main_window_dark.png)
+![main_window_dark](./resources/screenshots/main_window_dark.png)
+![main_window_light](./resources/screenshots/main_window_light.png)
+![multiple_pages](./resources/screenshots/multiple_pages.png)
+![selection](./resources/screenshots/selection.png)
 
 ### Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.json`.

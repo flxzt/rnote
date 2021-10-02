@@ -86,6 +86,46 @@
                   <attribute name="action">app.predefined-format</attribute>
                   <attribute name="target">a3-300dpi-landscape</attribute>
                 </item>
+                <item>
+                  <attribute name="label">US-letter 150DPI portrait</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">us-letter-150dpi-portrait</attribute>
+                </item>
+                <item>
+                  <attribute name="label">US-letter 150DPI landscape</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">us-letter-150dpi-landscape</attribute>
+                </item>
+                <item>
+                  <attribute name="label">US-letter 300DPI portrait</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">us-letter-300dpi-portrait</attribute>
+                </item>
+                <item>
+                  <attribute name="label">US-letter 300DPI landscape</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">us-letter-300dpi-landscape</attribute>
+                </item>
+                <item>
+                  <attribute name="label">US-legal 150DPI portrait</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">us-legal-150dpi-portrait</attribute>
+                </item>
+                <item>
+                  <attribute name="label">US-legal 150DPI landscape</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">us-legal-150dpi-landscape</attribute>
+                </item>
+                <item>
+                  <attribute name="label">US-legal 300DPI portrait</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">us-legal-300dpi-portrait</attribute>
+                </item>
+                <item>
+                  <attribute name="label">US-legal 300DPI landscape</attribute>
+                  <attribute name="action">app.predefined-format</attribute>
+                  <attribute name="target">us-legal-300dpi-landscape</attribute>
+                </item>
               </section>
               <section>
                 <submenu>

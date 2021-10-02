@@ -322,6 +322,30 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                 "a3-300dpi-landscape" => {
                     appwindow.application().unwrap().activate_action("sheet-format", Some(&(3508, 4961, 300).to_variant()));
                 },
+                "us-letter-150dpi-portrait" => {
+                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1125, 1500, 150).to_variant()));
+                },
+                "us-letter-150dpi-landscape" => {
+                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1500, 1125, 150).to_variant()));
+                },
+                "us-letter-300dpi-portrait" => {
+                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(2250, 3000, 300).to_variant()));
+                },
+                "us-letter-300dpi-landscape" => {
+                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(3000, 2250, 300).to_variant()));
+                },
+                "us-legal-150dpi-portrait" => {
+                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1125, 1950, 150).to_variant()));
+                },
+                "us-legal-150dpi-landscape" => {
+                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1950, 1125, 150).to_variant()));
+                },
+                "us-legal-300dpi-portrait" => {
+                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(2250, 3900, 300).to_variant()));
+                },
+                "us-legal-300dpi-landscape" => {
+                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(3900, 2250, 300).to_variant()));
+                },
                 "custom" => {
                     // Is here to deactivate the radio buttons in canvasmenu
                 }

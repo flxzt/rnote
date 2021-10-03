@@ -7,9 +7,6 @@
     <child>
       <object class="GtkMenuButton" id="menubutton">
         <property name="icon_name">open-menu</property>
-        <style>
-          <class name="flat" />
-        </style>
       </object>
     </child>
     <child>

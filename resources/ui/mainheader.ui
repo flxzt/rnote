@@ -41,27 +41,19 @@
                 <property name="transition_duration">300</property>
                 <child>
                   <object class="GtkBox">
-                    <property name="homogeneous">True</property>
+                    <property name="homogeneous">true</property>
+                    <property name="spacing">6</property>
+                    <property name="margin-end">24</property>
                     <child>
                       <object class="GtkButton" id="add_page_button">
                         <property name="icon_name">add-page-symbolic</property>
                         <property name="tooltip_text">add page</property>
-                        <property name="margin-start">0</property>
-                        <property name="margin-end">0</property>
-                        <style>
-                          <class name="flat" />
-                        </style>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton" id="fit_to_format_button">
                         <property name="icon_name">fit-to-format-symbolic</property>
                         <property name="tooltip_text">fit to format</property>
-                        <property name="margin-start">6</property>
-                        <property name="margin-end">6</property>
-                        <style>
-                          <class name="flat" />
-                        </style>
                       </object>
                     </child>
                   </object>
@@ -69,31 +61,15 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox">
-                <property name="homogeneous">True</property>
-                <property name="margin-start">0</property>
-                <property name="margin-end">0</property>
-                <style>
-                  <class name="linked" />
-                </style>
-                <child>
-                  <object class="GtkButton" id="undo_button">
-                    <property name="icon_name">edit-undo-symbolic</property>
-                    <property name="tooltip_text">undo last stroke</property>
-                    <style>
-                      <class name="flat" />
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="redo_button">
-                    <property name="icon_name">edit-redo-symbolic</property>
-                    <property name="tooltip_text">redo last stroke</property>
-                    <style>
-                      <class name="flat" />
-                    </style>
-                  </object>
-                </child>
+              <object class="GtkButton" id="undo_button">
+                <property name="icon_name">edit-undo-symbolic</property>
+                <property name="tooltip_text">undo last stroke</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="redo_button">
+                <property name="icon_name">edit-redo-symbolic</property>
+                <property name="tooltip_text">redo last stroke</property>
               </object>
             </child>
           </object>

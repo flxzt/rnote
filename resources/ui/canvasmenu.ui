@@ -7,9 +7,6 @@
     <child>
       <object class="GtkMenuButton" id="menubutton">
         <property name="icon_name">document-properties-symbolic</property>
-        <style>
-          <class name="flat" />
-        </style>
       </object>
     </child>
     <child>

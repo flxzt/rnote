@@ -10,7 +10,7 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         let aboutdialog = AboutDialog::builder()
             .modal(true)
             .transient_for(appwindow)
-            .program_name(config::APP_NAME)
+            .program_name("Rnote")
             .comments("Create handwritten notes")
             .logo_icon_name(config::APP_ID)
             .website(config::APP_WEBSITE)

@@ -271,7 +271,10 @@ impl ShapeStroke {
                 ref mut pos,
             } => {
                 let delta = inputdata.pos() - *pos;
-                shape.half_extents = delta.scale(0.5).abs();
+                if delta[0] >= 0.0 && delta[1] >= 0.0 {
+                    shape.half_extents = delta.scale(0.5);
+                };
+
             }
             ShapeStyle::Ellipse {
                 ref mut shape,

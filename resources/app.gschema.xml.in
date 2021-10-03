@@ -30,7 +30,7 @@
       <summary>Color scheme preference</summary>
     </key>
     <key name="mouse-drawing" type="b">
-      <default>false</default>
+      <default>true</default>
       <summary>Enable mouse input for drawing</summary>
     </key>
     <key name="righthanded" type="b">

@@ -51,7 +51,7 @@
           </section>
           <section>
             <item>
-              <attribute name="label">Shortcuts</attribute>
+              <attribute name="label">Keyboard Shortcuts</attribute>
               <attribute name="action">app.shortcuts</attribute>
             </item>
             <item>

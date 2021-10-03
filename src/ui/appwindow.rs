@@ -383,18 +383,18 @@ impl RnoteAppWindow {
                     .default_theme_toggle()
                     .set_active(true);
             }
-            adw::ColorScheme::PreferLight => {
+            adw::ColorScheme::ForceLight => {
                 self.app_settings()
-                    .set_string("color-scheme", "prefer-light")
+                    .set_string("color-scheme", "force-light")
                     .unwrap();
                 self.mainheader()
                     .appmenu()
                     .light_theme_toggle()
                     .set_active(true);
             }
-            adw::ColorScheme::PreferDark => {
+            adw::ColorScheme::ForceDark => {
                 self.app_settings()
-                    .set_string("color-scheme", "prefer-dark")
+                    .set_string("color-scheme", "force-dark")
                     .unwrap();
                 self.mainheader()
                     .appmenu()
@@ -529,11 +529,11 @@ impl RnoteAppWindow {
             self.app_settings().string("workspace-dir").as_str(),
         ));
 
-        // prefer dark / light theme
+        // color schemes
         match self.app_settings().string("color-scheme").as_str() {
             "default" => self.set_color_scheme(adw::ColorScheme::Default),
-            "prefer-light" => self.set_color_scheme(adw::ColorScheme::PreferLight),
-            "prefer-dark" => self.set_color_scheme(adw::ColorScheme::PreferDark),
+            "force-light" => self.set_color_scheme(adw::ColorScheme::ForceLight),
+            "force-dark" => self.set_color_scheme(adw::ColorScheme::ForceDark),
             _ => {
                 log::error!("failed to load setting color-scheme, unsupported string as key")
             }

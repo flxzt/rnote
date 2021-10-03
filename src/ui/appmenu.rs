@@ -138,7 +138,7 @@ impl AppMenu {
         self.light_theme_toggle().connect_toggled(
             clone!(@weak appwindow => move |light_theme_toggle| {
                 if light_theme_toggle.is_active() {
-                    appwindow.set_color_scheme(adw::ColorScheme::PreferLight);
+                    appwindow.set_color_scheme(adw::ColorScheme::ForceLight);
                 }
             }),
         );
@@ -146,7 +146,7 @@ impl AppMenu {
         self.dark_theme_toggle().connect_active_notify(
             clone!(@weak appwindow => move |dark_theme_toggle| {
                 if dark_theme_toggle.is_active() {
-                    appwindow.set_color_scheme(adw::ColorScheme::PreferDark);
+                    appwindow.set_color_scheme(adw::ColorScheme::ForceDark);
                 }
             }),
         );

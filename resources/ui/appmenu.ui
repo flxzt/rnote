@@ -85,7 +85,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="light_theme_toggle">
-                <property name="tooltip_text">Prefer light colors</property>
+                <property name="tooltip_text">Use light colors</property>
                 <property name="height-request">50</property>
                 <property name="width-request">50</property>
                 <property name="halign">center</property>
@@ -98,7 +98,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="dark_theme_toggle">
-                <property name="tooltip_text">Prefer dark colors</property>
+                <property name="tooltip_text">Use dark colors</property>
                 <property name="height-request">50</property>
                 <property name="width-request">50</property>
                 <property name="halign">center</property>

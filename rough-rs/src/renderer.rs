@@ -1,5 +1,5 @@
 use crate::{math, options::Options};
-use svg::node::element::{self};
+use svg::node::element::path;
 
 fn offset(min: f64, max: f64, options: &Options, _roughness_gain: f64) -> f64 {
     let roughness_gain = 1.0;
@@ -17,7 +17,7 @@ pub(crate) fn line(
     options: &Options,
     move_to: bool,
     overlay: bool,
-) -> element::Path {
+) -> Vec<path::Command> {
     let len = (end - start).magnitude();
 
     let roughness_gain = if len < 200.0 {
@@ -44,7 +44,7 @@ pub(crate) fn line(
     let random_half = || offset_opt(half_offset, options, roughness_gain);
     let random_full = || offset_opt(offset, options, roughness_gain);
 
-    let mut data = element::path::Data::new();
+    let mut commands = Vec::new();
 
     if move_to {
         if overlay {
@@ -61,7 +61,10 @@ pub(crate) fn line(
                     random_half()
                 };
 
-            data = data.move_to((x, y));
+            commands.push(path::Command::Move(
+                path::Position::Absolute,
+                path::Parameters::from((x, y)),
+            ));
         } else {
             let x = start[0]
                 + if options.preserve_vertices {
@@ -76,7 +79,10 @@ pub(crate) fn line(
                     offset_opt(offset, options, roughness_gain)
                 };
 
-            data = data.move_to((x, y));
+            commands.push(path::Command::Move(
+                path::Position::Absolute,
+                path::Parameters::from((x, y)),
+            ));
         }
     }
 
@@ -94,16 +100,25 @@ pub(crate) fn line(
                 random_half()
             };
 
-        data = data.cubic_curve_to((
-            (
-                mid_disp_x + start[0] + (end[0] - start[0]) * diverge_point + random_half(),
-                mid_disp_y + start[1] + (end[1] - start[1]) * diverge_point + random_half(),
-            ),
-            (
-                mid_disp_x + start[0] + 2.0 * (end[0] - start[0]) * diverge_point + random_half(),
-                mid_disp_y + start[1] + 2.0 * (end[1] - start[1]) * diverge_point + random_half(),
-            ),
-            (x2, y2),
+        commands.push(path::Command::CubicCurve(
+            path::Position::Absolute,
+            path::Parameters::from((
+                (
+                    mid_disp_x + start[0] + (end[0] - start[0]) * diverge_point + random_half(),
+                    mid_disp_y + start[1] + (end[1] - start[1]) * diverge_point + random_half(),
+                ),
+                (
+                    mid_disp_x
+                        + start[0]
+                        + 2.0 * (end[0] - start[0]) * diverge_point
+                        + random_half(),
+                    mid_disp_y
+                        + start[1]
+                        + 2.0 * (end[1] - start[1]) * diverge_point
+                        + random_half(),
+                ),
+                (x2, y2),
+            )),
         ));
     } else {
         let x2 = end[0]
@@ -119,20 +134,29 @@ pub(crate) fn line(
                 random_full()
             };
 
-        data = data.cubic_curve_to((
-            (
-                mid_disp_x + start[0] + (end[0] - start[0]) * diverge_point + random_full(),
-                mid_disp_y + start[1] + (end[1] - start[1]) * diverge_point + random_full(),
-            ),
-            (
-                mid_disp_x + start[0] + 2.0 * (end[0] - start[0]) * diverge_point + random_full(),
-                mid_disp_y + start[1] + 2.0 * (end[1] - start[1]) * diverge_point + random_full(),
-            ),
-            (x2, y2),
+        commands.push(path::Command::CubicCurve(
+            path::Position::Absolute,
+            path::Parameters::from((
+                (
+                    mid_disp_x + start[0] + (end[0] - start[0]) * diverge_point + random_full(),
+                    mid_disp_y + start[1] + (end[1] - start[1]) * diverge_point + random_full(),
+                ),
+                (
+                    mid_disp_x
+                        + start[0]
+                        + 2.0 * (end[0] - start[0]) * diverge_point
+                        + random_full(),
+                    mid_disp_y
+                        + start[1]
+                        + 2.0 * (end[1] - start[1]) * diverge_point
+                        + random_full(),
+                ),
+                (x2, y2),
+            )),
         ));
     }
 
-    element::Path::new().set("d", data)
+    commands
 }
 
 pub(crate) fn cubic_bezier(
@@ -141,8 +165,8 @@ pub(crate) fn cubic_bezier(
     second: na::Vector2<f64>,
     end: na::Vector2<f64>,
     options: &Options,
-) -> element::Path {
-    let mut data = element::path::Data::new();
+) -> Vec<path::Command> {
+    let mut commands = Vec::new();
 
     let ros = [
         options.max_randomness_offset,
@@ -157,7 +181,10 @@ pub(crate) fn cubic_bezier(
     };
     for i in 0..iterations {
         if i == 0 {
-            data = data.move_to((start[0], start[1]));
+            commands.push(path::Command::Move(
+                path::Position::Absolute,
+                path::Parameters::from((start[0], start[1])),
+            ));
         } else {
             let delta = if options.preserve_vertices {
                 na::vector![0.0, 0.0]
@@ -168,7 +195,10 @@ pub(crate) fn cubic_bezier(
                 ]
             };
 
-            data = data.move_to((start[0] + delta[0], start[1] + delta[1]));
+            commands.push(path::Command::Move(
+                path::Position::Absolute,
+                path::Parameters::from((start[0] + delta[0], start[1] + delta[1])),
+            ));
         }
 
         let end_ = if options.preserve_vertices {
@@ -180,7 +210,9 @@ pub(crate) fn cubic_bezier(
             ]
         };
 
-        data = data.cubic_curve_to((
+        commands.push(path::Command::CubicCurve(
+            path::Position::Absolute,
+            path::Parameters::from((
             (
                 first[0] + offset_opt(ros[i], options, roughness_gain),
                 first[1] + offset_opt(ros[i], options, roughness_gain),
@@ -190,8 +222,8 @@ pub(crate) fn cubic_bezier(
                 second[1] + offset_opt(ros[i], options, roughness_gain),
             ),
             (end_[0], end_[1]),
-        ))
+        ))));
     }
 
-    element::Path::new().set("d", data)
+    commands
 }

@@ -7,8 +7,8 @@ use crate::{
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
-use rough_rs::generator::RoughGenerator;
 use serde::{Deserialize, Serialize};
+use svg::node::element::path;
 
 use super::StrokeBehaviour;
 
@@ -345,40 +345,48 @@ impl BrushStroke {
         &self,
         offset: na::Vector2<f64>,
     ) -> Result<String, Box<dyn Error>> {
-        let mut rough_generator = RoughGenerator::new(None);
-        rough_generator.config.roughness = 0.6;
-        rough_generator.config.seed = Some(1);
-        rough_generator.config.preserve_vertices = true;
-        rough_generator.config.stroke = Some(rough_rs::utils::Color::new(
-            self.brush.color.r,
-            self.brush.color.g,
-            self.brush.color.b,
-            self.brush.color.a,
-        ));
+        let mut commands = Vec::new();
 
-        let mut svg = String::new();
-
-        for (((element_start, element_one), element_two), element_end) in self
+        for (_i, (((element_first, element_second), element_third), element_forth)) in self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
-            // Overlapping the elements make the strokes actually look nicer
-            .step_by(1)
+            .step_by(2)
+            .enumerate()
         {
-            rough_generator.config.stroke_width =
-                self.brush.width() * element_one.inputdata.pressure();
+            let cubic_bezier = compose::CubicBezier {
+                start: element_second.inputdata.pos() + offset,
+                // first control points is the reflection of the previous second
+                cp1: element_second.inputdata.pos()
+                    + (element_second.inputdata.pos() - element_first.inputdata.pos())
+                    + offset,
+                cp2: element_third.inputdata.pos() + offset,
+                end: element_forth.inputdata.pos() + offset,
+            };
 
-            let svg_path = rough_generator.cubic_bezier(
-                element_start.inputdata.pos() + offset,
-                (element_one.inputdata.pos().scale(2.0) - element_start.inputdata.pos()) + offset,
-                element_two.inputdata.pos() + offset,
-                element_end.inputdata.pos() + offset,
-                None,
-            );
-            svg += rough_rs::node_to_string(&svg_path)?.as_str();
+            let start_width = element_second.inputdata.pressure() * self.brush.width();
+            let end_width = element_third.inputdata.pressure() * self.brush.width();
+            //let start_width = 20.0;
+            //let end_width = start_width;
+
+            commands.append(&mut compose::cubic_bezier_variable_width(
+                cubic_bezier,
+                start_width,
+                end_width,
+            ));
         }
+
+        //commands.append()
+
+        let path = svg::node::element::Path::new()
+            .set("stroke", self.brush.color.to_css_color())
+            .set("fill", "none")
+            //.set("stroke-width", self.brush.width())
+            .set("stroke-width", 1.0)
+            .set("d", path::Data::from(commands));
+        let svg = rough_rs::node_to_string(&path)?.to_string();
 
         //println!("{}", svg);
         Ok(svg)

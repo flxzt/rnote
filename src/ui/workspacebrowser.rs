@@ -64,7 +64,7 @@ use gtk4::{
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
     Widget,
 };
-use gtk4::{pango, Image, MultiSorter, Orientation};
+use gtk4::{DirectoryList, Image, ListView, MultiSorter, Orientation, pango};
 
 glib::wrapper! {
     pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
@@ -82,6 +82,14 @@ impl WorkspaceBrowser {
         let workspacebrowser: Self =
             glib::Object::new(&[]).expect("Failed to create `WorkspaceBrowser`");
         workspacebrowser
+    }
+
+    pub fn primary_dirlist(&self) -> DirectoryList {
+        imp::WorkspaceBrowser::from_instance(self).primary_dirlist.clone()
+    }
+
+    pub fn primary_list(&self) -> ListView {
+        imp::WorkspaceBrowser::from_instance(self).primary_list.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

@@ -572,6 +572,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             if let Err(e) = appwindow.canvas().sheet().save_sheet(&output_file) {
                 log::error!("failed to save sheet, {}", e);
                 *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow_mut() = None;
+            } else {
             }
         }
     }));

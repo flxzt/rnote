@@ -1,4 +1,4 @@
-use svg::node::element;
+use svg::node::element::{self, path};
 
 use crate::{options::Options, renderer};
 
@@ -33,23 +33,23 @@ impl RoughGenerator {
         end: na::Vector2<f64>,
         options: Option<&Options>,
     ) -> element::Path {
-        let svg_path = renderer::line(start, end, options.unwrap_or(&self.config), true, false);
+        let commands = renderer::line(start, end, options.unwrap_or(&self.config), true, false);
 
-        self.config.apply_to_path(svg_path)
+        self.config.apply_to_path(element::Path::new().set("d", path::Data::from(commands)))
     }
 
     /// Generating a cubic bezier curve
     pub fn cubic_bezier(
         &mut self,
         start: na::Vector2<f64>,
-        first: na::Vector2<f64>,
-        second: na::Vector2<f64>,
+        cp1: na::Vector2<f64>,
+        cp2: na::Vector2<f64>,
         end: na::Vector2<f64>,
         options: Option<&Options>,
     ) -> element::Path {
-        let svg_path =
-            renderer::cubic_bezier(start, first, second, end, options.unwrap_or(&self.config));
+        let commands =
+            renderer::cubic_bezier(start, cp1, cp2, end, options.unwrap_or(&self.config));
 
-        self.config.apply_to_path(svg_path)
+        self.config.apply_to_path(element::Path::new().set("d", path::Data::from(commands)))
     }
 }

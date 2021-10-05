@@ -1,39 +1,25 @@
-use std::{cell::RefCell, error::Error, rc::Rc};
+use std::{error::Error};
 
 use gtk4::{gdk, gio};
 use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
-use tera::Tera;
 
 use crate::{
-    config,
     strokes::{self, brushstroke::BrushStroke, compose, render, InputData, StrokeBehaviour},
     utils,
 };
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
-pub enum TemplateType {
+pub enum BrushStyle {
     Linear,
     CubicBezier,
     Experimental,
-    Custom(String),
+    CustomTemplate(String),
 }
 
-impl Default for TemplateType {
+impl Default for BrushStyle {
     fn default() -> Self {
         Self::CubicBezier
-    }
-}
-
-impl TemplateType {
-    pub fn template_name(&self) -> String {
-        // Must match file names in resources as they will be installed pkgdatadir and templates_config_dir
-        match self {
-            Self::Linear => String::from("brushstroke-linear"),
-            Self::CubicBezier => String::from("brushstroke-cubicbezier"),
-            Self::Experimental => String::from("brushstroke-experimental"),
-            Self::Custom(_) => String::from("brushstroke-custom"),
-        }
     }
 }
 
@@ -42,10 +28,7 @@ pub struct Brush {
     width: f64,
     sensitivity: f64,
     pub color: strokes::Color,
-    // Templates get Rc::clone()'d into the individual strokes so overwriting templates does not affect existing strokes.
-    #[serde(skip, default = "Brush::default_brush_templates")]
-    pub templates: Rc<RefCell<Tera>>,
-    pub current_template: TemplateType,
+    pub current_style: BrushStyle,
 }
 
 impl Default for Brush {
@@ -54,8 +37,7 @@ impl Default for Brush {
             width: Self::WIDTH_DEFAULT,
             sensitivity: Self::SENSITIVITY_DEFAULT,
             color: strokes::Color::from_gdk(Self::COLOR_DEFAULT),
-            templates: Self::default_brush_templates(),
-            current_template: TemplateType::default(),
+            current_style: BrushStyle::default(),
         }
     }
 }
@@ -90,63 +72,6 @@ impl Brush {
     pub fn set_sensitivity(&mut self, sensitivity: f64) {
         self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
     }
-
-    pub fn replace_custom_template(&self, file: &gio::File) -> Result<(), Box<dyn Error>> {
-        let template_string = utils::load_file_contents(file)?;
-
-        self.templates.borrow_mut().add_raw_template(
-            TemplateType::Custom(String::from(""))
-                .template_name()
-                .as_str(),
-            template_string.as_str(),
-        )?;
-
-        Ok(())
-    }
-
-    pub fn register_custom_template(&self) -> Result<(), Box<dyn Error>> {
-        if let TemplateType::Custom(template_string) = self.current_template.to_owned() {
-            self.templates.borrow_mut().add_raw_template(
-                TemplateType::Custom(String::from(""))
-                    .template_name()
-                    .as_str(),
-                template_string.as_str(),
-            )?;
-        }
-        Ok(())
-    }
-
-    pub fn default_brush_templates() -> Rc<RefCell<Tera>> {
-        let mut templates = Tera::default();
-
-        let brushstroke_linear_template_path = String::from(config::APP_IDPATH)
-            + "templates/"
-            + TemplateType::Linear.template_name().as_str()
-            + ".svg.templ";
-        templates
-            .add_raw_template(
-                TemplateType::Linear.template_name().as_str(),
-                utils::load_string_from_resource(brushstroke_linear_template_path.as_str())
-                    .expect("failed to load string from resource")
-                    .as_str(),
-            )
-            .expect("Failed to add linear template for brushstroke to `templates`");
-
-        let brushstroke_cubicbezier_template_path = String::from(config::APP_IDPATH)
-            + "templates/"
-            + TemplateType::CubicBezier.template_name().as_str()
-            + ".svg.templ";
-        templates
-            .add_raw_template(
-                TemplateType::CubicBezier.template_name().as_str(),
-                utils::load_string_from_resource(brushstroke_cubicbezier_template_path.as_str())
-                    .expect("failed to load string from resource")
-                    .as_str(),
-            )
-            .expect("Failed to add cubicbezier template for brushstroke to `templates`");
-
-        Rc::new(RefCell::new(templates))
-    }
 }
 
 pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn Error>> {
@@ -157,8 +82,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
     let mut brush = Brush::default();
     let renderer = render::Renderer::default();
 
-    brush.replace_custom_template(file)?;
-    brush.current_template = TemplateType::Custom(utils::load_file_contents(file)?);
+    brush.current_style = BrushStyle::CustomTemplate(utils::load_file_contents(file)?);
 
     for _i in 0..=strokes_uniform.sample(&mut rng) {
         let validation_stroke =

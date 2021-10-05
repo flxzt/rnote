@@ -357,21 +357,6 @@ impl StrokeStyle {
         }
     }
 
-    pub fn register_custom_templates(strokes: &mut Vec<Self>) -> Result<(), Box<dyn Error>> {
-        for stroke in strokes {
-            match stroke {
-                StrokeStyle::MarkerStroke(_markerstroke) => {}
-                StrokeStyle::BrushStroke(brushstroke) => {
-                    brushstroke.brush.register_custom_template()?;
-                }
-                StrokeStyle::ShapeStroke(_shapestroke) => {}
-                StrokeStyle::VectorImage(_vectorimage) => {}
-                StrokeStyle::BitmapImage(_bitmapimage) => {}
-            }
-        }
-        Ok(())
-    }
-
     pub fn draw_strokes(strokes: &[Self], snapshot: &Snapshot) {
         for stroke in strokes.iter() {
             match stroke {

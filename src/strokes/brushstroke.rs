@@ -91,17 +91,18 @@ impl StrokeBehaviour for BrushStroke {
             .collect();
 
         self.elements = new_elements;
-        //self.update_bounds();
         self.bounds = new_bounds;
         self.hitbox = self.gen_hitbox();
     }
 
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
-        match self.brush.current_template {
-            brush::TemplateType::Linear
-            | brush::TemplateType::CubicBezier
-            | brush::TemplateType::Custom(_) => self.templates_svg_data(offset),
-            brush::TemplateType::Experimental => self.experimental_svg_data(offset),
+        match self.brush.current_style {
+            brush::BrushStyle::Linear => self.linear_svg_data(offset),
+            brush::BrushStyle::CubicBezier => self.cubic_bezier_svg_data(offset),
+            brush::BrushStyle::CustomTemplate(_) => {
+                self.templates_svg_data(offset)
+            }
+            brush::BrushStyle::Experimental => self.experimental_svg_data(offset),
         }
     }
 
@@ -287,56 +288,112 @@ impl BrushStroke {
         }
     }
 
-    pub fn templates_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
-        let mut cx = tera::Context::new();
+    pub fn linear_svg_data(
+        &self,
+        offset: na::Vector2<f64>,
+    ) -> Result<String, Box<dyn Error>> {
+        let mut commands = Vec::new();
 
-        let color = self.brush.color.to_css_color();
-        let width = self.brush.width();
-        let sensitivity = self.brush.sensitivity();
+        for (i, (element_first, element_second)) in self
+            .elements
+            .iter()
+            .zip(self.elements.iter().skip(1))
+            .enumerate()
+        {
+            if i == 0 {
+                commands.push(path::Command::Move(
+                    path::Position::Absolute,
+                    path::Parameters::from((
+                        element_first.inputdata.pos()[0],
+                        element_first.inputdata.pos()[1],
+                    )),
+                ));
+            }
+            let start = element_first.inputdata.pos() + offset;
+            let end = element_second.inputdata.pos() + offset;
 
-        let teraelements = self
+            let width_start = element_first.inputdata.pressure() * self.brush.width();
+            let width_end = element_second.inputdata.pressure() * self.brush.width();
+
+            let line = compose::Line {
+                start,
+                end,
+            };
+
+            commands.append(&mut compose::linear_variable_width(line, width_start, width_end));
+        }
+
+        let path = svg::node::element::Path::new()
+            .set("stroke", "none")
+            .set("fill", self.brush.color.to_css_color())
+            .set("d", path::Data::from(commands));
+        let svg = rough_rs::node_to_string(&path)?.to_string();
+
+        Ok(svg)
+    }
+
+    pub fn cubic_bezier_svg_data(
+        &self,
+        offset: na::Vector2<f64>,
+    ) -> Result<String, Box<dyn Error>> {
+        let mut commands = Vec::new();
+
+        for (i, (((element_first, element_second), element_third), element_forth)) in self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
-            .map(|(((first, second), third), fourth)| {
-                (
-                    TeraElement {
-                        pressure: first.inputdata.pressure(),
-                        x: first.inputdata.pos()[0] + offset[0],
-                        y: first.inputdata.pos()[1] + offset[1],
-                    },
-                    TeraElement {
-                        pressure: second.inputdata.pressure(),
-                        x: second.inputdata.pos()[0] + offset[0],
-                        y: second.inputdata.pos()[1] + offset[1],
-                    },
-                    TeraElement {
-                        pressure: third.inputdata.pressure(),
-                        x: third.inputdata.pos()[0] + offset[0],
-                        y: third.inputdata.pos()[1] + offset[1],
-                    },
-                    TeraElement {
-                        pressure: fourth.inputdata.pressure(),
-                        x: fourth.inputdata.pos()[0] + offset[0],
-                        y: fourth.inputdata.pos()[1] + offset[1],
-                    },
-                )
-            })
-            .collect::<Vec<(TeraElement, TeraElement, TeraElement, TeraElement)>>();
+            .step_by(2)
+            .enumerate()
+        {
+            if i == 0 {
+                commands.push(path::Command::Move(
+                    path::Position::Absolute,
+                    path::Parameters::from((
+                        element_first.inputdata.pos()[0],
+                        element_first.inputdata.pos()[1],
+                    )),
+                ));
+            }
+            let start = element_second.inputdata.pos() + offset;
+            // first control points is the reflection of the previous second
+            let mut cp1 = element_second.inputdata.pos()
+                + (element_second.inputdata.pos() - element_first.inputdata.pos())
+                + offset;
+            let cp2 = element_third.inputdata.pos() + offset;
+            let end = element_forth.inputdata.pos() + offset;
 
-        cx.insert("color", &color);
-        cx.insert("width", &width);
-        cx.insert("sensitivity", &sensitivity);
-        cx.insert("attributes", "");
-        cx.insert("elements", &teraelements);
+            let start_end_len = (cp1 - start).magnitude();
+            let start_cp1_len = (cp1 - start).magnitude();
+            let start_cp2_len = (cp2 - start).magnitude();
+            // Avoiding curve loops and general instability and weirdness with the lines
+            if start_end_len < 10.0 || start_cp1_len >= start_cp2_len {
+                cp1 = start + (cp1 - start) * (start_cp2_len / (start_cp1_len + 2.0));
+            }
 
-        let svg = self
-            .brush
-            .templates
-            .borrow()
-            .render(self.brush.current_template.template_name().as_str(), &cx)?;
+            let cubic_bezier = compose::CubicBezier {
+                start,
+                cp1,
+                cp2,
+                end,
+            };
+
+            let start_width = element_second.inputdata.pressure() * self.brush.width();
+            let end_width = element_forth.inputdata.pressure() * self.brush.width();
+
+            commands.append(&mut compose::cubic_bezier_variable_width(
+                cubic_bezier,
+                start_width,
+                end_width,
+            ));
+        }
+
+        let path = svg::node::element::Path::new()
+            .set("stroke", "none")
+            .set("fill", self.brush.color.to_css_color())
+            .set("d", path::Data::from(commands));
+        let svg = rough_rs::node_to_string(&path)?.to_string();
 
         Ok(svg)
     }
@@ -400,16 +457,65 @@ impl BrushStroke {
 
         let path = svg::node::element::Path::new()
             .set("stroke", "none")
-            //.set("stroke", "red")
-            //.set("stroke", self.brush.color.to_css_color())
             .set("fill", self.brush.color.to_css_color())
-            //.set("fill", "none")
-            //.set("stroke-width", self.brush.width())
-            //.set("stroke-width", 1.0)
             .set("d", path::Data::from(commands));
         let svg = rough_rs::node_to_string(&path)?.to_string();
 
-        //println!("{}", svg);
+        Ok(svg)
+    }
+
+    pub fn templates_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
+        let mut cx = tera::Context::new();
+
+        let color = self.brush.color.to_css_color();
+        let width = self.brush.width();
+        let sensitivity = self.brush.sensitivity();
+
+        let teraelements = self
+            .elements
+            .iter()
+            .zip(self.elements.iter().skip(1))
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
+            .map(|(((first, second), third), fourth)| {
+                (
+                    TeraElement {
+                        pressure: first.inputdata.pressure(),
+                        x: first.inputdata.pos()[0] + offset[0],
+                        y: first.inputdata.pos()[1] + offset[1],
+                    },
+                    TeraElement {
+                        pressure: second.inputdata.pressure(),
+                        x: second.inputdata.pos()[0] + offset[0],
+                        y: second.inputdata.pos()[1] + offset[1],
+                    },
+                    TeraElement {
+                        pressure: third.inputdata.pressure(),
+                        x: third.inputdata.pos()[0] + offset[0],
+                        y: third.inputdata.pos()[1] + offset[1],
+                    },
+                    TeraElement {
+                        pressure: fourth.inputdata.pressure(),
+                        x: fourth.inputdata.pos()[0] + offset[0],
+                        y: fourth.inputdata.pos()[1] + offset[1],
+                    },
+                )
+            })
+            .collect::<Vec<(TeraElement, TeraElement, TeraElement, TeraElement)>>();
+
+        cx.insert("color", &color);
+        cx.insert("width", &width);
+        cx.insert("sensitivity", &sensitivity);
+        cx.insert("attributes", "");
+        cx.insert("elements", &teraelements);
+
+        let svg = if let brush::BrushStyle::CustomTemplate(templ) = &self.brush.current_style {
+            tera::Tera::one_off(templ.as_str(), &cx, false)?
+        } else {
+            log::error!("template_svg_data() called, but brush is not BrushStyle::CustomTemplate");
+            String::from("")
+        };
+
         Ok(svg)
     }
 }

@@ -26,7 +26,6 @@ mod imp {
         pub custom_templates_list: TemplateChild<ListBox>,
         #[template_child]
         pub predefined_template_experimental_listboxrow: TemplateChild<ListBoxRow>,
-        pub predefined_templates_to_confdir: Vec<String>,
         pub templates_dirlist: DirectoryList,
     }
 
@@ -45,10 +44,6 @@ mod imp {
                 predefined_template_experimental_listboxrow: TemplateChild::<ListBoxRow>::default(),
                 custom_templates_list: TemplateChild::<ListBox>::default(),
                 templates_dirlist,
-                predefined_templates_to_confdir: vec![
-                    String::from(brush::TemplateType::CubicBezier.template_name().as_str())
-                        + ".svg.templ",
-                ],
             }
         }
     }
@@ -206,13 +201,13 @@ impl TemplateChooser {
 
                     match selection.widget_name().as_str() {
                         "predefined_template_linear_row" => { 
-                            (*appwindow.canvas().pens().borrow_mut()).brush.current_template = brush::TemplateType::Linear;
+                            (*appwindow.canvas().pens().borrow_mut()).brush.current_style = brush::BrushStyle::Linear;
                             },
                         "predefined_template_cubicbezier_row" => { 
-                            (*appwindow.canvas().pens().borrow_mut()).brush.current_template = brush::TemplateType::CubicBezier;
+                            (*appwindow.canvas().pens().borrow_mut()).brush.current_style = brush::BrushStyle::CubicBezier;
                             },
                         "predefined_template_experimental_row" => {
-                            (*appwindow.canvas().pens().borrow_mut()).brush.current_template = brush::TemplateType::Experimental;
+                            (*appwindow.canvas().pens().borrow_mut()).brush.current_style = brush::BrushStyle::Experimental;
                         }
                             _ => {
                                 log::error!("selected unknown predefined template in templatechooser")
@@ -235,20 +230,8 @@ impl TemplateChooser {
 
                         match brush::validate_brush_template_for_file(&file) {
                             Ok(()) => {
-                                let replaced_result = (*appwindow.canvas().pens().borrow_mut()).brush.replace_custom_template(&file);
-                                match replaced_result {
-                                    Ok(()) => {
-                                        let file_contents = utils::load_file_contents(&file).unwrap();
-                                        (*appwindow.canvas().pens().borrow_mut()).brush.current_template = brush::TemplateType::Custom(file_contents);
-                                    },
-                                    Err(e) => {
-                                        log::warn!(
-                                            "replace_custom_template() for file `{}` failed, {}",
-                                            file.basename().unwrap().to_string_lossy(),
-                                            e
-                                        );
-                                    }
-                                };
+                                let file_contents = utils::load_file_contents(&file).unwrap();
+                                (*appwindow.canvas().pens().borrow_mut()).brush.current_style = brush::BrushStyle::CustomTemplate(file_contents);
                             },
                             Err(e) => {
                                 log::warn!(
@@ -287,8 +270,6 @@ impl TemplateChooser {
     }
 
     pub fn create_populate_templates_dir(&self, path: &path::Path) -> Option<gio::File> {
-        let priv_ = imp::TemplateChooser::from_instance(self);
-
         let templates_dir = gio::File::for_path(path.to_path_buf());
 
         let templates_dir_opt =
@@ -303,7 +284,12 @@ impl TemplateChooser {
                 },
             };
 
-        for template_name in priv_.predefined_templates_to_confdir.iter() {
+        let templates_to_copy = [
+            "brushstroke-linear.svg.templ",
+            "brushstroke-cubicbezier.svg.templ",
+        ];
+
+        for template_name in templates_to_copy {
             let mut template_path = path.to_path_buf();
             template_path.push(template_name);
             let template_file = gio::File::for_path(template_path.clone());

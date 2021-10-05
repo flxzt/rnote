@@ -117,6 +117,12 @@ pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
 }
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
+pub struct Line {
+    pub start: na::Vector2<f64>,
+    pub end: na::Vector2<f64>,
+}
+
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 pub struct QuadBezier {
     pub start: na::Vector2<f64>,
     pub cp1: na::Vector2<f64>,
@@ -134,6 +140,40 @@ pub struct CubicBezier {
 pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
     rot_90deg * vec.normalize()
+}
+
+pub fn linear_offsetted(
+    line: Line,
+    start_offset_dist: f64,
+    end_offset_dist: f64,
+    move_start: bool,
+) -> Vec<path::Command> {
+    let direction_unit_norm = vector2_unit_norm(line.end - line.start);
+    let start_offset = direction_unit_norm * start_offset_dist;
+
+    let end_offset = direction_unit_norm * end_offset_dist;
+
+    let mut commands = Vec::new();
+    if move_start {
+        commands.push(path::Command::Move(
+            path::Position::Absolute,
+            path::Parameters::from((
+                line.start[0] + start_offset[0],
+                line.start[1] + start_offset[1],
+            )),
+        ));
+    }
+    commands.push(path::Command::Line(
+        path::Position::Absolute,
+        path::Parameters::from(
+            (
+                line.end[0] + end_offset[0],
+                line.end[1] + end_offset[1],
+            ),
+        ),
+    ));
+
+    commands
 }
 
 pub fn quad_bezier_offsetted(
@@ -225,6 +265,47 @@ pub fn split_cubic_bezier(cubic_bezier: CubicBezier) -> (QuadBezier, QuadBezier)
     (first_quad_bezier, second_quad_bezier)
 }
 
+pub fn linear_variable_width(
+    line: Line,
+    width_start: f64,
+    width_end: f64,
+) -> Vec<path::Command> {
+    let start_offset_dist = width_start / 2.0;
+    let end_offset_dist = width_end / 2.0;
+
+    let line_reverse = Line {
+        start: line.end,
+        end: line.start,
+    };
+    let direction_unit_norm = vector2_unit_norm(line.end - line.start);
+
+    let mut commands = Vec::new();
+    commands.append(&mut linear_offsetted(line, start_offset_dist, end_offset_dist, true));
+    commands.push(path::Command::Line(
+        path::Position::Absolute,
+        path::Parameters::from((
+            (line.end + direction_unit_norm * (-end_offset_dist))[0],
+            (line.end + direction_unit_norm * (-end_offset_dist))[1],
+        )),
+    ));
+
+    commands.append(&mut linear_offsetted(
+        line_reverse,
+        end_offset_dist,
+        start_offset_dist,
+        false,
+    ));
+    commands.push(path::Command::Line(
+        path::Position::Absolute,
+        path::Parameters::from((
+            (line_reverse.end + direction_unit_norm * (-start_offset_dist))[0],
+            (line_reverse.end + direction_unit_norm * (-start_offset_dist))[1],
+        )),
+    ));
+
+    commands
+}
+
 pub fn cubic_bezier_variable_width(
     cubic_bezier: CubicBezier,
     width_start: f64,
@@ -269,7 +350,6 @@ pub fn cubic_bezier_variable_width(
                     * -start_offset_dist)[1],
         )),
     ));
-    //commands.push(path::Command::Close);
 
     commands
 }

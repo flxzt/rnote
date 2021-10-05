@@ -196,39 +196,6 @@ impl<'de> Deserialize<'de> for Sheet {
                 sheet.set_format_borders(format_borders);
                 sheet.set_padding_bottom(padding_bottom);
 
-                // Register the custom templates into the brushes (serde does not yet support post-deserialize hooks, see https://github.com/paritytech/parity-scale-codec/issues/280)
-                match StrokeStyle::register_custom_templates(&mut *sheet.strokes().borrow_mut()) {
-                    Err(e) => {
-                        return Err(de::Error::custom(format!(
-                            "failed to register custom template for sheet strokes, {:?}",
-                            e
-                        )));
-                    }
-                    Ok(()) => {}
-                }
-                match StrokeStyle::register_custom_templates(
-                    &mut *sheet.strokes_trash().borrow_mut(),
-                ) {
-                    Err(e) => {
-                        return Err(de::Error::custom(format!(
-                            "failed to register custom template for sheet strokes, {:?}",
-                            e
-                        )));
-                    }
-                    Ok(()) => {}
-                }
-                match StrokeStyle::register_custom_templates(
-                    &mut *sheet.selection().strokes().borrow_mut(),
-                ) {
-                    Err(e) => {
-                        return Err(de::Error::custom(format!(
-                            "failed to register custom template for sheet strokes, {:?}",
-                            e
-                        )));
-                    }
-                    Ok(()) => {}
-                }
-
                 Ok(sheet)
             }
 
@@ -360,39 +327,6 @@ impl<'de> Deserialize<'de> for Sheet {
                 sheet.set_autoexpand_height(autoexpand_height);
                 sheet.set_format_borders(format_borders);
                 sheet.set_padding_bottom(padding_bottom);
-
-                // Register the custom templates into the brushes (serde does not yet support post-deserialize hooks, see https://github.com/paritytech/parity-scale-codec/issues/280)
-                match StrokeStyle::register_custom_templates(&mut *sheet.strokes().borrow_mut()) {
-                    Err(e) => {
-                        return Err(de::Error::custom(format!(
-                            "failed to register custom template for sheet strokes, {:?}",
-                            e
-                        )));
-                    }
-                    Ok(()) => {}
-                }
-                match StrokeStyle::register_custom_templates(
-                    &mut *sheet.strokes_trash().borrow_mut(),
-                ) {
-                    Err(e) => {
-                        return Err(de::Error::custom(format!(
-                            "failed to register custom template for sheet strokes, {:?}",
-                            e
-                        )));
-                    }
-                    Ok(()) => {}
-                }
-                match StrokeStyle::register_custom_templates(
-                    &mut *sheet.selection().strokes().borrow_mut(),
-                ) {
-                    Err(e) => {
-                        return Err(de::Error::custom(format!(
-                            "failed to register custom template for sheet strokes, {:?}",
-                            e
-                        )));
-                    }
-                    Ok(()) => {}
-                }
 
                 Ok(sheet)
             }

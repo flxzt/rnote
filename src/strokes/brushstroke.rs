@@ -389,7 +389,7 @@ impl BrushStroke {
             };
 
             let start_width = element_second.inputdata.pressure() * self.brush.width();
-            let end_width = element_third.inputdata.pressure() * self.brush.width();
+            let end_width = element_forth.inputdata.pressure() * self.brush.width();
 
             commands.append(&mut compose::cubic_bezier_variable_width(
                 cubic_bezier,
@@ -398,15 +398,14 @@ impl BrushStroke {
             ));
         }
 
-        //commands.append()
-
         let path = svg::node::element::Path::new()
-            //.set("stroke", "none")
-            .set("stroke", self.brush.color.to_css_color())
-            //.set("fill", self.brush.color.to_css_color())
-            .set("fill", "none")
+            .set("stroke", "none")
+            //.set("stroke", "red")
+            //.set("stroke", self.brush.color.to_css_color())
+            .set("fill", self.brush.color.to_css_color())
+            //.set("fill", "none")
             //.set("stroke-width", self.brush.width())
-            .set("stroke-width", 1.0)
+            //.set("stroke-width", 1.0)
             .set("d", path::Data::from(commands));
         let svg = rough_rs::node_to_string(&path)?.to_string();
 

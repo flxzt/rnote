@@ -131,16 +131,21 @@ pub struct CubicBezier {
     pub end: na::Vector2<f64>,
 }
 
+pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
+    let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
+    rot_90deg * vec.normalize()
+}
+
 pub fn quad_bezier_offsetted(
     quad_bezier: QuadBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
 ) -> Vec<path::Command> {
-    let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
-    let start_unit_norm = rot_90deg * (quad_bezier.cp1 - quad_bezier.start).normalize();
+    let start_unit_norm = vector2_unit_norm(quad_bezier.cp1 - quad_bezier.start);
     let start_offset = start_unit_norm * start_offset_dist;
 
-    let end_unit_norm = rot_90deg * (quad_bezier.end - quad_bezier.cp1).normalize();
+
+    let end_unit_norm = vector2_unit_norm(quad_bezier.end - quad_bezier.cp1);
     let end_offset = end_unit_norm * end_offset_dist;
 
     let added_unit_norms = start_unit_norm + end_unit_norm;

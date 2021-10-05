@@ -356,20 +356,31 @@ impl BrushStroke {
             .step_by(2)
             .enumerate()
         {
+            let start = element_second.inputdata.pos() + offset;
+            // first control points is the reflection of the previous second
+            let mut cp1 = element_second.inputdata.pos()
+                + (element_second.inputdata.pos() - element_first.inputdata.pos())
+                + offset;
+            let cp2 = element_third.inputdata.pos() + offset;
+            let end = element_forth.inputdata.pos() + offset;
+
+            let start_end_len = (cp1 - start).magnitude();
+            let start_cp1_len = (cp1 - start).magnitude();
+            let start_cp2_len = (cp2 - start).magnitude();
+            // Avoiding curve loops and general instability and weirdness with the lines
+            if start_end_len < 10.0 || start_cp1_len >= start_cp2_len {
+                cp1 = start + (cp1 - start) * ( start_cp2_len / (start_cp1_len + 2.0) );
+            }
+
             let cubic_bezier = compose::CubicBezier {
-                start: element_second.inputdata.pos() + offset,
-                // first control points is the reflection of the previous second
-                cp1: element_second.inputdata.pos()
-                    + (element_second.inputdata.pos() - element_first.inputdata.pos())
-                    + offset,
-                cp2: element_third.inputdata.pos() + offset,
-                end: element_forth.inputdata.pos() + offset,
+                start,
+                cp1,
+                cp2,
+                end,
             };
 
             let start_width = element_second.inputdata.pressure() * self.brush.width();
             let end_width = element_third.inputdata.pressure() * self.brush.width();
-            //let start_width = 20.0;
-            //let end_width = start_width;
 
             commands.append(&mut compose::cubic_bezier_variable_width(
                 cubic_bezier,

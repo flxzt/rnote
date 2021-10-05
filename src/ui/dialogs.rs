@@ -184,7 +184,6 @@ pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_open_file.file() {
-                        dbg!("opening file");
                         *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().borrow_mut() = Some(file);
                         appwindow.canvas().set_unsaved_changes(false);
 

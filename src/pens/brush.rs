@@ -1,4 +1,4 @@
-use std::{error::Error};
+use std::error::Error;
 
 use gtk4::{gdk, gio};
 use rand::{distributions::Uniform, prelude::Distribution};

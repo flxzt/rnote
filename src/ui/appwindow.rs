@@ -248,7 +248,10 @@ mod imp {
 use std::{boxed, cell::RefCell, error::Error, path::PathBuf, rc::Rc};
 
 use adw::prelude::*;
-use gtk4::{Application, Box, Button, Entry, FileChooserNative, Grid, Overlay, ScrolledWindow, gdk, gio, glib, glib::clone, subclass::prelude::*};
+use gtk4::{
+    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, Entry,
+    FileChooserNative, Grid, Overlay, ScrolledWindow,
+};
 
 use crate::{
     app::RnoteApp,
@@ -276,7 +279,9 @@ impl RnoteAppWindow {
     }
 
     pub fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
-        imp::RnoteAppWindow::from_instance(self).filechoosernative.clone()
+        imp::RnoteAppWindow::from_instance(self)
+            .filechoosernative
+            .clone()
     }
 
     pub fn main_grid(&self) -> Grid {

@@ -1,5 +1,8 @@
 use gtk4::{glib, glib::clone, prelude::*, Builder};
-use gtk4::{AboutDialog, FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType, ShortcutsWindow};
+use gtk4::{
+    AboutDialog, FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType,
+    ShortcutsWindow,
+};
 
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::utils;
@@ -7,17 +10,22 @@ use crate::{app::RnoteApp, config};
 
 // About Dialog
 pub fn dialog_about(appwindow: &RnoteAppWindow) {
-        let aboutdialog = AboutDialog::builder()
-            .modal(true)
-            .transient_for(appwindow)
-            .program_name("Rnote")
-            .comments("Create handwritten notes")
-            .logo_icon_name(config::APP_ID)
-            .website(config::APP_WEBSITE)
-            .authors(config::APP_AUTHORS.iter().map(|&s| String::from(s)).collect())
-            .license_type(config::APP_LICENSE)
-            .version(config::APP_VERSION)
-            .build();
+    let aboutdialog = AboutDialog::builder()
+        .modal(true)
+        .transient_for(appwindow)
+        .program_name("Rnote")
+        .comments("Create handwritten notes")
+        .logo_icon_name(config::APP_ID)
+        .website(config::APP_WEBSITE)
+        .authors(
+            config::APP_AUTHORS
+                .iter()
+                .map(|&s| String::from(s))
+                .collect(),
+        )
+        .license_type(config::APP_LICENSE)
+        .version(config::APP_VERSION)
+        .build();
 
     aboutdialog.show();
 }
@@ -172,7 +180,7 @@ pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
 
     dialog_open_file.add_filter(&filter);
 
-     dialog_open_file.connect_response(clone!(@weak appwindow => move |dialog_open_file, responsetype| {
+    dialog_open_file.connect_response(clone!(@weak appwindow => move |dialog_open_file, responsetype| {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_open_file.file() {
@@ -193,7 +201,7 @@ pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
 
     dialog_open_file.show();
 
-    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_open_file);
 }
 
@@ -231,7 +239,7 @@ pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
     );
 
     dialog_open_workspace.show();
-    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_open_workspace);
 }
 
@@ -277,7 +285,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
     }));
 
     dialog_save_sheet_as.show();
-    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_save_sheet_as);
 }
 
@@ -321,7 +329,7 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
     );
 
     dialog_import_file.show();
-    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_import_file);
 }
 
@@ -363,7 +371,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
         }));
 
     dialog_export_selection.show();
-    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_selection);
 }
 
@@ -407,6 +415,6 @@ pub fn dialog_export_sheet(appwindow: &RnoteAppWindow) {
     );
 
     dialog_export_sheet.show();
-    // keeping the filechooser around because otherwise GTK won't keep it alive 
+    // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_sheet);
 }

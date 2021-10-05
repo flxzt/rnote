@@ -74,7 +74,9 @@ impl SelectorPage {
     }
 
     pub fn duplicate_button(&self) -> Button {
-        imp::SelectorPage::from_instance(self).duplicate_button.get()
+        imp::SelectorPage::from_instance(self)
+            .duplicate_button
+            .get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

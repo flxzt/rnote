@@ -213,16 +213,17 @@ pub(crate) fn cubic_bezier(
         commands.push(path::Command::CubicCurve(
             path::Position::Absolute,
             path::Parameters::from((
-            (
-                first[0] + offset_opt(ros[i], options, roughness_gain),
-                first[1] + offset_opt(ros[i], options, roughness_gain),
-            ),
-            (
-                second[0] + offset_opt(ros[i], options, roughness_gain),
-                second[1] + offset_opt(ros[i], options, roughness_gain),
-            ),
-            (end_[0], end_[1]),
-        ))));
+                (
+                    first[0] + offset_opt(ros[i], options, roughness_gain),
+                    first[1] + offset_opt(ros[i], options, roughness_gain),
+                ),
+                (
+                    second[0] + offset_opt(ros[i], options, roughness_gain),
+                    second[1] + offset_opt(ros[i], options, roughness_gain),
+                ),
+                (end_[0], end_[1]),
+            )),
+        ));
     }
 
     commands

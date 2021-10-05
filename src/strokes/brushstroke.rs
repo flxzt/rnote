@@ -347,7 +347,7 @@ impl BrushStroke {
     ) -> Result<String, Box<dyn Error>> {
         let mut commands = Vec::new();
 
-        for (_i, (((element_first, element_second), element_third), element_forth)) in self
+        for (i, (((element_first, element_second), element_third), element_forth)) in self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
@@ -356,6 +356,15 @@ impl BrushStroke {
             .step_by(2)
             .enumerate()
         {
+            if i == 0 {
+                commands.push(path::Command::Move(
+                    path::Position::Absolute,
+                    path::Parameters::from((
+                        element_first.inputdata.pos()[0],
+                        element_first.inputdata.pos()[1],
+                    )),
+                ));
+            }
             let start = element_second.inputdata.pos() + offset;
             // first control points is the reflection of the previous second
             let mut cp1 = element_second.inputdata.pos()
@@ -369,7 +378,7 @@ impl BrushStroke {
             let start_cp2_len = (cp2 - start).magnitude();
             // Avoiding curve loops and general instability and weirdness with the lines
             if start_end_len < 10.0 || start_cp1_len >= start_cp2_len {
-                cp1 = start + (cp1 - start) * ( start_cp2_len / (start_cp1_len + 2.0) );
+                cp1 = start + (cp1 - start) * (start_cp2_len / (start_cp1_len + 2.0));
             }
 
             let cubic_bezier = compose::CubicBezier {
@@ -392,7 +401,9 @@ impl BrushStroke {
         //commands.append()
 
         let path = svg::node::element::Path::new()
+            //.set("stroke", "none")
             .set("stroke", self.brush.color.to_css_color())
+            //.set("fill", self.brush.color.to_css_color())
             .set("fill", "none")
             //.set("stroke-width", self.brush.width())
             .set("stroke-width", 1.0)

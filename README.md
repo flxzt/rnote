@@ -32,7 +32,9 @@ Rnote is available as  a flatpak on Flathub:
 - [ ] PDF import
 - [x] Picture import
 - [ ] export as picture
-- [ ] Implement bezier curve stroke with variable stroke width (see this paper: [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf))
+- [ ] Implement bezier curve stroke with variable stroke width
+    (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
+    [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
 
 ## Screenshots
 

@@ -101,7 +101,7 @@ impl StrokeBehaviour for ShapeStroke {
                 shape.half_extents = (na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
                     - na::vector![new_bounds.mins[0], new_bounds.mins[1]]
                     - na::Vector2::from_element(self.shaper.rectangle_config.width()))
-                * 0.5;
+                    * 0.5;
             }
             ShapeStyle::Ellipse {
                 ref mut shape,
@@ -274,7 +274,6 @@ impl ShapeStroke {
                 if delta[0] >= 0.0 && delta[1] >= 0.0 {
                     shape.half_extents = delta.scale(0.5);
                 };
-
             }
             ShapeStyle::Ellipse {
                 ref mut shape,

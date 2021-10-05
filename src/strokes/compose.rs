@@ -165,17 +165,13 @@ pub fn linear_offsetted(
     }
     commands.push(path::Command::Line(
         path::Position::Absolute,
-        path::Parameters::from(
-            (
-                line.end[0] + end_offset[0],
-                line.end[1] + end_offset[1],
-            ),
-        ),
+        path::Parameters::from((line.end[0] + end_offset[0], line.end[1] + end_offset[1])),
     ));
 
     commands
 }
 
+// Offsetted quad bezier approximation, see "precise offsetting of quadratic bezier curves"
 pub fn quad_bezier_offsetted(
     quad_bezier: QuadBezier,
     start_offset_dist: f64,
@@ -265,11 +261,7 @@ pub fn split_cubic_bezier(cubic_bezier: CubicBezier) -> (QuadBezier, QuadBezier)
     (first_quad_bezier, second_quad_bezier)
 }
 
-pub fn linear_variable_width(
-    line: Line,
-    width_start: f64,
-    width_end: f64,
-) -> Vec<path::Command> {
+pub fn linear_variable_width(line: Line, width_start: f64, width_end: f64) -> Vec<path::Command> {
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
 
@@ -280,7 +272,12 @@ pub fn linear_variable_width(
     let direction_unit_norm = vector2_unit_norm(line.end - line.start);
 
     let mut commands = Vec::new();
-    commands.append(&mut linear_offsetted(line, start_offset_dist, end_offset_dist, true));
+    commands.append(&mut linear_offsetted(
+        line,
+        start_offset_dist,
+        end_offset_dist,
+        true,
+    ));
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((
@@ -322,7 +319,12 @@ pub fn cubic_bezier_variable_width(
     };
 
     let mut commands = Vec::new();
-    commands.append(&mut cubic_bezier_offsetted(cubic_bezier, start_offset_dist, end_offset_dist, true));
+    commands.append(&mut cubic_bezier_offsetted(
+        cubic_bezier,
+        start_offset_dist,
+        end_offset_dist,
+        true,
+    ));
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((

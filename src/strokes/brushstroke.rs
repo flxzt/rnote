@@ -99,9 +99,7 @@ impl StrokeBehaviour for BrushStroke {
         match self.brush.current_style {
             brush::BrushStyle::Linear => self.linear_svg_data(offset),
             brush::BrushStyle::CubicBezier => self.cubic_bezier_svg_data(offset),
-            brush::BrushStyle::CustomTemplate(_) => {
-                self.templates_svg_data(offset)
-            }
+            brush::BrushStyle::CustomTemplate(_) => self.templates_svg_data(offset),
             brush::BrushStyle::Experimental => self.experimental_svg_data(offset),
         }
     }
@@ -126,8 +124,6 @@ impl StrokeBehaviour for BrushStroke {
             true,
             false,
         );
-
-        //println!("{}", svg);
 
         renderer.gen_rendernode(self.bounds, scalefactor, svg.as_str())
     }
@@ -288,10 +284,7 @@ impl BrushStroke {
         }
     }
 
-    pub fn linear_svg_data(
-        &self,
-        offset: na::Vector2<f64>,
-    ) -> Result<String, Box<dyn Error>> {
+    pub fn linear_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut commands = Vec::new();
 
         for (i, (element_first, element_second)) in self
@@ -315,12 +308,13 @@ impl BrushStroke {
             let width_start = element_first.inputdata.pressure() * self.brush.width();
             let width_end = element_second.inputdata.pressure() * self.brush.width();
 
-            let line = compose::Line {
-                start,
-                end,
-            };
+            let line = compose::Line { start, end };
 
-            commands.append(&mut compose::linear_variable_width(line, width_start, width_end));
+            commands.append(&mut compose::linear_variable_width(
+                line,
+                width_start,
+                width_end,
+            ));
         }
 
         let path = svg::node::element::Path::new()
@@ -347,15 +341,6 @@ impl BrushStroke {
             .step_by(2)
             .enumerate()
         {
-            if i == 0 {
-                commands.push(path::Command::Move(
-                    path::Position::Absolute,
-                    path::Parameters::from((
-                        element_first.inputdata.pos()[0],
-                        element_first.inputdata.pos()[1],
-                    )),
-                ));
-            }
             let start = element_second.inputdata.pos() + offset;
             // first control points is the reflection of the previous second
             let mut cp1 = element_second.inputdata.pos()
@@ -364,12 +349,24 @@ impl BrushStroke {
             let cp2 = element_third.inputdata.pos() + offset;
             let end = element_forth.inputdata.pos() + offset;
 
-            let start_end_len = (cp1 - start).magnitude();
+            let start_end_len = (end - start).magnitude();
             let start_cp1_len = (cp1 - start).magnitude();
             let start_cp2_len = (cp2 - start).magnitude();
-            // Avoiding curve loops and general instability and weirdness with the lines
-            if start_end_len < 10.0 || start_cp1_len >= start_cp2_len {
-                cp1 = start + (cp1 - start) * (start_cp2_len / (start_cp1_len + 2.0));
+            let cp1_cp2_len = (cp2 - cp1).magnitude();
+            let cp2_end_len = (end - cp2).magnitude();
+
+            let start_cp1 = cp1 - start;
+
+            // No length, no need to draw.
+            if start_cp1_len == 0.0 || cp1_cp2_len == 0.0 || cp2_end_len == 0.0 {
+                continue;
+            }
+
+            // Avoiding curve loops and general instability and weirdness
+            if start_cp1_len > (start_cp2_len + 2.0) {
+                cp1 = start + start_cp1 * (start_cp2_len / start_cp1_len);
+            } else if start_end_len < 10.0 {
+                cp1 = start + start_cp1.unscale(start_cp1.norm() * 2.0);
             }
 
             let cubic_bezier = compose::CubicBezier {
@@ -381,6 +378,16 @@ impl BrushStroke {
 
             let start_width = element_second.inputdata.pressure() * self.brush.width();
             let end_width = element_forth.inputdata.pressure() * self.brush.width();
+
+            if i == 0 {
+                commands.push(path::Command::Move(
+                    path::Position::Absolute,
+                    path::Parameters::from((
+                        element_first.inputdata.pos()[0],
+                        element_first.inputdata.pos()[1],
+                    )),
+                ));
+            }
 
             commands.append(&mut compose::cubic_bezier_variable_width(
                 cubic_bezier,
@@ -400,68 +407,9 @@ impl BrushStroke {
 
     pub fn experimental_svg_data(
         &self,
-        offset: na::Vector2<f64>,
+        _offset: na::Vector2<f64>,
     ) -> Result<String, Box<dyn Error>> {
-        let mut commands = Vec::new();
-
-        for (i, (((element_first, element_second), element_third), element_forth)) in self
-            .elements
-            .iter()
-            .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
-            .step_by(2)
-            .enumerate()
-        {
-            if i == 0 {
-                commands.push(path::Command::Move(
-                    path::Position::Absolute,
-                    path::Parameters::from((
-                        element_first.inputdata.pos()[0],
-                        element_first.inputdata.pos()[1],
-                    )),
-                ));
-            }
-            let start = element_second.inputdata.pos() + offset;
-            // first control points is the reflection of the previous second
-            let mut cp1 = element_second.inputdata.pos()
-                + (element_second.inputdata.pos() - element_first.inputdata.pos())
-                + offset;
-            let cp2 = element_third.inputdata.pos() + offset;
-            let end = element_forth.inputdata.pos() + offset;
-
-            let start_end_len = (cp1 - start).magnitude();
-            let start_cp1_len = (cp1 - start).magnitude();
-            let start_cp2_len = (cp2 - start).magnitude();
-            // Avoiding curve loops and general instability and weirdness with the lines
-            if start_end_len < 10.0 || start_cp1_len >= start_cp2_len {
-                cp1 = start + (cp1 - start) * (start_cp2_len / (start_cp1_len + 2.0));
-            }
-
-            let cubic_bezier = compose::CubicBezier {
-                start,
-                cp1,
-                cp2,
-                end,
-            };
-
-            let start_width = element_second.inputdata.pressure() * self.brush.width();
-            let end_width = element_forth.inputdata.pressure() * self.brush.width();
-
-            commands.append(&mut compose::cubic_bezier_variable_width(
-                cubic_bezier,
-                start_width,
-                end_width,
-            ));
-        }
-
-        let path = svg::node::element::Path::new()
-            .set("stroke", "none")
-            .set("fill", self.brush.color.to_css_color())
-            .set("d", path::Data::from(commands));
-        let svg = rough_rs::node_to_string(&path)?.to_string();
-
-        Ok(svg)
+        Ok(String::from(""))
     }
 
     pub fn templates_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {

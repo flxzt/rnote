@@ -278,27 +278,43 @@ pub fn linear_variable_width(line: Line, width_start: f64, width_end: f64) -> Ve
         end_offset_dist,
         true,
     ));
-    commands.push(path::Command::Line(
+    commands.push(path::Command::EllipticalArc(
         path::Position::Absolute,
         path::Parameters::from((
+            end_offset_dist,
+            end_offset_dist,
+            0.0,
+            0.0,
+            0.0,
             (line.end + direction_unit_norm * (-end_offset_dist))[0],
             (line.end + direction_unit_norm * (-end_offset_dist))[1],
         )),
     ));
-
     commands.append(&mut linear_offsetted(
         line_reverse,
         end_offset_dist,
         start_offset_dist,
         false,
     ));
-    commands.push(path::Command::Line(
+    commands.push(path::Command::EllipticalArc(
+        path::Position::Absolute,
+        path::Parameters::from((
+            start_offset_dist,
+            start_offset_dist,
+            0.0,
+            0.0,
+            0.0,
+            (line_reverse.end + direction_unit_norm * (start_offset_dist))[0],
+            (line_reverse.end + direction_unit_norm * (start_offset_dist))[1],
+        )),
+    ));
+    /*     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((
             (line_reverse.end + direction_unit_norm * (-start_offset_dist))[0],
             (line_reverse.end + direction_unit_norm * (-start_offset_dist))[1],
         )),
-    ));
+    )); */
 
     commands
 }
@@ -346,10 +362,10 @@ pub fn cubic_bezier_variable_width(
         path::Parameters::from((
             (cubic_bezier_reverse.end
                 + vector2_unit_norm(cubic_bezier_reverse.end - cubic_bezier_reverse.cp2)
-                    * -start_offset_dist)[0],
+                    * start_offset_dist)[0],
             (cubic_bezier_reverse.end
                 + vector2_unit_norm(cubic_bezier_reverse.end - cubic_bezier_reverse.cp2)
-                    * -start_offset_dist)[1],
+                    * start_offset_dist)[1],
         )),
     ));
 

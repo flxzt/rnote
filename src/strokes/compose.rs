@@ -308,13 +308,6 @@ pub fn linear_variable_width(line: Line, width_start: f64, width_end: f64) -> Ve
             (line_reverse.end + direction_unit_norm * (start_offset_dist))[1],
         )),
     ));
-    /*     commands.push(path::Command::Line(
-        path::Position::Absolute,
-        path::Parameters::from((
-            (line_reverse.end + direction_unit_norm * (-start_offset_dist))[0],
-            (line_reverse.end + direction_unit_norm * (-start_offset_dist))[1],
-        )),
-    )); */
 
     commands
 }

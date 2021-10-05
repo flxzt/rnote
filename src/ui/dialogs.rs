@@ -24,7 +24,7 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
                 .collect(),
         )
         .license_type(config::APP_LICENSE)
-        .version(config::APP_VERSION)
+        .version((String::from(config::APP_VERSION) + config::APP_VERSION_SUFFIX).as_str())
         .build();
 
     aboutdialog.show();

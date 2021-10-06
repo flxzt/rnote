@@ -1972,7 +1972,7 @@ dependencies = [
 
 [[package]]
 name = "rnote"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "base64",
  "cairo-rs",

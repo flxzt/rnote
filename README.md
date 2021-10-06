@@ -26,13 +26,13 @@ Rnote is available as  a flatpak on Flathub:
 * Dual sheet view (e.g. one for imported pdfs and one for extra notes)
 
 ## To-Do
-- [x] Switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
-- [ ] Template deduplication when loading in .rnote save files.
+- [x] switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
+- [ ] template deduplication when loading in .rnote save files.
 - [x] printing / PDF export
 - [ ] PDF import
-- [x] Picture import
+- [x] picture import
 - [ ] export as picture
-- [ ] Implement bezier curve stroke with variable stroke width
+- [x] implement bezier curve stroke with variable stroke width
     (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
 

@@ -8,11 +8,11 @@ mod imp {
     use crate::strokes::{render, StrokeStyle};
     use crate::{sheet::Sheet, strokes};
 
+    use gtk4::Widget;
     use gtk4::{
-        gdk, glib, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus, Orientation,
-        PropagationPhase, SizeRequestMode, Snapshot,
+        gdk, glib, graphene, gsk, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
+        Orientation, PropagationPhase, SizeRequestMode, Snapshot, WidgetPaintable,
     };
-    use gtk4::{graphene, gsk};
 
     use once_cell::sync::Lazy;
 
@@ -26,9 +26,10 @@ mod imp {
         pub mouse_drawing: Cell<bool>,       // is a property
         pub unsaved_changes: Cell<bool>,     // is a property
         pub cursor: gdk::Cursor,             // is a property
-        pub gesture_stylus: GestureStylus,
-        pub gesture_drag: GestureDrag,
+        pub stylus_drawing_gesture: GestureStylus,
+        pub drag_drawing_gesture: GestureDrag,
         pub renderer: Rc<RefCell<render::Renderer>>,
+        pub preview: WidgetPaintable,
     }
 
     impl Default for Canvas {
@@ -62,9 +63,10 @@ mod imp {
                     8,
                     gdk::Cursor::from_name("default", None).as_ref(),
                 ),
-                gesture_stylus,
-                gesture_drag,
+                stylus_drawing_gesture: gesture_stylus,
+                drag_drawing_gesture: gesture_drag,
                 renderer: Rc::new(RefCell::new(render::Renderer::default())),
+                preview: WidgetPaintable::new::<Widget>(None),
             }
         }
     }
@@ -83,13 +85,12 @@ mod imp {
             obj.set_hexpand(false);
             obj.set_vexpand(false);
             obj.set_can_target(true);
-            obj.set_focusable(true);
-            obj.set_can_focus(true);
-            obj.set_focus_on_click(true);
             obj.set_cursor(Some(&self.cursor));
 
-            obj.add_controller(&self.gesture_stylus);
-            obj.add_controller(&self.gesture_drag);
+            obj.add_controller(&self.stylus_drawing_gesture);
+            obj.add_controller(&self.drag_drawing_gesture);
+
+            obj.preview().set_widget(Some(obj));
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -183,14 +184,14 @@ mod imp {
                         value.get().expect("The value needs to be of type `bool`.");
                     self.mouse_drawing.replace(mouse_drawing);
                     if mouse_drawing {
-                        self.gesture_stylus
+                        self.stylus_drawing_gesture
                             .set_propagation_phase(PropagationPhase::None);
-                        self.gesture_drag
+                        self.drag_drawing_gesture
                             .set_propagation_phase(PropagationPhase::Bubble);
                     } else {
-                        self.gesture_stylus
+                        self.stylus_drawing_gesture
                             .set_propagation_phase(PropagationPhase::Bubble);
-                        self.gesture_drag
+                        self.drag_drawing_gesture
                             .set_propagation_phase(PropagationPhase::None);
                     }
                 }
@@ -435,9 +436,9 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
+use gtk4::{WidgetPaintable};
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus, GestureZoom,
-    PropagationPhase,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus,
 };
 
 glib::wrapper! {
@@ -455,7 +456,6 @@ impl Canvas {
     pub const SCALE_MIN: f64 = 0.4;
     pub const SCALE_MAX: f64 = 3.0;
     pub const SCALE_DEFAULT: f64 = 1.0;
-    pub const SCALE_ZOOMGESTURE_RES: f64 = 0.02; // Sets the delta (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
     pub const INPUT_OVERSHOOT: f64 = 30.0;
     pub const SHADOW_WIDTH: f64 = 30.0;
 
@@ -495,6 +495,10 @@ impl Canvas {
                 log::error!("failed to set property `scalefactor` of `Canvas`, {}", e)
             }
         }
+    }
+
+    pub fn preview(&self) -> WidgetPaintable {
+        imp::Canvas::from_instance(self).preview.clone()
     }
 
     pub fn unsaved_changes(&self) -> bool {
@@ -575,16 +579,10 @@ impl Canvas {
         .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE)
         .build();
 
-        let gesture_zoom = GestureZoom::builder()
-            .name("gesture_zoom")
-            .propagation_phase(PropagationPhase::Capture)
-            .build();
-        self.add_controller(&gesture_zoom);
-
         // Mouse drawing
         let drag_start_tmp = Rc::new(Cell::new((0_f64, 0_f64)));
 
-        priv_.gesture_drag.connect_drag_begin(
+        priv_.drag_drawing_gesture.connect_drag_begin(
             clone!(@weak self as canvas, @strong drag_start_tmp, @weak appwindow => move |_gesture_drag, x, y| {
                 drag_start_tmp.set( (x, y) );
                 let data_entries = Self::retreive_pointer_inputdata(x, y);
@@ -594,14 +592,14 @@ impl Canvas {
             }),
         );
 
-        priv_.gesture_drag.connect_drag_update(clone!(@strong drag_start_tmp, @weak self as canvas, @weak appwindow => move |_gesture_drag, x, y| {
+        priv_.drag_drawing_gesture.connect_drag_update(clone!(@strong drag_start_tmp, @weak self as canvas, @weak appwindow => move |_gesture_drag, x, y| {
             let data_entries = Self::retreive_pointer_inputdata(x, y);
             let data_entries = canvas.map_inputdata(data_entries, na::vector![drag_start_tmp.get().0, drag_start_tmp.get().1]);
 
             canvas.processing_draw_motion(data_entries);
         }));
 
-        priv_.gesture_drag.connect_drag_end(clone!(@strong drag_start_tmp, @weak self as canvas @weak appwindow => move |_gesture_drag, x, y| {
+        priv_.drag_drawing_gesture.connect_drag_end(clone!(@strong drag_start_tmp, @weak self as canvas @weak appwindow => move |_gesture_drag, x, y| {
             let data_entries = Self::retreive_pointer_inputdata(x, y);
             let data_entries = canvas.map_inputdata(data_entries, na::vector![drag_start_tmp.get().0, drag_start_tmp.get().1]);
 
@@ -609,7 +607,7 @@ impl Canvas {
         }));
 
         // Stylus Drawing
-        priv_.gesture_stylus.connect_down(clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
+        priv_.stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
             if let Some(device_tool) = gesture_stylus.device_tool() {
 
                 // Disable backlog, only allowed in motion signal handler
@@ -633,7 +631,7 @@ impl Canvas {
             }
         }));
 
-        priv_.gesture_stylus.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus, x, y| {
+        priv_.stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus, x, y| {
             if let Some(_device_tool) = gesture_stylus.device_tool() {
 
                 // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
@@ -644,7 +642,7 @@ impl Canvas {
             }
         }));
 
-        priv_.gesture_stylus.connect_up(
+        priv_.stylus_drawing_gesture.connect_up(
             clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
                 let data_entries = Canvas::retreive_stylus_inputdata(gesture_stylus, false, x, y);
                 let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
@@ -653,30 +651,6 @@ impl Canvas {
             }),
         );
 
-        // Gesture zooming
-        let scale_tmp = Rc::new(Cell::new(1_f64));
-        let scale_doubledelta = Rc::new(Cell::new(1_f64));
-
-        gesture_zoom.connect_begin(
-            clone!(@strong scale_tmp, @strong scale_doubledelta, @weak appwindow => move |_gesture_zoom, _eventsequence| {
-                scale_tmp.set(appwindow.canvas().scalefactor());
-                scale_doubledelta.set(1_f64);
-            }),
-        );
-
-        gesture_zoom.connect_scale_changed(
-            clone!(@strong scale_tmp, @strong scale_doubledelta, @weak appwindow => move |_gesture_zoom, scale_delta| {
-                if scale_delta < scale_doubledelta.get() - Self::SCALE_ZOOMGESTURE_RES || scale_delta > scale_doubledelta.get() + Self::SCALE_ZOOMGESTURE_RES {
-                    scale_doubledelta.set(scale_delta);
-                    appwindow.canvas().set_scalefactor(scale_tmp.get() * scale_delta);
-                }
-            }),
-        );
-
-        gesture_zoom.connect_end(
-            clone!(@strong scale_tmp, @weak appwindow => move |_gesture_zoom, _eventsequence| {
-            }),
-        );
     }
 
     fn processing_draw_begin(&self, mut data_entries: VecDeque<InputData>) {

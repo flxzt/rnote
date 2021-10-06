@@ -3,11 +3,10 @@ mod imp {
     use std::{cell::Cell, rc::Rc};
 
     use adw::{prelude::*, subclass::prelude::*};
-    use gtk4::FileChooserNative;
     use gtk4::{
         gdk, gio, glib, glib::clone, subclass::prelude::*, Box, Button, CompositeTemplate,
-        CssProvider, Entry, Grid, Inhibit, Overlay, PackType, ScrolledWindow, StyleContext,
-        ToggleButton,
+        CssProvider, Entry, FileChooserNative, Grid, Inhibit, Overlay, PackType, Picture,
+        ScrolledWindow, StyleContext, ToggleButton,
     };
 
     use crate::{
@@ -29,6 +28,8 @@ mod imp {
         pub canvas: TemplateChild<Canvas>,
         #[template_child]
         pub canvas_overlay: TemplateChild<Overlay>,
+        #[template_child]
+        pub canvas_resize_preview: TemplateChild<Picture>,
         #[template_child]
         pub selection_modifier: TemplateChild<SelectionModifier>,
         #[template_child]
@@ -72,6 +73,7 @@ mod imp {
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
                 canvas_overlay: TemplateChild::<Overlay>::default(),
+                canvas_resize_preview: TemplateChild::<Picture>::default(),
                 selection_modifier: TemplateChild::<SelectionModifier>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
                 flap: TemplateChild::<adw::Flap>::default(),
@@ -245,12 +247,19 @@ mod imp {
     impl AdwApplicationWindowImpl for RnoteAppWindow {}
 }
 
-use std::{boxed, cell::RefCell, error::Error, path::PathBuf, rc::Rc};
+use std::{
+    boxed,
+    cell::{Cell, RefCell},
+    error::Error,
+    path::PathBuf,
+    rc::Rc,
+};
 
 use adw::prelude::*;
 use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, Entry,
-    FileChooserNative, Grid, Overlay, ScrolledWindow,
+    gdk, gio, glib, glib::clone, graphene, subclass::prelude::*, Application, Box, Button, Entry,
+    FileChooserNative, GestureZoom, Grid, Overlay, Picture, PropagationPhase, ScrolledWindow,
+    Snapshot,
 };
 
 use crate::{
@@ -270,6 +279,8 @@ glib::wrapper! {
 }
 
 impl RnoteAppWindow {
+    pub const CANVAS_ZOOMGESTURE_THRESHOLD: f64 = 0.005; // Sets the delta threshold (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
+
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
     }
@@ -297,6 +308,12 @@ impl RnoteAppWindow {
     pub fn canvas_overlay(&self) -> Overlay {
         imp::RnoteAppWindow::from_instance(self)
             .canvas_overlay
+            .get()
+    }
+
+    pub fn canvas_resize_preview(&self) -> Picture {
+        imp::RnoteAppWindow::from_instance(self)
+            .canvas_resize_preview
             .get()
     }
 
@@ -485,6 +502,81 @@ impl RnoteAppWindow {
                 appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
             }
         }));
+
+        // Canvas zooming with preview
+        let canvas_zoom_gesture = GestureZoom::builder()
+            .name("gesture_zoom")
+            .propagation_phase(PropagationPhase::Capture)
+            .build();
+        self.canvas_scroller().add_controller(&canvas_zoom_gesture);
+
+        // Gesture zooming
+        let scale_begin = Rc::new(Cell::new(1_f64));
+        let scale_doubledelta = Rc::new(Cell::new(1_f64));
+        let canvas_preview_paintable = Rc::new(RefCell::new(gdk::Paintable::new_empty(0, 0)));
+
+        canvas_zoom_gesture.connect_begin(
+            clone!(@strong canvas_preview_paintable, @strong scale_begin, @strong scale_doubledelta, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+                scale_begin.set(appwindow.canvas().scalefactor());
+                scale_doubledelta.set(1_f64);
+
+                let width = f64::from(appwindow.canvas().sheet().width()) * scale_begin.get();
+                let height = f64::from(appwindow.canvas().sheet().height()) * scale_begin.get();
+                let preview_size = graphene::Size::new(width as f32, height as f32);
+
+                *canvas_preview_paintable.borrow_mut() = appwindow.canvas().preview().current_image();
+
+                if let Some(paintable) = canvas_preview_paintable.borrow().as_ref() {
+                    let snapshot = Snapshot::new();
+                    paintable.snapshot(snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(), width, height);
+                    appwindow.canvas_resize_preview().set_paintable(snapshot.to_paintable(Some(&preview_size)).as_ref());
+                }
+
+                appwindow.canvas().set_visible(false);
+                appwindow.canvas_resize_preview().set_visible(true);
+            }),
+        );
+
+        canvas_zoom_gesture.connect_scale_changed(
+            clone!(@strong canvas_preview_paintable, @strong scale_begin, @strong scale_doubledelta, @weak self as appwindow => move |_gesture_zoom, scale_delta| {
+                if scale_delta < scale_doubledelta.get() - Self::CANVAS_ZOOMGESTURE_THRESHOLD || scale_delta > scale_doubledelta.get() + Self::CANVAS_ZOOMGESTURE_THRESHOLD {
+                    scale_doubledelta.set(scale_delta);
+
+                    let width = f64::from(appwindow.canvas().sheet().width()) * scale_begin.get() * scale_delta;
+                    let height = f64::from(appwindow.canvas().sheet().height()) * scale_begin.get() * scale_delta;
+                    let preview_size = graphene::Size::new(width as f32, height as f32);
+
+                    if let Some(paintable) = canvas_preview_paintable.borrow().as_ref() {
+                        let snapshot = Snapshot::new();
+                        paintable.snapshot(snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(), width, height);
+                        //snapshot.scale(scalefactor as f32, scalefactor as f32);
+                        appwindow.canvas_resize_preview().set_paintable(snapshot.to_paintable(Some(&preview_size)).as_ref());
+                    }
+
+                    }
+            }),
+        );
+
+        canvas_zoom_gesture.connect_cancel(
+            clone!(@strong scale_begin, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+                    appwindow.canvas_resize_preview().set_visible(false);
+                    appwindow.canvas().set_visible(true);
+                    appwindow.canvas().set_sensitive(false);
+                    appwindow.canvas().set_sensitive(true);
+            }),
+        );
+
+        canvas_zoom_gesture.connect_end(
+            clone!(@strong scale_begin, @strong scale_doubledelta, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+                    let scalefactor_new = scale_begin.get() * scale_doubledelta.get();
+                    appwindow.canvas().set_scalefactor(scalefactor_new);
+
+                    appwindow.canvas_resize_preview().set_visible(false);
+                    appwindow.canvas().set_visible(true);
+                    appwindow.canvas().set_sensitive(false);
+                    appwindow.canvas().set_sensitive(true);
+            }),
+        );
 
         // This dictates the overlay children position and size
         self.canvas_overlay().connect_get_child_position(

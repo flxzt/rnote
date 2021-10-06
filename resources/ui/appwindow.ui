@@ -200,9 +200,22 @@
                       </object>
                     </child>
                     <child>
-                      <object class="Canvas" id="canvas">
-                        <property name="halign">start</property>
-                        <property name="valign">start</property>
+                      <object class="GtkBox">
+                        <child>
+                          <object class="GtkPicture" id="canvas_resize_preview">
+                            <property name="name">canvas_resize_preview</property>
+                            <property name="visible">false</property>
+                            <property name="can-shrink">false</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="Canvas" id="canvas">
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>

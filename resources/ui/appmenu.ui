@@ -52,7 +52,7 @@
           <section>
             <item>
               <attribute name="label">Keyboard Shortcuts</attribute>
-              <attribute name="action">app.shortcuts</attribute>
+              <attribute name="action">app.keyboard-shortcuts</attribute>
             </item>
             <item>
               <attribute name="label">About Rnote</attribute>

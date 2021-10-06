@@ -32,10 +32,10 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
 
 // Message Dialogs
 
-pub fn dialog_shortcuts(appwindow: &RnoteAppWindow) {
+pub fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
-    let dialog_shortcuts: ShortcutsWindow = builder.object("dialog_shortcuts").unwrap();
+    let dialog_shortcuts: ShortcutsWindow = builder.object("shortcuts_window").unwrap();
 
     dialog_shortcuts.set_transient_for(Some(appwindow));
     dialog_shortcuts.show();

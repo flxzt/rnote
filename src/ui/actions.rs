@@ -31,7 +31,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_import_file = gio::SimpleAction::new("import-file", None);
     let action_export_selection_as_svg = gio::SimpleAction::new("export-selection-as-svg", None);
     let action_export_sheet_as_svg = gio::SimpleAction::new("export-sheet-as-svg", None);
-    let action_shortcuts_dialog = gio::SimpleAction::new("shortcuts", None);
+    let action_keyboard_shortcuts_dialog = gio::SimpleAction::new("keyboard-shortcuts", None);
     let action_warning =
         gio::SimpleAction::new("warning", Some(&glib::VariantType::new("s").unwrap()));
     let action_error = gio::SimpleAction::new("error", Some(&glib::VariantType::new("s").unwrap()));
@@ -73,16 +73,16 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
     let action_visual_debug = appwindow.app_settings().create_action("visual-debug");
 
-    // Shortcuts help overlay
-    action_shortcuts_dialog.connect_activate(
-        clone!(@weak appwindow => move |_action_shortcuts_dialog, _parameter| {
-            dialogs::dialog_shortcuts(&appwindow);
+    // Keyboard shortcuts
+    action_keyboard_shortcuts_dialog.connect_activate(
+        clone!(@weak appwindow => move |_action_keyboard_shortcuts_dialog, _parameter| {
+            dialogs::dialog_keyboard_shortcuts(&appwindow);
         }),
     );
     appwindow
         .application()
         .unwrap()
-        .add_action(&action_shortcuts_dialog);
+        .add_action(&action_keyboard_shortcuts_dialog);
 
     // Warning
     action_warning.connect_activate(
@@ -708,15 +708,7 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
     appwindow
         .application()
         .unwrap()
-        .set_accels_for_action("app.save-sheet", &["<Ctrl>s"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.print-sheet", &["<Ctrl>p"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.import-file", &["<Ctrl>i"]);
+        .set_accels_for_action("app.keyboard-shortcuts", &["<Ctrl>?"]);
     appwindow
         .application()
         .unwrap()
@@ -725,6 +717,22 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
         .application()
         .unwrap()
         .set_accels_for_action("app.open-appmenu", &["F10"]);
+    appwindow
+        .application()
+        .unwrap()
+        .set_accels_for_action("app.save-sheet", &["<Ctrl>s"]);
+    appwindow
+        .application()
+        .unwrap()
+        .set_accels_for_action("app.clear-sheet", &["<Ctrl>l"]);
+    appwindow
+        .application()
+        .unwrap()
+        .set_accels_for_action("app.print-sheet", &["<Ctrl>p"]);
+    appwindow
+        .application()
+        .unwrap()
+        .set_accels_for_action("app.import-file", &["<Ctrl>i"]);
     appwindow
         .application()
         .unwrap()
@@ -741,10 +749,6 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
         .application()
         .unwrap()
         .set_accels_for_action("app.duplicate-selection", &["<Ctrl>v"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.clear-sheet", &["<Ctrl>l"]);
     appwindow
         .application()
         .unwrap()

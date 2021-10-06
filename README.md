@@ -10,7 +10,7 @@ Rnote aims to be a simple but functional note taking application for freehand dr
 One main consideration is that it is vector based, which should make it very flexible in editing and altering the contents.
 
 **Disclaimer**  
-This is my first Rust and GTK project and I am learning as I go along. Its not unlikely to blow up your computer. ;)
+This is my first Rust and GTK project and I am learning as I go along. It might blow up your computer. ;)
 
 ## Installation
 Rnote is available as  a flatpak on Flathub:

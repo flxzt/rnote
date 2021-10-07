@@ -1,6 +1,7 @@
 use super::StrokeBehaviour;
 use crate::pens::shaper;
 use crate::strokes::compose;
+use crate::utils;
 use crate::{
     pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render, strokes::InputData,
 };
@@ -16,12 +17,13 @@ pub enum ShapeStyle {
         end: na::Vector2<f64>,   // The position of the line end
     },
     Rectangle {
-        shape: p2d::shape::Cuboid,
-        pos: na::Vector2<f64>, // The position of the upper left corner
+        start: na::Vector2<f64>, // The position of the rect start
+        end: na::Vector2<f64>,   // The position of the rect end
     },
     Ellipse {
-        shape: p2d::shape::Ball,
         pos: na::Vector2<f64>, // The center position
+        radius_x: f64,         // The radius
+        radius_y: f64,         // The radius
     },
 }
 
@@ -56,14 +58,15 @@ impl StrokeBehaviour for ShapeStroke {
                 *end = *end + offset;
             }
             ShapeStyle::Rectangle {
-                shape: _,
-                ref mut pos,
+                start: _,
+                ref mut end,
             } => {
-                *pos = *pos + offset;
+                *end = *end + offset;
             }
             ShapeStyle::Ellipse {
-                shape: _,
                 ref mut pos,
+                radius_x: _,
+                radius_y: _,
             } => {
                 *pos = *pos + offset;
             }
@@ -95,19 +98,18 @@ impl StrokeBehaviour for ShapeStroke {
                 *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
             }
             ShapeStyle::Rectangle {
-                ref mut shape,
-                ref mut pos,
+                ref mut start,
+                ref mut end,
             } => {
-                *pos = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                    + na::Vector2::from_element(0.5 * self.shaper.rectangle_config.width());
-                shape.half_extents = (na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                    - na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                    - na::Vector2::from_element(self.shaper.rectangle_config.width()))
-                    * 0.5;
+                *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
+                    + na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width() * 0.5);
+                *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
+                    - na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width() * 0.5);
             }
             ShapeStyle::Ellipse {
-                ref mut shape,
                 ref mut pos,
+                ref mut radius_x,
+                ref mut radius_y,
             } => {
                 let center = na::vector![
                     new_bounds.mins[0] + (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0,
@@ -115,9 +117,9 @@ impl StrokeBehaviour for ShapeStroke {
                 ];
                 *pos = center;
 
-                shape.radius = (new_bounds.maxs[0] - new_bounds.mins[0])
-                    .min(new_bounds.maxs[1] - new_bounds.mins[1])
-                    / 2.0
+                *radius_x = (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0
+                    - self.shaper.rectangle_config.width();
+                *radius_y = (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
                     - self.shaper.rectangle_config.width();
             }
         }
@@ -177,7 +179,7 @@ impl StrokeBehaviour for ShapeStroke {
                         .into()
                 }
             },
-            ShapeStyle::Rectangle { ref shape, ref pos } => match self.shaper.drawstyle {
+            ShapeStyle::Rectangle { ref start, ref end } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
                     let color = if let Some(color) = self.shaper.rectangle_config.color {
                         color.to_css_color()
@@ -191,10 +193,10 @@ impl StrokeBehaviour for ShapeStroke {
                     };
 
                     svg::node::element::Rectangle::new()
-                        .set("x", pos[0] + offset[0])
-                        .set("y", pos[1] + offset[1])
-                        .set("width", 2.0 * shape.half_extents[0])
-                        .set("height", 2.0 * shape.half_extents[1])
+                        .set("x", start[0] + offset[0])
+                        .set("y", start[1] + offset[1])
+                        .set("width", end[0] - start[0])
+                        .set("height", end[1] - start[1])
                         .set("stroke", color)
                         .set("stroke-width", self.shaper.rectangle_config.width())
                         .set("fill", fill)
@@ -220,14 +222,15 @@ impl StrokeBehaviour for ShapeStroke {
                         rough_rs::generator::RoughGenerator::new(Some(rough_config));
 
                     svg::node::element::Group::new()
-                        .add(
-                            rough_generator
-                                .rectangle(pos + offset, pos + 2.0 * shape.half_extents + offset),
-                        )
+                        .add(rough_generator.rectangle(start + offset, end + offset))
                         .into()
                 }
             },
-            ShapeStyle::Ellipse { ref shape, ref pos } => {
+            ShapeStyle::Ellipse {
+                ref pos,
+                ref radius_x,
+                ref radius_y,
+            } => {
                 let color = if let Some(color) = self.shaper.ellipse_config.color {
                     color.to_css_color()
                 } else {
@@ -242,8 +245,8 @@ impl StrokeBehaviour for ShapeStroke {
                 svg::node::element::Ellipse::new()
                     .set("cx", pos[0] + offset[0])
                     .set("cy", pos[1] + offset[1])
-                    .set("rx", shape.radius)
-                    .set("ry", shape.radius)
+                    .set("rx", *radius_x)
+                    .set("ry", *radius_y)
                     .set("stroke", color)
                     .set("stroke-width", self.shaper.ellipse_config.width())
                     .set("fill", fill)
@@ -295,12 +298,13 @@ impl ShapeStroke {
                 end: inputdata.pos(),
             },
             CurrentShape::Rectangle => ShapeStyle::Rectangle {
-                shape: p2d::shape::Cuboid::new(na::vector![0.0, 0.0]),
-                pos: inputdata.pos(),
+                start: inputdata.pos(),
+                end: inputdata.pos(),
             },
             CurrentShape::Ellipse => ShapeStyle::Ellipse {
-                shape: p2d::shape::Ball::new(1.0),
                 pos: inputdata.pos(),
+                radius_x: 0.0,
+                radius_y: 0.0,
             },
         };
 
@@ -326,20 +330,19 @@ impl ShapeStroke {
                 *end = inputdata.pos();
             }
             ShapeStyle::Rectangle {
-                ref mut shape,
-                ref mut pos,
+                start: _,
+                ref mut end,
             } => {
-                let delta = inputdata.pos() - *pos;
-                if delta[0] >= 0.0 && delta[1] >= 0.0 {
-                    shape.half_extents = delta.scale(0.5);
-                };
+                *end = inputdata.pos();
             }
             ShapeStyle::Ellipse {
-                ref mut shape,
                 ref pos,
+                ref mut radius_x,
+                ref mut radius_y,
             } => {
                 let delta = inputdata.pos() - *pos;
-                shape.radius = delta.norm().abs();
+                *radius_x = delta[0].abs();
+                *radius_y = delta[1].abs();
             }
         }
 
@@ -350,80 +353,36 @@ impl ShapeStroke {
         match self.shape_style {
             ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
-                    let line_bounds = if start[0] <= end[0] && start[1] <= end[1] {
-                        p2d::bounding_volume::AABB::new(
-                            na::point![start[0], start[1]],
-                            na::point![end[0], end[1]],
-                        )
-                    } else if start[0] > end[0] && start[1] <= end[1] {
-                        p2d::bounding_volume::AABB::new(
-                            na::point![end[0], start[1]],
-                            na::point![start[0], end[1]],
-                        )
-                    } else if start[0] <= end[0] && start[1] > end[1] {
-                        p2d::bounding_volume::AABB::new(
-                            na::point![start[0], end[1]],
-                            na::point![end[0], start[1]],
-                        )
-                    } else {
-                        p2d::bounding_volume::AABB::new(
-                            na::point![end[0], end[1]],
-                            na::point![start[0], start[1]],
-                        )
-                    };
-
-                    self.bounds = line_bounds.loosened(self.shaper.line_config.width() * 5.0);
+                    self.bounds = utils::aabb_new_positive(*start, *end)
+                        .loosened(self.shaper.line_config.width() * 0.5);
                 }
                 shaper::DrawStyle::Rough => {
-                    let line_bounds = if start[0] <= end[0] && start[1] <= end[1] {
-                        p2d::bounding_volume::AABB::new(
-                            na::point![start[0], start[1]],
-                            na::point![end[0], end[1]],
-                        )
-                    } else if start[0] > end[0] && start[1] <= end[1] {
-                        p2d::bounding_volume::AABB::new(
-                            na::point![end[0], start[1]],
-                            na::point![start[0], end[1]],
-                        )
-                    } else if start[0] <= end[0] && start[1] > end[1] {
-                        p2d::bounding_volume::AABB::new(
-                            na::point![start[0], end[1]],
-                            na::point![end[0], start[1]],
-                        )
-                    } else {
-                        p2d::bounding_volume::AABB::new(
-                            na::point![end[0], end[1]],
-                            na::point![start[0], start[1]],
-                        )
-                    };
-
-                    self.bounds = line_bounds.loosened(self.shaper.line_config.width());
+                    self.bounds = utils::aabb_new_positive(*start, *end)
+                        .loosened(self.shaper.line_config.width() * 2.0);
                 }
             },
-            ShapeStyle::Rectangle { ref shape, ref pos } => {
+            ShapeStyle::Rectangle { ref start, ref end } => {
                 match self.shaper.drawstyle {
                     shaper::DrawStyle::Smooth => {
-                        self.bounds = shape
-                            .aabb(&na::geometry::Isometry2::new(
-                                *pos + shape.half_extents,
-                                0.0,
-                            ))
+                        self.bounds = utils::aabb_new_positive(*start, *end)
                             .loosened(self.shaper.rectangle_config.width() * 0.5);
                     }
                     shaper::DrawStyle::Rough => {
-                        self.bounds = shape
-                            .aabb(&na::geometry::Isometry2::new(
-                                *pos + shape.half_extents,
-                                0.0,
-                            ))
-                            .loosened(self.shaper.rectangle_config.width() * 0.5 * 5.0);
+                        self.bounds = utils::aabb_new_positive(*start, *end)
+                            .loosened(self.shaper.rectangle_config.width() * 2.0);
                     }
                 };
             }
-            ShapeStyle::Ellipse { ref shape, ref pos } => {
-                self.bounds = shape
-                    .aabb(&na::geometry::Isometry2::new(*pos, 0.0))
-                    .loosened(self.shaper.ellipse_config.width());
+            ShapeStyle::Ellipse {
+                ref pos,
+                ref radius_x,
+                ref radius_y,
+            } => {
+                self.bounds = utils::aabb_new_positive(
+                    na::vector![pos[0] - radius_x, pos[1] - radius_y],
+                    na::vector![pos[0] + radius_x, pos[1] + radius_y],
+                )
+                .loosened(self.shaper.ellipse_config.width());
             }
         }
     }

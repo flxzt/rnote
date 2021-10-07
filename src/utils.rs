@@ -24,13 +24,17 @@ pub fn now() -> String {
 }
 
 pub fn aabb_new_positive(
-    mins: na::Vector2<f64>,
-    maxs: na::Vector2<f64>,
+    start: na::Vector2<f64>,
+    end: na::Vector2<f64>,
 ) -> p2d::bounding_volume::AABB {
-    if (maxs - mins).norm() > 0.0 {
-        p2d::bounding_volume::AABB::new(na::point![mins[0], mins[1]], na::point![maxs[0], maxs[1]])
+    if start[0] <= end[0] && start[1] <= end[1] {
+        p2d::bounding_volume::AABB::new(na::point![start[0], start[1]], na::point![end[0], end[1]])
+    } else if start[0] > end[0] && start[1] <= end[1] {
+        p2d::bounding_volume::AABB::new(na::point![end[0], start[1]], na::point![start[0], end[1]])
+    } else if start[0] <= end[0] && start[1] > end[1] {
+        p2d::bounding_volume::AABB::new(na::point![start[0], end[1]], na::point![end[0], start[1]])
     } else {
-        p2d::bounding_volume::AABB::new(na::point![maxs[0], maxs[1]], na::point![mins[0], mins[1]])
+        p2d::bounding_volume::AABB::new(na::point![end[0], end[1]], na::point![start[0], start[1]])
     }
 }
 

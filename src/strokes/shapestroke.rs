@@ -58,9 +58,10 @@ impl StrokeBehaviour for ShapeStroke {
                 *end = *end + offset;
             }
             ShapeStyle::Rectangle {
-                start: _,
+                ref mut start,
                 ref mut end,
             } => {
+                *start = *start + offset;
                 *end = *end + offset;
             }
             ShapeStyle::Ellipse {

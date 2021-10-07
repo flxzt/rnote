@@ -37,9 +37,9 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="shapes_togglebox">
+      <object class="GtkBox" id="drawstyle_togglebox">
         <property name="orientation">vertical</property>
-        <property name="height_request">150</property>
+        <property name="height_request">60</property>
         <property name="homogeneous">true</property>
         <property name="vexpand">false</property>
         <style>
@@ -48,6 +48,47 @@
         <layout>
           <property name="column">0</property>
           <property name="row">2</property>
+        </layout>
+        <child>
+          <object class="GtkToggleButton" id="drawstyle_smooth_toggle">
+            <property name="label">s</property>
+            <property name="tooltip_text">smooth shapes</property>
+            <property name="vexpand">true</property>
+            <property name="active">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="drawstyle_rough_toggle">
+            <property name="label">r</property>
+            <property name="tooltip_text">rough shapes</property>
+            <property name="vexpand">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin_top">20</property>
+        <property name="margin_bottom">20</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">3</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="shapes_togglebox">
+        <property name="orientation">vertical</property>
+        <property name="height_request">120</property>
+        <property name="homogeneous">true</property>
+        <property name="vexpand">false</property>
+        <style>
+          <class name="linked" />
+        </style>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">4</property>
         </layout>
         <child>
           <object class="GtkToggleButton" id="line_toggle">
@@ -69,7 +110,6 @@
             <property name="icon_name">shape-ellipse-symbolic</property>
             <property name="tooltip_text">Ellipse</property>
             <property name="vexpand">true</property>
-
           </object>
         </child>
       </object>
@@ -81,7 +121,7 @@
         <property name="margin_bottom">20</property>
         <layout>
           <property name="column">0</property>
-          <property name="row">3</property>
+          <property name="row">5</property>
         </layout>
       </object>
     </child>
@@ -92,7 +132,7 @@
         <property name="transition_type">GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT</property>
         <layout>
           <property name="column">0</property>
-          <property name="row">4</property>
+          <property name="row">6</property>
         </layout>
         <style>
           <class name="shaperconfig_stack" />

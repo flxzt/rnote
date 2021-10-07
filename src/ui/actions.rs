@@ -58,6 +58,12 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         Some(&glib::VariantType::new("s").unwrap()),
         &"rectangle".to_variant(),
     );
+    let action_shaper_drawstyle = gio::SimpleAction::new_stateful(
+        "shaper-drawstyle",
+        Some(&glib::VariantType::new("s").unwrap()),
+        &"smooth".to_variant(),
+    );
+
     let action_predefined_format = gio::SimpleAction::new_stateful(
         "predefined-format",
         Some(&glib::VariantType::new("s").unwrap()),
@@ -206,6 +212,35 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         .application()
         .unwrap()
         .add_action(&action_current_pen);
+
+    // Shaper drawstyle
+    action_shaper_drawstyle.connect_activate(move |action_shaper_drawstyle, parameter| {
+        if action_shaper_drawstyle.state().unwrap().str().unwrap() != parameter.unwrap().str().unwrap()
+        {
+            action_shaper_drawstyle.change_state(parameter.unwrap());
+        }
+    });
+    action_shaper_drawstyle.connect_change_state(
+        clone!(@weak appwindow => move |action_shaper_drawstyle, value| {
+            action_shaper_drawstyle.set_state(value.unwrap());
+
+            match action_shaper_drawstyle.state().unwrap().str().unwrap() {
+                "smooth" => {
+                    appwindow.penssidebar().shaper_page().drawstyle_smooth_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::DrawStyle::Smooth;
+                },
+                "rough" => {
+                    appwindow.penssidebar().shaper_page().drawstyle_rough_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::DrawStyle::Rough;
+                },
+                _ => { log::error!("set invalid state of action `shaper-drawstye`")}
+            }
+        }),
+    );
+    appwindow
+        .application()
+        .unwrap()
+        .add_action(&action_shaper_drawstyle);
 
     // Current Shape
     action_current_shape.connect_activate(move |action_current_shape, parameter| {
@@ -708,7 +743,7 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
     appwindow
         .application()
         .unwrap()
-        .set_accels_for_action("app.keyboard-shortcuts", &["<Ctrl>?"]);
+        .set_accels_for_action("app.keyboard-shortcuts", &["<Ctrl>k"]);
     appwindow
         .application()
         .unwrap()

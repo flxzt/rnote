@@ -1,4 +1,5 @@
 use super::StrokeBehaviour;
+use crate::pens::shaper;
 use crate::strokes::compose;
 use crate::{
     pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render, strokes::InputData,
@@ -29,6 +30,7 @@ pub struct ShapeStroke {
     pub shape_style: ShapeStyle,
     pub shaper: Shaper,
     pub bounds: p2d::bounding_volume::AABB,
+    pub seed: Option<u64>,
     #[serde(skip, default = "render::default_rendernode")]
     pub rendernode: gsk::RenderNode,
 }
@@ -127,50 +129,104 @@ impl StrokeBehaviour for ShapeStroke {
         let mut svg = String::new();
 
         let element: svg::node::element::Element = match self.shape_style {
-            ShapeStyle::Line { ref start, ref end } => {
-                let color = if let Some(color) = self.shaper.line_config.color {
-                    color.to_css_color()
-                } else {
-                    String::from("none")
-                };
-                let fill = if let Some(fill) = self.shaper.line_config.fill {
-                    fill.to_css_color()
-                } else {
-                    String::from("none")
-                };
+            ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
+                shaper::DrawStyle::Smooth => {
+                    let color = if let Some(color) = self.shaper.line_config.color {
+                        color.to_css_color()
+                    } else {
+                        String::from("none")
+                    };
 
-                svg::node::element::Line::new()
-                    .set("x1", start[0] + offset[0])
-                    .set("y1", start[1] + offset[1])
-                    .set("x2", end[0] + offset[0])
-                    .set("y2", end[1] + offset[1])
-                    .set("stroke", color)
-                    .set("stroke-width", self.shaper.line_config.width())
-                    .set("fill", fill)
-                    .into()
-            }
-            ShapeStyle::Rectangle { ref shape, ref pos } => {
-                let color = if let Some(color) = self.shaper.rectangle_config.color {
-                    color.to_css_color()
-                } else {
-                    String::from("none")
-                };
-                let fill = if let Some(fill) = self.shaper.rectangle_config.fill {
-                    fill.to_css_color()
-                } else {
-                    String::from("none")
-                };
+                    let fill = if let Some(fill) = self.shaper.line_config.fill {
+                        fill.to_css_color()
+                    } else {
+                        String::from("none")
+                    };
 
-                svg::node::element::Rectangle::new()
-                    .set("x", pos[0] + offset[0])
-                    .set("y", pos[1] + offset[1])
-                    .set("width", 2.0 * shape.half_extents[0])
-                    .set("height", 2.0 * shape.half_extents[1])
-                    .set("stroke", color)
-                    .set("stroke-width", self.shaper.rectangle_config.width())
-                    .set("fill", fill)
-                    .into()
-            }
+                    svg::node::element::Line::new()
+                        .set("x1", start[0] + offset[0])
+                        .set("y1", start[1] + offset[1])
+                        .set("x2", end[0] + offset[0])
+                        .set("y2", end[1] + offset[1])
+                        .set("stroke", color)
+                        .set("stroke-width", self.shaper.line_config.width())
+                        .set("fill", fill)
+                        .into()
+                }
+                shaper::DrawStyle::Rough => {
+                    let mut rough_config = rough_rs::options::Options::default();
+
+                    if let Some(color) = self.shaper.line_config.color {
+                        rough_config.stroke = Some(rough_rs::utils::Color::new(
+                            color.r, color.g, color.b, color.a,
+                        ));
+                    }
+                    if let Some(fill) = self.shaper.line_config.fill {
+                        rough_config.fill =
+                            Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                    }
+
+                    rough_config.stroke_width = self.shaper.line_config.width();
+                    rough_config.seed = self.seed;
+
+                    let mut rough_generator =
+                        rough_rs::generator::RoughGenerator::new(Some(rough_config));
+
+                    svg::node::element::Group::new()
+                        .add(rough_generator.line(start + offset, end + offset))
+                        .into()
+                }
+            },
+            ShapeStyle::Rectangle { ref shape, ref pos } => match self.shaper.drawstyle {
+                shaper::DrawStyle::Smooth => {
+                    let color = if let Some(color) = self.shaper.rectangle_config.color {
+                        color.to_css_color()
+                    } else {
+                        String::from("none")
+                    };
+                    let fill = if let Some(fill) = self.shaper.rectangle_config.fill {
+                        fill.to_css_color()
+                    } else {
+                        String::from("none")
+                    };
+
+                    svg::node::element::Rectangle::new()
+                        .set("x", pos[0] + offset[0])
+                        .set("y", pos[1] + offset[1])
+                        .set("width", 2.0 * shape.half_extents[0])
+                        .set("height", 2.0 * shape.half_extents[1])
+                        .set("stroke", color)
+                        .set("stroke-width", self.shaper.rectangle_config.width())
+                        .set("fill", fill)
+                        .into()
+                }
+                shaper::DrawStyle::Rough => {
+                    let mut rough_config = rough_rs::options::Options::default();
+
+                    if let Some(color) = self.shaper.rectangle_config.color {
+                        rough_config.stroke = Some(rough_rs::utils::Color::new(
+                            color.r, color.g, color.b, color.a,
+                        ));
+                    }
+                    if let Some(fill) = self.shaper.rectangle_config.fill {
+                        rough_config.fill =
+                            Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                    }
+
+                    rough_config.stroke_width = self.shaper.rectangle_config.width();
+                    rough_config.seed = self.seed;
+
+                    let mut rough_generator =
+                        rough_rs::generator::RoughGenerator::new(Some(rough_config));
+
+                    svg::node::element::Group::new()
+                        .add(
+                            rough_generator
+                                .rectangle(pos + offset, pos + 2.0 * shape.half_extents + offset),
+                        )
+                        .into()
+                }
+            },
             ShapeStyle::Ellipse { ref shape, ref pos } => {
                 let color = if let Some(color) = self.shaper.ellipse_config.color {
                     color.to_css_color()
@@ -231,6 +287,8 @@ impl ShapeStroke {
             na::point![inputdata.pos()[0] + 1.0, inputdata.pos()[1] + 1.0],
         );
 
+        let seed = Some(rough_rs::utils::random_u64_full(None));
+
         let shape_style = match shaper.current_shape {
             CurrentShape::Line => ShapeStyle::Line {
                 start: inputdata.pos(),
@@ -250,6 +308,7 @@ impl ShapeStroke {
             shape_style,
             shaper,
             bounds,
+            seed,
             rendernode: render::default_rendernode(),
         };
 
@@ -289,38 +348,77 @@ impl ShapeStroke {
 
     pub fn update_bounds(&mut self) {
         match self.shape_style {
-            ShapeStyle::Line { ref start, ref end } => {
-                let line_bounds = if start[0] <= end[0] && start[1] <= end[1] {
-                    p2d::bounding_volume::AABB::new(
-                        na::point![start[0], start[1]],
-                        na::point![end[0], end[1]],
-                    )
-                } else if start[0] > end[0] && start[1] <= end[1] {
-                    p2d::bounding_volume::AABB::new(
-                        na::point![end[0], start[1]],
-                        na::point![start[0], end[1]],
-                    )
-                } else if start[0] <= end[0] && start[1] > end[1] {
-                    p2d::bounding_volume::AABB::new(
-                        na::point![start[0], end[1]],
-                        na::point![end[0], start[1]],
-                    )
-                } else {
-                    p2d::bounding_volume::AABB::new(
-                        na::point![end[0], end[1]],
-                        na::point![start[0], start[1]],
-                    )
-                };
+            ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
+                shaper::DrawStyle::Smooth => {
+                    let line_bounds = if start[0] <= end[0] && start[1] <= end[1] {
+                        p2d::bounding_volume::AABB::new(
+                            na::point![start[0], start[1]],
+                            na::point![end[0], end[1]],
+                        )
+                    } else if start[0] > end[0] && start[1] <= end[1] {
+                        p2d::bounding_volume::AABB::new(
+                            na::point![end[0], start[1]],
+                            na::point![start[0], end[1]],
+                        )
+                    } else if start[0] <= end[0] && start[1] > end[1] {
+                        p2d::bounding_volume::AABB::new(
+                            na::point![start[0], end[1]],
+                            na::point![end[0], start[1]],
+                        )
+                    } else {
+                        p2d::bounding_volume::AABB::new(
+                            na::point![end[0], end[1]],
+                            na::point![start[0], start[1]],
+                        )
+                    };
 
-                self.bounds = line_bounds.loosened(self.shaper.line_config.width());
-            }
+                    self.bounds = line_bounds.loosened(self.shaper.line_config.width() * 5.0);
+                }
+                shaper::DrawStyle::Rough => {
+                    let line_bounds = if start[0] <= end[0] && start[1] <= end[1] {
+                        p2d::bounding_volume::AABB::new(
+                            na::point![start[0], start[1]],
+                            na::point![end[0], end[1]],
+                        )
+                    } else if start[0] > end[0] && start[1] <= end[1] {
+                        p2d::bounding_volume::AABB::new(
+                            na::point![end[0], start[1]],
+                            na::point![start[0], end[1]],
+                        )
+                    } else if start[0] <= end[0] && start[1] > end[1] {
+                        p2d::bounding_volume::AABB::new(
+                            na::point![start[0], end[1]],
+                            na::point![end[0], start[1]],
+                        )
+                    } else {
+                        p2d::bounding_volume::AABB::new(
+                            na::point![end[0], end[1]],
+                            na::point![start[0], start[1]],
+                        )
+                    };
+
+                    self.bounds = line_bounds.loosened(self.shaper.line_config.width());
+                }
+            },
             ShapeStyle::Rectangle { ref shape, ref pos } => {
-                self.bounds = shape
-                    .aabb(&na::geometry::Isometry2::new(
-                        *pos + shape.half_extents,
-                        0.0,
-                    ))
-                    .loosened(self.shaper.rectangle_config.width() * 0.5);
+                match self.shaper.drawstyle {
+                    shaper::DrawStyle::Smooth => {
+                        self.bounds = shape
+                            .aabb(&na::geometry::Isometry2::new(
+                                *pos + shape.half_extents,
+                                0.0,
+                            ))
+                            .loosened(self.shaper.rectangle_config.width() * 0.5);
+                    }
+                    shaper::DrawStyle::Rough => {
+                        self.bounds = shape
+                            .aabb(&na::geometry::Isometry2::new(
+                                *pos + shape.half_extents,
+                                0.0,
+                            ))
+                            .loosened(self.shaper.rectangle_config.width() * 0.5 * 5.0);
+                    }
+                };
             }
             ShapeStyle::Ellipse { ref shape, ref pos } => {
                 self.bounds = shape

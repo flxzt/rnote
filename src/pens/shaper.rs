@@ -16,6 +16,18 @@ impl Default for CurrentShape {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+pub enum DrawStyle {
+    Smooth,
+    Rough,
+}
+
+impl Default for DrawStyle {
+    fn default() -> Self {
+        Self::Smooth
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LineConfig {
     width: f64,
     pub color: Option<strokes::Color>,
@@ -35,7 +47,7 @@ impl Default for LineConfig {
 impl LineConfig {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 5.0;
+    pub const WIDTH_DEFAULT: f64 = 2.0;
     pub const COLOR_DEFAULT: Option<strokes::Color> = Some(strokes::Color {
         r: 0.0,
         g: 0.0,
@@ -73,7 +85,7 @@ impl Default for RectangleConfig {
 impl RectangleConfig {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 5.0;
+    pub const WIDTH_DEFAULT: f64 = 2.0;
     pub const COLOR_DEFAULT: Option<strokes::Color> = Some(strokes::Color {
         r: 0.0,
         g: 0.0,
@@ -111,7 +123,7 @@ impl Default for EllipseConfig {
 impl EllipseConfig {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 5.0;
+    pub const WIDTH_DEFAULT: f64 = 2.0;
     pub const COLOR_DEFAULT: Option<strokes::Color> = Some(strokes::Color {
         r: 0.0,
         g: 0.0,
@@ -132,6 +144,7 @@ impl EllipseConfig {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Shaper {
     pub current_shape: CurrentShape,
+    pub drawstyle: DrawStyle,
     pub line_config: LineConfig,
     pub rectangle_config: RectangleConfig,
     pub ellipse_config: EllipseConfig,
@@ -141,6 +154,7 @@ impl Default for Shaper {
     fn default() -> Self {
         Self {
             current_shape: CurrentShape::default(),
+            drawstyle: DrawStyle::default(),
             line_config: LineConfig::default(),
             rectangle_config: RectangleConfig::default(),
             ellipse_config: EllipseConfig::default(),

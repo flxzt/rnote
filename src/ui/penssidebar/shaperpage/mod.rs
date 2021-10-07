@@ -14,6 +14,10 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage/shaperpage.ui")]
     pub struct ShaperPage {
         #[template_child]
+        pub drawstyle_smooth_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub drawstyle_rough_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub shapes_togglebox: TemplateChild<gtk4::Box>,
         #[template_child]
         pub line_toggle: TemplateChild<ToggleButton>,
@@ -40,6 +44,8 @@ mod imp {
     impl Default for ShaperPage {
         fn default() -> Self {
             Self {
+                drawstyle_smooth_toggle: TemplateChild::<ToggleButton>::default(),
+                drawstyle_rough_toggle: TemplateChild::<ToggleButton>::default(),
                 shapes_togglebox: TemplateChild::<gtk4::Box>::default(),
                 line_toggle: TemplateChild::<ToggleButton>::default(),
                 rectangle_toggle: TemplateChild::<ToggleButton>::default(),
@@ -108,6 +114,14 @@ impl ShaperPage {
         glib::Object::new(&[]).expect("Failed to create ShaperPage")
     }
 
+    pub fn drawstyle_smooth_toggle(&self) -> ToggleButton {
+        imp::ShaperPage::from_instance(self).drawstyle_smooth_toggle.get()
+    }
+
+    pub fn drawstyle_rough_toggle(&self) -> ToggleButton {
+        imp::ShaperPage::from_instance(self).drawstyle_rough_toggle.get()
+    }
+
     pub fn shapes_togglebox(&self) -> gtk4::Box {
         imp::ShaperPage::from_instance(self).shapes_togglebox.get()
     }
@@ -169,11 +183,25 @@ impl ShaperPage {
         self.rectangleconfig_page().init(appwindow);
         self.ellipseconfig_page().init(appwindow);
 
+        self.drawstyle_rough_toggle().set_group(Some(&self.drawstyle_smooth_toggle()));
+
         self.rectangle_toggle().set_group(Some(&self.line_toggle()));
         self.ellipse_toggle().set_group(Some(&self.line_toggle()));
 
         self.shaperconfig_stack()
             .set_visible_child_name("rectangleconfig_page");
+
+        self.drawstyle_smooth_toggle().connect_active_notify(clone!(@weak appwindow => move |drawstyle_smooth_toggle| {
+            if drawstyle_smooth_toggle.is_active() {
+                appwindow.application().unwrap().activate_action("shaper-drawstyle", Some(&"smooth".to_variant()));
+            }
+        }));
+
+        self.drawstyle_rough_toggle().connect_active_notify(clone!(@weak appwindow => move |drawstyle_rough_toggle| {
+            if drawstyle_rough_toggle.is_active() {
+                appwindow.application().unwrap().activate_action("shaper-drawstyle", Some(&"rough".to_variant()));
+            }
+        }));
 
         self.line_toggle().connect_active_notify(clone!(@weak appwindow => move |line_toggle| {
             if line_toggle.is_active() {

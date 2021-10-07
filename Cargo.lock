@@ -2005,6 +2005,7 @@ version = "0.1.0"
 dependencies = [
  "nalgebra 0.29.0",
  "rand 0.8.4",
+ "serde",
  "svg",
 ]
 

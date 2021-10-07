@@ -1,5 +1,9 @@
 use std::fmt::Debug;
 
+use rand::{Rng, SeedableRng};
+
+use crate::options::Options;
+
 #[allow(dead_code)]
 pub(crate) fn merge<T>(this: Option<T>, other: Option<T>) -> Option<T> {
     match this {
@@ -53,4 +57,42 @@ impl Color {
     pub fn black() -> Self {
         Self::new(0.0, 0.0, 0.0, 1.0)
     }
+}
+
+/// Random u64 with full number range
+pub fn random_u64_full(seed: Option<u64>) -> u64 {
+    let mut rng = if let Some(seed) = seed {
+        rand::rngs::StdRng::seed_from_u64(seed)
+    } else {
+        rand::rngs::StdRng::from_entropy()
+    };
+    rng.gen()
+}
+
+/// Random i32 with full number range
+pub fn random_i32_full(seed: Option<u64>) -> i32 {
+    let mut rng = if let Some(seed) = seed {
+        rand::rngs::StdRng::seed_from_u64(seed)
+    } else {
+        rand::rngs::StdRng::from_entropy()
+    };
+    rng.gen()
+}
+
+/// Random f64 between 0.0 and 1.0
+pub fn random_f64_0to1(seed: Option<u64>) -> f64 {
+    let mut rng = if let Some(seed) = seed {
+        rand::rngs::StdRng::seed_from_u64(seed)
+    } else {
+        rand::rngs::StdRng::from_entropy()
+    };
+    rng.gen_range(0.0..1.0)
+}
+
+/// returning random f64 from 0.0 to 1.0 created from seed and advancing it
+pub fn random_next(options: &mut Options) -> f64 {
+    if let Some(ref mut seed) = options.seed {
+        *seed = random_u64_full(Some(*seed));
+    };
+    random_f64_0to1(options.seed)
 }

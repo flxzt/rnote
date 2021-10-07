@@ -27,13 +27,12 @@ impl RoughGenerator {
     }
 
     /// Generating a single line element
-    pub fn line(
-        &mut self,
-        start: na::Vector2<f64>,
-        end: na::Vector2<f64>,
-        options: Option<&Options>,
-    ) -> element::Path {
-        let commands = renderer::line(start, end, options.unwrap_or(&self.config), true, false);
+    pub fn line(&mut self, start: na::Vector2<f64>, end: na::Vector2<f64>) -> element::Path {
+        let commands = if !self.config.disable_multistroke {
+            renderer::doubleline(start, end, &mut self.config)
+        } else {
+            renderer::line(start, end, &mut self.config, true, false)
+        };
 
         self.config
             .apply_to_path(element::Path::new().set("d", path::Data::from(commands)))
@@ -46,10 +45,72 @@ impl RoughGenerator {
         cp1: na::Vector2<f64>,
         cp2: na::Vector2<f64>,
         end: na::Vector2<f64>,
-        options: Option<&Options>,
     ) -> element::Path {
-        let commands =
-            renderer::cubic_bezier(start, cp1, cp2, end, options.unwrap_or(&self.config));
+        let commands = renderer::cubic_bezier(start, cp1, cp2, end, &mut self.config);
+
+        self.config
+            .apply_to_path(element::Path::new().set("d", path::Data::from(commands)))
+    }
+
+    /// Generating a rectangle
+    pub fn rectangle(
+        &mut self,
+        top_left: na::Vector2<f64>,
+        bottom_right: na::Vector2<f64>,
+    ) -> element::Path {
+        let mut commands = Vec::new();
+
+        if !self.config.disable_multistroke {
+            commands.append(&mut renderer::doubleline(
+                top_left,
+                na::vector![bottom_right[0], top_left[1]],
+                &mut self.config,
+            ));
+            commands.append(&mut renderer::doubleline(
+                na::vector![bottom_right[0], top_left[1]],
+                bottom_right,
+                &mut self.config,
+            ));
+            commands.append(&mut renderer::doubleline(
+                bottom_right,
+                na::vector![top_left[0], bottom_right[1]],
+                &mut self.config,
+            ));
+            commands.append(&mut renderer::doubleline(
+                na::vector![top_left[0], bottom_right[1]],
+                top_left,
+                &mut self.config,
+            ));
+        } else {
+            commands.append(&mut renderer::line(
+                top_left,
+                na::vector![bottom_right[0], top_left[1]],
+                &mut self.config,
+                true,
+                false,
+            ));
+            commands.append(&mut renderer::line(
+                na::vector![bottom_right[0], top_left[1]],
+                bottom_right,
+                &mut self.config,
+                true,
+                false,
+            ));
+            commands.append(&mut renderer::line(
+                bottom_right,
+                na::vector![top_left[0], bottom_right[1]],
+                &mut self.config,
+                true,
+                false,
+            ));
+            commands.append(&mut renderer::line(
+                na::vector![top_left[0], bottom_right[1]],
+                top_left,
+                &mut self.config,
+                true,
+                false,
+            ));
+        }
 
         self.config
             .apply_to_path(element::Path::new().set("d", path::Data::from(commands)))

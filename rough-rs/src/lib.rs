@@ -10,7 +10,6 @@ use std::{error::Error, io};
 
 /// The generator module
 pub mod generator;
-pub(crate) mod math;
 /// The options module
 pub mod options;
 pub(crate) mod renderer;

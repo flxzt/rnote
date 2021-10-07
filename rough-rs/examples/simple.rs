@@ -13,14 +13,11 @@ fn main() {
     //rough_generator.config.seed = Some(1);
 
     for _i in 0..=1 {
-        let path_top =
-            rough_generator.line(na::vector![100.0, 100.0], na::vector![100.0, 400.0], None);
+        let path_top = rough_generator.line(na::vector![100.0, 100.0], na::vector![100.0, 400.0]);
         let path_bottom =
-            rough_generator.line(na::vector![100.0, 400.0], na::vector![400.0, 400.0], None);
-        let path_left =
-            rough_generator.line(na::vector![100.0, 100.0], na::vector![400.0, 100.0], None);
-        let path_right =
-            rough_generator.line(na::vector![400.0, 100.0], na::vector![400.0, 400.0], None);
+            rough_generator.line(na::vector![100.0, 400.0], na::vector![400.0, 400.0]);
+        let path_left = rough_generator.line(na::vector![100.0, 100.0], na::vector![400.0, 100.0]);
+        let path_right = rough_generator.line(na::vector![400.0, 100.0], na::vector![400.0, 400.0]);
 
         document = document
             .add(path_top)
@@ -34,7 +31,6 @@ fn main() {
         na::vector![20.0, 200.0],
         na::vector![200.0, 200.0],
         na::vector![400.0, 200.0],
-        None,
     );
     document = document.add(path_cubic_bezier);
 

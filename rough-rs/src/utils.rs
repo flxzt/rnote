@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use serde::{Deserialize, Serialize};
 
 use rand::{Rng, SeedableRng};
 
@@ -13,7 +14,7 @@ pub(crate) fn merge<T>(this: Option<T>, other: Option<T>) -> Option<T> {
 }
 
 /// representing a RGBA color
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Color {
     r: f32, // between 0.0 and 1.0
     g: f32, // between 0.0 and 1.0

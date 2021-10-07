@@ -156,7 +156,7 @@ impl StrokeBehaviour for ShapeStroke {
                         .into()
                 }
                 shaper::DrawStyle::Rough => {
-                    let mut rough_config = rough_rs::options::Options::default();
+                    let mut rough_config = self.shaper.roughconfig.clone();
 
                     if let Some(color) = self.shaper.line_config.color {
                         rough_config.stroke = Some(rough_rs::utils::Color::new(
@@ -205,7 +205,7 @@ impl StrokeBehaviour for ShapeStroke {
                         .into()
                 }
                 shaper::DrawStyle::Rough => {
-                    let mut rough_config = rough_rs::options::Options::default();
+                    let mut rough_config = self.shaper.roughconfig.clone();
 
                     if let Some(color) = self.shaper.rectangle_config.color {
                         rough_config.stroke = Some(rough_rs::utils::Color::new(

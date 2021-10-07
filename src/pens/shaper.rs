@@ -148,6 +148,7 @@ pub struct Shaper {
     pub line_config: LineConfig,
     pub rectangle_config: RectangleConfig,
     pub ellipse_config: EllipseConfig,
+    pub roughconfig: rough_rs::options::Options,
 }
 
 impl Default for Shaper {
@@ -158,8 +159,14 @@ impl Default for Shaper {
             line_config: LineConfig::default(),
             rectangle_config: RectangleConfig::default(),
             ellipse_config: EllipseConfig::default(),
+            roughconfig: rough_rs::options::Options::default(),
         }
     }
 }
 
-impl Shaper {}
+impl Shaper {
+    pub fn apply_roughconfig_onto(&self, options: &mut rough_rs::options::Options) {
+        options.roughness = self.roughconfig.roughness();
+        options.bowing = self.roughconfig.bowing();
+    }
+}

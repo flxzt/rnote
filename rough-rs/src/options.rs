@@ -1,9 +1,10 @@
 use svg::node::element;
+use serde::{Deserialize, Serialize};
 
 use crate::utils::{self};
 
 /// The options
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Options {
     /// limits the maximum offset the randomness is allowed to create.
     pub max_randomness_offset: f64,
@@ -66,8 +67,8 @@ impl Default for Options {
     fn default() -> Self {
         Self {
             max_randomness_offset: 2.0,
-            roughness: 1.0,
-            bowing: 1.0,
+            roughness: Self::ROUGHNESS_DEFAULT,
+            bowing: Self::BOWING_DEFAULT,
             seed: None,
             stroke: Some(utils::Color::black()),
             stroke_width: 1.0,
@@ -95,6 +96,19 @@ impl Default for Options {
 }
 
 impl Options {
+    /// Roughness min
+    pub const ROUGHNESS_MIN: f64 = 0.0;
+    /// Roughness max
+    pub const ROUGHNESS_MAX: f64 = 10.0;
+    /// Roughness default
+    pub const ROUGHNESS_DEFAULT: f64 = 1.0;
+    /// Bowing min
+    pub const BOWING_MIN: f64 = 0.0;
+    /// Bowing max
+    pub const BOWING_MAX: f64 = 20.0;
+    /// Bowing default
+    pub const BOWING_DEFAULT: f64 = 1.0;
+
     pub(crate) fn apply_to_path(&self, mut path: element::Path) -> element::Path {
         path = if let Some(stroke) = self.stroke {
             path.set("stroke", stroke.to_css_color())
@@ -121,10 +135,40 @@ impl Options {
 
         path
     }
+
+    /// Returns the roughness
+    pub fn roughness(&self) -> f64 {
+        self.roughness
+    }
+
+    /// Sets the roughness
+    pub fn set_roughness(&mut self, roughness: f64) {
+        self.roughness = roughness.clamp(Self::ROUGHNESS_MIN, Self::ROUGHNESS_MAX);
+    }
+
+    /// Returns the bowing
+    pub fn bowing(&self) -> f64 {
+        self.roughness
+    }
+
+    /// Sets the bowing
+    pub fn set_bowing(&mut self, bowing: f64) {
+        self.bowing = bowing.clamp(Self::BOWING_MIN, Self::BOWING_MAX);
+    }
+
+    /// Returns the bowing
+    pub fn multistroke(&self) -> bool {
+        !self.disable_multistroke
+    }
+
+    /// Sets the bowing
+    pub fn set_multistroke(&mut self, multistroke: bool) {
+        self.disable_multistroke = !multistroke;
+    }
 }
 
 /// available Fill styles
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum FillStyle {
     /// Solid
     Solid,

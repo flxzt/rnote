@@ -176,7 +176,7 @@
             <child>
               <object class="GtkScrolledWindow" id="canvas_scroller">
                 <style>
-                  <class name="canvas-scroller" />
+                  <class name="canvas_scroller" />
                 </style>
                 <layout>
                   <property name="column">0</property>

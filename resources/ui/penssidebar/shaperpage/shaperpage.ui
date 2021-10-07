@@ -29,7 +29,7 @@
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
         <property name="margin_top">0</property>
-        <property name="margin_bottom">20</property>
+        <property name="margin_bottom">6</property>
         <layout>
           <property name="column">0</property>
           <property name="row">1</property>
@@ -69,8 +69,8 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">20</property>
-        <property name="margin_bottom">20</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
         <layout>
           <property name="column">0</property>
           <property name="row">3</property>
@@ -117,8 +117,8 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">20</property>
-        <property name="margin_bottom">20</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
         <layout>
           <property name="column">0</property>
           <property name="row">5</property>

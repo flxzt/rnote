@@ -192,11 +192,13 @@ impl StrokeBehaviour for ShapeStroke {
                         String::from("none")
                     };
 
+                    let (mins, maxs) = utils::vec2_mins_maxs(*start, *end);
+
                     svg::node::element::Rectangle::new()
-                        .set("x", start[0] + offset[0])
-                        .set("y", start[1] + offset[1])
-                        .set("width", end[0] - start[0])
-                        .set("height", end[1] - start[1])
+                        .set("x", mins[0] + offset[0])
+                        .set("y", mins[1] + offset[1])
+                        .set("width", maxs[0] - mins[0])
+                        .set("height", maxs[1] - mins[1])
                         .set("stroke", color)
                         .set("stroke-width", self.shaper.rectangle_config.width())
                         .set("fill", fill)

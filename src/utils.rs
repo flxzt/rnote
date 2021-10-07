@@ -23,6 +23,28 @@ pub fn now() -> String {
     }
 }
 
+// Return mins, maxs
+pub fn vec2_mins_maxs(
+    first: na::Vector2<f64>,
+    second: na::Vector2<f64>,
+) -> (na::Vector2<f64>, na::Vector2<f64>) {
+    if first[0] < second[0] && first[1] < second[1] {
+        (first, second)
+    } else if first[0] > second[0] && first[1] < second[1] {
+        (
+            na::vector![second[0], first[1]],
+            na::vector![first[0], second[1]],
+        )
+    } else if first[0] < second[0] && first[1] > second[1] {
+        (
+            na::vector![first[0], second[1]],
+            na::vector![second[0], first[1]],
+        )
+    } else {
+        (second, first)
+    }
+}
+
 pub fn aabb_new_positive(
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,

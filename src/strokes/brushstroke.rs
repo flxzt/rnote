@@ -308,6 +308,13 @@ impl BrushStroke {
             let width_start = element_first.inputdata.pressure() * self.brush.width();
             let width_end = element_second.inputdata.pressure() * self.brush.width();
 
+            let start_end_len = (end - start).magnitude();
+
+            // No length, no need to draw. Also this prevents a NaN bug
+            if start_end_len == 0.0 {
+                continue;
+            }
+
             let line = compose::Line { start, end };
 
             commands.append(&mut compose::linear_variable_width(
@@ -357,7 +364,7 @@ impl BrushStroke {
 
             let start_cp1 = cp1 - start;
 
-            // No length, no need to draw.
+            // No length, no need to draw. Also this prevents a NaN bug
             if start_cp1_len == 0.0 || cp1_cp2_len == 0.0 || cp2_end_len == 0.0 {
                 continue;
             }

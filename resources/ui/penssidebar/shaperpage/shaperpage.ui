@@ -96,6 +96,8 @@
                     <property name="selection-mode">none</property>
                     <child>
                       <object class="AdwActionRow">
+                        <property name="margin_top">6</property>
+                        <property name="margin_bottom">6</property>
                         <property name="title">Roughness</property>
                         <property name="subtitle">indicating how rough the drawing is. between 0.0 and 10.0</property>
                         <child type="suffix">
@@ -113,6 +115,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow">
+                        <property name="margin_top">6</property>
+                        <property name="margin_bottom">6</property>
                         <property name="title">Bowing</property>
                         <property name="subtitle">how curvy the lines are when drawing a sketch. 0 is a straight line.</property>
                         <child type="suffix">
@@ -130,6 +134,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow">
+                        <property name="margin_top">6</property>
+                        <property name="margin_bottom">6</property>
                         <property name="title">Multistroke</property>
                         <property name="subtitle">multiple stroke generation for a sketched look.</property>
                         <child type="suffix">

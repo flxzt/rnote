@@ -132,10 +132,8 @@ mod imp {
             let parsed = format!(
                 "
 .setter-button {{
-    padding: 0 0 0 0;
     margin{0}: 10px;
-    background: rgba({1}, {2}, {3}, {4:.3});
-
+    background-color: rgba({1}, {2}, {3}, {4:.3});
     transition: margin{0} 0.3s;
 }}
 

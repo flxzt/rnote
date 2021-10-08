@@ -19,6 +19,7 @@
             <property name="vexpand">true</property>
             <property name="halign">fill</property>
             <property name="valign">fill</property>
+            <property name="active">true</property>
           </object>
         </child>
       </object>

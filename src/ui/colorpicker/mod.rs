@@ -77,16 +77,10 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-            let colorchooser = &*self.colorchooser;
-            let currentcolor_setter1 = &*self.currentcolor_setter1;
-            let colorpicker_popover = &*self.colorpicker_popover;
-            let colorchooser_editor_gobackbutton = &*self.colorchooser_editor_gobackbutton;
-
-            colorchooser.set_rgba(&super::ColorPicker::COLOR_DEFAULT);
-
-            currentcolor_setter1.set_active(true);
-            currentcolor_setter1.set_hexpand(true);
-            currentcolor_setter1.set_hexpand(true);
+            let colorchooser = self.colorchooser.get();
+            let currentcolor_setter1 = self.currentcolor_setter1.get();
+            let colorpicker_popover = self.colorpicker_popover.get();
+            let colorchooser_editor_gobackbutton = self.colorchooser_editor_gobackbutton.get();
 
             self.currentcolor_setter1.connect_clicked(
                 clone!(@weak obj => move |currentcolor_setter1| {
@@ -95,10 +89,8 @@ mod imp {
                 }),
             );
 
-            //self.init_currentcolor_setters(obj);
-
             self.colorpicker_button
-                .set_popover(Some(colorpicker_popover));
+                .set_popover(Some(&colorpicker_popover));
 
             self.colorchooser.connect_show_editor_notify(
                 clone!(@weak colorchooser_editor_gobackbutton => move |_colorchooser| {
@@ -117,13 +109,18 @@ mod imp {
                 let color = colorchooser.rgba();
                 obj.set_property("current-color", &color.to_value()).expect("settings `color` property");
 
+            }));
+
+            obj.connect_notify_local(Some("current-color"), clone!(@weak currentcolor_setter1, @weak self.currentcolor_setters as currentcolor_setters => move |obj, _param| {
+                let current_color = obj.current_color();
+
                 // store color in the buttons
                 if currentcolor_setter1.is_active() {
-                    currentcolor_setter1.set_property("color", &color.to_value()).expect("settings `color` property");
+                    currentcolor_setter1.set_property("color", &current_color.to_value()).expect("settings `color` property");
                 } else {
                     for setter_button in &*currentcolor_setters.borrow() {
                         if setter_button.is_active() {
-                            setter_button.set_property("color", &color.to_value()).expect("settings `color` property");
+                            setter_button.set_property("color", &current_color.to_value()).expect("settings `color` property");
                         }
                     }
                 }
@@ -307,9 +304,9 @@ mod imp {
             let rgb_offset = (2.0 / 3.0) * std::f32::consts::PI;
             let color_offset = (5.0 / 4.0) * std::f32::consts::PI + 0.4;
 
-            self.currentcolor_setter1
+/*             self.currentcolor_setter1
                 .set_property("color", &super::ColorPicker::COLOR_DEFAULT.to_value())
-                .expect("settings `color` property");
+                .expect("settings `color` property"); */
 
             for (i, setter_button) in self.currentcolor_setters.borrow().iter().rev().enumerate() {
                 let i = i + 1;
@@ -369,5 +366,16 @@ impl ColorPicker {
 
     pub fn set_position(&self, position: PositionType) {
         self.set_property("position", position.to_value()).unwrap();
+    }
+
+    pub fn current_color(&self) -> gdk::RGBA {
+        self.property("current-color")
+            .unwrap()
+            .get::<gdk::RGBA>()
+            .expect("value not of type `PositionType`")
+    }
+
+    pub fn set_current_color(&self, position: PositionType) {
+        self.set_property("current-color", position.to_value()).unwrap();
     }
 }

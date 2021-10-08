@@ -148,19 +148,31 @@
             <child>
               <object class="GtkPopover" id="help_popover">
                 <child>
-                  <object class="GtkTextView" id="help_text">
+                  <object class="GtkScrolledWindow">
                     <property name="width-request">600</property>
-                    <property name="hexpand">false</property>
-                    <property name="vexpand">false</property>
-                    <property name="halign">start</property>
-                    <property name="valign">start</property>
-                    <property name="margin_top">12</property>
-                    <property name="margin_bottom">12</property>
-                    <property name="margin_start">12</property>
-                    <property name="margin_end">12</property>
-                    <property name="editable">false</property>
-                    <property name="wrap-mode">word</property>
-                    <property name="justification">fill</property>
+                    <property name="height-request">500</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="hexpand">true</property>
+                    <property name="vexpand">true</property>
+                    <property name="halign">fill</property>
+                    <property name="valign">fill</property>
+                    <child>
+                      <object class="GtkTextView" id="help_text">
+                        <property name="width-request">600</property>
+                        <property name="hexpand">false</property>
+                        <property name="vexpand">false</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="margin_top">12</property>
+                        <property name="margin_bottom">12</property>
+                        <property name="margin_start">12</property>
+                        <property name="margin_end">12</property>
+                        <property name="editable">false</property>
+                        <property name="wrap-mode">word</property>
+                        <property name="justification">fill</property>
+                      </object>
+                    </child>
+
                   </object>
                 </child>
               </object>

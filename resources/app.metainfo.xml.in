@@ -54,6 +54,17 @@
   </provides>
 
   <releases>
+    <release version="0.1.3" date="2021-10-08">
+      <description>
+        <p>
+          - Introducing rough shapes for a sketched look
+          - fill shapes with a color
+          - improved shape drawing (broke .rnote file backward compatibility, sorry!)
+          - alpha checkerboard background in the colorpicker
+          - bug fixes
+        </p>
+      </description>
+    </release>
     <release version="0.1.2" date="2021-10-07">
       <description>
         <p>improved zooming, UI tweaks and bug fixes</p>

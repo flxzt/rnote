@@ -41,7 +41,7 @@ Rnote is available as  a flatpak on Flathub:
 - [x] implement bezier curve stroke with variable stroke width
     (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
-- [ ] drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
+- [ ] (implemented: rectangles) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
 
 ## Screenshots
 

@@ -35,7 +35,7 @@ impl RoughGenerator {
         };
 
         self.config
-            .apply_to_path(element::Path::new().set("d", path::Data::from(commands)))
+            .apply_to_line(element::Path::new().set("d", path::Data::from(commands)))
     }
 
     /// Generating a cubic bezier curve
@@ -49,7 +49,7 @@ impl RoughGenerator {
         let commands = renderer::cubic_bezier(start, cp1, cp2, end, &mut self.config);
 
         self.config
-            .apply_to_path(element::Path::new().set("d", path::Data::from(commands)))
+            .apply_to_line(element::Path::new().set("d", path::Data::from(commands)))
     }
 
     /// Generating a rectangle
@@ -113,6 +113,6 @@ impl RoughGenerator {
         }
 
         self.config
-            .apply_to_path(element::Path::new().set("d", path::Data::from(commands)))
+            .apply_to_rect(element::Path::new().set("d", path::Data::from(commands)))
     }
 }

@@ -109,18 +109,51 @@ impl Options {
     /// Bowing default
     pub const BOWING_DEFAULT: f64 = 1.0;
 
-    pub(crate) fn apply_to_path(&self, mut path: element::Path) -> element::Path {
+    pub(crate) fn apply_to_line(&self, mut path: element::Path) -> element::Path {
         path = if let Some(stroke) = self.stroke {
             path.set("stroke", stroke.to_css_color())
         } else {
             path.set("stroke", "none")
         };
         path = path.set("stroke-width", self.stroke_width);
-        path = if let Some(fill) = self.fill {
+
+/*         path = if let Some(fill) = self.fill {
             path.set("fill", fill.to_css_color())
         } else {
             path.set("fill", "none")
+        }; */
+        path = path.set("fill", "none");
+
+        path = path.set(
+            "stroke-dasharray",
+            self.stroke_line_dash
+                .iter()
+                .map(|&no| {
+                    format! {"{}", no}
+                })
+                .collect::<Vec<String>>()
+                .join(" "),
+        );
+        path = path.set("stroke-dashoffset", self.stroke_line_dash_offset);
+
+        path
+    }
+
+    pub(crate) fn apply_to_rect(&self, mut path: element::Path) -> element::Path {
+        path = if let Some(stroke) = self.stroke {
+            path.set("stroke", stroke.to_css_color())
+        } else {
+            path.set("stroke", "none")
         };
+        path = path.set("stroke-width", self.stroke_width);
+
+/*         path = if let Some(fill) = self.fill {
+            path.set("fill", fill.to_css_color())
+        } else {
+            path.set("fill", "none")
+        }; */
+        path = path.set("fill", "none");
+
         path = path.set(
             "stroke-dasharray",
             self.stroke_line_dash

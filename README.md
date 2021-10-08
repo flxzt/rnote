@@ -3,6 +3,10 @@
 <img src="resources/icons/scalable/apps/rnote.svg" width="256"></img>
 </div>
 
+<div align="start">
+<a href="https://liberapay.com/flxzt/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
+</div>
+
 # Rnote
 A simple note taking application written in Rust and GTK4.
 
@@ -15,7 +19,9 @@ This is my first Rust and GTK project and I am learning as I go along. It might 
 ## Installation
 Rnote is available as  a flatpak on Flathub:
 
+<div align="start">
 <a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+</div>
 
 
 ## Feature Ideas:
@@ -31,10 +37,11 @@ Rnote is available as  a flatpak on Flathub:
 - [x] printing / PDF export
 - [ ] PDF import
 - [x] picture import
-- [ ] export as picture
+- [ ] export as bitmap picture
 - [x] implement bezier curve stroke with variable stroke width
     (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
+- [ ] drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
 
 ## Screenshots
 
@@ -44,7 +51,7 @@ Rnote is available as  a flatpak on Flathub:
 ![selection](./resources/screenshots/selection.png)
 
 ### Building with Flatpak
-There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.json`.
+There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.json`.
 
 Use Gnome Builder or vscode with the flatpak extension to build and run the application for you. **This is the easiest and recommended way.**
 

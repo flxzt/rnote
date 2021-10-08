@@ -5,7 +5,7 @@
   <object class="GtkMessageDialog" id="dialog_new_sheet">
     <property name="modal">true</property>
     <property name="title">New Sheet</property>
-    <property name="text">Creating a new sheet erases any unsaved changes. Please confirm</property>
+    <property name="text">Creating a new sheet erases any unsaved changes. Are you sure?</property>
     <child type="action">
       <object class="GtkButton" id="new_sheet_button_cancel">
         <property name="label">Cancel</property>

@@ -682,6 +682,7 @@ impl RnoteAppWindow {
             .flags(gio::SettingsBindFlags::DEFAULT)
             .build();
 
+        // Developer mode
         self.app_settings()
             .bind(
                 "devel",
@@ -694,6 +695,9 @@ impl RnoteAppWindow {
             )
             .flags(gio::SettingsBindFlags::DEFAULT)
             .build();
+
+            let action_devel_settings = self.application().unwrap().downcast::<RnoteApp>().unwrap().lookup_action("devel-settings").unwrap();
+            action_devel_settings.downcast::<gio::SimpleAction>().unwrap().set_enabled(self.app_settings().boolean("devel"));
     }
 
     pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn Error>> {

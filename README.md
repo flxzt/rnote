@@ -45,6 +45,8 @@ Rnote is available as  a flatpak on Flathub:
 
 ## Screenshots
 
+**If you have drawn** something beautiful in Rnote and want to share it, let me know so I can include it as a screenshot. :)
+
 ![main_window_dark](./resources/screenshots/main_window_dark.png)
 ![main_window_light](./resources/screenshots/main_window_light.png)
 ![multiple_pages](./resources/screenshots/multiple_pages.png)

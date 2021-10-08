@@ -119,6 +119,7 @@
       <object class="ColorPicker" id="fill_colorpicker">
         <property name="height_request">134</property>
         <property name="amount-colorbuttons">2</property>
+        <property name="current-color">rgba(0.0, 0.0, 0.0, 0.0)</property>
         <layout>
           <property name="column">0</property>
           <property name="row">9</property>

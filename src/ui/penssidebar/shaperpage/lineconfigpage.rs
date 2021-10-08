@@ -59,8 +59,8 @@ mod imp {
 }
 
 use crate::pens::shaper::LineConfig;
-use crate::strokes;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use crate::utils;
 use gtk4::gdk;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
@@ -116,7 +116,7 @@ impl LineConfigPage {
 
         self.stroke_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
             let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().shaper.line_config.color = Some(strokes::Color::from_gdk(color));
+            appwindow.canvas().pens().borrow_mut().shaper.line_config.color = Some(utils::Color::from_gdk(color));
         }));
 
         self.width_resetbutton().connect_clicked(

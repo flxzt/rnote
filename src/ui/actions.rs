@@ -215,7 +215,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Shaper drawstyle
     action_shaper_drawstyle.connect_activate(move |action_shaper_drawstyle, parameter| {
-        if action_shaper_drawstyle.state().unwrap().str().unwrap() != parameter.unwrap().str().unwrap()
+        if action_shaper_drawstyle.state().unwrap().str().unwrap()
+            != parameter.unwrap().str().unwrap()
         {
             action_shaper_drawstyle.change_state(parameter.unwrap());
         }
@@ -448,10 +449,15 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.mainheader().headerbar().pack_start::<Box>(&appwindow.mainheader().pens_togglebox());
 
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
+            appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Right);
+            appwindow.penssidebar().brush_page().templatechooser().chooser_button().set_direction(ArrowType::Right);
             appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().lineconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().rectangleconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().rectangleconfig_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().ellipseconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().ellipseconfig_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Right);
 
             appwindow.flap().set_flap_position(PackType::Start);
             appwindow.flaphide_button().set_icon_name("arrow1-left-symbolic");
@@ -460,8 +466,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.workspace_grid().attach(&appwindow.flaphide_box(), 0, 3, 1, 1);
             appwindow.workspace_grid().attach(&appwindow.workspace_controlbox(), 1, 3, 1, 1);
 
-            appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Right);
-            appwindow.penssidebar().brush_page().templatechooser().chooser_button().set_direction(ArrowType::Right);
         } else {
             appwindow.mainheader().canvasmenu().lefthanded_toggle().set_active(true);
             appwindow.main_grid().remove::<Grid>(&appwindow.sidebar_grid());
@@ -475,10 +479,15 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.mainheader().headerbar().pack_end::<Box>(&appwindow.mainheader().pens_togglebox());
 
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Left);
+            appwindow.penssidebar().brush_page().templatechooser().chooser_button().set_direction(ArrowType::Left);
             appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().lineconfig_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().rectangleconfig_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().rectangleconfig_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().ellipseconfig_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().ellipseconfig_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Left);
 
             appwindow.flap().set_flap_position(PackType::End);
             appwindow.flaphide_button().set_icon_name("arrow1-right-symbolic");
@@ -486,9 +495,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.workspace_grid().remove::<Box>(&appwindow.workspace_controlbox());
             appwindow.workspace_grid().attach(&appwindow.flaphide_box(), 1, 3, 1, 1);
             appwindow.workspace_grid().attach(&appwindow.workspace_controlbox(), 0, 3, 1, 1);
-
-            appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Left);
-            appwindow.penssidebar().brush_page().templatechooser().chooser_button().set_direction(ArrowType::Left);
         }
     }));
     appwindow

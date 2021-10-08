@@ -436,10 +436,8 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
-use gtk4::{WidgetPaintable};
-use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus,
-};
+use gtk4::WidgetPaintable;
+use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus};
 
 glib::wrapper! {
     pub struct Canvas(ObjectSubclass<imp::Canvas>)
@@ -650,7 +648,6 @@ impl Canvas {
                 canvas.processing_draw_end(&appwindow, data_entries);
             }),
         );
-
     }
 
     fn processing_draw_begin(&self, mut data_entries: VecDeque<InputData>) {

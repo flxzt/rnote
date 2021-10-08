@@ -17,6 +17,8 @@ mod imp {
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub stroke_colorpicker: TemplateChild<ColorPicker>,
+        #[template_child]
+        pub fill_colorpicker: TemplateChild<ColorPicker>,
     }
 
     impl Default for RectangleConfigPage {
@@ -26,6 +28,7 @@ mod imp {
                 width_adj: TemplateChild::<Adjustment>::default(),
                 width_spinbutton: TemplateChild::<SpinButton>::default(),
                 stroke_colorpicker: TemplateChild::<ColorPicker>::default(),
+                fill_colorpicker: TemplateChild::<ColorPicker>::default(),
             }
         }
     }
@@ -61,8 +64,8 @@ mod imp {
 }
 
 use crate::pens::shaper::RectangleConfig;
-use crate::strokes;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use crate::utils;
 use gtk4::gdk;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
@@ -109,6 +112,12 @@ impl RectangleConfigPage {
             .get()
     }
 
+    pub fn fill_colorpicker(&self) -> ColorPicker {
+        imp::RectangleConfigPage::from_instance(self)
+            .fill_colorpicker
+            .get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let width_adj = self.width_adj();
 
@@ -120,7 +129,12 @@ impl RectangleConfigPage {
 
         self.stroke_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
             let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.color = Some(strokes::Color::from_gdk(color));
+            appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.color = Some(utils::Color::from_gdk(color));
+        }));
+
+        self.fill_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
+            let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
+            appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.fill = Some(utils::Color::from_gdk(color));
         }));
 
         self.width_resetbutton().connect_clicked(

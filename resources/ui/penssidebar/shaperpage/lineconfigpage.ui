@@ -73,7 +73,7 @@
     <child>
       <object class="GtkImage">
         <property name="margin_bottom">12</property>
-        <property name="icon_name">pipette-symbolic</property>
+        <property name="icon_name">stroke-color-symbolic</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
         <layout>

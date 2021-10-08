@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::strokes;
+use crate::utils;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum CurrentShape {
@@ -30,8 +30,8 @@ impl Default for DrawStyle {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LineConfig {
     width: f64,
-    pub color: Option<strokes::Color>,
-    pub fill: Option<strokes::Color>,
+    pub color: Option<utils::Color>,
+    pub fill: Option<utils::Color>,
 }
 
 impl Default for LineConfig {
@@ -48,13 +48,13 @@ impl LineConfig {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 2.0;
-    pub const COLOR_DEFAULT: Option<strokes::Color> = Some(strokes::Color {
+    pub const COLOR_DEFAULT: Option<utils::Color> = Some(utils::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     });
-    pub const FILL_DEFAULT: Option<strokes::Color> = None;
+    pub const FILL_DEFAULT: Option<utils::Color> = None;
 
     pub fn width(&self) -> f64 {
         self.width
@@ -68,8 +68,8 @@ impl LineConfig {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct RectangleConfig {
     width: f64,
-    pub color: Option<strokes::Color>,
-    pub fill: Option<strokes::Color>,
+    pub color: Option<utils::Color>,
+    pub fill: Option<utils::Color>,
 }
 
 impl Default for RectangleConfig {
@@ -86,13 +86,13 @@ impl RectangleConfig {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 2.0;
-    pub const COLOR_DEFAULT: Option<strokes::Color> = Some(strokes::Color {
+    pub const COLOR_DEFAULT: Option<utils::Color> = Some(utils::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     });
-    pub const FILL_DEFAULT: Option<strokes::Color> = None;
+    pub const FILL_DEFAULT: Option<utils::Color> = None;
 
     pub fn width(&self) -> f64 {
         self.width
@@ -106,8 +106,8 @@ impl RectangleConfig {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EllipseConfig {
     width: f64,
-    pub color: Option<strokes::Color>,
-    pub fill: Option<strokes::Color>,
+    pub color: Option<utils::Color>,
+    pub fill: Option<utils::Color>,
 }
 
 impl Default for EllipseConfig {
@@ -124,13 +124,13 @@ impl EllipseConfig {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 2.0;
-    pub const COLOR_DEFAULT: Option<strokes::Color> = Some(strokes::Color {
+    pub const COLOR_DEFAULT: Option<utils::Color> = Some(utils::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     });
-    pub const FILL_DEFAULT: Option<strokes::Color> = None;
+    pub const FILL_DEFAULT: Option<utils::Color> = None;
 
     pub fn width(&self) -> f64 {
         self.width

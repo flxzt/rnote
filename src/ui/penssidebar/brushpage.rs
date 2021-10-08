@@ -65,7 +65,7 @@ use crate::pens::brush::Brush;
 use crate::ui::{
     appwindow::RnoteAppWindow, colorpicker::ColorPicker, templatechooser::TemplateChooser,
 };
-use crate::{config, strokes, utils};
+use crate::{config, utils};
 use gtk4::gdk;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
@@ -121,7 +121,7 @@ impl BrushPage {
 
         self.colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |colorpicker, _paramspec| {
             let color = colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().brush.color = strokes::Color::from_gdk(color);
+            appwindow.canvas().pens().borrow_mut().brush.color = utils::Color::from_gdk(color);
         }));
 
         self.width_resetbutton().connect_clicked(

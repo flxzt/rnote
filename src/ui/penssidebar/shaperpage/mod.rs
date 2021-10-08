@@ -8,7 +8,10 @@ mod imp {
         rectangleconfigpage::RectangleConfigPage,
     };
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{Adjustment, Switch, Revealer, SpinButton, Stack, StackPage, ToggleButton};
+    use gtk4::{
+        Adjustment, MenuButton, Popover, Revealer, SpinButton, Stack, StackPage, Switch,
+        ToggleButton,
+    };
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage/shaperpage.ui")]
@@ -17,6 +20,10 @@ mod imp {
         pub drawstyle_smooth_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub drawstyle_rough_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub roughconfig_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub roughconfig_popover: TemplateChild<Popover>,
         #[template_child]
         pub roughconfig_revealer: TemplateChild<Revealer>,
         #[template_child]
@@ -58,6 +65,8 @@ mod imp {
             Self {
                 drawstyle_smooth_toggle: TemplateChild::<ToggleButton>::default(),
                 drawstyle_rough_toggle: TemplateChild::<ToggleButton>::default(),
+                roughconfig_menubutton: TemplateChild::<MenuButton>::default(),
+                roughconfig_popover: TemplateChild::<Popover>::default(),
                 roughconfig_revealer: TemplateChild::<Revealer>::default(),
                 roughconfig_roughness_spinbutton: TemplateChild::<SpinButton>::default(),
                 roughconfig_roughness_adj: TemplateChild::<Adjustment>::default(),
@@ -112,7 +121,7 @@ mod imp {
 use crate::ui::appwindow::RnoteAppWindow;
 use ellipseconfigpage::EllipseConfigPage;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, Widget};
-use gtk4::{Revealer, Stack, StackPage, ToggleButton};
+use gtk4::{MenuButton, Popover, Revealer, Stack, StackPage, ToggleButton};
 use lineconfigpage::LineConfigPage;
 use rectangleconfigpage::RectangleConfigPage;
 
@@ -141,6 +150,18 @@ impl ShaperPage {
     pub fn drawstyle_rough_toggle(&self) -> ToggleButton {
         imp::ShaperPage::from_instance(self)
             .drawstyle_rough_toggle
+            .get()
+    }
+
+    pub fn roughconfig_menubutton(&self) -> MenuButton {
+        imp::ShaperPage::from_instance(self)
+            .roughconfig_menubutton
+            .get()
+    }
+
+    pub fn roughconfig_popover(&self) -> Popover {
+        imp::ShaperPage::from_instance(self)
+            .roughconfig_popover
             .get()
     }
 

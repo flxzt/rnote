@@ -1,4 +1,5 @@
-use gtk4::{gio, glib, prelude::*};
+use gtk4::{gdk, gio, glib, prelude::*};
+use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::ops::Deref;
 use std::path::PathBuf;
@@ -11,6 +12,83 @@ use crate::config;
 pub struct BoxedPos {
     pub x: f64,
     pub y: f64,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct Color {
+    pub r: f32, // between 0.0 and 1.0
+    pub g: f32, // between 0.0 and 1.0
+    pub b: f32, // between 0.0 and 1.0
+    pub a: f32, // between 0.0 and 1.0
+}
+
+impl Default for Color {
+    fn default() -> Self {
+        Self::black()
+    }
+}
+
+impl Color {
+    pub fn new(r: f32, g: f32, b: f32, a: f32) -> Self {
+        Self {
+            r: r.clamp(0.0, 1.0),
+            g: g.clamp(0.0, 1.0),
+            b: b.clamp(0.0, 1.0),
+            a: a.clamp(0.0, 1.0),
+        }
+    }
+
+    pub fn r(&self) -> f32 {
+        self.r
+    }
+
+    pub fn g(&self) -> f32 {
+        self.g
+    }
+
+    pub fn b(&self) -> f32 {
+        self.b
+    }
+
+    pub fn a(&self) -> f32 {
+        self.a
+    }
+
+    pub fn to_css_color(self) -> String {
+        format!(
+            "rgb({:03},{:03},{:03},{:.3})",
+            (self.r * 255.0) as i32,
+            (self.g * 255.0) as i32,
+            (self.b * 255.0) as i32,
+            ((1000.0 * self.a).round() / 1000.0),
+        )
+    }
+
+    pub fn from_gdk(gdk_color: gdk::RGBA) -> Self {
+        Self {
+            r: gdk_color.red,
+            g: gdk_color.green,
+            b: gdk_color.blue,
+            a: gdk_color.alpha,
+        }
+    }
+
+    pub fn to_gdk(&self) -> gdk::RGBA {
+        gdk::RGBA {
+            red: self.r,
+            green: self.g,
+            blue: self.b,
+            alpha: self.a,
+        }
+    }
+
+    pub fn transparent() -> Self {
+        Self::new(0.0, 0.0, 0.0, 0.0)
+    }
+
+    pub fn black() -> Self {
+        Self::new(0.0, 0.0, 0.0, 1.0)
+    }
 }
 
 pub fn now() -> String {

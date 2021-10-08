@@ -5,7 +5,7 @@ use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    strokes::{self, brushstroke::BrushStroke, compose, render, InputData, StrokeBehaviour},
+    strokes::{brushstroke::BrushStroke, compose, render, InputData, StrokeBehaviour},
     utils,
 };
 
@@ -27,7 +27,7 @@ impl Default for BrushStyle {
 pub struct Brush {
     width: f64,
     sensitivity: f64,
-    pub color: strokes::Color,
+    pub color: utils::Color,
     pub current_style: BrushStyle,
 }
 
@@ -36,7 +36,7 @@ impl Default for Brush {
         Self {
             width: Self::WIDTH_DEFAULT,
             sensitivity: Self::SENSITIVITY_DEFAULT,
-            color: strokes::Color::from_gdk(Self::COLOR_DEFAULT),
+            color: utils::Color::from_gdk(Self::COLOR_DEFAULT),
             current_style: BrushStyle::default(),
         }
     }

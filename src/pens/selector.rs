@@ -1,6 +1,7 @@
 use std::error::Error;
 
-use crate::strokes::{self, compose, render, InputData};
+use crate::strokes::{compose, render, InputData};
+use crate::utils;
 
 use gtk4::{gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
@@ -23,13 +24,13 @@ impl Default for Selector {
 impl Selector {
     pub const STROKE_DASHARRAY: &'static str = "4 6";
     pub const PATH_WIDTH: f64 = 2.0;
-    pub const PATH_COLOR: strokes::Color = strokes::Color {
+    pub const PATH_COLOR: utils::Color = utils::Color {
         r: 0.7,
         g: 0.7,
         b: 0.7,
         a: 0.7,
     };
-    pub const FILL_COLOR: strokes::Color = strokes::Color {
+    pub const FILL_COLOR: utils::Color = utils::Color {
         r: 0.9,
         g: 0.9,
         b: 0.9,

@@ -73,7 +73,7 @@
     <child>
       <object class="GtkImage">
         <property name="margin_bottom">12</property>
-        <property name="icon_name">pipette-symbolic</property>
+        <property name="icon_name">stroke-color-symbolic</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
         <layout>
@@ -89,6 +89,39 @@
         <layout>
           <property name="column">0</property>
           <property name="row">6</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">7</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImage">
+        <property name="margin_bottom">12</property>
+        <property name="icon_name">fill-color-symbolic</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">8</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="ColorPicker" id="fill_colorpicker">
+        <property name="height_request">134</property>
+        <property name="amount-colorbuttons">2</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">9</property>
         </layout>
       </object>
     </child>

@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::strokes;
+use crate::utils;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Marker {
     width: f64,
-    pub color: strokes::Color,
+    pub color: utils::Color,
 }
 
 impl Default for Marker {
@@ -22,7 +22,7 @@ impl Marker {
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 5.0;
 
-    pub const COLOR_DEFAULT: strokes::Color = strokes::Color {
+    pub const COLOR_DEFAULT: utils::Color = utils::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,

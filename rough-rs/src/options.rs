@@ -1,5 +1,5 @@
-use svg::node::element;
 use serde::{Deserialize, Serialize};
+use svg::node::element;
 
 use crate::utils::{self};
 

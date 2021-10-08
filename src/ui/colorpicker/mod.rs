@@ -304,10 +304,6 @@ mod imp {
             let rgb_offset = (2.0 / 3.0) * std::f32::consts::PI;
             let color_offset = (5.0 / 4.0) * std::f32::consts::PI + 0.4;
 
-/*             self.currentcolor_setter1
-                .set_property("color", &super::ColorPicker::COLOR_DEFAULT.to_value())
-                .expect("settings `color` property"); */
-
             for (i, setter_button) in self.currentcolor_setters.borrow().iter().rev().enumerate() {
                 let i = i + 1;
 
@@ -330,13 +326,15 @@ mod imp {
 
 use gtk4::{gdk, glib, prelude::*, Orientable, PositionType, Widget};
 
+use crate::utils;
+
 glib::wrapper! {
     pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>) @extends Widget, @implements Orientable;
 }
 
 impl Default for ColorPicker {
     fn default() -> Self {
-        Self::new()
+        Self::new(utils::Color::black().to_gdk())
     }
 }
 
@@ -351,9 +349,10 @@ impl ColorPicker {
     pub const AMOUNT_COLORBUTTONS_MAX: u32 = 1000;
     pub const AMOUNT_COLORBUTTONS_DEFAULT: u32 = 8;
 
-    pub fn new() -> Self {
+    pub fn new(current_color: gdk::RGBA) -> Self {
         let color_picker: ColorPicker =
-            glib::Object::new(&[]).expect("Failed to create ColorPicker");
+            glib::Object::new(&[("current-color", &current_color.to_value())])
+                .expect("Failed to create ColorPicker");
         color_picker
     }
 
@@ -375,7 +374,8 @@ impl ColorPicker {
             .expect("value not of type `PositionType`")
     }
 
-    pub fn set_current_color(&self, position: PositionType) {
-        self.set_property("current-color", position.to_value()).unwrap();
+    pub fn set_current_color(&self, current_color: gdk::RGBA) {
+        self.set_property("current-color", current_color.to_value())
+            .unwrap();
     }
 }

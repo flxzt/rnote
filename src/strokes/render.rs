@@ -104,7 +104,7 @@ impl Renderer {
         )
         .unwrap();
 
-        resvg::render(&rtree, usvg::FitTo::Original, pixmap.as_mut()).unwrap();
+        resvg::render(&rtree, usvg::FitTo::Size(node_bounds.width().round() as u32, node_bounds.height().round() as u32), pixmap.as_mut()).unwrap();
 
         //pixmap.save_png(&PathBuf::from("./tests/output/stroke_resvg.png"))?;
         let pixbuf = gdk_pixbuf::Pixbuf::from_bytes(
@@ -112,9 +112,9 @@ impl Renderer {
             gdk_pixbuf::Colorspace::Rgb,
             true,
             8,
-            node_bounds.width().floor() as i32,
-            node_bounds.height().floor() as i32,
-            4 * node_bounds.width().floor() as i32,
+            node_bounds.width().round() as i32,
+            node_bounds.height().round() as i32,
+            4 * node_bounds.width().round() as i32,
         );
         let texture = gdk::Texture::for_pixbuf(&pixbuf);
 

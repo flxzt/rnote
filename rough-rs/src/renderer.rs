@@ -253,3 +253,27 @@ pub fn cubic_bezier(
 
     commands
 }
+
+pub fn fill_polygon(
+    points: Vec<na::Vector2<f64>>,
+    _options: &mut Options,
+) -> Vec<path::Command> {
+    let mut commands = Vec::new();
+
+    for (i, point) in points.iter().enumerate() {
+        if i == 0 {
+            commands.push(path::Command::Move(
+                path::Position::Absolute,
+                path::Parameters::from((point[0], point[1])),
+            ));
+        } else {
+            commands.push(path::Command::Line(
+                path::Position::Absolute,
+                path::Parameters::from((point[0], point[1])),
+            ));
+        }
+    }
+    commands.push(path::Command::Close);
+
+    commands
+}

@@ -117,11 +117,7 @@ impl Options {
         };
         path = path.set("stroke-width", self.stroke_width);
 
-/*         path = if let Some(fill) = self.fill {
-            path.set("fill", fill.to_css_color())
-        } else {
-            path.set("fill", "none")
-        }; */
+        // the fill is in generated with the fill_polygon
         path = path.set("fill", "none");
 
         path = path.set(
@@ -139,22 +135,30 @@ impl Options {
         path
     }
 
-    pub(crate) fn apply_to_rect(&self, mut path: element::Path) -> element::Path {
-        path = if let Some(stroke) = self.stroke {
-            path.set("stroke", stroke.to_css_color())
-        } else {
-            path.set("stroke", "none")
-        };
-        path = path.set("stroke-width", self.stroke_width);
+    pub(crate) fn apply_to_fill_polygon(&self, mut path: element::Path) -> element::Path {
+        path = path.set("stroke", "none");
 
-/*         path = if let Some(fill) = self.fill {
+        path = if let Some(fill) = self.fill {
             path.set("fill", fill.to_css_color())
         } else {
             path.set("fill", "none")
-        }; */
-        path = path.set("fill", "none");
+        };
 
-        path = path.set(
+        path
+    }
+
+    pub(crate) fn apply_to_rect(&mut self, mut rect: element::Path) -> element::Path {
+        rect = if let Some(stroke) = self.stroke {
+            rect.set("stroke", stroke.to_css_color())
+        } else {
+            rect.set("stroke", "none")
+        };
+        rect = rect.set("stroke-width", self.stroke_width);
+
+        // the fill is in generated with the fill_polygon
+        rect = rect.set("fill", "none");
+
+        rect = rect.set(
             "stroke-dasharray",
             self.stroke_line_dash
                 .iter()
@@ -164,9 +168,9 @@ impl Options {
                 .collect::<Vec<String>>()
                 .join(" "),
         );
-        path = path.set("stroke-dashoffset", self.stroke_line_dash_offset);
+        rect = rect.set("stroke-dashoffset", self.stroke_line_dash_offset);
 
-        path
+        rect
     }
 
     /// Returns the roughness

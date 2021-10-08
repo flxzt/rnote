@@ -57,7 +57,7 @@ impl RoughGenerator {
         &mut self,
         top_left: na::Vector2<f64>,
         bottom_right: na::Vector2<f64>,
-    ) -> element::Path {
+    ) -> element::Group {
         let mut commands = Vec::new();
 
         if !self.config.disable_multistroke {
@@ -112,7 +112,28 @@ impl RoughGenerator {
             ));
         }
 
+        let rect = self
+            .config
+            .apply_to_rect(element::Path::new().set("d", path::Data::from(commands)));
+
+        let fill_points = vec![
+            na::vector![top_left[0], top_left[1]],
+            na::vector![bottom_right[0], top_left[1]],
+            na::vector![bottom_right[0], bottom_right[1]],
+            na::vector![top_left[0], bottom_right[1]],
+        ];
+        let fill_polygon = self.fill_polygon(fill_points);
+
+        element::Group::new().add(fill_polygon).add(rect)
+    }
+
+    /// Generating a fill polygon
+    pub fn fill_polygon(&mut self, points: Vec<na::Vector2<f64>>) -> element::Path {
+        let mut commands = Vec::new();
+
+        commands.append(&mut renderer::fill_polygon(points, &mut self.config));
+
         self.config
-            .apply_to_rect(element::Path::new().set("d", path::Data::from(commands)))
+            .apply_to_fill_polygon(element::Path::new().set("d", path::Data::from(commands)))
     }
 }

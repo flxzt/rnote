@@ -361,7 +361,8 @@ impl ShapeStroke {
                 }
                 shaper::DrawStyle::Rough => {
                     self.bounds = utils::aabb_new_positive(*start, *end)
-                        .loosened(self.shaper.line_config.width() * 2.0);
+                        // TODO what are the actual bounds for a rough shape?
+                        .loosened(self.shaper.line_config.width() * 0.5 + 15.0);
                 }
             },
             ShapeStyle::Rectangle { ref start, ref end } => {
@@ -372,7 +373,8 @@ impl ShapeStroke {
                     }
                     shaper::DrawStyle::Rough => {
                         self.bounds = utils::aabb_new_positive(*start, *end)
-                            .loosened(self.shaper.rectangle_config.width() * 2.0);
+                            // TODO what are the actual bounds for a rough shape?
+                            .loosened(self.shaper.rectangle_config.width() * 0.5 + 15.0);
                     }
                 };
             }

@@ -134,6 +134,6 @@ impl RoughGenerator {
         commands.append(&mut renderer::fill_polygon(points, &mut self.config));
 
         self.config
-            .apply_to_fill_polygon(element::Path::new().set("d", path::Data::from(commands)))
+            .apply_to_fill_polygon_solid(element::Path::new().set("d", path::Data::from(commands)))
     }
 }

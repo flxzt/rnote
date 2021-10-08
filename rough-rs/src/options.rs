@@ -135,7 +135,7 @@ impl Options {
         path
     }
 
-    pub(crate) fn apply_to_fill_polygon(&self, mut path: element::Path) -> element::Path {
+    pub(crate) fn apply_to_fill_polygon_solid(&self, mut path: element::Path) -> element::Path {
         path = path.set("stroke", "none");
 
         path = if let Some(fill) = self.fill {

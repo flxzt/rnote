@@ -84,65 +84,83 @@
                 <property name="hexpand">true</property>
                 <property name="halign">fill</property>
                 <property name="direction">left</property>
-                <property name="tooltip_text">Rough shape settings</property>
+                <property name="tooltip_text">Rough shape configuration</property>
                 <property name="popover">roughconfig_popover</property>
               </object>
             </child>
             <child>
               <object class="GtkPopover" id="roughconfig_popover">
                 <child>
-                  <object class="GtkListBox">
-                    <property name="width-request">300</property>
-                    <property name="selection-mode">none</property>
-                    <style>
-                      <class name="content"/>
-                      <class name="medium"/>
-                    </style>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="AdwActionRow">
-                        <property name="title">Roughness</property>
-                        <property name="subtitle">indicating how rough the drawing is. between 0.0 and 10.0</property>
-                        <child type="suffix">
-                          <object class="GtkAdjustment" id="roughconfig_roughness_adj">
-                            <property name="step-increment">0.1</property>
-                          </object>
-                          <object class="GtkSpinButton" id="roughconfig_roughness_spinbutton">
-                            <property name="valign">center</property>
-                            <property name="margin_start">12</property>
-                            <property name="adjustment">roughconfig_roughness_adj</property>
-                            <property name="orientation">horizontal</property>
-                            <property name="digits">1</property>
-                          </object>
-                        </child>
+                      <object class="GtkLabel">
+                        <property name="label">Rough shapes configuration</property>
+                        <property name="use-underline">true</property>
+                        <property name="halign">center</property>
+                        <property name="margin-top">12</property>
+                        <property name="margin-bottom">36</property>
+                        <style>
+                          <class name="title"/>
+                          <class name="large-title"/>
+                        </style>
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow">
-                        <property name="title">Bowing</property>
-                        <property name="subtitle">how curvy the lines are when drawing a sketch. 0 is a straight line.</property>
-                        <child type="suffix">
-                          <object class="GtkAdjustment" id="roughconfig_bowing_adj">
-                            <property name="step-increment">0.1</property>
-                          </object>
-                          <object class="GtkSpinButton" id="roughconfig_bowing_spinbutton">
-                            <property name="valign">center</property>
-                            <property name="margin_start">12</property>
-                            <property name="adjustment">roughconfig_bowing_adj</property>
-                            <property name="orientation">horizontal</property>
-                            <property name="digits">1</property>
+                      <object class="GtkListBox">
+                        <property name="width-request">300</property>
+                        <property name="selection-mode">none</property>
+                        <style>
+                          <class name="content" />
+                          <class name="medium" />
+                        </style>
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title">Roughness</property>
+                            <property name="subtitle">indicating how rough the drawing is. between 0.0 and 10.0</property>
+                            <child type="suffix">
+                              <object class="GtkAdjustment" id="roughconfig_roughness_adj">
+                                <property name="step-increment">0.1</property>
+                              </object>
+                              <object class="GtkSpinButton" id="roughconfig_roughness_spinbutton">
+                                <property name="valign">center</property>
+                                <property name="margin_start">12</property>
+                                <property name="adjustment">roughconfig_roughness_adj</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="digits">1</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwActionRow">
-                        <property name="title">Multistroke</property>
-                        <property name="subtitle">multiple stroke generation for a sketched look.</property>
-                        <child type="suffix">
-                          <object class="GtkSwitch" id="roughconfig_multistroke_switch">
-                            <property name="valign">center</property>
-                            <property name="margin_start">12</property>
-                            <property name="active">true</property>
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title">Bowing</property>
+                            <property name="subtitle">how curvy the lines are when drawing a sketch. 0 is a straight line.</property>
+                            <child type="suffix">
+                              <object class="GtkAdjustment" id="roughconfig_bowing_adj">
+                                <property name="step-increment">0.1</property>
+                              </object>
+                              <object class="GtkSpinButton" id="roughconfig_bowing_spinbutton">
+                                <property name="valign">center</property>
+                                <property name="margin_start">12</property>
+                                <property name="adjustment">roughconfig_bowing_adj</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="digits">1</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title">Multistroke</property>
+                            <property name="subtitle">multiple stroke generation for a sketched look.</property>
+                            <child type="suffix">
+                              <object class="GtkSwitch" id="roughconfig_multistroke_switch">
+                                <property name="valign">center</property>
+                                <property name="margin_start">12</property>
+                                <property name="active">true</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>

@@ -32,6 +32,7 @@ mod imp {
         pub input_file: Rc<RefCell<Option<gio::File>>>,
         pub output_file: Rc<RefCell<Option<gio::File>>>,
         pub unsaved_changes: Cell<bool>,
+        pub rng: Rc<RefCell<rand::rngs::ThreadRng>>,
     }
 
     #[glib::object_subclass]
@@ -174,6 +175,11 @@ impl RnoteApp {
     pub fn output_file(&self) -> Rc<RefCell<Option<gio::File>>> {
         let priv_ = imp::RnoteApp::from_instance(self);
         priv_.output_file.clone()
+    }
+
+    pub fn rng(&self) -> Rc<RefCell<rand::rngs::ThreadRng>> {
+        let priv_ = imp::RnoteApp::from_instance(self);
+        priv_.rng.clone()
     }
 
     pub fn unsaved_changes(&self) -> bool {

@@ -550,6 +550,7 @@ impl RnoteAppWindow {
                 }
 
                 appwindow.canvas().set_visible(false);
+                appwindow.canvas().sheet().selection().set_shown(false);
                 appwindow.canvas_resize_preview().set_visible(true);
             }),
         );
@@ -578,6 +579,8 @@ impl RnoteAppWindow {
             clone!(@strong scale_begin, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
                     appwindow.canvas_resize_preview().set_visible(false);
                     appwindow.canvas().set_visible(true);
+                    appwindow.canvas().sheet().selection().set_shown(true);
+
                     appwindow.canvas().set_sensitive(false);
                     appwindow.canvas().set_sensitive(true);
             }),
@@ -590,6 +593,8 @@ impl RnoteAppWindow {
 
                     appwindow.canvas_resize_preview().set_visible(false);
                     appwindow.canvas().set_visible(true);
+                    appwindow.canvas().sheet().selection().set_shown(true);
+
                     appwindow.canvas().set_sensitive(false);
                     appwindow.canvas().set_sensitive(true);
             }),

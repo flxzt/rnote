@@ -167,6 +167,20 @@ pub fn aabb_clamp(
     )
 }
 
+pub fn aabb_scale(
+    aabb: p2d::bounding_volume::AABB,
+    scalefactor: f64,
+) -> p2d::bounding_volume::AABB {
+    p2d::bounding_volume::AABB::new(
+        na::Point2::<f64>::from(na::vector![0.0, 0.0].unscale(scalefactor)),
+        na::Point2::<f64>::from(
+            na::vector![aabb.maxs[0] - aabb.mins[0], aabb.maxs[1] - aabb.mins[0]]
+                .unscale(scalefactor)
+                + na::vector![aabb.mins[0], aabb.mins[1]],
+        ),
+    )
+}
+
 pub fn load_string_from_resource(resource_path: &str) -> Result<String, Box<dyn Error>> {
     let imported_string = String::from_utf8(
         gio::resources_lookup_data(resource_path, gio::ResourceLookupFlags::NONE)?

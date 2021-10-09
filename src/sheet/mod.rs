@@ -468,7 +468,7 @@ impl Sheet {
     }
 
     // returns true if resizing is needed
-    pub fn remove_colliding_strokes(&self, eraser: &Eraser) -> bool {
+    pub fn remove_colliding_strokes(&self, eraser: &Eraser, viewport: Option<p2d::bounding_volume::AABB>) -> bool {
         let priv_ = imp::Sheet::from_instance(self);
 
         let eraser_bounds = p2d::bounding_volume::AABB::new(
@@ -485,9 +485,14 @@ impl Sheet {
         let mut removed_strokes: Vec<strokes::StrokeStyle> = Vec::new();
 
         priv_.strokes.borrow_mut().retain(|stroke| {
+            if let Some(viewport) = viewport {
+                if !viewport.contains(&stroke.bounds()) {
+                    return true;
+                }
+            }
             match stroke {
                 strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                    // First check markerstroke bounds, and if true zoom in and check hitbox
+                    // First check markerstroke bounds, then conditionally check hitbox
                     if eraser_bounds.intersects(&markerstroke.bounds) {
                         for hitbox_elem in markerstroke.hitbox.iter() {
                             if eraser_bounds.intersects(hitbox_elem) {
@@ -498,7 +503,7 @@ impl Sheet {
                     }
                 }
                 strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                    // First check markerstroke bounds, and if true zoom in and check hitbox
+                    // First check markerstroke bounds, then conditionally check hitbox
                     if eraser_bounds.intersects(&brushstroke.bounds) {
                         for hitbox_elem in brushstroke.hitbox.iter() {
                             if eraser_bounds.intersects(hitbox_elem) {

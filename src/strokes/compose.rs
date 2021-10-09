@@ -5,6 +5,8 @@ use svg::node::element::path;
 
 use crate::config;
 
+use super::Element;
+
 #[allow(dead_code)]
 pub fn add_xml_header(svg: &str) -> String {
     let re = regex::Regex::new(r#"<\?xml[^\?>]*\?>"#).unwrap();
@@ -363,4 +365,62 @@ pub fn cubic_bezier_variable_width(
     ));
 
     commands
+}
+
+pub fn filter_prepare_cubic_bezier_from_input(
+    first: &Element,
+    second: &Element,
+    third: &Element,
+    forth: &Element,
+    offset: na::Vector2<f64>,
+) -> Option<CubicBezier> {
+    let mut cubic_bezier = CubicBezier {
+        start: second.inputdata.pos() + offset,
+        // first control points is the reflection of the previous second
+        cp1: second.inputdata.pos() + (second.inputdata.pos() - first.inputdata.pos()) + offset,
+        cp2: third.inputdata.pos() + offset,
+        end: forth.inputdata.pos() + offset,
+    };
+
+    let start_end_len = (cubic_bezier.end - cubic_bezier.start).magnitude();
+    let start_cp1_len = (cubic_bezier.cp1 - cubic_bezier.start).magnitude();
+    let start_cp2_len = (cubic_bezier.cp2 - cubic_bezier.start).magnitude();
+    let cp2_end_len = (cubic_bezier.end - cubic_bezier.cp2).magnitude();
+
+    // returns early to prevent NaN when calculating vector norms.
+    if start_cp1_len == 0.0 || start_end_len == 0.0 || cp2_end_len == 0.0 {
+        return None;
+    }
+
+    let start_cp1 = cubic_bezier.cp1 - cubic_bezier.start;
+
+    // Avoiding curve loops and general instability and weirdness
+    // see https://pomax.github.io/bezierinfo/#canonical
+    if start_cp1_len > (start_cp2_len + 1.0) {
+        cubic_bezier.cp1 = cubic_bezier.start + start_cp1 * (start_cp2_len / start_cp1_len);
+    } else if start_end_len < 10.0 {
+        cubic_bezier.cp1 = cubic_bezier.start + start_cp1.unscale(start_cp1.norm() * 2.0);
+    }
+
+    Some(cubic_bezier)
+}
+
+pub fn filter_prepare_line_from_input(
+    first: &Element,
+    second: &Element,
+    offset: na::Vector2<f64>,
+) -> Option<Line> {
+    let line = Line {
+        start: first.inputdata.pos() + offset,
+        end: second.inputdata.pos() + offset,
+    };
+
+    let start_end_len = (line.end - line.start).magnitude();
+
+    // returns early to prevent NaN when calculating the vector norm.
+    if start_end_len == 0.0 {
+        return None;
+    }
+
+    Some(line)
 }

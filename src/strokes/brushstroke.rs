@@ -287,41 +287,30 @@ impl BrushStroke {
     pub fn linear_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut commands = Vec::new();
 
-        for (i, (element_first, element_second)) in self
+        for (i, (first, second)) in self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
             .enumerate()
         {
-            if i == 0 {
-                commands.push(path::Command::Move(
-                    path::Position::Absolute,
-                    path::Parameters::from((
-                        element_first.inputdata.pos()[0],
-                        element_first.inputdata.pos()[1],
-                    )),
+            let line = compose::filter_prepare_line_from_input(first, second, offset);
+
+            let start_width = first.inputdata.pressure() * self.brush.width();
+            let end_width = second.inputdata.pressure() * self.brush.width();
+
+            if let Some(line) = line {
+                if i == 0 {
+                    commands.push(path::Command::Move(
+                        path::Position::Absolute,
+                        path::Parameters::from((line.start[0], line.start[1])),
+                    ));
+                }
+                commands.append(&mut compose::linear_variable_width(
+                    line,
+                    start_width,
+                    end_width,
                 ));
             }
-            let start = element_first.inputdata.pos() + offset;
-            let end = element_second.inputdata.pos() + offset;
-
-            let width_start = element_first.inputdata.pressure() * self.brush.width();
-            let width_end = element_second.inputdata.pressure() * self.brush.width();
-
-            let start_end_len = (end - start).magnitude();
-
-            // No length, no need to draw. Also this prevents a NaN bug
-            if start_end_len == 0.0 {
-                continue;
-            }
-
-            let line = compose::Line { start, end };
-
-            commands.append(&mut compose::linear_variable_width(
-                line,
-                width_start,
-                width_end,
-            ));
         }
 
         let path = svg::node::element::Path::new()
@@ -339,7 +328,7 @@ impl BrushStroke {
     ) -> Result<String, Box<dyn Error>> {
         let mut commands = Vec::new();
 
-        for (i, (((element_first, element_second), element_third), element_forth)) in self
+        for (i, (((first, second), third), forth)) in self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
@@ -348,59 +337,41 @@ impl BrushStroke {
             .step_by(2)
             .enumerate()
         {
-            let start = element_second.inputdata.pos() + offset;
-            // first control points is the reflection of the previous second
-            let mut cp1 = element_second.inputdata.pos()
-                + (element_second.inputdata.pos() - element_first.inputdata.pos())
-                + offset;
-            let cp2 = element_third.inputdata.pos() + offset;
-            let end = element_forth.inputdata.pos() + offset;
+            let start_width = second.inputdata.pressure() * self.brush.width();
+            let end_width = forth.inputdata.pressure() * self.brush.width();
 
-            let start_end_len = (end - start).magnitude();
-            let start_cp1_len = (cp1 - start).magnitude();
-            let start_cp2_len = (cp2 - start).magnitude();
-            let cp1_cp2_len = (cp2 - cp1).magnitude();
-            let cp2_end_len = (end - cp2).magnitude();
+            // Is None when one of the length between the control points is zero.
+            if let Some(cubic_bezier) =
+                compose::filter_prepare_cubic_bezier_from_input(first, second, third, forth, offset)
+            {
+                if i == 0 {
+                    commands.push(path::Command::Move(
+                        path::Position::Absolute,
+                        path::Parameters::from((cubic_bezier.start[0], cubic_bezier.start[1])),
+                    ));
+                }
+                commands.append(&mut compose::cubic_bezier_variable_width(
+                    cubic_bezier,
+                    start_width,
+                    end_width,
+                ));
+            // is None when line length is zero
+            } else if let Some(line) =
+                compose::filter_prepare_line_from_input(second, forth, offset)
+            {
+                if i == 0 {
+                    commands.push(path::Command::Move(
+                        path::Position::Absolute,
+                        path::Parameters::from((line.start[0], line.start[1])),
+                    ));
+                }
 
-            let start_cp1 = cp1 - start;
-
-            // No length, no need to draw. Also this prevents a NaN bug
-            if start_cp1_len == 0.0 || cp1_cp2_len == 0.0 || cp2_end_len == 0.0 {
-                continue;
-            }
-
-            // Avoiding curve loops and general instability and weirdness
-            if start_cp1_len > (start_cp2_len + 2.0) {
-                cp1 = start + start_cp1 * (start_cp2_len / start_cp1_len);
-            } else if start_end_len < 10.0 {
-                cp1 = start + start_cp1.unscale(start_cp1.norm() * 2.0);
-            }
-
-            let cubic_bezier = compose::CubicBezier {
-                start,
-                cp1,
-                cp2,
-                end,
-            };
-
-            let start_width = element_second.inputdata.pressure() * self.brush.width();
-            let end_width = element_forth.inputdata.pressure() * self.brush.width();
-
-            if i == 0 {
-                commands.push(path::Command::Move(
-                    path::Position::Absolute,
-                    path::Parameters::from((
-                        element_first.inputdata.pos()[0],
-                        element_first.inputdata.pos()[1],
-                    )),
+                commands.append(&mut compose::linear_variable_width(
+                    line,
+                    start_width,
+                    end_width,
                 ));
             }
-
-            commands.append(&mut compose::cubic_bezier_variable_width(
-                cubic_bezier,
-                start_width,
-                end_width,
-            ));
         }
 
         let path = svg::node::element::Path::new()
@@ -409,6 +380,7 @@ impl BrushStroke {
             .set("d", path::Data::from(commands));
         let svg = rough_rs::node_to_string(&path)?.to_string();
 
+        //println!("{}", svg);
         Ok(svg)
     }
 

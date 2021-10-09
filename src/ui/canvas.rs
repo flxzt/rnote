@@ -426,6 +426,7 @@ mod imp {
 }
 
 use crate::strokes::{render, StrokeStyle};
+use crate::utils;
 use crate::{
     app::RnoteApp, pens::PenStyle, pens::Pens, sheet::Sheet, strokes::InputData,
     strokes::StrokeBehaviour, ui::appwindow::RnoteAppWindow,
@@ -586,7 +587,7 @@ impl Canvas {
                 let data_entries = Self::retreive_pointer_inputdata(x, y);
                 let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
-                canvas.processing_draw_begin(data_entries);
+                canvas.processing_draw_begin(&appwindow, data_entries);
             }),
         );
 
@@ -594,7 +595,7 @@ impl Canvas {
             let data_entries = Self::retreive_pointer_inputdata(x, y);
             let data_entries = canvas.map_inputdata(data_entries, na::vector![drag_start_tmp.get().0, drag_start_tmp.get().1]);
 
-            canvas.processing_draw_motion(data_entries);
+            canvas.processing_draw_motion(&appwindow, data_entries);
         }));
 
         priv_.drag_drawing_gesture.connect_drag_end(clone!(@strong drag_start_tmp, @weak self as canvas @weak appwindow => move |_gesture_drag, x, y| {
@@ -625,7 +626,7 @@ impl Canvas {
                     _ => { canvas.current_pen().set(PenStyle::Unkown) },
                 }
 
-                canvas.processing_draw_begin(data_entries);
+                canvas.processing_draw_begin(&appwindow, data_entries);
             }
         }));
 
@@ -636,7 +637,7 @@ impl Canvas {
                 let data_entries: VecDeque<InputData> = Canvas::retreive_stylus_inputdata(gesture_stylus, false, x, y);
                 let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
-                canvas.processing_draw_motion(data_entries);
+                canvas.processing_draw_motion(&appwindow, data_entries);
             }
         }));
 
@@ -650,7 +651,11 @@ impl Canvas {
         );
     }
 
-    fn processing_draw_begin(&self, mut data_entries: VecDeque<InputData>) {
+    fn processing_draw_begin(
+        &self,
+        appwindow: &RnoteAppWindow,
+        mut data_entries: VecDeque<InputData>,
+    ) {
         self.set_unsaved_changes(true);
 
         if !self.sheet().selection().strokes().borrow().is_empty() {
@@ -684,13 +689,6 @@ impl Canvas {
                     self.set_cursor(gdk::Cursor::from_name("none", None).as_ref());
                     self.pens().borrow_mut().eraser.current_input = inputdata;
                     self.pens().borrow_mut().eraser.set_shown(true);
-
-                    if self
-                        .sheet()
-                        .remove_colliding_strokes(&self.pens().borrow().eraser)
-                    {
-                        self.queue_resize();
-                    }
                 }
             }
             PenStyle::Selector => {
@@ -705,7 +703,7 @@ impl Canvas {
                         .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                 }
 
-                self.processing_draw_motion(data_entries);
+                self.processing_draw_motion(appwindow, data_entries);
             }
             PenStyle::Unkown => {}
         }
@@ -713,7 +711,11 @@ impl Canvas {
         self.queue_draw();
     }
 
-    fn processing_draw_motion(&self, data_entries: VecDeque<InputData>) {
+    fn processing_draw_motion(
+        &self,
+        appwindow: &RnoteAppWindow,
+        data_entries: VecDeque<InputData>,
+    ) {
         self.set_unsaved_changes(true);
 
         match self.current_pen().get() {
@@ -725,21 +727,31 @@ impl Canvas {
                         inputdata,
                         &self.pens().borrow(),
                     );
+
                     if self.sheet().resize() {
                         self.queue_resize();
                     }
+
                     if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
                 }
             }
             PenStyle::Eraser => {
+                let scalefactor = self.scalefactor();
+                let canvas_scroller_viewport_scaled =
+                    if let Some(viewport) = appwindow.canvas_scroller_viewport() {
+                        Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
+                    } else {
+                        None
+                    };
+
                 for inputdata in data_entries {
                     self.pens().borrow_mut().eraser.current_input = inputdata;
-                    if self
-                        .sheet()
-                        .remove_colliding_strokes(&self.pens().borrow().eraser)
-                    {
+                    if self.sheet().remove_colliding_strokes(
+                        &self.pens().borrow().eraser,
+                        canvas_scroller_viewport_scaled,
+                    ) {
                         self.queue_resize();
                     }
                 }
@@ -775,14 +787,20 @@ impl Canvas {
             stroke.complete_stroke();
         }
 
-        let canvas_scroller_viewport_scaled = appwindow.canvas_scroller_viewport();
+        let scalefactor = self.scalefactor();
+        let canvas_scroller_viewport_scaled =
+            if let Some(viewport) = appwindow.canvas_scroller_viewport() {
+                Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
+            } else {
+                None
+            };
 
         match self.current_pen().get() {
             PenStyle::Selector => {
                 self.sheet().selection().update_selection(
                     &self.pens().borrow().selector,
                     &mut self.sheet().strokes().borrow_mut(),
-                    canvas_scroller_viewport_scaled
+                    canvas_scroller_viewport_scaled,
                 );
 
                 self.pens().borrow_mut().selector.clear_path();

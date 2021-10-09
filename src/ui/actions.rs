@@ -20,6 +20,12 @@ for other stateful actions: They have the same values as their state as their pa
 */
 
 pub fn setup_actions(appwindow: &RnoteAppWindow) {
+    let app = appwindow
+        .application()
+        .unwrap()
+        .downcast::<RnoteApp>()
+        .unwrap();
+
     let action_about = gio::SimpleAction::new("about", None);
     let action_clear_sheet = gio::SimpleAction::new("clear-sheet", None);
     let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
@@ -85,10 +91,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             dialogs::dialog_keyboard_shortcuts(&appwindow);
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_keyboard_shortcuts_dialog);
+    app.add_action(&action_keyboard_shortcuts_dialog);
 
     // Warning
     action_warning.connect_activate(
@@ -97,14 +100,14 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             log::warn!("{}", warning);
         }),
     );
-    appwindow.application().unwrap().add_action(&action_warning);
+    app.add_action(&action_warning);
 
     // Error
     action_error.connect_activate(clone!(@weak appwindow => move |_action_error, parameter| {
          let error = parameter.unwrap().get::<String>().unwrap();
             log::error!("{}", error);
     }));
-    appwindow.application().unwrap().add_action(&action_error);
+    app.add_action(&action_error);
 
     // Developer mode
     action_devel.connect_state_notify(
@@ -116,19 +119,13 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }),
     );
-    appwindow.application().unwrap().add_action(&action_devel);
+    app.add_action(&action_devel);
 
     // Developer settings menu
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_devel_settings);
+    app.add_action(&action_devel_settings);
 
     // Visual Debug
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_visual_debug);
+    app.add_action(&action_visual_debug);
 
     // Renderer Backend
     action_renderer_backend.connect_state_notify(clone!(@weak appwindow => move |action_renderer_backend| {
@@ -157,16 +154,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         );
         appwindow.canvas().queue_draw()
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_renderer_backend);
+    app.add_action(&action_renderer_backend);
 
     // Mouse drawing
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_mouse_drawing);
+    app.add_action(&action_mouse_drawing);
 
     // Current Pen
     action_current_pen.connect_activate(move |action_current_pen, parameter| {
@@ -208,10 +199,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_current_pen);
+    app.add_action(&action_current_pen);
 
     // Shaper drawstyle
     action_shaper_drawstyle.connect_activate(move |action_shaper_drawstyle, parameter| {
@@ -238,10 +226,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_shaper_drawstyle);
+    app.add_action(&action_shaper_drawstyle);
 
     // Current Shape
     action_current_shape.connect_activate(move |action_current_shape, parameter| {
@@ -274,10 +259,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_current_shape);
+    app.add_action(&action_current_shape);
 
     // Delete Selection
     action_delete_selection.connect_activate(
@@ -287,10 +269,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().queue_draw();
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_delete_selection);
+    app.add_action(&action_delete_selection);
 
     // Duplicate Selection
     action_duplicate_selection.connect_activate(
@@ -303,10 +282,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().queue_draw();
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_duplicate_selection);
+    app.add_action(&action_duplicate_selection);
 
     // Format borders
     action_sheet_format_borders.connect_state_notify(
@@ -316,10 +292,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                 appwindow.canvas().queue_draw();
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_sheet_format_borders);
+    app.add_action(&action_sheet_format_borders);
 
     // Predefined format
     action_predefined_format.connect_activate(move |action_predefined_format, parameter| {
@@ -389,10 +362,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_predefined_format);
+    app.add_action(&action_predefined_format);
 
     // Sheet format
     action_sheet_format.connect_state_notify(clone!(@weak appwindow => move |action_set_format| {
@@ -406,16 +376,13 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.canvas().queue_resize();
             appwindow.canvas().queue_draw();
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_sheet_format);
+    app.add_action(&action_sheet_format);
 
     // About Dialog
     action_about.connect_activate(clone!(@weak appwindow => move |_, _| {
         dialogs::dialog_about(&appwindow);
     }));
-    appwindow.application().unwrap().add_action(&action_about);
+    app.add_action(&action_about);
 
     // Autoexpand height
     action_autoexpand_height.connect_state_notify(
@@ -428,10 +395,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.canvas().queue_resize();
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_autoexpand_height);
+    app.add_action(&action_autoexpand_height);
 
     // Righthanded
     action_righthanded.connect_state_notify(clone!(@weak appwindow => move |action_righthanded| {
@@ -454,9 +418,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().lineconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().rectangleconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
-            appwindow.penssidebar().shaper_page().rectangleconfig_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().rectangleconfig_page().fill_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().ellipseconfig_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
-            appwindow.penssidebar().shaper_page().ellipseconfig_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().shaper_page().ellipseconfig_page().fill_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Right);
 
             appwindow.flap().set_flap_position(PackType::Start);
@@ -497,52 +461,40 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.workspace_grid().attach(&appwindow.workspace_controlbox(), 0, 3, 1, 1);
         }
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_righthanded);
+    app.add_action(&action_righthanded);
 
     // Clear sheet
     action_clear_sheet.connect_activate(clone!(@weak appwindow => move |_, _| {
         dialogs::dialog_clear_sheet(&appwindow);
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_clear_sheet);
+    app.add_action(&action_clear_sheet);
 
     // Open App Menu
     action_open_appmenu.connect_activate(clone!(@weak appwindow => move |_,_| {
         appwindow.mainheader().appmenu().popovermenu().popup();
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_open_appmenu);
+    app.add_action(&action_open_appmenu);
 
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
         let scalefactor = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().borrow().width as f64;
         appwindow.canvas().set_property("scalefactor", scalefactor.to_value()).unwrap();
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_zoom_fit_width);
+    app.add_action(&action_zoom_fit_width);
 
     // Zoom in
     action_zoomin.connect_activate(clone!(@weak appwindow => move |_,_| {
         let scalefactor = appwindow.canvas().property("scalefactor").unwrap().get::<f64>().unwrap() + 0.02;
         appwindow.canvas().set_property("scalefactor", &scalefactor).unwrap();
     }));
-    appwindow.application().unwrap().add_action(&action_zoomin);
+    app.add_action(&action_zoomin);
 
     // Zoom out
     action_zoomout.connect_activate(clone!(@weak appwindow => move |_,_| {
         let scalefactor = appwindow.canvas().property("scalefactor").unwrap().get::<f64>().unwrap() - 0.02;
         appwindow.canvas().set_property("scalefactor", &scalefactor).unwrap();
     }));
-    appwindow.application().unwrap().add_action(&action_zoomout);
+    app.add_action(&action_zoomout);
 
     // Temporary Eraser
     let pen_tmp = Rc::new(Cell::new(PenStyle::default()));
@@ -571,37 +523,25 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_tmperaser);
+    app.add_action(&action_tmperaser);
 
     // New sheet
     action_new_sheet.connect_activate(clone!(@weak appwindow => move |_, _| {
         dialogs::dialog_new_sheet(&appwindow);
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_new_sheet);
+    app.add_action(&action_new_sheet);
 
     // Open workspace
     action_open_workspace.connect_activate(clone!(@weak appwindow => move |_, _| {
         dialogs::dialog_open_workspace(&appwindow);
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_open_workspace);
+    app.add_action(&action_open_workspace);
 
     // Open sheet
     action_open_sheet.connect_activate(clone!(@weak appwindow => move |_, _| {
         dialogs::dialog_open_sheet(&appwindow);
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_open_sheet);
+    app.add_action(&action_open_sheet);
 
     // Save sheet
     action_save_sheet.connect_activate(clone!(@weak appwindow => move |_, _| {
@@ -617,19 +557,13 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_save_sheet);
+    app.add_action(&action_save_sheet);
 
     // Save sheet as
     action_save_sheet_as.connect_activate(clone!(@weak appwindow => move |_, _| {
         dialogs::dialog_save_sheet_as(&appwindow);
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_save_sheet_as);
+    app.add_action(&action_save_sheet_as);
 
     // Print sheet
     action_print_sheet.connect_activate(clone!(@weak appwindow => move |_, _| {
@@ -711,87 +645,45 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         };
 
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_print_sheet);
+    app.add_action(&action_print_sheet);
 
     // Import
     action_import_file.connect_activate(clone!(@weak appwindow => move |_,_| {
         dialogs::dialog_import_file(&appwindow);
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_import_file);
+    app.add_action(&action_import_file);
 
     // Export selection as SVG
     action_export_selection_as_svg.connect_activate(clone!(@weak appwindow => move |_,_| {
         dialogs::dialog_export_selection(&appwindow);
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_export_selection_as_svg);
+    app.add_action(&action_export_selection_as_svg);
 
     // Export sheet as SVG
     action_export_sheet_as_svg.connect_activate(clone!(@weak appwindow => move |_,_| {
         dialogs::dialog_export_sheet(&appwindow);
     }));
-    appwindow
-        .application()
-        .unwrap()
-        .add_action(&action_export_sheet_as_svg);
+    app.add_action(&action_export_sheet_as_svg);
 }
 
 // ### Accelerators / Keyboard Shortcuts
 pub fn setup_accels(appwindow: &RnoteAppWindow) {
-    appwindow
+    let app = appwindow
         .application()
         .unwrap()
-        .set_accels_for_action("app.keyboard-shortcuts", &["<Ctrl>k"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.quit", &["<Ctrl>q"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.open-appmenu", &["F10"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.save-sheet", &["<Ctrl>s"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.clear-sheet", &["<Ctrl>l"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.print-sheet", &["<Ctrl>p"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.import-file", &["<Ctrl>i"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.zoomin", &["plus"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.zoomout", &["minus"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.delete-selection", &["Delete"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.duplicate-selection", &["<Ctrl>v"]);
-    appwindow
-        .application()
-        .unwrap()
-        .set_accels_for_action("app.tmperaser(true)", &["d"]);
+        .downcast::<RnoteApp>()
+        .unwrap();
+
+    app.set_accels_for_action("app.keyboard-shortcuts", &["<Ctrl>k"]);
+    app.set_accels_for_action("app.quit", &["<Ctrl>q"]);
+    app.set_accels_for_action("app.open-appmenu", &["F10"]);
+    app.set_accels_for_action("app.save-sheet", &["<Ctrl>s"]);
+    app.set_accels_for_action("app.clear-sheet", &["<Ctrl>l"]);
+    app.set_accels_for_action("app.print-sheet", &["<Ctrl>p"]);
+    app.set_accels_for_action("app.import-file", &["<Ctrl>i"]);
+    app.set_accels_for_action("app.zoomin", &["plus"]);
+    app.set_accels_for_action("app.zoomout", &["minus"]);
+    app.set_accels_for_action("app.delete-selection", &["Delete"]);
+    app.set_accels_for_action("app.duplicate-selection", &["<Ctrl>v"]);
+    app.set_accels_for_action("app.tmperaser(true)", &["d"]);
 }

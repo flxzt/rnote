@@ -1978,6 +1978,7 @@ dependencies = [
  "cairo-rs",
  "gtk4",
  "image",
+ "kurbo",
  "lazy_static",
  "libadwaita",
  "libadwaita-sys",
@@ -2003,6 +2004,7 @@ dependencies = [
 name = "rough-rs"
 version = "0.1.0"
 dependencies = [
+ "kurbo",
  "nalgebra 0.29.0",
  "rand 0.8.4",
  "serde",

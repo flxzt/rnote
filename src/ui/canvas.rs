@@ -775,11 +775,14 @@ impl Canvas {
             stroke.complete_stroke();
         }
 
+        let canvas_scroller_viewport_scaled = appwindow.canvas_scroller_viewport();
+
         match self.current_pen().get() {
             PenStyle::Selector => {
                 self.sheet().selection().update_selection(
                     &self.pens().borrow().selector,
                     &mut self.sheet().strokes().borrow_mut(),
+                    canvas_scroller_viewport_scaled
                 );
 
                 self.pens().borrow_mut().selector.clear_path();

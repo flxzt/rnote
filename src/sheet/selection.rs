@@ -258,7 +258,12 @@ impl Selection {
         .unwrap();
     }
 
-    pub fn update_selection(&self, selector: &Selector, other_strokes: &mut Vec<StrokeStyle>) {
+    pub fn update_selection(
+        &self,
+        selector: &Selector,
+        other_strokes: &mut Vec<StrokeStyle>,
+        viewport: Option<p2d::bounding_volume::AABB>,
+    ) {
         let mut to_remove_from_strokes = Vec::<usize>::new();
         let mut to_remove_from_selection = Vec::<usize>::new();
 
@@ -276,9 +281,18 @@ impl Selection {
 
         // remove from selection, add to other strokes
         for (i, stroke) in self.strokes().borrow().iter().enumerate() {
+            // skip if stroke is not in viewport
+            if let Some(viewport) = viewport {
+                if !viewport.contains(&stroke.bounds()) {
+                    continue;
+                }
+            }
             match stroke {
                 strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                    if selector_bounds.intersects(&markerstroke.bounds) {
+                    if selector_bounds.contains(&markerstroke.bounds) {
+                        other_strokes.push(self.strokes().borrow()[i].clone());
+                        to_remove_from_selection.push(i);
+                    } else if selector_bounds.intersects(&markerstroke.bounds) {
                         let mut contains_all = true;
                         'selection_markerstroke_check: for hitbox_elem in markerstroke.hitbox.iter()
                         {
@@ -295,7 +309,10 @@ impl Selection {
                     }
                 }
                 strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                    if selector_bounds.intersects(&brushstroke.bounds) {
+                    if selector_bounds.contains(&brushstroke.bounds) {
+                        other_strokes.push(self.strokes().borrow()[i].clone());
+                        to_remove_from_selection.push(i);
+                    } else if selector_bounds.intersects(&brushstroke.bounds) {
                         let mut contains_all = true;
                         'selection_brushstroke_check: for hitbox_elem in brushstroke.hitbox.iter() {
                             if !path_bounds.contains(hitbox_elem) {
@@ -311,45 +328,21 @@ impl Selection {
                     }
                 }
                 strokes::StrokeStyle::ShapeStroke(shapestroke) => {
-                    if selector_bounds.intersects(&shapestroke.bounds) {
-                        let mut contains_all = true;
-
-                        if !path_bounds.contains(&shapestroke.bounds) {
-                            contains_all = false;
-                        }
-
-                        if contains_all {
-                            other_strokes.push(self.strokes().borrow()[i].clone());
-                            to_remove_from_selection.push(i);
-                        }
+                    if path_bounds.contains(&shapestroke.bounds) {
+                        other_strokes.push(self.strokes().borrow()[i].clone());
+                        to_remove_from_selection.push(i);
                     }
                 }
                 strokes::StrokeStyle::VectorImage(vector_image) => {
-                    if selector_bounds.intersects(&vector_image.bounds) {
-                        let mut contains_all = true;
-
-                        if !path_bounds.contains(&vector_image.bounds) {
-                            contains_all = false;
-                        }
-
-                        if contains_all {
-                            other_strokes.push(self.strokes().borrow()[i].clone());
-                            to_remove_from_selection.push(i);
-                        }
+                    if path_bounds.contains(&vector_image.bounds) {
+                        other_strokes.push(self.strokes().borrow()[i].clone());
+                        to_remove_from_selection.push(i);
                     }
                 }
                 strokes::StrokeStyle::BitmapImage(vector_image) => {
-                    if selector_bounds.intersects(&vector_image.bounds) {
-                        let mut contains_all = true;
-
-                        if !path_bounds.contains(&vector_image.bounds) {
-                            contains_all = false;
-                        }
-
-                        if contains_all {
-                            other_strokes.push(self.strokes().borrow()[i].clone());
-                            to_remove_from_selection.push(i);
-                        }
+                    if !path_bounds.contains(&vector_image.bounds) {
+                        other_strokes.push(self.strokes().borrow()[i].clone());
+                        to_remove_from_selection.push(i);
                     }
                 }
             }
@@ -360,9 +353,18 @@ impl Selection {
 
         // remove from other strokes, add to selection
         for (i, stroke) in other_strokes.iter().enumerate() {
+            // skip if stroke is not in viewport
+            if let Some(viewport) = viewport {
+                if !viewport.contains(&stroke.bounds()) {
+                    continue;
+                }
+            }
             match stroke {
                 strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                    if selector_bounds.intersects(&markerstroke.bounds) {
+                    if selector_bounds.contains(&markerstroke.bounds) {
+                        self.push_to_selection(other_strokes[i].clone());
+                        to_remove_from_strokes.push(i);
+                    } else if selector_bounds.intersects(&markerstroke.bounds) {
                         let mut contains_all = true;
                         'strokes_markerstroke_check: for hitbox_elem in markerstroke.hitbox.iter() {
                             if !path_bounds.contains(hitbox_elem) {
@@ -378,7 +380,10 @@ impl Selection {
                     }
                 }
                 strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                    if selector_bounds.intersects(&brushstroke.bounds) {
+                    if selector_bounds.contains(&brushstroke.bounds) {
+                        self.push_to_selection(other_strokes[i].clone());
+                        to_remove_from_strokes.push(i);
+                    } else if selector_bounds.intersects(&brushstroke.bounds) {
                         let mut contains_all = true;
                         'strokes_brushstroke_check: for hitbox_elem in brushstroke.hitbox.iter() {
                             if !path_bounds.contains(hitbox_elem) {
@@ -394,45 +399,21 @@ impl Selection {
                     }
                 }
                 strokes::StrokeStyle::ShapeStroke(shapestroke) => {
-                    if selector_bounds.intersects(&shapestroke.bounds) {
-                        let mut contains_bounds = true;
-
-                        if !path_bounds.contains(&shapestroke.bounds) {
-                            contains_bounds = false;
-                        }
-
-                        if contains_bounds {
-                            self.push_to_selection(other_strokes[i].clone());
-                            to_remove_from_strokes.push(i);
-                        }
+                    if path_bounds.contains(&shapestroke.bounds) {
+                        self.push_to_selection(other_strokes[i].clone());
+                        to_remove_from_strokes.push(i);
                     }
                 }
                 strokes::StrokeStyle::VectorImage(vectorimage) => {
-                    if selector_bounds.intersects(&vectorimage.bounds) {
-                        let mut contains_bounds = true;
-
-                        if !path_bounds.contains(&vectorimage.bounds) {
-                            contains_bounds = false;
-                        }
-
-                        if contains_bounds {
-                            self.push_to_selection(other_strokes[i].clone());
-                            to_remove_from_strokes.push(i);
-                        }
+                    if path_bounds.contains(&vectorimage.bounds) {
+                        self.push_to_selection(other_strokes[i].clone());
+                        to_remove_from_strokes.push(i);
                     }
                 }
                 strokes::StrokeStyle::BitmapImage(bitmapimage) => {
-                    if selector_bounds.intersects(&bitmapimage.bounds) {
-                        let mut contains_bounds = true;
-
-                        if !path_bounds.contains(&bitmapimage.bounds) {
-                            contains_bounds = false;
-                        }
-
-                        if contains_bounds {
-                            self.push_to_selection(other_strokes[i].clone());
-                            to_remove_from_strokes.push(i);
-                        }
+                    if path_bounds.contains(&bitmapimage.bounds) {
+                        self.push_to_selection(other_strokes[i].clone());
+                        to_remove_from_strokes.push(i);
                     }
                 }
             }
@@ -443,11 +424,7 @@ impl Selection {
 
         *self.bounds().borrow_mut() = StrokeStyle::gen_bounds(&self.strokes().borrow());
 
-        if self.strokes().borrow().is_empty() {
-            self.set_shown(false);
-        } else {
-            self.set_shown(true);
-        }
+        self.set_shown(!self.strokes().borrow().is_empty())
     }
 
     pub fn push_to_selection(&self, stroke: strokes::StrokeStyle) {

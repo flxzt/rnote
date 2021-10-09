@@ -453,6 +453,23 @@ impl RnoteAppWindow {
         }
     }
 
+    pub fn canvas_scroller_viewport(&self) -> Option<p2d::bounding_volume::AABB> {
+                let pos = if let (Some(hadjustment), Some(vadjustment)) = (self.canvas_scroller().hadjustment(), self.canvas_scroller().vadjustment()) {
+                    na::vector![
+                        hadjustment.value(),
+                        vadjustment.value()
+                    ]
+                } else {
+                    return None
+                };
+                let width = f64::from(self.canvas_scroller().width());
+                let height = f64::from(self.canvas_scroller().height());
+                Some(p2d::bounding_volume::AABB::new(
+                    na::Point2::<f64>::from(pos),
+                    na::point![pos[0] + width, pos[1] + height],
+                ))
+    }
+
     // Must be called after application is associated with it else it fails
     pub fn init(&self) {
         let priv_ = imp::RnoteAppWindow::from_instance(self);

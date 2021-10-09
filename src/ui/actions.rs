@@ -111,7 +111,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         clone!(@weak appwindow, @weak action_devel_settings => move |action_devel| {
             let state = action_devel.state().unwrap().get::<bool>().unwrap();
             action_devel_settings.set_enabled(state);
-            appwindow.application().unwrap().change_action_state("visual-debug", &state.to_variant());
+            if !state {
+                appwindow.application().unwrap().change_action_state("visual-debug", &false.to_variant());
+            }
         }),
     );
     appwindow.application().unwrap().add_action(&action_devel);

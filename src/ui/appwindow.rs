@@ -3,7 +3,7 @@ mod imp {
     use std::{cell::Cell, rc::Rc};
 
     use adw::{prelude::*, subclass::prelude::*};
-    use gtk4::Revealer;
+    use gtk4::{Revealer, Separator};
     use gtk4::{
         gdk, gio, glib, glib::clone, subclass::prelude::*, Box, Button, CompositeTemplate,
         CssProvider, Entry, FileChooserNative, Grid, Inhibit, Overlay, PackType, Picture,
@@ -39,6 +39,8 @@ mod imp {
         pub selection_modifier: TemplateChild<SelectionModifier>,
         #[template_child]
         pub sidebar_grid: TemplateChild<Grid>,
+        #[template_child]
+        pub sidebar_sep: TemplateChild<Separator>,
         #[template_child]
         pub flap: TemplateChild<adw::Flap>,
         #[template_child]
@@ -83,6 +85,7 @@ mod imp {
                 canvas_resize_preview: TemplateChild::<Picture>::default(),
                 selection_modifier: TemplateChild::<SelectionModifier>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
+                sidebar_sep: TemplateChild::<Separator>::default(),
                 flap: TemplateChild::<adw::Flap>::default(),
                 open_workspace_button: TemplateChild::<Button>::default(),
                 workspace_pathup_button: TemplateChild::<Button>::default(),
@@ -263,11 +266,7 @@ use std::{
 };
 
 use adw::prelude::*;
-use gtk4::{
-    gdk, gio, glib, glib::clone, graphene, subclass::prelude::*, Application, Box, Button, Entry,
-    FileChooserNative, GestureZoom, Grid, Overlay, Picture, PropagationPhase, Revealer,
-    ScrolledWindow, Snapshot,
-};
+use gtk4::{Application, Box, Button, Entry, FileChooserNative, GestureZoom, Grid, Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator, Snapshot, gdk, gio, glib, glib::clone, graphene, subclass::prelude::*};
 
 use crate::{
     app::RnoteApp,
@@ -343,6 +342,10 @@ impl RnoteAppWindow {
 
     pub fn sidebar_grid(&self) -> Grid {
         imp::RnoteAppWindow::from_instance(self).sidebar_grid.get()
+    }
+
+    pub fn sidebar_sep(&self) -> Separator {
+        imp::RnoteAppWindow::from_instance(self).sidebar_sep.get()
     }
 
     pub fn canvas(&self) -> Canvas {

@@ -122,26 +122,36 @@ mod imp {
 
     impl ColorSetter {
         fn generate_css_string(&self, rgba: &gdk::RGBA, position: PositionType) -> String {
-            let pos_string: String = String::from(match position {
+            // Watch out for inverse
+            let position_string: String = String::from(match position {
                 PositionType::Left => "-right",
                 PositionType::Right => "-left",
                 PositionType::Top => "-bottom",
                 PositionType::Bottom => "-top",
                 _ => "",
             });
+            let border_radius_string: String = String::from(match position {
+                PositionType::Left => "0px 5px 5px 0px",
+                PositionType::Right => "5px 0px 0px 5px",
+                PositionType::Top => "0px 0px 5px 5px",
+                PositionType::Bottom => "5px 5px 0px 0px",
+                _ => "",
+            });
             let parsed = format!(
                 "
 .setter-button {{
     margin{0}: 10px;
-    background-color: rgba({1}, {2}, {3}, {4:.3});
-    transition: margin{0} 0.3s;
+    background-color: rgba({2}, {3}, {4}, {5:.3});
+    transition: margin{0} 0.3s ease-out, border-radius 0.3s ease-out;
 }}
 
 .setter-button:checked {{
     margin{0}: 0px;
+    border-radius: {1}; 
 }}
 ",
-                pos_string,
+                position_string,
+                border_radius_string,
                 (rgba.red * 255.0) as i32,
                 (rgba.green * 255.0) as i32,
                 (rgba.blue * 255.0) as i32,

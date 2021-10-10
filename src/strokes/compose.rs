@@ -389,7 +389,8 @@ pub fn cubic_bezier_variable_width(
     commands
 }
 
-// Is None when one of the length between the control points is zero.
+// Is None when one of the length is zero.
+// See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
 pub fn cubic_bezier_w_catmull_rom(
     first: &Element,
     second: &Element,
@@ -410,6 +411,7 @@ pub fn cubic_bezier_w_catmull_rom(
         return None;
     } */
 
+    // Tension factor (tau), minimum 1.0
     let tension = 1.0;
 
     //

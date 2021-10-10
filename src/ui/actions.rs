@@ -7,10 +7,7 @@ use crate::{
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
 };
-use gtk4::{
-    gio, glib, glib::clone, graphene, prelude::*, ArrowType, Box, Grid, PackType, PositionType,
-    PrintOperation, PrintOperationAction, ScrolledWindow, Snapshot, Unit,
-};
+use gtk4::{ArrowType, Box, Grid, PackType, PositionType, PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Snapshot, Unit, gio, glib, glib::clone, graphene, prelude::*};
 
 /* Actions follow this principle:
 without any state: the activation triggers the callback
@@ -406,8 +403,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         if action_righthanded.state().unwrap().get::<bool>().unwrap() {
             appwindow.mainheader().canvasmenu().righthanded_toggle().set_active(true);
             appwindow.main_grid().remove::<Grid>(&appwindow.sidebar_grid());
+            appwindow.main_grid().remove::<Revealer>(&appwindow.devel_actions_revealer());
             appwindow.main_grid().remove::<ScrolledWindow>(&appwindow.canvas_scroller());
             appwindow.main_grid().attach(&appwindow.sidebar_grid(), 0, 1 ,1, 2);
+            appwindow.main_grid().attach(&appwindow.devel_actions_revealer(), 2, 1 ,1, 1);
             appwindow.main_grid().attach(&appwindow.canvas_scroller(), 2, 2 ,1, 1);
 
             appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().quickactions_box());
@@ -436,9 +435,11 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         } else {
             appwindow.mainheader().canvasmenu().lefthanded_toggle().set_active(true);
             appwindow.main_grid().remove::<Grid>(&appwindow.sidebar_grid());
+            appwindow.main_grid().remove::<Revealer>(&appwindow.devel_actions_revealer());
             appwindow.main_grid().remove::<ScrolledWindow>(&appwindow.canvas_scroller());
-            appwindow.main_grid().attach(&appwindow.sidebar_grid(), 2, 1 ,1, 2);
             appwindow.main_grid().attach(&appwindow.canvas_scroller(), 0, 2 ,1, 1);
+            appwindow.main_grid().attach(&appwindow.devel_actions_revealer(), 0, 1 ,1, 1);
+            appwindow.main_grid().attach(&appwindow.sidebar_grid(), 2, 1 ,1, 2);
 
             appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().pens_togglebox());
             appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().quickactions_box());

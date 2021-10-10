@@ -670,6 +670,8 @@ impl Canvas {
                 if let Some(inputdata) = data_entries.pop_front() {
                     self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
 
+                    self.sheet().elements_trash().borrow_mut().clear();
+
                     StrokeStyle::new_stroke(
                         &mut *self.sheet().strokes().borrow_mut(),
                         Element::new(inputdata),

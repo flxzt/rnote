@@ -4,13 +4,7 @@ pub mod selection;
 
 use std::{cell::RefCell, error::Error, rc::Rc};
 
-use crate::{
-    pens::eraser::Eraser,
-    sheet::selection::Selection,
-    strokes::{self, compose, render::Renderer, StrokeBehaviour, StrokeStyle},
-    strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
-    utils::{self, FileType},
-};
+use crate::{pens::eraser::Eraser, sheet::selection::Selection, strokes::{self, Element, StrokeBehaviour, StrokeStyle, compose, render::Renderer}, strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage}, utils::{self, FileType}};
 
 use self::{background::Background, format::Format};
 
@@ -364,6 +358,10 @@ impl Sheet {
 
     pub fn strokes_trash(&self) -> Rc<RefCell<Vec<StrokeStyle>>> {
         imp::Sheet::from_instance(self).strokes_trash.clone()
+    }
+
+    pub fn elements_trash(&self) -> Rc<RefCell<Vec<Element>>> {
+        imp::Sheet::from_instance(self).elements_trash.clone()
     }
 
     pub fn selection(&self) -> Selection {

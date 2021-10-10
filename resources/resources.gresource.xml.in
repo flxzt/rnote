@@ -3,6 +3,7 @@
     <gresource prefix="@APP_IDPATH@">
         <file>ui/custom.css</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appwindow.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/develactions.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>

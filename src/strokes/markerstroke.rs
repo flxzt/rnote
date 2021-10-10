@@ -2,9 +2,7 @@ use std::error::Error;
 
 use crate::{
     pens::marker::Marker,
-    strokes,
-    strokes::InputData,
-    strokes::{compose, render, Element},
+    strokes::{self, compose, render, Element},
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
@@ -26,7 +24,7 @@ pub struct MarkerStroke {
 
 impl Default for MarkerStroke {
     fn default() -> Self {
-        Self::new(InputData::default(), Marker::default())
+        Self::new(Element::default(), Marker::default())
     }
 }
 
@@ -142,11 +140,14 @@ impl StrokeBehaviour for MarkerStroke {
 impl MarkerStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
 
-    pub fn new(inputdata: InputData, marker: Marker) -> Self {
+    pub fn new(element: Element, marker: Marker) -> Self {
         let elements = Vec::with_capacity(20);
         let bounds = p2d::bounding_volume::AABB::new(
-            na::point![inputdata.pos()[0], inputdata.pos()[1]],
-            na::point![inputdata.pos()[0] + 1.0, inputdata.pos()[1] + 1.0],
+            na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
+            na::point![
+                element.inputdata.pos()[0] + 1.0,
+                element.inputdata.pos()[1] + 1.0
+            ],
         );
         let hitbox: Vec<p2d::bounding_volume::AABB> = Vec::new();
 
@@ -158,18 +159,27 @@ impl MarkerStroke {
             rendernode: render::default_rendernode(),
         };
 
-        markerstroke.push_elem(inputdata);
+        // Pushing with push_elem() instead filling vector, because bounds are getting updated there too
+        markerstroke.push_elem(element);
 
         markerstroke
     }
 
-    pub fn push_elem(&mut self, inputdata: InputData) {
-        self.elements.push(Element::new(inputdata));
+    pub fn push_elem(&mut self, element: Element) {
+        self.elements.push(element);
 
         self.update_bounds_to_last_elem();
     }
 
+    pub fn pop_elem(&mut self) -> Option<Element> {
+        let element = self.elements.pop();
+
+        self.complete_stroke();
+        element
+    }
+
     pub fn complete_stroke(&mut self) {
+        self.update_bounds();
         self.hitbox = self.gen_hitbox();
     }
 

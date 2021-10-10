@@ -1,10 +1,8 @@
-use super::StrokeBehaviour;
+use super::{Element, StrokeBehaviour};
 use crate::pens::shaper;
 use crate::strokes::compose;
 use crate::utils;
-use crate::{
-    pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render, strokes::InputData,
-};
+use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render};
 
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
@@ -39,7 +37,7 @@ pub struct ShapeStroke {
 
 impl Default for ShapeStroke {
     fn default() -> Self {
-        Self::new(InputData::default(), Shaper::default())
+        Self::new(Element::default(), Shaper::default())
     }
 }
 
@@ -287,25 +285,28 @@ impl StrokeBehaviour for ShapeStroke {
 }
 
 impl ShapeStroke {
-    pub fn new(inputdata: InputData, shaper: Shaper) -> Self {
+    pub fn new(element: Element, shaper: Shaper) -> Self {
         let bounds = p2d::bounding_volume::AABB::new(
-            na::point![inputdata.pos()[0], inputdata.pos()[1]],
-            na::point![inputdata.pos()[0] + 1.0, inputdata.pos()[1] + 1.0],
+            na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
+            na::point![
+                element.inputdata.pos()[0] + 1.0,
+                element.inputdata.pos()[1] + 1.0
+            ],
         );
 
         let seed = Some(rough_rs::utils::random_u64_full(None));
 
         let shape_style = match shaper.current_shape {
             CurrentShape::Line => ShapeStyle::Line {
-                start: inputdata.pos(),
-                end: inputdata.pos(),
+                start: element.inputdata.pos(),
+                end: element.inputdata.pos(),
             },
             CurrentShape::Rectangle => ShapeStyle::Rectangle {
-                start: inputdata.pos(),
-                end: inputdata.pos(),
+                start: element.inputdata.pos(),
+                end: element.inputdata.pos(),
             },
             CurrentShape::Ellipse => ShapeStyle::Ellipse {
-                pos: inputdata.pos(),
+                pos: element.inputdata.pos(),
                 radius_x: 0.0,
                 radius_y: 0.0,
             },
@@ -324,26 +325,26 @@ impl ShapeStroke {
         shapestroke
     }
 
-    pub fn update_shape(&mut self, inputdata: InputData) {
+    pub fn update_shape(&mut self, element: Element) {
         match self.shape_style {
             ShapeStyle::Line {
                 start: _,
                 ref mut end,
             } => {
-                *end = inputdata.pos();
+                *end = element.inputdata.pos();
             }
             ShapeStyle::Rectangle {
                 start: _,
                 ref mut end,
             } => {
-                *end = inputdata.pos();
+                *end = element.inputdata.pos();
             }
             ShapeStyle::Ellipse {
                 ref pos,
                 ref mut radius_x,
                 ref mut radius_y,
             } => {
-                let delta = inputdata.pos() - *pos;
+                let delta = element.inputdata.pos() - *pos;
                 *radius_x = delta[0].abs();
                 *radius_y = delta[1].abs();
             }

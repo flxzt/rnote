@@ -35,3 +35,4 @@ resvg = "0.18"
 usvg = "0.18"
 tiny-skia = "0.6.1"
 kurbo ="0.8.0"
+splines = { version = "4.0", features = ["nalgebra"]}

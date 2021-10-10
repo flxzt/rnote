@@ -48,6 +48,7 @@ rust_sources = files(
     'ui/mod.rs',
     'ui/appwindow.rs',
     'ui/actions.rs',
+    'ui/develactions.rs',
     'ui/appmenu.rs',
     'ui/canvas.rs',
     'ui/canvasmenu.rs',

@@ -254,10 +254,7 @@ pub fn cubic_bezier(
     commands
 }
 
-pub fn fill_polygon(
-    points: Vec<na::Vector2<f64>>,
-    _options: &mut Options,
-) -> Vec<path::Command> {
+pub fn fill_polygon(points: Vec<na::Vector2<f64>>, _options: &mut Options) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
     for (i, point) in points.iter().enumerate() {

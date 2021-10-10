@@ -104,7 +104,15 @@ impl Renderer {
         )
         .unwrap();
 
-        resvg::render(&rtree, usvg::FitTo::Size(node_bounds.width().round() as u32, node_bounds.height().round() as u32), pixmap.as_mut()).unwrap();
+        resvg::render(
+            &rtree,
+            usvg::FitTo::Size(
+                node_bounds.width().round() as u32,
+                node_bounds.height().round() as u32,
+            ),
+            pixmap.as_mut(),
+        )
+        .unwrap();
 
         //pixmap.save_png(&PathBuf::from("./tests/output/stroke_resvg.png"))?;
         let pixbuf = gdk_pixbuf::Pixbuf::from_bytes(

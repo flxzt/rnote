@@ -15,7 +15,7 @@ mod imp {
         ui::{
             appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvasmenu::CanvasMenu,
             colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
-            mainheader::MainHeader, penssidebar::brushpage::BrushPage,
+            develactions::DevelActions, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
             penssidebar::eraserpage::EraserPage, penssidebar::markerpage::MarkerPage,
             penssidebar::selectorpage::SelectorPage,
             penssidebar::shaperpage::ellipseconfigpage::EllipseConfigPage,
@@ -85,6 +85,7 @@ mod imp {
         fn activate(&self, application: &Self::Type) {
             // Custom buildable Widgets must be initalized
             RnoteAppWindow::static_type();
+            DevelActions::static_type();
             Sheet::static_type();
             Canvas::static_type();
             ColorPicker::static_type();

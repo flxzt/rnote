@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### DevelActions ### -->
+<interface>
+  <template class="DevelActions" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout" />
+    </property>
+    <child>
+      <object class="GtkActionBar" id="devel_actionbar">
+        <child type="start">
+          <object class="GtkBox">
+            <style>
+              <class name="linked" />
+            </style>
+            <child>
+              <object class="GtkButton" id="element_stepback_button">
+                <property name="icon_name">edit-undo-symbolic</property>
+                <property name="tooltip-text">step back one element in stroke</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="element_stepforward_button">
+                <property name="icon_name">edit-redo-symbolic</property>
+                <property name="tooltip-text">step forward one element in stroke</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkToggleButton" id="visual_debug_toggle">
+            <property name="label">vd</property>
+            <property name="tooltip-text">visual debugging</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

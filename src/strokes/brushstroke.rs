@@ -2,7 +2,6 @@ use std::error::Error;
 
 use crate::{
     pens::brush::{self, Brush},
-    strokes::InputData,
     strokes::{compose, render, Element},
 };
 use gtk4::gsk;
@@ -35,7 +34,7 @@ pub struct BrushStroke {
 
 impl Default for BrushStroke {
     fn default() -> Self {
-        Self::new(InputData::default(), Brush::default())
+        Self::new(Element::default(), Brush::default())
     }
 }
 
@@ -132,11 +131,11 @@ impl StrokeBehaviour for BrushStroke {
 impl BrushStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
 
-    pub fn new(inputdata: InputData, brush: Brush) -> Self {
+    pub fn new(element: Element, brush: Brush) -> Self {
         let elements = Vec::with_capacity(20);
         let bounds = p2d::bounding_volume::AABB::new(
-            na::point![inputdata.pos()[0], inputdata.pos()[1]],
-            na::point![inputdata.pos()[0], inputdata.pos()[1]],
+            na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
+            na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
         );
         let hitbox = Vec::new();
 
@@ -148,13 +147,14 @@ impl BrushStroke {
             rendernode: render::default_rendernode(),
         };
 
-        brushstroke.push_elem(inputdata);
+        // Pushing with push_elem() instead filling vector, because bounds are getting updated there too
+        brushstroke.push_elem(element);
 
         brushstroke
     }
 
-    pub fn validation_stroke(data_entries: &[InputData], brush: &Brush) -> Option<Self> {
-        let mut data_entries_iter = data_entries.iter();
+    pub fn validation_stroke(elements: &[Element], brush: &Brush) -> Option<Self> {
+        let mut data_entries_iter = elements.iter();
         let mut stroke = if let Some(first_entry) = data_entries_iter.next() {
             Self::new(first_entry.clone(), brush.clone())
         } else {
@@ -169,13 +169,22 @@ impl BrushStroke {
         Some(stroke)
     }
 
-    pub fn push_elem(&mut self, inputdata: InputData) {
-        self.elements.push(Element::new(inputdata));
+    pub fn push_elem(&mut self, element: Element) {
+        self.elements.push(element);
 
         self.update_bounds_to_last_elem();
     }
 
+    pub fn pop_elem(&mut self) -> Option<Element> {
+        let element = self.elements.pop();
+
+        self.complete_stroke();
+
+        element
+    }
+
     pub fn complete_stroke(&mut self) {
+        self.update_bounds();
         self.hitbox = self.gen_hitbox();
     }
 
@@ -334,16 +343,18 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(1))
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
-            .step_by(2)
             .enumerate()
         {
             let start_width = second.inputdata.pressure() * self.brush.width();
-            let end_width = forth.inputdata.pressure() * self.brush.width();
+            let end_width = third.inputdata.pressure() * self.brush.width();
 
-            // Is None when one of the length between the control points is zero.
-            if let Some(cubic_bezier) =
-                compose::filter_prepare_cubic_bezier_from_input(first, second, third, forth, offset)
+            if let Some(mut cubic_bezier) =
+                compose::cubic_bezier_w_catmull_rom(first, second, third, forth)
             {
+                cubic_bezier.start += offset;
+                cubic_bezier.cp1 += offset;
+                cubic_bezier.cp2 += offset;
+                cubic_bezier.end += offset;
                 if i == 0 {
                     commands.push(path::Command::Move(
                         path::Position::Absolute,

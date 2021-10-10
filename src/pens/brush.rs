@@ -5,7 +5,7 @@ use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    strokes::{brushstroke::BrushStroke, compose, render, InputData, StrokeBehaviour},
+    strokes::{brushstroke::BrushStroke, compose, render, Element, StrokeBehaviour},
     utils,
 };
 
@@ -86,7 +86,7 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn 
 
     for _i in 0..=strokes_uniform.sample(&mut rng) {
         let validation_stroke =
-            BrushStroke::validation_stroke(&InputData::validation_data(bounds), &brush).unwrap();
+            BrushStroke::validation_stroke(&Element::validation_data(bounds), &brush).unwrap();
         let svg = compose::wrap_svg(
             validation_stroke
                 .gen_svg_data(na::vector![0.0, 0.0])?

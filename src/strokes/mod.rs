@@ -212,26 +212,26 @@ impl StrokeStyle {
     // returns true if resizing is needed
     pub fn new_stroke(
         strokes: &mut Vec<Self>,
-        inputdata: InputData,
+        element: Element,
         current_pen: PenStyle,
         pens: &Pens,
     ) {
         match current_pen {
             PenStyle::Marker => {
                 strokes.push(StrokeStyle::MarkerStroke(MarkerStroke::new(
-                    inputdata,
+                    element,
                     pens.marker.clone(),
                 )));
             }
             PenStyle::Brush => {
                 strokes.push(StrokeStyle::BrushStroke(BrushStroke::new(
-                    inputdata,
+                    element,
                     pens.brush.clone(),
                 )));
             }
             PenStyle::Shaper => {
                 strokes.push(StrokeStyle::ShapeStroke(ShapeStroke::new(
-                    inputdata,
+                    element,
                     pens.shaper.clone(),
                 )));
             }
@@ -247,24 +247,24 @@ impl StrokeStyle {
     }
 
     // returns true if resizing is needed
-    pub fn add_to_last_stroke(strokes: &mut Vec<Self>, inputdata: InputData, pens: &Pens) {
+    pub fn add_to_last_stroke(strokes: &mut Vec<Self>, element: Element, pens: &Pens) {
         if let Some(strokes) = strokes.last_mut() {
             match strokes {
                 StrokeStyle::MarkerStroke(ref mut markerstroke) => {
-                    markerstroke.push_elem(inputdata);
+                    markerstroke.push_elem(element);
                 }
                 StrokeStyle::BrushStroke(ref mut brushstroke) => {
-                    brushstroke.push_elem(inputdata);
+                    brushstroke.push_elem(element);
                 }
                 StrokeStyle::ShapeStroke(ref mut shapestroke) => {
-                    shapestroke.update_shape(inputdata);
+                    shapestroke.update_shape(element);
                 }
                 StrokeStyle::VectorImage(_vectorimage) => {}
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
             }
         } else {
             strokes.push(StrokeStyle::BrushStroke(BrushStroke::new(
-                inputdata,
+                element,
                 pens.brush.clone(),
             )));
         }
@@ -344,29 +344,10 @@ impl InputData {
     pub fn set_pressure(&mut self, pressure: f64) {
         self.pressure = pressure.clamp(0.0, 1.0);
     }
-
-    pub fn validation_data(bounds: p2d::bounding_volume::AABB) -> Vec<Self> {
-        let mut rng = rand::thread_rng();
-        let data_entries_uniform = Uniform::from(0..=20);
-        let x_uniform = Uniform::from(bounds.mins[0]..=bounds.maxs[0]);
-        let y_uniform = Uniform::from(bounds.mins[1]..=bounds.maxs[1]);
-        let pressure_uniform = Uniform::from(0_f64..=1_f64);
-
-        let mut data_entries: Vec<Self> = Vec::new();
-
-        for _i in 0..=data_entries_uniform.sample(&mut rng) {
-            data_entries.push(Self::new(
-                na::vector![x_uniform.sample(&mut rng), y_uniform.sample(&mut rng)],
-                pressure_uniform.sample(&mut rng),
-            ));
-        }
-
-        data_entries
-    }
 }
 
 // Represents a single Stroke Element
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct Element {
     inputdata: InputData,
 }
@@ -382,5 +363,24 @@ impl Element {
 
     pub fn set_inputdata(&mut self, inputdata: InputData) {
         self.inputdata = inputdata;
+    }
+
+    pub fn validation_data(bounds: p2d::bounding_volume::AABB) -> Vec<Self> {
+        let mut rng = rand::thread_rng();
+        let data_entries_uniform = Uniform::from(0..=20);
+        let x_uniform = Uniform::from(bounds.mins[0]..=bounds.maxs[0]);
+        let y_uniform = Uniform::from(bounds.mins[1]..=bounds.maxs[1]);
+        let pressure_uniform = Uniform::from(0_f64..=1_f64);
+
+        let mut data_entries: Vec<Self> = Vec::new();
+
+        for _i in 0..=data_entries_uniform.sample(&mut rng) {
+            data_entries.push(Self::new(InputData::new(
+                na::vector![x_uniform.sample(&mut rng), y_uniform.sample(&mut rng)],
+                pressure_uniform.sample(&mut rng),
+            )));
+        }
+
+        data_entries
     }
 }

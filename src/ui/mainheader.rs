@@ -5,7 +5,7 @@ mod imp {
         ToggleButton, Widget,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/mainheader.ui")]
     pub struct MainHeader {
         #[template_child]
@@ -44,30 +44,6 @@ mod imp {
         pub appmenu: TemplateChild<AppMenu>,
     }
 
-    impl Default for MainHeader {
-        fn default() -> Self {
-            Self {
-                headerbar: TemplateChild::<adw::HeaderBar>::default(),
-                header_icon_image: TemplateChild::<Image>::default(),
-                menus_box: TemplateChild::<gtk4::Box>::default(),
-                quickactions_box: TemplateChild::<gtk4::Box>::default(),
-                pageedit_revealer: TemplateChild::<Revealer>::default(),
-                add_page_button: TemplateChild::<Button>::default(),
-                fit_to_format_button: TemplateChild::<Button>::default(),
-                undo_button: TemplateChild::<Button>::default(),
-                redo_button: TemplateChild::<Button>::default(),
-                pens_togglebox: TemplateChild::<gtk4::Box>::default(),
-                marker_toggle: TemplateChild::<ToggleButton>::default(),
-                brush_toggle: TemplateChild::<ToggleButton>::default(),
-                shaper_toggle: TemplateChild::<ToggleButton>::default(),
-                eraser_toggle: TemplateChild::<ToggleButton>::default(),
-                selector_toggle: TemplateChild::<ToggleButton>::default(),
-                canvasmenu: TemplateChild::<CanvasMenu>::default(),
-                appmenu: TemplateChild::<AppMenu>::default(),
-            }
-        }
-    }
-
     #[glib::object_subclass]
     impl ObjectSubclass for MainHeader {
         const NAME: &'static str = "MainHeader";
@@ -76,9 +52,6 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
-
-            CanvasMenu::static_type();
-            AppMenu::static_type();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {

@@ -425,7 +425,7 @@ mod imp {
     }
 }
 
-use crate::strokes::{render, StrokeStyle};
+use crate::strokes::{render, Element, StrokeStyle};
 use crate::utils;
 use crate::{
     app::RnoteApp, pens::PenStyle, pens::Pens, sheet::Sheet, strokes::InputData,
@@ -452,8 +452,8 @@ impl Default for Canvas {
 }
 
 impl Canvas {
-    pub const SCALE_MIN: f64 = 0.4;
-    pub const SCALE_MAX: f64 = 3.0;
+    pub const SCALE_MIN: f64 = 0.1;
+    pub const SCALE_MAX: f64 = 10.0;
     pub const SCALE_DEFAULT: f64 = 1.0;
     pub const INPUT_OVERSHOOT: f64 = 30.0;
     pub const SHADOW_WIDTH: f64 = 30.0;
@@ -672,7 +672,7 @@ impl Canvas {
 
                     StrokeStyle::new_stroke(
                         &mut *self.sheet().strokes().borrow_mut(),
-                        inputdata,
+                        Element::new(inputdata),
                         self.current_pen().get(),
                         &self.pens().borrow(),
                     );
@@ -724,7 +724,7 @@ impl Canvas {
                 for inputdata in data_entries {
                     StrokeStyle::add_to_last_stroke(
                         &mut *self.sheet().strokes().borrow_mut(),
-                        inputdata,
+                        Element::new(inputdata),
                         &self.pens().borrow(),
                     );
 

@@ -173,96 +173,6 @@ pub fn linear_offsetted(
     commands
 }
 
-// Offsetted quad bezier approximation, see "precise offsetting of quadratic bezier curves"
-pub fn quad_bezier_offsetted(
-    quad_bezier: QuadBezier,
-    start_offset_dist: f64,
-    end_offset_dist: f64,
-    move_start: bool,
-) -> Vec<path::Command> {
-    let start_unit_norm = vector2_unit_norm(quad_bezier.cp1 - quad_bezier.start);
-    let start_offset = start_unit_norm * start_offset_dist;
-
-    let end_unit_norm = vector2_unit_norm(quad_bezier.end - quad_bezier.cp1);
-    let end_offset = end_unit_norm * end_offset_dist;
-
-    let added_unit_norms = start_unit_norm + end_unit_norm;
-
-    let cp1_offset_dist = (start_offset_dist + end_offset_dist) / 2.0;
-    let cp1_offset =
-        (2.0 * cp1_offset_dist * added_unit_norms) / added_unit_norms.dot(&added_unit_norms);
-
-    let mut commands = Vec::new();
-    if move_start {
-        commands.push(path::Command::Move(
-            path::Position::Absolute,
-            path::Parameters::from((
-                quad_bezier.start[0] + start_offset[0],
-                quad_bezier.start[1] + start_offset[1],
-            )),
-        ));
-    }
-    commands.push(path::Command::QuadraticCurve(
-        path::Position::Absolute,
-        path::Parameters::from((
-            (
-                quad_bezier.cp1[0] + cp1_offset[0],
-                quad_bezier.cp1[1] + cp1_offset[1],
-            ),
-            (
-                quad_bezier.end[0] + end_offset[0],
-                quad_bezier.end[1] + end_offset[1],
-            ),
-        )),
-    ));
-
-    commands
-}
-
-pub fn cubic_bezier_offsetted(
-    cubic_bezier: CubicBezier,
-    start_offset_dist: f64,
-    end_offset_dist: f64,
-    move_start: bool,
-) -> Vec<path::Command> {
-    let mid_offset_dist = (start_offset_dist + end_offset_dist) / 2.0;
-    let (first_quad_bezier, second_quad_bezier) = split_cubic_bezier(cubic_bezier);
-
-    let mut commands = quad_bezier_offsetted(
-        first_quad_bezier,
-        start_offset_dist,
-        mid_offset_dist,
-        move_start,
-    );
-    commands.append(&mut quad_bezier_offsetted(
-        second_quad_bezier,
-        mid_offset_dist,
-        end_offset_dist,
-        false,
-    ));
-
-    commands
-}
-
-pub fn split_cubic_bezier(cubic_bezier: CubicBezier) -> (QuadBezier, QuadBezier) {
-    let cp_first = 0.25 * cubic_bezier.start + 0.75 * cubic_bezier.cp1;
-    let cp_second = 0.25 * cubic_bezier.end + 0.75 * cubic_bezier.cp2;
-    let mid = 0.5 * cp_first + 0.5 * cp_second;
-
-    let first_quad_bezier = QuadBezier {
-        start: cubic_bezier.start,
-        cp1: cp_first,
-        end: mid,
-    };
-    let second_quad_bezier = QuadBezier {
-        start: mid,
-        cp1: cp_second,
-        end: cubic_bezier.end,
-    };
-
-    (first_quad_bezier, second_quad_bezier)
-}
-
 pub fn linear_variable_width(line: Line, width_start: f64, width_end: f64) -> Vec<path::Command> {
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
@@ -314,24 +224,70 @@ pub fn linear_variable_width(line: Line, width_start: f64, width_end: f64) -> Ve
     commands
 }
 
-pub fn cubic_bezier_variable_width(
-    cubic_bezier: CubicBezier,
+// Offsetted quad bezier approximation, see "precise offsetting of quadratic bezier curves"
+pub fn quad_bezier_offsetted(
+    quad_bezier: QuadBezier,
+    start_offset_dist: f64,
+    end_offset_dist: f64,
+    move_start: bool,
+) -> Vec<path::Command> {
+    let start_unit_norm = vector2_unit_norm(quad_bezier.cp1 - quad_bezier.start);
+    let start_offset = start_unit_norm * start_offset_dist;
+
+    let end_unit_norm = vector2_unit_norm(quad_bezier.end - quad_bezier.cp1);
+    let end_offset = end_unit_norm * end_offset_dist;
+
+    let added_unit_norms = start_unit_norm + end_unit_norm;
+
+    let cp1_offset_dist = (start_offset_dist + end_offset_dist) / 2.0;
+    let cp1_offset =
+        (2.0 * cp1_offset_dist * added_unit_norms) / added_unit_norms.dot(&added_unit_norms);
+
+    let mut commands = Vec::new();
+    if move_start {
+        commands.push(path::Command::Move(
+            path::Position::Absolute,
+            path::Parameters::from((
+                quad_bezier.start[0] + start_offset[0],
+                quad_bezier.start[1] + start_offset[1],
+            )),
+        ));
+    }
+    commands.push(path::Command::QuadraticCurve(
+        path::Position::Absolute,
+        path::Parameters::from((
+            (
+                quad_bezier.cp1[0] + cp1_offset[0],
+                quad_bezier.cp1[1] + cp1_offset[1],
+            ),
+            (
+                quad_bezier.end[0] + end_offset[0],
+                quad_bezier.end[1] + end_offset[1],
+            ),
+        )),
+    ));
+
+    commands
+}
+
+pub fn quad_bezier_variable_width(
+    quad_bezier: QuadBezier,
     width_start: f64,
     width_end: f64,
 ) -> Vec<path::Command> {
+    let mut commands = Vec::new();
+
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
 
-    let cubic_bezier_reverse = CubicBezier {
-        start: cubic_bezier.end,
-        cp1: cubic_bezier.cp2,
-        cp2: cubic_bezier.cp1,
-        end: cubic_bezier.start,
+    let quad_bezier_reverse = QuadBezier {
+        start: quad_bezier.end,
+        cp1: quad_bezier.cp1,
+        end: quad_bezier.start,
     };
 
-    let mut commands = Vec::new();
-    commands.append(&mut cubic_bezier_offsetted(
-        cubic_bezier,
+    commands.append(&mut quad_bezier_offsetted(
+        quad_bezier,
         start_offset_dist,
         end_offset_dist,
         true,
@@ -339,15 +295,15 @@ pub fn cubic_bezier_variable_width(
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((
-            (cubic_bezier.end
-                + vector2_unit_norm(cubic_bezier.end - cubic_bezier.cp2) * (-end_offset_dist))[0],
-            (cubic_bezier.end
-                + vector2_unit_norm(cubic_bezier.end - cubic_bezier.cp2) * (-end_offset_dist))[1],
+            (quad_bezier.end
+                + vector2_unit_norm(quad_bezier.end - quad_bezier.cp1) * (-end_offset_dist))[0],
+            (quad_bezier.end
+                + vector2_unit_norm(quad_bezier.end - quad_bezier.cp1) * (-end_offset_dist))[1],
         )),
     ));
 
-    commands.append(&mut cubic_bezier_offsetted(
-        cubic_bezier_reverse,
+    commands.append(&mut quad_bezier_offsetted(
+        quad_bezier_reverse,
         end_offset_dist,
         start_offset_dist,
         false,
@@ -355,11 +311,11 @@ pub fn cubic_bezier_variable_width(
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((
-            (cubic_bezier_reverse.end
-                + vector2_unit_norm(cubic_bezier_reverse.end - cubic_bezier_reverse.cp2)
+            (quad_bezier_reverse.end
+                + vector2_unit_norm(quad_bezier_reverse.end - quad_bezier_reverse.cp1)
                     * start_offset_dist)[0],
-            (cubic_bezier_reverse.end
-                + vector2_unit_norm(cubic_bezier_reverse.end - cubic_bezier_reverse.cp2)
+            (quad_bezier_reverse.end
+                + vector2_unit_norm(quad_bezier_reverse.end - quad_bezier_reverse.cp1)
                     * start_offset_dist)[1],
         )),
     ));
@@ -367,39 +323,117 @@ pub fn cubic_bezier_variable_width(
     commands
 }
 
-pub fn filter_prepare_cubic_bezier_from_input(
+pub fn cubic_bezier_offsetted(
+    cubic_bezier: CubicBezier,
+    start_offset_dist: f64,
+    end_offset_dist: f64,
+    move_start: bool,
+) -> Vec<path::Command> {
+    let mid_offset_dist = (start_offset_dist + end_offset_dist) / 2.0;
+    let (first_quad_bezier, second_quad_bezier) = split_cubic_bezier(cubic_bezier);
+
+    let mut commands = quad_bezier_offsetted(
+        first_quad_bezier,
+        start_offset_dist,
+        mid_offset_dist,
+        move_start,
+    );
+    commands.append(&mut quad_bezier_offsetted(
+        second_quad_bezier,
+        mid_offset_dist,
+        end_offset_dist,
+        false,
+    ));
+
+    commands
+}
+
+pub fn split_cubic_bezier(cubic_bezier: CubicBezier) -> (QuadBezier, QuadBezier) {
+    let cp_first = 0.25 * cubic_bezier.start + 0.75 * cubic_bezier.cp1;
+    let cp_second = 0.25 * cubic_bezier.end + 0.75 * cubic_bezier.cp2;
+    let mid = 0.5 * cp_first + 0.5 * cp_second;
+
+    let first_quad_bezier = QuadBezier {
+        start: cubic_bezier.start,
+        cp1: cp_first,
+        end: mid,
+    };
+    let second_quad_bezier = QuadBezier {
+        start: mid,
+        cp1: cp_second,
+        end: cubic_bezier.end,
+    };
+
+    (first_quad_bezier, second_quad_bezier)
+}
+
+pub fn cubic_bezier_variable_width(
+    cubic_bezier: CubicBezier,
+    width_start: f64,
+    width_end: f64,
+) -> Vec<path::Command> {
+    let (first_quad_bezier, second_quad_bezier) = split_cubic_bezier(cubic_bezier);
+
+    let mut commands = Vec::new();
+    commands.append(&mut quad_bezier_variable_width(
+        first_quad_bezier,
+        width_start,
+        (width_start + width_end) / 2.0,
+    ));
+    commands.append(&mut quad_bezier_variable_width(
+        second_quad_bezier,
+        (width_start + width_end) / 2.0,
+        width_end,
+    ));
+
+    commands
+}
+
+// Is None when one of the length between the control points is zero.
+pub fn cubic_bezier_w_catmull_rom(
     first: &Element,
     second: &Element,
     third: &Element,
     forth: &Element,
-    offset: na::Vector2<f64>,
 ) -> Option<CubicBezier> {
+    /*     let catmullrom_spline = splines::spline::Spline::from_vec(vec![
+        splines::key::Key::new(0.0, first.inputdata.pos(), splines::Interpolation::CatmullRom),
+        splines::key::Key::new(0.0, second.inputdata.pos(), splines::Interpolation::CatmullRom),
+        splines::key::Key::new(0.0, third.inputdata.pos(), splines::Interpolation::CatmullRom),
+        splines::key::Key::new(1.0, forth.inputdata.pos(), splines::Interpolation::CatmullRom),
+    ]); */
+
+    let _second_third_len = (second.inputdata.pos() - third.inputdata.pos()).magnitude();
+
+    // returns early when no length.
+    /*     if second_third_len == 0.0 {
+        return None;
+    } */
+
+    let tension = 1.0;
+
+    //
+    let start = second.inputdata.pos();
+    let cp1 =
+        second.inputdata.pos() + (third.inputdata.pos() - first.inputdata.pos()) / (6.0 * tension);
+    let cp2 =
+        third.inputdata.pos() - (forth.inputdata.pos() - second.inputdata.pos()) / (6.0 * tension);
+    let end = third.inputdata.pos();
+
     let mut cubic_bezier = CubicBezier {
-        start: second.inputdata.pos() + offset,
-        // first control points is the reflection of the previous second
-        cp1: second.inputdata.pos() + (second.inputdata.pos() - first.inputdata.pos()) + offset,
-        cp2: third.inputdata.pos() + offset,
-        end: forth.inputdata.pos() + offset,
+        start,
+        cp1,
+        cp2,
+        end,
     };
 
-    let start_end_len = (cubic_bezier.end - cubic_bezier.start).magnitude();
-    let start_cp1_len = (cubic_bezier.cp1 - cubic_bezier.start).magnitude();
-    let start_cp2_len = (cubic_bezier.cp2 - cubic_bezier.start).magnitude();
-    let cp2_end_len = (cubic_bezier.end - cubic_bezier.cp2).magnitude();
+    // Avoiding curve loops and general line weirdness
+    // TODO implement see https://pomax.github.io/bezierinfo/#canonical
+    let start_cp1_len = (cp1 - start).magnitude();
+    let start_cp2_len = (cp1 - start).magnitude();
 
-    // returns early to prevent NaN when calculating vector norms.
-    if start_cp1_len == 0.0 || start_end_len == 0.0 || cp2_end_len == 0.0 {
-        return None;
-    }
-
-    let start_cp1 = cubic_bezier.cp1 - cubic_bezier.start;
-
-    // Avoiding curve loops and general instability and weirdness
-    // see https://pomax.github.io/bezierinfo/#canonical
     if start_cp1_len > (start_cp2_len + 1.0) {
-        cubic_bezier.cp1 = cubic_bezier.start + start_cp1 * (start_cp2_len / start_cp1_len);
-    } else if start_end_len < 10.0 {
-        cubic_bezier.cp1 = cubic_bezier.start + start_cp1.unscale(start_cp1.norm() * 2.0);
+        cubic_bezier.cp1 = cubic_bezier.start + (cp1 - start) * (start_cp2_len / start_cp1_len);
     }
 
     Some(cubic_bezier)

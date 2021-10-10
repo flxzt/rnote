@@ -3,6 +3,7 @@ mod imp {
     use std::{cell::Cell, rc::Rc};
 
     use adw::{prelude::*, subclass::prelude::*};
+    use gtk4::Revealer;
     use gtk4::{
         gdk, gio, glib, glib::clone, subclass::prelude::*, Box, Button, CompositeTemplate,
         CssProvider, Entry, FileChooserNative, Grid, Inhibit, Overlay, PackType, Picture,
@@ -10,9 +11,9 @@ mod imp {
     };
 
     use crate::{
-        app::RnoteApp, config, ui::canvas::Canvas, ui::dialogs, ui::mainheader::MainHeader,
-        ui::penssidebar::PensSideBar, ui::selectionmodifier::SelectionModifier,
-        ui::workspacebrowser::WorkspaceBrowser,
+        app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
+        ui::mainheader::MainHeader, ui::penssidebar::PensSideBar,
+        ui::selectionmodifier::SelectionModifier, ui::workspacebrowser::WorkspaceBrowser,
     };
 
     #[derive(Debug, CompositeTemplate)]
@@ -22,6 +23,10 @@ mod imp {
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
         #[template_child]
         pub main_grid: TemplateChild<Grid>,
+        #[template_child]
+        pub devel_actions_revealer: TemplateChild<Revealer>,
+        #[template_child]
+        pub devel_actions: TemplateChild<DevelActions>,
         #[template_child]
         pub canvas_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
@@ -70,6 +75,8 @@ mod imp {
                 settings: gio::Settings::new(config::APP_ID),
                 filechoosernative: Rc::new(RefCell::new(None)),
                 main_grid: TemplateChild::<Grid>::default(),
+                devel_actions_revealer: TemplateChild::<Revealer>::default(),
+                devel_actions: TemplateChild::<DevelActions>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
                 canvas_overlay: TemplateChild::<Overlay>::default(),
@@ -258,14 +265,15 @@ use std::{
 use adw::prelude::*;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, subclass::prelude::*, Application, Box, Button, Entry,
-    FileChooserNative, GestureZoom, Grid, Overlay, Picture, PropagationPhase, ScrolledWindow,
-    Snapshot,
+    FileChooserNative, GestureZoom, Grid, Overlay, Picture, PropagationPhase, Revealer,
+    ScrolledWindow, Snapshot,
 };
 
 use crate::{
     app::RnoteApp,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokeStyle},
     ui::canvas::Canvas,
+    ui::develactions::DevelActions,
     ui::penssidebar::PensSideBar,
     ui::{actions, selectionmodifier::SelectionModifier, workspacebrowser::WorkspaceBrowser},
     ui::{dialogs, mainheader::MainHeader},
@@ -297,6 +305,16 @@ impl RnoteAppWindow {
 
     pub fn main_grid(&self) -> Grid {
         imp::RnoteAppWindow::from_instance(self).main_grid.get()
+    }
+
+    pub fn devel_actions_revealer(&self) -> Revealer {
+        imp::RnoteAppWindow::from_instance(self)
+            .devel_actions_revealer
+            .get()
+    }
+
+    pub fn devel_actions(&self) -> DevelActions {
+        imp::RnoteAppWindow::from_instance(self).devel_actions.get()
     }
 
     pub fn canvas_scroller(&self) -> ScrolledWindow {
@@ -454,20 +472,20 @@ impl RnoteAppWindow {
     }
 
     pub fn canvas_scroller_viewport(&self) -> Option<p2d::bounding_volume::AABB> {
-                let pos = if let (Some(hadjustment), Some(vadjustment)) = (self.canvas_scroller().hadjustment(), self.canvas_scroller().vadjustment()) {
-                    na::vector![
-                        hadjustment.value(),
-                        vadjustment.value()
-                    ]
-                } else {
-                    return None
-                };
-                let width = f64::from(self.canvas_scroller().width());
-                let height = f64::from(self.canvas_scroller().height());
-                Some(p2d::bounding_volume::AABB::new(
-                    na::Point2::<f64>::from(pos),
-                    na::point![pos[0] + width, pos[1] + height],
-                ))
+        let pos = if let (Some(hadjustment), Some(vadjustment)) = (
+            self.canvas_scroller().hadjustment(),
+            self.canvas_scroller().vadjustment(),
+        ) {
+            na::vector![hadjustment.value(), vadjustment.value()]
+        } else {
+            return None;
+        };
+        let width = f64::from(self.canvas_scroller().width());
+        let height = f64::from(self.canvas_scroller().height());
+        Some(p2d::bounding_volume::AABB::new(
+            na::Point2::<f64>::from(pos),
+            na::point![pos[0] + width, pos[1] + height],
+        ))
     }
 
     // Must be called after application is associated with it else it fails
@@ -482,6 +500,7 @@ impl RnoteAppWindow {
         priv_.penssidebar.get().init(self);
         priv_.canvas.get().sheet().selection().init(self);
         priv_.selection_modifier.get().init(self);
+        priv_.devel_actions.get().init(self);
 
         // Loading in input file
         if let Some(input_file) = self
@@ -718,8 +737,20 @@ impl RnoteAppWindow {
             .flags(gio::SettingsBindFlags::DEFAULT)
             .build();
 
-            let action_devel_settings = self.application().unwrap().downcast::<RnoteApp>().unwrap().lookup_action("devel-settings").unwrap();
-            action_devel_settings.downcast::<gio::SimpleAction>().unwrap().set_enabled(self.app_settings().boolean("devel"));
+        let action_devel_settings = self
+            .application()
+            .unwrap()
+            .downcast::<RnoteApp>()
+            .unwrap()
+            .lookup_action("devel-settings")
+            .unwrap();
+        action_devel_settings
+            .downcast::<gio::SimpleAction>()
+            .unwrap()
+            .set_enabled(self.app_settings().boolean("devel"));
+
+        self.devel_actions_revealer()
+            .set_reveal_child(self.app_settings().boolean("devel"));
     }
 
     pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn Error>> {

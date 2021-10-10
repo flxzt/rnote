@@ -7,7 +7,7 @@ use std::{cell::RefCell, error::Error, rc::Rc};
 use crate::{
     pens::eraser::Eraser,
     sheet::selection::Selection,
-    strokes::{self, compose, StrokeBehaviour, StrokeStyle},
+    strokes::{self, compose, render::Renderer, StrokeBehaviour, StrokeStyle},
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     utils::{self, FileType},
 };
@@ -27,7 +27,7 @@ mod imp {
     use gtk4::{glib, subclass::prelude::*};
 
     use crate::sheet::selection::Selection;
-    use crate::strokes;
+    use crate::strokes::{self, Element};
 
     use super::{Background, Format};
 
@@ -35,6 +35,7 @@ mod imp {
     pub struct Sheet {
         pub strokes: Rc<RefCell<Vec<strokes::StrokeStyle>>>,
         pub strokes_trash: Rc<RefCell<Vec<strokes::StrokeStyle>>>,
+        pub elements_trash: Rc<RefCell<Vec<Element>>>,
         pub selection: Selection,
         pub format: Rc<RefCell<Format>>,
         pub background: Rc<RefCell<Background>>,
@@ -52,6 +53,7 @@ mod imp {
             Self {
                 strokes: Rc::new(RefCell::new(Vec::new())),
                 strokes_trash: Rc::new(RefCell::new(Vec::new())),
+                elements_trash: Rc::new(RefCell::new(Vec::new())),
                 selection: Selection::new(),
                 format: Rc::new(RefCell::new(Format::default())),
                 background: Rc::new(RefCell::new(Background::default())),
@@ -467,8 +469,86 @@ impl Sheet {
         self.resize()
     }
 
+    pub fn undo_elements_last_stroke(
+        &mut self,
+        n_elements: usize,
+        scalefactor: f64,
+        renderer: &Renderer,
+    ) {
+        let priv_ = imp::Sheet::from_instance(self);
+
+        if let Some(last_stroke) = priv_.strokes.borrow_mut().last_mut() {
+            match last_stroke {
+                StrokeStyle::MarkerStroke(markerstroke) => {
+                    for _i in 1..=n_elements {
+                        if let Some(element) = markerstroke.pop_elem() {
+                            priv_.elements_trash.borrow_mut().push(element);
+
+                            markerstroke.update_rendernode(scalefactor, renderer);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                StrokeStyle::BrushStroke(brushstroke) => {
+                    for _i in 1..=n_elements {
+                        if let Some(element) = brushstroke.pop_elem() {
+                            priv_.elements_trash.borrow_mut().push(element);
+
+                            brushstroke.update_rendernode(scalefactor, renderer);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
+    pub fn redo_elements_last_stroke(
+        &mut self,
+        n_elements: usize,
+        scalefactor: f64,
+        renderer: &Renderer,
+    ) {
+        let priv_ = imp::Sheet::from_instance(self);
+
+        if let Some(last_stroke) = priv_.strokes.borrow_mut().last_mut() {
+            match last_stroke {
+                StrokeStyle::MarkerStroke(markerstroke) => {
+                    for _i in 1..=n_elements {
+                        if let Some(element) = priv_.elements_trash.borrow_mut().pop() {
+                            markerstroke.push_elem(element);
+
+                            markerstroke.update_rendernode(scalefactor, renderer);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                StrokeStyle::BrushStroke(brushstroke) => {
+                    for _i in 1..=n_elements {
+                        if let Some(element) = priv_.elements_trash.borrow_mut().pop() {
+                            brushstroke.push_elem(element);
+
+                            brushstroke.update_rendernode(scalefactor, renderer);
+                        } else {
+                            break;
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
     // returns true if resizing is needed
-    pub fn remove_colliding_strokes(&self, eraser: &Eraser, viewport: Option<p2d::bounding_volume::AABB>) -> bool {
+    pub fn remove_colliding_strokes(
+        &self,
+        eraser: &Eraser,
+        viewport: Option<p2d::bounding_volume::AABB>,
+    ) -> bool {
         let priv_ = imp::Sheet::from_instance(self);
 
         let eraser_bounds = p2d::bounding_volume::AABB::new(

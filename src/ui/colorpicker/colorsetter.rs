@@ -130,28 +130,57 @@ mod imp {
                 PositionType::Bottom => "-top",
                 _ => "",
             });
-            let border_radius_string: String = String::from(match position {
-                PositionType::Left => "0px 5px 5px 0px",
-                PositionType::Right => "5px 0px 0px 5px",
-                PositionType::Top => "0px 0px 5px 5px",
-                PositionType::Bottom => "5px 5px 0px 0px",
+            let properties_string: String = String::from(match position {
+                PositionType::Left => {
+                    "
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+"
+                }
+                PositionType::Right => {
+                    "
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+"
+                }
+                PositionType::Top => {
+                    "
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+"
+                }
+                PositionType::Bottom => {
+                    "
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+"
+                }
+                _ => "",
+            });
+            let properties_checked_string: String = String::from(match position {
+                PositionType::Left => "border-radius: 0px 5px 5px 0px;",
+                PositionType::Right => "border-radius: 5px 0px 0px 5px;",
+                PositionType::Top => "border-radius: 0px 0px 5px 5px;",
+                PositionType::Bottom => "border-radius: 5px 5px 0px 0px;",
                 _ => "",
             });
             let parsed = format!(
                 "
 .setter-button {{
     margin{0}: 10px;
-    background-color: rgba({2}, {3}, {4}, {5:.3});
+    background-color: rgba({3}, {4}, {5}, {6:.3});
     transition: margin{0} 0.3s ease-out, border-radius 0.3s ease-out;
+    {1}
 }}
 
 .setter-button:checked {{
     margin{0}: 0px;
-    border-radius: {1}; 
+    {2}
 }}
 ",
                 position_string,
-                border_radius_string,
+                properties_string,
+                properties_checked_string,
                 (rgba.red * 255.0) as i32,
                 (rgba.green * 255.0) as i32,
                 (rgba.blue * 255.0) as i32,

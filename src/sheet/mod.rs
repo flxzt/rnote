@@ -520,6 +520,7 @@ impl Sheet {
                     for _i in 1..=n_elements {
                         if let Some(element) = priv_.elements_trash.borrow_mut().pop() {
                             markerstroke.push_elem(element);
+                            markerstroke.complete_stroke();
 
                             markerstroke.update_rendernode(scalefactor, renderer);
                         } else {
@@ -531,6 +532,7 @@ impl Sheet {
                     for _i in 1..=n_elements {
                         if let Some(element) = priv_.elements_trash.borrow_mut().pop() {
                             brushstroke.push_elem(element);
+                            brushstroke.complete_stroke();
 
                             brushstroke.update_rendernode(scalefactor, renderer);
                         } else {

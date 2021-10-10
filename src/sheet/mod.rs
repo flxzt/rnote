@@ -4,7 +4,13 @@ pub mod selection;
 
 use std::{cell::RefCell, error::Error, rc::Rc};
 
-use crate::{pens::eraser::Eraser, sheet::selection::Selection, strokes::{self, Element, StrokeBehaviour, StrokeStyle, compose, render::Renderer}, strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage}, utils::{self, FileType}};
+use crate::{
+    pens::eraser::Eraser,
+    sheet::selection::Selection,
+    strokes::{self, compose, render::Renderer, Element, StrokeBehaviour, StrokeStyle},
+    strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
+    utils::{self, FileType},
+};
 
 use self::{background::Background, format::Format};
 
@@ -28,8 +34,12 @@ mod imp {
     #[derive(Debug)]
     pub struct Sheet {
         pub strokes: Rc<RefCell<Vec<strokes::StrokeStyle>>>,
+
+        // Skipped by serde Serialize and Deserialize trait implementation
         pub strokes_trash: Rc<RefCell<Vec<strokes::StrokeStyle>>>,
+        // Skipped by serde Serialize and Deserialize trait implementation
         pub elements_trash: Rc<RefCell<Vec<Element>>>,
+
         pub selection: Selection,
         pub format: Rc<RefCell<Format>>,
         pub background: Rc<RefCell<Background>>,

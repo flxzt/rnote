@@ -11,6 +11,10 @@
     color: rgba(0, 200, 20, 255);
 }
 
+.devel_actions {
+    background-color: @theme_bg_color;
+}
+
 .files_grid {
     background-color: @theme_bg_color;
 }

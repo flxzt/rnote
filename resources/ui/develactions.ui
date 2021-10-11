@@ -5,9 +5,18 @@
     <property name="layout-manager">
       <object class="GtkBinLayout" />
     </property>
+    <style>
+      <class name="devel_actions" />
+    </style>
     <child>
-      <object class="GtkActionBar" id="devel_actionbar">
-        <child type="start">
+      <object class="GtkBox" id="devel_actionsbox">
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <property name="spacing">6</property>
+        <property name="orientation">horizontal</property>
+        <child>
           <object class="GtkBox">
             <style>
               <class name="linked" />
@@ -26,7 +35,15 @@
             </child>
           </object>
         </child>
-        <child type="end">
+        <child>
+          <object class="GtkSeparator">
+            <property name="hexpand">true</property>
+            <style>
+              <class name="spacer" />
+            </style>
+          </object>
+        </child>
+        <child>
           <object class="GtkToggleButton" id="visual_debug_toggle">
             <property name="label">vd</property>
             <property name="tooltip-text">visual debugging</property>

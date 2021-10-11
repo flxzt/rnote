@@ -7,9 +7,9 @@ use crate::{
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
-use svg::node::element;
+use svg::node::element::path;
 
-use super::StrokeBehaviour;
+use super::{curves, StrokeBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MarkerStroke {
@@ -85,30 +85,52 @@ impl StrokeBehaviour for MarkerStroke {
     }
 
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
-        let mut svg = String::new();
-        let mut data = element::path::Data::new();
+        let mut commands = Vec::new();
 
-        for (i, element) in self.elements.iter().enumerate() {
+        for (i, (((first, second), third), forth)) in self
+            .elements
+            .iter()
+            .zip(self.elements.iter().skip(1))
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
+            .enumerate()
+        {
+            let mut cubic_bezier =
+                curves::gen_cubic_bezier_w_catmull_rom(first, second, third, forth);
+            cubic_bezier.start += offset;
+            cubic_bezier.cp1 += offset;
+            cubic_bezier.cp2 += offset;
+            cubic_bezier.end += offset;
+
             if i == 0 {
-                data = data.move_to((
-                    element.inputdata.pos()[0] + offset[0],
-                    element.inputdata.pos()[1] + offset[1],
+                commands.push(path::Command::Move(
+                    path::Position::Absolute,
+                    path::Parameters::from((cubic_bezier.start[0], cubic_bezier.start[1])),
                 ));
             } else {
-                data = data.line_to((
-                    element.inputdata.pos()[0] + offset[0],
-                    element.inputdata.pos()[1] + offset[1],
+                commands.push(path::Command::CubicCurve(
+                    path::Position::Absolute,
+                    path::Parameters::from((
+                        (cubic_bezier.cp1[0], cubic_bezier.cp1[1]),
+                        (cubic_bezier.cp2[0], cubic_bezier.cp2[1]),
+                        (cubic_bezier.end[0], cubic_bezier.end[1]),
+                    )),
                 ));
             }
         }
 
-        let svg_path = element::Path::new()
-            .set("d", data)
-            .set("stroke", self.marker.color.to_css_color())
-            .set("stroke-width", self.marker.width())
-            .set("fill", "none");
-
-        svg += rough_rs::node_to_string(&svg_path)?.as_str();
+        let svg = if !commands.is_empty() {
+            let path = svg::node::element::Path::new()
+                .set("stroke", self.marker.color.to_css_color())
+                .set("stroke-width", self.marker.width())
+                .set("stroke-linejoin", "round")
+                .set("stroke-linecap", "round")
+                .set("fill", "none")
+                .set("d", path::Data::from(commands));
+            rough_rs::node_to_string(&path)?.to_string()
+        } else {
+            String::from("")
+        };
 
         Ok(svg)
     }

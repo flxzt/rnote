@@ -7,7 +7,10 @@ use crate::{
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
 };
-use gtk4::{ArrowType, Box, Grid, PackType, PositionType, PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit, gio, glib, glib::clone, graphene, prelude::*};
+use gtk4::{
+    gio, glib, glib::clone, graphene, prelude::*, ArrowType, Box, Grid, PackType, PositionType,
+    PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
+};
 
 /* Actions follow this principle:
 without any state: the activation triggers the callback

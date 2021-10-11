@@ -9,7 +9,7 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
-use super::StrokeBehaviour;
+use super::{curves, StrokeBehaviour};
 
 // Struct field names are also used in brushstroke template, reminder to be careful when renaming
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -97,7 +97,7 @@ impl StrokeBehaviour for BrushStroke {
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         match self.brush.current_style {
             brush::BrushStyle::Linear => self.linear_svg_data(offset),
-            brush::BrushStyle::CubicBezier => self.cubic_bezier_svg_data(offset),
+            brush::BrushStyle::CubicBezier => self.catmull_rom_svg_data(offset),
             brush::BrushStyle::CustomTemplate(_) => self.templates_svg_data(offset),
             brush::BrushStyle::Experimental => self.experimental_svg_data(offset),
         }
@@ -302,7 +302,7 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(1))
             .enumerate()
         {
-            let line = compose::filter_prepare_line_from_input(first, second, offset);
+            let line = curves::gen_line(first, second, offset);
 
             let start_width = first.inputdata.pressure() * self.brush.width();
             let end_width = second.inputdata.pressure() * self.brush.width();
@@ -314,7 +314,7 @@ impl BrushStroke {
                         path::Parameters::from((line.start[0], line.start[1])),
                     ));
                 }
-                commands.append(&mut compose::linear_variable_width(
+                commands.append(&mut compose::svg_linear_variable_width(
                     line,
                     start_width,
                     end_width,
@@ -331,65 +331,70 @@ impl BrushStroke {
         Ok(svg)
     }
 
-    pub fn cubic_bezier_svg_data(
-        &self,
-        offset: na::Vector2<f64>,
-    ) -> Result<String, Box<dyn Error>> {
+    pub fn catmull_rom_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut commands = Vec::new();
 
-        for (i, (((first, second), third), forth)) in self
+        for (((first, second), third), forth) in self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
-            .enumerate()
         {
-            let start_width = second.inputdata.pressure() * self.brush.width();
-            let end_width = third.inputdata.pressure() * self.brush.width();
+            let width_start = second.inputdata.pressure() * self.brush.width();
+            let width_end = third.inputdata.pressure() * self.brush.width();
+            //let width_end = width_start;
 
-            if let Some(mut cubic_bezier) =
-                compose::cubic_bezier_w_catmull_rom(first, second, third, forth)
-            {
-                cubic_bezier.start += offset;
-                cubic_bezier.cp1 += offset;
-                cubic_bezier.cp2 += offset;
-                cubic_bezier.end += offset;
-                if i == 0 {
-                    commands.push(path::Command::Move(
-                        path::Position::Absolute,
-                        path::Parameters::from((cubic_bezier.start[0], cubic_bezier.start[1])),
-                    ));
-                }
-                commands.append(&mut compose::cubic_bezier_variable_width(
-                    cubic_bezier,
-                    start_width,
-                    end_width,
-                ));
-            // is None when line length is zero
-            } else if let Some(line) =
-                compose::filter_prepare_line_from_input(second, forth, offset)
-            {
-                if i == 0 {
-                    commands.push(path::Command::Move(
-                        path::Position::Absolute,
-                        path::Parameters::from((line.start[0], line.start[1])),
-                    ));
-                }
+            let mut cubic_bezier =
+                curves::gen_cubic_bezier_w_catmull_rom(first, second, third, forth);
+            cubic_bezier.start += offset;
+            cubic_bezier.cp1 += offset;
+            cubic_bezier.cp2 += offset;
+            cubic_bezier.end += offset;
 
-                commands.append(&mut compose::linear_variable_width(
-                    line,
-                    start_width,
-                    end_width,
-                ));
-            }
+            commands.append(&mut compose::svg_cubic_bezier_variable_width(
+                cubic_bezier,
+                width_start,
+                width_end,
+            ));
+
+            // Debugging
+            /*             let end_offset_dist = width_end / 2.0;
+            let end_unit_norm = compose::vector2_unit_norm(cubic_bezier.end - cubic_bezier.cp2);
+            let end_offset = end_unit_norm * end_offset_dist;
+
+            commands.push(path::Command::Move(
+                path::Position::Absolute,
+                path::Parameters::from((
+                    (cubic_bezier.end + 1.2 * end_offset)[0],
+                    (cubic_bezier.end + 1.2 * end_offset)[1],
+                )),
+            ));
+            commands.push(path::Command::Line(
+                path::Position::Absolute,
+                path::Parameters::from((
+                    (cubic_bezier.end + 2.2 * end_offset)[0],
+                    (cubic_bezier.end + 2.2 * end_offset)[1],
+                )),
+            ));
+            commands.push(path::Command::Close); */
         }
 
-        let path = svg::node::element::Path::new()
-            .set("stroke", "none")
-            .set("fill", self.brush.color.to_css_color())
-            .set("d", path::Data::from(commands));
-        let svg = rough_rs::node_to_string(&path)?.to_string();
+        let svg = if !commands.is_empty() {
+            let path = svg::node::element::Path::new()
+                //.set("stroke", "none")
+                .set(
+                    "stroke",
+                    crate::utils::Color::new(0.0, 0.5, 0.5, 1.0).to_css_color(),
+                )
+                .set("stroke-width", 1.0)
+                //.set("fill", self.brush.color.to_css_color())
+                .set("fill", "none")
+                .set("d", path::Data::from(commands));
+            rough_rs::node_to_string(&path)?.to_string()
+        } else {
+            String::from("")
+        };
 
         //println!("{}", svg);
         Ok(svg)

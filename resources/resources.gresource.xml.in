@@ -64,8 +64,6 @@
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
         <file>templates/brushstroke-linear.svg.templ</file>
         <file>templates/brushstroke-cubicbezier.svg.templ</file>
-        <file>templates/bitmapimage.svg.templ</file>
-        <file>templates/svg_wrap.svg.templ</file>
         <file>text/brush_filechooser-help.txt</file>
     </gresource>
 </gresources>

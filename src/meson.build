@@ -38,6 +38,7 @@ rust_sources = files(
     'pens/eraser.rs',
     'pens/selector.rs',
     'strokes/mod.rs',
+    'strokes/curves.rs',
     'strokes/compose.rs',
     'strokes/render.rs',
     'strokes/markerstroke.rs',

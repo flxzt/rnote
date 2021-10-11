@@ -20,6 +20,7 @@ serde = {version = "1.0", features = ["derive", "rc"]}
 serde_json = { version="1.0" }
 regex = "1.5"
 nalgebra = { version = "0.29", features = ["serde-serialize"] }
+nalgebra-glm = { version = "0.15"}
 parry2d-f64 = { version = "0.7", features = ["serde-serialize"] }
 gtk4 = {version = "0.3", features = ["v4_4"]}
 adw = {version = "0.1.0-alpha-6", package="libadwaita"}
@@ -34,5 +35,3 @@ librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
 resvg = "0.18"
 usvg = "0.18"
 tiny-skia = "0.6.1"
-kurbo ="0.8.0"
-splines = { version = "4.0", features = ["nalgebra"]}

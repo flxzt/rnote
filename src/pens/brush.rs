@@ -45,7 +45,7 @@ impl Default for Brush {
 impl Brush {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 12.0;
+    pub const WIDTH_DEFAULT: f64 = 10.0;
     pub const SENSITIVITY_MIN: f64 = 0.0;
     pub const SENSITIVITY_MAX: f64 = 1.0;
     pub const SENSITIVITY_DEFAULT: f64 = 0.5;

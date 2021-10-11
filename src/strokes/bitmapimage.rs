@@ -1,10 +1,7 @@
-use std::{error::Error, io, ops::Deref};
+use std::{error::Error, io};
 
-use crate::{
-    config,
-    strokes::{compose, render},
-};
-use gtk4::{gio, gsk};
+use crate::strokes::{compose, render};
+use gtk4::gsk;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};
 
@@ -34,6 +31,10 @@ pub struct BitmapImage {
     #[serde(skip, default = "render::default_rendernode")]
     pub rendernode: gsk::RenderNode,
 }
+
+pub const BITMAPIMAGE_TEMPL_STR: &str = r#"
+<image x="{{x}}" y="{{y}}" width="{{width}}" height="{{height}}" href="data:{{mime_type}};base64,{{data_base64}}"/>
+"#;
 
 impl StrokeBehaviour for BitmapImage {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
@@ -65,17 +66,7 @@ impl StrokeBehaviour for BitmapImage {
         cx.insert("data_base64", &self.data_base64);
         cx.insert("mime_type", &self.format.as_mime_type());
 
-        let templ = String::from_utf8(
-            gio::resources_lookup_data(
-                (String::from(config::APP_IDPATH) + "templates/bitmapimage.svg.templ").as_str(),
-                gio::ResourceLookupFlags::NONE,
-            )?
-            .deref()
-            .to_vec(),
-        )
-        .unwrap();
-
-        let svg = tera::Tera::one_off(templ.as_str(), &cx, false)?;
+        let svg = tera::Tera::one_off(BITMAPIMAGE_TEMPL_STR, &cx, false)?;
 
         let intrinsic_bounds = p2d::bounding_volume::AABB::new(
             na::point![0.0, 0.0],

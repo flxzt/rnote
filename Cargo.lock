@@ -1322,6 +1322,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "nalgebra-glm"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9cec137f377549720ff9fbbcd1413a12bbb03b4feea3192cee987e8493158748"
+dependencies = [
+ "approx",
+ "nalgebra 0.29.0",
+ "num-traits",
+ "simba 0.6.0",
+]
+
+[[package]]
 name = "nalgebra-macros"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1978,13 +1990,13 @@ dependencies = [
  "cairo-rs",
  "gtk4",
  "image",
- "kurbo",
  "lazy_static",
  "libadwaita",
  "libadwaita-sys",
  "librsvg",
  "log",
  "nalgebra 0.29.0",
+ "nalgebra-glm",
  "once_cell",
  "parry2d-f64",
  "pretty_env_logger",
@@ -1994,7 +2006,6 @@ dependencies = [
  "rough-rs",
  "serde",
  "serde_json",
- "splines",
  "svg",
  "tera",
  "tiny-skia",
@@ -2263,15 +2274,6 @@ name = "smallvec"
 version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe0f37c9e8f3c5a4a66ad655a93c74daac4ad00c441533bf5c6e7990bb42604e"
-
-[[package]]
-name = "splines"
-version = "4.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c94307351d02448532cdf65ea95bfdd529183d360a60fb8c8bdca6c90af55542"
-dependencies = [
- "nalgebra 0.27.1",
-]
 
 [[package]]
 name = "stable_deref_trait"

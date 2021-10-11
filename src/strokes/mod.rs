@@ -1,6 +1,7 @@
 pub mod bitmapimage;
 pub mod brushstroke;
 pub mod compose;
+pub mod curves;
 pub mod markerstroke;
 pub mod render;
 pub mod shapestroke;

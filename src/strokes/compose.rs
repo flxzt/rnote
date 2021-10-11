@@ -308,6 +308,7 @@ pub fn cubic_bezier_offsetted(
     cubic_bezier: curves::CubicBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
+    move_start: bool,
 ) -> Vec<path::Command> {
     let t = 0.5;
     let (first_cubic, second_cubic) = curves::split_cubic_bezier(cubic_bezier, t);
@@ -322,14 +323,14 @@ pub fn cubic_bezier_offsetted(
         first_quad,
         start_offset_dist,
         mid_offset_dist,
-        true,
+        move_start,
     ));
 
     commands.append(&mut svg_quad_bezier_offsetted(
         second_quad,
         mid_offset_dist,
         end_offset_dist,
-        true,
+        false,
     ));
 
     /*     let mut quads = curves::split_quad_bezier_critical_points(first_quad, start_offset_dist, end_offset_dist);
@@ -351,6 +352,7 @@ pub fn svg_cubic_bezier_variable_width(
     cubic_bezier: curves::CubicBezier,
     width_start: f64,
     width_end: f64,
+    move_start: bool,
 ) -> Vec<path::Command> {
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
@@ -368,7 +370,7 @@ pub fn svg_cubic_bezier_variable_width(
         end: cubic_bezier.start,
     };
 
-    let mut commands = cubic_bezier_offsetted(cubic_bezier, start_offset_dist, end_offset_dist);
+    let mut commands = cubic_bezier_offsetted(cubic_bezier, start_offset_dist, end_offset_dist, move_start);
 
     commands.push(path::Command::Line(
         path::Position::Absolute,
@@ -382,6 +384,7 @@ pub fn svg_cubic_bezier_variable_width(
         cubic_bezier_reverse,
         end_offset_dist,
         start_offset_dist,
+        false,
     ));
     commands.push(path::Command::Line(
         path::Position::Absolute,

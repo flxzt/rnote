@@ -343,7 +343,6 @@ impl BrushStroke {
         {
             let width_start = second.inputdata.pressure() * self.brush.width();
             let width_end = third.inputdata.pressure() * self.brush.width();
-            //let width_end = width_start;
 
             let mut cubic_bezier =
                 curves::gen_cubic_bezier_w_catmull_rom(first, second, third, forth);
@@ -356,6 +355,7 @@ impl BrushStroke {
                 cubic_bezier,
                 width_start,
                 width_end,
+                true,
             ));
 
             // Debugging
@@ -382,14 +382,14 @@ impl BrushStroke {
 
         let svg = if !commands.is_empty() {
             let path = svg::node::element::Path::new()
-                //.set("stroke", "none")
-                .set(
+                .set("stroke", "none")
+/*                 .set(
                     "stroke",
                     crate::utils::Color::new(0.0, 0.5, 0.5, 1.0).to_css_color(),
-                )
-                .set("stroke-width", 1.0)
-                //.set("fill", self.brush.color.to_css_color())
-                .set("fill", "none")
+                ) */
+                //.set("stroke-width", 1.0)
+                //.set("fill", "none")
+                .set("fill", self.brush.color.to_css_color())
                 .set("d", path::Data::from(commands));
             rough_rs::node_to_string(&path)?.to_string()
         } else {

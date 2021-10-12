@@ -23,6 +23,7 @@ pub struct CubicBezier {
     pub end: na::Vector2<f64>,
 }
 
+#[allow(dead_code)]
 pub fn vector2_unit_tang(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     if vec.magnitude() > 0.0 {
         vec.normalize()

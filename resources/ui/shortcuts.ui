@@ -12,22 +12,25 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Show Keyboard Shortcuts</property>
-                <property name="action-name">app.keyboard-shortcuts</property>
-                <property name="shortcut-type">accelerator</property>
+                <property name="accelerator">&lt;ctrl&gt;question</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Quit the application</property>
-                <property name="action-name">app.quit</property>
-                <property name="shortcut-type">accelerator</property>
+                <property name="accelerator">&lt;ctrl&gt;q</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window">Open the appmenu</property>
-                <property name="action-name">app.open-appmenu</property>
-                <property name="shortcut-type">accelerator</property>
+                <property name="title" context="shortcut window">Open the canvas menu</property>
+                <property name="accelerator">F9</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Open the app menu</property>
+                <property name="accelerator">F10</property>
               </object>
             </child>
           </object>
@@ -38,63 +41,64 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Save sheet</property>
-                <property name="action-name">app.save-sheet</property>
-                <property name="shortcut-type">accelerator</property>
+                <property name="accelerator">&lt;ctrl&gt;s</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Clear sheet</property>
-                <property name="action-name">app.clear-sheet</property>
-                <property name="shortcut-type">accelerator</property>
+                <property name="accelerator">&lt;ctrl&gt;l</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Print sheet</property>
-                <property name="action-name">app.print-sheet</property>
-                <property name="shortcut-type">accelerator</property>
+                <property name="accelerator">&lt;ctrl&gt;p</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Import file</property>
-                <property name="action-name">app.import-file</property>
-                <property name="shortcut-type">accelerator</property>
+                <property name="accelerator">&lt;ctrl&gt;i</property>
               </object>
             </child>
             <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window">Zoom in</property>
-                <property name="action-name">app.zoomin</property>
-                <property name="shortcut-type">accelerator</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window">Zoom out</property>
-                <property name="action-name">app.zoomout</property>
-                <property name="shortcut-type">accelerator</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window">Delete current selection</property>
-                <property name="action-name">app.delete-selection</property>
-                <property name="shortcut-type">accelerator</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window">Duplicate current selection</property>
-                <property name="action-name">app.duplicate-selection</property>
-                <property name="shortcut-type">accelerator</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window">Enable temporary Eraser</property>
-                <property name="action-name">app.tmperaser(true)</property>
+              <object class="GtkShortcutsGroup">
+                <property name="title" context="shortcut window">Editing</property>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window">Zoom in</property>
+                    <property name="accelerator">plus</property>
+                    <property name="shortcut-type">gesture-stretch</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window">Zoom out</property>
+                    <property name="accelerator">minus</property>
+                    <property name="shortcut-type">gesture-pinch</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window">Delete current selection</property>
+                    <property name="accelerator">Delete</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window">Duplicate current selection</property>
+                    <property name="action-name">app.duplicate-selection</property>
+                    <property name="shortcut-type">accelerator</property>
+                    <property name="accelerator">&lt;ctrl&gt;v</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window">Enable temporary Eraser</property>
+                    <property name="accelerator">d</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

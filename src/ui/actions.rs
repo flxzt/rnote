@@ -28,6 +28,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     let action_about = gio::SimpleAction::new("about", None);
     let action_clear_sheet = gio::SimpleAction::new("clear-sheet", None);
+    let action_open_canvasmenu = gio::SimpleAction::new("open-canvasmenu", None);
     let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
     let action_zoom_fit_width = gio::SimpleAction::new("zoom-fit-width", None);
     let action_zoomin = gio::SimpleAction::new("zoomin", None);
@@ -482,6 +483,12 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     }));
     app.add_action(&action_clear_sheet);
 
+    // Open Canvas Menu
+    action_open_canvasmenu.connect_activate(clone!(@weak appwindow => move |_,_| {
+        appwindow.mainheader().canvasmenu().popovermenu().popup();
+    }));
+    app.add_action(&action_open_canvasmenu);
+
     // Open App Menu
     action_open_appmenu.connect_activate(clone!(@weak appwindow => move |_,_| {
         appwindow.mainheader().appmenu().popovermenu().popup();
@@ -687,8 +694,9 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
         .downcast::<RnoteApp>()
         .unwrap();
 
-    app.set_accels_for_action("app.keyboard-shortcuts", &["<Ctrl>k"]);
+    app.set_accels_for_action("app.keyboard-shortcuts", &["<Ctrl>question"]);
     app.set_accels_for_action("app.quit", &["<Ctrl>q"]);
+    app.set_accels_for_action("app.open-canvasmenu", &["F9"]);
     app.set_accels_for_action("app.open-appmenu", &["F10"]);
     app.set_accels_for_action("app.save-sheet", &["<Ctrl>s"]);
     app.set_accels_for_action("app.clear-sheet", &["<Ctrl>l"]);

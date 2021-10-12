@@ -268,8 +268,8 @@ use std::{
 use adw::prelude::*;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, subclass::prelude::*, Application, Box, Button, Entry,
-    FileChooserNative, GestureZoom, Grid, Overlay, Picture, PropagationPhase, Revealer,
-    ScrolledWindow, Separator, Snapshot,
+    EventControllerScroll, EventControllerScrollFlags, FileChooserNative, GestureZoom, Grid,
+    Inhibit, Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator, Snapshot,
 };
 
 use crate::{
@@ -291,6 +291,7 @@ glib::wrapper! {
 
 impl RnoteAppWindow {
     pub const CANVAS_ZOOMGESTURE_THRESHOLD: f64 = 0.005; // Sets the delta threshold (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
+    pub const CANVAS_ZOOM_SCROLL_SPEED: f64 = 0.04; // Sets the canvas zoom scroll speed
 
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
@@ -545,6 +546,20 @@ impl RnoteAppWindow {
                 appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
             }
         }));
+
+        // zoom scrolling with <ctrl> + scroll
+        let zoom_scroll_controller = EventControllerScroll::builder()
+            .name("zoom_scroll_controller")
+            .flags(EventControllerScrollFlags::VERTICAL | EventControllerScrollFlags::DISCRETE)
+            .build();
+        zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
+            if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
+                appwindow.canvas().set_scalefactor(appwindow.canvas().scalefactor() - dy * Self::CANVAS_ZOOM_SCROLL_SPEED);
+            }
+            Inhibit(false)
+        }));
+        self.canvas_scroller()
+            .add_controller(&zoom_scroll_controller);
 
         // Canvas zooming with preview
         let canvas_zoom_gesture = GestureZoom::builder()

@@ -40,8 +40,26 @@
             <property name="title" context="shortcut window">Sheet</property>
             <child>
               <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">New sheet</property>
+                <property name="accelerator">&lt;ctrl&gt;n</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Open sheet</property>
+                <property name="accelerator">&lt;ctrl&gt;o</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window">Save sheet</property>
                 <property name="accelerator">&lt;ctrl&gt;s</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window">Save sheet as</property>
+                <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;s</property>
               </object>
             </child>
             <child>
@@ -64,7 +82,7 @@
             </child>
             <child>
               <object class="GtkShortcutsGroup">
-                <property name="title" context="shortcut window">Editing</property>
+                <property name="title" context="shortcut window">Navigation and editing</property>
                 <child>
                   <object class="GtkShortcutsShortcut">
                     <property name="title" context="shortcut window">Zoom in</property>

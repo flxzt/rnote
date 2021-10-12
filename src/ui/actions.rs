@@ -698,7 +698,10 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
     app.set_accels_for_action("app.quit", &["<Ctrl>q"]);
     app.set_accels_for_action("app.open-canvasmenu", &["F9"]);
     app.set_accels_for_action("app.open-appmenu", &["F10"]);
+    app.set_accels_for_action("app.new-sheet", &["<Ctrl>n"]);
+    app.set_accels_for_action("app.open-sheet", &["<Ctrl>o"]);
     app.set_accels_for_action("app.save-sheet", &["<Ctrl>s"]);
+    app.set_accels_for_action("app.save-sheet-as", &["<Ctrl><Shift>s"]);
     app.set_accels_for_action("app.clear-sheet", &["<Ctrl>l"]);
     app.set_accels_for_action("app.print-sheet", &["<Ctrl>p"]);
     app.set_accels_for_action("app.import-file", &["<Ctrl>i"]);

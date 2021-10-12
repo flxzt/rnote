@@ -99,10 +99,9 @@
                         <property name="use-underline">true</property>
                         <property name="halign">center</property>
                         <property name="margin-top">12</property>
-                        <property name="margin-bottom">36</property>
+                        <property name="margin-bottom">24</property>
                         <style>
                           <class name="title"/>
-                          <class name="large-title"/>
                         </style>
                       </object>
                     </child>

@@ -268,8 +268,9 @@ use std::{
 use adw::prelude::*;
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, subclass::prelude::*, Application, Box, Button, Entry,
-    EventControllerScroll, EventControllerScrollFlags, FileChooserNative, GestureZoom, Grid,
-    Inhibit, Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator, Snapshot,
+    EventControllerScroll, EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom,
+    Grid, Inhibit, Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator,
+    Snapshot,
 };
 
 use crate::{
@@ -291,7 +292,8 @@ glib::wrapper! {
 
 impl RnoteAppWindow {
     pub const CANVAS_ZOOMGESTURE_THRESHOLD: f64 = 0.005; // Sets the delta threshold (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
-    pub const CANVAS_ZOOM_SCROLL_SPEED: f64 = 0.04; // Sets the canvas zoom scroll speed
+    pub const CANVAS_ZOOM_SCROLL_STEP: f64 = 0.1; // Sets the canvas zoom scroll step in
+    pub const CANVAS_ZOOMGESTURE_DRAG_SPEED: f64 = 2.0; // Sets the canvas zoom drag speed, 1.0 for one-to-one dragging / offset ratio
 
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
@@ -479,6 +481,35 @@ impl RnoteAppWindow {
         }
     }
 
+    // The point parameter has the coordinate space of canvas, not of the scrolled window!
+    pub fn canvas_scroller_center_around_point_canvas(&self, point: (f64, f64)) {
+        let scroller_pos = (
+            self.canvas_scroller().hadjustment().unwrap().value(),
+            self.canvas_scroller().vadjustment().unwrap().value(),
+        );
+        let scroller_dimensions = (
+            f64::from(self.canvas_scroller().width()),
+            f64::from(self.canvas_scroller().height()),
+        );
+        let canvas_dimensions = (
+            f64::from(self.canvas().width()),
+            f64::from(self.canvas().height()),
+        );
+
+        if canvas_dimensions.0 > scroller_dimensions.0 {
+            self.canvas_scroller()
+                .hadjustment()
+                .unwrap()
+                .set_value(scroller_pos.0 + point.0 + (canvas_dimensions.0 - scroller_dimensions.0) * 0.5);
+        }
+        if canvas_dimensions.1 > scroller_dimensions.1 {
+            self.canvas_scroller()
+                .vadjustment()
+                .unwrap()
+                .set_value(scroller_pos.1 + point.1 + (canvas_dimensions.1 - scroller_dimensions.1) * 0.5);
+        }
+    }
+
     pub fn canvas_scroller_viewport(&self) -> Option<p2d::bounding_volume::AABB> {
         let pos = if let (Some(hadjustment), Some(vadjustment)) = (
             self.canvas_scroller().hadjustment(),
@@ -548,39 +579,82 @@ impl RnoteAppWindow {
         }));
 
         // zoom scrolling with <ctrl> + scroll
-        let zoom_scroll_controller = EventControllerScroll::builder()
-            .name("zoom_scroll_controller")
+        let canvas_zoom_scroll_controller = EventControllerScroll::builder()
+            .name("canvas_zoom_scroll_controller")
+            .propagation_phase(PropagationPhase::Capture)
             .flags(EventControllerScrollFlags::VERTICAL | EventControllerScrollFlags::DISCRETE)
             .build();
-        zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
+        canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
             if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                appwindow.canvas().set_scalefactor(appwindow.canvas().scalefactor() - dy * Self::CANVAS_ZOOM_SCROLL_SPEED);
+                appwindow.canvas().set_scalefactor(appwindow.canvas().scalefactor() - dy * (Self::CANVAS_ZOOM_SCROLL_STEP * appwindow.canvas().scalefactor()));
+
+                // Stop event propagation
+                Inhibit(true)
+            } else {
+                Inhibit(false)
             }
-            Inhibit(false)
         }));
         self.canvas_scroller()
-            .add_controller(&zoom_scroll_controller);
+            .add_controller(&canvas_zoom_scroll_controller);
 
-        // Canvas zooming with preview
+        // Move Canvas with middle mouse button
+        let canvas_move_drag_gesture = GestureDrag::builder()
+            .name("canvas_move_drag_gesture")
+            .button(gdk::BUTTON_MIDDLE)
+            .propagation_phase(PropagationPhase::Capture)
+            .build();
+
+        let move_start_x = Rc::new(Cell::new(0.0));
+        let move_start_y = Rc::new(Cell::new(0.0));
+
+        canvas_move_drag_gesture.connect_drag_begin(clone!(@strong move_start_x, @strong move_start_y, @weak self as appwindow => move |_canvas_move_motion_controller, _x, _y| {
+            move_start_x.set(appwindow.canvas_scroller().hadjustment().unwrap().value());
+            move_start_y.set(appwindow.canvas_scroller().vadjustment().unwrap().value());
+        }));
+        canvas_move_drag_gesture.connect_drag_update(clone!(@strong move_start_x, @strong move_start_y, @weak self as appwindow => move |_canvas_move_motion_controller, x, y| {
+            appwindow.canvas_scroller().hadjustment().unwrap().set_value(move_start_x.get() - x);
+            appwindow.canvas_scroller().vadjustment().unwrap().set_value(move_start_y.get() - y);
+        }));
+        self.canvas_scroller()
+            .add_controller(&canvas_move_drag_gesture);
+
+        // Canvas gesture zooming with preview and dragging
         let canvas_zoom_gesture = GestureZoom::builder()
-            .name("gesture_zoom")
+            .name("canvas_zoom_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
         self.canvas_scroller().add_controller(&canvas_zoom_gesture);
 
-        // Gesture zooming
         let scale_begin = Rc::new(Cell::new(1_f64));
         let scale_doubledelta = Rc::new(Cell::new(1_f64));
         let canvas_preview_paintable = Rc::new(RefCell::new(gdk::Paintable::new_empty(0, 0)));
+        let zoomgesture_canvasscroller_start_pos = Rc::new(Cell::new((0.0, 0.0)));
+        let zoomgesture_bbcenter_start: Rc<Cell<Option<(f64, f64)>>> = Rc::new(Cell::new(None));
 
         canvas_zoom_gesture.connect_begin(
-            clone!(@strong canvas_preview_paintable, @strong scale_begin, @strong scale_doubledelta, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+            clone!(
+                @strong canvas_preview_paintable,
+                @strong scale_begin,
+                @strong scale_doubledelta,
+                @strong zoomgesture_canvasscroller_start_pos,
+                @strong zoomgesture_bbcenter_start,
+                @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
                 scale_begin.set(appwindow.canvas().scalefactor());
                 scale_doubledelta.set(1_f64);
 
                 let width = f64::from(appwindow.canvas().sheet().width()) * scale_begin.get();
                 let height = f64::from(appwindow.canvas().sheet().height()) * scale_begin.get();
                 let preview_size = graphene::Size::new(width as f32, height as f32);
+
+                zoomgesture_canvasscroller_start_pos.set(
+                    (
+                        appwindow.canvas_scroller().hadjustment().unwrap().value(),
+                        appwindow.canvas_scroller().vadjustment().unwrap().value()
+                    )
+                );
+                if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
+                    zoomgesture_canvasscroller_start_pos.set(bbcenter);
+                }
 
                 *canvas_preview_paintable.borrow_mut() = appwindow.canvas().preview().current_image();
 
@@ -597,7 +671,30 @@ impl RnoteAppWindow {
         );
 
         canvas_zoom_gesture.connect_scale_changed(
-            clone!(@strong canvas_preview_paintable, @strong scale_begin, @strong scale_doubledelta, @weak self as appwindow => move |_gesture_zoom, scale_delta| {
+            clone!(@strong canvas_preview_paintable, @strong scale_begin, @strong scale_doubledelta, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, scale_delta| {
+                if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
+                    if let Some(bbcenter_start) = zoomgesture_bbcenter_start.get() {
+                        let bbcenter_delta = (
+                            bbcenter.0 - bbcenter_start.0,
+                            bbcenter.1 - bbcenter_start.1
+                        );
+
+                        appwindow.canvas_scroller().hadjustment().unwrap().set_value(
+                            zoomgesture_canvasscroller_start_pos.get().0 - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.0
+                        );
+                        appwindow.canvas_scroller().vadjustment().unwrap().set_value(
+                            zoomgesture_canvasscroller_start_pos.get().1 - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.1
+                        );
+                    } else {
+                        // Setting the start position if connect_scale_start didn't set it
+                        zoomgesture_bbcenter_start.set(Some((
+                            bbcenter.0,
+                            bbcenter.1,
+                        )));
+                        log::debug!("### BEGIN DRAG ###");
+                    }
+                }
+
                 if scale_delta < scale_doubledelta.get() - Self::CANVAS_ZOOMGESTURE_THRESHOLD || scale_delta > scale_doubledelta.get() + Self::CANVAS_ZOOMGESTURE_THRESHOLD {
                     scale_doubledelta.set(scale_delta);
 
@@ -617,27 +714,29 @@ impl RnoteAppWindow {
         );
 
         canvas_zoom_gesture.connect_cancel(
-            clone!(@strong scale_begin, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
-                    appwindow.canvas_resize_preview().set_visible(false);
-                    appwindow.canvas().set_visible(true);
-                    appwindow.canvas().sheet().selection().set_shown(!appwindow.canvas().sheet().selection().strokes().borrow().is_empty());
+            clone!(@strong scale_begin, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+                zoomgesture_bbcenter_start.set(None);
+                appwindow.canvas_resize_preview().set_visible(false);
+                appwindow.canvas().set_visible(true);
+                appwindow.canvas().sheet().selection().set_shown(!appwindow.canvas().sheet().selection().strokes().borrow().is_empty());
 
-                    appwindow.canvas().set_sensitive(false);
-                    appwindow.canvas().set_sensitive(true);
+                appwindow.canvas().set_sensitive(false);
+                appwindow.canvas().set_sensitive(true);
             }),
         );
 
         canvas_zoom_gesture.connect_end(
-            clone!(@strong scale_begin, @strong scale_doubledelta, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
-                    let scalefactor_new = scale_begin.get() * scale_doubledelta.get();
-                    appwindow.canvas().set_scalefactor(scalefactor_new);
+            clone!(@strong scale_begin, @strong scale_doubledelta, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+                zoomgesture_bbcenter_start.set(None);
+                let scalefactor_new = scale_begin.get() * scale_doubledelta.get();
+                appwindow.canvas().set_scalefactor(scalefactor_new);
 
-                    appwindow.canvas_resize_preview().set_visible(false);
-                    appwindow.canvas().set_visible(true);
-                    appwindow.canvas().sheet().selection().set_shown(!appwindow.canvas().sheet().selection().strokes().borrow().is_empty());
+                appwindow.canvas_resize_preview().set_visible(false);
+                appwindow.canvas().set_visible(true);
+                appwindow.canvas().sheet().selection().set_shown(!appwindow.canvas().sheet().selection().strokes().borrow().is_empty());
 
-                    appwindow.canvas().set_sensitive(false);
-                    appwindow.canvas().set_sensitive(true);
+                appwindow.canvas().set_sensitive(false);
+                appwindow.canvas().set_sensitive(true);
             }),
         );
 
@@ -711,9 +810,9 @@ impl RnoteAppWindow {
             .unwrap()
             .activate_action("righthanded", None);
 
-        // Mouse drawing
+        // Touch drawing
         self.app_settings()
-            .bind("mouse-drawing", &self.canvas(), "mouse-drawing")
+            .bind("touch-drawing", &self.canvas(), "touch-drawing")
             .flags(gio::SettingsBindFlags::DEFAULT)
             .build();
 

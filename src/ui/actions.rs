@@ -81,7 +81,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_renderer_backend = appwindow.app_settings().create_action("renderer-backend");
     let action_sheet_format = appwindow.app_settings().create_action("sheet-format");
     let action_sheet_format_borders = appwindow.app_settings().create_action("format-borders");
-    let action_mouse_drawing = appwindow.app_settings().create_action("mouse-drawing");
+    let action_touch_drawing = appwindow.app_settings().create_action("touch-drawing");
     let action_autoexpand_height = appwindow.app_settings().create_action("autoexpand-height");
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
     let action_visual_debug = appwindow.app_settings().create_action("visual-debug");
@@ -160,8 +160,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     }));
     app.add_action(&action_renderer_backend);
 
-    // Mouse drawing
-    app.add_action(&action_mouse_drawing);
+    // Touch drawing
+    app.add_action(&action_touch_drawing);
 
     // Current Pen
     action_current_pen.connect_activate(move |action_current_pen, parameter| {

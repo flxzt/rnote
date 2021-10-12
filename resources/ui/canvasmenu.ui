@@ -22,9 +22,9 @@
           </section>
           <section>
             <item>
-              <attribute name="label">Draw with mouse</attribute>
+              <attribute name="label">Draw with touch input</attribute>
               <attribute name="toggle" />
-              <attribute name="action">app.mouse-drawing</attribute>
+              <attribute name="action">app.touch-drawing</attribute>
             </item>
             <item>
               <attribute name="label">Endless sheet</attribute>

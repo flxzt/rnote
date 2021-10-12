@@ -23,26 +23,36 @@ mod imp {
         pub sheet: Sheet,                    // is a GObject
         pub scalefactor: Cell<f64>,          // is a property
         pub visual_debug: Cell<bool>,        // is a property
-        pub mouse_drawing: Cell<bool>,       // is a property
+        pub touch_drawing: Cell<bool>,       // is a property
         pub unsaved_changes: Cell<bool>,     // is a property
         pub cursor: gdk::Cursor,             // is a property
         pub stylus_drawing_gesture: GestureStylus,
-        pub drag_drawing_gesture: GestureDrag,
+        pub mouse_drawing_gesture: GestureDrag,
+        pub touch_drawing_gesture: GestureDrag,
         pub renderer: Rc<RefCell<render::Renderer>>,
         pub preview: WidgetPaintable,
     }
 
     impl Default for Canvas {
         fn default() -> Self {
-            let gesture_stylus = GestureStylus::builder()
-                .name("gesture_stylus")
+            let stylus_drawing_gesture = GestureStylus::builder()
+                .name("stylus_drawing_gesture")
                 .n_points(2)
+                .propagation_phase(PropagationPhase::Target)
+                .build();
+
+            // mouse gesture handlers have a guard to not handle emulated pointer events ( e.g. coming from touch input )
+            // matching different input methods with gdk4::InputSource or gdk4::DeviceToolType did NOT WORK unfortunately, IDK why
+            let mouse_drawing_gesture = GestureDrag::builder()
+                .name("mouse_drawing_gesture")
+                .button(gdk::BUTTON_PRIMARY)
                 .propagation_phase(PropagationPhase::Bubble)
                 .build();
 
-            let gesture_drag = GestureDrag::builder()
-                .name("gesture_drag")
-                .propagation_phase(PropagationPhase::Bubble)
+            let touch_drawing_gesture = GestureDrag::builder()
+                .name("touch_drawing_gesture")
+                .touch_only(true)
+                .propagation_phase(PropagationPhase::Target)
                 .build();
 
             Self {
@@ -51,7 +61,7 @@ mod imp {
                 sheet: Sheet::default(),
                 scalefactor: Cell::new(super::Canvas::SCALE_DEFAULT),
                 visual_debug: Cell::new(false),
-                mouse_drawing: Cell::new(false),
+                touch_drawing: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 cursor: gdk::Cursor::from_texture(
                     &gdk::Texture::from_resource(
@@ -63,8 +73,9 @@ mod imp {
                     8,
                     gdk::Cursor::from_name("default", None).as_ref(),
                 ),
-                stylus_drawing_gesture: gesture_stylus,
-                drag_drawing_gesture: gesture_drag,
+                stylus_drawing_gesture,
+                mouse_drawing_gesture,
+                touch_drawing_gesture,
                 renderer: Rc::new(RefCell::new(render::Renderer::default())),
                 preview: WidgetPaintable::new::<Widget>(None),
             }
@@ -88,7 +99,8 @@ mod imp {
             obj.set_cursor(Some(&self.cursor));
 
             obj.add_controller(&self.stylus_drawing_gesture);
-            obj.add_controller(&self.drag_drawing_gesture);
+            obj.add_controller(&self.mouse_drawing_gesture);
+            obj.add_controller(&self.touch_drawing_gesture);
 
             obj.preview().set_widget(Some(obj));
         }
@@ -126,9 +138,9 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     glib::ParamSpec::new_boolean(
-                        "mouse-drawing",
-                        "mouse-drawing",
-                        "mouse-drawing",
+                        "touch-drawing",
+                        "touch-drawing",
+                        "touch-drawing",
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
@@ -179,19 +191,15 @@ mod imp {
                     self.visual_debug.replace(visual_debug);
                     obj.queue_draw();
                 }
-                "mouse-drawing" => {
-                    let mouse_drawing: bool =
+                "touch-drawing" => {
+                    let touch_drawing: bool =
                         value.get().expect("The value needs to be of type `bool`.");
-                    self.mouse_drawing.replace(mouse_drawing);
-                    if mouse_drawing {
-                        self.stylus_drawing_gesture
-                            .set_propagation_phase(PropagationPhase::None);
-                        self.drag_drawing_gesture
-                            .set_propagation_phase(PropagationPhase::Bubble);
+                    self.touch_drawing.replace(touch_drawing);
+                    if touch_drawing {
+                        self.touch_drawing_gesture
+                            .set_propagation_phase(PropagationPhase::Target);
                     } else {
-                        self.stylus_drawing_gesture
-                            .set_propagation_phase(PropagationPhase::Bubble);
-                        self.drag_drawing_gesture
+                        self.touch_drawing_gesture
                             .set_propagation_phase(PropagationPhase::None);
                     }
                 }
@@ -208,7 +216,7 @@ mod imp {
             match pspec.name() {
                 "scalefactor" => self.scalefactor.get().to_value(),
                 "visual-debug" => self.visual_debug.get().to_value(),
-                "mouse-drawing" => self.mouse_drawing.get().to_value(),
+                "touch-drawing" => self.touch_drawing.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 _ => unimplemented!(),
             }
@@ -437,7 +445,10 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
-use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus, WidgetPaintable};
+use gtk4::EventSequenceState;
+use gtk4::{
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus, WidgetPaintable,
+};
 
 glib::wrapper! {
     pub struct Canvas(ObjectSubclass<imp::Canvas>)
@@ -578,11 +589,16 @@ impl Canvas {
         .build();
 
         // Mouse drawing
-        let drag_start_tmp = Rc::new(Cell::new((0_f64, 0_f64)));
+        priv_.mouse_drawing_gesture.connect_drag_begin(
+            clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+                // Guard not to handle touch events that emulate a pointer
+                if let Some(event) = mouse_drawing_gesture.current_event() {
+                    if event.is_pointer_emulated() {
+                        return;
+                    }
+                }
+                mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
 
-        priv_.drag_drawing_gesture.connect_drag_begin(
-            clone!(@weak self as canvas, @strong drag_start_tmp, @weak appwindow => move |_gesture_drag, x, y| {
-                drag_start_tmp.set( (x, y) );
                 let data_entries = Self::retreive_pointer_inputdata(x, y);
                 let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
@@ -590,26 +606,45 @@ impl Canvas {
             }),
         );
 
-        priv_.drag_drawing_gesture.connect_drag_update(clone!(@strong drag_start_tmp, @weak self as canvas, @weak appwindow => move |_gesture_drag, x, y| {
-            let data_entries = Self::retreive_pointer_inputdata(x, y);
-            let data_entries = canvas.map_inputdata(data_entries, na::vector![drag_start_tmp.get().0, drag_start_tmp.get().1]);
+        priv_.mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            // Guard not to handle touch events that emulate a pointer
+            if let Some(event) = mouse_drawing_gesture.current_event() {
+                if event.is_pointer_emulated() {
+                    return;
+                }
+            }
 
-            canvas.processing_draw_motion(&appwindow, data_entries);
+            if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                let data_entries = Self::retreive_pointer_inputdata(x, y);
+                let data_entries = canvas.map_inputdata(data_entries, na::vector![start_point.0, start_point.1]);
+
+                canvas.processing_draw_motion(&appwindow, data_entries);
+            }
         }));
 
-        priv_.drag_drawing_gesture.connect_drag_end(clone!(@strong drag_start_tmp, @weak self as canvas @weak appwindow => move |_gesture_drag, x, y| {
+        priv_.mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            // Guard not to handle touch events that emulate a pointer
+            if let Some(event) = mouse_drawing_gesture.current_event() {
+                if event.is_pointer_emulated() {
+                    return;
+                }
+            }
+
+            if let Some(start_point) = mouse_drawing_gesture.start_point() {
             let data_entries = Self::retreive_pointer_inputdata(x, y);
-            let data_entries = canvas.map_inputdata(data_entries, na::vector![drag_start_tmp.get().0, drag_start_tmp.get().1]);
+            let data_entries = canvas.map_inputdata(data_entries, na::vector![start_point.0, start_point.1]);
 
             canvas.processing_draw_end(&appwindow, data_entries);
+            }
         }));
 
         // Stylus Drawing
-        priv_.stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
-            if let Some(device_tool) = gesture_stylus.device_tool() {
+        priv_.stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+            stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
+            if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
 
                 // Disable backlog, only allowed in motion signal handler
-                let data_entries = Canvas::retreive_stylus_inputdata(gesture_stylus, false, x, y);
+                let data_entries = Canvas::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
                 let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
                 canvas.pens().borrow_mut().selector.clear_path();
@@ -629,11 +664,10 @@ impl Canvas {
             }
         }));
 
-        priv_.stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus, x, y| {
-            if let Some(_device_tool) = gesture_stylus.device_tool() {
-
+        priv_.stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
+            if stylus_drawing_gesture.device_tool().is_some() {
                 // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
-                let data_entries: VecDeque<InputData> = Canvas::retreive_stylus_inputdata(gesture_stylus, false, x, y);
+                let data_entries: VecDeque<InputData> = Canvas::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
                 let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
                 canvas.processing_draw_motion(&appwindow, data_entries);
@@ -648,6 +682,35 @@ impl Canvas {
                 canvas.processing_draw_end(&appwindow, data_entries);
             }),
         );
+
+        // Touch drawing
+        priv_.touch_drawing_gesture.connect_drag_begin(
+            clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+                touch_drawing_gesture.set_state(EventSequenceState::Claimed);
+                let data_entries = Self::retreive_pointer_inputdata(x, y);
+                let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
+
+                canvas.processing_draw_begin(&appwindow, data_entries);
+            }),
+        );
+
+        priv_.touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+            if let Some(start_point) = touch_drawing_gesture.start_point() {
+                let data_entries = Self::retreive_pointer_inputdata(x, y);
+                let data_entries = canvas.map_inputdata(data_entries, na::vector![start_point.0, start_point.1]);
+
+                canvas.processing_draw_motion(&appwindow, data_entries);
+            }
+        }));
+
+        priv_.touch_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
+            if let Some(start_point) = touch_drawing_gesture.start_point() {
+            let data_entries = Self::retreive_pointer_inputdata(x, y);
+            let data_entries = canvas.map_inputdata(data_entries, na::vector![start_point.0, start_point.1]);
+
+            canvas.processing_draw_end(&appwindow, data_entries);
+            }
+        }));
     }
 
     fn processing_draw_begin(

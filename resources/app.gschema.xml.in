@@ -29,9 +29,9 @@
       <default>"default"</default>
       <summary>Color scheme preference</summary>
     </key>
-    <key name="mouse-drawing" type="b">
-      <default>true</default>
-      <summary>Enable mouse input for drawing</summary>
+    <key name="touch-drawing" type="b">
+      <default>false</default>
+      <summary>Enable touch input for drawing</summary>
     </key>
     <key name="righthanded" type="b">
       <default>true</default>

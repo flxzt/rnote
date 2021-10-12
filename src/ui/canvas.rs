@@ -437,8 +437,7 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
-use gtk4::WidgetPaintable;
-use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus};
+use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus, WidgetPaintable};
 
 glib::wrapper! {
     pub struct Canvas(ObjectSubclass<imp::Canvas>)

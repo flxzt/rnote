@@ -23,6 +23,14 @@ pub struct CubicBezier {
     pub end: na::Vector2<f64>,
 }
 
+pub fn vector2_unit_tang(vec: na::Vector2<f64>) -> na::Vector2<f64> {
+    if vec.magnitude() > 0.0 {
+        vec.normalize()
+    } else {
+        na::Vector2::<f64>::from_element(0.0)
+    }
+}
+
 pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
 

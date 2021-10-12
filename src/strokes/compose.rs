@@ -209,6 +209,8 @@ pub fn svg_quad_bezier_offsetted(
     end_offset_dist: f64,
     move_start: bool,
 ) -> Vec<path::Command> {
+    let start_unit_tang = curves::vector2_unit_tang(quad_bezier.cp - quad_bezier.start);
+    let end_unit_tang = curves::vector2_unit_tang(quad_bezier.end - quad_bezier.cp);
     let start_unit_norm = curves::vector2_unit_norm(quad_bezier.cp - quad_bezier.start);
     let end_unit_norm = curves::vector2_unit_norm(quad_bezier.end - quad_bezier.cp);
 
@@ -228,8 +230,8 @@ pub fn svg_quad_bezier_offsetted(
         commands.push(path::Command::Move(
             path::Position::Absolute,
             path::Parameters::from((
-                quad_bezier.start[0] + start_offset[0],
-                quad_bezier.start[1] + start_offset[1],
+                quad_bezier.start[0] + start_offset[0] - start_unit_tang[0],
+                quad_bezier.start[1] + start_offset[1] - start_unit_tang[1],
             )),
         ));
     }
@@ -241,8 +243,8 @@ pub fn svg_quad_bezier_offsetted(
                 quad_bezier.cp[1] + cp_offset[1],
             ),
             (
-                quad_bezier.end[0] + end_offset[0],
-                quad_bezier.end[1] + end_offset[1],
+                quad_bezier.end[0] + end_offset[0] + end_unit_tang[0],
+                quad_bezier.end[1] + end_offset[1] + end_unit_tang[1],
             ),
         )),
     ));

@@ -561,76 +561,80 @@ impl Sheet {
     ) -> bool {
         let priv_ = imp::Sheet::from_instance(self);
 
-        let eraser_bounds = p2d::bounding_volume::AABB::new(
-            na::Point2::from(
-                eraser.current_input.pos()
-                    - na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
-            ),
-            na::Point2::from(
-                eraser.current_input.pos()
-                    + na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
-            ),
-        );
+        if let Some(ref eraser_current_input) = eraser.current_input {
+            let eraser_bounds = p2d::bounding_volume::AABB::new(
+                na::Point2::from(
+                    eraser_current_input.pos()
+                        - na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
+                ),
+                na::Point2::from(
+                    eraser_current_input.pos()
+                        + na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
+                ),
+            );
 
-        let mut removed_strokes: Vec<strokes::StrokeStyle> = Vec::new();
+            let mut removed_strokes: Vec<strokes::StrokeStyle> = Vec::new();
 
-        priv_.strokes.borrow_mut().retain(|stroke| {
-            if let Some(viewport) = viewport {
-                if !viewport.contains(&stroke.bounds()) {
-                    return true;
+            priv_.strokes.borrow_mut().retain(|stroke| {
+                if let Some(viewport) = viewport {
+                    if !viewport.intersects(&stroke.bounds()) {
+                        return true;
+                    }
                 }
-            }
-            match stroke {
-                strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                    // First check markerstroke bounds, then conditionally check hitbox
-                    if eraser_bounds.intersects(&markerstroke.bounds) {
-                        for hitbox_elem in markerstroke.hitbox.iter() {
-                            if eraser_bounds.intersects(hitbox_elem) {
-                                removed_strokes.push(stroke.clone());
-                                return false;
+                match stroke {
+                    strokes::StrokeStyle::MarkerStroke(markerstroke) => {
+                        // First check markerstroke bounds, then conditionally check hitbox
+                        if eraser_bounds.intersects(&markerstroke.bounds) {
+                            for hitbox_elem in markerstroke.hitbox.iter() {
+                                if eraser_bounds.intersects(hitbox_elem) {
+                                    removed_strokes.push(stroke.clone());
+                                    return false;
+                                }
                             }
                         }
                     }
-                }
-                strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                    // First check markerstroke bounds, then conditionally check hitbox
-                    if eraser_bounds.intersects(&brushstroke.bounds) {
-                        for hitbox_elem in brushstroke.hitbox.iter() {
-                            if eraser_bounds.intersects(hitbox_elem) {
-                                removed_strokes.push(stroke.clone());
-                                return false;
+                    strokes::StrokeStyle::BrushStroke(brushstroke) => {
+                        // First check markerstroke bounds, then conditionally check hitbox
+                        if eraser_bounds.intersects(&brushstroke.bounds) {
+                            for hitbox_elem in brushstroke.hitbox.iter() {
+                                if eraser_bounds.intersects(hitbox_elem) {
+                                    removed_strokes.push(stroke.clone());
+                                    return false;
+                                }
                             }
                         }
                     }
-                }
-                strokes::StrokeStyle::ShapeStroke(shapestroke) => {
-                    if eraser_bounds.intersects(&shapestroke.bounds) {
-                        removed_strokes.push(stroke.clone());
-                        return false;
+                    strokes::StrokeStyle::ShapeStroke(shapestroke) => {
+                        if eraser_bounds.intersects(&shapestroke.bounds) {
+                            removed_strokes.push(stroke.clone());
+                            return false;
+                        }
+                    }
+                    strokes::StrokeStyle::VectorImage(vectorimage) => {
+                        if eraser_bounds.intersects(&vectorimage.bounds) {
+                            removed_strokes.push(stroke.clone());
+                            return false;
+                        }
+                    }
+                    strokes::StrokeStyle::BitmapImage(bitmapimage) => {
+                        if eraser_bounds.intersects(&bitmapimage.bounds) {
+                            removed_strokes.push(stroke.clone());
+                            return false;
+                        }
                     }
                 }
-                strokes::StrokeStyle::VectorImage(vectorimage) => {
-                    if eraser_bounds.intersects(&vectorimage.bounds) {
-                        removed_strokes.push(stroke.clone());
-                        return false;
-                    }
-                }
-                strokes::StrokeStyle::BitmapImage(bitmapimage) => {
-                    if eraser_bounds.intersects(&bitmapimage.bounds) {
-                        removed_strokes.push(stroke.clone());
-                        return false;
-                    }
-                }
-            }
 
-            true
-        });
-        priv_
-            .strokes_trash
-            .borrow_mut()
-            .append(&mut removed_strokes);
+                true
+            });
+            priv_
+                .strokes_trash
+                .borrow_mut()
+                .append(&mut removed_strokes);
 
-        self.resize()
+            self.resize()
+        } else {
+            false
+        }
     }
 
     // Returns true if resizing is needed
@@ -677,7 +681,7 @@ impl Sheet {
         );
     }
 
-    // Resizing the sheet format height and returning true if window resizing is needed
+    // Resizing the sheet format height and returning true if widget resizing is needed
     pub fn resize(&self) -> bool {
         if !self.autoexpand_height() {
             return false;

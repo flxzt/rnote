@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     pens::brush::{self, Brush},
     strokes::{compose, render, Element},
+    utils,
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
@@ -258,37 +259,33 @@ impl BrushStroke {
             let second = second.inputdata.pos();
 
             let delta = second - first;
-            let marker_x = if delta[0] < 0.0 {
+            let brush_x = if delta[0] < 0.0 {
                 -brush_width
             } else {
                 brush_width
             };
-            let marker_y = if delta[1] < 0.0 {
+            let brush_y = if delta[1] < 0.0 {
                 -brush_width
             } else {
                 brush_width
             };
 
-            p2d::bounding_volume::AABB::new(
-                na::Point2::from(first - na::vector![marker_x / 2.0, marker_y / 2.0]),
-                na::Point2::from(first + delta + na::vector![marker_x / 2.0, marker_y / 2.0]),
+            utils::aabb_new_positive(
+                first - na::vector![brush_x / 2.0, brush_y / 2.0],
+                first + delta + na::vector![brush_x / 2.0, brush_y / 2.0],
             )
         } else {
-            p2d::bounding_volume::AABB::new(
-                na::Point2::from(
-                    first
-                        - na::vector![
-                            (Self::HITBOX_DEFAULT + brush_width) / 2.0,
-                            (Self::HITBOX_DEFAULT + brush_width / 2.0)
-                        ],
-                ),
-                na::Point2::from(
-                    first
-                        + na::vector![
-                            Self::HITBOX_DEFAULT + brush_width,
-                            Self::HITBOX_DEFAULT + brush_width
-                        ],
-                ),
+            utils::aabb_new_positive(
+                first
+                    - na::vector![
+                        (Self::HITBOX_DEFAULT + brush_width) / 2.0,
+                        (Self::HITBOX_DEFAULT + brush_width / 2.0)
+                    ],
+                first
+                    + na::vector![
+                        Self::HITBOX_DEFAULT + brush_width,
+                        Self::HITBOX_DEFAULT + brush_width
+                    ],
             )
         }
     }
@@ -382,13 +379,15 @@ impl BrushStroke {
 
         let svg = if !commands.is_empty() {
             let path = svg::node::element::Path::new()
-                .set("stroke", "none")
-/*                 .set(
+                /*                 .set(
                     "stroke",
                     crate::utils::Color::new(0.0, 0.5, 0.5, 1.0).to_css_color(),
                 ) */
-                //.set("stroke-width", 1.0)
-                //.set("fill", "none")
+                // avoids gaps between each section
+                .set("stroke", self.brush.color.to_css_color())
+                .set("stroke-width", 0.5)
+                .set("stroke-linejoin", "round")
+                .set("stroke-linecap", "round")
                 .set("fill", self.brush.color.to_css_color())
                 .set("d", path::Data::from(commands));
             rough_rs::node_to_string(&path)?.to_string()

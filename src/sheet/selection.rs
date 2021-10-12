@@ -283,7 +283,7 @@ impl Selection {
         for (i, stroke) in self.strokes().borrow().iter().enumerate() {
             // skip if stroke is not in viewport
             if let Some(viewport) = viewport {
-                if !viewport.contains(&stroke.bounds()) {
+                if !viewport.intersects(&stroke.bounds()) {
                     continue;
                 }
             }
@@ -355,7 +355,7 @@ impl Selection {
         for (i, stroke) in other_strokes.iter().enumerate() {
             // skip if stroke is not in viewport
             if let Some(viewport) = viewport {
-                if !viewport.contains(&stroke.bounds()) {
+                if !viewport.intersects(&stroke.bounds()) {
                     continue;
                 }
             }

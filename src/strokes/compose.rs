@@ -370,7 +370,8 @@ pub fn svg_cubic_bezier_variable_width(
         end: cubic_bezier.start,
     };
 
-    let mut commands = cubic_bezier_offsetted(cubic_bezier, start_offset_dist, end_offset_dist, move_start);
+    let mut commands =
+        cubic_bezier_offsetted(cubic_bezier, start_offset_dist, end_offset_dist, move_start);
 
     commands.push(path::Command::Line(
         path::Position::Absolute,

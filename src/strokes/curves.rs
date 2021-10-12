@@ -46,7 +46,7 @@ pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
 
 /// Bezier Curves
 
-// Coefficient a of quadratic bezier in polynomial form: C' = a * t^2 + b * t + c
+// Coefficient a of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
 #[allow(dead_code)]
 fn quad_bezier_coeff_a(
     p0: na::Vector2<f64>,
@@ -56,13 +56,13 @@ fn quad_bezier_coeff_a(
     p2 - 2.0 * p1 + p0
 }
 
-// Coefficient b of quadratic bezier in polynomial form: C' = a * t^2 + b * t + c
+// Coefficient b of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
 #[allow(dead_code)]
 fn quad_bezier_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }
 
-// Coefficient c of quadratic bezier in polynomial form: C' = a * t^2 + b * t + c
+// Coefficient c of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
 #[allow(dead_code)]
 fn quad_bezier_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
     p0

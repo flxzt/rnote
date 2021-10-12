@@ -497,16 +497,14 @@ impl RnoteAppWindow {
         );
 
         if canvas_dimensions.0 > scroller_dimensions.0 {
-            self.canvas_scroller()
-                .hadjustment()
-                .unwrap()
-                .set_value(scroller_pos.0 + point.0 + (canvas_dimensions.0 - scroller_dimensions.0) * 0.5);
+            self.canvas_scroller().hadjustment().unwrap().set_value(
+                scroller_pos.0 + point.0 + (canvas_dimensions.0 - scroller_dimensions.0) * 0.5,
+            );
         }
         if canvas_dimensions.1 > scroller_dimensions.1 {
-            self.canvas_scroller()
-                .vadjustment()
-                .unwrap()
-                .set_value(scroller_pos.1 + point.1 + (canvas_dimensions.1 - scroller_dimensions.1) * 0.5);
+            self.canvas_scroller().vadjustment().unwrap().set_value(
+                scroller_pos.1 + point.1 + (canvas_dimensions.1 - scroller_dimensions.1) * 0.5,
+            );
         }
     }
 

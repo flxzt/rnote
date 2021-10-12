@@ -3,6 +3,7 @@ use std::error::Error;
 use crate::{
     pens::marker::Marker,
     strokes::{self, compose, render, Element},
+    utils,
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
@@ -286,26 +287,22 @@ impl MarkerStroke {
                 marker_width
             };
 
-            p2d::bounding_volume::AABB::new(
-                na::Point2::from(first - na::vector![marker_x / 2.0, marker_y / 2.0]),
-                na::Point2::from(first + delta + na::vector![marker_x / 2.0, marker_y / 2.0]),
+            utils::aabb_new_positive(
+                first - na::vector![marker_x / 2.0, marker_y / 2.0],
+                first + delta + na::vector![marker_x / 2.0, marker_y / 2.0],
             )
         } else {
-            p2d::bounding_volume::AABB::new(
-                na::Point2::from(
-                    first
-                        - na::vector![
-                            (Self::HITBOX_DEFAULT + marker_width) / 2.0,
-                            (Self::HITBOX_DEFAULT + marker_width / 2.0)
-                        ],
-                ),
-                na::Point2::from(
-                    first
-                        + na::vector![
-                            Self::HITBOX_DEFAULT + marker_width,
-                            Self::HITBOX_DEFAULT + marker_width
-                        ],
-                ),
+            utils::aabb_new_positive(
+                first
+                    - na::vector![
+                        (Self::HITBOX_DEFAULT + marker_width) / 2.0,
+                        (Self::HITBOX_DEFAULT + marker_width / 2.0)
+                    ],
+                first
+                    + na::vector![
+                        Self::HITBOX_DEFAULT + marker_width,
+                        Self::HITBOX_DEFAULT + marker_width
+                    ],
             )
         }
     }

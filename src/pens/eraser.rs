@@ -5,7 +5,7 @@ use gtk4::{gdk, graphene, gsk, Snapshot};
 #[derive(Clone, Debug)]
 pub struct Eraser {
     width: f64,
-    pub current_input: InputData,
+    pub current_input: Option<InputData>,
     shown: bool,
 }
 
@@ -13,7 +13,7 @@ impl Default for Eraser {
     fn default() -> Self {
         Self {
             width: Self::WIDTH_DEFAULT,
-            current_input: InputData::default(),
+            current_input: None,
             shown: false,
         }
     }
@@ -24,10 +24,10 @@ impl Eraser {
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 30.0;
 
-    pub fn new(width: f64, current_input: InputData) -> Self {
+    pub fn new(width: f64) -> Self {
         Self {
             width,
-            current_input,
+            current_input: None,
             shown: false,
         }
     }
@@ -49,12 +49,16 @@ impl Eraser {
     }
 
     pub fn draw(&self, scalefactor: f64, snapshot: &Snapshot) {
-        if self.shown {
+        if !self.shown {
+            return;
+        };
+
+        if let Some(ref current_input) = self.current_input {
             let bounds = graphene::Rect::new(
-                (scalefactor * (self.current_input.pos()[0])) as f32 - self.width as f32 / 2.0,
-                (scalefactor * (self.current_input.pos()[1])) as f32 - self.width as f32 / 2.0,
-                self.width as f32,
-                self.width as f32,
+                (((current_input.pos()[0]) - self.width / 2.0) * scalefactor) as f32,
+                (((current_input.pos()[1]) - self.width / 2.0) * scalefactor) as f32,
+                (self.width * scalefactor) as f32,
+                (self.width * scalefactor) as f32,
             );
             let border_color = gdk::RGBA {
                 red: 0.8,

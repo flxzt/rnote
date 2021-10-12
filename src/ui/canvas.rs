@@ -171,8 +171,21 @@ mod imp {
                         .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
                     self.scalefactor.replace(scalefactor);
 
+                    StrokeStyle::complete_all_strokes(&mut *obj.sheet().strokes().borrow_mut());
+                    StrokeStyle::complete_all_strokes(
+                        &mut *obj.sheet().strokes_trash().borrow_mut(),
+                    );
+                    StrokeStyle::complete_all_strokes(
+                        &mut *obj.sheet().selection().strokes().borrow_mut(),
+                    );
+
                     StrokeStyle::update_all_rendernodes(
                         &mut *obj.sheet().strokes().borrow_mut(),
+                        scalefactor,
+                        &*obj.renderer().borrow(),
+                    );
+                    StrokeStyle::update_all_rendernodes(
+                        &mut *obj.sheet().strokes_trash().borrow_mut(),
                         scalefactor,
                         &*obj.renderer().borrow(),
                     );
@@ -316,12 +329,15 @@ mod imp {
                 match self.current_pen.get() {
                     PenStyle::Eraser => {
                         if self.pens.borrow().eraser.shown() {
-                            debug::draw_pos(
-                                self.pens.borrow().eraser.current_input.pos(),
-                                debug::COLOR_POS_ALT,
-                                scalefactor,
-                                snapshot,
-                            );
+                            if let Some(ref current_input) = self.pens.borrow().eraser.current_input
+                            {
+                                debug::draw_pos(
+                                    current_input.pos(),
+                                    debug::COLOR_POS_ALT,
+                                    scalefactor,
+                                    snapshot,
+                                );
+                            }
                         }
                     }
                     PenStyle::Selector => {
@@ -599,10 +615,10 @@ impl Canvas {
                 }
                 mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
 
-                let data_entries = Self::retreive_pointer_inputdata(x, y);
-                let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
+                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+                canvas.map_inputdata(&mut data_entries, na::vector![0.0, 0.0]);
 
-                canvas.processing_draw_begin(&appwindow, data_entries);
+                canvas.processing_draw_begin(&appwindow, &mut data_entries);
             }),
         );
 
@@ -615,28 +631,30 @@ impl Canvas {
             }
 
             if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                let data_entries = Self::retreive_pointer_inputdata(x, y);
-                let data_entries = canvas.map_inputdata(data_entries, na::vector![start_point.0, start_point.1]);
+                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+                canvas.map_inputdata(&mut data_entries, na::vector![start_point.0, start_point.1]);
 
-                canvas.processing_draw_motion(&appwindow, data_entries);
+                canvas.processing_draw_motion(&appwindow, &mut data_entries);
             }
         }));
 
-        priv_.mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
-            // Guard not to handle touch events that emulate a pointer
-            if let Some(event) = mouse_drawing_gesture.current_event() {
-                if event.is_pointer_emulated() {
-                    return;
+        priv_.mouse_drawing_gesture.connect_drag_end(
+            clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
+                // Guard not to handle touch events that emulate a pointer
+                if let Some(event) = mouse_drawing_gesture.current_event() {
+                    if event.is_pointer_emulated() {
+                        return;
+                    }
                 }
-            }
 
-            if let Some(start_point) = mouse_drawing_gesture.start_point() {
-            let data_entries = Self::retreive_pointer_inputdata(x, y);
-            let data_entries = canvas.map_inputdata(data_entries, na::vector![start_point.0, start_point.1]);
+                if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+                canvas.map_inputdata(&mut data_entries, na::vector![start_point.0, start_point.1]);
 
-            canvas.processing_draw_end(&appwindow, data_entries);
-            }
-        }));
+                canvas.processing_draw_end(&appwindow, &mut data_entries);
+                }
+            }),
+        );
 
         // Stylus Drawing
         priv_.stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
@@ -644,8 +662,8 @@ impl Canvas {
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
 
                 // Disable backlog, only allowed in motion signal handler
-                let data_entries = Canvas::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
-                let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
+                let mut data_entries = Canvas::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
+                canvas.map_inputdata(&mut data_entries, na::vector![0.0, 0.0]);
 
                 canvas.pens().borrow_mut().selector.clear_path();
 
@@ -660,26 +678,26 @@ impl Canvas {
                     _ => { canvas.current_pen().set(PenStyle::Unkown) },
                 }
 
-                canvas.processing_draw_begin(&appwindow, data_entries);
+                canvas.processing_draw_begin(&appwindow, &mut data_entries);
             }
         }));
 
         priv_.stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
             if stylus_drawing_gesture.device_tool().is_some() {
                 // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
-                let data_entries: VecDeque<InputData> = Canvas::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
-                let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
+                let mut data_entries: VecDeque<InputData> = Canvas::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
+                canvas.map_inputdata(&mut data_entries, na::vector![0.0, 0.0]);
 
-                canvas.processing_draw_motion(&appwindow, data_entries);
+                canvas.processing_draw_motion(&appwindow, &mut data_entries);
             }
         }));
 
         priv_.stylus_drawing_gesture.connect_up(
             clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
-                let data_entries = Canvas::retreive_stylus_inputdata(gesture_stylus, false, x, y);
-                let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
+                let mut data_entries = Canvas::retreive_stylus_inputdata(gesture_stylus, false, x, y);
 
-                canvas.processing_draw_end(&appwindow, data_entries);
+                canvas.map_inputdata(&mut data_entries, na::vector![0.0, 0.0]);
+                canvas.processing_draw_end(&appwindow, &mut data_entries);
             }),
         );
 
@@ -687,39 +705,43 @@ impl Canvas {
         priv_.touch_drawing_gesture.connect_drag_begin(
             clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
                 touch_drawing_gesture.set_state(EventSequenceState::Claimed);
-                let data_entries = Self::retreive_pointer_inputdata(x, y);
-                let data_entries = canvas.map_inputdata(data_entries, na::vector![0.0, 0.0]);
 
-                canvas.processing_draw_begin(&appwindow, data_entries);
+                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+
+                canvas.map_inputdata(&mut data_entries, na::vector![0.0, 0.0]);
+                canvas.processing_draw_begin(&appwindow, &mut data_entries);
             }),
         );
 
         priv_.touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
-                let data_entries = Self::retreive_pointer_inputdata(x, y);
-                let data_entries = canvas.map_inputdata(data_entries, na::vector![start_point.0, start_point.1]);
+                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+                canvas.map_inputdata(&mut data_entries, na::vector![start_point.0, start_point.1]);
 
-                canvas.processing_draw_motion(&appwindow, data_entries);
+                canvas.processing_draw_motion(&appwindow, &mut data_entries);
             }
         }));
 
-        priv_.touch_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
-            if let Some(start_point) = touch_drawing_gesture.start_point() {
-            let data_entries = Self::retreive_pointer_inputdata(x, y);
-            let data_entries = canvas.map_inputdata(data_entries, na::vector![start_point.0, start_point.1]);
+        priv_.touch_drawing_gesture.connect_drag_end(
+            clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
+                if let Some(start_point) = touch_drawing_gesture.start_point() {
+                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+                canvas.map_inputdata(&mut data_entries, na::vector![start_point.0, start_point.1]);
 
-            canvas.processing_draw_end(&appwindow, data_entries);
-            }
-        }));
+                canvas.processing_draw_end(&appwindow, &mut data_entries);
+                }
+            }),
+        );
     }
 
     fn processing_draw_begin(
         &self,
-        appwindow: &RnoteAppWindow,
-        mut data_entries: VecDeque<InputData>,
+        _appwindow: &RnoteAppWindow,
+        data_entries: &mut VecDeque<InputData>,
     ) {
         self.set_unsaved_changes(true);
 
+        // readding all selected strokes to sheet
         if !self.sheet().selection().strokes().borrow().is_empty() {
             let mut strokes = self.sheet().selection().remove_strokes();
             self.sheet().strokes().borrow_mut().append(&mut strokes);
@@ -727,9 +749,9 @@ impl Canvas {
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
-                let mut data_entries = self.filter_inputdata(data_entries);
+                self.filter_mapped_inputdata(data_entries);
 
-                if let Some(inputdata) = data_entries.pop_front() {
+                if let Some(inputdata) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
 
                     self.sheet().elements_trash().borrow_mut().clear();
@@ -743,7 +765,7 @@ impl Canvas {
                     if self.sheet().resize() {
                         self.queue_resize();
                     }
-                    if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {
+                    if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
                 }
@@ -751,12 +773,12 @@ impl Canvas {
             PenStyle::Eraser => {
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("none", None).as_ref());
-                    self.pens().borrow_mut().eraser.current_input = inputdata;
+                    self.pens().borrow_mut().eraser.current_input = Some(inputdata);
                     self.pens().borrow_mut().eraser.set_shown(true);
                 }
             }
             PenStyle::Selector => {
-                if let Some(inputdata) = data_entries.pop_front() {
+                if let Some(inputdata) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
 
                     self.pens().borrow_mut().selector.set_shown(true);
@@ -766,8 +788,6 @@ impl Canvas {
                         .selector
                         .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                 }
-
-                self.processing_draw_motion(appwindow, data_entries);
             }
             PenStyle::Unkown => {}
         }
@@ -778,17 +798,18 @@ impl Canvas {
     fn processing_draw_motion(
         &self,
         appwindow: &RnoteAppWindow,
-        data_entries: VecDeque<InputData>,
+        data_entries: &mut VecDeque<InputData>,
     ) {
         self.set_unsaved_changes(true);
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
-                let data_entries = self.filter_inputdata(data_entries);
+                self.filter_mapped_inputdata(data_entries);
+
                 for inputdata in data_entries {
                     StrokeStyle::add_to_last_stroke(
                         &mut *self.sheet().strokes().borrow_mut(),
-                        Element::new(inputdata),
+                        Element::new(inputdata.clone()),
                         &self.pens().borrow(),
                     );
 
@@ -803,18 +824,18 @@ impl Canvas {
             }
             PenStyle::Eraser => {
                 let scalefactor = self.scalefactor();
-                let canvas_scroller_viewport_scaled =
+                let canvas_scroller_viewport_descaled =
                     if let Some(viewport) = appwindow.canvas_scroller_viewport() {
                         Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
                     } else {
                         None
                     };
 
-                for inputdata in data_entries {
-                    self.pens().borrow_mut().eraser.current_input = inputdata;
+                if let Some(inputdata) = data_entries.pop_back() {
+                    self.pens().borrow_mut().eraser.current_input = Some(inputdata);
                     if self.sheet().remove_colliding_strokes(
                         &self.pens().borrow().eraser,
-                        canvas_scroller_viewport_scaled,
+                        canvas_scroller_viewport_descaled,
                     ) {
                         self.queue_resize();
                     }
@@ -838,7 +859,11 @@ impl Canvas {
         self.queue_draw();
     }
 
-    fn processing_draw_end(&self, appwindow: &RnoteAppWindow, _data_entries: VecDeque<InputData>) {
+    fn processing_draw_end(
+        &self,
+        appwindow: &RnoteAppWindow,
+        _data_entries: &mut VecDeque<InputData>,
+    ) {
         self.set_unsaved_changes(true);
         self.set_cursor(Some(&self.cursor()));
 
@@ -852,7 +877,7 @@ impl Canvas {
         }
 
         let scalefactor = self.scalefactor();
-        let canvas_scroller_viewport_scaled =
+        let canvas_scroller_viewport_descaled =
             if let Some(viewport) = appwindow.canvas_scroller_viewport() {
                 Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
             } else {
@@ -864,7 +889,7 @@ impl Canvas {
                 self.sheet().selection().update_selection(
                     &self.pens().borrow().selector,
                     &mut self.sheet().strokes().borrow_mut(),
-                    canvas_scroller_viewport_scaled,
+                    canvas_scroller_viewport_descaled,
                 );
 
                 self.pens().borrow_mut().selector.clear_path();
@@ -887,12 +912,8 @@ impl Canvas {
     }
 
     // Map Stylus input to the position on a sheet
-    fn map_inputdata(
-        &self,
-        data_entries: VecDeque<InputData>,
-        offset: na::Vector2<f64>,
-    ) -> VecDeque<InputData> {
-        let data_entries: VecDeque<InputData> = data_entries
+    fn map_inputdata(&self, data_entries: &mut VecDeque<InputData>, offset: na::Vector2<f64>) {
+        *data_entries = data_entries
             .iter()
             .map(|inputdata| {
                 InputData::new(
@@ -901,12 +922,10 @@ impl Canvas {
                 )
             })
             .collect();
-
-        data_entries
     }
 
-    // Clip inputdata to sheet
-    fn filter_inputdata(&self, mut data_entries: VecDeque<InputData>) -> VecDeque<InputData> {
+    // Filter inputdata to sheet bounds
+    fn filter_mapped_inputdata(&self, data_entries: &mut VecDeque<InputData>) {
         let priv_ = imp::Canvas::from_instance(self);
 
         let filter_bounds = p2d::bounding_volume::AABB::new(
@@ -922,8 +941,6 @@ impl Canvas {
 
         data_entries
             .retain(|data| filter_bounds.contains_local_point(&na::Point2::from(data.pos())));
-
-        data_entries
     }
 
     fn retreive_pointer_inputdata(x: f64, y: f64) -> VecDeque<InputData> {

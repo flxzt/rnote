@@ -54,15 +54,21 @@
   </provides>
 
   <releases>
+    <release version="0.1.4" date="2021-10-13">
+      <description>
+        <p>- added ellipse as a rough shape</p>
+        <p>- new and improved gestures and shortcuts (zoom with "ctrl+scroll", drag the canvas with the middle mouse button)</p>
+        <p>- improved brushstroke algorithms</p>
+        <p>- bug fixes</p>
+      </description>
+    </release>
     <release version="0.1.3" date="2021-10-08">
       <description>
-        <p>
-          - Introducing rough shapes for a sketched look
-          - fill shapes with a color
-          - improved shape drawing (broke .rnote file backward compatibility, sorry!)
-          - alpha checkerboard background in the colorpicker
-          - bug fixes
-        </p>
+        <p>- Introducing rough shapes for a sketched look</p>
+        <p>- fill shapes with a color</p>
+        <p>- improved shape drawing (broke .rnote file backward compatibility, sorry!)</p>
+        <p>- alpha checkerboard background in the colorpicker</p>
+        <p>- bug fixes</p>
       </description>
     </release>
     <release version="0.1.2" date="2021-10-07">

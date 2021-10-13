@@ -116,7 +116,7 @@
                         <child>
                           <object class="AdwActionRow">
                             <property name="title">Roughness</property>
-                            <property name="subtitle">indicating how rough the drawing is. between 0.0 and 10.0</property>
+                            <property name="subtitle">indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0</property>
                             <child type="suffix">
                               <object class="GtkAdjustment" id="roughconfig_roughness_adj">
                                 <property name="step-increment">0.1</property>
@@ -134,7 +134,7 @@
                         <child>
                           <object class="AdwActionRow">
                             <property name="title">Bowing</property>
-                            <property name="subtitle">how curvy the lines are when drawing a sketch. 0 is a straight line.</property>
+                            <property name="subtitle">how curvy the lines are when drawing a sketch. 0.0 is a straight line. Defaults to 1.0</property>
                             <child type="suffix">
                               <object class="GtkAdjustment" id="roughconfig_bowing_adj">
                                 <property name="step-increment">0.1</property>
@@ -152,12 +152,30 @@
                         <child>
                           <object class="AdwActionRow">
                             <property name="title">Multistroke</property>
-                            <property name="subtitle">multiple stroke generation for a sketched look.</property>
+                            <property name="subtitle">multiple stroke generation for a sketched look. Defaults to true</property>
                             <child type="suffix">
                               <object class="GtkSwitch" id="roughconfig_multistroke_switch">
                                 <property name="valign">center</property>
                                 <property name="margin_start">12</property>
                                 <property name="active">true</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title">Curve stepcount</property>
+                            <property name="subtitle">how many steps make up a curve. Defaults to 9</property>
+                            <child type="suffix">
+                              <object class="GtkAdjustment" id="roughconfig_curvestepcount_adj">
+                                <property name="step-increment">1.0</property>
+                              </object>
+                              <object class="GtkSpinButton" id="roughconfig_curvestepcount_spinbutton">
+                                <property name="valign">center</property>
+                                <property name="margin_start">12</property>
+                                <property name="adjustment">roughconfig_curvestepcount_adj</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="digits">0</property>
                               </object>
                             </child>
                           </object>

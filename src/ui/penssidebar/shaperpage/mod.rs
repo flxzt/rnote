@@ -37,6 +37,10 @@ mod imp {
         #[template_child]
         pub roughconfig_multistroke_switch: TemplateChild<Switch>,
         #[template_child]
+        pub roughconfig_curvestepcount_spinbutton: TemplateChild<SpinButton>,
+        #[template_child]
+        pub roughconfig_curvestepcount_adj: TemplateChild<Adjustment>,
+        #[template_child]
         pub shapes_togglebox: TemplateChild<gtk4::Box>,
         #[template_child]
         pub line_toggle: TemplateChild<ToggleButton>,
@@ -73,6 +77,8 @@ mod imp {
                 roughconfig_bowing_spinbutton: TemplateChild::<SpinButton>::default(),
                 roughconfig_bowing_adj: TemplateChild::<Adjustment>::default(),
                 roughconfig_multistroke_switch: TemplateChild::<Switch>::default(),
+                roughconfig_curvestepcount_spinbutton: TemplateChild::<SpinButton>::default(),
+                roughconfig_curvestepcount_adj: TemplateChild::<Adjustment>::default(),
                 shapes_togglebox: TemplateChild::<gtk4::Box>::default(),
                 line_toggle: TemplateChild::<ToggleButton>::default(),
                 rectangle_toggle: TemplateChild::<ToggleButton>::default(),
@@ -286,6 +292,26 @@ impl ShaperPage {
         priv_.roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
             appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_multistroke(roughconfig_multistroke_switch.state());
         }));
+
+        // Curve stepcount
+        priv_
+            .roughconfig_curvestepcount_adj
+            .get()
+            .set_lower(rough_rs::options::Options::CURVESTEPCOUNT_MIN);
+        priv_
+            .roughconfig_curvestepcount_adj
+            .get()
+            .set_upper(rough_rs::options::Options::CURVESTEPCOUNT_MAX);
+        priv_
+            .roughconfig_curvestepcount_adj
+            .get()
+            .set_value(rough_rs::options::Options::CURVESTEPCOUNT_DEFAULT);
+
+        priv_.roughconfig_curvestepcount_adj.get().connect_value_changed(
+            clone!(@weak appwindow => move |roughconfig_curvestepcount_adj| {
+                appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_curve_stepcount(roughconfig_curvestepcount_adj.value());
+            }),
+        );
 
         // Smooth / Rough shape toggle
         self.drawstyle_smooth_toggle().connect_active_notify(clone!(@weak appwindow => move |drawstyle_smooth_toggle| {

@@ -77,7 +77,7 @@ impl Default for Options {
             fill_weight: 0.5,
             hachure_angle: -41.0,
             hachure_gap: 4.0,
-            curve_stepcount: 12.0,
+            curve_stepcount: Self::CURVESTEPCOUNT_DEFAULT,
             curve_fitting: 0.95,
             curve_tightness: 0.0,
             stroke_line_dash: Vec::new(),
@@ -108,6 +108,12 @@ impl Options {
     pub const BOWING_MAX: f64 = 20.0;
     /// Bowing default
     pub const BOWING_DEFAULT: f64 = 1.0;
+    /// Curve stepcount min
+    pub const CURVESTEPCOUNT_MIN: f64 = 3.0;
+    /// Curve stepcount max
+    pub const CURVESTEPCOUNT_MAX: f64 = 1000.0;
+    /// Curve stepcount default
+    pub const CURVESTEPCOUNT_DEFAULT: f64 = 9.0;
 
     pub(crate) fn apply_to_line(&self, mut path: element::Path) -> element::Path {
         path = if let Some(stroke) = self.stroke {
@@ -219,14 +225,24 @@ impl Options {
         self.bowing = bowing.clamp(Self::BOWING_MIN, Self::BOWING_MAX);
     }
 
-    /// Returns the bowing
+    /// Returns the multistroke
     pub fn multistroke(&self) -> bool {
         !self.disable_multistroke
     }
 
-    /// Sets the bowing
+    /// Sets the multistroke
     pub fn set_multistroke(&mut self, multistroke: bool) {
         self.disable_multistroke = !multistroke;
+    }
+
+    /// Returns the multistroke
+    pub fn curve_stepcount(&self) -> f64 {
+        self.curve_stepcount
+    }
+
+    /// Sets the multistroke
+    pub fn set_curve_stepcount(&mut self, curve_stepcount: f64) {
+        self.curve_stepcount = curve_stepcount;
     }
 }
 

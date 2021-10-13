@@ -294,6 +294,7 @@ impl RnoteAppWindow {
     pub const CANVAS_ZOOMGESTURE_THRESHOLD: f64 = 0.005; // Sets the delta threshold (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
     pub const CANVAS_ZOOM_SCROLL_STEP: f64 = 0.1; // Sets the canvas zoom scroll step in
     pub const CANVAS_ZOOMGESTURE_DRAG_SPEED: f64 = 2.0; // Sets the canvas zoom drag speed, 1.0 for one-to-one dragging / offset ratio
+    pub const CANVAS_ZOOMGESTURE_ZOOM_SPEED: f64 = 0.8; // Sets the canvas zoom speed, 1.0 for one-to-one scale_delta to zoom ratio
 
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
@@ -688,6 +689,7 @@ impl RnoteAppWindow {
 
         canvas_zoom_gesture.connect_scale_changed(
             clone!(@strong canvas_preview_paintable, @strong scale_begin, @strong scale_doubledelta, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, scale_delta| {
+                let scale_delta = scale_delta * Self::CANVAS_ZOOMGESTURE_ZOOM_SPEED;
                 let new_scalefactor = scale_begin.get() * scale_delta;
 
                 if scale_delta < scale_doubledelta.get() - Self::CANVAS_ZOOMGESTURE_THRESHOLD || scale_delta > scale_doubledelta.get() + Self::CANVAS_ZOOMGESTURE_THRESHOLD {
@@ -708,15 +710,15 @@ impl RnoteAppWindow {
                 if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
                     if let Some(bbcenter_start) = zoomgesture_bbcenter_start.get() {
                         let bbcenter_delta = (
-                            bbcenter.0 - bbcenter_start.0,
-                            bbcenter.1 - bbcenter_start.1
+                            bbcenter.0 - bbcenter_start.0 * scale_delta,
+                            bbcenter.1 - bbcenter_start.1 * scale_delta
                         );
 
                         appwindow.canvas_scroller().hadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().0 * scale_delta - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.0
+                            zoomgesture_canvasscroller_start_pos.get().0 * scale_delta - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.0 * 0.5
                         );
                         appwindow.canvas_scroller().vadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().1 * scale_delta - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.1
+                            zoomgesture_canvasscroller_start_pos.get().1 * scale_delta - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.1 * 0.5
                         );
                     } else {
                         // Setting the start position if connect_scale_start didn't set it

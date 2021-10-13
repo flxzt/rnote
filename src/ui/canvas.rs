@@ -607,51 +607,52 @@ impl Canvas {
         // Mouse drawing
         priv_.mouse_drawing_gesture.connect_drag_begin(
             clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
-                // Guard not to handle touch events that emulate a pointer
                 if let Some(event) = mouse_drawing_gesture.current_event() {
+                    // Guard not to handle touch events that emulate a pointer
                     if event.is_pointer_emulated() {
                         return;
                     }
+
+                    mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
+
+                    let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+                    canvas.map_inputdata(&mut data_entries, na::vector![0.0, 0.0]);
+
+                    canvas.processing_draw_begin(&appwindow, &mut data_entries);
                 }
-                mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
-
-                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
-                canvas.map_inputdata(&mut data_entries, na::vector![0.0, 0.0]);
-
-                canvas.processing_draw_begin(&appwindow, &mut data_entries);
             }),
         );
 
         priv_.mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
-            // Guard not to handle touch events that emulate a pointer
             if let Some(event) = mouse_drawing_gesture.current_event() {
+                // Guard not to handle touch events that emulate a pointer
                 if event.is_pointer_emulated() {
                     return;
                 }
-            }
 
-            if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
-                canvas.map_inputdata(&mut data_entries, na::vector![start_point.0, start_point.1]);
+                if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                    let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+                    canvas.map_inputdata(&mut data_entries, na::vector![start_point.0, start_point.1]);
 
-                canvas.processing_draw_motion(&appwindow, &mut data_entries);
+                    canvas.processing_draw_motion(&appwindow, &mut data_entries);
+                }
             }
         }));
 
         priv_.mouse_drawing_gesture.connect_drag_end(
             clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
-                // Guard not to handle touch events that emulate a pointer
                 if let Some(event) = mouse_drawing_gesture.current_event() {
+                    // Guard not to handle touch events that emulate a pointer
                     if event.is_pointer_emulated() {
                         return;
                     }
-                }
 
-                if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                let mut data_entries = Self::retreive_pointer_inputdata(x, y);
-                canvas.map_inputdata(&mut data_entries, na::vector![start_point.0, start_point.1]);
+                    if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                    let mut data_entries = Self::retreive_pointer_inputdata(x, y);
+                    canvas.map_inputdata(&mut data_entries, na::vector![start_point.0, start_point.1]);
 
-                canvas.processing_draw_end(&appwindow, &mut data_entries);
+                    canvas.processing_draw_end(&appwindow, &mut data_entries);
+                    }
                 }
             }),
         );

@@ -460,10 +460,15 @@ impl RnoteAppWindow {
     pub fn save_window_size(&self) -> Result<(), glib::BoolError> {
         let settings = &imp::RnoteAppWindow::from_instance(self).settings;
 
-        let size = self.default_size();
+        let mut width = self.width();
+        let mut height = self.height();
 
-        settings.set_int("window-width", size.0)?;
-        settings.set_int("window-height", size.1)?;
+        // Window would grow without subtracting this size. Why? I dont know
+        width -= 122;
+        height -= 122;
+
+        settings.set_int("window-width", width)?;
+        settings.set_int("window-height", height)?;
         settings.set_boolean("is-maximized", self.is_maximized())?;
 
         Ok(())
@@ -481,12 +486,8 @@ impl RnoteAppWindow {
         }
     }
 
-    // The point parameter has the coordinate space of canvas, not of the scrolled window!
-    pub fn canvas_scroller_center_around_point_canvas(&self, point: (f64, f64)) {
-        let scroller_pos = (
-            self.canvas_scroller().hadjustment().unwrap().value(),
-            self.canvas_scroller().vadjustment().unwrap().value(),
-        );
+    /// The point parameter has the coordinate space of the sheet, NOT of the scrolled window!
+    pub fn canvas_scroller_center_around_point_on_sheet(&self, point: (f64, f64)) {
         let scroller_dimensions = (
             f64::from(self.canvas_scroller().width()),
             f64::from(self.canvas_scroller().height()),
@@ -497,14 +498,16 @@ impl RnoteAppWindow {
         );
 
         if canvas_dimensions.0 > scroller_dimensions.0 {
-            self.canvas_scroller().hadjustment().unwrap().set_value(
-                scroller_pos.0 + point.0 + (canvas_dimensions.0 - scroller_dimensions.0) * 0.5,
-            );
+            self.canvas_scroller()
+                .hadjustment()
+                .unwrap()
+                .set_value((point.0 * self.canvas().scalefactor()) - scroller_dimensions.0 * 0.5);
         }
         if canvas_dimensions.1 > scroller_dimensions.1 {
-            self.canvas_scroller().vadjustment().unwrap().set_value(
-                scroller_pos.1 + point.1 + (canvas_dimensions.1 - scroller_dimensions.1) * 0.5,
-            );
+            self.canvas_scroller()
+                .vadjustment()
+                .unwrap()
+                .set_value((point.1 * self.canvas().scalefactor()) - scroller_dimensions.1 * 0.5);
         }
     }
 
@@ -584,8 +587,21 @@ impl RnoteAppWindow {
             .build();
         canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
             if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                appwindow.canvas().set_scalefactor(appwindow.canvas().scalefactor() - dy * (Self::CANVAS_ZOOM_SCROLL_STEP * appwindow.canvas().scalefactor()));
+                let delta = dy * (Self::CANVAS_ZOOM_SCROLL_STEP * appwindow.canvas().scalefactor());
+                let new_scalefactor = appwindow.canvas().scalefactor() - delta;
 
+                // the sheet position BEFORE scaling
+                let sheet_center_pos = (
+                    ((appwindow.canvas_scroller().hadjustment().unwrap().value()
+                    + f64::from(appwindow.canvas_scroller().width()) * 0.5) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().x()),
+                    ((appwindow.canvas_scroller().vadjustment().unwrap().value()
+                    + f64::from(appwindow.canvas_scroller().height()) * 0.5) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().y())
+                );
+
+                appwindow.canvas().set_scalefactor(new_scalefactor);
+
+                // Reposition scroller center to the stored sheet position
+                appwindow.canvas_scroller_center_around_point_on_sheet(sheet_center_pos);
                 // Stop event propagation
                 Inhibit(true)
             } else {
@@ -670,34 +686,13 @@ impl RnoteAppWindow {
 
         canvas_zoom_gesture.connect_scale_changed(
             clone!(@strong canvas_preview_paintable, @strong scale_begin, @strong scale_doubledelta, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, scale_delta| {
-                if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
-                    if let Some(bbcenter_start) = zoomgesture_bbcenter_start.get() {
-                        let bbcenter_delta = (
-                            bbcenter.0 - bbcenter_start.0,
-                            bbcenter.1 - bbcenter_start.1
-                        );
-
-                        appwindow.canvas_scroller().hadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().0 - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.0
-                        );
-                        appwindow.canvas_scroller().vadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().1 - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.1
-                        );
-                    } else {
-                        // Setting the start position if connect_scale_start didn't set it
-                        zoomgesture_bbcenter_start.set(Some((
-                            bbcenter.0,
-                            bbcenter.1,
-                        )));
-                        log::debug!("### BEGIN DRAG ###");
-                    }
-                }
+                let new_scalefactor = scale_begin.get() * scale_delta;
 
                 if scale_delta < scale_doubledelta.get() - Self::CANVAS_ZOOMGESTURE_THRESHOLD || scale_delta > scale_doubledelta.get() + Self::CANVAS_ZOOMGESTURE_THRESHOLD {
                     scale_doubledelta.set(scale_delta);
 
-                    let width = f64::from(appwindow.canvas().sheet().width()) * scale_begin.get() * scale_delta;
-                    let height = f64::from(appwindow.canvas().sheet().height()) * scale_begin.get() * scale_delta;
+                    let width = f64::from(appwindow.canvas().sheet().width()) * new_scalefactor;
+                    let height = f64::from(appwindow.canvas().sheet().height()) * new_scalefactor;
                     let preview_size = graphene::Size::new(width as f32, height as f32);
 
                     if let Some(paintable) = canvas_preview_paintable.borrow().as_ref() {
@@ -706,8 +701,38 @@ impl RnoteAppWindow {
                         //snapshot.scale(scalefactor as f32, scalefactor as f32);
                         appwindow.canvas_resize_preview().set_paintable(snapshot.to_paintable(Some(&preview_size)).as_ref());
                     }
+                }
 
+                if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
+                    if let Some(bbcenter_start) = zoomgesture_bbcenter_start.get() {
+                        let bbcenter_delta = (
+                            bbcenter.0 - bbcenter_start.0,
+                            bbcenter.1 - bbcenter_start.1
+                        );
+
+                        appwindow.canvas_scroller().hadjustment().unwrap().set_value(
+                            zoomgesture_canvasscroller_start_pos.get().0 * scale_delta - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.0
+                        );
+                        appwindow.canvas_scroller().vadjustment().unwrap().set_value(
+                            zoomgesture_canvasscroller_start_pos.get().1 * scale_delta - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.1
+                        );
+                    } else {
+                        // Setting the start position if connect_scale_start didn't set it
+                        zoomgesture_bbcenter_start.set(Some((
+                            bbcenter.0,
+                            bbcenter.1,
+                        )));
+                        log::debug!("### BEGIN DRAG ###");
+
+                        // the sheet position with the drag bounding box center
+                        let sheet_drag_center_pos = (
+                            ((appwindow.canvas_scroller().hadjustment().unwrap().value() + zoomgesture_canvasscroller_start_pos.get().0) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().x()),
+                            ((appwindow.canvas_scroller().vadjustment().unwrap().value() + zoomgesture_canvasscroller_start_pos.get().1) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().y()));
+
+                        // Reposition scroller center to the stored sheet position
+                        appwindow.canvas_scroller_center_around_point_on_sheet(sheet_drag_center_pos);
                     }
+                }
             }),
         );
 

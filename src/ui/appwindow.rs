@@ -293,7 +293,6 @@ glib::wrapper! {
 impl RnoteAppWindow {
     pub const CANVAS_ZOOMGESTURE_THRESHOLD: f64 = 0.005; // Sets the delta threshold (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
     pub const CANVAS_ZOOM_SCROLL_STEP: f64 = 0.1; // Sets the canvas zoom scroll step in
-    pub const CANVAS_ZOOMGESTURE_DRAG_SPEED: f64 = 2.0; // Sets the canvas zoom drag speed, 1.0 for one-to-one dragging / offset ratio
     pub const CANVAS_ZOOMGESTURE_ZOOM_SPEED: f64 = 0.8; // Sets the canvas zoom speed, 1.0 for one-to-one scale_delta to zoom ratio
 
     pub fn new(app: &Application) -> Self {
@@ -715,10 +714,10 @@ impl RnoteAppWindow {
                         );
 
                         appwindow.canvas_scroller().hadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().0 * scale_delta - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.0 * 0.5
+                            zoomgesture_canvasscroller_start_pos.get().0 * scale_delta - bbcenter_delta.0
                         );
                         appwindow.canvas_scroller().vadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().1 * scale_delta - Self::CANVAS_ZOOMGESTURE_DRAG_SPEED * bbcenter_delta.1 * 0.5
+                            zoomgesture_canvasscroller_start_pos.get().1 * scale_delta - bbcenter_delta.1
                         );
                     } else {
                         // Setting the start position if connect_scale_start didn't set it

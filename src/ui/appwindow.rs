@@ -667,7 +667,9 @@ impl RnoteAppWindow {
                     )
                 );
                 if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
-                    zoomgesture_canvasscroller_start_pos.set(bbcenter);
+                    zoomgesture_bbcenter_start.set(Some(
+                        bbcenter
+                    ));
                 }
 
                 *canvas_preview_paintable.borrow_mut() = appwindow.canvas().preview().current_image();
@@ -718,19 +720,10 @@ impl RnoteAppWindow {
                         );
                     } else {
                         // Setting the start position if connect_scale_start didn't set it
-                        zoomgesture_bbcenter_start.set(Some((
-                            bbcenter.0,
-                            bbcenter.1,
-                        )));
+                        zoomgesture_bbcenter_start.set(Some(
+                            bbcenter
+                        ));
                         log::debug!("### BEGIN DRAG ###");
-
-                        // the sheet position with the drag bounding box center
-                        let sheet_drag_center_pos = (
-                            ((appwindow.canvas_scroller().hadjustment().unwrap().value() + zoomgesture_canvasscroller_start_pos.get().0) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().x()),
-                            ((appwindow.canvas_scroller().vadjustment().unwrap().value() + zoomgesture_canvasscroller_start_pos.get().1) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().y()));
-
-                        // Reposition scroller center to the stored sheet position
-                        appwindow.canvas_scroller_center_around_point_on_sheet(sheet_drag_center_pos);
                     }
                 }
             }),

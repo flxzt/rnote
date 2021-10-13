@@ -35,11 +35,11 @@ mod imp {
         #[template_child]
         pub roughconfig_bowing_adj: TemplateChild<Adjustment>,
         #[template_child]
-        pub roughconfig_multistroke_switch: TemplateChild<Switch>,
-        #[template_child]
         pub roughconfig_curvestepcount_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub roughconfig_curvestepcount_adj: TemplateChild<Adjustment>,
+        #[template_child]
+        pub roughconfig_multistroke_switch: TemplateChild<Switch>,
         #[template_child]
         pub shapes_togglebox: TemplateChild<gtk4::Box>,
         #[template_child]
@@ -76,9 +76,9 @@ mod imp {
                 roughconfig_roughness_adj: TemplateChild::<Adjustment>::default(),
                 roughconfig_bowing_spinbutton: TemplateChild::<SpinButton>::default(),
                 roughconfig_bowing_adj: TemplateChild::<Adjustment>::default(),
-                roughconfig_multistroke_switch: TemplateChild::<Switch>::default(),
                 roughconfig_curvestepcount_spinbutton: TemplateChild::<SpinButton>::default(),
                 roughconfig_curvestepcount_adj: TemplateChild::<Adjustment>::default(),
+                roughconfig_multistroke_switch: TemplateChild::<Switch>::default(),
                 shapes_togglebox: TemplateChild::<gtk4::Box>::default(),
                 line_toggle: TemplateChild::<ToggleButton>::default(),
                 rectangle_toggle: TemplateChild::<ToggleButton>::default(),
@@ -288,11 +288,6 @@ impl ShaperPage {
             }),
         );
 
-        // Multistroke
-        priv_.roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
-            appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_multistroke(roughconfig_multistroke_switch.state());
-        }));
-
         // Curve stepcount
         priv_
             .roughconfig_curvestepcount_adj
@@ -312,6 +307,11 @@ impl ShaperPage {
                 appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_curve_stepcount(roughconfig_curvestepcount_adj.value());
             }),
         );
+
+        // Multistroke
+        priv_.roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
+            appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_multistroke(roughconfig_multistroke_switch.state());
+        }));
 
         // Smooth / Rough shape toggle
         self.drawstyle_smooth_toggle().connect_active_notify(clone!(@weak appwindow => move |drawstyle_smooth_toggle| {

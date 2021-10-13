@@ -151,20 +151,7 @@
                         </child>
                         <child>
                           <object class="AdwActionRow">
-                            <property name="title">Multistroke</property>
-                            <property name="subtitle">multiple stroke generation for a sketched look. Defaults to true</property>
-                            <child type="suffix">
-                              <object class="GtkSwitch" id="roughconfig_multistroke_switch">
-                                <property name="valign">center</property>
-                                <property name="margin_start">12</property>
-                                <property name="active">true</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="AdwActionRow">
-                            <property name="title">Curve stepcount</property>
+                            <property name="title">Curve step count</property>
                             <property name="subtitle">how many steps make up a curve. Defaults to 9</property>
                             <child type="suffix">
                               <object class="GtkAdjustment" id="roughconfig_curvestepcount_adj">
@@ -176,6 +163,19 @@
                                 <property name="adjustment">roughconfig_curvestepcount_adj</property>
                                 <property name="orientation">horizontal</property>
                                 <property name="digits">0</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="AdwActionRow">
+                            <property name="title">Multistroke</property>
+                            <property name="subtitle">multiple stroke generation for a sketched look. Defaults to true</property>
+                            <child type="suffix">
+                              <object class="GtkSwitch" id="roughconfig_multistroke_switch">
+                                <property name="valign">center</property>
+                                <property name="margin_start">12</property>
+                                <property name="active">true</property>
                               </object>
                             </child>
                           </object>

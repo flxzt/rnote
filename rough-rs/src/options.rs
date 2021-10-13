@@ -28,7 +28,7 @@ pub struct Options {
     pub fill_weight: f64,
     /// The angle of the hachure lines in degrees.
     pub hachure_angle: f64,
-    /// The gap between to hachure lines.
+    /// The gap between the hachure lines.
     pub hachure_gap: f64,
     /// The number of points when estimating curved shapes.
     pub curve_stepcount: f64,
@@ -226,6 +226,16 @@ impl Options {
     }
 
     /// Returns the multistroke
+    pub fn curve_stepcount(&self) -> f64 {
+        self.curve_stepcount
+    }
+
+    /// Sets multistroke
+    pub fn set_curve_stepcount(&mut self, curve_stepcount: f64) {
+        self.curve_stepcount = curve_stepcount;
+    }
+
+    /// Returns multistroke
     pub fn multistroke(&self) -> bool {
         !self.disable_multistroke
     }
@@ -235,14 +245,14 @@ impl Options {
         self.disable_multistroke = !multistroke;
     }
 
-    /// Returns the multistroke
-    pub fn curve_stepcount(&self) -> f64 {
-        self.curve_stepcount
+    /// Returns preserve_vertices
+    pub fn preserve_vertices(&self) -> bool {
+        !self.preserve_vertices
     }
 
-    /// Sets the multistroke
-    pub fn set_curve_stepcount(&mut self, curve_stepcount: f64) {
-        self.curve_stepcount = curve_stepcount;
+    /// Sets preserve_vertices
+    pub fn set_preserve_vertices(&mut self, preserve_vertices: bool) {
+        self.preserve_vertices = !preserve_vertices;
     }
 }
 

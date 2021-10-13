@@ -222,8 +222,8 @@ impl StrokeBehaviour for ShapeStroke {
                     let mut rough_generator =
                         rough_rs::generator::RoughGenerator::new(Some(rough_config));
 
-                    svg::node::element::Group::new()
-                        .add(rough_generator.rectangle(start + offset, end + offset))
+                    rough_generator
+                        .rectangle(start + offset, end + offset)
                         .into()
                 }
             },
@@ -231,28 +231,53 @@ impl StrokeBehaviour for ShapeStroke {
                 ref pos,
                 ref radius_x,
                 ref radius_y,
-            } => {
-                let color = if let Some(color) = self.shaper.ellipse_config.color {
-                    color.to_css_color()
-                } else {
-                    String::from("none")
-                };
-                let fill = if let Some(fill) = self.shaper.ellipse_config.fill {
-                    fill.to_css_color()
-                } else {
-                    String::from("none")
-                };
+            } => match self.shaper.drawstyle {
+                shaper::DrawStyle::Smooth => {
+                    let color = if let Some(color) = self.shaper.ellipse_config.color {
+                        color.to_css_color()
+                    } else {
+                        String::from("none")
+                    };
+                    let fill = if let Some(fill) = self.shaper.ellipse_config.fill {
+                        fill.to_css_color()
+                    } else {
+                        String::from("none")
+                    };
 
-                svg::node::element::Ellipse::new()
-                    .set("cx", pos[0] + offset[0])
-                    .set("cy", pos[1] + offset[1])
-                    .set("rx", *radius_x)
-                    .set("ry", *radius_y)
-                    .set("stroke", color)
-                    .set("stroke-width", self.shaper.ellipse_config.width())
-                    .set("fill", fill)
-                    .into()
-            }
+                    svg::node::element::Ellipse::new()
+                        .set("cx", pos[0] + offset[0])
+                        .set("cy", pos[1] + offset[1])
+                        .set("rx", *radius_x)
+                        .set("ry", *radius_y)
+                        .set("stroke", color)
+                        .set("stroke-width", self.shaper.ellipse_config.width())
+                        .set("fill", fill)
+                        .into()
+                }
+                shaper::DrawStyle::Rough => {
+                    let mut rough_config = self.shaper.roughconfig.clone();
+
+                    if let Some(color) = self.shaper.ellipse_config.color {
+                        rough_config.stroke = Some(rough_rs::utils::Color::new(
+                            color.r, color.g, color.b, color.a,
+                        ));
+                    }
+                    if let Some(fill) = self.shaper.ellipse_config.fill {
+                        rough_config.fill =
+                            Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                    }
+
+                    rough_config.stroke_width = self.shaper.ellipse_config.width();
+                    rough_config.seed = self.seed;
+
+                    let mut rough_generator =
+                        rough_rs::generator::RoughGenerator::new(Some(rough_config));
+
+                    rough_generator
+                        .ellipse(pos + offset, *radius_x, *radius_y)
+                        .into()
+                }
+            },
         };
 
         svg += rough_rs::node_to_string(&element)?.as_str();
@@ -362,7 +387,7 @@ impl ShapeStroke {
                 }
                 shaper::DrawStyle::Rough => {
                     self.bounds = utils::aabb_new_positive(*start, *end)
-                        // TODO what are the actual bounds for a rough shape?
+                        // TODO what are the actual bounds for a rough line?
                         .loosened(self.shaper.line_config.width() * 0.5 + 15.0);
                 }
             },
@@ -374,7 +399,7 @@ impl ShapeStroke {
                     }
                     shaper::DrawStyle::Rough => {
                         self.bounds = utils::aabb_new_positive(*start, *end)
-                            // TODO what are the actual bounds for a rough shape?
+                            // TODO what are the actual bounds for a rough rect?
                             .loosened(self.shaper.rectangle_config.width() * 0.5 + 15.0);
                     }
                 };
@@ -383,13 +408,23 @@ impl ShapeStroke {
                 ref pos,
                 ref radius_x,
                 ref radius_y,
-            } => {
-                self.bounds = utils::aabb_new_positive(
-                    na::vector![pos[0] - radius_x, pos[1] - radius_y],
-                    na::vector![pos[0] + radius_x, pos[1] + radius_y],
-                )
-                .loosened(self.shaper.ellipse_config.width());
-            }
+            } => match self.shaper.drawstyle {
+                shaper::DrawStyle::Smooth => {
+                    self.bounds = utils::aabb_new_positive(
+                        na::vector![pos[0] - radius_x, pos[1] - radius_y],
+                        na::vector![pos[0] + radius_x, pos[1] + radius_y],
+                    )
+                    .loosened(self.shaper.ellipse_config.width());
+                }
+                shaper::DrawStyle::Rough => {
+                    self.bounds = utils::aabb_new_positive(
+                        na::vector![pos[0] - radius_x, pos[1] - radius_y],
+                        na::vector![pos[0] + radius_x, pos[1] + radius_y],
+                    )
+                    // TODO what are the actual bounds for a rough ellipse?
+                    .loosened(self.shaper.ellipse_config.width() + 15.0);
+                }
+            },
         }
     }
 

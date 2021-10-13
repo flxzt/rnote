@@ -77,7 +77,7 @@ impl Default for Options {
             fill_weight: 0.5,
             hachure_angle: -41.0,
             hachure_gap: 4.0,
-            curve_stepcount: 9.0,
+            curve_stepcount: 12.0,
             curve_fitting: 0.95,
             curve_tightness: 0.0,
             stroke_line_dash: Vec::new(),
@@ -171,6 +171,32 @@ impl Options {
         rect = rect.set("stroke-dashoffset", self.stroke_line_dash_offset);
 
         rect
+    }
+
+    pub(crate) fn apply_to_ellipse(&mut self, mut ellipse: element::Path) -> element::Path {
+        ellipse = if let Some(stroke) = self.stroke {
+            ellipse.set("stroke", stroke.to_css_color())
+        } else {
+            ellipse.set("stroke", "none")
+        };
+        ellipse = ellipse.set("stroke-width", self.stroke_width);
+
+        // the fill is in generated with the fill_polygon
+        ellipse = ellipse.set("fill", "none");
+
+        ellipse = ellipse.set(
+            "stroke-dasharray",
+            self.stroke_line_dash
+                .iter()
+                .map(|&no| {
+                    format! {"{}", no}
+                })
+                .collect::<Vec<String>>()
+                .join(" "),
+        );
+        ellipse = ellipse.set("stroke-dashoffset", self.stroke_line_dash_offset);
+
+        ellipse
     }
 
     /// Returns the roughness

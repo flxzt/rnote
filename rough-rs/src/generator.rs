@@ -136,4 +136,17 @@ impl RoughGenerator {
         self.config
             .apply_to_fill_polygon_solid(element::Path::new().set("d", path::Data::from(commands)))
     }
+
+    /// Generating a ellipse
+    pub fn ellipse(&mut self, center: na::Vector2<f64>, radius_x: f64, radius_y: f64) -> element::Group {
+
+        let ellipse_result = renderer::ellipse(center, radius_x, radius_y, &mut self.config);
+
+        let ellipse = self.config
+            .apply_to_ellipse(element::Path::new().set("d", path::Data::from(ellipse_result.commands)));
+
+        let fill_polygon = self.fill_polygon(ellipse_result.estimated_points);
+
+        element::Group::new().add(fill_polygon).add(ellipse)
+    }
 }

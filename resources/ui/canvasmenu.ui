@@ -6,7 +6,7 @@
     </property>
     <child>
       <object class="GtkMenuButton" id="menubutton">
-        <property name="icon_name">document-properties-symbolic</property>
+        <property name="icon_name">canvasmenu-symbolic</property>
       </object>
     </child>
     <child>

@@ -24,6 +24,8 @@
         <file preprocess="xml-stripblanks">ui/dialogs.ui</file>
         <file compressed="true">icons/scalable/apps/rnote.svg</file>
         <file compressed="true">icons/scalable/apps/rnote-devel.svg</file>
+        <file compressed="true">icons/scalable/actions/settings-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/canvasmenu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/function-linear-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/function-third-order-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/function-experimental-symbolic.svg</file>

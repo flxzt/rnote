@@ -81,6 +81,7 @@
             <property name="halign">fill</property>
             <child>
               <object class="GtkMenuButton" id="roughconfig_menubutton">
+                <property name="icon-name">settings-symbolic</property>
                 <property name="hexpand">true</property>
                 <property name="halign">fill</property>
                 <property name="direction">left</property>
@@ -101,7 +102,7 @@
                         <property name="margin-top">12</property>
                         <property name="margin-bottom">24</property>
                         <style>
-                          <class name="title"/>
+                          <class name="title" />
                         </style>
                       </object>
                     </child>

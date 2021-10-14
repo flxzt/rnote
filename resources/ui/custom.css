@@ -25,6 +25,12 @@ listview {
 
 .flap_resizer {
     background-color: @theme_bg_color;
+    transition: all 0.2s ease-out;
+}
+
+.flap_resizer:hover {
+    background-color: steelblue;
+    box-shadow: 0 0 12px darker(steelblue);
 }
 
 .flap_box {

@@ -8,7 +8,7 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gio, glib, glib::clone, graphene, prelude::*, ArrowType, Box, Grid, PackType, PositionType,
+    gio, glib, glib::clone, graphene, prelude::*, ArrowType, Grid, PackType, PositionType,
     PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
 };
 
@@ -18,7 +18,6 @@ with boolean state: They have a boolean parameter, and a boolean state. activati
     A state change can also be directly requested with change_action_state( somebool ).
 for other stateful actions: They have the same values as their state as their parameters. Activating the action with a parameter is equivalent to changing its state directly
 */
-
 pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let app = appwindow
         .application()
@@ -416,10 +415,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.main_grid().attach(&appwindow.devel_actions_revealer(), 2, 1 ,1, 1);
             appwindow.main_grid().attach(&appwindow.canvas_scroller(), 2, 2 ,1, 1);
 
-            appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().pens_togglebox());
-            appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_end::<Box>(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_start::<Box>(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
+            appwindow.mainheader().headerbar().pack_end::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
+            appwindow.mainheader().headerbar().pack_start::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
 
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Right);
@@ -433,12 +432,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Right);
 
             appwindow.flap().set_flap_position(PackType::Start);
-            appwindow.flaphide_button().set_icon_name("arrow1-left-symbolic");
-            appwindow.workspace_grid().remove::<Box>(&appwindow.flaphide_box());
-            appwindow.workspace_grid().remove::<Box>(&appwindow.workspace_controlbox());
-            appwindow.workspace_grid().attach(&appwindow.flaphide_box(), 0, 3, 1, 1);
-            appwindow.workspace_grid().attach(&appwindow.workspace_controlbox(), 1, 3, 1, 1);
-
         } else {
             appwindow.mainheader().canvasmenu().lefthanded_toggle().set_active(true);
 
@@ -451,10 +444,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.main_grid().attach(&appwindow.sidebar_sep(), 1, 1 ,1, 2);
             appwindow.main_grid().attach(&appwindow.sidebar_grid(), 2, 1 ,1, 2);
 
-            appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().pens_togglebox());
-            appwindow.mainheader().headerbar().remove::<Box>(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_start::<Box>(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_end::<Box>(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
+            appwindow.mainheader().headerbar().pack_start::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
+            appwindow.mainheader().headerbar().pack_end::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
 
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Left);
@@ -468,11 +461,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Left);
 
             appwindow.flap().set_flap_position(PackType::End);
-            appwindow.flaphide_button().set_icon_name("arrow1-right-symbolic");
-            appwindow.workspace_grid().remove::<Box>(&appwindow.workspace_controlbox());
-            appwindow.workspace_grid().remove::<Box>(&appwindow.flaphide_box());
-            appwindow.workspace_grid().attach(&appwindow.workspace_controlbox(), 0, 3, 1, 1);
-            appwindow.workspace_grid().attach(&appwindow.flaphide_box(), 1, 3, 1, 1);
         }
     }));
     app.add_action(&action_righthanded);

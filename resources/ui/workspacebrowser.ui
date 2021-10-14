@@ -6,37 +6,110 @@
     <property name="valign">fill</property>
     <property name="halign">fill</property>
     <property name="layout-manager">
-      <object class="GtkBinLayout" />
+      <object class="GtkGridLayout" />
     </property>
+    <style>
+      <class name="workspace_grid" />
+    </style>
     <child>
-      <object class="GtkGrid" id="browser_grid">
+      <object class="GtkScrolledWindow" id="files_scroller">
+        <layout>
+          <property name="column">0</property>
+          <property name="row">0</property>
+        </layout>
+        <property name="propagate-natural-width">true</property>
+        <property name="propagate-natural-height">false</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
+        <property name="valign">fill</property>
+        <property name="halign">fill</property>
+        <property name="width-request">400</property>
+        <property name="hscrollbar-policy">never</property>
+        <property name="min-content-width">100</property>
         <child>
-          <object class="GtkScrolledWindow">
-            <property name="propagate-natural-width">true</property>
-            <property name="propagate-natural-height">false</property>
-            <property name="hexpand">true</property>
+          <object class="GtkListView" id="primary_list">
+            <style>
+              <class name="rich-list"></class>
+              <class name="separators"></class>
+            </style>
+            <property name="hexpand">false</property>
             <property name="vexpand">true</property>
             <property name="valign">fill</property>
             <property name="halign">fill</property>
-            <layout>
-              <property name="column">0</property>
-              <property name="row">0</property>
-            </layout>
-            <property name="hscrollbar-policy">never</property>
-            <property name="min-content-width">200</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <layout>
+          <property name="column">0</property>
+          <property name="row">1</property>
+        </layout>
+        <property name="orientation">horizontal</property>
+        <property name="margin_top">0</property>
+        <property name="margin_bottom">0</property>
+        <property name="vexpand">false</property>
+        <property name="valign">end</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="workspace_controlbox">
+        <layout>
+          <property name="column">0</property>
+          <property name="row">2</property>
+        </layout>
+        <property name="orientation">horizontal</property>
+        <property name="margin_start">6</property>
+        <property name="margin_end">6</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+        <property name="hexpand">true</property>
+        <property name="vexpand">false</property>
+        <property name="halign">fill</property>
+        <property name="valign">center</property>
+        <property name="height-request">35</property>
+        <child>
+          <object class="GtkBox">
+            <style>
+              <class name="linked" />
+            </style>
             <child>
-              <object class="GtkListView" id="primary_list">
-                <style>
-                  <class name="rich-list"></class>
-                  <class name="separators"></class>
-                </style>
-                <property name="width-request">470</property>
+              <object class="GtkButton" id="workspace_pathup_button">
+                <property name="icon_name">arrow1-up-symbolic</property>
                 <property name="hexpand">false</property>
-                <property name="vexpand">true</property>
-                <property name="valign">fill</property>
                 <property name="halign">fill</property>
+                <property name="width-request">20</property>
               </object>
             </child>
+            <child>
+              <object class="GtkEntry" id="workspace_pathentry">
+                <property name="margin_start">0</property>
+                <property name="margin_end">6</property>
+                <property name="vexpand">false</property>
+                <property name="valign">center</property>
+                <property name="hexpand">true</property>
+                <property name="halign">fill</property>
+                <property name="vexpand">false</property>
+                <property name="valign">center</property>
+                <property name="activates-default">true</property>
+                <style>
+                  <class name="workspace_pathentry" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="open_workspace_button">
+            <property name="icon_name">folder-open-symbolic</property>
+            <property name="margin_start">0</property>
+            <property name="margin_end">0</property>
+            <property name="halign">fill</property>
+            <property name="width_request">48</property>
+            <property name="vexpand">false</property>
+            <property name="valign">center</property>
+            <property name="tooltip_text">Change workspace directory</property>
           </object>
         </child>
       </object>

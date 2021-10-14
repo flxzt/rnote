@@ -10,6 +10,7 @@
         <property name="label"></property>
       </object>
       <object class="AdwHeaderBar" id="headerbar">
+        <property name="height-request">49</property>
         <property name="title-widget">main_title</property>
         <property name="vexpand">false</property>
         <child type="start">

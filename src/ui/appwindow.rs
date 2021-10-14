@@ -4,16 +4,17 @@ mod imp {
 
     use adw::{prelude::*, subclass::prelude::*};
     use gtk4::{
-        gdk, gio, glib, glib::clone, subclass::prelude::*, Box, Button, CompositeTemplate,
-        CssProvider, Entry, FileChooserNative, Grid, Inhibit, Overlay, PackType, Picture,
-        ScrolledWindow, StyleContext, ToggleButton,
+        gdk, gio, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
+        FileChooserNative, Grid, Inhibit, Overlay, PackType, Picture, ScrolledWindow, StyleContext,
+        ToggleButton,
     };
-    use gtk4::{Revealer, Separator};
+    use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
 
     use crate::{
-        app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
-        ui::mainheader::MainHeader, ui::penssidebar::PensSideBar,
-        ui::selectionmodifier::SelectionModifier, ui::workspacebrowser::WorkspaceBrowser,
+        app::RnoteApp, config, ui::canvas::Canvas, ui::canvassettings::CanvasSettings,
+        ui::develactions::DevelActions, ui::dialogs, ui::mainheader::MainHeader,
+        ui::penssidebar::PensSideBar, ui::selectionmodifier::SelectionModifier,
+        ui::workspacebrowser::WorkspaceBrowser,
     };
 
     #[derive(Debug, CompositeTemplate)]
@@ -36,6 +37,8 @@ mod imp {
         #[template_child]
         pub canvas_resize_preview: TemplateChild<Picture>,
         #[template_child]
+        pub canvassettings: TemplateChild<CanvasSettings>,
+        #[template_child]
         pub selection_modifier: TemplateChild<SelectionModifier>,
         #[template_child]
         pub sidebar_grid: TemplateChild<Grid>,
@@ -44,25 +47,17 @@ mod imp {
         #[template_child]
         pub flap: TemplateChild<adw::Flap>,
         #[template_child]
-        pub open_workspace_button: TemplateChild<Button>,
+        pub flap_box: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub workspace_pathup_button: TemplateChild<Button>,
+        pub flap_header: TemplateChild<adw::HeaderBar>,
         #[template_child]
-        pub workspace_grid: TemplateChild<Grid>,
+        pub flap_resizer: TemplateChild<gtk4::Box>,
         #[template_child]
-        pub workspace_headerbar: TemplateChild<adw::HeaderBar>,
-        #[template_child]
-        pub workspace_pathentry: TemplateChild<Entry>,
+        pub flap_resizer_box: TemplateChild<gtk4::Box>,
         #[template_child]
         pub workspacebrowser: TemplateChild<WorkspaceBrowser>,
         #[template_child]
         pub flapreveal_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub flaphide_button: TemplateChild<Button>,
-        #[template_child]
-        pub flaphide_box: TemplateChild<Box>,
-        #[template_child]
-        pub workspace_controlbox: TemplateChild<Box>,
         #[template_child]
         pub menus_box: TemplateChild<Box>,
         #[template_child]
@@ -83,20 +78,17 @@ mod imp {
                 canvas: TemplateChild::<Canvas>::default(),
                 canvas_overlay: TemplateChild::<Overlay>::default(),
                 canvas_resize_preview: TemplateChild::<Picture>::default(),
+                canvassettings: TemplateChild::<CanvasSettings>::default(),
                 selection_modifier: TemplateChild::<SelectionModifier>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
                 sidebar_sep: TemplateChild::<Separator>::default(),
                 flap: TemplateChild::<adw::Flap>::default(),
-                open_workspace_button: TemplateChild::<Button>::default(),
-                workspace_pathup_button: TemplateChild::<Button>::default(),
-                workspace_grid: TemplateChild::<Grid>::default(),
-                workspace_headerbar: TemplateChild::<adw::HeaderBar>::default(),
-                workspace_pathentry: TemplateChild::<Entry>::default(),
+                flap_box: TemplateChild::<gtk4::Box>::default(),
+                flap_header: TemplateChild::<adw::HeaderBar>::default(),
+                flap_resizer: TemplateChild::<gtk4::Box>::default(),
+                flap_resizer_box: TemplateChild::<gtk4::Box>::default(),
                 workspacebrowser: TemplateChild::<WorkspaceBrowser>::default(),
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
-                flaphide_button: TemplateChild::<Button>::default(),
-                flaphide_box: TemplateChild::<Box>::default(),
-                workspace_controlbox: TemplateChild::<Box>::default(),
                 menus_box: TemplateChild::<Box>::default(),
                 mainheader: TemplateChild::<MainHeader>::default(),
                 penssidebar: TemplateChild::<PensSideBar>::default(),
@@ -124,7 +116,10 @@ mod imp {
             self.parent_constructed(obj);
 
             let flap = self.flap.get();
-            let workspace_headerbar = self.workspace_headerbar.get();
+            let flap_box = self.flap_box.get();
+            let flap_resizer = self.flap_resizer.get();
+            let flap_resizer_box = self.flap_resizer_box.get();
+            let workspace_headerbar = self.flap_header.get();
             let flapreveal_toggle = self.flapreveal_toggle.get();
 
             let _windowsettings = obj.settings();
@@ -144,12 +139,6 @@ mod imp {
             );
 
             let expanded_revealed = Rc::new(Cell::new(flap.reveals_flap()));
-
-            self.flaphide_button.connect_clicked(
-                clone!(@weak flap, @weak flapreveal_toggle => move |_flaphide_button| {
-                    flapreveal_toggle.set_active(false);
-                }),
-            );
 
             self.flapreveal_toggle
                 .bind_property("active", &flap, "reveal-flap")
@@ -189,12 +178,6 @@ mod imp {
                     }
                 }));
 
-            self.flap
-                .bind_property("folded", &self.flaphide_button.get(), "visible")
-                .flags(glib::BindingFlags::DEFAULT)
-                .build()
-                .unwrap();
-
             self.flap.connect_flap_position_notify(
                 clone!(@weak workspace_headerbar, @strong expanded_revealed => move |flap| {
                     if !flap.is_folded() && flap.flap_position() == PackType::End {
@@ -205,21 +188,61 @@ mod imp {
                 }),
             );
 
-            self.open_workspace_button.get().connect_clicked(
-                clone!(@weak obj => move |_open_workspace_button| {
-                    obj.application().unwrap().activate_action("open-workspace", None);
-                }),
+            // Resizing the flap contents
+            let resizer_drag_gesture = GestureDrag::builder()
+                .name("resizer_drag_gesture")
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
+            self.flap_resizer.add_controller(&resizer_drag_gesture);
+
+            // Dirty hack to stop resizing when it is switching from non-folded to folded or vice versa
+            let prev_folded = Rc::new(Cell::new(flap.is_folded()));
+
+            resizer_drag_gesture.connect_drag_begin(clone!(@strong prev_folded, @weak flap, @weak flap_box => move |_resizer_drag_gesture, _x , _y| {
+                    prev_folded.set(flap.is_folded());
+            }));
+
+            resizer_drag_gesture.connect_drag_update(clone!(@weak obj, @strong prev_folded, @weak flap, @weak flap_box, @weak flapreveal_toggle => move |_resizer_drag_gesture, x , _y| {
+                if flap.is_folded() == prev_folded.get() {
+                    // Set BEFORE new width request
+                    prev_folded.set(flap.is_folded());
+
+                    let new_width = if flap.flap_position() == PackType::Start {
+                        flap_box.width() + x.ceil() as i32
+                    } else {
+                        flap_box.width() - x.floor() as i32
+                    };
+                    if new_width > 0 && new_width < obj.mainheader().width() - 64 {
+                        flap_box.set_width_request(new_width);
+                    }
+                } else {
+                    if flap.is_folded() {
+                        flapreveal_toggle.set_active(true);
+                    }
+                }
+            }));
+
+            self.flap_resizer.set_cursor(
+                gdk::Cursor::from_name(
+                    "col-resize",
+                    gdk::Cursor::from_name("default", None).as_ref(),
+                )
+                .as_ref(),
             );
 
-            self.workspace_pathup_button.get().connect_clicked(
-                clone!(@weak obj => move |_workspace_pathup_button| {
-                        if let Some(current_path) = obj.workspacebrowser().primary_path() {
-                            if let Some(parent_path) = current_path.parent() {
-                                obj.workspacebrowser().set_primary_path(parent_path);
-                            }
-                        }
-                }),
-            );
+            self.flap.get().connect_flap_position_notify(clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box => move |flap| {
+                if flap.flap_position() == PackType::Start {
+                        flap_resizer_box.remove::<gtk4::Box>(&flap_box);
+                        flap_resizer_box.remove::<gtk4::Box>(&flap_resizer);
+                        flap_resizer_box.prepend::<gtk4::Box>(&flap_box);
+                        flap_resizer_box.append::<gtk4::Box>(&flap_resizer);
+                } else {
+                        flap_resizer_box.remove::<gtk4::Box>(&flap_resizer);
+                        flap_resizer_box.remove::<gtk4::Box>(&flap_box);
+                        flap_resizer_box.prepend::<gtk4::Box>(&flap_resizer);
+                        flap_resizer_box.append::<gtk4::Box>(&flap_box);
+                }
+            }));
 
             // Load latest window state
             obj.load_window_size();
@@ -267,16 +290,17 @@ use std::{
 
 use adw::prelude::*;
 use gtk4::{
-    gdk, gio, glib, glib::clone, graphene, subclass::prelude::*, Application, Box, Button, Entry,
+    gdk, gio, glib, glib::clone, graphene, subclass::prelude::*, Application, Box,
     EventControllerScroll, EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom,
     Grid, Inhibit, Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator,
-    Snapshot,
+    Snapshot, ToggleButton,
 };
 
 use crate::{
     app::RnoteApp,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokeStyle},
     ui::canvas::Canvas,
+    ui::canvassettings::CanvasSettings,
     ui::develactions::DevelActions,
     ui::penssidebar::PensSideBar,
     ui::{actions, selectionmodifier::SelectionModifier, workspacebrowser::WorkspaceBrowser},
@@ -335,9 +359,19 @@ impl RnoteAppWindow {
             .get()
     }
 
+    pub fn canvas(&self) -> Canvas {
+        imp::RnoteAppWindow::from_instance(self).canvas.get()
+    }
+
     pub fn canvas_resize_preview(&self) -> Picture {
         imp::RnoteAppWindow::from_instance(self)
             .canvas_resize_preview
+            .get()
+    }
+
+    pub fn canvassettings(&self) -> CanvasSettings {
+        imp::RnoteAppWindow::from_instance(self)
+            .canvassettings
             .get()
     }
 
@@ -355,20 +389,8 @@ impl RnoteAppWindow {
         imp::RnoteAppWindow::from_instance(self).sidebar_sep.get()
     }
 
-    pub fn canvas(&self) -> Canvas {
-        imp::RnoteAppWindow::from_instance(self).canvas.get()
-    }
-
-    pub fn workspace_grid(&self) -> Grid {
-        imp::RnoteAppWindow::from_instance(self)
-            .workspace_grid
-            .get()
-    }
-
-    pub fn workspace_headerbar(&self) -> adw::HeaderBar {
-        imp::RnoteAppWindow::from_instance(self)
-            .workspace_headerbar
-            .get()
+    pub fn flap_header(&self) -> adw::HeaderBar {
+        imp::RnoteAppWindow::from_instance(self).flap_header.get()
     }
 
     pub fn workspacebrowser(&self) -> WorkspaceBrowser {
@@ -381,25 +403,9 @@ impl RnoteAppWindow {
         imp::RnoteAppWindow::from_instance(self).flap.get()
     }
 
-    pub fn flaphide_button(&self) -> Button {
+    pub fn flapreveal_toggle(&self) -> ToggleButton {
         imp::RnoteAppWindow::from_instance(self)
-            .flaphide_button
-            .get()
-    }
-
-    pub fn flaphide_box(&self) -> Box {
-        imp::RnoteAppWindow::from_instance(self).flaphide_box.get()
-    }
-
-    pub fn workspace_controlbox(&self) -> Box {
-        imp::RnoteAppWindow::from_instance(self)
-            .workspace_controlbox
-            .get()
-    }
-
-    pub fn workspace_pathentry(&self) -> Entry {
-        imp::RnoteAppWindow::from_instance(self)
-            .workspace_pathentry
+            .flapreveal_toggle
             .get()
     }
 
@@ -539,6 +545,7 @@ impl RnoteAppWindow {
         priv_.mainheader.get().appmenu().init(self);
         priv_.penssidebar.get().init(self);
         priv_.canvas.get().sheet().selection().init(self);
+        priv_.canvassettings.get().init(self);
         priv_.selection_modifier.get().init(self);
         priv_.devel_actions.get().init(self);
 
@@ -565,8 +572,8 @@ impl RnoteAppWindow {
             }
         }
 
-        self.workspace_headerbar().connect_show_end_title_buttons_notify(clone!(@weak self as appwindow => move |_files_headerbar| {
-            if appwindow.workspace_headerbar().shows_end_title_buttons() {
+        self.flap_header().connect_show_end_title_buttons_notify(clone!(@weak self as appwindow => move |_files_headerbar| {
+            if appwindow.flap_header().shows_end_title_buttons() {
                  appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
                 appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
                 appwindow.menus_box().append(&appwindow.mainheader().canvasmenu());

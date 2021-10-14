@@ -7,6 +7,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/canvassettings.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/selectionmodifier.ui</file>
@@ -64,6 +65,7 @@
         <file compressed="true">icons/scalable/actions/shape-ellipse-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stroke-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/workspacebrowser-symbolic.svg</file>
         <file>templates/brushstroke-linear.svg.templ</file>
         <file>templates/brushstroke-cubicbezier.svg.templ</file>
         <file>text/brush_filechooser-help.txt</file>

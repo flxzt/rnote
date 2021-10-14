@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### Canvas Settings ### -->
+<interface>
+  <template class="CanvasSettings" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout"></object>
+    </property>
+    <style>
+      <class name="canvassettings" />
+    </style>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="hexpand">false</property>
+        <property name="vexpand">true</property>
+        <property name="valign">fill</property>
+        <property name="halign">fill</property>
+        <property name="spacing">12</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
+        <property name="margin-start">12</property>
+        <property name="margin-end">12</property>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">horizontal</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="label">Canvas Settings</property>
+                <property name="hexpand">true</property>
+                <property name="halign">center</property>
+                <property name="vexpand">false</property>
+                <property name="valign">center</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">12</property>
+                <style>
+                  <class name="title" />
+                </style>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow">
+            <property name="hscrollbar-policy">never</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="halign">fill</property>
+            <property name="valign">fill</property>
+            <property name="propagate-natural-width">true</property>
+            <property name="propagate-natural-height">false</property>
+            <child>
+              <object class="AdwPreferencesGroup">
+                    <property name="title">Format</property>
+                <child>
+                  <object class="AdwComboRow">
+                    <property name="title">Test</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwComboRow" id="format_chooser">
+                    <property name="title">Choose a format</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

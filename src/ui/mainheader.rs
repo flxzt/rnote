@@ -199,7 +199,7 @@ impl MainHeader {
             .get()
             .bind_property(
                 "show-end-title-buttons",
-                &appwindow.workspace_headerbar(),
+                &appwindow.flap_header(),
                 "show-end-title-buttons",
             )
             .flags(

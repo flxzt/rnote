@@ -14,6 +14,7 @@ mod imp {
         sheet::Sheet,
         ui::{
             appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvasmenu::CanvasMenu,
+            canvassettings::CanvasSettings,
             colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
             develactions::DevelActions, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
             penssidebar::eraserpage::EraserPage, penssidebar::markerpage::MarkerPage,
@@ -93,6 +94,7 @@ mod imp {
             SelectionModifier::static_type();
             ModifierNode::static_type();
             CanvasMenu::static_type();
+            CanvasSettings::static_type();
             AppMenu::static_type();
             MainHeader::static_type();
             TemplateChooser::static_type();

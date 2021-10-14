@@ -1,12 +1,21 @@
 mod imp {
     use gtk4::{
-        gio, glib, prelude::*, subclass::prelude::*, CompositeTemplate, DirectoryList, ListView,
-        Widget,
+        gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DirectoryList,
+        ListView, Widget,
     };
+    use gtk4::{Button, Entry};
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
     pub struct WorkspaceBrowser {
+        #[template_child]
+        pub open_workspace_button: TemplateChild<Button>,
+        #[template_child]
+        pub workspace_pathup_button: TemplateChild<Button>,
+        #[template_child]
+        pub workspace_pathentry: TemplateChild<Entry>,
+        #[template_child]
+        pub workspace_controlbox: TemplateChild<gtk4::Box>,
         #[template_child]
         pub primary_list: TemplateChild<ListView>,
         pub primary_dirlist: DirectoryList,
@@ -18,6 +27,10 @@ mod imp {
             primary_dirlist.set_monitored(true);
 
             Self {
+                open_workspace_button: TemplateChild::<Button>::default(),
+                workspace_pathup_button: TemplateChild::<Button>::default(),
+                workspace_pathentry: TemplateChild::<Entry>::default(),
+                workspace_controlbox: TemplateChild::<gtk4::Box>::default(),
                 primary_list: TemplateChild::<ListView>::default(),
                 primary_dirlist,
             }
@@ -42,6 +55,16 @@ mod imp {
     impl ObjectImpl for WorkspaceBrowser {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+
+            self.workspace_pathup_button.get().connect_clicked(
+                clone!(@weak obj => move |_workspace_pathup_button| {
+                        if let Some(current_path) = obj.primary_path() {
+                            if let Some(parent_path) = current_path.parent() {
+                                obj.set_primary_path(parent_path);
+                            }
+                        }
+                }),
+            );
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -64,7 +87,7 @@ use gtk4::{
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
     Widget,
 };
-use gtk4::{pango, DirectoryList, Image, ListView, MultiSorter, Orientation};
+use gtk4::{pango, DirectoryList, Entry, Image, ListView, MultiSorter, Orientation};
 
 glib::wrapper! {
     pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
@@ -96,8 +119,26 @@ impl WorkspaceBrowser {
             .clone()
     }
 
+    pub fn workspace_controlbox(&self) -> gtk4::Box {
+        imp::WorkspaceBrowser::from_instance(self)
+            .workspace_controlbox
+            .get()
+    }
+
+    pub fn workspace_pathentry(&self) -> Entry {
+        imp::WorkspaceBrowser::from_instance(self)
+            .workspace_pathentry
+            .get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::WorkspaceBrowser::from_instance(self);
+
+        priv_.open_workspace_button.get().connect_clicked(
+            clone!(@weak appwindow => move |_open_workspace_button| {
+                appwindow.application().unwrap().activate_action("open-workspace", None);
+            }),
+        );
 
         priv_.primary_dirlist.connect_file_notify(clone!(@weak appwindow => move |primary_dirlist| {
             if let Some(file) = primary_dirlist.file() {
@@ -109,7 +150,7 @@ impl WorkspaceBrowser {
 
         priv_
             .primary_dirlist
-            .bind_property("file", &appwindow.workspace_pathentry(), "text")
+            .bind_property("file", &self.workspace_pathentry(), "text")
             .transform_to(|_, value| {
                 let file = value.get::<Option<gio::File>>().unwrap();
                 if let Some(file) = file {

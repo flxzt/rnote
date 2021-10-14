@@ -11,3 +11,4 @@ pub mod penssidebar;
 pub mod selectionmodifier;
 pub mod templatechooser;
 pub mod workspacebrowser;
+pub mod canvassettings;

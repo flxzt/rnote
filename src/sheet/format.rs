@@ -1,6 +1,23 @@
 use gtk4::{gdk, graphene, gsk, Snapshot};
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Copy)]
+pub enum FormatOrientation {
+    Portrait,
+    Landscape
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum PredefinedFormats {
+    A6,
+    A5,
+    A4,
+    A3,
+    A2,
+    USLetter,
+    USLegal
+}
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub struct Format {
     pub width: i32,

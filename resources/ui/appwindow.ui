@@ -219,23 +219,23 @@
                 </child>
                 <child>
                   <object class="AdwViewStack" id="flap_stack">
-                    <!-- Workspacebrowser Page -->
+                    <!-- Workspace Page -->
                     <child>
                       <object class="AdwViewStackPage">
                         <property name="name">workspacebrowser_page</property>
-                        <property name="title">Workspace Browser</property>
+                        <property name="title">Workspace</property>
                         <property name="icon-name">workspacebrowser-symbolic</property>
                         <property name="child">
                           <object class="WorkspaceBrowser" id="workspacebrowser"></object>
                         </property>
                       </object>
                     </child>
-                    <!-- Canvassettings Page -->
+                    <!-- Settings Page -->
                     <child>
                       <object class="AdwViewStackPage">
                         <property name="name">canvassettings_page</property>
-                        <property name="title">Canvas Settings</property>
-                        <property name="icon-name">canvasmenu-symbolic</property>
+                        <property name="title">Settings</property>
+                        <property name="icon-name">settings-symbolic</property>
                         <property name="child">
                           <object class="AdwClamp">
                             <property name="tightening-threshold">800</property>

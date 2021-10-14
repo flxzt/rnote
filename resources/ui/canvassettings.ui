@@ -25,7 +25,7 @@
             <property name="orientation">horizontal</property>
             <child>
               <object class="GtkLabel">
-                <property name="label">Canvas Settings</property>
+                <property name="label">Settings</property>
                 <property name="hexpand">true</property>
                 <property name="halign">center</property>
                 <property name="vexpand">false</property>

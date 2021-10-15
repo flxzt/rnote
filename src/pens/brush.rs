@@ -19,7 +19,7 @@ pub enum BrushStyle {
 
 impl Default for BrushStyle {
     fn default() -> Self {
-        Self::CubicBezier
+        Self::Linear
     }
 }
 

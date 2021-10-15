@@ -199,8 +199,9 @@ pub fn gen_line(first: &Element, second: &Element, offset: na::Vector2<f64>) -> 
     (quads, option_ts)
 } */
 
-/// splitting offsetted quadratic bezier curve at critical points where offset dist < curvature radius
+/// splitting offsetted quadratic bezier curve at critical points where offset dist < curvature radius minimize cusps
 /// returns the splitted quad beziers, and possible split points t1, t2
+/// See "precise offsetting of quadratic bezier curves, Section 3.4 Handling cusps"
 pub fn split_quadbez_critical_points(
     quad_to_split: QuadBezier,
     start_offset_dist: f64,

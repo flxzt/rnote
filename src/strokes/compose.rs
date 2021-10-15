@@ -458,8 +458,9 @@ pub fn compose_cubbez_variable_width(
         end: cubic_bezier.start,
     };
 
-    // if the angle of the two offsets is > 90deg, only draw a line
-    let angle_greater_90 = if start_offset.angle(&end_offset).to_degrees() > 90.0 {
+    // if the angle of the two offsets is > 90deg, calculating the norms went wrong, so reverse them.
+    let angle = start_offset.angle(&end_offset).to_degrees();
+    let angle_greater_90 = if angle < -90.0 && angle > 90.0 {
         true
     } else {
         false

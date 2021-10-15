@@ -96,27 +96,47 @@ impl StrokeBehaviour for MarkerStroke {
             .zip(self.elements.iter().skip(3))
             .enumerate()
         {
-            let mut cubic_bezier =
-                curves::gen_cubic_bezier_w_catmull_rom(first, second, third, forth);
-            cubic_bezier.start += offset;
-            cubic_bezier.cp1 += offset;
-            cubic_bezier.cp2 += offset;
-            cubic_bezier.end += offset;
+            if let Some(mut cubic_bezier) =
+                curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
+            {
+                cubic_bezier.start += offset;
+                cubic_bezier.cp1 += offset;
+                cubic_bezier.cp2 += offset;
+                cubic_bezier.end += offset;
 
-            if i == 0 {
-                commands.push(path::Command::Move(
-                    path::Position::Absolute,
-                    path::Parameters::from((cubic_bezier.start[0], cubic_bezier.start[1])),
-                ));
+                if i == 0 {
+                    commands.push(path::Command::Move(
+                        path::Position::Absolute,
+                        path::Parameters::from((cubic_bezier.start[0], cubic_bezier.start[1])),
+                    ));
+                } else {
+                    commands.push(path::Command::CubicCurve(
+                        path::Position::Absolute,
+                        path::Parameters::from((
+                            (cubic_bezier.cp1[0], cubic_bezier.cp1[1]),
+                            (cubic_bezier.cp2[0], cubic_bezier.cp2[1]),
+                            (cubic_bezier.end[0], cubic_bezier.end[1]),
+                        )),
+                    ));
+                }
             } else {
-                commands.push(path::Command::CubicCurve(
-                    path::Position::Absolute,
-                    path::Parameters::from((
-                        (cubic_bezier.cp1[0], cubic_bezier.cp1[1]),
-                        (cubic_bezier.cp2[0], cubic_bezier.cp2[1]),
-                        (cubic_bezier.end[0], cubic_bezier.end[1]),
-                    )),
-                ));
+                if i == 0 {
+                    commands.push(path::Command::Move(
+                        path::Position::Absolute,
+                        path::Parameters::from((
+                            second.inputdata.pos()[0],
+                            second.inputdata.pos()[1],
+                        )),
+                    ));
+                } else {
+                    commands.push(path::Command::Line(
+                        path::Position::Absolute,
+                        path::Parameters::from((
+                            third.inputdata.pos()[0],
+                            third.inputdata.pos()[1],
+                        )),
+                    ));
+                }
             }
         }
 

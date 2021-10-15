@@ -299,22 +299,21 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(1))
             .enumerate()
         {
-            let line = curves::gen_line(first, second, offset);
-
             let start_width = first.inputdata.pressure() * self.brush.width();
             let end_width = second.inputdata.pressure() * self.brush.width();
 
-            if let Some(line) = line {
+            if let Some(line) = curves::gen_line(first, second, offset) {
                 if i == 0 {
                     commands.push(path::Command::Move(
                         path::Position::Absolute,
                         path::Parameters::from((line.start[0], line.start[1])),
                     ));
                 }
-                commands.append(&mut compose::svg_linear_variable_width(
+                commands.append(&mut compose::compose_linear_variable_width(
                     line,
                     start_width,
                     end_width,
+                    true
                 ));
             }
         }
@@ -338,22 +337,31 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
         {
-            let width_start = second.inputdata.pressure() * self.brush.width();
-            let width_end = third.inputdata.pressure() * self.brush.width();
+            let start_width = second.inputdata.pressure() * self.brush.width();
+            let end_width = third.inputdata.pressure() * self.brush.width();
 
-            let mut cubic_bezier =
-                curves::gen_cubic_bezier_w_catmull_rom(first, second, third, forth);
-            cubic_bezier.start += offset;
-            cubic_bezier.cp1 += offset;
-            cubic_bezier.cp2 += offset;
-            cubic_bezier.end += offset;
+            if let Some(mut cubic_bezier) =
+                curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
+            {
+                cubic_bezier.start += offset;
+                cubic_bezier.cp1 += offset;
+                cubic_bezier.cp2 += offset;
+                cubic_bezier.end += offset;
 
-            commands.append(&mut compose::svg_cubic_bezier_variable_width(
-                cubic_bezier,
-                width_start,
-                width_end,
-                true,
-            ));
+                commands.append(&mut compose::compose_cubbez_variable_width(
+                    cubic_bezier,
+                    start_width,
+                    end_width,
+                    true,
+                ));
+            } else if let Some(line) = curves::gen_line(first, second, offset) {
+                commands.append(&mut compose::compose_linear_variable_width(
+                    line,
+                    start_width,
+                    end_width,
+                    true
+                ));
+            }
 
             // Debugging
             /*             let end_offset_dist = width_end / 2.0;

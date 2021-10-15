@@ -118,7 +118,7 @@ pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
     }
 }
 
-pub fn svg_linear_offsetted(
+pub fn compose_linear_offsetted(
     line: curves::Line,
     start_offset_dist: f64,
     end_offset_dist: f64,
@@ -147,10 +147,11 @@ pub fn svg_linear_offsetted(
     commands
 }
 
-pub fn svg_linear_variable_width(
+pub fn compose_linear_variable_width(
     line: curves::Line,
     width_start: f64,
     width_end: f64,
+    move_start: bool,
 ) -> Vec<path::Command> {
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
@@ -162,11 +163,11 @@ pub fn svg_linear_variable_width(
     let direction_unit_norm = curves::vector2_unit_norm(line.end - line.start);
 
     let mut commands = Vec::new();
-    commands.append(&mut svg_linear_offsetted(
+    commands.append(&mut compose_linear_offsetted(
         line,
         start_offset_dist,
         end_offset_dist,
-        true,
+        move_start,
     ));
     commands.push(path::Command::EllipticalArc(
         path::Position::Absolute,
@@ -180,7 +181,7 @@ pub fn svg_linear_variable_width(
             (line.end + direction_unit_norm * (-end_offset_dist))[1],
         )),
     ));
-    commands.append(&mut svg_linear_offsetted(
+    commands.append(&mut compose_linear_offsetted(
         line_reverse,
         end_offset_dist,
         start_offset_dist,
@@ -202,13 +203,14 @@ pub fn svg_linear_variable_width(
     commands
 }
 
-// Offsetted quad bezier approximation, see "precise offsetting of quadratic bezier curves"
-pub fn svg_quad_bezier_offsetted(
+pub fn compose_quadbez_offsetted(
     quad_bezier: curves::QuadBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
 ) -> Vec<path::Command> {
+    let mut commands = Vec::new();
+
     let start_unit_norm = curves::vector2_unit_norm(quad_bezier.cp - quad_bezier.start);
     let end_unit_norm = curves::vector2_unit_norm(quad_bezier.end - quad_bezier.cp);
 
@@ -223,7 +225,6 @@ pub fn svg_quad_bezier_offsetted(
     let cp_offset =
         (2.0 * cp_offset_dist * added_unit_norms) / added_unit_norms.dot(&added_unit_norms);
 
-    let mut commands = Vec::new();
     if move_start {
         commands.push(path::Command::Move(
             path::Position::Absolute,
@@ -250,7 +251,106 @@ pub fn svg_quad_bezier_offsetted(
     commands
 }
 
-pub fn svg_quad_bezier_variable_width(
+// Offsetted quad bezier approximation, see "precise offsetting of quadratic bezier curves"
+pub fn compose_quadbez_offsetted_w_subdivision(
+    quad_bezier: curves::QuadBezier,
+    start_offset_dist: f64,
+    end_offset_dist: f64,
+    move_start: bool,
+) -> Vec<path::Command> {
+    let mut commands = Vec::new();
+
+    let (splitted_quads, split_t1, split_t2) =
+        curves::split_quadbez_critical_points(quad_bezier, start_offset_dist, end_offset_dist);
+
+    match (split_t1, split_t2) {
+        (Some(split_t1), Some(split_t2)) => {
+            let offset_dist_t1 = curves::quadbez_calc_offset_dist_at_t(
+                quad_bezier,
+                start_offset_dist,
+                end_offset_dist,
+                split_t1,
+            );
+            let offset_dist_t2 = curves::quadbez_calc_offset_dist_at_t(
+                quad_bezier,
+                start_offset_dist,
+                end_offset_dist,
+                split_t2,
+            );
+
+            commands.append(&mut compose_quadbez_offsetted(
+                splitted_quads[0],
+                start_offset_dist,
+                offset_dist_t1,
+                move_start,
+            ));
+            commands.append(&mut compose_quadbez_offsetted(
+                splitted_quads[1],
+                offset_dist_t1,
+                offset_dist_t2,
+                false,
+            ));
+            commands.append(&mut compose_quadbez_offsetted(
+                splitted_quads[2],
+                offset_dist_t2,
+                end_offset_dist,
+                false,
+            ));
+        }
+        (Some(split_t1), None) => {
+            let offset_dist_t1 = curves::quadbez_calc_offset_dist_at_t(
+                quad_bezier,
+                start_offset_dist,
+                end_offset_dist,
+                split_t1,
+            );
+            commands.append(&mut compose_quadbez_offsetted(
+                splitted_quads[0],
+                start_offset_dist,
+                offset_dist_t1,
+                move_start,
+            ));
+            commands.append(&mut compose_quadbez_offsetted(
+                splitted_quads[1],
+                offset_dist_t1,
+                end_offset_dist,
+                false,
+            ));
+        }
+        (None, Some(split_t2)) => {
+            let offset_dist_t2 = curves::quadbez_calc_offset_dist_at_t(
+                quad_bezier,
+                start_offset_dist,
+                end_offset_dist,
+                split_t2,
+            );
+            commands.append(&mut compose_quadbez_offsetted(
+                splitted_quads[0],
+                start_offset_dist,
+                offset_dist_t2,
+                move_start,
+            ));
+            commands.append(&mut compose_quadbez_offsetted(
+                splitted_quads[1],
+                offset_dist_t2,
+                end_offset_dist,
+                false,
+            ));
+        }
+        (None, None) => {
+            commands.append(&mut compose_quadbez_offsetted(
+                splitted_quads[0],
+                start_offset_dist,
+                end_offset_dist,
+                move_start,
+            ));
+        }
+    }
+
+    commands
+}
+
+pub fn compose_quadbez_variable_width(
     quad_bezier: curves::QuadBezier,
     width_start: f64,
     width_end: f64,
@@ -273,7 +373,7 @@ pub fn svg_quad_bezier_variable_width(
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
 
-    commands.append(&mut svg_quad_bezier_offsetted(
+    commands.append(&mut compose_quadbez_offsetted_w_subdivision(
         quad_bezier,
         start_offset_dist,
         end_offset_dist,
@@ -287,7 +387,7 @@ pub fn svg_quad_bezier_variable_width(
         )),
     ));
 
-    commands.append(&mut svg_quad_bezier_offsetted(
+    commands.append(&mut compose_quadbez_offsetted_w_subdivision(
         quad_bezier_reverse,
         end_offset_dist,
         start_offset_dist,
@@ -304,51 +404,39 @@ pub fn svg_quad_bezier_variable_width(
     commands
 }
 
-pub fn cubic_bezier_offsetted(
+pub fn compose_cubbez_offsetted(
     cubic_bezier: curves::CubicBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
 ) -> Vec<path::Command> {
     let t = 0.5;
-    let (first_cubic, second_cubic) = curves::split_cubic_bezier(cubic_bezier, t);
     let mid_offset_dist = start_offset_dist + (end_offset_dist - start_offset_dist) * t;
 
-    let first_quad = curves::approx_cubic_with_quad(first_cubic);
-    let second_quad = curves::approx_cubic_with_quad(second_cubic);
+    let (first_cubic, second_cubic) = curves::split_cubbez(cubic_bezier, t);
+    let first_quad = curves::approx_cubbez_with_quadbez(first_cubic);
+    let second_quad = curves::approx_cubbez_with_quadbez(second_cubic);
 
     let mut commands = Vec::new();
 
-    commands.append(&mut svg_quad_bezier_offsetted(
+    commands.append(&mut compose_quadbez_offsetted_w_subdivision(
         first_quad,
         start_offset_dist,
         mid_offset_dist,
         move_start,
     ));
 
-    commands.append(&mut svg_quad_bezier_offsetted(
+    commands.append(&mut compose_quadbez_offsetted_w_subdivision(
         second_quad,
         mid_offset_dist,
         end_offset_dist,
         false,
     ));
 
-    /*     let mut quads = curves::split_quad_bezier_critical_points(first_quad, start_offset_dist, end_offset_dist);
-    quads.append(&mut curves::split_quad_bezier_critical_points(second_quad, start_offset_dist, end_offset_dist));
-
-    for (i, quad) in quads.iter().enumerate() {
-    commands.append(&mut svg_quad_bezier_offsetted(
-        *quad,
-        start_offset_dist + (end_offset_dist - start_offset_dist) * f64::from((i as i32 + 1) / quads.len() as i32),
-        start_offset_dist + (end_offset_dist - start_offset_dist) * f64::from(1 - (i as i32 + 1) / quads.len() as i32),
-        true,
-    ));
-    } */
-
     commands
 }
 
-pub fn svg_cubic_bezier_variable_width(
+pub fn compose_cubbez_variable_width(
     cubic_bezier: curves::CubicBezier,
     width_start: f64,
     width_end: f64,
@@ -370,8 +458,15 @@ pub fn svg_cubic_bezier_variable_width(
         end: cubic_bezier.start,
     };
 
+    // if the angle of the two offsets is > 90deg, only draw a line
+    let angle_greater_90 = if start_offset.angle(&end_offset).to_degrees() > 90.0 {
+        true
+    } else {
+        false
+    };
+
     let mut commands =
-        cubic_bezier_offsetted(cubic_bezier, start_offset_dist, end_offset_dist, move_start);
+        compose_cubbez_offsetted(cubic_bezier, start_offset_dist, end_offset_dist, move_start);
 
     commands.push(path::Command::Line(
         path::Position::Absolute,
@@ -381,12 +476,22 @@ pub fn svg_cubic_bezier_variable_width(
         )),
     ));
 
-    commands.append(&mut cubic_bezier_offsetted(
-        cubic_bezier_reverse,
-        end_offset_dist,
-        start_offset_dist,
-        false,
-    ));
+    // If angle > 90.0 degrees, reverse the cubic_bezier vector (using the original cubic_bezier, but with offsets of the reversed)
+    if angle_greater_90 {
+        commands.append(&mut compose_cubbez_offsetted(
+            cubic_bezier,
+            -end_offset_dist,
+            -start_offset_dist,
+            false,
+        ));
+    } else {
+        commands.append(&mut compose_cubbez_offsetted(
+            cubic_bezier_reverse,
+            end_offset_dist,
+            start_offset_dist,
+            false,
+        ));
+    }
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((

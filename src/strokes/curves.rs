@@ -15,6 +15,13 @@ pub struct QuadBezier {
     pub end: na::Vector2<f64>,
 }
 
+#[derive(Debug, Default, Clone, Copy)]
+pub struct QuadBezierVariableOffset {
+    quad: QuadBezier,
+    start_offset: f64,
+    end_offset: f64,
+}
+
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 pub struct CubicBezier {
     pub start: na::Vector2<f64>,
@@ -88,7 +95,7 @@ fn quad_bezier_derive_coeff_a(
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
 ) -> na::Vector2<f64> {
-    2.0 * (p2 - 2.0 * p1 + p0)
+    2.0 * p2 - 4.0 * p1 + 2.0 * p0
 }
 
 // Coefficient b of quadratic bezier derivation in polynomial form: C' = a * t + b
@@ -108,6 +115,7 @@ fn quad_bezier_derive_calc(
     quad_bezier_derive_coeff_a(p0, p1, p2) * t + quad_bezier_derive_coeff_b(p0, p1)
 }
 
+/// Returns (t1, t2) with t1, t2 between 0.0 and 1.0
 fn quad_solve_critical_points(a: na::Vector2<f64>, b: na::Vector2<f64>, d: f64) -> (f64, f64) {
     let t1 = (-(a[0] * b[0] + a[1] + b[1])
         + ((a[0] * b[0] + a[1] * b[1]).powi(2)
@@ -129,12 +137,12 @@ fn quad_solve_critical_points(a: na::Vector2<f64>, b: na::Vector2<f64>, d: f64) 
 }
 
 // See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
-pub fn gen_cubic_bezier_w_catmull_rom(
+pub fn gen_cubbez_w_catmull_rom(
     first: &Element,
     second: &Element,
     third: &Element,
     forth: &Element,
-) -> CubicBezier {
+) -> Option<CubicBezier> {
     // Tension factor (tau)
     let tension = 1.0;
 
@@ -153,7 +161,13 @@ pub fn gen_cubic_bezier_w_catmull_rom(
         end,
     };
 
-    cubic_bezier
+    let start_to_end = cubic_bezier.end - cubic_bezier.start;
+    // returns early to prevent NaN when calculating the normals.
+    if start_to_end.magnitude() == 0.0 {
+        return None;
+    }
+
+    Some(cubic_bezier)
 }
 
 pub fn gen_line(first: &Element, second: &Element, offset: na::Vector2<f64>) -> Option<Line> {
@@ -162,21 +176,36 @@ pub fn gen_line(first: &Element, second: &Element, offset: na::Vector2<f64>) -> 
         end: second.inputdata.pos() + offset,
     };
 
-    let start_end_len = (line.end - line.start).magnitude();
+    let start_to_end = line.end - line.start;
 
-    // returns early to prevent NaN when calculating the vector norm.
-    if start_end_len == 0.0 {
+    // returns early to prevent NaN when calculating the normals.
+    if start_to_end.magnitude() == 0.0 {
         return None;
     }
 
     Some(line)
 }
 
-pub fn split_quad_bezier_critical_points(
+/// Splits at angle condition to minimize max error when flattening the curve later
+/* pub fn split_quadbez_angle_condition(
     quad_to_split: QuadBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
-) -> Vec<QuadBezier> {
+) -> (Vec<QuadBezier>, Option<f64>) {
+    let mut quads = Vec::new();
+
+    let mut option_ts = None;
+
+    (quads, option_ts)
+} */
+
+/// splitting offsetted quadratic bezier curve at critical points where offset dist < curvature radius
+/// returns the splitted quad beziers, and possible split points t1, t2
+pub fn split_quadbez_critical_points(
+    quad_to_split: QuadBezier,
+    start_offset_dist: f64,
+    end_offset_dist: f64,
+) -> (Vec<QuadBezier>, Option<f64>, Option<f64>) {
     let mut quads = Vec::new();
 
     let max_offset_dist = start_offset_dist.max(end_offset_dist);
@@ -193,23 +222,32 @@ pub fn split_quad_bezier_critical_points(
         t1 = t2;
         t2 = tmp;
     }
+    let mut option_t1 = None;
+    let mut option_t2 = None;
 
     if t1 > 0.0 && t1 < 1.0 {
-        let (t1_first, t1_second) = split_quad_bezier(quad_to_split, t1);
+        let (t1_first, t1_second) = split_quadbez(quad_to_split, t1);
         quads.push(t1_first);
+        option_t1 = Some(t1);
 
         if t2 > 0.0 && t2 < 1.0 {
-            let (t2_first, t2_second) = split_quad_bezier(t1_second, t2);
+            let (t2_first, t2_second) = split_quadbez(t1_second, t2);
             quads.push(t2_first);
             quads.push(t2_second);
+
+            option_t2 = Some(t2);
+        } else {
+            quads.push(t1_second);
         }
+    } else {
+        quads.push(quad_to_split);
     }
 
-    quads
+    (quads, option_t1, option_t2)
 }
 
-// Split a quadratic bezier curve into two, interpolation value z: between 0.0 and 1.0
-pub fn split_quad_bezier(quad_to_split: QuadBezier, z: f64) -> (QuadBezier, QuadBezier) {
+/// Split a quadratic bezier curve into two, interpolation value z: between 0.0 and 1.0
+pub fn split_quadbez(quad_to_split: QuadBezier, z: f64) -> (QuadBezier, QuadBezier) {
     let p0 = quad_to_split.start;
     let p1 = quad_to_split.cp;
     let p2 = quad_to_split.end;
@@ -229,7 +267,7 @@ pub fn split_quad_bezier(quad_to_split: QuadBezier, z: f64) -> (QuadBezier, Quad
     (first_splitted, second_splitted)
 }
 
-pub fn split_cubic_bezier(cubic_bezier: CubicBezier, t: f64) -> (CubicBezier, CubicBezier) {
+pub fn split_cubbez(cubic_bezier: CubicBezier, t: f64) -> (CubicBezier, CubicBezier) {
     let a0 = cubic_bezier.start;
     let a1 = cubic_bezier.cp1;
     let a2 = cubic_bezier.cp2;
@@ -258,10 +296,15 @@ pub fn split_cubic_bezier(cubic_bezier: CubicBezier, t: f64) -> (CubicBezier, Cu
     )
 }
 
-pub fn approx_cubic_with_quad(cubic_bezier: CubicBezier) -> QuadBezier {
+pub fn approx_cubbez_with_quadbez(cubic_bezier: CubicBezier) -> QuadBezier {
     let start = cubic_bezier.start;
     let cp = cubic_bezier.cp1.lerp(&cubic_bezier.cp2, 0.5);
     let end = cubic_bezier.end;
 
     QuadBezier { start, cp, end }
+}
+
+// Returns offset dist at t
+pub fn quadbez_calc_offset_dist_at_t(_quad: QuadBezier, start_offset_dist: f64, end_offset_dist: f64, t: f64) -> f64 {
+    start_offset_dist + (end_offset_dist - start_offset_dist) * t
 }

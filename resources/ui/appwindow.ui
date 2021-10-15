@@ -209,7 +209,7 @@
                       </object>
                     </child>
                     <child type="end">
-                      <object class="GtkBox" id="menus_box">
+                      <object class="GtkBox" id="flap_menus_box">
                         <property name="spacing">6</property>
                         <property name="halign">end</property>
                         <property name="margin-end">12</property>
@@ -233,14 +233,14 @@
                     <!-- Settings Page -->
                     <child>
                       <object class="AdwViewStackPage">
-                        <property name="name">canvassettings_page</property>
+                        <property name="name">settings_page</property>
                         <property name="title">Settings</property>
                         <property name="icon-name">settings-symbolic</property>
                         <property name="child">
                           <object class="AdwClamp">
                             <property name="tightening-threshold">800</property>
                             <property name="child">
-                              <object class="CanvasSettings" id="canvassettings"></object>
+                              <object class="SettingsPanel" id="settings_panel"></object>
                             </property>
                           </object>
                         </property>

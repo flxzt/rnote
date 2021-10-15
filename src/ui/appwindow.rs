@@ -11,7 +11,7 @@ mod imp {
     use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
 
     use crate::{
-        app::RnoteApp, config, ui::canvas::Canvas, ui::canvassettings::CanvasSettings,
+        app::RnoteApp, config, ui::canvas::Canvas, ui::settingspanel::SettingsPanel,
         ui::develactions::DevelActions, ui::dialogs, ui::mainheader::MainHeader,
         ui::penssidebar::PensSideBar, ui::selectionmodifier::SelectionModifier,
         ui::workspacebrowser::WorkspaceBrowser,
@@ -37,7 +37,7 @@ mod imp {
         #[template_child]
         pub canvas_resize_preview: TemplateChild<Picture>,
         #[template_child]
-        pub canvassettings: TemplateChild<CanvasSettings>,
+        pub settings_panel: TemplateChild<SettingsPanel>,
         #[template_child]
         pub selection_modifier: TemplateChild<SelectionModifier>,
         #[template_child]
@@ -59,7 +59,7 @@ mod imp {
         #[template_child]
         pub flapreveal_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub menus_box: TemplateChild<Box>,
+        pub flap_menus_box: TemplateChild<Box>,
         #[template_child]
         pub mainheader: TemplateChild<MainHeader>,
         #[template_child]
@@ -78,7 +78,7 @@ mod imp {
                 canvas: TemplateChild::<Canvas>::default(),
                 canvas_overlay: TemplateChild::<Overlay>::default(),
                 canvas_resize_preview: TemplateChild::<Picture>::default(),
-                canvassettings: TemplateChild::<CanvasSettings>::default(),
+                settings_panel: TemplateChild::<SettingsPanel>::default(),
                 selection_modifier: TemplateChild::<SelectionModifier>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
                 sidebar_sep: TemplateChild::<Separator>::default(),
@@ -89,7 +89,7 @@ mod imp {
                 flap_resizer_box: TemplateChild::<gtk4::Box>::default(),
                 workspacebrowser: TemplateChild::<WorkspaceBrowser>::default(),
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
-                menus_box: TemplateChild::<Box>::default(),
+                flap_menus_box: TemplateChild::<Box>::default(),
                 mainheader: TemplateChild::<MainHeader>::default(),
                 penssidebar: TemplateChild::<PensSideBar>::default(),
             }
@@ -300,7 +300,7 @@ use crate::{
     app::RnoteApp,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokeStyle},
     ui::canvas::Canvas,
-    ui::canvassettings::CanvasSettings,
+    ui::settingspanel::SettingsPanel,
     ui::develactions::DevelActions,
     ui::penssidebar::PensSideBar,
     ui::{actions, selectionmodifier::SelectionModifier, workspacebrowser::WorkspaceBrowser},
@@ -369,9 +369,9 @@ impl RnoteAppWindow {
             .get()
     }
 
-    pub fn canvassettings(&self) -> CanvasSettings {
+    pub fn settings_panel(&self) -> SettingsPanel {
         imp::RnoteAppWindow::from_instance(self)
-            .canvassettings
+            .settings_panel
             .get()
     }
 
@@ -409,8 +409,8 @@ impl RnoteAppWindow {
             .get()
     }
 
-    pub fn menus_box(&self) -> Box {
-        imp::RnoteAppWindow::from_instance(self).menus_box.get()
+    pub fn flap_menus_box(&self) -> Box {
+        imp::RnoteAppWindow::from_instance(self).flap_menus_box.get()
     }
 
     pub fn mainheader(&self) -> MainHeader {
@@ -545,7 +545,7 @@ impl RnoteAppWindow {
         priv_.mainheader.get().appmenu().init(self);
         priv_.penssidebar.get().init(self);
         priv_.canvas.get().sheet().selection().init(self);
-        priv_.canvassettings.get().init(self);
+        priv_.settings_panel.get().init(self);
         priv_.selection_modifier.get().init(self);
         priv_.devel_actions.get().init(self);
 
@@ -576,11 +576,11 @@ impl RnoteAppWindow {
             if appwindow.flap_header().shows_end_title_buttons() {
                  appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
                 appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
-                appwindow.menus_box().append(&appwindow.mainheader().canvasmenu());
-                appwindow.menus_box().append(&appwindow.mainheader().appmenu());
+                appwindow.flap_menus_box().append(&appwindow.mainheader().canvasmenu());
+                appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
             } else {
-                 appwindow.menus_box().remove(&appwindow.mainheader().canvasmenu());
-                appwindow.menus_box().remove(&appwindow.mainheader().appmenu());
+                 appwindow.flap_menus_box().remove(&appwindow.mainheader().canvasmenu());
+                appwindow.flap_menus_box().remove(&appwindow.mainheader().appmenu());
                 appwindow.mainheader().menus_box().append(&appwindow.mainheader().canvasmenu());
                 appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
             }

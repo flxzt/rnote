@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- ### Canvas Settings ### -->
 <interface>
-  <template class="CanvasSettings" parent="GtkWidget">
+  <template class="SettingsPanel" parent="GtkWidget">
     <property name="layout-manager">
       <object class="GtkBinLayout"></object>
     </property>
     <style>
-      <class name="canvassettings" />
+      <class name="settings_panel" />
     </style>
     <child>
       <object class="GtkBox">
@@ -50,7 +50,7 @@
             <property name="propagate-natural-height">false</property>
             <child>
               <object class="AdwPreferencesGroup">
-                    <property name="title">Format</property>
+                    <property name="title">Sheet</property>
                 <child>
                   <object class="AdwComboRow">
                     <property name="title">Test</property>

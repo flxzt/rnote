@@ -7,7 +7,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appmenu.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/canvasmenu.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/canvassettings.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/settingspanel.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/selectionmodifier.ui</file>

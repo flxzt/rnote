@@ -98,7 +98,7 @@ impl StrokeBehaviour for BrushStroke {
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         match self.brush.current_style {
             brush::BrushStyle::Linear => self.linear_svg_data(offset),
-            brush::BrushStyle::CubicBezier => self.catmull_rom_svg_data(offset),
+            brush::BrushStyle::CubicBezier => self.cubbez_svg_data(offset),
             brush::BrushStyle::CustomTemplate(_) => self.templates_svg_data(offset),
             brush::BrushStyle::Experimental => self.experimental_svg_data(offset),
         }
@@ -293,16 +293,46 @@ impl BrushStroke {
     pub fn linear_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut commands = Vec::new();
 
-        for (i, (first, second)) in self
+        for (i, (((first, second), third), forth)) in self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
             .enumerate()
         {
-            let start_width = first.inputdata.pressure() * self.brush.width();
-            let end_width = second.inputdata.pressure() * self.brush.width();
+            let start_width = second.inputdata.pressure() * self.brush.width();
+            let end_width = third.inputdata.pressure() * self.brush.width();
 
-            if let Some(line) = curves::gen_line(first, second, offset) {
+            if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
+            {
+                cubbez.start += offset;
+                cubbez.cp1 += offset;
+                cubbez.cp2 += offset;
+                cubbez.end += offset;
+
+                let n_splits = 8;
+                for (i, line) in curves::approx_cubbez_with_lines(cubbez, n_splits)
+                    .iter()
+                    .enumerate()
+                {
+                    let line_start_width = start_width
+                        + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_splits));
+                    let line_end_width = start_width
+                        + (end_width - start_width)
+                            * (f64::from(i as i32 + 1) / f64::from(n_splits));
+
+                    commands.append(&mut compose::compose_linear_variable_width(
+                        *line,
+                        line_start_width,
+                        line_end_width,
+                        true,
+                    ));
+                }
+            } else if let Some(mut line) = curves::gen_line(second, third) {
+                line.start += offset;
+                line.end += offset;
+
                 if i == 0 {
                     commands.push(path::Command::Move(
                         path::Position::Absolute,
@@ -313,7 +343,7 @@ impl BrushStroke {
                     line,
                     start_width,
                     end_width,
-                    true
+                    true,
                 ));
             }
         }
@@ -327,7 +357,7 @@ impl BrushStroke {
         Ok(svg)
     }
 
-    pub fn catmull_rom_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
+    pub fn cubbez_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
         let mut commands = Vec::new();
 
         for (((first, second), third), forth) in self
@@ -354,12 +384,15 @@ impl BrushStroke {
                     end_width,
                     true,
                 ));
-            } else if let Some(line) = curves::gen_line(first, second, offset) {
+            } else if let Some(mut line) = curves::gen_line(first, second) {
+                line.start += offset;
+                line.end += offset;
+
                 commands.append(&mut compose::compose_linear_variable_width(
                     line,
                     start_width,
                     end_width,
-                    true
+                    true,
                 ));
             }
 

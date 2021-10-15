@@ -115,6 +115,29 @@ fn quad_bezier_derive_calc(
     quad_bezier_derive_coeff_a(p0, p1, p2) * t + quad_bezier_derive_coeff_b(p0, p1)
 }
 
+fn cubbez_calc(
+    p0: na::Vector2<f64>,
+    p1: na::Vector2<f64>,
+    p2: na::Vector2<f64>,
+    p3: na::Vector2<f64>,
+    t: f64,
+) -> na::Vector2<f64> {
+    let transform_matrix = na::matrix![
+        1.0, 0.0, 0.0, 0.0;
+        -3.0, 3.0, 0.0, 0.0;
+        3.0, -6.0, 3.0, 0.0;
+        -1.0, 3.0, -3.0, 1.0
+    ];
+    let p_matrix = na::matrix![
+        p0[0], p0[1];
+        p1[0], p1[1];
+        p2[0], p2[1];
+        p3[0], p3[1]
+    ];
+
+    (na::vector![1.0, t, t.powi(2), t.powi(3)].transpose() * transform_matrix * p_matrix).transpose()
+}
+
 /// Returns (t1, t2) with t1, t2 between 0.0 and 1.0
 fn quad_solve_critical_points(a: na::Vector2<f64>, b: na::Vector2<f64>, d: f64) -> (f64, f64) {
     let t1 = (-(a[0] * b[0] + a[1] + b[1])
@@ -170,10 +193,10 @@ pub fn gen_cubbez_w_catmull_rom(
     Some(cubic_bezier)
 }
 
-pub fn gen_line(first: &Element, second: &Element, offset: na::Vector2<f64>) -> Option<Line> {
+pub fn gen_line(first: &Element, second: &Element) -> Option<Line> {
     let line = Line {
-        start: first.inputdata.pos() + offset,
-        end: second.inputdata.pos() + offset,
+        start: first.inputdata.pos(),
+        end: second.inputdata.pos(),
     };
 
     let start_to_end = line.end - line.start;
@@ -303,6 +326,22 @@ pub fn approx_cubbez_with_quadbez(cubic_bezier: CubicBezier) -> QuadBezier {
     let end = cubic_bezier.end;
 
     QuadBezier { start, cp, end }
+}
+
+pub fn approx_cubbez_with_lines(cubbez: CubicBezier, n_splits: i32) -> Vec<Line> {
+    let mut lines = Vec::new();
+
+    for i in 0..n_splits {
+        let start_t = f64::from(i) / f64::from(n_splits);
+        let end_t = f64::from(i + 1) / f64::from(n_splits);
+
+        lines.push(Line {
+            start: cubbez_calc(cubbez.start, cubbez.cp1, cubbez.cp2, cubbez.end, start_t),
+            end: cubbez_calc(cubbez.start, cubbez.cp1, cubbez.cp2, cubbez.end, end_t),
+        })
+    }
+
+    lines
 }
 
 // Returns offset dist at t

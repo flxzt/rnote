@@ -117,7 +117,7 @@ mod imp {
                         }
                     }
 
-                    item_box.append(&item_label);
+                    item_box.prepend(&item_label);
                     item_box.append(&item_icon);
                     item_listboxrow.set_child(Some(&item_box));
                     item_listboxrow.upcast::<Widget>()

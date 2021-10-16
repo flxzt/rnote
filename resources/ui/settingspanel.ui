@@ -87,10 +87,12 @@
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
-                            <property name="spacing">6</property>
                             <property name="hexpand">false</property>
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
+                            <style>
+                              <class name="linked" />
+                            </style>
                             <child>
                               <object class="GtkEntry" id="format_width_entry">
                                 <property name="input-purpose">digits</property>
@@ -123,10 +125,12 @@
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
-                            <property name="spacing">6</property>
                             <property name="vexpand">false</property>
                             <property name="hexpand">false</property>
                             <property name="valign">center</property>
+                            <style>
+                              <class name="linked" />
+                            </style>
                             <child>
                               <object class="GtkEntry" id="format_height_entry">
                                 <property name="input-purpose">digits</property>

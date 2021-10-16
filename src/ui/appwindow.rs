@@ -576,19 +576,21 @@ impl RnoteAppWindow {
             }
         }
 
-        self.flap_header().connect_show_end_title_buttons_notify(clone!(@weak self as appwindow => move |_files_headerbar| {
-            if appwindow.flap_header().shows_end_title_buttons() {
-                //appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
-                appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
-                //appwindow.flap_menus_box().append(&appwindow.mainheader().canvasmenu());
-                appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-            } else {
-                //appwindow.flap_menus_box().remove(&appwindow.mainheader().canvasmenu());
-                appwindow.flap_menus_box().remove(&appwindow.mainheader().appmenu());
-                //appwindow.mainheader().menus_box().append(&appwindow.mainheader().canvasmenu());
-                appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-            }
-        }));
+        self.flap_header().connect_show_end_title_buttons_notify(
+            clone!(@weak self as appwindow => move |_files_headerbar| {
+                if appwindow.flap_header().shows_end_title_buttons() {
+                    //appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
+                    appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
+                    //appwindow.flap_menus_box().append(&appwindow.mainheader().canvasmenu());
+                    appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
+                } else {
+                    //appwindow.flap_menus_box().remove(&appwindow.mainheader().canvasmenu());
+                    appwindow.flap_menus_box().remove(&appwindow.mainheader().appmenu());
+                    //appwindow.mainheader().menus_box().append(&appwindow.mainheader().canvasmenu());
+                    appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
+                }
+            }),
+        );
 
         // zoom scrolling with <ctrl> + scroll
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()
@@ -899,7 +901,8 @@ impl RnoteAppWindow {
             utils::FileType::Rnote => {
                 self.canvas().sheet().open_sheet(file)?;
 
-                self.settings_panel().update_format_settingsgroup();
+                // Loading the format into the format settings panel
+                self.settings_panel().load_format(self.canvas().sheet().format());
 
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),

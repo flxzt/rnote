@@ -60,53 +60,53 @@ mod imp {
 
             self.predefined_formats_row.connect_selected_item_notify(
                 clone!(@weak obj => move |_predefined_formats_row| {
-                    obj.update_format_settingsgroup();
+                    obj.update_temporary_format_from_rows();
                     Self::apply_predefined_format(&obj);
                 }),
             );
 
             self.format_orientation_portrait_toggle.connect_toggled(
                 clone!(@weak obj => move |_format_orientation_portrait_toggle| {
-                    obj.update_format_settingsgroup();
+                    obj.update_temporary_format_from_rows();
                     Self::apply_predefined_format(&obj);
                 }),
             );
 
             self.format_orientation_landscape_toggle.connect_toggled(
                 clone!(@weak obj => move |_format_orientation_landscape_toggle| {
-                    obj.update_format_settingsgroup();
+                    obj.update_temporary_format_from_rows();
                     Self::apply_predefined_format(&obj);
                 }),
             );
 
             self.format_width_unitdropdown.connect_selected_item_notify(
                 clone!(@weak obj => move |_format_width_unitdropdown| {
-                    obj.update_format_settingsgroup();
+                    obj.update_temporary_format_from_rows();
                 }),
             );
 
             self.format_height_unitdropdown
                 .connect_selected_item_notify(
                     clone!(@weak obj => move |_format_height_unitdropdown| {
-                        obj.update_format_settingsgroup();
+                        obj.update_temporary_format_from_rows();
                     }),
                 );
 
             self.format_width_entry.buffer().connect_text_notify(
                 clone!(@weak obj => move |_buffer| {
-                    obj.update_format_settingsgroup();
+                    obj.update_temporary_format_from_rows();
                 }),
             );
 
             self.format_height_entry.buffer().connect_text_notify(
                 clone!(@weak obj => move |_buffer| {
-                obj.update_format_settingsgroup();
+                obj.update_temporary_format_from_rows();
                 }),
             );
 
             self.format_dpi_adj
                 .connect_value_changed(clone!(@weak obj => move |_format_dpi_adj| {
-                    obj.update_format_settingsgroup();
+                    obj.update_temporary_format_from_rows();
                 }));
         }
 
@@ -276,6 +276,7 @@ mod imp {
 
 use adw::prelude::*;
 use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
+use gtk4::{Adjustment, Entry};
 
 use super::appwindow::RnoteAppWindow;
 use crate::sheet::format::{self, Format};
@@ -296,7 +297,13 @@ impl SettingsPanel {
         glib::Object::new(&[]).expect("Failed to create SettingsPanel")
     }
 
-    pub fn set_predefined_format(&self, predefined_format: format::PredefinedFormat) {
+    pub fn temporary_format(&self) -> Format {
+        imp::SettingsPanel::from_instance(self)
+            .temporary_format
+            .clone()
+    }
+
+    pub fn set_predefined_format_variant(&self, predefined_format: format::PredefinedFormat) {
         let priv_ = imp::SettingsPanel::from_instance(self);
         let predefined_format_listmodel = priv_
             .predefined_formats_row
@@ -309,6 +316,45 @@ impl SettingsPanel {
             .predefined_formats_row
             .get()
             .set_selected(predefined_format_listmodel.find_position(predefined_format as i32));
+    }
+
+    pub fn set_format_orientation(&self, orientation: format::Orientation) {
+        let priv_ = imp::SettingsPanel::from_instance(self);
+        if orientation == format::Orientation::Portrait {
+            priv_.format_orientation_portrait_toggle.set_active(true);
+        } else {
+            priv_.format_orientation_landscape_toggle.set_active(true);
+        }
+    }
+
+    pub fn format_width_entry(&self) -> Entry {
+        imp::SettingsPanel::from_instance(self)
+            .format_width_entry
+            .clone()
+    }
+
+    pub fn format_height_entry(&self) -> Entry {
+        imp::SettingsPanel::from_instance(self)
+            .format_height_entry
+            .clone()
+    }
+
+    pub fn format_dpi_adj(&self) -> Adjustment {
+        imp::SettingsPanel::from_instance(self)
+            .format_dpi_adj
+            .clone()
+    }
+
+    pub fn load_format(&self, format: Format) {
+        self.set_predefined_format_variant(format::PredefinedFormat::Custom);
+        self.format_width_entry()
+            .buffer()
+            .set_text(format.width().to_string().as_str());
+        self.format_height_entry()
+            .buffer()
+            .set_text(format.height().to_string().as_str());
+        self.format_dpi_adj().set_value(f64::from(format.dpi()));
+        self.set_format_orientation(format.orientation());
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -332,7 +378,7 @@ impl SettingsPanel {
             priv_.format_height_entry.buffer().set_text(&revert_format.height().to_string());
             priv_.format_dpi_adj.set_value(f64::from(revert_format.dpi()));
 
-            settingspanel.set_predefined_format(format::PredefinedFormat::Custom);
+            settingspanel.set_predefined_format_variant(format::PredefinedFormat::Custom);
         }));
 
         priv_.format_apply_button.get().connect_clicked(
@@ -374,7 +420,8 @@ impl SettingsPanel {
             }),
         );
     }
-    pub fn update_format_settingsgroup(&self) {
+
+    pub fn update_temporary_format_from_rows(&self) {
         let priv_ = imp::SettingsPanel::from_instance(self);
 
         // Format

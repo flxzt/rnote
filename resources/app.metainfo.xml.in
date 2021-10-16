@@ -54,11 +54,13 @@
   </provides>
 
   <releases>
-    <release version="0.1.4" date="2021-10-13">
+    <release version="0.1.4" date="2021-10-16">
       <description>
+        <p>- UI improvements: sidebar and settings</p>
+        <p>- set a background color</p>
         <p>- added ellipse as a rough shape</p>
         <p>- new and improved gestures and shortcuts (zoom with "ctrl+scroll", drag the canvas with the middle mouse button)</p>
-        <p>- improved brushstroke algorithms</p>
+        <p>- improved strokes algorithms</p>
         <p>- bug fixes</p>
       </description>
     </release>

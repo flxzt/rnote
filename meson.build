@@ -1,7 +1,7 @@
 project(
     'rnote',
     'rust',
-    version: '0.1.3',
+    version: '0.1.4',
     meson_version: '>= 0.56',
 )
 i18n = import('i18n')

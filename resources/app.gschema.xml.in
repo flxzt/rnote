@@ -39,11 +39,7 @@
     </key>
     <key name="autoexpand-height" type="b">
       <default>false</default>
-      <summary>Autoexpand sheet height</summary>
-    </key>
-    <key name="sheet-format" type="(iii)">
-      <default>(1240, 1754, 150)</default>
-      <summary>The sheet format in (width, height, dpi)</summary>
+      <summary>Autoexpand sheet height ( also called "endless sheet" )</summary>
     </key>
     <key name="format-borders" type="b">
       <default>true</default>

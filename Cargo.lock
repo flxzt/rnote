@@ -1997,6 +1997,8 @@ dependencies = [
  "log",
  "nalgebra 0.29.0",
  "nalgebra-glm",
+ "num-derive",
+ "num-traits",
  "once_cell",
  "parry2d-f64",
  "pretty_env_logger",

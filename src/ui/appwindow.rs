@@ -899,6 +899,8 @@ impl RnoteAppWindow {
             utils::FileType::Rnote => {
                 self.canvas().sheet().open_sheet(file)?;
 
+                self.settings_panel().update_format_settingsgroup();
+
                 StrokeStyle::update_all_rendernodes(
                     &mut *self.canvas().sheet().strokes().borrow_mut(),
                     self.canvas().scalefactor(),

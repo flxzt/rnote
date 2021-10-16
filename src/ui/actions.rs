@@ -70,12 +70,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         &"smooth".to_variant(),
     );
 
-    let action_predefined_format = gio::SimpleAction::new_stateful(
-        "predefined-format",
-        Some(&glib::VariantType::new("s").unwrap()),
-        &"custom".to_variant(),
-    );
-
     let action_devel = appwindow.app_settings().create_action("devel");
     let action_renderer_backend = appwindow.app_settings().create_action("renderer-backend");
     let action_sheet_format_borders = appwindow.app_settings().create_action("format-borders");
@@ -295,76 +289,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         }),
     );
     app.add_action(&action_sheet_format_borders);
-
-    // Predefined format
-    action_predefined_format.connect_activate(move |action_predefined_format, parameter| {
-        if action_predefined_format.state().unwrap().str().unwrap()
-            != parameter.unwrap().str().unwrap()
-        {
-            action_predefined_format.change_state(parameter.unwrap());
-        }
-    });
-    action_predefined_format.connect_change_state(
-        clone!(@weak appwindow => move |action_predefined_format, value| {
-            action_predefined_format.set_state(value.unwrap());
-
-            match action_predefined_format.state().unwrap().str().unwrap() {
-                "a4-150dpi-portrait" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1240, 1754, 150).to_variant()));
-                },
-                "a4-150dpi-landscape" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1754, 1240, 150).to_variant()));
-                },
-                "a4-300dpi-portrait" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(3508, 2480, 300).to_variant()));
-                },
-                "a4-300dpi-landscape" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(2480, 3508, 300).to_variant()));
-                },
-                "a3-150dpi-portrait" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(2480, 1754, 150).to_variant()));
-                },
-                "a3-150dpi-landscape" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1754, 2480, 150).to_variant()));
-                },
-                "a3-300dpi-portrait" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(4962, 3508, 300).to_variant()));
-                },
-                "a3-300dpi-landscape" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(3508, 4961, 300).to_variant()));
-                },
-                "us-letter-150dpi-portrait" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1125, 1500, 150).to_variant()));
-                },
-                "us-letter-150dpi-landscape" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1500, 1125, 150).to_variant()));
-                },
-                "us-letter-300dpi-portrait" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(2250, 3000, 300).to_variant()));
-                },
-                "us-letter-300dpi-landscape" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(3000, 2250, 300).to_variant()));
-                },
-                "us-legal-150dpi-portrait" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1125, 1950, 150).to_variant()));
-                },
-                "us-legal-150dpi-landscape" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(1950, 1125, 150).to_variant()));
-                },
-                "us-legal-300dpi-portrait" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(2250, 3900, 300).to_variant()));
-                },
-                "us-legal-300dpi-landscape" => {
-                    appwindow.application().unwrap().activate_action("sheet-format", Some(&(3900, 2250, 300).to_variant()));
-                },
-                "custom" => {
-                    // Is here to deactivate the radio buttons in canvasmenu
-                }
-                _ => { log::error!("set invalid state of action `predefined-format`")}
-            }
-        }),
-    );
-    app.add_action(&action_predefined_format);
 
     // About Dialog
     action_about.connect_activate(clone!(@weak appwindow => move |_, _| {

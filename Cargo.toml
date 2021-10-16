@@ -12,7 +12,8 @@ members = [
 
 [dependencies]
 rough-rs = { path = "./rough-rs" } 
-svg = "0.10.0"
+num-derive = "0.3.3"
+num-traits = "0.2.14"
 rand = "0.8"
 log = "0.4"
 pretty_env_logger = "0.3"
@@ -22,6 +23,7 @@ regex = "1.5"
 nalgebra = { version = "0.29", features = ["serde-serialize"] }
 nalgebra-glm = { version = "0.15"}
 parry2d-f64 = { version = "0.7", features = ["serde-serialize"] }
+svg = "0.10.0"
 gtk4 = {version = "0.3", features = ["v4_4"]}
 adw = {version = "0.1.0-alpha-6", package="libadwaita"}
 libadwaita-sys = "0.1.0-alpha-6"

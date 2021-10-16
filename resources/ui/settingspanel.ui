@@ -39,7 +39,7 @@
                     <property name="title">Sheet Format</property>
                     <child>
                       <object class="AdwComboRow" id="predefined_formats_row">
-                        <property name="title">Sheet Format</property>
+                        <property name="title">Format</property>
                         <property name="subtitle">Choose a format</property>
                         <property name="model">
                           <object class="AdwEnumListModel">

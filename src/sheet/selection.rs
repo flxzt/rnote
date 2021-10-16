@@ -204,9 +204,24 @@ impl<'de> Deserialize<'de> for Selection {
                         }
                     }
                 }
-                let strokes = strokes.ok_or_else(|| de::Error::missing_field("strokes"))?;
-                let bounds = bounds.ok_or_else(|| de::Error::missing_field("bounds"))?;
-                let shown = shown.ok_or_else(|| de::Error::missing_field("shown"))?;
+
+                let selection_default = Selection::default();
+
+                let strokes = strokes.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("strokes");
+                    log::error!("{}",err);
+                    Vec::new()
+                });
+                let bounds = bounds.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("bounds");
+                    log::error!("{}",err);
+                    *selection_default.bounds().borrow()
+                });
+                let shown = shown.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("shown");
+                    log::error!("{}",err);
+                    selection_default.shown()
+                });
 
                 let selection = Selection::new();
                 *selection.strokes().borrow_mut() = strokes;

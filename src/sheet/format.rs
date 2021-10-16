@@ -248,12 +248,28 @@ impl<'de> Deserialize<'de> for Format {
                         }
                     }
                 }
+                let format_default = Format::default();
 
-                let width = width.ok_or_else(|| de::Error::missing_field("width"))?;
-                let height = height.ok_or_else(|| de::Error::missing_field("height"))?;
-                let dpi = dpi.ok_or_else(|| de::Error::missing_field("dpi"))?;
-                let orientation =
-                    orientation.ok_or_else(|| de::Error::missing_field("orientation"))?;
+                let width = width.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("width");
+                    log::error!("{}",err);
+                    format_default.width()
+                });
+                let height = height.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("height");
+                    log::error!("{}",err);
+                    format_default.height()
+                });
+                let dpi = dpi.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("dpi");
+                    log::error!("{}",err);
+                    format_default.dpi()
+                });
+                let orientation = orientation.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("orientation");
+                    log::error!("{}",err);
+                    format_default.orientation()
+                });
 
                 let format = Format::new();
                 format.set_width(width);
@@ -385,12 +401,12 @@ impl Format {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize, num_derive::FromPrimitive)]
 #[repr(u32)]
 #[genum(type_name = "PredefinedFormats")]
 pub enum PredefinedFormat {
     #[genum(name = "A6", nick = "a6")]
-    A6,
+    A6 = 0,
     #[genum(name = "A5", nick = "a5")]
     A5,
     #[genum(name = "A4", nick = "a4")]
@@ -413,12 +429,12 @@ impl Default for PredefinedFormat {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize, num_derive::FromPrimitive)]
 #[repr(u32)]
 #[genum(type_name = "MeasureUnits")]
 pub enum MeasureUnit {
     #[genum(name = "Pixel", nick = "px")]
-    Px,
+    Px = 0,
     #[genum(name = "Millimeter", nick = "mm")]
     Mm,
     #[genum(name = "Centimeter", nick = "cm")]
@@ -458,12 +474,12 @@ impl MeasureUnit {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize, num_derive::FromPrimitive)]
 #[repr(u32)]
 #[genum(type_name = "FormatOrientation")]
 pub enum Orientation {
     #[genum(name = "Portrait", nick = "portrait")]
-    Portrait,
+    Portrait = 0,
     #[genum(name = "Landscape", nick = "landscape")]
     Landscape,
 }

@@ -330,24 +330,68 @@ impl<'de> Deserialize<'de> for Sheet {
                     }
                 }
 
-                let strokes = strokes.ok_or_else(|| de::Error::missing_field("strokes"))?;
-                let strokes_trash =
-                    strokes_trash.ok_or_else(|| de::Error::missing_field("strokes_trash"))?;
-                let selection: Selection =
-                    selection.ok_or_else(|| de::Error::missing_field("selection"))?;
-                let format: Format = format.ok_or_else(|| de::Error::missing_field("format"))?;
-                let background: Background =
-                    background.ok_or_else(|| de::Error::missing_field("background"))?;
-                let x: i32 = x.ok_or_else(|| de::Error::missing_field("x"))?;
-                let y: i32 = y.ok_or_else(|| de::Error::missing_field("y"))?;
-                let width: i32 = width.ok_or_else(|| de::Error::missing_field("width"))?;
-                let height: i32 = height.ok_or_else(|| de::Error::missing_field("height"))?;
-                let autoexpand_height: bool = autoexpand_height
-                    .ok_or_else(|| de::Error::missing_field("autoexpand_height"))?;
-                let format_borders: bool =
-                    format_borders.ok_or_else(|| de::Error::missing_field("format_borders"))?;
-                let padding_bottom: i32 =
-                    padding_bottom.ok_or_else(|| de::Error::missing_field("padding_bottom"))?;
+                let sheet_default = Sheet::default();
+
+                let strokes = strokes.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("strokes");
+                    log::error!("{}",err);
+                    Vec::new()
+                });
+                let strokes_trash = strokes_trash.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("strokes_trash");
+                    log::error!("{}",err);
+                    Vec::new()
+                });
+                let selection = selection.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("selection");
+                    log::error!("{}",err);
+                    Selection::default()
+                });
+                let format = format.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("format");
+                    log::error!("{}",err);
+                    Format::default()
+                });
+                let background = background.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("background");
+                    log::error!("{}",err);
+                    Background::default()
+                });
+                let x = x.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("x");
+                    log::error!("{}",err);
+                    sheet_default.x()
+                });
+                let y = y.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("y");
+                    log::error!("{}",err);
+                    sheet_default.y()
+                });
+                let width = width.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("width");
+                    log::error!("{}",err);
+                    sheet_default.width()
+                });
+                let height = height.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("height");
+                    log::error!("{}",err);
+                    sheet_default.height()
+                });
+                let autoexpand_height = autoexpand_height.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("autoexpand_height");
+                    log::error!("{}",err);
+                    sheet_default.autoexpand_height()
+                });
+                let format_borders = format_borders.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("format_borders");
+                    log::error!("{}",err);
+                    sheet_default.format_borders()
+                });
+                let padding_bottom = padding_bottom.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("padding_bottom");
+                    log::error!("{}",err);
+                    sheet_default.padding_bottom()
+                });
 
                 let sheet = Sheet::new();
                 *sheet.strokes().borrow_mut() = strokes;

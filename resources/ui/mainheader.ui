@@ -52,9 +52,9 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkButton" id="fit_to_format_button">
-                        <property name="icon_name">fit-to-format-symbolic</property>
-                        <property name="tooltip_text">fit to format</property>
+                      <object class="GtkButton" id="resize_to_format_button">
+                        <property name="icon_name">resize-to-format-symbolic</property>
+                        <property name="tooltip_text">resize to format</property>
                       </object>
                     </child>
                   </object>

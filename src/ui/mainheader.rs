@@ -21,7 +21,7 @@ mod imp {
         #[template_child]
         pub add_page_button: TemplateChild<Button>,
         #[template_child]
-        pub fit_to_format_button: TemplateChild<Button>,
+        pub resize_to_format_button: TemplateChild<Button>,
         #[template_child]
         pub undo_button: TemplateChild<Button>,
         #[template_child]
@@ -123,9 +123,9 @@ impl MainHeader {
         imp::MainHeader::from_instance(self).add_page_button.get()
     }
 
-    pub fn fit_to_format_button(&self) -> Button {
+    pub fn resize_to_format_button(&self) -> Button {
         imp::MainHeader::from_instance(self)
-            .fit_to_format_button
+            .resize_to_format_button
             .get()
     }
 
@@ -211,15 +211,15 @@ impl MainHeader {
 
         priv_.add_page_button.get().connect_clicked(
             clone!(@weak appwindow => move |_add_page_button| {
-                let format_height = appwindow.canvas().sheet().format().borrow().height;
+                let format_height = appwindow.canvas().sheet().format().height();
                 appwindow.canvas().sheet().set_height(appwindow.canvas().sheet().height() + format_height);
                 appwindow.canvas().queue_resize();
             }),
         );
 
-        priv_.fit_to_format_button.get().connect_clicked(
-            clone!(@weak appwindow => move |_fit_to_format_button| {
-                appwindow.canvas().sheet().fit_to_format();
+        priv_.resize_to_format_button.get().connect_clicked(
+            clone!(@weak appwindow => move |_resize_to_format_button| {
+                appwindow.canvas().sheet().resize_to_format();
                 appwindow.canvas().queue_resize();
             }),
         );

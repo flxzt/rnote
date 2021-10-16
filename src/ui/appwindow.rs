@@ -11,9 +11,9 @@ mod imp {
     use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
 
     use crate::{
-        app::RnoteApp, config, ui::canvas::Canvas, ui::settingspanel::SettingsPanel,
-        ui::develactions::DevelActions, ui::dialogs, ui::mainheader::MainHeader,
-        ui::penssidebar::PensSideBar, ui::selectionmodifier::SelectionModifier,
+        app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
+        ui::mainheader::MainHeader, ui::penssidebar::PensSideBar,
+        ui::selectionmodifier::SelectionModifier, ui::settingspanel::SettingsPanel,
         ui::workspacebrowser::WorkspaceBrowser,
     };
 
@@ -230,19 +230,21 @@ mod imp {
                 .as_ref(),
             );
 
-            self.flap.get().connect_flap_position_notify(clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box => move |flap| {
-                if flap.flap_position() == PackType::Start {
-                        flap_resizer_box.remove::<gtk4::Box>(&flap_box);
-                        flap_resizer_box.remove::<gtk4::Box>(&flap_resizer);
-                        flap_resizer_box.prepend::<gtk4::Box>(&flap_box);
-                        flap_resizer_box.append::<gtk4::Box>(&flap_resizer);
-                } else {
-                        flap_resizer_box.remove::<gtk4::Box>(&flap_resizer);
-                        flap_resizer_box.remove::<gtk4::Box>(&flap_box);
-                        flap_resizer_box.prepend::<gtk4::Box>(&flap_resizer);
-                        flap_resizer_box.append::<gtk4::Box>(&flap_box);
-                }
-            }));
+            self.flap.get().connect_flap_position_notify(
+                clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box => move |flap| {
+                    if flap.flap_position() == PackType::Start {
+                            flap_resizer_box.remove::<gtk4::Box>(&flap_box);
+                            flap_resizer_box.remove::<gtk4::Box>(&flap_resizer);
+                            flap_resizer_box.prepend::<gtk4::Box>(&flap_box);
+                            flap_resizer_box.append::<gtk4::Box>(&flap_resizer);
+                    } else {
+                            flap_resizer_box.remove::<gtk4::Box>(&flap_resizer);
+                            flap_resizer_box.remove::<gtk4::Box>(&flap_box);
+                            flap_resizer_box.prepend::<gtk4::Box>(&flap_resizer);
+                            flap_resizer_box.append::<gtk4::Box>(&flap_box);
+                    }
+                }),
+            );
 
             // Load latest window state
             obj.load_window_size();
@@ -300,9 +302,9 @@ use crate::{
     app::RnoteApp,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokeStyle},
     ui::canvas::Canvas,
-    ui::settingspanel::SettingsPanel,
     ui::develactions::DevelActions,
     ui::penssidebar::PensSideBar,
+    ui::settingspanel::SettingsPanel,
     ui::{actions, selectionmodifier::SelectionModifier, workspacebrowser::WorkspaceBrowser},
     ui::{dialogs, mainheader::MainHeader},
     utils,
@@ -410,7 +412,9 @@ impl RnoteAppWindow {
     }
 
     pub fn flap_menus_box(&self) -> Box {
-        imp::RnoteAppWindow::from_instance(self).flap_menus_box.get()
+        imp::RnoteAppWindow::from_instance(self)
+            .flap_menus_box
+            .get()
     }
 
     pub fn mainheader(&self) -> MainHeader {
@@ -574,14 +578,14 @@ impl RnoteAppWindow {
 
         self.flap_header().connect_show_end_title_buttons_notify(clone!(@weak self as appwindow => move |_files_headerbar| {
             if appwindow.flap_header().shows_end_title_buttons() {
-                 appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
+                //appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
                 appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
-                appwindow.flap_menus_box().append(&appwindow.mainheader().canvasmenu());
+                //appwindow.flap_menus_box().append(&appwindow.mainheader().canvasmenu());
                 appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
             } else {
-                 appwindow.flap_menus_box().remove(&appwindow.mainheader().canvasmenu());
+                //appwindow.flap_menus_box().remove(&appwindow.mainheader().canvasmenu());
                 appwindow.flap_menus_box().remove(&appwindow.mainheader().appmenu());
-                appwindow.mainheader().menus_box().append(&appwindow.mainheader().canvasmenu());
+                //appwindow.mainheader().menus_box().append(&appwindow.mainheader().canvasmenu());
                 appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
             }
         }));
@@ -839,14 +843,6 @@ impl RnoteAppWindow {
             .bind("touch-drawing", &self.canvas(), "touch-drawing")
             .flags(gio::SettingsBindFlags::DEFAULT)
             .build();
-
-        // Sheet format
-        self.canvas().sheet().change_format(
-            self.app_settings()
-                .value("sheet-format")
-                .get::<(i32, i32, i32)>()
-                .unwrap(),
-        );
 
         // Format borders
         self.canvas()

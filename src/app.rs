@@ -11,10 +11,11 @@ mod imp {
 
     use crate::{
         config,
+        sheet::format::MeasureUnit,
+        sheet::format::PredefinedFormat,
         sheet::Sheet,
         ui::{
             appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvasmenu::CanvasMenu,
-            settingspanel::SettingsPanel,
             colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
             develactions::DevelActions, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
             penssidebar::eraserpage::EraserPage, penssidebar::markerpage::MarkerPage,
@@ -23,7 +24,8 @@ mod imp {
             penssidebar::shaperpage::rectangleconfigpage::RectangleConfigPage,
             penssidebar::shaperpage::ShaperPage, penssidebar::PensSideBar,
             selectionmodifier::modifiernode::ModifierNode, selectionmodifier::SelectionModifier,
-            templatechooser::TemplateChooser, workspacebrowser::WorkspaceBrowser,
+            settingspanel::SettingsPanel, templatechooser::TemplateChooser,
+            workspacebrowser::WorkspaceBrowser,
         },
         utils,
     };
@@ -107,6 +109,8 @@ mod imp {
             EraserPage::static_type();
             SelectorPage::static_type();
             WorkspaceBrowser::static_type();
+            PredefinedFormat::static_type();
+            MeasureUnit::static_type();
 
             application.set_resource_base_path(Some(config::APP_IDPATH));
             let res = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))

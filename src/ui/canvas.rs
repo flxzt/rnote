@@ -514,12 +514,7 @@ impl Canvas {
     }
 
     pub fn set_scalefactor(&self, scalefactor: f64) {
-        match self.set_property("scalefactor", scalefactor.to_value()) {
-            Ok(_) => {}
-            Err(e) => {
-                log::error!("failed to set property `scalefactor` of `Canvas`, {}", e)
-            }
-        }
+        self.set_property("scalefactor", scalefactor.to_value()).unwrap();
     }
 
     pub fn preview(&self) -> WidgetPaintable {
@@ -763,9 +758,11 @@ impl Canvas {
                         self.current_pen().get(),
                         &self.pens().borrow(),
                     );
-                    if self.sheet().resize() {
+
+                    if self.sheet().resize_autoexpand() {
                         self.queue_resize();
                     }
+
                     if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
@@ -814,7 +811,7 @@ impl Canvas {
                         &self.pens().borrow(),
                     );
 
-                    if self.sheet().resize() {
+                    if self.sheet().resize_autoexpand() {
                         self.queue_resize();
                     }
 

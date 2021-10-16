@@ -78,7 +78,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     let action_devel = appwindow.app_settings().create_action("devel");
     let action_renderer_backend = appwindow.app_settings().create_action("renderer-backend");
-    let action_sheet_format = appwindow.app_settings().create_action("sheet-format");
     let action_sheet_format_borders = appwindow.app_settings().create_action("format-borders");
     let action_touch_drawing = appwindow.app_settings().create_action("touch-drawing");
     let action_autoexpand_height = appwindow.app_settings().create_action("autoexpand-height");
@@ -367,20 +366,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     );
     app.add_action(&action_predefined_format);
 
-    // Sheet format
-    action_sheet_format.connect_state_notify(clone!(@weak appwindow => move |action_set_format| {
-            let format_tuple = action_set_format.state().unwrap().get::<(i32, i32, i32)>().unwrap();
-
-            appwindow.mainheader().canvasmenu().custom_format_width_entry().buffer().set_text(format_tuple.0.to_string().as_str());
-            appwindow.mainheader().canvasmenu().custom_format_height_entry().buffer().set_text(format_tuple.1.to_string().as_str());
-            appwindow.mainheader().canvasmenu().custom_format_dpi_entry().buffer().set_text(format_tuple.2.to_string().as_str());
-            appwindow.canvas().sheet().change_format(format_tuple);
-
-            appwindow.canvas().queue_resize();
-            appwindow.canvas().queue_draw();
-    }));
-    app.add_action(&action_sheet_format);
-
     // About Dialog
     action_about.connect_activate(clone!(@weak appwindow => move |_, _| {
         dialogs::dialog_about(&appwindow);
@@ -485,7 +470,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let scalefactor = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().borrow().width as f64;
+        let scalefactor = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
         appwindow.canvas().set_property("scalefactor", scalefactor.to_value()).unwrap();
     }));
     app.add_action(&action_zoom_fit_width);
@@ -594,10 +579,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             let (margin_top, margin_bottom, margin_left, margin_right) = print_cx.hard_margins().unwrap_or( (0.0, 0.0, 0.0, 0.0) );
 
-            let width_scale = (print_cx.width() + margin_left + margin_right) / f64::from(appwindow.canvas().sheet().format().borrow().width);
-            let height_scale = (print_cx.height() + margin_top + margin_bottom) / f64::from(appwindow.canvas().sheet().format().borrow().height);
+            let width_scale = (print_cx.width() + margin_left + margin_right) / f64::from(appwindow.canvas().sheet().format().width());
+            let height_scale = (print_cx.height() + margin_top + margin_bottom) / f64::from(appwindow.canvas().sheet().format().height());
             let scalefactor = width_scale.min(height_scale);
-            let y_offset =  - (f64::from(page_nr * appwindow.canvas().sheet().format().borrow().height) * scalefactor);
+            let y_offset =  - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * scalefactor);
 
             // Cloning strokes out of sheet to change their rendernodes without affecting the original strokes
             let mut strokes = (*appwindow.canvas().sheet().strokes().borrow_mut()).clone();
@@ -624,7 +609,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             if appwindow.canvas().sheet().format_borders() {
                 appwindow.canvas().sheet()
                     .format()
-                    .borrow()
                     .draw(appwindow.canvas().sheet().calc_n_pages(), &snapshot, scalefactor);
             }
 
@@ -634,8 +618,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             cx.rectangle(
                 0.0,
                 0.0,
-                f64::from(appwindow.canvas().sheet().format().borrow().width) * scalefactor,
-                f64::from(appwindow.canvas().sheet().format().borrow().height) * scalefactor,
+                f64::from(appwindow.canvas().sheet().format().width()) * scalefactor,
+                f64::from(appwindow.canvas().sheet().format().height()) * scalefactor,
             );
             cx.clip();
             cx.translate(0.0, y_offset);

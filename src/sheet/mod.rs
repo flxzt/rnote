@@ -24,8 +24,9 @@ mod imp {
     use std::cell::Cell;
     use std::{cell::RefCell, rc::Rc};
 
-    use gtk4::{glib, subclass::prelude::*};
+    use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 
+    use crate::sheet::format;
     use crate::sheet::selection::Selection;
     use crate::strokes::{self, Element};
 
@@ -41,7 +42,7 @@ mod imp {
         pub elements_trash: Rc<RefCell<Vec<Element>>>,
 
         pub selection: Selection,
-        pub format: Rc<RefCell<Format>>,
+        pub format: Format,
         pub background: Rc<RefCell<Background>>,
         pub x: Cell<i32>,
         pub y: Cell<i32>,
@@ -59,15 +60,15 @@ mod imp {
                 strokes_trash: Rc::new(RefCell::new(Vec::new())),
                 elements_trash: Rc::new(RefCell::new(Vec::new())),
                 selection: Selection::new(),
-                format: Rc::new(RefCell::new(Format::default())),
+                format: Format::default(),
                 background: Rc::new(RefCell::new(Background::default())),
                 x: Cell::new(0),
                 y: Cell::new(0),
-                width: Cell::new(Format::default().width),
-                height: Cell::new(Format::default().height),
+                width: Cell::new(Format::default().width()),
+                height: Cell::new(Format::default().height()),
                 autoexpand_height: Cell::new(true),
                 format_borders: Cell::new(true),
-                padding_bottom: Cell::new(Format::default().height),
+                padding_bottom: Cell::new(Format::default().height()),
             }
         }
     }
@@ -79,7 +80,37 @@ mod imp {
         type ParentType = glib::Object;
     }
 
-    impl ObjectImpl for Sheet {}
+    impl ObjectImpl for Sheet {
+        fn constructed(&self, obj: &Self::Type) {
+            self.format.connect_notify_local(
+                Some("width"),
+                clone!(@weak obj => move |format, _| {
+                    obj.set_width(format.width());
+
+                    obj.resize_to_format();
+                }),
+            );
+
+            self.format.connect_notify_local(
+                Some("height"),
+                clone!(@weak obj => move |format, _| {
+                    obj.set_height(format.height());
+
+                    obj.resize_to_format();
+                }),
+            );
+
+            self.format.connect_notify_local(Some("dpi"), clone!(@weak obj => move |format, _| {
+                let new_width = format::MeasureUnit::convert_measure_units(f64::from(format.width()), format::MeasureUnit::Px, obj.format().dpi(), format::MeasureUnit::Px, format.dpi()).round() as i32;
+                let new_height = format::MeasureUnit::convert_measure_units(f64::from(format.height()), format::MeasureUnit::Px, obj.format().dpi(), format::MeasureUnit::Px, format.dpi()).round() as i32;
+
+                obj.set_width(new_width);
+                obj.set_height(new_height);
+
+                    obj.resize_to_format();
+            }));
+        }
+    }
 }
 
 glib::wrapper! {
@@ -97,7 +128,7 @@ impl Serialize for Sheet {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("Sheet", 2)?;
+        let mut state = serializer.serialize_struct("Sheet", 12)?;
         state.serialize_field("strokes", &*self.strokes().borrow())?;
         state.serialize_field("strokes_trash", &*self.strokes_trash().borrow())?;
         state.serialize_field("selection", &self.selection())?;
@@ -158,7 +189,7 @@ impl<'de> Deserialize<'de> for Sheet {
                 let selection: Selection = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(2, &self))?;
-                let format = seq
+                let format: Format = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(3, &self))?;
                 let background = seq
@@ -192,7 +223,7 @@ impl<'de> Deserialize<'de> for Sheet {
                 *sheet.selection().strokes().borrow_mut() = selection.strokes().borrow().clone();
                 *sheet.selection().bounds().borrow_mut() = *selection.bounds().borrow();
                 sheet.selection().set_shown(selection.shown());
-                *sheet.format().borrow_mut() = format;
+                sheet.format().replace_fields(format);
                 *sheet.background().borrow_mut() = background;
                 sheet.set_x(x);
                 sheet.set_y(y);
@@ -324,7 +355,7 @@ impl<'de> Deserialize<'de> for Sheet {
                 *sheet.selection().strokes().borrow_mut() = selection.strokes().borrow().clone();
                 *sheet.selection().bounds().borrow_mut() = *selection.bounds().borrow();
                 sheet.selection().set_shown(selection.shown());
-                *sheet.format().borrow_mut() = format;
+                sheet.format().replace_fields(format);
                 *sheet.background().borrow_mut() = background;
                 sheet.set_x(x);
                 sheet.set_y(y);
@@ -419,16 +450,10 @@ impl Sheet {
         let priv_ = imp::Sheet::from_instance(self);
         priv_.autoexpand_height.set(autoexpand_height);
 
-        if autoexpand_height {
-            priv_.padding_bottom.set(2 * priv_.format.borrow().height);
-            self.resize();
-        } else {
-            priv_.padding_bottom.set(0);
-            self.fit_to_format();
-        }
+        self.resize_to_format();
     }
 
-    pub fn format(&self) -> Rc<RefCell<Format>> {
+    pub fn format(&self) -> Format {
         let priv_ = imp::Sheet::from_instance(self);
         priv_.format.clone()
     }
@@ -464,7 +489,7 @@ impl Sheet {
         if let Some(removed_stroke) = priv_.strokes.borrow_mut().pop() {
             priv_.strokes_trash.borrow_mut().push(removed_stroke);
         }
-        self.resize()
+        self.resize_to_format()
     }
 
     // returns true if resizing is needed
@@ -474,7 +499,7 @@ impl Sheet {
         if let Some(restored_stroke) = priv_.strokes_trash.borrow_mut().pop() {
             priv_.strokes.borrow_mut().push(restored_stroke);
         }
-        self.resize()
+        self.resize_to_format()
     }
 
     pub fn undo_elements_last_stroke(
@@ -631,7 +656,7 @@ impl Sheet {
                 .borrow_mut()
                 .append(&mut removed_strokes);
 
-            self.resize()
+            self.resize_autoexpand()
         } else {
             false
         }
@@ -644,58 +669,46 @@ impl Sheet {
         priv_.strokes.borrow_mut().clear();
         priv_.strokes_trash.borrow_mut().clear();
         priv_.selection.strokes().borrow_mut().clear();
+    }
+
+    pub fn resize_autoexpand(&self) -> bool {
+        if self.autoexpand_height() {
+            let new_height = self.calc_height();
+
+            if new_height != self.height() {
+                self.set_height(new_height);
+                return true;
+            }
+        }
+
+        false
+    }
+
+    pub fn resize_to_format(&self) -> bool {
+        let priv_ = imp::Sheet::from_instance(self);
+        let mut resize_needed = false;
 
         if self.autoexpand_height() {
-            self.set_padding_bottom(2 * priv_.format.borrow().height);
-            self.resize();
+            self.set_padding_bottom(2 * priv_.format.height());
+
+            let new_height = self.calc_height();
+
+            if new_height != self.height() {
+                resize_needed = true;
+                self.set_height(new_height);
+            }
         } else {
             self.set_padding_bottom(0);
-            self.fit_to_format();
-        }
-    }
 
-    // In format (width, height, dpi)
-    pub fn change_format(&self, format_tuple: (i32, i32, i32)) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        *priv_.format.borrow_mut() = Format {
-            width: format_tuple.0,
-            height: format_tuple.1,
-            dpi: format_tuple.2,
-        };
-
-        self.set_width(priv_.format.borrow().width);
-        self.set_height(priv_.format.borrow().height);
-        self.set_padding_bottom(2 * priv_.format.borrow().height);
-        // Ignoring return parameter of resize() because resizing is needed either way.
-        self.resize();
-    }
-
-    pub fn fit_to_format(&self) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        let new_height = self.calc_height();
-        self.set_height(
-            (new_height as f64 / priv_.format.borrow().height as f64).ceil() as i32
-                * priv_.format.borrow().height,
-        );
-    }
-
-    // Resizing the sheet format height and returning true if widget resizing is needed
-    pub fn resize(&self) -> bool {
-        if !self.autoexpand_height() {
-            return false;
+            let new_height = self.calc_height();
+            self.set_height(
+                (new_height as f64 / priv_.format.height() as f64).ceil() as i32
+                    * priv_.format.height(),
+            );
+            resize_needed = true;
         }
 
-        let mut resize = false;
-        let new_height = self.calc_height();
-
-        if new_height != self.height() {
-            resize = true;
-            self.set_height(new_height);
-        }
-
-        resize
+        resize_needed
     }
 
     pub fn calc_height(&self) -> i32 {
@@ -708,15 +721,19 @@ impl Sheet {
             // max_by_key() returns the element, so we need to extract the height again
             stroke.bounds().maxs[1].round() as i32 + self.padding_bottom()
         } else {
-            // Iterator empty so resizing to format height
-            priv_.format.borrow().height
+            // Strokes are empty so resizing to format height
+            priv_.format.height()
         };
 
         new_height
     }
 
     pub fn calc_n_pages(&self) -> i32 {
-        self.height() / self.format().borrow().height
+        if self.format().height() > 0 {
+            self.height() / self.format().height()
+        } else {
+            0
+        }
     }
 
     pub fn remove_strokes(&self, indices: Vec<usize>) {
@@ -758,7 +775,6 @@ impl Sheet {
         if self.format_borders() {
             priv_
                 .format
-                .borrow()
                 .draw(self.calc_n_pages(), snapshot, scalefactor);
         }
 
@@ -775,7 +791,7 @@ impl Sheet {
         *self.selection().strokes().borrow_mut() = sheet.selection().strokes().borrow().clone();
         *self.selection().bounds().borrow_mut() = *sheet.selection().bounds().borrow();
         self.selection().set_shown(sheet.selection().shown());
-        *self.format().borrow_mut() = *sheet.format().borrow();
+        self.format().replace_fields(sheet.format());
         *self.background().borrow_mut() = *sheet.background().borrow();
         self.set_x(sheet.x());
         self.set_y(sheet.y());

@@ -238,7 +238,8 @@
                         <property name="icon-name">settings-symbolic</property>
                         <property name="child">
                           <object class="AdwClamp">
-                            <property name="tightening-threshold">800</property>
+                            <property name="maximum-size">800</property>
+                            <property name="tightening-threshold">700</property>
                             <property name="child">
                               <object class="SettingsPanel" id="settings_panel"></object>
                             </property>

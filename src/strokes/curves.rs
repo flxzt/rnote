@@ -135,7 +135,8 @@ fn cubbez_calc(
         p3[0], p3[1]
     ];
 
-    (na::vector![1.0, t, t.powi(2), t.powi(3)].transpose() * transform_matrix * p_matrix).transpose()
+    (na::vector![1.0, t, t.powi(2), t.powi(3)].transpose() * transform_matrix * p_matrix)
+        .transpose()
 }
 
 /// Returns (t1, t2) with t1, t2 between 0.0 and 1.0
@@ -345,6 +346,11 @@ pub fn approx_cubbez_with_lines(cubbez: CubicBezier, n_splits: i32) -> Vec<Line>
 }
 
 // Returns offset dist at t
-pub fn quadbez_calc_offset_dist_at_t(_quad: QuadBezier, start_offset_dist: f64, end_offset_dist: f64, t: f64) -> f64 {
+pub fn quadbez_calc_offset_dist_at_t(
+    _quad: QuadBezier,
+    start_offset_dist: f64,
+    end_offset_dist: f64,
+    t: f64,
+) -> f64 {
     start_offset_dist + (end_offset_dist - start_offset_dist) * t
 }

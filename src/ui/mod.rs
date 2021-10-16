@@ -9,6 +9,6 @@ pub mod dialogs;
 pub mod mainheader;
 pub mod penssidebar;
 pub mod selectionmodifier;
+pub mod settingspanel;
 pub mod templatechooser;
 pub mod workspacebrowser;
-pub mod settingspanel;

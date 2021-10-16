@@ -1,13 +1,42 @@
 mod imp {
-    use gtk4::{glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate};
+    use adw::prelude::*;
+    use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate};
+    use gtk4::{Adjustment, Button, DropDown, Entry, ToggleButton};
+
+    use crate::sheet::format::{self, Format};
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub struct SettingsPanel {
+        pub temporary_format: Format,
         #[template_child]
-        pub settings_closebutton: TemplateChild<Button>,
+        pub predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
-        pub format_chooser: TemplateChild<adw::ComboRow>,
+        pub format_orientation_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub format_orientation_portrait_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub format_orientation_landscape_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub format_width_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub format_width_entry: TemplateChild<Entry>,
+        #[template_child]
+        pub format_width_unitdropdown: TemplateChild<DropDown>,
+        #[template_child]
+        pub format_height_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub format_height_entry: TemplateChild<Entry>,
+        #[template_child]
+        pub format_height_unitdropdown: TemplateChild<DropDown>,
+        #[template_child]
+        pub format_dpi_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub format_dpi_adj: TemplateChild<Adjustment>,
+        #[template_child]
+        pub format_revert_button: TemplateChild<Button>,
+        #[template_child]
+        pub format_apply_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
@@ -28,6 +57,57 @@ mod imp {
     impl ObjectImpl for SettingsPanel {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+
+            self.predefined_formats_row.connect_selected_item_notify(
+                clone!(@weak obj => move |_predefined_formats_row| {
+                    obj.update_format_settingsgroup();
+                    Self::apply_predefined_format(&obj);
+                }),
+            );
+
+            self.format_orientation_portrait_toggle.connect_toggled(
+                clone!(@weak obj => move |_format_orientation_portrait_toggle| {
+                    obj.update_format_settingsgroup();
+                    Self::apply_predefined_format(&obj);
+                }),
+            );
+
+            self.format_orientation_landscape_toggle.connect_toggled(
+                clone!(@weak obj => move |_format_orientation_landscape_toggle| {
+                    obj.update_format_settingsgroup();
+                    Self::apply_predefined_format(&obj);
+                }),
+            );
+
+            self.format_width_unitdropdown.connect_selected_item_notify(
+                clone!(@weak obj => move |_format_width_unitdropdown| {
+                    obj.update_format_settingsgroup();
+                }),
+            );
+
+            self.format_height_unitdropdown
+                .connect_selected_item_notify(
+                    clone!(@weak obj => move |_format_height_unitdropdown| {
+                        obj.update_format_settingsgroup();
+                    }),
+                );
+
+            self.format_width_entry.buffer().connect_text_notify(
+                clone!(@weak obj => move |_buffer| {
+                    obj.update_format_settingsgroup();
+                }),
+            );
+
+            self.format_height_entry.buffer().connect_text_notify(
+                clone!(@weak obj => move |_buffer| {
+                obj.update_format_settingsgroup();
+                }),
+            );
+
+            self.format_dpi_adj
+                .connect_value_changed(clone!(@weak obj => move |_format_dpi_adj| {
+                    obj.update_format_settingsgroup();
+                }));
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -35,16 +115,170 @@ mod imp {
                 child.unparent();
             }
         }
+
+        fn properties() -> &'static [glib::ParamSpec] {
+            &[]
+        }
+
+        fn signals() -> &'static [glib::subclass::Signal] {
+            &[]
+        }
+
+        fn set_property(
+            &self,
+            _obj: &Self::Type,
+            _id: usize,
+            _value: &glib::Value,
+            _pspec: &glib::ParamSpec,
+        ) {
+            unimplemented!()
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, _pspec: &glib::ParamSpec) -> glib::Value {
+            unimplemented!()
+        }
     }
 
     impl WidgetImpl for SettingsPanel {}
 
-    impl SettingsPanel {}
+    impl SettingsPanel {
+        fn apply_predefined_format(obj: &super::SettingsPanel) {
+            let priv_ = Self::from_instance(obj);
+
+            if let Some(selected_item) = priv_.predefined_formats_row.selected_item() {
+                // Dimensions are in mm
+                let mut preconfigured_dimensions = match selected_item
+                    .downcast::<adw::EnumListItem>()
+                    .unwrap()
+                    .nick()
+                    .unwrap()
+                    .as_str()
+                {
+                    "a2" => {
+                        priv_.format_orientation_row.set_sensitive(true);
+                        priv_.format_width_row.set_sensitive(false);
+                        priv_.format_height_row.set_sensitive(false);
+                        Some((420.0, 594.0))
+                    }
+                    "a3" => {
+                        priv_.format_orientation_row.set_sensitive(true);
+                        priv_.format_width_row.set_sensitive(false);
+                        priv_.format_height_row.set_sensitive(false);
+                        Some((297.0, 420.0))
+                    }
+                    "a4" => {
+                        priv_.format_orientation_row.set_sensitive(true);
+                        priv_.format_width_row.set_sensitive(false);
+                        priv_.format_height_row.set_sensitive(false);
+                        Some((210.0, 297.0))
+                    }
+                    "a5" => {
+                        priv_.format_orientation_row.set_sensitive(true);
+                        priv_.format_width_row.set_sensitive(false);
+                        priv_.format_height_row.set_sensitive(false);
+                        Some((148.0, 210.0))
+                    }
+                    "a6" => {
+                        priv_.format_orientation_row.set_sensitive(true);
+                        priv_.format_width_row.set_sensitive(false);
+                        priv_.format_height_row.set_sensitive(false);
+                        Some((105.0, 148.0))
+                    }
+                    "us-letter" => {
+                        priv_.format_orientation_row.set_sensitive(true);
+                        priv_.format_width_row.set_sensitive(false);
+                        priv_.format_height_row.set_sensitive(false);
+                        Some((215.9, 279.4))
+                    }
+                    "us-legal" => {
+                        priv_.format_orientation_row.set_sensitive(true);
+                        priv_.format_width_row.set_sensitive(false);
+                        priv_.format_height_row.set_sensitive(false);
+                        Some((215.9, 355.6))
+                    }
+                    "custom" => {
+                        priv_.format_orientation_row.set_sensitive(false);
+                        priv_.format_width_row.set_sensitive(true);
+                        priv_.format_height_row.set_sensitive(true);
+                        priv_.format_orientation_portrait_toggle.set_active(true);
+                        priv_
+                            .temporary_format
+                            .set_orientation(format::Orientation::Portrait);
+                        None
+                    }
+                    _ => {
+                        log::error!(
+                            "invalid nick string when selecting a format in predefined_formats_row"
+                        );
+                        None
+                    }
+                };
+
+                if let Some(ref mut preconfigured_dimensions) = preconfigured_dimensions {
+                    if priv_.temporary_format.orientation() == format::Orientation::Landscape {
+                        let tmp = preconfigured_dimensions.0;
+                        preconfigured_dimensions.0 = preconfigured_dimensions.1;
+                        preconfigured_dimensions.1 = tmp;
+                    }
+
+                    // Setting the unit dropdowns to Mm
+                    let width_unit_listmodel = priv_
+                        .format_width_unitdropdown
+                        .get()
+                        .model()
+                        .unwrap()
+                        .downcast::<adw::EnumListModel>()
+                        .unwrap();
+                    priv_.format_width_unitdropdown.get().set_selected(
+                        width_unit_listmodel.find_position(format::MeasureUnit::Mm as i32),
+                    );
+
+                    let height_unit_listmodel = priv_
+                        .format_height_unitdropdown
+                        .get()
+                        .model()
+                        .unwrap()
+                        .downcast::<adw::EnumListModel>()
+                        .unwrap();
+                    priv_.format_height_unitdropdown.get().set_selected(
+                        height_unit_listmodel.find_position(format::MeasureUnit::Mm as i32),
+                    );
+
+                    let converted_width_px = format::MeasureUnit::convert_measure_units(
+                        preconfigured_dimensions.0,
+                        format::MeasureUnit::Mm,
+                        priv_.temporary_format.dpi(),
+                        format::MeasureUnit::Mm,
+                        priv_.temporary_format.dpi(),
+                    );
+                    let converted_height_px = format::MeasureUnit::convert_measure_units(
+                        preconfigured_dimensions.1,
+                        format::MeasureUnit::Mm,
+                        priv_.temporary_format.dpi(),
+                        format::MeasureUnit::Mm,
+                        priv_.temporary_format.dpi(),
+                    );
+
+                    // Setting the entries, which have callbacks to update the temporary format
+                    priv_
+                        .format_width_entry
+                        .buffer()
+                        .set_text(&converted_width_px.to_string());
+                    priv_
+                        .format_height_entry
+                        .buffer()
+                        .set_text(&converted_height_px.to_string());
+                }
+            }
+        }
+    }
 }
 
-use gtk4::{glib, Widget};
+use adw::prelude::*;
+use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
 
 use super::appwindow::RnoteAppWindow;
+use crate::sheet::format::{self, Format};
 
 glib::wrapper! {
     pub struct SettingsPanel(ObjectSubclass<imp::SettingsPanel>)
@@ -59,10 +293,213 @@ impl Default for SettingsPanel {
 
 impl SettingsPanel {
     pub fn new() -> Self {
-        let canvasmenu: SettingsPanel =
-            glib::Object::new(&[]).expect("Failed to create SettingsPanel");
-        canvasmenu
+        glib::Object::new(&[]).expect("Failed to create SettingsPanel")
     }
 
-    pub fn init(&self, _appwindow: &RnoteAppWindow) {}
+    pub fn set_predefined_format(&self, predefined_format: format::PredefinedFormat) {
+        let priv_ = imp::SettingsPanel::from_instance(self);
+        let predefined_format_listmodel = priv_
+            .predefined_formats_row
+            .get()
+            .model()
+            .unwrap()
+            .downcast::<adw::EnumListModel>()
+            .unwrap();
+        priv_
+            .predefined_formats_row
+            .get()
+            .set_selected(predefined_format_listmodel.find_position(predefined_format as i32));
+    }
+
+    pub fn init(&self, appwindow: &RnoteAppWindow) {
+        let priv_ = imp::SettingsPanel::from_instance(self);
+        let temporary_format = priv_.temporary_format.clone();
+
+        priv_.format_revert_button.get().connect_clicked(clone!(@weak self as settingspanel, @weak appwindow => move |_format_revert_button| {
+            let priv_ = imp::SettingsPanel::from_instance(&settingspanel);
+            priv_.temporary_format.replace_fields(appwindow.canvas().sheet().format());
+            let revert_format = appwindow.canvas().sheet().format();
+
+            // Setting the unit dropdowns to Px
+            let width_unit_listmodel = priv_.format_width_unitdropdown.get().model().unwrap().downcast::<adw::EnumListModel>().unwrap();
+            priv_.format_width_unitdropdown.get().set_selected(width_unit_listmodel.find_position(format::MeasureUnit::Px as i32));
+
+            let height_unit_listmodel = priv_.format_height_unitdropdown.get().model().unwrap().downcast::<adw::EnumListModel>().unwrap();
+            priv_.format_height_unitdropdown.get().set_selected(height_unit_listmodel.find_position(format::MeasureUnit::Px as i32));
+
+            // Setting the entries, which have callbacks to update the temporary format
+            priv_.format_width_entry.buffer().set_text(&revert_format.width().to_string());
+            priv_.format_height_entry.buffer().set_text(&revert_format.height().to_string());
+            priv_.format_dpi_adj.set_value(f64::from(revert_format.dpi()));
+
+            settingspanel.set_predefined_format(format::PredefinedFormat::Custom);
+        }));
+
+        priv_.format_apply_button.get().connect_clicked(
+            clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
+                appwindow.canvas().sheet().format().replace_fields(temporary_format);
+
+                if appwindow.canvas().sheet().resize_to_format() {
+                    appwindow.canvas().queue_resize();
+                }
+                appwindow.canvas().queue_draw();
+            }),
+        );
+
+        appwindow.canvas().sheet().format().connect_notify_local(
+            Some("width"),
+            clone!(@weak temporary_format => move |format, _| {
+                temporary_format.set_width(format.width());
+            }),
+        );
+
+        appwindow.canvas().sheet().format().connect_notify_local(
+            Some("height"),
+            clone!(@weak temporary_format => move |format, _| {
+                temporary_format.set_height(format.height());
+            }),
+        );
+
+        appwindow.canvas().sheet().format().connect_notify_local(
+            Some("dpi"),
+            clone!(@weak temporary_format => move |format, _| {
+                temporary_format.set_dpi(format.dpi());
+            }),
+        );
+
+        appwindow.canvas().sheet().format().connect_notify_local(
+            Some("orientation"),
+            clone!(@weak temporary_format => move |format, _| {
+                temporary_format.set_orientation(format.orientation());
+            }),
+        );
+    }
+    pub fn update_format_settingsgroup(&self) {
+        let priv_ = imp::SettingsPanel::from_instance(self);
+
+        // Format
+        if priv_.format_orientation_portrait_toggle.is_active() {
+            priv_
+                .temporary_format
+                .set_orientation(format::Orientation::Portrait);
+        } else {
+            priv_
+                .temporary_format
+                .set_orientation(format::Orientation::Landscape);
+        }
+
+        // DPI
+        {
+            priv_.temporary_format.set_dpi(
+                (priv_.format_dpi_adj.value().round() as i32)
+                    .clamp(Format::DPI_MIN, Format::DPI_MAX),
+            );
+        }
+
+        {
+            // Width
+            if let Some(selected_item_width) = priv_.format_width_unitdropdown.selected_item() {
+                let measure_unit_width = match selected_item_width
+                    .downcast::<adw::EnumListItem>()
+                    .unwrap()
+                    .nick()
+                    .unwrap()
+                    .as_str()
+                {
+                    "px" => Some(format::MeasureUnit::Px),
+                    "mm" => Some(format::MeasureUnit::Mm),
+                    "cm" => Some(format::MeasureUnit::Cm),
+                    _ => None,
+                };
+
+                if let Some(measure_unit_width) = measure_unit_width {
+                    if let Some(width) = priv_
+                        .format_width_entry
+                        .buffer()
+                        .text()
+                        .as_str()
+                        .parse::<f64>()
+                        .ok()
+                    {
+                        let converted_width_px = format::MeasureUnit::convert_measure_units(
+                            f64::from(width),
+                            measure_unit_width,
+                            priv_.temporary_format.dpi(),
+                            format::MeasureUnit::Px,
+                            priv_.temporary_format.dpi(),
+                        )
+                        .round() as i32;
+                        priv_.temporary_format.set_width(
+                            converted_width_px.clamp(Format::WIDTH_MIN, Format::WIDTH_MAX),
+                        );
+
+                        priv_
+                            .format_width_entry
+                            .style_context()
+                            .remove_class("error");
+                        priv_.format_width_entry.style_context().add_class("plain");
+                    } else {
+                        priv_
+                            .format_width_entry
+                            .style_context()
+                            .remove_class("plain");
+                        priv_.format_width_entry.style_context().add_class("error");
+                    }
+                }
+            }
+        }
+
+        // Height
+        {
+            if let Some(selected_item_height) = priv_.format_height_unitdropdown.selected_item() {
+                let measure_unit_height = match selected_item_height
+                    .downcast::<adw::EnumListItem>()
+                    .unwrap()
+                    .nick()
+                    .unwrap()
+                    .as_str()
+                {
+                    "px" => Some(format::MeasureUnit::Px),
+                    "mm" => Some(format::MeasureUnit::Mm),
+                    "cm" => Some(format::MeasureUnit::Cm),
+                    _ => None,
+                };
+
+                if let Some(measure_unit_height) = measure_unit_height {
+                    if let Some(height) = priv_
+                        .format_height_entry
+                        .buffer()
+                        .text()
+                        .as_str()
+                        .parse::<f64>()
+                        .ok()
+                    {
+                        let converted_height_px = format::MeasureUnit::convert_measure_units(
+                            f64::from(height),
+                            measure_unit_height,
+                            priv_.temporary_format.dpi(),
+                            format::MeasureUnit::Px,
+                            priv_.temporary_format.dpi(),
+                        )
+                        .round() as i32;
+                        priv_.temporary_format.set_height(
+                            converted_height_px.clamp(Format::HEIGHT_MIN, Format::HEIGHT_MAX),
+                        );
+
+                        priv_
+                            .format_height_entry
+                            .style_context()
+                            .remove_class("error");
+                        priv_.format_height_entry.style_context().add_class("plain");
+                    } else {
+                        priv_
+                            .format_height_entry
+                            .style_context()
+                            .remove_class("plain");
+                        priv_.format_height_entry.style_context().add_class("error");
+                    }
+                }
+            }
+        }
+    }
 }

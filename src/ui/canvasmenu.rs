@@ -1,10 +1,8 @@
 mod imp {
     use gtk4::{
-        gio::MenuModel, glib, glib::clone, prelude::*, subclass::prelude::*, Button,
-        CompositeTemplate, Entry, MenuButton, PopoverMenu, ToggleButton,
+        gio::MenuModel, glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
+        MenuButton, PopoverMenu, ToggleButton,
     };
-
-    use crate::sheet::format::Format;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
@@ -27,14 +25,6 @@ mod imp {
         pub lefthanded_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub righthanded_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub custom_format_width_entry: TemplateChild<Entry>,
-        #[template_child]
-        pub custom_format_height_entry: TemplateChild<Entry>,
-        #[template_child]
-        pub custom_format_dpi_entry: TemplateChild<Entry>,
-        #[template_child]
-        pub custom_format_apply: TemplateChild<Button>,
     }
 
     impl Default for CanvasMenu {
@@ -49,10 +39,6 @@ mod imp {
                 zoom_fit_width_button: TemplateChild::<Button>::default(),
                 lefthanded_toggle: TemplateChild::<ToggleButton>::default(),
                 righthanded_toggle: TemplateChild::<ToggleButton>::default(),
-                custom_format_width_entry: TemplateChild::<Entry>::default(),
-                custom_format_height_entry: TemplateChild::<Entry>::default(),
-                custom_format_dpi_entry: TemplateChild::<Entry>::default(),
-                custom_format_apply: TemplateChild::<Button>::default(),
             }
         }
     }
@@ -76,76 +62,9 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-            let custom_format_width_entry = self.custom_format_width_entry.get();
-            let custom_format_height_entry = self.custom_format_height_entry.get();
-            let custom_format_dpi_entry = self.custom_format_dpi_entry.get();
-
             self.menubutton
                 .get()
                 .set_popover(Some(&self.popovermenu.get()));
-
-            self.custom_format_width_entry.get().set_tooltip_text(Some(
-                format!(
-                    "Width must be between `{}` and `{}`",
-                    Format::WIDTH_MIN,
-                    Format::WIDTH_MAX
-                )
-                .as_str(),
-            ));
-            self.custom_format_width_entry
-                .get()
-                .buffer()
-                .connect_text_notify(clone!(@weak custom_format_width_entry => move |buffer| {
-                    if Format::try_parse_width(buffer.text().as_str()).is_some() {
-                        custom_format_width_entry.style_context().remove_class("error");
-                        custom_format_width_entry.style_context().add_class("plain");
-                    } else {
-                        custom_format_width_entry.style_context().remove_class("plain");
-                        custom_format_width_entry.style_context().add_class("error");
-                    }
-                }));
-
-            self.custom_format_height_entry.get().set_tooltip_text(Some(
-                format!(
-                    "Height must be between `{}` and `{}`",
-                    Format::HEIGHT_MIN,
-                    Format::HEIGHT_MAX
-                )
-                .as_str(),
-            ));
-            self.custom_format_height_entry
-                .get()
-                .buffer()
-                .connect_text_notify(clone!(@weak custom_format_height_entry => move |buffer| {
-                    if Format::try_parse_height(buffer.text().as_str()).is_some() {
-                        custom_format_height_entry.style_context().remove_class("error");
-                        custom_format_height_entry.style_context().add_class("plain");
-                    } else {
-                        custom_format_height_entry.style_context().remove_class("plain");
-                        custom_format_height_entry.style_context().add_class("error");
-                    }
-                }));
-
-            self.custom_format_dpi_entry.get().set_tooltip_text(Some(
-                format!(
-                    "DPI must be between `{}` and `{}`",
-                    Format::DPI_MIN,
-                    Format::DPI_MAX
-                )
-                .as_str(),
-            ));
-            self.custom_format_dpi_entry
-                .get()
-                .buffer()
-                .connect_text_notify(clone!(@weak custom_format_dpi_entry => move |buffer| {
-                        if Format::try_parse_height(buffer.text().as_str()).is_some() {
-                            custom_format_dpi_entry.style_context().remove_class("error");
-                            custom_format_dpi_entry.style_context().add_class("plain");
-                        } else {
-                            custom_format_dpi_entry.style_context().remove_class("plain");
-                            custom_format_dpi_entry.style_context().add_class("error");
-                        }
-                }));
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -163,10 +82,9 @@ mod imp {
     }
 }
 
-use crate::sheet::format::Format;
 use crate::ui::{appwindow::RnoteAppWindow, canvas};
 
-use gtk4::{gio, Entry, MenuButton, PopoverMenu, Widget};
+use gtk4::{gio, MenuButton, PopoverMenu, Widget};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, ToggleButton};
 
 glib::wrapper! {
@@ -226,38 +144,10 @@ impl CanvasMenu {
             .get()
     }
 
-    pub fn custom_format_width_entry(&self) -> Entry {
-        imp::CanvasMenu::from_instance(self)
-            .custom_format_width_entry
-            .get()
-    }
-
-    pub fn custom_format_height_entry(&self) -> Entry {
-        imp::CanvasMenu::from_instance(self)
-            .custom_format_height_entry
-            .get()
-    }
-
-    pub fn custom_format_dpi_entry(&self) -> Entry {
-        imp::CanvasMenu::from_instance(self)
-            .custom_format_dpi_entry
-            .get()
-    }
-
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::CanvasMenu::from_instance(self);
         let zoomreset_button = priv_.zoomreset_button.get();
-        let custom_format_width_entry = priv_.custom_format_width_entry.get();
-        let custom_format_height_entry = priv_.custom_format_height_entry.get();
-        let custom_format_dpi_entry = priv_.custom_format_dpi_entry.get();
 
-        priv_.custom_format_apply.get().connect_clicked(clone!(@weak appwindow, @weak custom_format_width_entry, @weak custom_format_height_entry, @weak custom_format_dpi_entry => move |_custom_format_apply| {
-                if let (Some(width), Some(height), Some(dpi)) = (Format::try_parse_width(custom_format_width_entry.buffer().text().as_str()),
-                    Format::try_parse_height(custom_format_height_entry.buffer().text().as_str()), Format::try_parse_dpi(custom_format_dpi_entry.buffer().text().as_str())) {
-                        appwindow.application().unwrap().activate_action("sheet-format", Some(&(width, height, dpi).to_variant()));
-                        appwindow.application().unwrap().activate_action("predefined-format", Some(&"custom".to_variant()));
-                    };
-            }));
         priv_
             .righthanded_toggle
             .set_group(Some(&priv_.lefthanded_toggle.get()));

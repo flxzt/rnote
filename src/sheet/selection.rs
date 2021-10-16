@@ -209,17 +209,17 @@ impl<'de> Deserialize<'de> for Selection {
 
                 let strokes = strokes.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("strokes");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     Vec::new()
                 });
                 let bounds = bounds.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("bounds");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     *selection_default.bounds().borrow()
                 });
                 let shown = shown.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("shown");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     selection_default.shown()
                 });
 

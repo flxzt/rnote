@@ -30,6 +30,8 @@ mod imp {
         pub colorchooser: TemplateChild<ColorChooserWidget>,
         #[template_child]
         pub colorchooser_editor_gobackbutton: TemplateChild<Button>,
+        #[template_child]
+        pub colorchooser_editor_selectbutton: TemplateChild<Button>,
 
         pub position: Cell<PositionType>,
         pub amount_colorbuttons: Cell<u32>,
@@ -48,6 +50,7 @@ mod imp {
                 colorpicker_popover: TemplateChild::<Popover>::default(),
                 colorchooser: TemplateChild::<ColorChooserWidget>::default(),
                 colorchooser_editor_gobackbutton: TemplateChild::<Button>::default(),
+                colorchooser_editor_selectbutton: TemplateChild::<Button>::default(),
                 position: Cell::new(PositionType::Right),
                 amount_colorbuttons: Cell::new(super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT),
                 current_color: Cell::new(super::ColorPicker::COLOR_DEFAULT),
@@ -95,6 +98,12 @@ mod imp {
             self.colorchooser.connect_show_editor_notify(
                 clone!(@weak colorchooser_editor_gobackbutton => move |_colorchooser| {
                     colorchooser_editor_gobackbutton.set_visible(true);
+                }),
+            );
+
+            self.colorchooser_editor_selectbutton.connect_clicked(
+                clone!(@weak colorpicker_popover => move |_colorchooser_editor_selectbutton| {
+                    colorpicker_popover.popdown();
                 }),
             );
 

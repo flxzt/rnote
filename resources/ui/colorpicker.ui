@@ -35,25 +35,20 @@
       <property name="position">left</property>
       <property name="child">
         <object class="GtkGrid">
-          <property name="row_spacing">6</property>
-          <property name="column_spacing">6</property>
+          <property name="row_spacing">12</property>
+          <property name="column_spacing">12</property>
           <property name="margin_top">6</property>
           <property name="margin_bottom">6</property>
           <property name="margin_start">6</property>
           <property name="margin_end">6</property>
           <child>
             <object class="GtkButton" id="colorchooser_editor_gobackbutton">
-              <property name="label">Go back</property>
+              <property name="icon-name">arrow1-left-symbolic</property>
               <property name="hexpand">false</property>
+              <property name="width-request">48</property>
+              <property name="halign">start</property>
               <property name="vexpand">false</property>
               <property name="visible">false</property>
-              <property name="margin_top">3</property>
-              <property name="margin_bottom">3</property>
-              <property name="margin_start">6</property>
-              <property name="margin_end">6</property>
-              <style>
-                <class name="suggested-action" />
-              </style>
               <layout>
                 <property name="column">0</property>
                 <property name="row">0</property>
@@ -61,8 +56,14 @@
             </object>
           </child>
           <child>
-            <object class="GtkBox">
-              <property name="hexpand">true</property>
+            <object class="GtkButton" id="colorchooser_editor_selectbutton">
+              <property name="label">Select</property>
+              <property name="hexpand">false</property>
+              <property name="halign">end</property>
+              <property name="vexpand">false</property>
+              <style>
+                <class name="suggested-action" />
+              </style>
               <layout>
                 <property name="column">1</property>
                 <property name="row">0</property>

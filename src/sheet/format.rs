@@ -252,22 +252,22 @@ impl<'de> Deserialize<'de> for Format {
 
                 let width = width.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("width");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     format_default.width()
                 });
                 let height = height.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("height");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     format_default.height()
                 });
                 let dpi = dpi.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("dpi");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     format_default.dpi()
                 });
                 let orientation = orientation.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("orientation");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     format_default.orientation()
                 });
 
@@ -401,7 +401,17 @@ impl Format {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize, num_derive::FromPrimitive)]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    glib::GEnum,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+)]
 #[repr(u32)]
 #[genum(type_name = "PredefinedFormats")]
 pub enum PredefinedFormat {
@@ -429,7 +439,17 @@ impl Default for PredefinedFormat {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize, num_derive::FromPrimitive)]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    glib::GEnum,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+)]
 #[repr(u32)]
 #[genum(type_name = "MeasureUnits")]
 pub enum MeasureUnit {
@@ -474,7 +494,17 @@ impl MeasureUnit {
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::GEnum, Serialize, Deserialize, num_derive::FromPrimitive)]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    glib::GEnum,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+)]
 #[repr(u32)]
 #[genum(type_name = "FormatOrientation")]
 pub enum Orientation {

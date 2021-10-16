@@ -334,62 +334,62 @@ impl<'de> Deserialize<'de> for Sheet {
 
                 let strokes = strokes.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("strokes");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     Vec::new()
                 });
                 let strokes_trash = strokes_trash.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("strokes_trash");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     Vec::new()
                 });
                 let selection = selection.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("selection");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     Selection::default()
                 });
                 let format = format.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("format");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     Format::default()
                 });
                 let background = background.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("background");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     Background::default()
                 });
                 let x = x.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("x");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     sheet_default.x()
                 });
                 let y = y.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("y");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     sheet_default.y()
                 });
                 let width = width.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("width");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     sheet_default.width()
                 });
                 let height = height.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("height");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     sheet_default.height()
                 });
                 let autoexpand_height = autoexpand_height.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("autoexpand_height");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     sheet_default.autoexpand_height()
                 });
                 let format_borders = format_borders.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("format_borders");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     sheet_default.format_borders()
                 });
                 let padding_bottom = padding_bottom.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("padding_bottom");
-                    log::error!("{}",err);
+                    log::error!("{}", err);
                     sheet_default.padding_bottom()
                 });
 
@@ -875,13 +875,6 @@ impl Sheet {
     pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), Box<dyn Error>> {
         let priv_ = imp::Sheet::from_instance(self);
 
-        let mut data = String::new();
-        for stroke in &*priv_.strokes.borrow() {
-            let data_entry = stroke.gen_svg_data(na::vector![0.0, 0.0])?;
-
-            data.push_str(&data_entry);
-        }
-
         let sheet_bounds = p2d::bounding_volume::AABB::new(
             na::point![f64::from(self.x()), f64::from(self.y())],
             na::point![
@@ -889,6 +882,20 @@ impl Sheet {
                 f64::from(self.y() + self.height())
             ],
         );
+        let mut data = String::new();
+
+        data.push_str(
+            self.background()
+                .borrow()
+                .gen_svg_data(sheet_bounds.loosened(1.0))?
+                .as_str(),
+        );
+
+        for stroke in &*priv_.strokes.borrow() {
+            let data_entry = stroke.gen_svg_data(na::vector![0.0, 0.0])?;
+
+            data.push_str(&data_entry);
+        }
 
         data = compose::wrap_svg(
             data.as_str(),

@@ -1,7 +1,7 @@
 mod imp {
     use adw::prelude::*;
     use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{Adjustment, Button, DropDown, Entry, ToggleButton};
+    use gtk4::{Adjustment, Button, ColorButton, DropDown, Entry, ToggleButton};
 
     use crate::sheet::format::{self, Format};
 
@@ -37,6 +37,8 @@ mod imp {
         pub format_revert_button: TemplateChild<Button>,
         #[template_child]
         pub format_apply_button: TemplateChild<Button>,
+        #[template_child]
+        pub background_color_choosebutton: TemplateChild<ColorButton>,
     }
 
     #[glib::object_subclass]
@@ -276,10 +278,12 @@ mod imp {
 
 use adw::prelude::*;
 use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
-use gtk4::{Adjustment, Entry};
+use gtk4::{Adjustment, ColorButton, Entry};
 
 use super::appwindow::RnoteAppWindow;
+use crate::sheet::background::Background;
 use crate::sheet::format::{self, Format};
+use crate::utils;
 
 glib::wrapper! {
     pub struct SettingsPanel(ObjectSubclass<imp::SettingsPanel>)
@@ -345,6 +349,12 @@ impl SettingsPanel {
             .clone()
     }
 
+    pub fn background_color_choosebutton(&self) -> ColorButton {
+        imp::SettingsPanel::from_instance(self)
+            .background_color_choosebutton
+            .clone()
+    }
+
     pub fn load_format(&self, format: Format) {
         self.set_predefined_format_variant(format::PredefinedFormat::Custom);
         self.format_width_entry()
@@ -357,10 +367,20 @@ impl SettingsPanel {
         self.set_format_orientation(format.orientation());
     }
 
+    pub fn load_background(&self, background: Background) {
+        match background {
+            Background::Solid(color) => {
+                self.background_color_choosebutton()
+                    .set_rgba(&color.to_gdk());
+            }
+        }
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::SettingsPanel::from_instance(self);
         let temporary_format = priv_.temporary_format.clone();
 
+        // Format
         priv_.format_revert_button.get().connect_clicked(clone!(@weak self as settingspanel, @weak appwindow => move |_format_revert_button| {
             let priv_ = imp::SettingsPanel::from_instance(&settingspanel);
             priv_.temporary_format.replace_fields(appwindow.canvas().sheet().format());
@@ -392,33 +412,11 @@ impl SettingsPanel {
             }),
         );
 
-        appwindow.canvas().sheet().format().connect_notify_local(
-            Some("width"),
-            clone!(@weak temporary_format => move |format, _| {
-                temporary_format.set_width(format.width());
-            }),
-        );
-
-        appwindow.canvas().sheet().format().connect_notify_local(
-            Some("height"),
-            clone!(@weak temporary_format => move |format, _| {
-                temporary_format.set_height(format.height());
-            }),
-        );
-
-        appwindow.canvas().sheet().format().connect_notify_local(
-            Some("dpi"),
-            clone!(@weak temporary_format => move |format, _| {
-                temporary_format.set_dpi(format.dpi());
-            }),
-        );
-
-        appwindow.canvas().sheet().format().connect_notify_local(
-            Some("orientation"),
-            clone!(@weak temporary_format => move |format, _| {
-                temporary_format.set_orientation(format.orientation());
-            }),
-        );
+        // Background
+        priv_.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
+            *appwindow.canvas().sheet().background().borrow_mut() = Background::Solid(utils::Color::from_gdk(background_color_choosebutton.rgba()));
+            appwindow.canvas().queue_draw();
+        }));
     }
 
     pub fn update_temporary_format_from_rows(&self) {

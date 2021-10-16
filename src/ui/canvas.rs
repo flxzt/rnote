@@ -514,7 +514,8 @@ impl Canvas {
     }
 
     pub fn set_scalefactor(&self, scalefactor: f64) {
-        self.set_property("scalefactor", scalefactor.to_value()).unwrap();
+        self.set_property("scalefactor", scalefactor.to_value())
+            .unwrap();
     }
 
     pub fn preview(&self) -> WidgetPaintable {

@@ -1,10 +1,30 @@
 
+<style type="text/css">
+    #container {height: 100%; width:100%; font-size: 0;}
+    #donatebutton {
+        display: inline-block;
+        *display: inline;
+        zoom: 1;
+        vertical-align: top;
+        font-size: 12px;
+        margin-left: 6px;
+    }
+</style>
 <div align="center">
 <img src="resources/icons/scalable/apps/rnote.svg" width="256"></img>
 </div>
 
-<div align="start">
-<a href="https://liberapay.com/flxzt/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
+<div align="start" id="container">
+    <div id="donatebutton">
+    <a href="https://liberapay.com/flxzt/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
+    </div>
+    <div id="donatebutton">
+    <form action="https://www.paypal.com/donate" method="post" target="_top">
+    <input type="hidden" name="hosted_button_id" value="JFDAZDD26P8X8" />
+    <input type="image" src="https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" width="70" height="30" />
+    <img alt="" border="0" src="https://www.paypal.com/en_DE/i/scr/pixel.gif" width="1" height="1" />
+    </form>
+    </div>
 </div>
 
 # Rnote
@@ -21,6 +41,7 @@ Rnote is available as  a flatpak on Flathub:
 
 <div align="start">
 <a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+
 </div>
 
 

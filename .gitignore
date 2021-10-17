@@ -10,5 +10,5 @@
 /.editorconfig
 /.vscode
 src/config.rs
-/tests/output
+/tests
 /rough-rs/target

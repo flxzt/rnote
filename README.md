@@ -1,12 +1,15 @@
 <div align="center">
-<img src="resources/icons/scalable/apps/rnote.svg" width="256"></img>
-</div>
+<img src="resources/icons/scalable/apps/rnote.svg" width="384"></img>
+</div><br><br><br>
 
-<div align="start" id="container">
-    <div id="donatebutton">
-    <a href="https://liberapay.com/flxzt/donate"><img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg"></a>
-    </div>
-</div>
+<div align="start">
+    <a href="https://liberapay.com/flxzt/donate">
+        <img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg" width="75" height="25">
+    </a>
+    <a href="https://www.paypal.com/donate?hosted_button_id=LQ9Q4868GKQGG">
+        <img src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/media/paypal-donate-button.png" alt="Donate with PayPal" width="75" height="25"/>
+    </a>
+</div><br>
 
 # Rnote
 A simple note taking application written in Rust and GTK4.
@@ -20,10 +23,9 @@ This is my first Rust and GTK project and I am learning as I go along. It might 
 ## Installation
 Rnote is available as  a flatpak on Flathub:
 
-<div align="start">
-<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width='240' alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
-
-</div>
+<br><div align="start">
+<a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="256" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
+</div><br>
 
 
 ## Feature Ideas:
@@ -47,7 +49,7 @@ Rnote is available as  a flatpak on Flathub:
 
 ## Screenshots
 
-**If you have drawn** something beautiful in Rnote and want to share it, let me know so I can include it as a screenshot. :)
+If you have drawn something beautiful in Rnote and want to share it, let me know so I can include it as a screenshot. :)
 
 ![main_window_dark](./resources/screenshots/main_window_dark.png)
 ![main_window_light](./resources/screenshots/main_window_light.png)
@@ -128,7 +130,7 @@ Once the project is configured, it can be compiled with:
 meson compile -C _mesonbuild
 ```
 
-The compiled binary should now be here: `./build/target/release/rnote`.
+The compiled binary should now be here: `./_mesonbuild/target/release/rnote`.
 
 **Install**  
 Installing the binary into the system can be done with:

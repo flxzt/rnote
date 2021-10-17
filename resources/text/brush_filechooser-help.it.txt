@@ -1,0 +1,10 @@
+Questo selettore di modelli di pennello consente di scegliere i modelli di pennello utilizzati per eseguire il rendering dei tratti del pennello. Ce ne sono un paio di predefiniti, ma puoi anche aggiungerne alcuni in `~/.config/rnote/brush_templates/`.
+
+All'interno è presente anche una copia commentata del modello predefinito denominata "brushstroke-cubicbezier.svg.templ" che può essere utilizzata come punto di partenza per la creazione di modelli personalizzati. Puoi modificare e rinominare questo modello. Tuttavia, il file che termina con `.svg.templ` deve essere mantenuto. I tuoi modelli personalizzati verranno quindi visualizzati nell'elenco di selezione dei modelli. Se elimini o rinomini il modello predefinito, verrà creata un'altra copia al successivo avvio dell'applicazione. Tutti i modelli predefiniti si trovano anche in '/usr/share/rnote/templates/`.
+L'icona accanto ai modelli personalizzati indica se il modello è valido.
+
+Suggerimento:
+Molte volte il renderer SVG ignora semplicemente tag o attributi che non comprende. Se il tuo modello appare valido nell'elenco, ma non viene disegnato nulla, è molto probabile che ci sia ancora un errore nel tuo modello.
+
+
+Il motore del modello utilizzato è Tera e la documentazione su come utilizzarlo può essere trovata qui: https://tera.netlify.app/docs/#introduction

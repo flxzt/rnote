@@ -1990,7 +1990,6 @@ dependencies = [
  "cairo-rs",
  "gtk4",
  "image",
- "lazy_static",
  "libadwaita",
  "libadwaita-sys",
  "librsvg",

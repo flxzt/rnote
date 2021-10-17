@@ -2003,6 +2003,7 @@ dependencies = [
  "parry2d-f64",
  "pretty_env_logger",
  "rand 0.8.4",
+ "rayon",
  "regex",
  "resvg",
  "rough-rs",

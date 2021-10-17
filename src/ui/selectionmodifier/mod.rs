@@ -174,8 +174,8 @@ impl Default for SelectionModifier {
 impl SelectionModifier {
     pub const TRANSLATE_NODE_MARGIN: i32 = 1;
     pub const TRANSLATE_NODE_SIZE_MIN: i32 = 1;
-    pub const TRANSLATE_NODE_SIZE_MAX: i32 = 256;
-    pub const RESIZE_NODE_SIZE: i32 = 18;
+    pub const TRANSLATE_NODE_SIZE_MAX: i32 = 192;
+    pub const RESIZE_NODE_SIZE: i32 = 22;
     pub const RESIZE_MIN: f64 = 3.0; // Must be >= TRANSLATE_NODE_SIZE_MIN + 2 * TRANSLATE_NODE_MARGIN
 
     pub fn new() -> Self {

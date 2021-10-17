@@ -169,7 +169,7 @@ mod imp {
 .setter-button {{
     margin{0}: 10px;
     background-color: rgba({3}, {4}, {5}, {6:.3});
-    transition: margin{0} 0.3s ease-out, border-radius 0.3s ease-out;
+    transition: margin{0} 0.2s ease-out, border-radius 0.2s ease-out;
     {1}
 }}
 

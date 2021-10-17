@@ -16,7 +16,7 @@ mod imp {
         fn default() -> Self {
             let image = Image::builder()
                 .name("image")
-                .icon_name("checkbox-symbolic")
+                .icon_name("modifiernode-default-symbolic")
                 .build();
 
             Self { image }

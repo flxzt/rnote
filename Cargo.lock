@@ -1986,6 +1986,7 @@ dependencies = [
 name = "rnote"
 version = "0.1.4"
 dependencies = [
+ "anyhow",
  "base64",
  "cairo-rs",
  "gtk4",

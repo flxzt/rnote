@@ -794,7 +794,7 @@ impl Canvas {
 
         // Only capture when texture_buffer is resetted (= None)
         if priv_.texture_buffer.borrow().is_none() {
-            *priv_.texture_buffer.borrow_mut() = Some(self.capture_current_content());
+            *priv_.texture_buffer.borrow_mut() = self.capture_current_content();
         }
         self.set_temporary_zoom(temp_scalefactor / self.scalefactor());
 
@@ -872,7 +872,7 @@ impl Canvas {
         );
     }
 
-    pub fn capture_current_content(&self) -> gdk::Texture {
+    pub fn capture_current_content(&self) -> Option<gdk::Texture> {
         let snapshot = Snapshot::new();
         let width = self.width();
         let height = self.height();
@@ -885,8 +885,7 @@ impl Canvas {
         let root_renderer = self.root().unwrap().upcast::<Native>().renderer().unwrap();
         let node = snapshot.free_to_node().unwrap();
         let texture = root_renderer
-            .render_texture(&node, None::<&graphene::Rect>)
-            .unwrap();
+            .render_texture(&node, None::<&graphene::Rect>);
 
         texture
     }

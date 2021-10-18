@@ -260,6 +260,10 @@ mod imp {
                 log::error!("Failed to save window state, {}", &err);
             }
 
+            if let Err(err) = obj.save_state_to_settings() {
+                log::error!("Failed to save app state, {}", &err);
+            }
+
             // Save current sheet
             if obj
                 .application()
@@ -296,6 +300,7 @@ use gtk4::{
     EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, Inhibit,
     Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
 };
+use tuple_conv::RepeatedTuple;
 
 use crate::{
     app::RnoteApp,
@@ -736,12 +741,13 @@ impl RnoteAppWindow {
 
                          //Some(gdk::Rectangle {x: bounds.x().round() as i32, y: bounds.y().round() as i32, width: bounds.width().round() as i32, height: bounds.height().round() as i32})
                         if let Some(bounds) = &*appwindow.canvas().sheet().selection().bounds().borrow() {
-                            let translate_node_size = ((bounds.maxs[0] - bounds.mins[0]).min( bounds.maxs[1] - bounds.mins[1] ) * scalefactor).round() as i32 - 2 * SelectionModifier::TRANSLATE_NODE_MARGIN;
+                            let translate_node_size = (
+                                (bounds.maxs[0] - bounds.mins[0]).round() as i32 - 2 * SelectionModifier::TRANSLATE_NODE_MARGIN,
+                                (bounds.maxs[1] - bounds.mins[1]).round() as i32 - 2 * SelectionModifier::TRANSLATE_NODE_MARGIN,
+                            );
 
-                            appwindow.selection_modifier().translate_node().image().set_pixel_size(
-                                translate_node_size.clamp(SelectionModifier::TRANSLATE_NODE_SIZE_MIN,
-                                    SelectionModifier::TRANSLATE_NODE_SIZE_MAX
-                            ));
+                            appwindow.selection_modifier().translate_node().set_width_request(translate_node_size.0);
+                            appwindow.selection_modifier().translate_node().set_height_request(translate_node_size.1);
 
                             Some(gdk::Rectangle {
                                 x: (bounds.mins[0] * scalefactor).round() as i32 - SelectionModifier::RESIZE_NODE_SIZE,
@@ -759,11 +765,144 @@ impl RnoteAppWindow {
         // actions and settings AFTER widget callback declarations
         actions::setup_actions(self);
         actions::setup_accels(self);
-        self.setup_settings();
+        self.load_settings();
+    }
+
+    pub fn save_state_to_settings(&self) -> Result<(), glib::BoolError> {
+        // Marker Colors
+        let marker_colors: Vec<u32> = self
+            .penssidebar()
+            .marker_page()
+            .colorpicker()
+            .fetch_all_colors()
+            .iter()
+            .map(|color| {
+                let value = color.to_u32();
+                value
+            })
+            .collect();
+        if marker_colors.len() != 8 {
+            log::error!(
+                "Couldn't save marker colors. Vector length does not match settings tuple length"
+            )
+        } else {
+            self.app_settings().set_value(
+                "marker-colors",
+                &(
+                    marker_colors[0],
+                    marker_colors[1],
+                    marker_colors[2],
+                    marker_colors[3],
+                    marker_colors[4],
+                    marker_colors[5],
+                    marker_colors[6],
+                    marker_colors[7],
+                )
+                    .to_variant(),
+            )?;
+        }
+
+        // Brush Colors
+        let brush_colors: Vec<u32> = self
+            .penssidebar()
+            .brush_page()
+            .colorpicker()
+            .fetch_all_colors()
+            .iter()
+            .map(|color| {
+                let value = color.to_u32();
+                value
+            })
+            .collect();
+        if brush_colors.len() != 8 {
+            log::error!(
+                "Couldn't save brush colors. Vector length does not match settings tuple length"
+            )
+        } else {
+            self.app_settings().set_value(
+                "brush-colors",
+                &(
+                    brush_colors[0],
+                    brush_colors[1],
+                    brush_colors[2],
+                    brush_colors[3],
+                    brush_colors[4],
+                    brush_colors[5],
+                    brush_colors[6],
+                    brush_colors[7],
+                )
+                    .to_variant(),
+            )?;
+        }
+
+        // Shaper stroke colors
+        let shaper_stroke_colors: Vec<u32> = self
+            .penssidebar()
+            .shaper_page()
+            .stroke_colorpicker()
+            .fetch_all_colors()
+            .iter()
+            .map(|color| {
+                let value = color.to_u32();
+                value
+            })
+            .collect();
+        if shaper_stroke_colors.len() != 2 {
+            log::error!(
+                "Couldn't save shaper stroke colors. Vector length does not match settings tuple length"
+            )
+        } else {
+            self.app_settings().set_value(
+                "shaper-stroke-colors",
+                &(
+                    shaper_stroke_colors[0],
+                    shaper_stroke_colors[1],
+                )
+                    .to_variant(),
+            )?;
+        }
+
+        // Shaper fill colors
+        let shaper_fill_colors: Vec<u32> = self
+            .penssidebar()
+            .shaper_page()
+            .fill_colorpicker()
+            .fetch_all_colors()
+            .iter()
+            .map(|color| {
+                let value = color.to_u32();
+                value
+            })
+            .collect();
+        if shaper_fill_colors.len() != 2 {
+            log::error!(
+                "Couldn't save shaper fill colors. Vector length does not match settings tuple length"
+            )
+        } else {
+            self.app_settings().set_value(
+                "shaper-fill-colors",
+                &(
+                    shaper_fill_colors[0],
+                    shaper_fill_colors[1],
+                )
+                    .to_variant(),
+            )?;
+        }
+
+        // Background Color
+        self.app_settings()
+            .set_uint(
+                "background-color",
+                utils::Color::from(self.settings_panel().background_color_choosebutton().rgba())
+                    .to_u32(),
+            )
+            .unwrap();
+
+        Ok(())
     }
 
     // ### Settings are setup only at startup. Setting changes through gsettings / dconf might not be applied until app restarts
-    fn setup_settings(&self) {
+    fn load_settings(&self) {
         let _priv_ = imp::RnoteAppWindow::from_instance(self);
 
         // overwriting theme so users can choose dark / light in appmenu
@@ -782,6 +921,79 @@ impl RnoteAppWindow {
             _ => {
                 log::error!("failed to load setting color-scheme, unsupported string as key")
             }
+        }
+
+        // Marker colors
+        let marker_colors = self
+            .app_settings()
+            .value("marker-colors")
+            .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>()
+            .unwrap();
+        let marker_colors_vec: Vec<utils::Color> = marker_colors
+            .to_vec()
+            .iter()
+            .map(|color_value| utils::Color::from(*color_value))
+            .collect();
+        self.penssidebar()
+            .marker_page()
+            .colorpicker()
+            .load_all_colors(&marker_colors_vec);
+
+        // Brush colors
+        let brush_colors = self
+            .app_settings()
+            .value("brush-colors")
+            .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>()
+            .unwrap();
+        let brush_colors_vec: Vec<utils::Color> = brush_colors
+            .to_vec()
+            .iter()
+            .map(|color_value| utils::Color::from(*color_value))
+            .collect();
+        self.penssidebar()
+            .brush_page()
+            .colorpicker()
+            .load_all_colors(&brush_colors_vec);
+
+        // Shaper stroke colors
+        let brush_colors = self
+            .app_settings()
+            .value("shaper-stroke-colors")
+            .get::<(u32, u32)>()
+            .unwrap();
+        let brush_colors_vec: Vec<utils::Color> = brush_colors
+            .to_vec()
+            .iter()
+            .map(|color_value| utils::Color::from(*color_value))
+            .collect();
+        self.penssidebar()
+            .shaper_page()
+            .stroke_colorpicker()
+            .load_all_colors(&brush_colors_vec);
+
+        // Shaper fill colors
+        let brush_colors = self
+            .app_settings()
+            .value("shaper-fill-colors")
+            .get::<(u32, u32)>()
+            .unwrap();
+        let brush_colors_vec: Vec<utils::Color> = brush_colors
+            .to_vec()
+            .iter()
+            .map(|color_value| utils::Color::from(*color_value))
+            .collect();
+        self.penssidebar()
+            .shaper_page()
+            .stroke_colorpicker()
+            .load_all_colors(&brush_colors_vec);
+
+        // Background color
+        let background_color = utils::Color::from(self.app_settings().uint("background-color"));
+        if self.canvas().empty() {
+            self.settings_panel()
+                .background_color_choosebutton()
+                .set_rgba(&background_color.to_gdk());
+            self.canvas().sheet().background().borrow_mut().color = background_color;
         }
 
         // Ui for right / left handed writers
@@ -804,7 +1016,6 @@ impl RnoteAppWindow {
 
         // Format borders
         self.canvas()
-            .sheet()
             .set_format_borders(self.app_settings().boolean("format-borders"));
 
         // Autoexpand height
@@ -877,8 +1088,6 @@ impl RnoteAppWindow {
                 self.canvas().queue_resize();
                 self.canvas().queue_draw();
                 self.canvas().set_unsaved_changes(false);
-
-                Ok(())
             }
             utils::FileType::Svg => {
                 let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
@@ -891,16 +1100,7 @@ impl RnoteAppWindow {
                 };
                 self.canvas().sheet().import_file_as_svg(pos, file)?;
 
-                StrokeStyle::update_all_rendernodes(
-                    &mut *self.canvas().sheet().strokes().borrow_mut(),
-                    self.canvas().scalefactor(),
-                    &*self.canvas().renderer().borrow(),
-                );
-                StrokeStyle::update_all_rendernodes(
-                    &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
-                    self.canvas().scalefactor(),
-                    &*self.canvas().renderer().borrow(),
-                );
+                self.canvas().regenerate_content();
 
                 self.canvas()
                     .sheet()
@@ -911,7 +1111,6 @@ impl RnoteAppWindow {
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
-                Ok(())
             }
             utils::FileType::BitmapImage => {
                 let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
@@ -946,13 +1145,13 @@ impl RnoteAppWindow {
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
-
-                Ok(())
             }
             utils::FileType::Folder | utils::FileType::Unknown => {
                 log::warn!("tried to open unsupported file type.");
-                Ok(())
             }
         }
+
+        self.canvas().set_empty(false);
+        Ok(())
     }
 }

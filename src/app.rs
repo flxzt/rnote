@@ -20,8 +20,6 @@ mod imp {
             develactions::DevelActions, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
             penssidebar::eraserpage::EraserPage, penssidebar::markerpage::MarkerPage,
             penssidebar::selectorpage::SelectorPage,
-            penssidebar::shaperpage::ellipseconfigpage::EllipseConfigPage,
-            penssidebar::shaperpage::rectangleconfigpage::RectangleConfigPage,
             penssidebar::shaperpage::ShaperPage, penssidebar::PensSideBar,
             selectionmodifier::modifiernode::ModifierNode, selectionmodifier::SelectionModifier,
             settingspanel::SettingsPanel, templatechooser::TemplateChooser,
@@ -104,8 +102,6 @@ mod imp {
             MarkerPage::static_type();
             BrushPage::static_type();
             ShaperPage::static_type();
-            RectangleConfigPage::static_type();
-            EllipseConfigPage::static_type();
             EraserPage::static_type();
             SelectorPage::static_type();
             WorkspaceBrowser::static_type();

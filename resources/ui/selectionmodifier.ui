@@ -58,11 +58,11 @@
       </object>
     </child>
     <child>
-      <object class="ModifierNode" id="translate_node">
+      <object class="GtkBox" id="translate_node">
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>
-        <property name="halign">center</property>
-        <property name="valign">center</property>
+        <property name="halign">fill</property>
+        <property name="valign">fill</property>
         <layout>
           <property name="column">1</property>
           <property name="row">1</property>

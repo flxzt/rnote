@@ -53,9 +53,12 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Ok => {
                     appwindow.canvas().sheet().clear();
+                    appwindow.canvas().sheet().selection().strokes().borrow_mut().clear();
+                    appwindow.canvas().sheet().selection().set_shown(false);
+                    appwindow.canvas().set_unsaved_changes(false);
+                    appwindow.canvas().set_empty(true);
                     appwindow.canvas().queue_resize();
                     appwindow.canvas().queue_draw();
-                    appwindow.canvas().set_unsaved_changes(false);
 
                     dialog_clear_sheet.close();
                 },
@@ -86,6 +89,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.canvas().queue_draw();
                 appwindow.canvas().sheet().selection().set_shown(false);
                 appwindow.canvas().set_unsaved_changes(false);
+                appwindow.canvas().set_empty(true);
 
                 dialog_new_sheet.close();
             },

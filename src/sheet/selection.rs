@@ -140,10 +140,12 @@ impl<'de> Deserialize<'de> for Selection {
     {
         #[derive(Deserialize)]
         #[serde(field_identifier, rename_all = "lowercase")]
+        #[allow(non_camel_case_types)]
         enum Field {
-            Strokes,
-            Bounds,
-            Shown,
+            strokes,
+            bounds,
+            shown,
+            unknown,
         }
 
         struct SelectionVisitor;
@@ -182,25 +184,35 @@ impl<'de> Deserialize<'de> for Selection {
                 let mut strokes = None;
                 let mut bounds = None;
                 let mut shown = None;
-                while let Some(key) = map.next_key()? {
+                while let Some(key) = match map.next_key() {
+                    Ok(key) => key,
+                    Err(e) => {
+                        log::warn!("{}", e);
+                        Some(Field::unknown)
+                    }
+                } {
                     match key {
-                        Field::Strokes => {
+                        Field::strokes => {
                             if strokes.is_some() {
                                 return Err(de::Error::duplicate_field("strokes"));
                             }
                             strokes = Some(map.next_value()?);
                         }
-                        Field::Bounds => {
+                        Field::bounds => {
                             if bounds.is_some() {
                                 return Err(de::Error::duplicate_field("bounds"));
                             }
                             bounds = Some(map.next_value()?);
                         }
-                        Field::Shown => {
+                        Field::shown => {
                             if shown.is_some() {
                                 return Err(de::Error::duplicate_field("shown"));
                             }
                             shown = Some(map.next_value()?);
+                        }
+                        Field::unknown => {
+                            // throw away the value
+                            map.next_value::<serde::de::IgnoredAny>()?;
                         }
                     }
                 }

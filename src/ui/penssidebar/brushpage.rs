@@ -121,7 +121,7 @@ impl BrushPage {
 
         self.colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |colorpicker, _paramspec| {
             let color = colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().brush.color = utils::Color::from_gdk(color);
+            appwindow.canvas().pens().borrow_mut().brush.color = utils::Color::from(color);
         }));
 
         self.width_resetbutton().connect_clicked(

@@ -16,10 +16,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/penssidebar.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/markerpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/brushpage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage/shaperpage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage/lineconfigpage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage/rectangleconfigpage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage/ellipseconfigpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/eraserpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/selectorpage.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs.ui</file>

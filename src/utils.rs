@@ -64,15 +64,6 @@ impl Color {
         )
     }
 
-    pub fn from_gdk(gdk_color: gdk::RGBA) -> Self {
-        Self {
-            r: gdk_color.red,
-            g: gdk_color.green,
-            b: gdk_color.blue,
-            a: gdk_color.alpha,
-        }
-    }
-
     pub fn to_gdk(&self) -> gdk::RGBA {
         gdk::RGBA {
             red: self.r,
@@ -82,12 +73,46 @@ impl Color {
         }
     }
 
+    pub fn to_u32(&self) -> u32 {
+        let value = ((((self.r * 255.0).round() as u32) & 0xff) << 24)
+            | ((((self.g * 255.0).round() as u32) & 0xff) << 16)
+            | ((((self.b * 255.0).round() as u32) & 0xff) << 8)
+            | ((((self.a * 255.0).round() as u32) & 0xff) << 0);
+        //println!("to_u32: {:x?}", value);
+
+        value
+    }
+
     pub fn transparent() -> Self {
         Self::new(0.0, 0.0, 0.0, 0.0)
     }
 
     pub fn black() -> Self {
         Self::new(0.0, 0.0, 0.0, 1.0)
+    }
+}
+
+impl From<gdk::RGBA> for Color {
+    fn from(gdk_color: gdk::RGBA) -> Self {
+        Self {
+            r: gdk_color.red,
+            g: gdk_color.green,
+            b: gdk_color.blue,
+            a: gdk_color.alpha,
+        }
+    }
+}
+
+// u32 encoded as RGBA
+impl From<u32> for Color {
+    fn from(value: u32) -> Self {
+        //println!("from u32: {:x?}", value);
+        Self {
+            r: ((value >> 24) & 0xff) as f32 / 255.0,
+            g: ((value >> 16) & 0xff) as f32 / 255.0,
+            b: ((value >> 8) & 0xff) as f32 / 255.0,
+            a: ((value >> 0) & 0xff) as f32 / 255.0,
+        }
     }
 }
 

@@ -49,5 +49,49 @@
       <default>"./"</default>
       <summary>Workspace directory</summary>
     </key>
+    <key name="marker-colors" type="(uuuuuuuu)">
+      <default>(
+        0x000000ff,
+        0xffffffff,
+        0x99c1f1ff,
+        0x1a5fb4ff,
+        0x26a269ff,
+        0xf6d32dff,
+        0xff7800ff,
+        0xe01b24ff
+      )</default>
+      <summary>Marker colors encoded as RGBA values (8-bit)</summary>
+    </key>
+    <key name="brush-colors" type="(uuuuuuuu)">
+      <default>(
+        0x000000ff,
+        0xffffffff,
+        0x99c1f1ff,
+        0x1a5fb4ff,
+        0x26a269ff,
+        0xf6d32dff,
+        0xff7800ff,
+        0xe01b24ff
+      )</default>
+      <summary>Brush colors encoded as RGBA values (8-bit)</summary>
+    </key>
+    <key name="shaper-stroke-colors" type="(uu)">
+      <default>(
+        0x000000ff,
+        0x99c1f1ff
+      )</default>
+      <summary>Shape stroke colors encoded as RGBA values (8-bit)</summary>
+    </key>
+    <key name="shaper-fill-colors" type="(uu)">
+      <default>(
+        0x00000000,
+        0x1a5fb4ff
+      )</default>
+      <summary>Shape fill colors encoded as RGBA values (8-bit)</summary>
+    </key>
+    <key name="background-color" type="u">
+      <default>0xffffffff</default>
+      <summary>Background color encoded as RGBA value (8-bit)</summary>
+    </key>
   </schema>
 </schemalist>

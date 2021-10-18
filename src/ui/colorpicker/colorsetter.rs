@@ -225,4 +225,12 @@ impl ColorSetter {
     pub fn set_position(&self, position: PositionType) {
         self.set_property("position", position.to_value()).unwrap();
     }
+
+    pub fn color(&self) -> gdk::RGBA {
+        self.property("color").unwrap().get::<gdk::RGBA>().unwrap()
+    }
+
+    pub fn set_color(&self, color: gdk::RGBA) {
+        self.set_property("color", color.to_value()).unwrap();
+    }
 }

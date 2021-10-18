@@ -175,6 +175,7 @@ impl<'de> Deserialize<'de> for Format {
             height,
             dpi,
             orientation,
+            unknown,
         }
 
         struct FormatVisitor;
@@ -220,7 +221,13 @@ impl<'de> Deserialize<'de> for Format {
                 let mut dpi = None;
                 let mut orientation = None;
 
-                while let Some(key) = map.next_key()? {
+                while let Some(key) = match map.next_key() {
+                    Ok(key) => key,
+                    Err(e) => {
+                        log::warn!("{}", e);
+                        Some(Field::unknown)
+                    }
+                } {
                     match key {
                         Field::width => {
                             if width.is_some() {
@@ -245,6 +252,10 @@ impl<'de> Deserialize<'de> for Format {
                                 return Err(de::Error::duplicate_field("orientation"));
                             }
                             orientation = Some(map.next_value()?);
+                        }
+                        Field::unknown => {
+                            // throw away the value
+                            map.next_value::<serde::de::IgnoredAny>()?;
                         }
                     }
                 }

@@ -368,12 +368,8 @@ impl SettingsPanel {
     }
 
     pub fn load_background(&self, background: Background) {
-        match background {
-            Background::Solid(color) => {
-                self.background_color_choosebutton()
-                    .set_rgba(&color.to_gdk());
-            }
-        }
+        self.background_color_choosebutton()
+            .set_rgba(&background.color.to_gdk());
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -414,7 +410,7 @@ impl SettingsPanel {
 
         // Background
         priv_.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            *appwindow.canvas().sheet().background().borrow_mut() = Background::Solid(utils::Color::from_gdk(background_color_choosebutton.rgba()));
+            appwindow.canvas().sheet().background().borrow_mut().color = utils::Color::from(background_color_choosebutton.rgba());
             appwindow.canvas().queue_draw();
         }));
     }

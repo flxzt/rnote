@@ -36,7 +36,7 @@ impl Default for Brush {
         Self {
             width: Self::WIDTH_DEFAULT,
             sensitivity: Self::SENSITIVITY_DEFAULT,
-            color: utils::Color::from_gdk(Self::COLOR_DEFAULT),
+            color: utils::Color::from(Self::COLOR_DEFAULT),
             current_style: BrushStyle::default(),
         }
     }

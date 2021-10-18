@@ -49,7 +49,6 @@ mod imp {
         pub width: Cell<i32>,
         pub height: Cell<i32>,
         pub autoexpand_height: Cell<bool>,
-        pub format_borders: Cell<bool>,
         pub padding_bottom: Cell<i32>,
     }
 
@@ -67,7 +66,6 @@ mod imp {
                 width: Cell::new(Format::default().width()),
                 height: Cell::new(Format::default().height()),
                 autoexpand_height: Cell::new(true),
-                format_borders: Cell::new(true),
                 padding_bottom: Cell::new(Format::default().height()),
             }
         }
@@ -139,7 +137,6 @@ impl Serialize for Sheet {
         state.serialize_field("width", &self.width())?;
         state.serialize_field("height", &self.height())?;
         state.serialize_field("autoexpand_height", &self.autoexpand_height())?;
-        state.serialize_field("format_borders", &self.format_borders())?;
         state.serialize_field("padding_bottom", &self.padding_bottom())?;
         state.end()
     }
@@ -164,8 +161,8 @@ impl<'de> Deserialize<'de> for Sheet {
             width,
             height,
             autoexpand_height,
-            format_borders,
             padding_bottom,
+            unknown,
         }
 
         struct SheetVisitor;
@@ -210,12 +207,9 @@ impl<'de> Deserialize<'de> for Sheet {
                 let autoexpand_height = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(9, &self))?;
-                let format_borders = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(10, &self))?;
                 let padding_bottom = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(11, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(10, &self))?;
 
                 let sheet = Sheet::new();
                 *sheet.strokes().borrow_mut() = strokes;
@@ -230,7 +224,6 @@ impl<'de> Deserialize<'de> for Sheet {
                 sheet.set_width(width);
                 sheet.set_height(height);
                 sheet.set_autoexpand_height(autoexpand_height);
-                sheet.set_format_borders(format_borders);
                 sheet.set_padding_bottom(padding_bottom);
 
                 Ok(sheet)
@@ -250,10 +243,15 @@ impl<'de> Deserialize<'de> for Sheet {
                 let mut width = None;
                 let mut height = None;
                 let mut autoexpand_height = None;
-                let mut format_borders = None;
                 let mut padding_bottom = None;
 
-                while let Some(key) = map.next_key()? {
+                while let Some(key) = match map.next_key() {
+                    Ok(key) => key,
+                    Err(e) => {
+                        log::warn!("{}", e);
+                        Some(Field::unknown)
+                    }
+                } {
                     match key {
                         Field::strokes => {
                             if strokes.is_some() {
@@ -315,17 +313,15 @@ impl<'de> Deserialize<'de> for Sheet {
                             }
                             autoexpand_height = Some(map.next_value()?);
                         }
-                        Field::format_borders => {
-                            if format_borders.is_some() {
-                                return Err(de::Error::duplicate_field("format_borders"));
-                            }
-                            format_borders = Some(map.next_value()?);
-                        }
                         Field::padding_bottom => {
                             if padding_bottom.is_some() {
                                 return Err(de::Error::duplicate_field("padding_bottom"));
                             }
                             padding_bottom = Some(map.next_value()?);
+                        }
+                        Field::unknown => {
+                            // throw away the value
+                            map.next_value::<serde::de::IgnoredAny>()?;
                         }
                     }
                 }
@@ -382,11 +378,6 @@ impl<'de> Deserialize<'de> for Sheet {
                     log::error!("{}", err);
                     sheet_default.autoexpand_height()
                 });
-                let format_borders = format_borders.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("format_borders");
-                    log::error!("{}", err);
-                    sheet_default.format_borders()
-                });
                 let padding_bottom = padding_bottom.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("padding_bottom");
                     log::error!("{}", err);
@@ -406,7 +397,6 @@ impl<'de> Deserialize<'de> for Sheet {
                 sheet.set_width(width);
                 sheet.set_height(height);
                 sheet.set_autoexpand_height(autoexpand_height);
-                sheet.set_format_borders(format_borders);
                 sheet.set_padding_bottom(padding_bottom);
 
                 Ok(sheet)
@@ -424,7 +414,6 @@ impl<'de> Deserialize<'de> for Sheet {
             "width",
             "height",
             "autoexpand_height",
-            "format_borders",
             "padding_bottom",
         ];
         deserializer.deserialize_struct("Sheet", FIELDS, SheetVisitor)
@@ -500,16 +489,6 @@ impl Sheet {
     pub fn format(&self) -> Format {
         let priv_ = imp::Sheet::from_instance(self);
         priv_.format.clone()
-    }
-
-    pub fn format_borders(&self) -> bool {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.format_borders.get()
-    }
-
-    pub fn set_format_borders(&self, format_borders: bool) {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.format_borders.set(format_borders);
     }
 
     pub fn padding_bottom(&self) -> i32 {
@@ -816,12 +795,6 @@ impl Sheet {
             .borrow()
             .draw(snapshot, &sheet_bounds_scaled);
 
-        if self.format_borders() {
-            priv_
-                .format
-                .draw(self.calc_n_pages(), snapshot, scalefactor);
-        }
-
         StrokeStyle::draw_strokes(&priv_.strokes.borrow(), snapshot);
 
         snapshot.pop();
@@ -842,7 +815,6 @@ impl Sheet {
         self.set_width(sheet.width());
         self.set_height(sheet.height());
         self.set_autoexpand_height(sheet.autoexpand_height());
-        self.set_format_borders(sheet.format_borders());
         self.set_padding_bottom(sheet.padding_bottom());
 
         StrokeStyle::complete_all_strokes(&mut *self.strokes().borrow_mut());

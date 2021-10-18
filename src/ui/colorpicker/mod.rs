@@ -333,7 +333,7 @@ mod imp {
     }
 }
 
-use gtk4::{gdk, glib, prelude::*, Orientable, PositionType, Widget};
+use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, Orientable, PositionType, Widget};
 
 use crate::utils;
 
@@ -386,5 +386,41 @@ impl ColorPicker {
     pub fn set_current_color(&self, current_color: gdk::RGBA) {
         self.set_property("current-color", current_color.to_value())
             .unwrap();
+    }
+
+    pub fn amount_colorbuttons(&self) -> u32 {
+        self.property("amount-colorbuttons")
+            .unwrap()
+            .get::<u32>()
+            .expect("value not of type `u32`")
+    }
+
+    pub fn set_amount_colorbuttons(&self, amount: u32) {
+        self.set_property("amount-colorbuttons", amount.to_value())
+            .unwrap();
+    }
+
+    pub fn fetch_all_colors(&self) -> Vec<utils::Color> {
+        let priv_ = imp::ColorPicker::from_instance(self);
+        let mut all_colors = Vec::with_capacity(8);
+        all_colors.push(utils::Color::from(priv_.currentcolor_setter1.get().color()));
+        for colorsetter in priv_.currentcolor_setters.borrow().iter() {
+            all_colors.push(utils::Color::from(colorsetter.color()));
+        }
+
+        all_colors
+    }
+
+    pub fn load_all_colors(&self, all_colors: &[utils::Color]) {
+        let priv_ = imp::ColorPicker::from_instance(self);
+
+        let mut all_colors_iter = all_colors.iter();
+        if let Some(first_color) = all_colors_iter.next() {
+            priv_.currentcolor_setter1.set_color(first_color.to_gdk());
+        }
+        for (color, colorsetter) in all_colors_iter.zip(priv_.currentcolor_setters.borrow().iter())
+        {
+            colorsetter.set_color(color.to_gdk());
+        }
     }
 }

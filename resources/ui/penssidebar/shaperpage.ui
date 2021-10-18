@@ -2,27 +2,22 @@
 <interface>
   <template class="ShaperPage" parent="GtkWidget">
     <property name="layout-manager">
-      <object class="GtkGridLayout">
-        <property name="column_homogeneous">true</property>
-        <property name="row_spacing">6</property>
-        <property name="column_spacing">6</property>
+      <object class="GtkBoxLayout">
+        <property name="spacing">6</property>
+        <property name="orientation">vertical</property>
       </object>
     </property>
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
     <property name="margin_top">6</property>
     <property name="margin_bottom">6</property>
-    <property name="margin_start">3</property>
-    <property name="margin_end">3</property>
+    <property name="margin_start">6</property>
+    <property name="margin_end">6</property>
     <child>
       <object class="GtkImage">
         <property name="icon_name">shaper-symbolic</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">0</property>
-        </layout>
       </object>
     </child>
     <child>
@@ -30,10 +25,6 @@
         <property name="orientation">vertical</property>
         <property name="margin_top">0</property>
         <property name="margin_bottom">6</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">1</property>
-        </layout>
       </object>
     </child>
     <child>
@@ -45,10 +36,6 @@
         <style>
           <class name="linked" />
         </style>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">2</property>
-        </layout>
         <child>
           <object class="GtkToggleButton" id="drawstyle_smooth_toggle">
             <property name="label">s</property>
@@ -62,16 +49,14 @@
             <property name="label">r</property>
             <property name="tooltip_text">rough shapes</property>
             <property name="vexpand">true</property>
+            <property name="group">drawstyle_smooth_toggle</property>
           </object>
         </child>
       </object>
     </child>
+    <!-- Rough shape config -->
     <child>
       <object class="GtkRevealer" id="roughconfig_revealer">
-        <layout>
-          <property name="column">0</property>
-          <property name="row">3</property>
-        </layout>
         <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
         <property name="transition_duration">300</property>
         <property name="reveal-child">false</property>
@@ -195,10 +180,6 @@
         <property name="orientation">vertical</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">4</property>
-        </layout>
       </object>
     </child>
     <child>
@@ -210,10 +191,6 @@
         <style>
           <class name="linked" />
         </style>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">5</property>
-        </layout>
         <child>
           <object class="GtkToggleButton" id="line_toggle">
             <property name="icon_name">shape-line-symbolic</property>
@@ -227,6 +204,7 @@
             <property name="tooltip_text">Rectangle</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
+            <property name="group">line_toggle</property>
           </object>
         </child>
         <child>
@@ -234,6 +212,7 @@
             <property name="icon_name">shape-ellipse-symbolic</property>
             <property name="tooltip_text">Ellipse</property>
             <property name="vexpand">true</property>
+            <property name="group">line_toggle</property>
           </object>
         </child>
       </object>
@@ -243,85 +222,72 @@
         <property name="orientation">vertical</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">6</property>
-        </layout>
       </object>
     </child>
-
     <child>
-      <object class="GtkStack" id="shaperconfig_stack">
+      <object class="GtkButton" id="width_resetbutton">
+        <property name="icon_name">reset-width-symbolic</property>
+        <property name="tooltip_text">reset shape stroke width</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAdjustment" id="width_adj">
+        <property name="step-increment">1</property>
+      </object>
+      <object class="GtkSpinButton" id="width_spinbutton">
+        <property name="adjustment">width_adj</property>
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkImage">
+        <property name="margin_bottom">12</property>
+        <property name="icon_name">stroke-color-symbolic</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="ColorPicker" id="stroke_colorpicker">
+        <property name="height_request">134</property>
+        <property name="amount-colorbuttons">2</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkRevealer" id="fill_revealer">
+        <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
         <property name="transition_duration">300</property>
-        <property name="transition_type">GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT_RIGHT</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">7</property>
-        </layout>
-        <style>
-          <class name="shaperconfig_stack" />
-        </style>
-
-        <!-- LineConfig Page -->
+        <property name="reveal-child">false</property>
         <child>
-          <object class="GtkStackPage" id="lineconfig_stackpage">
-            <property name="name">lineconfig_page</property>
-            <property name="title">Line Config</property>
-            <property name="child">
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="LineConfigPage" id="lineconfig_page">
-                    <property name="width_request">42</property>
-                    <property name="margin_start">6</property>
-                    <property name="margin_end">6</property>
-                  </object>
-                </child>
+          <object class="GtkBox">
+            <property name="spacing">6</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkImage">
+                <property name="margin_bottom">12</property>
+                <property name="icon_name">fill-color-symbolic</property>
               </object>
-            </property>
-          </object>
-        </child>
-
-        <!-- RectangleConfig Page -->
-        <child>
-          <object class="GtkStackPage" id="rectangleconfig_stackpage">
-            <property name="name">rectangleconfig_page</property>
-            <property name="title">Rectangle Config</property>
-            <property name="child">
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="RectangleConfigPage" id="rectangleconfig_page">
-                    <property name="width_request">42</property>
-                    <property name="margin_start">6</property>
-                    <property name="margin_end">6</property>
-                  </object>
-                </child>
+            </child>
+            <child>
+              <object class="ColorPicker" id="fill_colorpicker">
+                <property name="height_request">134</property>
+                <property name="amount-colorbuttons">2</property>
               </object>
-            </property>
-          </object>
-        </child>
-
-        <!-- EllipseConfig Page -->
-        <child>
-          <object class="GtkStackPage" id="ellipseconfig_stackpage">
-            <property name="name">ellipseconfig_page</property>
-            <property name="title">Ellipse Config</property>
-            <property name="child">
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="EllipseConfigPage" id="ellipseconfig_page">
-                    <property name="width_request">42</property>
-                    <property name="margin_start">6</property>
-                    <property name="margin_end">6</property>
-                  </object>
-                </child>
-              </object>
-            </property>
+            </child>
           </object>
         </child>
       </object>

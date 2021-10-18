@@ -6,6 +6,7 @@ mod imp {
     use super::modifiernode::ModifierNode;
     use crate::ui::canvas::Canvas;
 
+    use gtk4::gdk;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
     use once_cell::sync::Lazy;
 
@@ -21,7 +22,7 @@ mod imp {
         #[template_child]
         pub resize_br: TemplateChild<ModifierNode>,
         #[template_child]
-        pub translate_node: TemplateChild<ModifierNode>,
+        pub translate_node: TemplateChild<gtk4::Box>,
 
         pub scalefactor: Cell<f64>,
     }
@@ -35,7 +36,7 @@ mod imp {
                 resize_tr: TemplateChild::<ModifierNode>::default(),
                 resize_bl: TemplateChild::<ModifierNode>::default(),
                 resize_br: TemplateChild::<ModifierNode>::default(),
-                translate_node: TemplateChild::<ModifierNode>::default(),
+                translate_node: TemplateChild::<gtk4::Box>::default(),
                 scalefactor: Cell::new(Canvas::SCALE_DEFAULT),
             }
         }
@@ -76,9 +77,10 @@ mod imp {
                 .image()
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
 
-            self.translate_node
-                .image()
-                .set_icon_name(Some("selection-translate-symbolic"));
+            self.translate_node.set_cursor(
+                gdk::Cursor::from_name("grab", gdk::Cursor::from_name("default", None).as_ref())
+                    .as_ref(),
+            );
 
             self.translate_node
                 .get()
@@ -155,6 +157,7 @@ mod imp {
 }
 
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
+use gtk4::{GestureDrag, PropagationPhase};
 
 use crate::{
     ui::appwindow::RnoteAppWindow, ui::selectionmodifier::modifiernode::ModifierNode, utils,
@@ -200,7 +203,7 @@ impl SelectionModifier {
         imp::SelectionModifier::from_instance(self).resize_br.get()
     }
 
-    pub fn translate_node(&self) -> ModifierNode {
+    pub fn translate_node(&self) -> gtk4::Box {
         imp::SelectionModifier::from_instance(self)
             .translate_node
             .get()
@@ -365,21 +368,18 @@ impl SelectionModifier {
             )
             .unwrap();
 
-        priv_
-            .translate_node
-            .get()
-            .connect_local(
-                "offset-update",
-                false,
-                clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
-                    let scalefactor = appwindow.canvas().scalefactor();
-                    let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                    let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
+        let translate_drag_gesture = GestureDrag::builder()
+            .name("translate_drag")
+            .propagation_phase(PropagationPhase::Bubble)
+            .build();
+        priv_.translate_node.add_controller(&translate_drag_gesture);
+        translate_drag_gesture.connect_drag_update(
+            clone!(@weak self as obj, @weak appwindow => move |_translate_drag_gesture, x, y| {
+                let scalefactor = appwindow.canvas().scalefactor();
+                let offset = na::vector![x.round() / scalefactor, y.round() / scalefactor];
 
-                    appwindow.canvas().sheet().selection().translate_selection(offset);
-                    None
-                }),
-            )
-            .unwrap();
+                appwindow.canvas().sheet().selection().translate_selection(offset);
+            }),
+        );
     }
 }

@@ -25,7 +25,9 @@ mod imp {
         pub visual_debug: Cell<bool>,        // is a property
         pub touch_drawing: Cell<bool>,       // is a property
         pub unsaved_changes: Cell<bool>,     // is a property
-        pub cursor: gdk::Cursor,             // is a property
+        pub empty: Cell<bool>,               // is a property
+        pub format_borders: Cell<bool>,
+        pub cursor: gdk::Cursor, // is a property
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
@@ -66,6 +68,8 @@ mod imp {
                 visual_debug: Cell::new(false),
                 touch_drawing: Cell::new(false),
                 unsaved_changes: Cell::new(false),
+                empty: Cell::new(true),
+                format_borders: Cell::new(true),
                 cursor: gdk::Cursor::from_texture(
                     &gdk::Texture::from_resource(
                         (String::from(config::APP_IDPATH)
@@ -158,6 +162,13 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    glib::ParamSpec::new_boolean(
+                        "empty",
+                        "empty",
+                        "empty",
+                        true,
+                        glib::ParamFlags::READWRITE,
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -170,6 +181,7 @@ mod imp {
                 "visual-debug" => self.visual_debug.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
+                "empty" => self.empty.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -217,6 +229,10 @@ mod imp {
                     let unsaved_changes: bool =
                         value.get().expect("The value needs to be of type `bool`.");
                     self.unsaved_changes.replace(unsaved_changes);
+                }
+                "empty" => {
+                    let empty: bool = value.get().expect("The value needs to be of type `bool`.");
+                    self.empty.replace(empty);
                 }
                 _ => unimplemented!(),
             }
@@ -283,6 +299,12 @@ mod imp {
                 self.pens
                     .borrow()
                     .draw(self.current_pen.get(), snapshot, scalefactor);
+
+                if self.format_borders.get() {
+                    self.sheet
+                        .format()
+                        .draw(self.sheet.calc_n_pages(), snapshot, scalefactor);
+                }
 
                 if self.visual_debug.get() {
                     self.draw_debug(snapshot);
@@ -550,6 +572,29 @@ impl Canvas {
                 )
             }
         }
+    }
+
+    pub fn empty(&self) -> bool {
+        self.property("empty").unwrap().get::<bool>().unwrap()
+    }
+
+    pub fn set_empty(&self, empty: bool) {
+        match self.set_property("empty", empty.to_value()) {
+            Ok(_) => {}
+            Err(e) => {
+                log::error!("failed to set property `empty` of `Canvas`, {}", e)
+            }
+        }
+    }
+
+    pub fn format_borders(&self) -> bool {
+        let priv_ = imp::Canvas::from_instance(self);
+        priv_.format_borders.get()
+    }
+
+    pub fn set_format_borders(&self, format_borders: bool) {
+        let priv_ = imp::Canvas::from_instance(self);
+        priv_.format_borders.set(format_borders);
     }
 
     pub fn renderer(&self) -> Rc<RefCell<render::Renderer>> {
@@ -852,6 +897,7 @@ impl Canvas {
         data_entries: &mut VecDeque<InputData>,
     ) {
         self.set_unsaved_changes(true);
+        self.set_empty(false);
 
         // deselect all strokes from selection and readding them to the sheet
         if !self.sheet().selection().strokes().borrow().is_empty() {

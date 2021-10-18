@@ -1,20 +1,10 @@
-pub mod ellipseconfigpage;
-pub mod lineconfigpage;
-pub mod rectangleconfigpage;
-
 mod imp {
-    use super::{
-        ellipseconfigpage::EllipseConfigPage, lineconfigpage::LineConfigPage,
-        rectangleconfigpage::RectangleConfigPage,
-    };
+    use crate::ui::colorpicker::ColorPicker;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{
-        Adjustment, MenuButton, Popover, Revealer, SpinButton, Stack, StackPage, Switch,
-        ToggleButton,
-    };
+    use gtk4::{Adjustment, Button, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
 
     #[derive(Debug, CompositeTemplate)]
-    #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage/shaperpage.ui")]
+    #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
     pub struct ShaperPage {
         #[template_child]
         pub drawstyle_smooth_toggle: TemplateChild<ToggleButton>,
@@ -41,6 +31,16 @@ mod imp {
         #[template_child]
         pub roughconfig_multistroke_switch: TemplateChild<Switch>,
         #[template_child]
+        pub width_resetbutton: TemplateChild<Button>,
+        #[template_child]
+        pub width_adj: TemplateChild<Adjustment>,
+        #[template_child]
+        pub stroke_colorpicker: TemplateChild<ColorPicker>,
+        #[template_child]
+        pub fill_revealer: TemplateChild<Revealer>,
+        #[template_child]
+        pub fill_colorpicker: TemplateChild<ColorPicker>,
+        #[template_child]
         pub shapes_togglebox: TemplateChild<gtk4::Box>,
         #[template_child]
         pub line_toggle: TemplateChild<ToggleButton>,
@@ -48,20 +48,6 @@ mod imp {
         pub rectangle_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub ellipse_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub shaperconfig_stack: TemplateChild<Stack>,
-        #[template_child]
-        pub lineconfig_stackpage: TemplateChild<StackPage>,
-        #[template_child]
-        pub lineconfig_page: TemplateChild<LineConfigPage>,
-        #[template_child]
-        pub rectangleconfig_stackpage: TemplateChild<StackPage>,
-        #[template_child]
-        pub rectangleconfig_page: TemplateChild<RectangleConfigPage>,
-        #[template_child]
-        pub ellipseconfig_stackpage: TemplateChild<StackPage>,
-        #[template_child]
-        pub ellipseconfig_page: TemplateChild<EllipseConfigPage>,
     }
 
     impl Default for ShaperPage {
@@ -79,17 +65,15 @@ mod imp {
                 roughconfig_curvestepcount_spinbutton: TemplateChild::<SpinButton>::default(),
                 roughconfig_curvestepcount_adj: TemplateChild::<Adjustment>::default(),
                 roughconfig_multistroke_switch: TemplateChild::<Switch>::default(),
+                width_resetbutton: TemplateChild::<Button>::default(),
+                width_adj: TemplateChild::<Adjustment>::default(),
+                stroke_colorpicker: TemplateChild::<ColorPicker>::default(),
+                fill_revealer: TemplateChild::<Revealer>::default(),
+                fill_colorpicker: TemplateChild::<ColorPicker>::default(),
                 shapes_togglebox: TemplateChild::<gtk4::Box>::default(),
                 line_toggle: TemplateChild::<ToggleButton>::default(),
                 rectangle_toggle: TemplateChild::<ToggleButton>::default(),
                 ellipse_toggle: TemplateChild::<ToggleButton>::default(),
-                shaperconfig_stack: TemplateChild::<Stack>::default(),
-                lineconfig_stackpage: TemplateChild::<StackPage>::default(),
-                lineconfig_page: TemplateChild::<LineConfigPage>::default(),
-                rectangleconfig_stackpage: TemplateChild::<StackPage>::default(),
-                rectangleconfig_page: TemplateChild::<RectangleConfigPage>::default(),
-                ellipseconfig_stackpage: TemplateChild::<StackPage>::default(),
-                ellipseconfig_page: TemplateChild::<EllipseConfigPage>::default(),
             }
         }
     }
@@ -124,12 +108,11 @@ mod imp {
     impl WidgetImpl for ShaperPage {}
 }
 
-use crate::ui::appwindow::RnoteAppWindow;
-use ellipseconfigpage::EllipseConfigPage;
+use crate::pens::shaper::{Shaper};
+use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use crate::utils;
+use gtk4::{Adjustment, Button, MenuButton, Popover, Revealer, ToggleButton, gdk};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, Widget};
-use gtk4::{MenuButton, Popover, Revealer, Stack, StackPage, ToggleButton};
-use lineconfigpage::LineConfigPage;
-use rectangleconfigpage::RectangleConfigPage;
 
 glib::wrapper! {
     pub struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
@@ -177,6 +160,30 @@ impl ShaperPage {
             .get()
     }
 
+    pub fn width_resetbutton(&self) -> Button {
+        imp::ShaperPage::from_instance(self)
+            .width_resetbutton
+            .get()
+    }
+
+    pub fn width_adj(&self) -> Adjustment {
+        imp::ShaperPage::from_instance(self).width_adj.get()
+    }
+
+    pub fn stroke_colorpicker(&self) -> ColorPicker {
+        imp::ShaperPage::from_instance(self)
+            .stroke_colorpicker
+            .get()
+    }
+
+    pub fn fill_revealer(&self) -> Revealer {
+        imp::ShaperPage::from_instance(self).fill_revealer.get()
+    }
+
+    pub fn fill_colorpicker(&self) -> ColorPicker {
+        imp::ShaperPage::from_instance(self).fill_colorpicker.get()
+    }
+
     pub fn shapes_togglebox(&self) -> gtk4::Box {
         imp::ShaperPage::from_instance(self).shapes_togglebox.get()
     }
@@ -193,60 +200,49 @@ impl ShaperPage {
         imp::ShaperPage::from_instance(self).ellipse_toggle.get()
     }
 
-    pub fn shaperconfig_stack(&self) -> Stack {
-        imp::ShaperPage::from_instance(self)
-            .shaperconfig_stack
-            .get()
-    }
-
-    pub fn lineconfig_stackpage(&self) -> StackPage {
-        imp::ShaperPage::from_instance(self)
-            .rectangleconfig_stackpage
-            .get()
-    }
-
-    pub fn lineconfig_page(&self) -> LineConfigPage {
-        imp::ShaperPage::from_instance(self).lineconfig_page.get()
-    }
-
-    pub fn rectangleconfig_stackpage(&self) -> StackPage {
-        imp::ShaperPage::from_instance(self)
-            .rectangleconfig_stackpage
-            .get()
-    }
-
-    pub fn rectangleconfig_page(&self) -> RectangleConfigPage {
-        imp::ShaperPage::from_instance(self)
-            .rectangleconfig_page
-            .get()
-    }
-
-    pub fn ellipseconfig_stackpage(&self) -> StackPage {
-        imp::ShaperPage::from_instance(self)
-            .ellipseconfig_stackpage
-            .get()
-    }
-
-    pub fn ellipseconfig_page(&self) -> EllipseConfigPage {
-        imp::ShaperPage::from_instance(self)
-            .ellipseconfig_page
-            .get()
-    }
-
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::ShaperPage::from_instance(self);
-        self.lineconfig_page().init(appwindow);
-        self.rectangleconfig_page().init(appwindow);
-        self.ellipseconfig_page().init(appwindow);
+        let width_adj = self.width_adj();
 
-        self.drawstyle_rough_toggle()
-            .set_group(Some(&self.drawstyle_smooth_toggle()));
+        // Shape stroke width
+        self.width_resetbutton().connect_clicked(
+            clone!(@weak width_adj, @weak appwindow => move |_| {
+                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(Shaper::WIDTH_DEFAULT);
+                width_adj.set_value(Shaper::WIDTH_DEFAULT);
+                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(Shaper::WIDTH_DEFAULT);
+                width_adj.set_value(Shaper::WIDTH_DEFAULT);
+                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(Shaper::WIDTH_DEFAULT);
+                width_adj.set_value(Shaper::WIDTH_DEFAULT);
+            }),
+        );
 
-        self.rectangle_toggle().set_group(Some(&self.line_toggle()));
-        self.ellipse_toggle().set_group(Some(&self.line_toggle()));
 
-        self.shaperconfig_stack()
-            .set_visible_child_name("rectangleconfig_page");
+        self.width_adj().set_lower(Shaper::WIDTH_MIN);
+
+        self.width_adj().set_upper(Shaper::WIDTH_MAX);
+
+        self.width_adj().set_value(Shaper::WIDTH_DEFAULT);
+        self.width_adj()
+            .connect_value_changed(clone!(@weak appwindow => move |width_adj| {
+                appwindow.canvas().pens().borrow_mut().shaper.line_config.set_width(width_adj.value());
+                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(width_adj.value());
+                appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.set_width(width_adj.value());
+            }));
+
+        // Stroke color
+        self.stroke_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
+            let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
+            appwindow.canvas().pens().borrow_mut().shaper.line_config.color = Some(utils::Color::from(color));
+            appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.color = Some(utils::Color::from(color));
+            appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.color = Some(utils::Color::from(color));
+        }));
+
+        // Fill color
+        self.fill_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
+            let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
+            appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.fill = Some(utils::Color::from(color));
+            appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.fill = Some(utils::Color::from(color));
+        }));
 
         // Roughness
         priv_
@@ -329,9 +325,11 @@ impl ShaperPage {
         }));
 
         // Shape toggles
-        self.line_toggle().connect_active_notify(clone!(@weak appwindow => move |line_toggle| {
+        self.line_toggle().connect_active_notify(clone!(@weak self as shaperpage, @weak appwindow => move |line_toggle| {
             if line_toggle.is_active() {
                 appwindow.application().unwrap().activate_action("current-shape", Some(&"line".to_variant()));
+            } else {
+                shaperpage.fill_revealer().set_reveal_child(true);
             }
         }));
 
@@ -346,24 +344,5 @@ impl ShaperPage {
                 appwindow.application().unwrap().activate_action("current-shape", Some(&"ellipse".to_variant()));
             }
         }));
-
-        self.shaperconfig_stack().connect_visible_child_name_notify(
-            clone!(@weak appwindow => move |shaperconfig_stack| {
-                if let Some(child_name) = shaperconfig_stack.visible_child_name() {
-                    match child_name.to_value().get::<String>().unwrap().as_str() {
-                        "lineconfig_page" => {
-                            appwindow.application().unwrap().activate_action("current-shape", Some(&"line".to_variant()));
-                        },
-                        "rectangleconfig_page" => {
-                            appwindow.application().unwrap().activate_action("current-shape", Some(&"rectangle".to_variant()));
-                        },
-                        "ellipseconfig_page" => {
-                            appwindow.application().unwrap().activate_action("current-shape", Some(&"ellipse".to_variant()));
-                        },
-                        _ => {}
-                    };
-                };
-            }),
-        );
     }
 }

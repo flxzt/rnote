@@ -317,7 +317,7 @@ glib::wrapper! {
 
 impl RnoteAppWindow {
     pub const CANVAS_ZOOMGESTURE_THRESHOLD: f64 = 0.005; // Sets the delta threshold (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
-    pub const CANVAS_ZOOM_SCROLL_STEP: f64 = 0.1; // Sets the canvas zoom scroll step in
+    pub const CANVAS_ZOOM_SCROLL_STEP: f64 = 0.1; // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub const CANVAS_ZOOMGESTURE_ZOOM_SPEED: f64 = 0.8; // Sets the canvas zoom speed, 1.0 for one-to-one scale_delta to zoom ratio
 
     pub fn new(app: &Application) -> Self {
@@ -507,16 +507,16 @@ impl RnoteAppWindow {
         );
 
         if canvas_dimensions.0 > scroller_dimensions.0 {
-            self.canvas_scroller()
-                .hadjustment()
-                .unwrap()
-                .set_value((point.0 * self.canvas().scalefactor()) - scroller_dimensions.0 * 0.5);
+            self.canvas_scroller().hadjustment().unwrap().set_value(
+                (point.0 * self.canvas().scalefactor() * self.canvas().temporary_zoom())
+                    - scroller_dimensions.0 * 0.5,
+            );
         }
         if canvas_dimensions.1 > scroller_dimensions.1 {
-            self.canvas_scroller()
-                .vadjustment()
-                .unwrap()
-                .set_value((point.1 * self.canvas().scalefactor()) - scroller_dimensions.1 * 0.5);
+            self.canvas_scroller().vadjustment().unwrap().set_value(
+                (point.1 * self.canvas().scalefactor() * self.canvas().temporary_zoom())
+                    - scroller_dimensions.1 * 0.5,
+            );
         }
     }
 
@@ -595,22 +595,25 @@ impl RnoteAppWindow {
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()
             .name("canvas_zoom_scroll_controller")
             .propagation_phase(PropagationPhase::Capture)
-            .flags(EventControllerScrollFlags::VERTICAL | EventControllerScrollFlags::DISCRETE)
+            .flags(EventControllerScrollFlags::VERTICAL)
             .build();
+
         canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
             if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                let delta = dy * (Self::CANVAS_ZOOM_SCROLL_STEP * appwindow.canvas().scalefactor());
-                let new_scalefactor = appwindow.canvas().scalefactor() - delta;
+                let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom();
+                let new_scalefactor = appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom() - delta;
 
                 // the sheet position BEFORE scaling
                 let sheet_center_pos = (
                     ((appwindow.canvas_scroller().hadjustment().unwrap().value()
-                    + f64::from(appwindow.canvas_scroller().width()) * 0.5) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().x()),
+                        + f64::from(appwindow.canvas_scroller().width()) * 0.5) / (appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom()))
+                        + f64::from(appwindow.canvas().sheet().x()),
                     ((appwindow.canvas_scroller().vadjustment().unwrap().value()
-                    + f64::from(appwindow.canvas_scroller().height()) * 0.5) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().y())
+                    + f64::from(appwindow.canvas_scroller().height()) * 0.5)
+                    / (appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom())) + f64::from(appwindow.canvas().sheet().y())
                 );
 
-                appwindow.canvas().scale_to(new_scalefactor);
+                appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_scalefactor, Canvas::ZOOM_TIMEOUT_TIME);
 
                 // Reposition scroller center to the stored sheet position
                 appwindow.canvas_scroller_center_around_point_on_sheet(sheet_center_pos);
@@ -683,11 +686,8 @@ impl RnoteAppWindow {
                 let scale_delta = scale_delta * Self::CANVAS_ZOOMGESTURE_ZOOM_SPEED;
                 let new_scalefactor = scale_begin.get() * scale_delta;
 
-                if scale_delta < scale_delta_prev.get() - Self::CANVAS_ZOOMGESTURE_THRESHOLD || scale_delta > scale_delta_prev.get() + Self::CANVAS_ZOOMGESTURE_THRESHOLD {
-                    scale_delta_prev.set(scale_delta);
-
-                    appwindow.canvas().zoom_temporarily_to(new_scalefactor);
-                }
+                scale_delta_prev.set(scale_delta);
+                appwindow.canvas().zoom_temporarily_to(new_scalefactor);
 
                 if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
                     if let Some(bbcenter_start) = zoomgesture_bbcenter_start.get() {

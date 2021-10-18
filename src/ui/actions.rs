@@ -394,22 +394,22 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let scalefactor = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
-        appwindow.canvas().scale_to(scalefactor);
+        let new_scalefactor = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
+        appwindow.canvas().scale_to(new_scalefactor);
     }));
     app.add_action(&action_zoom_fit_width);
 
     // Zoom in
     action_zoomin.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let scalefactor = appwindow.canvas().scalefactor() + Canvas::ZOOM_ACTION_DELTA;
-        appwindow.canvas().scale_to(scalefactor);
+        let new_scalefactor = appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom() + Canvas::ZOOM_ACTION_DELTA;
+        appwindow.canvas().scale_to(new_scalefactor);
     }));
     app.add_action(&action_zoomin);
 
     // Zoom out
     action_zoomout.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let scalefactor = appwindow.canvas().scalefactor() - Canvas::ZOOM_ACTION_DELTA;
-        appwindow.canvas().scale_to(scalefactor);
+        let new_scalefactor = appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom() - Canvas::ZOOM_ACTION_DELTA;
+        appwindow.canvas().scale_to(new_scalefactor);
     }));
     app.add_action(&action_zoomout);
 

@@ -82,7 +82,7 @@ mod imp {
     }
 }
 
-use crate::ui::{appwindow::RnoteAppWindow, canvas};
+use crate::ui::{appwindow::RnoteAppWindow, canvas::Canvas};
 
 use gtk4::{gio, MenuButton, PopoverMenu, Widget};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, ToggleButton};
@@ -162,18 +162,20 @@ impl CanvasMenu {
             }),
         );
 
-        priv_.zoom_reset_button.connect_clicked(clone!(@weak appwindow => move |_zoomreset_button| {
-            appwindow.canvas().scale_to(canvas::Canvas::SCALE_DEFAULT);
-        }));
+        priv_.zoom_reset_button.connect_clicked(
+            clone!(@weak appwindow => move |_zoomreset_button| {
+                appwindow.canvas().scale_to(Canvas::SCALE_DEFAULT);
+            }),
+        );
 
         priv_.zoom_in_button.connect_clicked(
-            clone!(@weak appwindow, @weak zoomreset_button => move |_| {
+            clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_in_button| {
                 appwindow.application().unwrap().activate_action("zoom-in", None);
             }),
         );
 
         priv_.zoom_out_button.connect_clicked(
-            clone!(@weak appwindow, @weak zoomreset_button => move |_| {
+            clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_out_button| {
                 appwindow.application().unwrap().activate_action("zoom-out", None);
             }),
         );

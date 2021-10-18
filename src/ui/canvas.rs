@@ -8,10 +8,9 @@ mod imp {
     use crate::strokes::render;
     use crate::{sheet::Sheet, strokes};
 
-    use gtk4::Widget;
     use gtk4::{
         gdk, glib, graphene, gsk, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
-        Orientation, PropagationPhase, SizeRequestMode, Snapshot, WidgetPaintable,
+        Orientation, PropagationPhase, SizeRequestMode, Snapshot, Widget, WidgetPaintable,
     };
 
     use once_cell::sync::Lazy;
@@ -33,6 +32,7 @@ mod imp {
         pub renderer: Rc<RefCell<render::Renderer>>,
         pub preview: WidgetPaintable,
         pub texture_buffer: RefCell<Option<gdk::Texture>>,
+        pub zoom_timeout: RefCell<Option<glib::SourceId>>,
     }
 
     impl Default for Canvas {
@@ -82,6 +82,7 @@ mod imp {
                 renderer: Rc::new(RefCell::new(render::Renderer::default())),
                 preview: WidgetPaintable::new::<Widget>(None),
                 texture_buffer: RefCell::new(None),
+                zoom_timeout: RefCell::new(None),
             }
         }
     }
@@ -455,6 +456,7 @@ use std::cell::Cell;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
+use std::time;
 
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus, WidgetPaintable,
@@ -477,6 +479,7 @@ impl Canvas {
     pub const SCALE_MAX: f64 = 10.0;
     pub const SCALE_DEFAULT: f64 = 1.0;
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
+    pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
     pub const INPUT_OVERSHOOT: f64 = 30.0;
     pub const SHADOW_WIDTH: f64 = 30.0;
 
@@ -758,7 +761,7 @@ impl Canvas {
     pub fn scale_to(&self, scalefactor: f64) {
         let priv_ = imp::Canvas::from_instance(self);
 
-/*         if let Some(texture_buffer) = &*priv_.texture_buffer.borrow() {
+        /*         if let Some(texture_buffer) = &*priv_.texture_buffer.borrow() {
             texture_buffer.save_to_png(Path::new("./tests/canvas.png"));
         } */
 
@@ -775,6 +778,35 @@ impl Canvas {
 
         self.queue_resize();
         self.queue_draw();
+    }
+
+    /// Zooms temporarily and then scale the canvas and its contents to a new scalefactor after a given time.
+    /// Repeated calls to this function reset the timeout.
+    pub fn zoom_temporarily_then_scale_to_after_timeout(
+        &self,
+        scalefactor: f64,
+        timeout_time: time::Duration,
+    ) {
+        let priv_ = imp::Canvas::from_instance(self);
+
+        if let Some(zoom_timeout) = priv_.zoom_timeout.take() {
+            glib::source::source_remove(zoom_timeout);
+        }
+
+        self.zoom_temporarily_to(scalefactor);
+
+        priv_
+            .zoom_timeout
+            .borrow_mut()
+            .replace(glib::source::timeout_add_local_once(
+                timeout_time,
+                clone!(@weak self as canvas => move || {
+                    let priv_ = imp::Canvas::from_instance(&canvas);
+
+                    canvas.scale_to(scalefactor);
+                    priv_.zoom_timeout.borrow_mut().take();
+                }),
+            ));
     }
 
     pub fn regenerate_content(&self) {

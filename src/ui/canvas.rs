@@ -5,7 +5,7 @@ mod imp {
     use super::debug;
     use crate::config;
     use crate::pens::{PenStyle, Pens};
-    use crate::strokes::{render, StrokeStyle};
+    use crate::strokes::render;
     use crate::{sheet::Sheet, strokes};
 
     use gtk4::Widget;
@@ -22,6 +22,7 @@ mod imp {
         pub current_pen: Rc<Cell<PenStyle>>, // accessed via current_pen()
         pub sheet: Sheet,                    // is a GObject
         pub scalefactor: Cell<f64>,          // is a property
+        pub temporary_zoom: Cell<f64>,       // is a property
         pub visual_debug: Cell<bool>,        // is a property
         pub touch_drawing: Cell<bool>,       // is a property
         pub unsaved_changes: Cell<bool>,     // is a property
@@ -31,6 +32,7 @@ mod imp {
         pub touch_drawing_gesture: GestureDrag,
         pub renderer: Rc<RefCell<render::Renderer>>,
         pub preview: WidgetPaintable,
+        pub texture_buffer: RefCell<Option<gdk::Texture>>,
     }
 
     impl Default for Canvas {
@@ -60,6 +62,7 @@ mod imp {
                 current_pen: Rc::new(Cell::new(PenStyle::default())),
                 sheet: Sheet::default(),
                 scalefactor: Cell::new(super::Canvas::SCALE_DEFAULT),
+                temporary_zoom: Cell::new(1.0),
                 visual_debug: Cell::new(false),
                 touch_drawing: Cell::new(false),
                 unsaved_changes: Cell::new(false),
@@ -78,6 +81,7 @@ mod imp {
                 touch_drawing_gesture,
                 renderer: Rc::new(RefCell::new(render::Renderer::default())),
                 preview: WidgetPaintable::new::<Widget>(None),
+                texture_buffer: RefCell::new(None),
             }
         }
     }
@@ -102,7 +106,7 @@ mod imp {
             obj.add_controller(&self.mouse_drawing_gesture);
             obj.add_controller(&self.touch_drawing_gesture);
 
-            obj.preview().set_widget(Some(obj));
+            self.preview.set_widget(Some(obj));
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -115,19 +119,21 @@ mod imp {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
                     glib::ParamSpec::new_double(
-                        // Name
-                        "scalefactor",
-                        // Nickname
-                        "scalefactor",
-                        // Short description
-                        "scalefactor",
-                        // Minimum value
+                        "temporary-zoom",
+                        "temporary-zoom",
+                        "temporary-zoom",
                         f64::MIN,
-                        // Maximum value
                         f64::MAX,
-                        // Default value
+                        1.0,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    glib::ParamSpec::new_double(
+                        "scalefactor",
+                        "scalefactor",
+                        "scalefactor",
+                        f64::MIN,
+                        f64::MAX,
                         super::Canvas::SCALE_DEFAULT,
-                        // The property can be read and written to
                         glib::ParamFlags::READWRITE,
                     ),
                     glib::ParamSpec::new_boolean(
@@ -156,6 +162,17 @@ mod imp {
             PROPERTIES.as_ref()
         }
 
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "temporary-zoom" => self.temporary_zoom.get().to_value(),
+                "scalefactor" => self.scalefactor.get().to_value(),
+                "visual-debug" => self.visual_debug.get().to_value(),
+                "touch-drawing" => self.touch_drawing.get().to_value(),
+                "unsaved-changes" => self.unsaved_changes.get().to_value(),
+                _ => unimplemented!(),
+            }
+        }
+
         fn set_property(
             &self,
             obj: &Self::Type,
@@ -164,39 +181,18 @@ mod imp {
             pspec: &glib::ParamSpec,
         ) {
             match pspec.name() {
+                "temporary-zoom" => {
+                    let temporary_zoom = value
+                        .get::<f64>()
+                        .expect("The value needs to be of type `f64`.");
+                    self.temporary_zoom.replace(temporary_zoom);
+                }
                 "scalefactor" => {
                     let scalefactor: f64 = value
                         .get::<f64>()
-                        .expect("The value needs to be of type `i32`.")
+                        .expect("The value needs to be of type `f64`.")
                         .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
                     self.scalefactor.replace(scalefactor);
-
-                    StrokeStyle::complete_all_strokes(&mut *obj.sheet().strokes().borrow_mut());
-                    StrokeStyle::complete_all_strokes(
-                        &mut *obj.sheet().strokes_trash().borrow_mut(),
-                    );
-                    StrokeStyle::complete_all_strokes(
-                        &mut *obj.sheet().selection().strokes().borrow_mut(),
-                    );
-
-                    StrokeStyle::update_all_rendernodes(
-                        &mut *obj.sheet().strokes().borrow_mut(),
-                        scalefactor,
-                        &*obj.renderer().borrow(),
-                    );
-                    StrokeStyle::update_all_rendernodes(
-                        &mut *obj.sheet().strokes_trash().borrow_mut(),
-                        scalefactor,
-                        &*obj.renderer().borrow(),
-                    );
-                    StrokeStyle::update_all_rendernodes(
-                        &mut *obj.sheet().selection().strokes().borrow_mut(),
-                        scalefactor,
-                        &*obj.renderer().borrow(),
-                    );
-
-                    obj.queue_draw();
-                    obj.queue_resize();
                 }
                 "visual-debug" => {
                     let visual_debug: bool =
@@ -224,16 +220,6 @@ mod imp {
                 _ => unimplemented!(),
             }
         }
-
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-            match pspec.name() {
-                "scalefactor" => self.scalefactor.get().to_value(),
-                "visual-debug" => self.visual_debug.get().to_value(),
-                "touch-drawing" => self.touch_drawing.get().to_value(),
-                "unsaved-changes" => self.unsaved_changes.get().to_value(),
-                _ => unimplemented!(),
-            }
-        }
     }
 
     impl WidgetImpl for Canvas {
@@ -248,23 +234,28 @@ mod imp {
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
             if orientation == Orientation::Vertical {
-                let minimum_size = (f64::from(widget.sheet().height()) * self.scalefactor.get()
+                let minimal_height = (f64::from(widget.sheet().height())
+                    * self.scalefactor.get()
+                    * self.temporary_zoom.get()
                     + f64::from(widget.sheet().y()))
                 .round() as i32;
-                let natural_size = minimum_size;
+                let natural_height = minimal_height;
 
-                (minimum_size, natural_size, -1, -1)
+                (minimal_height, natural_height, -1, -1)
             } else {
-                let minimum_size = (f64::from(widget.sheet().width()) * self.scalefactor.get()
+                let minimal_width = (f64::from(widget.sheet().width())
+                    * self.scalefactor.get()
+                    * self.temporary_zoom.get()
                     + f64::from(widget.sheet().x()))
                 .round() as i32;
-                let natural_size = minimum_size;
+                let natural_width = minimal_width;
 
-                (minimum_size, natural_size, -1, -1)
+                (minimal_width, natural_width, -1, -1)
             }
         }
 
         fn snapshot(&self, _widget: &Self::Type, snapshot: &gtk4::Snapshot) {
+            let temporary_zoom = self.temporary_zoom.get();
             let scalefactor = self.scalefactor.get();
 
             let sheet_bounds_scaled = graphene::Rect::new(
@@ -274,21 +265,28 @@ mod imp {
                 self.sheet.height() as f32 * scalefactor as f32,
             );
 
-            self.draw_shadow(
-                &sheet_bounds_scaled,
-                Self::SHADOW_WIDTH * scalefactor,
-                snapshot,
-            );
+            if let Some(texture_buffer) = &*self.texture_buffer.borrow() {
+                snapshot.scale(temporary_zoom as f32, temporary_zoom as f32);
+                snapshot.append_texture(texture_buffer, &sheet_bounds_scaled);
+            } else {
+                self.draw_shadow(
+                    &sheet_bounds_scaled,
+                    Self::SHADOW_WIDTH * scalefactor,
+                    snapshot,
+                );
 
-            self.sheet.draw(scalefactor, snapshot);
+                self.sheet.draw(scalefactor, snapshot);
 
-            self.sheet.selection().draw(scalefactor, snapshot);
+                self.sheet.selection().draw(scalefactor, snapshot);
 
-            self.pens
-                .borrow()
-                .draw_pens(self.current_pen.get(), snapshot, scalefactor);
+                self.pens
+                    .borrow()
+                    .draw(self.current_pen.get(), snapshot, scalefactor);
 
-            self.draw_debug(snapshot);
+                if self.visual_debug.get() {
+                    self.draw_debug(snapshot);
+                }
+            }
         }
     }
 
@@ -323,125 +321,122 @@ mod imp {
         }
 
         fn draw_debug(&self, snapshot: &Snapshot) {
-            if self.visual_debug.get() {
-                let scalefactor = self.scalefactor.get();
+            let scalefactor = self.scalefactor.get();
 
-                match self.current_pen.get() {
-                    PenStyle::Eraser => {
-                        if self.pens.borrow().eraser.shown() {
-                            if let Some(ref current_input) = self.pens.borrow().eraser.current_input
-                            {
-                                debug::draw_pos(
-                                    current_input.pos(),
-                                    debug::COLOR_POS_ALT,
-                                    scalefactor,
-                                    snapshot,
-                                );
-                            }
+            match self.current_pen.get() {
+                PenStyle::Eraser => {
+                    if self.pens.borrow().eraser.shown() {
+                        if let Some(ref current_input) = self.pens.borrow().eraser.current_input {
+                            debug::draw_pos(
+                                current_input.pos(),
+                                debug::COLOR_POS_ALT,
+                                scalefactor,
+                                snapshot,
+                            );
                         }
                     }
-                    PenStyle::Selector => {
-                        if self.pens.borrow().selector.shown() {
-                            if let Some(bounds) = self.pens.borrow().selector.bounds {
-                                debug::draw_bounds(
-                                    bounds,
-                                    debug::COLOR_SELECTOR_BOUNDS,
-                                    scalefactor,
-                                    snapshot,
-                                );
-                            }
-                        }
-                    }
-                    PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unkown => {}
                 }
+                PenStyle::Selector => {
+                    if self.pens.borrow().selector.shown() {
+                        if let Some(bounds) = self.pens.borrow().selector.bounds {
+                            debug::draw_bounds(
+                                bounds,
+                                debug::COLOR_SELECTOR_BOUNDS,
+                                scalefactor,
+                                snapshot,
+                            );
+                        }
+                    }
+                }
+                PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unkown => {}
+            }
 
-                debug::draw_bounds(
-                    p2d::bounding_volume::AABB::new(
-                        na::point![0.0, 0.0],
-                        na::point![
-                            f64::from(self.sheet.width()),
-                            f64::from(self.sheet.height())
-                        ],
-                    ),
-                    debug::COLOR_SHEET_BOUNDS,
-                    scalefactor,
-                    snapshot,
-                );
+            debug::draw_bounds(
+                p2d::bounding_volume::AABB::new(
+                    na::point![0.0, 0.0],
+                    na::point![
+                        f64::from(self.sheet.width()),
+                        f64::from(self.sheet.height())
+                    ],
+                ),
+                debug::COLOR_SHEET_BOUNDS,
+                scalefactor,
+                snapshot,
+            );
 
-                for stroke in self.sheet.strokes().borrow().iter() {
-                    match stroke {
-                        strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                            for element in markerstroke.elements.iter() {
-                                debug::draw_pos(
-                                    element.inputdata().pos(),
-                                    debug::COLOR_POS,
-                                    scalefactor,
-                                    snapshot,
-                                )
-                            }
-                            for &hitbox_elem in markerstroke.hitbox.iter() {
-                                debug::draw_bounds(
-                                    hitbox_elem,
-                                    debug::COLOR_STROKE_HITBOX,
-                                    scalefactor,
-                                    snapshot,
-                                );
-                            }
+            for stroke in self.sheet.strokes().borrow().iter() {
+                match stroke {
+                    strokes::StrokeStyle::MarkerStroke(markerstroke) => {
+                        for element in markerstroke.elements.iter() {
+                            debug::draw_pos(
+                                element.inputdata().pos(),
+                                debug::COLOR_POS,
+                                scalefactor,
+                                snapshot,
+                            )
+                        }
+                        for &hitbox_elem in markerstroke.hitbox.iter() {
                             debug::draw_bounds(
-                                markerstroke.bounds,
-                                debug::COLOR_STROKE_BOUNDS,
+                                hitbox_elem,
+                                debug::COLOR_STROKE_HITBOX,
                                 scalefactor,
                                 snapshot,
                             );
                         }
-                        strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                            for element in brushstroke.elements.iter() {
-                                debug::draw_pos(
-                                    element.inputdata().pos(),
-                                    debug::COLOR_POS,
-                                    scalefactor,
-                                    snapshot,
-                                )
-                            }
-                            for &hitbox_elem in brushstroke.hitbox.iter() {
-                                debug::draw_bounds(
-                                    hitbox_elem,
-                                    debug::COLOR_STROKE_HITBOX,
-                                    scalefactor,
-                                    snapshot,
-                                );
-                            }
+                        debug::draw_bounds(
+                            markerstroke.bounds,
+                            debug::COLOR_STROKE_BOUNDS,
+                            scalefactor,
+                            snapshot,
+                        );
+                    }
+                    strokes::StrokeStyle::BrushStroke(brushstroke) => {
+                        for element in brushstroke.elements.iter() {
+                            debug::draw_pos(
+                                element.inputdata().pos(),
+                                debug::COLOR_POS,
+                                scalefactor,
+                                snapshot,
+                            )
+                        }
+                        for &hitbox_elem in brushstroke.hitbox.iter() {
                             debug::draw_bounds(
-                                brushstroke.bounds,
-                                debug::COLOR_STROKE_BOUNDS,
+                                hitbox_elem,
+                                debug::COLOR_STROKE_HITBOX,
                                 scalefactor,
                                 snapshot,
                             );
                         }
-                        strokes::StrokeStyle::ShapeStroke(shapestroke) => {
-                            debug::draw_bounds(
-                                shapestroke.bounds,
-                                debug::COLOR_STROKE_BOUNDS,
-                                scalefactor,
-                                snapshot,
-                            );
-                        }
-                        strokes::StrokeStyle::VectorImage(vectorimage) => {
-                            debug::draw_bounds(
-                                vectorimage.bounds,
-                                debug::COLOR_STROKE_BOUNDS,
-                                scalefactor,
-                                snapshot,
-                            );
-                        }
-                        strokes::StrokeStyle::BitmapImage(bitmapimage) => {
-                            debug::draw_bounds(
-                                bitmapimage.bounds,
-                                debug::COLOR_STROKE_BOUNDS,
-                                scalefactor,
-                                snapshot,
-                            );
-                        }
+                        debug::draw_bounds(
+                            brushstroke.bounds,
+                            debug::COLOR_STROKE_BOUNDS,
+                            scalefactor,
+                            snapshot,
+                        );
+                    }
+                    strokes::StrokeStyle::ShapeStroke(shapestroke) => {
+                        debug::draw_bounds(
+                            shapestroke.bounds,
+                            debug::COLOR_STROKE_BOUNDS,
+                            scalefactor,
+                            snapshot,
+                        );
+                    }
+                    strokes::StrokeStyle::VectorImage(vectorimage) => {
+                        debug::draw_bounds(
+                            vectorimage.bounds,
+                            debug::COLOR_STROKE_BOUNDS,
+                            scalefactor,
+                            snapshot,
+                        );
+                    }
+                    strokes::StrokeStyle::BitmapImage(bitmapimage) => {
+                        debug::draw_bounds(
+                            bitmapimage.bounds,
+                            debug::COLOR_STROKE_BOUNDS,
+                            scalefactor,
+                            snapshot,
+                        );
                     }
                 }
             }
@@ -461,10 +456,10 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
-use gtk4::EventSequenceState;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus, WidgetPaintable,
 };
+use gtk4::{graphene, EventSequenceState, Native, Snapshot};
 
 glib::wrapper! {
     pub struct Canvas(ObjectSubclass<imp::Canvas>)
@@ -481,6 +476,7 @@ impl Canvas {
     pub const SCALE_MIN: f64 = 0.1;
     pub const SCALE_MAX: f64 = 10.0;
     pub const SCALE_DEFAULT: f64 = 1.0;
+    pub const ZOOM_ACTION_DELTA: f64 = 0.1;
     pub const INPUT_OVERSHOOT: f64 = 30.0;
     pub const SHADOW_WIDTH: f64 = 30.0;
 
@@ -509,11 +505,23 @@ impl Canvas {
         imp::Canvas::from_instance(self).sheet.clone()
     }
 
+    pub fn temporary_zoom(&self) -> f64 {
+        self.property("temporary-zoom")
+            .unwrap()
+            .get::<f64>()
+            .unwrap()
+    }
+
+    fn set_temporary_zoom(&self, temporary_zoom: f64) {
+        self.set_property("temporary-zoom", temporary_zoom.to_value())
+            .unwrap();
+    }
+
     pub fn scalefactor(&self) -> f64 {
         self.property("scalefactor").unwrap().get::<f64>().unwrap()
     }
 
-    pub fn set_scalefactor(&self, scalefactor: f64) {
+    fn set_scalefactor(&self, scalefactor: f64) {
         self.set_property("scalefactor", scalefactor.to_value())
             .unwrap();
     }
@@ -731,6 +739,81 @@ impl Canvas {
         );
     }
 
+    /// Zoom temporarily to a new scalefactor, not rescaling the contents while doing it.
+    /// To scale the content and reset the zoom, use scale_to().
+    pub fn zoom_temporarily_to(&self, temp_scalefactor: f64) {
+        let priv_ = imp::Canvas::from_instance(self);
+
+        // Only capture when texture_buffer is resetted (= None)
+        if priv_.texture_buffer.borrow().is_none() {
+            *priv_.texture_buffer.borrow_mut() = Some(self.capture_current_content());
+        }
+        self.set_temporary_zoom(temp_scalefactor / self.scalefactor());
+
+        self.queue_resize();
+        self.queue_draw();
+    }
+
+    /// Scales the canvas and its contents to a new scalefactor
+    pub fn scale_to(&self, scalefactor: f64) {
+        let priv_ = imp::Canvas::from_instance(self);
+
+/*         if let Some(texture_buffer) = &*priv_.texture_buffer.borrow() {
+            texture_buffer.save_to_png(Path::new("./tests/canvas.png"));
+        } */
+
+        *priv_.texture_buffer.borrow_mut() = None;
+        self.set_temporary_zoom(1.0);
+        self.set_scalefactor(scalefactor);
+
+        // regenerating bounds, hitboxes,..
+        StrokeStyle::complete_all_strokes(&mut *self.sheet().strokes().borrow_mut());
+        StrokeStyle::complete_all_strokes(&mut *self.sheet().strokes_trash().borrow_mut());
+        StrokeStyle::complete_all_strokes(&mut *self.sheet().selection().strokes().borrow_mut());
+
+        self.regenerate_content();
+
+        self.queue_resize();
+        self.queue_draw();
+    }
+
+    pub fn regenerate_content(&self) {
+        StrokeStyle::update_all_rendernodes(
+            &mut *self.sheet().strokes().borrow_mut(),
+            self.scalefactor(),
+            &*self.renderer().borrow(),
+        );
+        StrokeStyle::update_all_rendernodes(
+            &mut *self.sheet().strokes_trash().borrow_mut(),
+            self.scalefactor(),
+            &*self.renderer().borrow(),
+        );
+        StrokeStyle::update_all_rendernodes(
+            &mut *self.sheet().selection().strokes().borrow_mut(),
+            self.scalefactor(),
+            &*self.renderer().borrow(),
+        );
+    }
+
+    pub fn capture_current_content(&self) -> gdk::Texture {
+        let snapshot = Snapshot::new();
+        let width = self.width();
+        let height = self.height();
+        self.preview().snapshot(
+            snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(),
+            f64::from(width),
+            f64::from(height),
+        );
+
+        let root_renderer = self.root().unwrap().upcast::<Native>().renderer().unwrap();
+        let node = snapshot.free_to_node().unwrap();
+        let texture = root_renderer
+            .render_texture(&node, None::<&graphene::Rect>)
+            .unwrap();
+
+        texture
+    }
+
     fn processing_draw_begin(
         &self,
         _appwindow: &RnoteAppWindow,
@@ -738,7 +821,7 @@ impl Canvas {
     ) {
         self.set_unsaved_changes(true);
 
-        // readding all selected strokes to sheet
+        // deselect all strokes from selection and readding them to the sheet
         if !self.sheet().selection().strokes().borrow().is_empty() {
             let mut strokes = self.sheet().selection().remove_strokes();
             self.sheet().strokes().borrow_mut().append(&mut strokes);
@@ -764,6 +847,7 @@ impl Canvas {
                         self.queue_resize();
                     }
 
+                    // update the rendernode of the current stroke
                     if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
@@ -782,6 +866,8 @@ impl Canvas {
 
                     self.pens().borrow_mut().selector.set_shown(true);
                     self.pens().borrow_mut().selector.new_path(inputdata);
+
+                    // update the rendernode of the current stroke
                     self.pens()
                         .borrow_mut()
                         .selector

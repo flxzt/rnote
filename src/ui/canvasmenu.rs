@@ -14,11 +14,11 @@ mod imp {
         #[template_child]
         pub menu_model: TemplateChild<MenuModel>,
         #[template_child]
-        pub zoomin_button: TemplateChild<Button>,
+        pub zoom_in_button: TemplateChild<Button>,
         #[template_child]
-        pub zoomout_button: TemplateChild<Button>,
+        pub zoom_out_button: TemplateChild<Button>,
         #[template_child]
-        pub zoomreset_button: TemplateChild<Button>,
+        pub zoom_reset_button: TemplateChild<Button>,
         #[template_child]
         pub zoom_fit_width_button: TemplateChild<Button>,
         #[template_child]
@@ -33,9 +33,9 @@ mod imp {
                 menubutton: TemplateChild::<MenuButton>::default(),
                 popovermenu: TemplateChild::<PopoverMenu>::default(),
                 menu_model: TemplateChild::<MenuModel>::default(),
-                zoomin_button: TemplateChild::<Button>::default(),
-                zoomout_button: TemplateChild::<Button>::default(),
-                zoomreset_button: TemplateChild::<Button>::default(),
+                zoom_in_button: TemplateChild::<Button>::default(),
+                zoom_out_button: TemplateChild::<Button>::default(),
+                zoom_reset_button: TemplateChild::<Button>::default(),
                 zoom_fit_width_button: TemplateChild::<Button>::default(),
                 lefthanded_toggle: TemplateChild::<ToggleButton>::default(),
                 righthanded_toggle: TemplateChild::<ToggleButton>::default(),
@@ -117,15 +117,15 @@ impl CanvasMenu {
     }
 
     pub fn zoomin_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self).zoomin_button.get()
+        imp::CanvasMenu::from_instance(self).zoom_in_button.get()
     }
 
     pub fn zoomout_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self).zoomout_button.get()
+        imp::CanvasMenu::from_instance(self).zoom_out_button.get()
     }
 
     pub fn zoomreset_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self).zoomreset_button.get()
+        imp::CanvasMenu::from_instance(self).zoom_reset_button.get()
     }
 
     pub fn zoom_fit_width_button(&self) -> Button {
@@ -146,7 +146,7 @@ impl CanvasMenu {
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::CanvasMenu::from_instance(self);
-        let zoomreset_button = priv_.zoomreset_button.get();
+        let zoomreset_button = priv_.zoom_reset_button.get();
 
         priv_
             .righthanded_toggle
@@ -162,21 +162,19 @@ impl CanvasMenu {
             }),
         );
 
-        priv_.zoomreset_button.connect_clicked(clone!(@weak appwindow => move |_zoomreset_button| {
-            appwindow.canvas().set_property("scalefactor", &canvas::Canvas::SCALE_DEFAULT).unwrap();
+        priv_.zoom_reset_button.connect_clicked(clone!(@weak appwindow => move |_zoomreset_button| {
+            appwindow.canvas().scale_to(canvas::Canvas::SCALE_DEFAULT);
         }));
 
-        priv_.zoomin_button.connect_clicked(
+        priv_.zoom_in_button.connect_clicked(
             clone!(@weak appwindow, @weak zoomreset_button => move |_| {
-                let scalefactor = ((appwindow.canvas().property("scalefactor").unwrap().get::<f64>().unwrap() * 10. ).floor() + 1. ) / 10.;
-                appwindow.canvas().set_property("scalefactor", &scalefactor).unwrap();
+                appwindow.application().unwrap().activate_action("zoom-in", None);
             }),
         );
 
-        priv_.zoomout_button.connect_clicked(
+        priv_.zoom_out_button.connect_clicked(
             clone!(@weak appwindow, @weak zoomreset_button => move |_| {
-                let scalefactor = ((appwindow.canvas().property("scalefactor").unwrap().get::<f64>().unwrap() * 10.).ceil() - 1.) / 10.;
-                appwindow.canvas().set_property("scalefactor", &scalefactor).unwrap();
+                appwindow.application().unwrap().activate_action("zoom-out", None);
             }),
         );
     }

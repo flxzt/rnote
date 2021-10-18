@@ -34,7 +34,7 @@ pub struct Pens {
 }
 
 impl Pens {
-    pub fn draw_pens(&self, current_pen: PenStyle, snapshot: &Snapshot, scalefactor: f64) {
+    pub fn draw(&self, current_pen: PenStyle, snapshot: &Snapshot, scalefactor: f64) {
         match current_pen {
             PenStyle::Eraser => {
                 self.eraser.draw(scalefactor, snapshot);

@@ -292,10 +292,9 @@ use std::{
 
 use adw::prelude::*;
 use gtk4::{
-    gdk, gio, glib, glib::clone, graphene, subclass::prelude::*, Application, Box,
-    EventControllerScroll, EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom,
-    Grid, Inhibit, Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator,
-    Snapshot, ToggleButton,
+    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
+    EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, Inhibit,
+    Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
 };
 
 use crate::{
@@ -611,7 +610,7 @@ impl RnoteAppWindow {
                     + f64::from(appwindow.canvas_scroller().height()) * 0.5) / appwindow.canvas().scalefactor()) + f64::from(appwindow.canvas().sheet().y())
                 );
 
-                appwindow.canvas().set_scalefactor(new_scalefactor);
+                appwindow.canvas().scale_to(new_scalefactor);
 
                 // Reposition scroller center to the stored sheet position
                 appwindow.canvas_scroller_center_around_point_on_sheet(sheet_center_pos);
@@ -653,70 +652,41 @@ impl RnoteAppWindow {
         self.canvas_scroller().add_controller(&canvas_zoom_gesture);
 
         let scale_begin = Rc::new(Cell::new(1_f64));
-        let scale_doubledelta = Rc::new(Cell::new(1_f64));
-        let canvas_preview_paintable = Rc::new(RefCell::new(gdk::Paintable::new_empty(0, 0)));
+        let scale_delta_prev = Rc::new(Cell::new(1_f64));
         let zoomgesture_canvasscroller_start_pos = Rc::new(Cell::new((0.0, 0.0)));
         let zoomgesture_bbcenter_start: Rc<Cell<Option<(f64, f64)>>> = Rc::new(Cell::new(None));
 
-        canvas_zoom_gesture.connect_begin(
-            clone!(
-                @strong canvas_preview_paintable,
-                @strong scale_begin,
-                @strong scale_doubledelta,
-                @strong zoomgesture_canvasscroller_start_pos,
-                @strong zoomgesture_bbcenter_start,
-                @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
-                scale_begin.set(appwindow.canvas().scalefactor());
-                scale_doubledelta.set(1_f64);
+        canvas_zoom_gesture.connect_begin(clone!(
+            @strong scale_begin,
+            @strong scale_delta_prev,
+            @strong zoomgesture_canvasscroller_start_pos,
+            @strong zoomgesture_bbcenter_start,
+            @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
+            scale_begin.set(appwindow.canvas().scalefactor());
+            scale_delta_prev.set(1_f64);
 
-                let width = f64::from(appwindow.canvas().sheet().width()) * scale_begin.get();
-                let height = f64::from(appwindow.canvas().sheet().height()) * scale_begin.get();
-                let preview_size = graphene::Size::new(width as f32, height as f32);
-
-                zoomgesture_canvasscroller_start_pos.set(
-                    (
-                        appwindow.canvas_scroller().hadjustment().unwrap().value(),
-                        appwindow.canvas_scroller().vadjustment().unwrap().value()
-                    )
-                );
-                if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
-                    zoomgesture_bbcenter_start.set(Some(
-                        bbcenter
-                    ));
-                }
-
-                *canvas_preview_paintable.borrow_mut() = appwindow.canvas().preview().current_image();
-
-                if let Some(paintable) = canvas_preview_paintable.borrow().as_ref() {
-                    let snapshot = Snapshot::new();
-                    paintable.snapshot(snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(), width, height);
-                    appwindow.canvas_resize_preview().set_paintable(snapshot.to_paintable(Some(&preview_size)).as_ref());
-                }
-
-                appwindow.canvas().set_visible(false);
-                appwindow.canvas().sheet().selection().set_shown(false);
-                appwindow.canvas_resize_preview().set_visible(true);
-            }),
-        );
+            zoomgesture_canvasscroller_start_pos.set(
+                (
+                    appwindow.canvas_scroller().hadjustment().unwrap().value(),
+                    appwindow.canvas_scroller().vadjustment().unwrap().value()
+                )
+            );
+            if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
+                zoomgesture_bbcenter_start.set(Some(
+                    bbcenter
+                ));
+            }
+        }));
 
         canvas_zoom_gesture.connect_scale_changed(
-            clone!(@strong canvas_preview_paintable, @strong scale_begin, @strong scale_doubledelta, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, scale_delta| {
+            clone!(@strong scale_begin, @strong scale_delta_prev, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, scale_delta| {
                 let scale_delta = scale_delta * Self::CANVAS_ZOOMGESTURE_ZOOM_SPEED;
                 let new_scalefactor = scale_begin.get() * scale_delta;
 
-                if scale_delta < scale_doubledelta.get() - Self::CANVAS_ZOOMGESTURE_THRESHOLD || scale_delta > scale_doubledelta.get() + Self::CANVAS_ZOOMGESTURE_THRESHOLD {
-                    scale_doubledelta.set(scale_delta);
+                if scale_delta < scale_delta_prev.get() - Self::CANVAS_ZOOMGESTURE_THRESHOLD || scale_delta > scale_delta_prev.get() + Self::CANVAS_ZOOMGESTURE_THRESHOLD {
+                    scale_delta_prev.set(scale_delta);
 
-                    let width = f64::from(appwindow.canvas().sheet().width()) * new_scalefactor;
-                    let height = f64::from(appwindow.canvas().sheet().height()) * new_scalefactor;
-                    let preview_size = graphene::Size::new(width as f32, height as f32);
-
-                    if let Some(paintable) = canvas_preview_paintable.borrow().as_ref() {
-                        let snapshot = Snapshot::new();
-                        paintable.snapshot(snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(), width, height);
-                        //snapshot.scale(scalefactor as f32, scalefactor as f32);
-                        appwindow.canvas_resize_preview().set_paintable(snapshot.to_paintable(Some(&preview_size)).as_ref());
-                    }
+                    appwindow.canvas().zoom_temporarily_to(new_scalefactor);
                 }
 
                 if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
@@ -737,7 +707,6 @@ impl RnoteAppWindow {
                         zoomgesture_bbcenter_start.set(Some(
                             bbcenter
                         ));
-                        log::debug!("### BEGIN DRAG ###");
                     }
                 }
             }),
@@ -746,27 +715,14 @@ impl RnoteAppWindow {
         canvas_zoom_gesture.connect_cancel(
             clone!(@strong scale_begin, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
                 zoomgesture_bbcenter_start.set(None);
-                appwindow.canvas_resize_preview().set_visible(false);
-                appwindow.canvas().set_visible(true);
-                appwindow.canvas().sheet().selection().set_shown(!appwindow.canvas().sheet().selection().strokes().borrow().is_empty());
-
-                appwindow.canvas().set_sensitive(false);
-                appwindow.canvas().set_sensitive(true);
             }),
         );
 
         canvas_zoom_gesture.connect_end(
-            clone!(@strong scale_begin, @strong scale_doubledelta, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+            clone!(@strong scale_begin, @strong scale_delta_prev, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
                 zoomgesture_bbcenter_start.set(None);
-                let scalefactor_new = scale_begin.get() * scale_doubledelta.get();
-                appwindow.canvas().set_scalefactor(scalefactor_new);
-
-                appwindow.canvas_resize_preview().set_visible(false);
-                appwindow.canvas().set_visible(true);
-                appwindow.canvas().sheet().selection().set_shown(!appwindow.canvas().sheet().selection().strokes().borrow().is_empty());
-
-                appwindow.canvas().set_sensitive(false);
-                appwindow.canvas().set_sensitive(true);
+                let scalefactor_new = scale_begin.get() * scale_delta_prev.get();
+                appwindow.canvas().scale_to(scalefactor_new);
             }),
         );
 

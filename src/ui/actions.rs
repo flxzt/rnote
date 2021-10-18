@@ -30,8 +30,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_open_canvasmenu = gio::SimpleAction::new("open-canvasmenu", None);
     let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
     let action_zoom_fit_width = gio::SimpleAction::new("zoom-fit-width", None);
-    let action_zoomin = gio::SimpleAction::new("zoomin", None);
-    let action_zoomout = gio::SimpleAction::new("zoomout", None);
+    let action_zoomin = gio::SimpleAction::new("zoom-in", None);
+    let action_zoomout = gio::SimpleAction::new("zoom-out", None);
     let action_delete_selection = gio::SimpleAction::new("delete-selection", None);
     let action_duplicate_selection = gio::SimpleAction::new("duplicate-selection", None);
     let action_import_file = gio::SimpleAction::new("import-file", None);
@@ -395,21 +395,21 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
         let scalefactor = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
-        appwindow.canvas().set_property("scalefactor", scalefactor.to_value()).unwrap();
+        appwindow.canvas().scale_to(scalefactor);
     }));
     app.add_action(&action_zoom_fit_width);
 
     // Zoom in
     action_zoomin.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let scalefactor = appwindow.canvas().property("scalefactor").unwrap().get::<f64>().unwrap() + 0.02;
-        appwindow.canvas().set_property("scalefactor", &scalefactor).unwrap();
+        let scalefactor = appwindow.canvas().scalefactor() + Canvas::ZOOM_ACTION_DELTA;
+        appwindow.canvas().scale_to(scalefactor);
     }));
     app.add_action(&action_zoomin);
 
     // Zoom out
     action_zoomout.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let scalefactor = appwindow.canvas().property("scalefactor").unwrap().get::<f64>().unwrap() - 0.02;
-        appwindow.canvas().set_property("scalefactor", &scalefactor).unwrap();
+        let scalefactor = appwindow.canvas().scalefactor() - Canvas::ZOOM_ACTION_DELTA;
+        appwindow.canvas().scale_to(scalefactor);
     }));
     app.add_action(&action_zoomout);
 

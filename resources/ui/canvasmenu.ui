@@ -102,19 +102,19 @@
                 <property name="orientation">horizontal</property>
                 <property name="hexpand">true</property>
                 <child>
-                  <object class="GtkButton" id="zoomout_button">
+                  <object class="GtkButton" id="zoom_out_button">
                     <property name="icon_name">zoom-out-symbolic</property>
                     <property name="width_request">50</property>
                     <property name="hexpand">false</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="zoomreset_button">
+                  <object class="GtkButton" id="zoom_reset_button">
                     <property name="hexpand">true</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkButton" id="zoomin_button">
+                  <object class="GtkButton" id="zoom_in_button">
                     <property name="icon_name">zoom-in-symbolic</property>
                     <property name="width_request">50</property>
                     <property name="hexpand">false</property>

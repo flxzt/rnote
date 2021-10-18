@@ -238,8 +238,8 @@ impl ShaperPage {
         }));
 
         // Fill color
-        self.fill_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
-            let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
+        self.fill_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |fill_colorpicker, _paramspec| {
+            let color = fill_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
             appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.fill = Some(utils::Color::from(color));
             appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.fill = Some(utils::Color::from(color));
         }));

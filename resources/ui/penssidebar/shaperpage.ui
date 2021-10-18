@@ -271,7 +271,7 @@
       <object class="GtkRevealer" id="fill_revealer">
         <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
         <property name="transition_duration">300</property>
-        <property name="reveal-child">false</property>
+        <property name="reveal-child">true</property>
         <child>
           <object class="GtkBox">
             <property name="spacing">6</property>

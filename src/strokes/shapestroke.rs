@@ -1,5 +1,5 @@
 use super::{Element, StrokeBehaviour};
-use crate::pens::shaper;
+use crate::pens::shaper::{self, DrawStyle};
 use crate::strokes::compose;
 use crate::utils;
 use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render};
@@ -101,9 +101,9 @@ impl StrokeBehaviour for ShapeStroke {
                 ref mut end,
             } => {
                 *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                    + na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width() * 0.5);
+                    + na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width());
                 *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                    - na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width() * 0.5);
+                    - na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width());
             }
             ShapeStyle::Ellipse {
                 ref mut pos,
@@ -117,9 +117,9 @@ impl StrokeBehaviour for ShapeStroke {
                 *pos = center;
 
                 *radius_x = (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0
-                    - self.shaper.rectangle_config.width();
+                    - self.shaper.ellipse_config.width();
                 *radius_y = (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
-                    - self.shaper.rectangle_config.width();
+                    - self.shaper.ellipse_config.width();
             }
         }
 
@@ -388,7 +388,7 @@ impl ShapeStroke {
                 shaper::DrawStyle::Rough => {
                     self.bounds = utils::aabb_new_positive(*start, *end)
                         // TODO what are the actual bounds for a rough line?
-                        .loosened(self.shaper.line_config.width() * 0.5 + 15.0);
+                        .loosened(self.shaper.line_config.width() * 0.5 + DrawStyle::ROUGH_MARGIN * 2.0);
                 }
             },
             ShapeStyle::Rectangle { ref start, ref end } => {
@@ -400,7 +400,7 @@ impl ShapeStroke {
                     shaper::DrawStyle::Rough => {
                         self.bounds = utils::aabb_new_positive(*start, *end)
                             // TODO what are the actual bounds for a rough rect?
-                            .loosened(self.shaper.rectangle_config.width() * 0.5 + 15.0);
+                            .loosened(self.shaper.rectangle_config.width() * 0.5 + DrawStyle::ROUGH_MARGIN * 2.0);
                     }
                 };
             }
@@ -422,7 +422,7 @@ impl ShapeStroke {
                         na::vector![pos[0] + radius_x, pos[1] + radius_y],
                     )
                     // TODO what are the actual bounds for a rough ellipse?
-                    .loosened(self.shaper.ellipse_config.width() + 15.0);
+                    .loosened(self.shaper.ellipse_config.width() + DrawStyle::ROUGH_MARGIN * 2.0);
                 }
             },
         }

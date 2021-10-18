@@ -984,7 +984,7 @@ impl RnoteAppWindow {
             .collect();
         self.penssidebar()
             .shaper_page()
-            .stroke_colorpicker()
+            .fill_colorpicker()
             .load_all_colors(&brush_colors_vec);
 
         // Background color

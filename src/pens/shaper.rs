@@ -27,6 +27,10 @@ impl Default for DrawStyle {
     }
 }
 
+impl DrawStyle {
+    pub const ROUGH_MARGIN: f64 = 8.0;
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct LineConfig {
     width: f64,

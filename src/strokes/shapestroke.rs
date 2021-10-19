@@ -79,32 +79,62 @@ impl StrokeBehaviour for ShapeStroke {
             ShapeStyle::Line {
                 ref mut start,
                 ref mut end,
-            } => {
-                let offset = na::vector![
-                    new_bounds.mins[0] - self.bounds.mins[0],
-                    new_bounds.mins[1] - self.bounds.mins[1]
-                ];
+            } => match self.shaper.drawstyle {
+                DrawStyle::Smooth => {
+                    let scalevector = na::vector![
+                        (new_bounds.maxs[0] - new_bounds.mins[0])
+                            / (self.bounds.maxs[0] - self.bounds.mins[0]),
+                        (new_bounds.maxs[1] - new_bounds.mins[1])
+                            / (self.bounds.maxs[1] - self.bounds.mins[1])
+                    ];
+                    let offset = na::vector![
+                        new_bounds.mins[0] - self.bounds.mins[0],
+                        new_bounds.mins[1] - self.bounds.mins[1]
+                    ];
+                    let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
 
-                let scalevector = na::vector![
-                    (new_bounds.maxs[0] - new_bounds.mins[0])
-                        / (self.bounds.maxs[0] - self.bounds.mins[0]),
-                    (new_bounds.maxs[1] - new_bounds.mins[1])
-                        / (self.bounds.maxs[1] - self.bounds.mins[1])
-                ];
-                let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
+                    *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
+                    *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
+                }
+                DrawStyle::Rough => {
+                    let scalevector = na::vector![
+                        (new_bounds.maxs[0] - new_bounds.mins[0])
+                            / (self.bounds.maxs[0] - self.bounds.mins[0]),
+                        (new_bounds.maxs[1] - new_bounds.mins[1])
+                            / (self.bounds.maxs[1] - self.bounds.mins[1])
+                    ];
+                    let offset = na::vector![
+                        new_bounds.mins[0] - self.bounds.mins[0],
+                        new_bounds.mins[1] - self.bounds.mins[1]
+                    ];
+                    let top_left = na::vector![
+                        self.bounds.mins[0],
+                        self.bounds.mins[1]
+                    ];
 
-                *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
-                *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
-            }
+                    *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
+                    *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
+                }
+            },
             ShapeStyle::Rectangle {
                 ref mut start,
                 ref mut end,
-            } => {
-                *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                    + na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width());
-                *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                    - na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width());
-            }
+            } => match self.shaper.drawstyle {
+                DrawStyle::Smooth => {
+                    *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
+                        + na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width());
+                    *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
+                        - na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width());
+                }
+                DrawStyle::Rough => {
+                    *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
+                        + na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width())
+                        + na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
+                    *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
+                        - na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width())
+                        - na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
+                }
+            },
             ShapeStyle::Ellipse {
                 ref mut pos,
                 ref mut radius_x,
@@ -114,12 +144,27 @@ impl StrokeBehaviour for ShapeStroke {
                     new_bounds.mins[0] + (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0,
                     new_bounds.mins[1] + (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
                 ];
-                *pos = center;
 
-                *radius_x = (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0
-                    - self.shaper.ellipse_config.width();
-                *radius_y = (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
-                    - self.shaper.ellipse_config.width();
+                match self.shaper.drawstyle {
+                    DrawStyle::Smooth => {
+                        *pos = center;
+
+                        *radius_x = (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0
+                            - self.shaper.ellipse_config.width();
+                        *radius_y = (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
+                            - self.shaper.ellipse_config.width();
+                    }
+                    DrawStyle::Rough => {
+                        *pos = center;
+
+                        *radius_x = (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0
+                            - self.shaper.ellipse_config.width()
+                            - DrawStyle::ROUGH_MARGIN;
+                        *radius_y = (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
+                            - self.shaper.ellipse_config.width()
+                            - DrawStyle::ROUGH_MARGIN;
+                    }
+                }
             }
         }
 
@@ -388,7 +433,7 @@ impl ShapeStroke {
                 shaper::DrawStyle::Rough => {
                     self.bounds = utils::aabb_new_positive(*start, *end)
                         // TODO what are the actual bounds for a rough line?
-                        .loosened(self.shaper.line_config.width() * 0.5 + DrawStyle::ROUGH_MARGIN * 2.0);
+                        .loosened(self.shaper.line_config.width() * 0.5 + DrawStyle::ROUGH_MARGIN);
                 }
             },
             ShapeStyle::Rectangle { ref start, ref end } => {
@@ -400,7 +445,10 @@ impl ShapeStroke {
                     shaper::DrawStyle::Rough => {
                         self.bounds = utils::aabb_new_positive(*start, *end)
                             // TODO what are the actual bounds for a rough rect?
-                            .loosened(self.shaper.rectangle_config.width() * 0.5 + DrawStyle::ROUGH_MARGIN * 2.0);
+                            .loosened(
+                                self.shaper.rectangle_config.width() * 0.5
+                                    + DrawStyle::ROUGH_MARGIN,
+                            );
                     }
                 };
             }
@@ -422,7 +470,7 @@ impl ShapeStroke {
                         na::vector![pos[0] + radius_x, pos[1] + radius_y],
                     )
                     // TODO what are the actual bounds for a rough ellipse?
-                    .loosened(self.shaper.ellipse_config.width() + DrawStyle::ROUGH_MARGIN * 2.0);
+                    .loosened(self.shaper.ellipse_config.width() + DrawStyle::ROUGH_MARGIN);
                 }
             },
         }

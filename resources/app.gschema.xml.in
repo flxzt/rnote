@@ -78,14 +78,14 @@
     <key name="shaper-stroke-colors" type="(uu)">
       <default>(
         0x000000ff,
-        0x99c1f1ff
+        0x1a5fb4ff
       )</default>
       <summary>Shape stroke colors encoded as RGBA values (8-bit)</summary>
     </key>
     <key name="shaper-fill-colors" type="(uu)">
       <default>(
         0x00000000,
-        0x1a5fb4ff
+        0x99c1f188
       )</default>
       <summary>Shape fill colors encoded as RGBA values (8-bit)</summary>
     </key>

@@ -9,7 +9,7 @@ use crate::{
 };
 use gtk4::{
     gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType, PositionType, PrintOperation,
-    PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
+    PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit, Widget,
 };
 
 /* Actions follow this principle:
@@ -490,8 +490,18 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             let scalefactor = width_scale.min(height_scale);
             let y_offset =  - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * scalefactor);
 
+            let sheet_format_bounds_scaled = p2d::bounding_volume::AABB::new(
+                na::point![0.0, 0.0],
+                na::point![f64::from(appwindow.canvas().sheet().format().width()) * scalefactor,f64::from(appwindow.canvas().sheet().format().height()) * scalefactor]
+            );
+
             // Cloning strokes out of sheet to change their rendernodes without affecting the original strokes
             let mut strokes = (*appwindow.canvas().sheet().strokes().borrow_mut()).clone();
+            let mut background = (*appwindow.canvas().sheet().background().borrow_mut()).clone();
+
+            if let Err(e) = background.update_rendernode(scalefactor, appwindow.canvas().sheet().bounds(), &*appwindow.canvas().renderer().borrow(), appwindow.canvas().upcast_ref::<Widget>(), true) {
+                log::error!("{}", e);
+            };
 
             StrokeStyle::update_all_rendernodes(
                 &mut strokes,
@@ -500,10 +510,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             );
 
             let snapshot = Snapshot::new();
-            appwindow.canvas().sheet()
-                .background()
-                .borrow()
-                .draw(&snapshot);
+            background.draw(&snapshot);
 
             if appwindow.canvas().format_borders() {
                 appwindow.canvas().sheet()
@@ -515,10 +522,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
 
             cx.rectangle(
-                0.0,
-                0.0,
-                f64::from(appwindow.canvas().sheet().format().width()) * scalefactor,
-                f64::from(appwindow.canvas().sheet().format().height()) * scalefactor,
+                sheet_format_bounds_scaled.mins[0],
+                sheet_format_bounds_scaled.mins[1],
+                sheet_format_bounds_scaled.maxs[0] - sheet_format_bounds_scaled.mins[0],
+                sheet_format_bounds_scaled.maxs[1] - sheet_format_bounds_scaled.mins[1]
             );
             cx.clip();
             cx.translate(0.0, y_offset);

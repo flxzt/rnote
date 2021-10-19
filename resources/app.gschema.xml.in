@@ -93,5 +93,9 @@
       <default>0xffffffff</default>
       <summary>Background color encoded as RGBA value (8-bit)</summary>
     </key>
+    <key name="background-pattern" type="s">
+      <default>"None"</default>
+      <summary>Background pattern</summary>
+    </key>
   </schema>
 </schemalist>

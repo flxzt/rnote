@@ -105,7 +105,7 @@ mod imp {
                 obj.set_width(new_width);
                 obj.set_height(new_height);
 
-                    obj.resize_to_format();
+                obj.resize_to_format();
             }));
         }
     }
@@ -505,24 +505,31 @@ impl Sheet {
         imp::Sheet::from_instance(self).background.clone()
     }
 
-    // returns true if resizing is needed
-    pub fn undo_last_stroke(&self) -> bool {
+    pub fn bounds(&self) -> p2d::bounding_volume::AABB {
+        p2d::bounding_volume::AABB::new(
+            na::point![f64::from(self.x()), f64::from(self.y())],
+            na::point![f64::from(self.width()), f64::from(self.height())],
+        )
+    }
+
+    /// Resize needed after calling this
+    pub fn undo_last_stroke(&self) {
         let priv_ = imp::Sheet::from_instance(self);
 
         if let Some(removed_stroke) = priv_.strokes.borrow_mut().pop() {
             priv_.strokes_trash.borrow_mut().push(removed_stroke);
         }
-        self.resize_to_format()
+        self.resize_to_format();
     }
 
-    // returns true if resizing is needed
-    pub fn redo_last_stroke(&self) -> bool {
+    /// Resize needed after calling this
+    pub fn redo_last_stroke(&self) {
         let priv_ = imp::Sheet::from_instance(self);
 
         if let Some(restored_stroke) = priv_.strokes_trash.borrow_mut().pop() {
             priv_.strokes.borrow_mut().push(restored_stroke);
         }
-        self.resize_to_format()
+        self.resize_to_format();
     }
 
     pub fn undo_elements_last_stroke(
@@ -707,17 +714,14 @@ impl Sheet {
         false
     }
 
-    pub fn resize_to_format(&self) -> bool {
+    pub fn resize_to_format(&self) {
         let priv_ = imp::Sheet::from_instance(self);
-        let mut resize_needed = false;
-
         if self.autoexpand_height() {
-            self.set_padding_bottom(2 * priv_.format.height());
+            self.set_padding_bottom(priv_.format.height());
 
             let new_height = self.calc_height();
 
             if new_height != self.height() {
-                resize_needed = true;
                 self.set_height(new_height);
             }
         } else {
@@ -728,10 +732,7 @@ impl Sheet {
                 (new_height as f64 / priv_.format.height() as f64).ceil() as i32
                     * priv_.format.height(),
             );
-            resize_needed = true;
         }
-
-        resize_needed
     }
 
     pub fn calc_height(&self) -> i32 {
@@ -790,10 +791,7 @@ impl Sheet {
 
         snapshot.push_clip(&sheet_bounds_scaled);
 
-        priv_
-            .background
-            .borrow()
-            .draw(snapshot, &sheet_bounds_scaled);
+        priv_.background.borrow().draw(snapshot);
 
         StrokeStyle::draw_strokes(&priv_.strokes.borrow(), snapshot);
 
@@ -809,7 +807,7 @@ impl Sheet {
         *self.selection().bounds().borrow_mut() = *sheet.selection().bounds().borrow();
         self.selection().set_shown(sheet.selection().shown());
         self.format().replace_fields(sheet.format());
-        *self.background().borrow_mut() = *sheet.background().borrow();
+        *self.background().borrow_mut() = sheet.background().borrow().clone();
         self.set_x(sheet.x());
         self.set_y(sheet.y());
         self.set_width(sheet.width());
@@ -903,7 +901,7 @@ impl Sheet {
             .borrow_mut()
             .append(&mut priv_.selection.remove_strokes());
 
-        let vector_image = VectorImage::import_from_svg(svg.as_str(), pos).unwrap();
+        let vector_image = VectorImage::import_from_svg(svg.as_str(), pos, None).unwrap();
         priv_
             .selection
             .push_to_selection(strokes::StrokeStyle::VectorImage(vector_image));

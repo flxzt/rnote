@@ -3,6 +3,8 @@ use std::error::Error;
 use gtk4::{
     gdk, gdk_pixbuf, gio, glib, graphene,
     gsk::{self, IsRenderNode},
+    prelude::*,
+    Native, Widget,
 };
 
 #[derive(Debug)]
@@ -172,4 +174,18 @@ pub fn gen_cairosurface(
         .expect("failed to stroke() cairo context onto cairo surface.");
 
     Ok(surface)
+}
+
+pub fn render_node_to_texture(
+    active_widget: &Widget,
+    node: &gsk::RenderNode,
+) -> Result<Option<gdk::Texture>, Box<dyn Error>> {
+    if let Some(root) = active_widget.root() {
+        if let Some(root_renderer) = root.upcast::<Native>().renderer() {
+            let texture = root_renderer.render_texture(node, None::<&graphene::Rect>);
+            return Ok(texture);
+        }
+    }
+
+    Ok(None)
 }

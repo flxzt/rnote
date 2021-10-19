@@ -223,6 +223,20 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwComboRow" id="background_patterns_row">
+                        <property name="title">Pattern</property>
+                        <property name="subtitle">Choose a background pattern</property>
+                        <property name="model">
+                          <object class="AdwEnumListModel">
+                            <property name="enum-type">PatternStyle</property>
+                          </object>
+                        </property>
+                        <property name="expression">
+                          <lookup type="AdwEnumListItem" name="name" />
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

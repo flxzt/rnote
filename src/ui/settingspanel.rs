@@ -39,6 +39,8 @@ mod imp {
         pub format_apply_button: TemplateChild<Button>,
         #[template_child]
         pub background_color_choosebutton: TemplateChild<ColorButton>,
+        #[template_child]
+        pub background_patterns_row: TemplateChild<adw::ComboRow>,
     }
 
     #[glib::object_subclass]
@@ -281,7 +283,7 @@ use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
 use gtk4::{Adjustment, ColorButton, Entry};
 
 use super::appwindow::RnoteAppWindow;
-use crate::sheet::background::Background;
+use crate::sheet::background::{Background, PatternStyle};
 use crate::sheet::format::{self, Format};
 use crate::utils;
 
@@ -355,6 +357,12 @@ impl SettingsPanel {
             .clone()
     }
 
+    pub fn background_patterns_row(&self) -> adw::ComboRow {
+        imp::SettingsPanel::from_instance(self)
+            .background_patterns_row
+            .clone()
+    }
+
     pub fn load_format(&self, format: Format) {
         self.set_predefined_format_variant(format::PredefinedFormat::Custom);
         self.format_width_entry()
@@ -369,7 +377,10 @@ impl SettingsPanel {
 
     pub fn load_background(&self, background: Background) {
         self.background_color_choosebutton()
-            .set_rgba(&background.color.to_gdk());
+            .set_rgba(&background.color().to_gdk());
+
+        self.background_patterns_row()
+            .set_selected(background.pattern() as u32);
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -401,17 +412,46 @@ impl SettingsPanel {
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
                 appwindow.canvas().sheet().format().replace_fields(temporary_format);
 
-                if appwindow.canvas().sheet().resize_to_format() {
-                    appwindow.canvas().queue_resize();
-                }
-                appwindow.canvas().queue_draw();
+                appwindow.canvas().sheet().resize_to_format();
+                appwindow.canvas().regenerate_background(false);
             }),
         );
 
         // Background
         priv_.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.canvas().sheet().background().borrow_mut().color = utils::Color::from(background_color_choosebutton.rgba());
-            appwindow.canvas().queue_draw();
+            appwindow.canvas().sheet().background().borrow_mut().set_color(utils::Color::from(background_color_choosebutton.rgba()));
+            appwindow.canvas().regenerate_background(true);
+            appwindow.canvas().queue_resize();
+        }));
+
+        priv_.background_patterns_row.get().connect_selected_item_notify(clone!(@weak appwindow => move |background_patterns_row| {
+            if let Some(selected_item) = background_patterns_row.selected_item() {
+                match selected_item
+                    .downcast::<adw::EnumListItem>()
+                    .unwrap()
+                    .nick()
+                    .unwrap()
+                    .as_str()
+                {
+                    "none" => {
+                        appwindow.canvas().sheet().background().borrow_mut().set_pattern(PatternStyle::None);
+
+                    },
+                    "lines" => {
+                        appwindow.canvas().sheet().background().borrow_mut().set_pattern(PatternStyle::Lines);
+                    },
+                    "grid" => {
+                        appwindow.canvas().sheet().background().borrow_mut().set_pattern(PatternStyle::Grid);
+                    },
+                    _ => {
+                        log::error!(
+                            "invalid nick string when selecting a format in predefined_formats_row"
+                        );
+                    }
+                };
+
+                appwindow.canvas().regenerate_background(true);
+            }
         }));
     }
 

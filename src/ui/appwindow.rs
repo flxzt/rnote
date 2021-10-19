@@ -304,7 +304,8 @@ use tuple_conv::RepeatedTuple;
 
 use crate::{
     app::RnoteApp,
-    strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokeStyle},
+    sheet::background::PatternStyle,
+    strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     ui::canvas::Canvas,
     ui::develactions::DevelActions,
     ui::penssidebar::PensSideBar,
@@ -673,6 +674,8 @@ impl RnoteAppWindow {
             scale_begin.set(appwindow.canvas().scalefactor());
             scale_delta_prev.set(1_f64);
 
+            appwindow.canvas().zoom_temporarily_to(appwindow.canvas().scalefactor());
+
             zoomgesture_canvasscroller_start_pos.set(
                 (
                     appwindow.canvas_scroller().hadjustment().unwrap().value(),
@@ -854,11 +857,7 @@ impl RnoteAppWindow {
         } else {
             self.app_settings().set_value(
                 "shaper-stroke-colors",
-                &(
-                    shaper_stroke_colors[0],
-                    shaper_stroke_colors[1],
-                )
-                    .to_variant(),
+                &(shaper_stroke_colors[0], shaper_stroke_colors[1]).to_variant(),
             )?;
         }
 
@@ -881,11 +880,7 @@ impl RnoteAppWindow {
         } else {
             self.app_settings().set_value(
                 "shaper-fill-colors",
-                &(
-                    shaper_fill_colors[0],
-                    shaper_fill_colors[1],
-                )
-                    .to_variant(),
+                &(shaper_fill_colors[0], shaper_fill_colors[1]).to_variant(),
             )?;
         }
 
@@ -895,6 +890,18 @@ impl RnoteAppWindow {
                 "background-color",
                 utils::Color::from(self.settings_panel().background_color_choosebutton().rgba())
                     .to_u32(),
+            )
+            .unwrap();
+
+        // Background pattern
+        self.app_settings()
+            .set_string(
+                "background-pattern",
+                match self.canvas().sheet().background().borrow().pattern() {
+                    PatternStyle::None => "none",
+                    PatternStyle::Lines => "lines",
+                    PatternStyle::Grid => "grid",
+                },
             )
             .unwrap();
 
@@ -993,7 +1000,36 @@ impl RnoteAppWindow {
             self.settings_panel()
                 .background_color_choosebutton()
                 .set_rgba(&background_color.to_gdk());
-            self.canvas().sheet().background().borrow_mut().color = background_color;
+            self.canvas()
+                .sheet()
+                .background()
+                .borrow_mut()
+                .set_color(background_color);
+        }
+
+        // color schemes
+        match self.app_settings().string("background-pattern").as_str() {
+            "none" => self
+                .canvas()
+                .sheet()
+                .background()
+                .borrow_mut()
+                .set_pattern(PatternStyle::None),
+            "lines" => self
+                .canvas()
+                .sheet()
+                .background()
+                .borrow_mut()
+                .set_pattern(PatternStyle::Lines),
+            "grid" => self
+                .canvas()
+                .sheet()
+                .background()
+                .borrow_mut()
+                .set_pattern(PatternStyle::Grid),
+            _ => {
+                log::error!("failed to load setting color-scheme, unsupported string as key")
+            }
         }
 
         // Ui for right / left handed writers
@@ -1074,19 +1110,7 @@ impl RnoteAppWindow {
                 self.settings_panel()
                     .load_background(self.canvas().sheet().background().borrow_mut().clone());
 
-                StrokeStyle::update_all_rendernodes(
-                    &mut *self.canvas().sheet().strokes().borrow_mut(),
-                    self.canvas().scalefactor(),
-                    &*self.canvas().renderer().borrow(),
-                );
-                StrokeStyle::update_all_rendernodes(
-                    &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
-                    self.canvas().scalefactor(),
-                    &*self.canvas().renderer().borrow(),
-                );
-
-                self.canvas().queue_resize();
-                self.canvas().queue_draw();
+                self.canvas().regenerate_content(false);
                 self.canvas().set_unsaved_changes(false);
             }
             utils::FileType::Svg => {
@@ -1100,7 +1124,7 @@ impl RnoteAppWindow {
                 };
                 self.canvas().sheet().import_file_as_svg(pos, file)?;
 
-                self.canvas().regenerate_content();
+                self.canvas().regenerate_content(false);
 
                 self.canvas()
                     .sheet()
@@ -1125,22 +1149,14 @@ impl RnoteAppWindow {
                     .sheet()
                     .import_file_as_bitmapimage(pos, file)?;
 
-                StrokeStyle::update_all_rendernodes(
-                    &mut *self.canvas().sheet().strokes().borrow_mut(),
-                    self.canvas().scalefactor(),
-                    &*self.canvas().renderer().borrow(),
-                );
-                StrokeStyle::update_all_rendernodes(
-                    &mut *self.canvas().sheet().selection().strokes().borrow_mut(),
-                    self.canvas().scalefactor(),
-                    &*self.canvas().renderer().borrow(),
-                );
+                self.canvas().regenerate_content(false);
 
                 self.canvas()
                     .sheet()
                     .selection()
                     .emit_by_name("redraw", &[])
                     .unwrap();
+
                 self.canvas().queue_draw();
 
                 self.canvas().set_unsaved_changes(true);

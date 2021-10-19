@@ -8,8 +8,8 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gio, glib, glib::clone, graphene, prelude::*, ArrowType, Grid, PackType, PositionType,
-    PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
+    gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType, PositionType, PrintOperation,
+    PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
 };
 
 /* Actions follow this principle:
@@ -125,7 +125,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Renderer Backend
     action_renderer_backend.connect_state_notify(clone!(@weak appwindow => move |action_renderer_backend| {
-        let state = action_renderer_backend.state().unwrap().get::<String>().unwrap();
+        let state = action_renderer_backend.state().unwrap().get::<String>().expect("wrong type for state of 'action_renderer_backend' must be of type String");
         match state.as_str() {
             "librsvg" => {
                 appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Librsvg;
@@ -138,17 +138,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }
 
-        StrokeStyle::update_all_rendernodes(
-            &mut *appwindow.canvas().sheet().strokes().borrow_mut(),
-            appwindow.canvas().scalefactor(),
-            &*appwindow.canvas().renderer().borrow(),
-        );
-        StrokeStyle::update_all_rendernodes(
-            &mut *appwindow.canvas().sheet().selection().strokes().borrow_mut(),
-            appwindow.canvas().scalefactor(),
-            &*appwindow.canvas().renderer().borrow(),
-        );
-        appwindow.canvas().queue_draw()
+        appwindow.canvas().regenerate_content(true);
     }));
     app.add_action(&action_renderer_backend);
 
@@ -262,7 +252,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         clone!(@weak appwindow => move |_action_delete_selection, _| {
                     let mut strokes = appwindow.canvas().sheet().selection().remove_strokes();
                     appwindow.canvas().sheet().strokes_trash().borrow_mut().append(&mut strokes);
-                    appwindow.canvas().queue_draw();
         }),
     );
     app.add_action(&action_delete_selection);
@@ -275,7 +264,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
                     let offset = na::vector![20.0, 20.0];
                     appwindow.canvas().sheet().selection().translate_selection(offset);
-                    appwindow.canvas().queue_draw();
         }),
     );
     app.add_action(&action_duplicate_selection);
@@ -512,17 +500,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             );
 
             let snapshot = Snapshot::new();
-            let sheet_bounds_scaled = graphene::Rect::new(
-                appwindow.canvas().sheet().x() as f32 * scalefactor as f32,
-                appwindow.canvas().sheet().y() as f32 * scalefactor as f32,
-                appwindow.canvas().sheet().width() as f32 * scalefactor as f32,
-                appwindow.canvas().sheet().height() as f32 * scalefactor as f32,
-            );
-
             appwindow.canvas().sheet()
                 .background()
                 .borrow()
-                .draw(&snapshot, &sheet_bounds_scaled);
+                .draw(&snapshot);
 
             if appwindow.canvas().format_borders() {
                 appwindow.canvas().sheet()

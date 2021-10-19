@@ -379,14 +379,14 @@ impl Format {
     }
 
     pub fn draw(&self, n_pages: i32, snapshot: &Snapshot, scalefactor: f64) {
-        for i in 0..=n_pages {
+        for i in 0..n_pages {
             let border_radius = graphene::Size::new(0.0, 0.0);
             let border_width = 2.0;
             let border_bounds = graphene::Rect::new(
                 0.0,
                 (i * self.height()) as f32 - border_width / 2.0,
                 self.width() as f32,
-                ((i + 1) * self.height()) as f32 + border_width,
+                ((i + 1) * self.height()) as f32 + border_width / 2.0,
             );
 
             let rounded_rect = gsk::RoundedRect::new(

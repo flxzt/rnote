@@ -111,6 +111,8 @@ mod imp {
             obj.add_controller(&self.mouse_drawing_gesture);
             obj.add_controller(&self.touch_drawing_gesture);
 
+            obj.regenerate_content(true);
+
             self.preview.set_widget(Some(obj));
         }
 
@@ -197,8 +199,14 @@ mod imp {
                 "temporary-zoom" => {
                     let temporary_zoom = value
                         .get::<f64>()
-                        .expect("The value needs to be of type `f64`.");
+                        .expect("The value needs to be of type `f64`.")
+                        .clamp(
+                            super::Canvas::SCALE_MIN * self.scalefactor.get(),
+                            super::Canvas::SCALE_MAX / self.scalefactor.get(),
+                        );
                     self.temporary_zoom.replace(temporary_zoom);
+                    obj.queue_resize();
+                    obj.queue_draw();
                 }
                 "scalefactor" => {
                     let scalefactor: f64 = value
@@ -206,6 +214,8 @@ mod imp {
                         .expect("The value needs to be of type `f64`.")
                         .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
                     self.scalefactor.replace(scalefactor);
+                    obj.queue_resize();
+                    obj.queue_draw();
                 }
                 "visual-debug" => {
                     let visual_debug: bool =
@@ -483,7 +493,7 @@ use std::time;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, GestureStylus, WidgetPaintable,
 };
-use gtk4::{graphene, EventSequenceState, Native, Snapshot};
+use gtk4::{EventSequenceState, Snapshot, Widget};
 
 glib::wrapper! {
     pub struct Canvas(ObjectSubclass<imp::Canvas>)
@@ -601,6 +611,26 @@ impl Canvas {
         imp::Canvas::from_instance(self).renderer.clone()
     }
 
+    pub fn sheet_bounds_scaled(&self) -> p2d::bounding_volume::AABB {
+        p2d::bounding_volume::AABB::new(
+            na::point![
+                f64::from(self.sheet().x()) * self.scalefactor(),
+                f64::from(self.sheet().y()) * self.scalefactor()
+            ],
+            na::point![
+                f64::from(self.width()) * self.scalefactor(),
+                f64::from(self.height()) * self.scalefactor()
+            ],
+        )
+    }
+
+    pub fn bounds(&self) -> p2d::bounding_volume::AABB {
+        p2d::bounding_volume::AABB::new(
+            na::point![f64::from(0.0), f64::from(0.0)],
+            na::point![f64::from(self.width()), f64::from(self.height())],
+        )
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::Canvas::from_instance(self);
 
@@ -629,16 +659,14 @@ impl Canvas {
             .connect_local(
                 "redraw",
                 false,
-                clone!(@weak self as obj => @default-return None, move |_| {
-                    let scalefactor = obj.property("scalefactor").unwrap().get::<f64>().unwrap();
+                clone!(@weak self as canvas => @default-return None, move |_| {
 
                     StrokeStyle::update_all_rendernodes(
-                        &mut *obj.sheet().selection().strokes().borrow_mut(),
-                        scalefactor,
-                        &*obj.renderer().borrow(),
+                        &mut *canvas.sheet().selection().strokes().borrow_mut(),
+                        canvas.scalefactor(),
+                        &*canvas.renderer().borrow(),
                     );
-
-                    obj.queue_draw();
+                    canvas.queue_draw();
                     None
                 }),
             )
@@ -797,9 +825,6 @@ impl Canvas {
             *priv_.texture_buffer.borrow_mut() = self.capture_current_content();
         }
         self.set_temporary_zoom(temp_scalefactor / self.scalefactor());
-
-        self.queue_resize();
-        self.queue_draw();
     }
 
     /// Scales the canvas and its contents to a new scalefactor
@@ -819,10 +844,7 @@ impl Canvas {
         StrokeStyle::complete_all_strokes(&mut *self.sheet().strokes_trash().borrow_mut());
         StrokeStyle::complete_all_strokes(&mut *self.sheet().selection().strokes().borrow_mut());
 
-        self.regenerate_content();
-
-        self.queue_resize();
-        self.queue_draw();
+        self.regenerate_content(false);
     }
 
     /// Zooms temporarily and then scale the canvas and its contents to a new scalefactor after a given time.
@@ -854,22 +876,42 @@ impl Canvas {
             ));
     }
 
-    pub fn regenerate_content(&self) {
+    pub fn regenerate_background(&self, force_regenerate: bool) {
+        match self.sheet().background().borrow_mut().update_rendernode(
+            self.scalefactor(),
+            self.sheet().bounds(),
+            &*self.renderer().borrow(),
+            self.upcast_ref::<Widget>(),
+            force_regenerate,
+        ) {
+            Err(e) => {
+                log::error!("{}", e)
+            }
+            Ok(_) => {}
+        }
+        self.queue_draw();
+    }
+
+    pub fn regenerate_content(&self, force_regenerate: bool) {
+        let scalefactor = self.scalefactor();
+
         StrokeStyle::update_all_rendernodes(
             &mut *self.sheet().strokes().borrow_mut(),
-            self.scalefactor(),
+            scalefactor,
             &*self.renderer().borrow(),
         );
         StrokeStyle::update_all_rendernodes(
             &mut *self.sheet().strokes_trash().borrow_mut(),
-            self.scalefactor(),
+            scalefactor,
             &*self.renderer().borrow(),
         );
         StrokeStyle::update_all_rendernodes(
             &mut *self.sheet().selection().strokes().borrow_mut(),
-            self.scalefactor(),
+            scalefactor,
             &*self.renderer().borrow(),
         );
+
+        self.regenerate_background(force_regenerate);
     }
 
     pub fn capture_current_content(&self) -> Option<gdk::Texture> {
@@ -882,12 +924,11 @@ impl Canvas {
             f64::from(height),
         );
 
-        let root_renderer = self.root().unwrap().upcast::<Native>().renderer().unwrap();
         let node = snapshot.free_to_node().unwrap();
-        let texture = root_renderer
-            .render_texture(&node, None::<&graphene::Rect>);
-
-        texture
+        render::render_node_to_texture(self.upcast_ref::<Widget>(), &node).unwrap_or_else(|e| {
+            log::error!("{}", e);
+            None
+        })
     }
 
     fn processing_draw_begin(
@@ -976,7 +1017,7 @@ impl Canvas {
                     );
 
                     if self.sheet().resize_autoexpand() {
-                        self.queue_resize();
+                        self.regenerate_background(false);
                     }
 
                     if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {

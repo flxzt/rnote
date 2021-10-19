@@ -107,10 +107,7 @@ impl StrokeBehaviour for ShapeStroke {
                         new_bounds.mins[0] - self.bounds.mins[0],
                         new_bounds.mins[1] - self.bounds.mins[1]
                     ];
-                    let top_left = na::vector![
-                        self.bounds.mins[0],
-                        self.bounds.mins[1]
-                    ];
+                    let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
 
                     *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
                     *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;

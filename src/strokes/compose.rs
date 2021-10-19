@@ -98,6 +98,41 @@ pub fn wrap_svg(
     output
 }
 
+pub const SVG_PATTERN_TEMPL_STR: &str = r#"
+<defs>
+    <pattern
+        id="{{id}}"
+        x="{{x}}"
+        y="{{y}}"
+        width="{{width}}"
+        height="{{height}}"
+        patternUnits="userSpaceOnUse"
+        >
+        {{data}}
+    </pattern>
+</defs>
+"#;
+
+/// patterns are rendered rather slow, so this should be used carefully!
+pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB) -> String {
+    let mut cx = tera::Context::new();
+    let x = format!("{:3}", bounds.mins[0].round());
+    let y = format!("{:3}", bounds.mins[1].round());
+    let width = format!("{:3}", (bounds.maxs[0] - bounds.mins[0]).round());
+    let height = format!("{:3}", (bounds.maxs[1] - bounds.mins[1]).round());
+    cx.insert("id", &id);
+    cx.insert("x", &x);
+    cx.insert("y", &y);
+    cx.insert("width", &width);
+    cx.insert("height", &height);
+    cx.insert("data", &data);
+
+    let output = tera::Tera::one_off(SVG_PATTERN_TEMPL_STR, &cx, false)
+        .expect("failed to create svg from template");
+
+    output
+}
+
 pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
     let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
     if let Ok(handle) = librsvg::Loader::new()

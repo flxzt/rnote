@@ -277,8 +277,9 @@ impl Selection {
             "redraw",
             false,
             clone!(@weak self as obj, @weak appwindow => @default-return None, move |_args| {
-                appwindow.canvas().queue_draw();
                 appwindow.selection_modifier().queue_resize();
+                appwindow.canvas().queue_resize();
+                appwindow.canvas().queue_draw();
                 None
             }),
         )

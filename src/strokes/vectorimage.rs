@@ -85,16 +85,33 @@ impl VectorImage {
     pub const OFFSET_X_DEFAULT: f64 = 28.0;
     pub const OFFSET_Y_DEFAULT: f64 = 28.0;
 
-    pub fn import_from_svg(svg: &str, pos: na::Vector2<f64>) -> Result<Self, Box<dyn Error>> {
-        let svg_data = compose::remove_xml_header(svg);
-        let intrinsic_size = compose::svg_intrinsic_size(svg).unwrap_or_else(|| {
-            na::vector![VectorImage::SIZE_X_DEFAULT, VectorImage::SIZE_Y_DEFAULT]
-        });
+    pub fn import_from_svg(
+        svg: &str,
+        pos: na::Vector2<f64>,
+        bounds: Option<p2d::bounding_volume::AABB>,
+    ) -> Result<Self, Box<dyn Error>> {
+        let (intrinsic_size, bounds) = if let Some(bounds) = bounds {
+            (
+                na::vector![
+                    bounds.maxs[0] - bounds.mins[0],
+                    bounds.maxs[1] - bounds.mins[1]
+                ],
+                bounds,
+            )
+        } else {
+            let intrinsic_size = compose::svg_intrinsic_size(svg).unwrap_or_else(|| {
+                na::vector![VectorImage::SIZE_X_DEFAULT, VectorImage::SIZE_Y_DEFAULT]
+            });
 
-        let bounds = p2d::bounding_volume::AABB::new(
-            na::Point2::from(pos),
-            na::Point2::from(intrinsic_size + pos),
-        );
+            let intrinsic_bounds = p2d::bounding_volume::AABB::new(
+                na::Point2::from(pos),
+                na::Point2::from(intrinsic_size + pos),
+            );
+
+            (intrinsic_size, intrinsic_bounds)
+        };
+
+        let svg_data = compose::remove_xml_header(svg);
 
         let vector_image = Self {
             bounds,

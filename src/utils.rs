@@ -1,4 +1,4 @@
-use gtk4::{gdk, gio, glib, prelude::*};
+use gtk4::{gdk, gio, glib, graphene, prelude::*};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::ops::Deref;
@@ -124,6 +124,16 @@ pub fn now() -> String {
         },
         Err(_) => String::from("1970-01-01_12:00:00"),
     }
+}
+
+// AABB to graphene Rect
+pub fn aabb_to_graphene_rect(aabb: p2d::bounding_volume::AABB) -> graphene::Rect {
+    graphene::Rect::new(
+        aabb.mins[0] as f32,
+        aabb.mins[1] as f32,
+        (aabb.maxs[0] - aabb.mins[0]) as f32,
+        (aabb.maxs[1] - aabb.mins[1]) as f32,
+    )
 }
 
 // Return mins, maxs

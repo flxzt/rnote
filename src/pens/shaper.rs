@@ -76,7 +76,6 @@ impl Default for RectangleConfig {
 }
 
 impl RectangleConfig {
-
     pub fn width(&self) -> f64 {
         self.width
     }

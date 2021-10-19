@@ -12,18 +12,17 @@ mod imp {
     use crate::{
         config,
         sheet::format::MeasureUnit,
-        sheet::format::PredefinedFormat,
         sheet::Sheet,
+        sheet::{background::PatternStyle, format::PredefinedFormat},
         ui::{
             appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvasmenu::CanvasMenu,
             colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
             develactions::DevelActions, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
             penssidebar::eraserpage::EraserPage, penssidebar::markerpage::MarkerPage,
-            penssidebar::selectorpage::SelectorPage,
-            penssidebar::shaperpage::ShaperPage, penssidebar::PensSideBar,
-            selectionmodifier::modifiernode::ModifierNode, selectionmodifier::SelectionModifier,
-            settingspanel::SettingsPanel, templatechooser::TemplateChooser,
-            workspacebrowser::WorkspaceBrowser,
+            penssidebar::selectorpage::SelectorPage, penssidebar::shaperpage::ShaperPage,
+            penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
+            selectionmodifier::SelectionModifier, settingspanel::SettingsPanel,
+            templatechooser::TemplateChooser, workspacebrowser::WorkspaceBrowser,
         },
         utils,
     };
@@ -107,6 +106,7 @@ mod imp {
             WorkspaceBrowser::static_type();
             PredefinedFormat::static_type();
             MeasureUnit::static_type();
+            PatternStyle::static_type();
 
             application.set_resource_base_path(Some(config::APP_IDPATH));
             let res = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
@@ -121,6 +121,7 @@ mod imp {
                 .expect("failed to get icon theme for appwindow");
             app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
+            application.finish_up(&appwindow);
             appwindow.show();
         }
 
@@ -148,6 +149,7 @@ use std::{cell::RefCell, rc::Rc};
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::config;
+use crate::ui::appwindow::RnoteAppWindow;
 
 glib::wrapper! {
     pub struct RnoteApp(ObjectSubclass<imp::RnoteApp>)
@@ -199,5 +201,10 @@ impl RnoteApp {
                 log::error!("failed to set property `unsaved-changes` of `App`, {}", e)
             }
         }
+    }
+
+    pub fn finish_up(&self, appwindow: &RnoteAppWindow) {
+        appwindow.canvas().regenerate_content(true);
+        appwindow.canvas().queue_draw();
     }
 }

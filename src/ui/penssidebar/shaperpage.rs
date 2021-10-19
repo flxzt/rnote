@@ -1,7 +1,9 @@
 mod imp {
     use crate::ui::colorpicker::ColorPicker;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{Adjustment, Button, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
+    use gtk4::{
+        Adjustment, Button, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton,
+    };
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
@@ -108,10 +110,10 @@ mod imp {
     impl WidgetImpl for ShaperPage {}
 }
 
-use crate::pens::shaper::{Shaper};
+use crate::pens::shaper::Shaper;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use crate::utils;
-use gtk4::{Adjustment, Button, MenuButton, Popover, Revealer, ToggleButton, gdk};
+use gtk4::{gdk, Adjustment, Button, MenuButton, Popover, Revealer, ToggleButton};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, Widget};
 
 glib::wrapper! {
@@ -161,9 +163,7 @@ impl ShaperPage {
     }
 
     pub fn width_resetbutton(&self) -> Button {
-        imp::ShaperPage::from_instance(self)
-            .width_resetbutton
-            .get()
+        imp::ShaperPage::from_instance(self).width_resetbutton.get()
     }
 
     pub fn width_adj(&self) -> Adjustment {
@@ -215,7 +215,6 @@ impl ShaperPage {
                 width_adj.set_value(Shaper::WIDTH_DEFAULT);
             }),
         );
-
 
         self.width_adj().set_lower(Shaper::WIDTH_MIN);
 

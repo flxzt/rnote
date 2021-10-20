@@ -24,6 +24,7 @@ impl Default for BrushStyle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Brush {
     width: f64,
     sensitivity: f64,

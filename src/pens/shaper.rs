@@ -32,6 +32,7 @@ impl DrawStyle {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct LineConfig {
     width: f64,
     pub color: Option<utils::Color>,
@@ -59,6 +60,7 @@ impl LineConfig {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RectangleConfig {
     width: f64,
     pub color: Option<utils::Color>,
@@ -86,6 +88,7 @@ impl RectangleConfig {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct EllipseConfig {
     width: f64,
     pub color: Option<utils::Color>,
@@ -113,6 +116,7 @@ impl EllipseConfig {
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Shaper {
     pub current_shape: CurrentShape,
     pub drawstyle: DrawStyle,

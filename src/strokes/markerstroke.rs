@@ -13,6 +13,7 @@ use svg::node::element::path;
 use super::{curves, StrokeBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct MarkerStroke {
     pub elements: Vec<Element>,
     pub marker: Marker,

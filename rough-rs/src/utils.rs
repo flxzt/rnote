@@ -15,6 +15,7 @@ pub(crate) fn merge<T>(this: Option<T>, other: Option<T>) -> Option<T> {
 
 /// representing a RGBA color
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Color {
     r: f32, // between 0.0 and 1.0
     g: f32, // between 0.0 and 1.0

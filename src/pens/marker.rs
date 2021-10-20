@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use crate::utils;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Marker {
     width: f64,
     pub color: utils::Color,

@@ -23,6 +23,7 @@ impl Format {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct BitmapImage {
     pub data_base64: String,
     pub format: Format,
@@ -30,6 +31,18 @@ pub struct BitmapImage {
     pub intrinsic_size: na::Vector2<f64>,
     #[serde(skip, default = "render::default_rendernode")]
     pub rendernode: gsk::RenderNode,
+}
+
+impl Default for BitmapImage {
+    fn default() -> Self {
+        Self {
+            data_base64: String::default(),
+            format: Format::Png,
+            bounds: p2d::bounding_volume::AABB::new_invalid(),
+            intrinsic_size: na::vector![0.0, 0.0],
+            rendernode: render::default_rendernode(),
+        }
+    }
 }
 
 pub const BITMAPIMAGE_TEMPL_STR: &str = r#"

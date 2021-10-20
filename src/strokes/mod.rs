@@ -305,6 +305,7 @@ impl StrokeStyle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct InputData {
     pos: na::Vector2<f64>,
     pressure: f64,
@@ -349,6 +350,7 @@ impl InputData {
 
 // Represents a single Stroke Element
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Element {
     inputdata: InputData,
 }

@@ -6,6 +6,7 @@ mod imp {
     use serde::{Deserialize, Serialize};
 
     #[derive(Debug, Default, Clone, Serialize, Deserialize)]
+    #[serde(default)]
     pub struct Format {
         width: Cell<i32>,
         height: Cell<i32>,

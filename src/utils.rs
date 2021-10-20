@@ -15,6 +15,7 @@ pub struct BoxedPos {
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Color {
     pub r: f32, // between 0.0 and 1.0
     pub g: f32, // between 0.0 and 1.0

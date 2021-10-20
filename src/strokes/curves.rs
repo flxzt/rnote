@@ -3,12 +3,14 @@ use serde::{Deserialize, Serialize};
 use super::Element;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Line {
     pub start: na::Vector2<f64>,
     pub end: na::Vector2<f64>,
 }
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
+#[serde(default)]
 pub struct QuadBezier {
     pub start: na::Vector2<f64>,
     pub cp: na::Vector2<f64>,
@@ -23,6 +25,7 @@ pub struct QuadBezierVariableOffset {
 }
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
+#[serde(default)]
 pub struct CubicBezier {
     pub start: na::Vector2<f64>,
     pub cp1: na::Vector2<f64>,

@@ -26,6 +26,7 @@ pub enum ShapeStyle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ShapeStroke {
     pub shape_style: ShapeStyle,
     pub shaper: Shaper,

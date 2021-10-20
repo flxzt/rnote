@@ -5,6 +5,7 @@ use crate::utils::{self};
 
 /// The options
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Options {
     /// limits the maximum offset the randomness is allowed to create.
     pub max_randomness_offset: f64,

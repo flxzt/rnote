@@ -8,12 +8,24 @@ use serde::{Deserialize, Serialize};
 use super::StrokeBehaviour;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct VectorImage {
     pub bounds: p2d::bounding_volume::AABB,
     pub intrinsic_size: na::Vector2<f64>,
     pub svg_data: String,
     #[serde(skip, default = "render::default_rendernode")]
     pub rendernode: gsk::RenderNode,
+}
+
+impl Default for VectorImage {
+    fn default() -> Self {
+        Self {
+            bounds: p2d::bounding_volume::AABB::new_invalid(),
+            intrinsic_size: na::vector![0.0, 0.0],
+            svg_data: String::default(),
+            rendernode: render::default_rendernode(),
+        }
+    }
 }
 
 impl StrokeBehaviour for VectorImage {

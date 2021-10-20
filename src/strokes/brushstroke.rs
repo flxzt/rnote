@@ -13,7 +13,8 @@ use svg::node::element::path;
 use super::{curves, StrokeBehaviour};
 
 // Struct field names are also used in brushstroke template, reminder to be careful when renaming
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TeraElement {
     // Pressure from 0.0 to 1.0
     pressure: f64,
@@ -23,6 +24,7 @@ pub struct TeraElement {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct BrushStroke {
     pub elements: Vec<Element>,
     pub brush: Brush,

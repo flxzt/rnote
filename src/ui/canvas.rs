@@ -966,15 +966,13 @@ impl Canvas {
                         &self.pens().borrow(),
                     );
 
-                    if self.sheet().resize_autoexpand() {
-                        self.regenerate_background(false, true);
-                        self.queue_resize();
-                    }
-
                     // update the rendernode of the current stroke
                     if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
+
+                    self.sheet().resize_autoexpand();
+                    self.regenerate_background(false, true);
                 }
             }
             PenStyle::Eraser => {
@@ -1001,6 +999,7 @@ impl Canvas {
             PenStyle::Unkown => {}
         }
 
+        self.queue_resize();
         self.queue_draw();
     }
 
@@ -1022,13 +1021,12 @@ impl Canvas {
                         &self.pens().borrow(),
                     );
 
-                    if self.sheet().resize_autoexpand() {
-                        self.regenerate_background(false, true);
-                    }
-
                     if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
+
+                    self.sheet().resize_autoexpand();
+                    self.regenerate_background(false, true);
                 }
             }
             PenStyle::Eraser => {
@@ -1042,12 +1040,11 @@ impl Canvas {
 
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.pens().borrow_mut().eraser.current_input = Some(inputdata);
-                    if self.sheet().remove_colliding_strokes(
+
+                    self.sheet().remove_colliding_strokes(
                         &self.pens().borrow().eraser,
                         canvas_scroller_viewport_descaled,
-                    ) {
-                        self.queue_resize();
-                    }
+                    );
                 }
             }
             PenStyle::Selector => {
@@ -1065,6 +1062,7 @@ impl Canvas {
             PenStyle::Unkown => {}
         }
 
+        self.queue_resize();
         self.queue_draw();
     }
 

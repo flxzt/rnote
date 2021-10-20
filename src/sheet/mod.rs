@@ -613,7 +613,7 @@ impl Sheet {
         &self,
         eraser: &Eraser,
         viewport: Option<p2d::bounding_volume::AABB>,
-    ) -> bool {
+    ) {
         let priv_ = imp::Sheet::from_instance(self);
 
         if let Some(ref eraser_current_input) = eraser.current_input {
@@ -686,10 +686,8 @@ impl Sheet {
                 .borrow_mut()
                 .append(&mut removed_strokes);
 
-            self.resize_autoexpand()
-        } else {
-            false
-        }
+            self.resize_autoexpand();
+        };
     }
 
     // Returns true if resizing is needed
@@ -701,17 +699,12 @@ impl Sheet {
         priv_.selection.strokes().borrow_mut().clear();
     }
 
-    pub fn resize_autoexpand(&self) -> bool {
+    pub fn resize_autoexpand(&self) {
         if self.autoexpand_height() {
             let new_height = self.calc_height();
 
-            if new_height != self.height() {
-                self.set_height(new_height);
-                return true;
-            }
+            self.set_height(new_height);
         }
-
-        false
     }
 
     pub fn resize_to_format(&self) {

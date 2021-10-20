@@ -200,7 +200,10 @@ mod imp {
                     let temporary_zoom = value
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`.")
-                        .clamp(super::Canvas::SCALE_MIN / self.scalefactor.get(), super::Canvas::SCALE_MAX / self.scalefactor.get());
+                        .clamp(
+                            super::Canvas::SCALE_MIN / self.scalefactor.get(),
+                            super::Canvas::SCALE_MAX / self.scalefactor.get(),
+                        );
                     self.temporary_zoom.replace(temporary_zoom);
                     obj.queue_resize();
                     obj.queue_draw();
@@ -310,7 +313,7 @@ mod imp {
                 if self.format_borders.get() {
                     self.sheet
                         .format()
-                        .draw(self.sheet.calc_n_pages(), snapshot, scalefactor);
+                        .draw(self.sheet.bounds(), snapshot, scalefactor);
                 }
 
                 if self.visual_debug.get() {

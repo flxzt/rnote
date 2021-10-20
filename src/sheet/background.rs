@@ -258,6 +258,11 @@ impl Background {
             }
         }
 
+        snapshot.push_clip(&utils::aabb_to_graphene_rect(utils::aabb_scale(
+            sheet_bounds,
+            scalefactor,
+        )));
+
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_color(
             &self.color.to_gdk(),
@@ -286,10 +291,10 @@ impl Background {
             }
         }
 
+        snapshot.pop();
+
         Ok(snapshot.free_to_node())
     }
-
-    pub fn gen_texture_buffer(&self) {}
 
     pub fn gen_svg_data(
         &self,

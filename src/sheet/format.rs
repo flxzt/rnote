@@ -144,6 +144,8 @@ use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 
+use crate::utils;
+
 glib::wrapper! {
     pub struct Format(ObjectSubclass<imp::Format>);
 }
@@ -378,25 +380,36 @@ impl Format {
         self.set_orientation(format.orientation());
     }
 
-    pub fn draw(&self, n_pages: i32, snapshot: &Snapshot, scalefactor: f64) {
-        for i in 0..n_pages {
-            let border_radius = graphene::Size::new(0.0, 0.0);
-            let border_width = 2.0;
+    pub fn draw(
+        &self,
+        sheet_bounds: p2d::bounding_volume::AABB,
+        snapshot: &Snapshot,
+        scalefactor: f64,
+    ) {
+        let border_radius = graphene::Size::new(0.0, 0.0);
+        let border_width = 2.0;
+
+        let mut offset_y = sheet_bounds.mins[1];
+
+        snapshot.push_clip(&utils::aabb_to_graphene_rect(utils::aabb_scale(
+            sheet_bounds,
+            scalefactor,
+        )));
+
+        while offset_y < sheet_bounds.maxs[1] {
             let border_bounds = graphene::Rect::new(
-                0.0,
-                (i * self.height()) as f32 - border_width / 2.0,
-                self.width() as f32,
-                ((i + 1) * self.height()) as f32 + border_width / 2.0,
+                (sheet_bounds.mins[0] * scalefactor) as f32,
+                (offset_y * scalefactor) as f32 - border_width / 2.0,
+                (f64::from(self.width()) * scalefactor) as f32,
+                ((offset_y + f64::from(self.height())) * scalefactor) as f32 + border_width / 2.0,
             );
 
             let rounded_rect = gsk::RoundedRect::new(
-                border_bounds
-                    .clone()
-                    .scale(scalefactor as f32, scalefactor as f32),
+                border_bounds.clone(),
                 border_radius.clone(),
                 border_radius.clone(),
                 border_radius.clone(),
-                border_radius,
+                border_radius.clone(),
             );
             snapshot.append_border(
                 &rounded_rect,
@@ -408,7 +421,10 @@ impl Format {
                     Self::FORMAT_BORDER_COLOR,
                 ],
             );
+            offset_y += f64::from(self.height());
         }
+
+        snapshot.pop();
     }
 }
 

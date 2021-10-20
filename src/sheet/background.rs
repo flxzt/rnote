@@ -112,6 +112,7 @@ pub struct Background {
     color: utils::Color,
     pattern: PatternStyle,
     pattern_size: na::Vector2<f64>,
+    pattern_color: utils::Color,
     #[serde(skip, default = "render::default_rendernode")]
     rendernode: gsk::RenderNode,
     #[serde(skip)]
@@ -133,6 +134,12 @@ impl Default for Background {
             },
             pattern: PatternStyle::default(),
             pattern_size: na::vector![32.0, 32.0],
+            pattern_color: utils::Color {
+                r: 0.3,
+                g: 0.7,
+                b: 1.0,
+                a: 1.0,
+            },
             rendernode: render::default_rendernode(),
             current_scalefactor: 1.0,
             current_bounds: p2d::bounding_volume::AABB::new_invalid(),
@@ -159,6 +166,14 @@ impl Background {
 
     pub fn set_pattern(&mut self, pattern: PatternStyle) {
         self.pattern = pattern;
+    }
+
+    pub fn pattern_color(&self) -> utils::Color {
+        self.pattern_color
+    }
+
+    pub fn set_pattern_color(&mut self, pattern_color: utils::Color) {
+        self.pattern_color = pattern_color;
     }
 
     pub fn draw(&self, snapshot: &Snapshot) {
@@ -299,7 +314,7 @@ impl Background {
                 group = group.add(gen_horizontal_line_pattern(
                     sheet_bounds,
                     self.pattern_size[1],
-                    utils::Color::new(0.3, 0.4, 0.9, 0.5),
+                    self.pattern_color,
                     1.0,
                 ));
             }
@@ -308,7 +323,7 @@ impl Background {
                     sheet_bounds,
                     self.pattern_size[0],
                     self.pattern_size[1],
-                    utils::Color::new(0.3, 0.4, 0.9, 0.5),
+                    self.pattern_color,
                     1.0,
                 ));
             }

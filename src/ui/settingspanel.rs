@@ -41,6 +41,8 @@ mod imp {
         pub background_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
         pub background_patterns_row: TemplateChild<adw::ComboRow>,
+        #[template_child]
+        pub background_pattern_color_choosebutton: TemplateChild<ColorButton>,
     }
 
     #[glib::object_subclass]
@@ -363,6 +365,13 @@ impl SettingsPanel {
             .clone()
     }
 
+    pub fn background_pattern_color_choosebutton(&self) -> ColorButton {
+        imp::SettingsPanel::from_instance(self)
+            .background_pattern_color_choosebutton
+            .clone()
+    }
+
+
     pub fn load_format(&self, format: Format) {
         self.set_predefined_format_variant(format::PredefinedFormat::Custom);
         self.format_width_entry()
@@ -381,6 +390,9 @@ impl SettingsPanel {
 
         self.background_patterns_row()
             .set_selected(background.pattern() as u32);
+
+        self.background_pattern_color_choosebutton()
+            .set_rgba(&background.pattern_color().to_gdk());
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -421,7 +433,6 @@ impl SettingsPanel {
         priv_.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
             appwindow.canvas().sheet().background().borrow_mut().set_color(utils::Color::from(background_color_choosebutton.rgba()));
             appwindow.canvas().regenerate_background(true, true);
-            appwindow.canvas().queue_resize();
         }));
 
         priv_.background_patterns_row.get().connect_selected_item_notify(clone!(@weak appwindow => move |background_patterns_row| {
@@ -452,6 +463,11 @@ impl SettingsPanel {
 
                 appwindow.canvas().regenerate_background(true, true);
             }
+        }));
+
+        priv_.background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
+            appwindow.canvas().sheet().background().borrow_mut().set_pattern_color(utils::Color::from(background_pattern_color_choosebutton.rgba()));
+            appwindow.canvas().regenerate_background(true, true);
         }));
     }
 

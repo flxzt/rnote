@@ -903,6 +903,15 @@ impl RnoteAppWindow {
             )
             .unwrap();
 
+        // Background Pattern Color
+        self.app_settings()
+            .set_uint(
+                "background-pattern-color",
+                utils::Color::from(self.settings_panel().background_pattern_color_choosebutton().rgba())
+                    .to_u32(),
+            )
+            .unwrap();
+
         Ok(())
     }
 
@@ -1005,7 +1014,7 @@ impl RnoteAppWindow {
                 .set_color(background_color);
         }
 
-        // color schemes
+        // Background pattern
         match self.app_settings().string("background-pattern").as_str() {
             "none" => self
                 .canvas()
@@ -1028,6 +1037,19 @@ impl RnoteAppWindow {
             _ => {
                 log::error!("failed to load setting color-scheme, unsupported string as key")
             }
+        }
+
+        // Background pattern color
+        let background_pattern_color = utils::Color::from(self.app_settings().uint("background-pattern-color"));
+        if self.canvas().empty() {
+            self.settings_panel()
+                .background_pattern_color_choosebutton()
+                .set_rgba(&background_pattern_color.to_gdk());
+            self.canvas()
+                .sheet()
+                .background()
+                .borrow_mut()
+                .set_pattern_color(background_pattern_color);
         }
 
         // Ui for right / left handed writers

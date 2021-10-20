@@ -237,6 +237,24 @@
                         </property>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwActionRow" id="background_pattern_color_row">
+                        <property name="title">Pattern color</property>
+                        <property name="subtitle">Set the pattern color</property>
+                        <child type="suffix">
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">6</property>
+                            <property name="hexpand">false</property>
+                            <property name="vexpand">false</property>
+                            <property name="valign">center</property>
+                            <child>
+                              <object class="GtkColorButton" id="background_pattern_color_choosebutton"></object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

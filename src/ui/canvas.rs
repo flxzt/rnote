@@ -890,6 +890,7 @@ impl Canvas {
             Ok(_) => {}
         }
         if redraw {
+            self.queue_resize();
             self.queue_draw();
         }
     }

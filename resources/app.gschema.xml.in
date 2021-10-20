@@ -42,7 +42,7 @@
       <summary>Autoexpand sheet height ( also called "endless sheet" )</summary>
     </key>
     <key name="format-borders" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Show sheet format borders</summary>
     </key>
     <key name="workspace-dir" type="s">
@@ -85,7 +85,7 @@
     <key name="shaper-fill-colors" type="(uu)">
       <default>(
         0x00000000,
-        0x99c1f188
+        0x62a0ea99
       )</default>
       <summary>Shape fill colors encoded as RGBA values (8-bit)</summary>
     </key>
@@ -96,6 +96,10 @@
     <key name="background-pattern" type="s">
       <default>"None"</default>
       <summary>Background pattern</summary>
+    </key>
+    <key name="background-pattern-color" type="u">
+      <default>0x99c1f1ff</default>
+      <summary>Background pattern color encoded as RGBA value (8-bit)</summary>
     </key>
   </schema>
 </schemalist>

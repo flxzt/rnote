@@ -1110,7 +1110,7 @@ impl RnoteAppWindow {
                 self.settings_panel()
                     .load_background(self.canvas().sheet().background().borrow_mut().clone());
 
-                self.canvas().regenerate_content(false);
+                self.canvas().regenerate_content(false, true);
                 self.canvas().set_unsaved_changes(false);
             }
             utils::FileType::Svg => {
@@ -1124,7 +1124,7 @@ impl RnoteAppWindow {
                 };
                 self.canvas().sheet().import_file_as_svg(pos, file)?;
 
-                self.canvas().regenerate_content(false);
+                self.canvas().regenerate_content(false, true);
 
                 self.canvas()
                     .sheet()
@@ -1149,7 +1149,7 @@ impl RnoteAppWindow {
                     .sheet()
                     .import_file_as_bitmapimage(pos, file)?;
 
-                self.canvas().regenerate_content(false);
+                self.canvas().regenerate_content(false, true);
 
                 self.canvas()
                     .sheet()

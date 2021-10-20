@@ -413,14 +413,14 @@ impl SettingsPanel {
                 appwindow.canvas().sheet().format().replace_fields(temporary_format);
 
                 appwindow.canvas().sheet().resize_to_format();
-                appwindow.canvas().regenerate_content(true);
+                appwindow.canvas().regenerate_content(true, true);
             }),
         );
 
         // Background
         priv_.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
             appwindow.canvas().sheet().background().borrow_mut().set_color(utils::Color::from(background_color_choosebutton.rgba()));
-            appwindow.canvas().regenerate_background(true);
+            appwindow.canvas().regenerate_background(true, true);
             appwindow.canvas().queue_resize();
         }));
 
@@ -450,7 +450,7 @@ impl SettingsPanel {
                     }
                 };
 
-                appwindow.canvas().regenerate_background(true);
+                appwindow.canvas().regenerate_background(true, true);
             }
         }));
     }

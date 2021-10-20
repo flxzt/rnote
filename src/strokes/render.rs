@@ -185,7 +185,8 @@ pub fn render_node_to_texture(
 ) -> Result<Option<gdk::Texture>, Box<dyn Error>> {
     if let Some(root) = active_widget.root() {
         if let Some(root_renderer) = root.upcast::<Native>().renderer() {
-            let texture = root_renderer.render_texture(node, Some(&utils::aabb_to_graphene_rect(viewport)));
+            let texture =
+                root_renderer.render_texture(node, Some(&utils::aabb_to_graphene_rect(viewport)));
             return Ok(texture);
         }
     }

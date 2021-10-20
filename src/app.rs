@@ -204,7 +204,6 @@ impl RnoteApp {
     }
 
     pub fn finish_up(&self, appwindow: &RnoteAppWindow) {
-        appwindow.canvas().regenerate_content(true);
-        appwindow.canvas().queue_draw();
+        appwindow.canvas().regenerate_content(true, true);
     }
 }

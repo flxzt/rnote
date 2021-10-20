@@ -111,7 +111,7 @@ mod imp {
             obj.add_controller(&self.mouse_drawing_gesture);
             obj.add_controller(&self.touch_drawing_gesture);
 
-            obj.regenerate_content(true);
+            obj.regenerate_content(true, true);
 
             self.preview.set_widget(Some(obj));
         }
@@ -822,7 +822,10 @@ impl Canvas {
 
         // Only capture when texture_buffer is resetted (= None)
         if priv_.texture_buffer.borrow().is_none() {
-            *priv_.texture_buffer.borrow_mut() = self.capture_current_content();
+            *priv_.texture_buffer.borrow_mut() = self.capture_current_content(na::vector![
+                f64::from(self.width()),
+                f64::from(self.height())
+            ]);
         }
         self.set_temporary_zoom(temp_scalefactor / self.scalefactor());
     }
@@ -844,7 +847,7 @@ impl Canvas {
         StrokeStyle::complete_all_strokes(&mut *self.sheet().strokes_trash().borrow_mut());
         StrokeStyle::complete_all_strokes(&mut *self.sheet().selection().strokes().borrow_mut());
 
-        self.regenerate_content(false);
+        self.regenerate_content(false, true);
     }
 
     /// Zooms temporarily and then scale the canvas and its contents to a new scalefactor after a given time.
@@ -877,7 +880,7 @@ impl Canvas {
     }
 
     /// regenerating the background rendernodes. use force_regenerate to disable the texture_buffer of the background (for example when changing the background pattern)
-    pub fn regenerate_background(&self, force_regenerate: bool) {
+    pub fn regenerate_background(&self, force_regenerate: bool, redraw: bool) {
         match self.sheet().background().borrow_mut().update_rendernode(
             self.scalefactor(),
             self.sheet().bounds(),
@@ -890,11 +893,13 @@ impl Canvas {
             }
             Ok(_) => {}
         }
-        self.queue_draw();
+        if redraw {
+            self.queue_draw();
+        }
     }
 
     /// regenerate the rendernodes of the canvas content. force_regenerate disables buffers and regenerates all rendernodes from scratch
-    pub fn regenerate_content(&self, force_regenerate: bool) {
+    pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
         let scalefactor = self.scalefactor();
 
         StrokeStyle::update_all_rendernodes(
@@ -913,25 +918,26 @@ impl Canvas {
             &*self.renderer().borrow(),
         );
 
-        self.regenerate_background(force_regenerate);
+        self.regenerate_background(force_regenerate, redraw);
     }
 
-    pub fn capture_current_content(&self) -> Option<gdk::Texture> {
+    pub fn capture_current_content(&self, size: na::Vector2<f64>) -> Option<gdk::Texture> {
         let snapshot = Snapshot::new();
-        let width = self.width();
-        let height = self.height();
         self.preview().snapshot(
             snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(),
-            f64::from(width),
-            f64::from(height),
+            size[0],
+            size[1],
         );
 
         if let Some(node) = snapshot.free_to_node() {
-        render::render_node_to_texture(self.upcast_ref::<Widget>(), &node, self.bounds()).unwrap_or_else(|e| {
-            log::error!("{}", e);
+            render::render_node_to_texture(self.upcast_ref::<Widget>(), &node, self.bounds())
+                .unwrap_or_else(|e| {
+                    log::error!("{}", e);
+                    None
+                })
+        } else {
             None
-        })
-        } else { None }
+        }
     }
 
     fn processing_draw_begin(
@@ -965,7 +971,7 @@ impl Canvas {
                     );
 
                     if self.sheet().resize_autoexpand() {
-                        self.regenerate_background(false);
+                        self.regenerate_background(false, true);
                         self.queue_resize();
                     }
 
@@ -1021,7 +1027,7 @@ impl Canvas {
                     );
 
                     if self.sheet().resize_autoexpand() {
-                        self.regenerate_background(false);
+                        self.regenerate_background(false, true);
                     }
 
                     if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {

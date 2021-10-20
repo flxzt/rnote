@@ -3,13 +3,13 @@ use std::{cell::Cell, rc::Rc};
 use crate::{
     app::RnoteApp,
     pens::{shaper, PenStyle},
-    strokes::{render, StrokeStyle},
+    strokes::render,
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType, PositionType, PrintOperation,
-    PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit, Widget,
+    gdk, gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType, PositionType,
+    PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
 };
 
 /* Actions follow this principle:
@@ -138,7 +138,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }
 
-        appwindow.canvas().regenerate_content(true);
+        appwindow.canvas().regenerate_content(true, true);
     }));
     app.add_action(&action_renderer_backend);
 
@@ -487,55 +487,47 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             let width_scale = (print_cx.width() + margin_left + margin_right) / f64::from(appwindow.canvas().sheet().format().width());
             let height_scale = (print_cx.height() + margin_top + margin_bottom) / f64::from(appwindow.canvas().sheet().format().height());
-            let scalefactor = width_scale.min(height_scale);
-            let y_offset =  - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * scalefactor);
+            let print_scalefactor = width_scale.min(height_scale);
+            let y_offset = - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * print_scalefactor);
 
-            let sheet_format_bounds_scaled = p2d::bounding_volume::AABB::new(
-                na::point![0.0, 0.0],
-                na::point![f64::from(appwindow.canvas().sheet().format().width()) * scalefactor,f64::from(appwindow.canvas().sheet().format().height()) * scalefactor]
-            );
-
-            // Cloning strokes out of sheet to change their rendernodes without affecting the original strokes
-            let mut strokes = (*appwindow.canvas().sheet().strokes().borrow_mut()).clone();
-            let mut background = (*appwindow.canvas().sheet().background().borrow_mut()).clone();
-
-            if let Err(e) = background.update_rendernode(scalefactor, appwindow.canvas().sheet().bounds(), &*appwindow.canvas().renderer().borrow(), appwindow.canvas().upcast_ref::<Widget>(), true) {
-                log::error!("{}", e);
-            };
-
-            StrokeStyle::update_all_rendernodes(
-                &mut strokes,
-                scalefactor,
-                &*appwindow.canvas().renderer().borrow(),
-            );
+            let app_scalefactor = appwindow.canvas().scalefactor();
+            appwindow.canvas().scale_to(print_scalefactor);
+            appwindow.canvas().regenerate_content(true, false);
 
             let snapshot = Snapshot::new();
-            background.draw(&snapshot);
 
-            if appwindow.canvas().format_borders() {
-                appwindow.canvas().sheet()
-                    .format()
-                    .draw(appwindow.canvas().sheet().calc_n_pages(), &snapshot, scalefactor);
-            }
+            let format_bounds_scaled = p2d::bounding_volume::AABB::new(
+                na::point![0.0, 0.0],
+                na::point![f64::from(appwindow.canvas().sheet().format().width()) * print_scalefactor,f64::from(appwindow.canvas().sheet().format().height()) * print_scalefactor]
+            );
+            let sheet_size_scaled = na::vector![
+                f64::from(appwindow.canvas().sheet().width()) * print_scalefactor,
+                f64::from(appwindow.canvas().sheet().height()) * print_scalefactor
+            ];
 
-            StrokeStyle::draw_strokes(&strokes, &snapshot);
-
+            appwindow.canvas().preview().snapshot(
+                snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(),
+                sheet_size_scaled[0],
+                sheet_size_scaled[1],
+            );
 
             cx.rectangle(
-                sheet_format_bounds_scaled.mins[0],
-                sheet_format_bounds_scaled.mins[1],
-                sheet_format_bounds_scaled.maxs[0] - sheet_format_bounds_scaled.mins[0],
-                sheet_format_bounds_scaled.maxs[1] - sheet_format_bounds_scaled.mins[1]
+                format_bounds_scaled.mins[0],
+                format_bounds_scaled.mins[1],
+                format_bounds_scaled.maxs[0] - format_bounds_scaled.mins[0],
+                format_bounds_scaled.maxs[1] - format_bounds_scaled.mins[1]
             );
             cx.clip();
             cx.translate(0.0, y_offset);
 
-            if let Some(node) = snapshot.to_node() {
+            if let Some(node) = snapshot.free_to_node() {
                 node.draw(&cx);
             } else {
                 log::error!("failed to get rendernode for created snapshot while printing page no {}", page_nr);
             };
 
+            appwindow.canvas().scale_to(app_scalefactor);
+            appwindow.canvas().regenerate_content(true, true);
         }));
 
         if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){

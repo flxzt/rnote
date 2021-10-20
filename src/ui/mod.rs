@@ -1,6 +1,6 @@
 pub mod actions;
-pub mod appmenu;
 pub mod appwindow;
+pub mod appmenu;
 pub mod canvas;
 pub mod canvasmenu;
 pub mod colorpicker;

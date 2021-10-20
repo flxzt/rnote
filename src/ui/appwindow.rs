@@ -660,18 +660,18 @@ impl RnoteAppWindow {
         self.canvas_scroller().add_controller(&canvas_zoom_gesture);
 
         let scale_begin = Rc::new(Cell::new(1_f64));
-        let scale_delta_prev = Rc::new(Cell::new(1_f64));
+        let new_scalefactor = Rc::new(Cell::new(self.canvas().scalefactor()));
         let zoomgesture_canvasscroller_start_pos = Rc::new(Cell::new((0.0, 0.0)));
         let zoomgesture_bbcenter_start: Rc<Cell<Option<(f64, f64)>>> = Rc::new(Cell::new(None));
 
         canvas_zoom_gesture.connect_begin(clone!(
             @strong scale_begin,
-            @strong scale_delta_prev,
+            @strong new_scalefactor,
             @strong zoomgesture_canvasscroller_start_pos,
             @strong zoomgesture_bbcenter_start,
             @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
             scale_begin.set(appwindow.canvas().scalefactor());
-            scale_delta_prev.set(1_f64);
+            new_scalefactor.set(appwindow.canvas().scalefactor());
 
             appwindow.canvas().zoom_temporarily_to(appwindow.canvas().scalefactor());
 
@@ -689,24 +689,28 @@ impl RnoteAppWindow {
         }));
 
         canvas_zoom_gesture.connect_scale_changed(
-            clone!(@strong scale_begin, @strong scale_delta_prev, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, scale_delta| {
-                let new_scalefactor = scale_begin.get() * scale_delta;
+            clone!(@strong scale_begin, @strong new_scalefactor, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, new_zoom| {
+                let new_zoom = if scale_begin.get() * new_zoom > Canvas::SCALE_MAX || scale_begin.get() * new_zoom < Canvas::SCALE_MIN {
+                    1.0
+                } else {
+                    new_scalefactor.set(scale_begin.get() * new_zoom);
+                    appwindow.canvas().zoom_temporarily_to(new_scalefactor.get());
 
-                scale_delta_prev.set(scale_delta);
-                appwindow.canvas().zoom_temporarily_to(new_scalefactor);
+                    new_zoom
+                };
 
                 if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
                     if let Some(bbcenter_start) = zoomgesture_bbcenter_start.get() {
                         let bbcenter_delta = (
-                            bbcenter.0 - bbcenter_start.0 * scale_delta,
-                            bbcenter.1 - bbcenter_start.1 * scale_delta
+                            bbcenter.0 - bbcenter_start.0 * new_zoom,
+                            bbcenter.1 - bbcenter_start.1 * new_zoom
                         );
 
                         appwindow.canvas_scroller().hadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().0 * scale_delta - bbcenter_delta.0
+                            zoomgesture_canvasscroller_start_pos.get().0 * new_zoom - bbcenter_delta.0
                         );
                         appwindow.canvas_scroller().vadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().1 * scale_delta - bbcenter_delta.1
+                            zoomgesture_canvasscroller_start_pos.get().1 * new_zoom - bbcenter_delta.1
                         );
                     } else {
                         // Setting the start position if connect_scale_start didn't set it
@@ -725,10 +729,9 @@ impl RnoteAppWindow {
         );
 
         canvas_zoom_gesture.connect_end(
-            clone!(@strong scale_begin, @strong scale_delta_prev, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+            clone!(@strong scale_begin, @strong new_scalefactor, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
                 zoomgesture_bbcenter_start.set(None);
-                let scalefactor_new = scale_begin.get() * scale_delta_prev.get();
-                appwindow.canvas().scale_to(scalefactor_new);
+                appwindow.canvas().scale_to(new_scalefactor.get());
             }),
         );
 
@@ -1123,8 +1126,8 @@ impl RnoteAppWindow {
             .load_format(self.canvas().sheet().format());
 
         // Avoid already borrowed error
-        let format = self.canvas().sheet().background().borrow().clone();
-        self.settings_panel().load_background(&format);
+        let background = self.canvas().sheet().background().borrow().clone();
+        self.settings_panel().load_background(&background);
     }
 
     pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn Error>> {
@@ -1135,8 +1138,10 @@ impl RnoteAppWindow {
                 // Loading the sheet properties into the format settings panel
                 self.settings_panel()
                     .load_format(self.canvas().sheet().format());
-                self.settings_panel()
-                    .load_background(&*self.canvas().sheet().background().borrow());
+
+                // Avoid already borrowed error
+                let background = self.canvas().sheet().background().borrow().clone();
+                self.settings_panel().load_background(&background);
 
                 self.canvas().regenerate_content(false, true);
                 self.canvas().set_unsaved_changes(false);

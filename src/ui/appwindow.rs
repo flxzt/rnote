@@ -907,8 +907,12 @@ impl RnoteAppWindow {
         self.app_settings()
             .set_uint(
                 "background-pattern-color",
-                utils::Color::from(self.settings_panel().background_pattern_color_choosebutton().rgba())
-                    .to_u32(),
+                utils::Color::from(
+                    self.settings_panel()
+                        .background_pattern_color_choosebutton()
+                        .rgba(),
+                )
+                .to_u32(),
             )
             .unwrap();
 
@@ -1004,9 +1008,6 @@ impl RnoteAppWindow {
         // Background color
         let background_color = utils::Color::from(self.app_settings().uint("background-color"));
         if self.canvas().empty() {
-            self.settings_panel()
-                .background_color_choosebutton()
-                .set_rgba(&background_color.to_gdk());
             self.canvas()
                 .sheet()
                 .background()
@@ -1016,12 +1017,13 @@ impl RnoteAppWindow {
 
         // Background pattern
         match self.app_settings().string("background-pattern").as_str() {
-            "none" => self
-                .canvas()
-                .sheet()
-                .background()
-                .borrow_mut()
-                .set_pattern(PatternStyle::None),
+            "none" => {
+                self.canvas()
+                    .sheet()
+                    .background()
+                    .borrow_mut()
+                    .set_pattern(PatternStyle::None);
+            }
             "lines" => self
                 .canvas()
                 .sheet()
@@ -1040,11 +1042,9 @@ impl RnoteAppWindow {
         }
 
         // Background pattern color
-        let background_pattern_color = utils::Color::from(self.app_settings().uint("background-pattern-color"));
+        let background_pattern_color =
+            utils::Color::from(self.app_settings().uint("background-pattern-color"));
         if self.canvas().empty() {
-            self.settings_panel()
-                .background_pattern_color_choosebutton()
-                .set_rgba(&background_pattern_color.to_gdk());
             self.canvas()
                 .sheet()
                 .background()
@@ -1117,6 +1117,14 @@ impl RnoteAppWindow {
 
         self.devel_actions_revealer()
             .set_reveal_child(self.app_settings().boolean("devel"));
+
+        // Loading the sheet properties into the format settings panel
+        self.settings_panel()
+            .load_format(self.canvas().sheet().format());
+
+        // Avoid already borrowed error
+        let format = self.canvas().sheet().background().borrow().clone();
+        self.settings_panel().load_background(&format);
     }
 
     pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn Error>> {
@@ -1128,7 +1136,7 @@ impl RnoteAppWindow {
                 self.settings_panel()
                     .load_format(self.canvas().sheet().format());
                 self.settings_panel()
-                    .load_background(self.canvas().sheet().background().borrow_mut().clone());
+                    .load_background(&*self.canvas().sheet().background().borrow());
 
                 self.canvas().regenerate_content(false, true);
                 self.canvas().set_unsaved_changes(false);

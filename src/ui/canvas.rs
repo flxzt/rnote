@@ -504,7 +504,7 @@ impl Default for Canvas {
 
 impl Canvas {
     pub const SCALE_MIN: f64 = 0.1;
-    pub const SCALE_MAX: f64 = 10.0;
+    pub const SCALE_MAX: f64 = 5.0;
     pub const SCALE_DEFAULT: f64 = 1.0;
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);

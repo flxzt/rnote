@@ -326,6 +326,21 @@ impl SettingsPanel {
             .set_selected(predefined_format_listmodel.find_position(predefined_format as i32));
     }
 
+    pub fn set_background_pattern_variant(&self, pattern: PatternStyle) {
+        let priv_ = imp::SettingsPanel::from_instance(self);
+        let background_pattern_listmodel = priv_
+            .background_patterns_row
+            .get()
+            .model()
+            .unwrap()
+            .downcast::<adw::EnumListModel>()
+            .unwrap();
+        priv_
+            .background_patterns_row
+            .get()
+            .set_selected(background_pattern_listmodel.find_position(pattern as i32));
+    }
+
     pub fn set_format_orientation(&self, orientation: format::Orientation) {
         let priv_ = imp::SettingsPanel::from_instance(self);
         if orientation == format::Orientation::Portrait {
@@ -371,7 +386,6 @@ impl SettingsPanel {
             .clone()
     }
 
-
     pub fn load_format(&self, format: Format) {
         self.set_predefined_format_variant(format::PredefinedFormat::Custom);
         self.format_width_entry()
@@ -384,12 +398,11 @@ impl SettingsPanel {
         self.set_format_orientation(format.orientation());
     }
 
-    pub fn load_background(&self, background: Background) {
+    pub fn load_background(&self, background: &Background) {
         self.background_color_choosebutton()
             .set_rgba(&background.color().to_gdk());
 
-        self.background_patterns_row()
-            .set_selected(background.pattern() as u32);
+        self.set_background_pattern_variant(background.pattern());
 
         self.background_pattern_color_choosebutton()
             .set_rgba(&background.pattern_color().to_gdk());

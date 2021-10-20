@@ -57,8 +57,7 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().sheet().selection().set_shown(false);
                     appwindow.canvas().set_unsaved_changes(false);
                     appwindow.canvas().set_empty(true);
-                    appwindow.canvas().queue_resize();
-                    appwindow.canvas().queue_draw();
+                    appwindow.canvas().regenerate_content(true, true);
 
                     dialog_clear_sheet.close();
                 },
@@ -88,8 +87,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.canvas().sheet().selection().set_shown(false);
                 appwindow.canvas().set_unsaved_changes(false);
                 appwindow.canvas().set_empty(true);
-                appwindow.canvas().queue_resize();
-                appwindow.canvas().queue_draw();
+                appwindow.canvas().regenerate_content(true, true);
 
                 dialog_new_sheet.close();
             },

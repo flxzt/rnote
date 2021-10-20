@@ -29,6 +29,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_clear_sheet = gio::SimpleAction::new("clear-sheet", None);
     let action_open_canvasmenu = gio::SimpleAction::new("open-canvasmenu", None);
     let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
+    let action_zoom_reset = gio::SimpleAction::new("zoom-reset", None);
     let action_zoom_fit_width = gio::SimpleAction::new("zoom-fit-width", None);
     let action_zoomin = gio::SimpleAction::new("zoom-in", None);
     let action_zoomout = gio::SimpleAction::new("zoom-out", None);
@@ -292,7 +293,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.canvas().sheet().set_autoexpand_height(state);
             appwindow.mainheader().pageedit_revealer().set_reveal_child(!state);
 
-            appwindow.canvas().queue_resize();
+            appwindow.canvas().regenerate_background(false, true);
         }),
     );
     app.add_action(&action_autoexpand_height);
@@ -374,10 +375,18 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     }));
     app.add_action(&action_open_appmenu);
 
+    // Zoom reset
+    action_zoom_reset.connect_activate(clone!(@weak appwindow => move |_,_| {
+        appwindow.canvas().scale_to(Canvas::SCALE_DEFAULT);
+        appwindow.canvas().regenerate_background(true, true);
+    }));
+    app.add_action(&action_zoom_reset);
+
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
         let new_scalefactor = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
         appwindow.canvas().scale_to(new_scalefactor);
+        appwindow.canvas().regenerate_background(true, true);
     }));
     app.add_action(&action_zoom_fit_width);
 
@@ -385,6 +394,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     action_zoomin.connect_activate(clone!(@weak appwindow => move |_,_| {
         let new_scalefactor = appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom() + Canvas::ZOOM_ACTION_DELTA;
         appwindow.canvas().scale_to(new_scalefactor);
+        appwindow.canvas().regenerate_background(true, true);
     }));
     app.add_action(&action_zoomin);
 
@@ -392,6 +402,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     action_zoomout.connect_activate(clone!(@weak appwindow => move |_,_| {
         let new_scalefactor = appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom() - Canvas::ZOOM_ACTION_DELTA;
         appwindow.canvas().scale_to(new_scalefactor);
+        appwindow.canvas().regenerate_background(true, true);
     }));
     app.add_action(&action_zoomout);
 

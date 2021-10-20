@@ -659,6 +659,7 @@ impl RnoteAppWindow {
             .build();
         self.canvas_scroller().add_controller(&canvas_zoom_gesture);
 
+        let prev_zoom = Rc::new(Cell::new(1_f64));
         let scale_begin = Rc::new(Cell::new(1_f64));
         let new_scalefactor = Rc::new(Cell::new(self.canvas().scalefactor()));
         let zoomgesture_canvasscroller_start_pos = Rc::new(Cell::new((0.0, 0.0)));
@@ -666,6 +667,7 @@ impl RnoteAppWindow {
 
         canvas_zoom_gesture.connect_begin(clone!(
             @strong scale_begin,
+            @strong prev_zoom,
             @strong new_scalefactor,
             @strong zoomgesture_canvasscroller_start_pos,
             @strong zoomgesture_bbcenter_start,
@@ -673,6 +675,7 @@ impl RnoteAppWindow {
             scale_begin.set(appwindow.canvas().scalefactor());
             new_scalefactor.set(appwindow.canvas().scalefactor());
 
+            prev_zoom.set(1.0);
             appwindow.canvas().zoom_temporarily_to(appwindow.canvas().scalefactor());
 
             zoomgesture_canvasscroller_start_pos.set(
@@ -689,13 +692,14 @@ impl RnoteAppWindow {
         }));
 
         canvas_zoom_gesture.connect_scale_changed(
-            clone!(@strong scale_begin, @strong new_scalefactor, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, new_zoom| {
+            clone!(@strong scale_begin, @strong new_scalefactor, @strong prev_zoom, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, new_zoom| {
                 let new_zoom = if scale_begin.get() * new_zoom > Canvas::SCALE_MAX || scale_begin.get() * new_zoom < Canvas::SCALE_MIN {
-                    1.0
+                    prev_zoom.get()
                 } else {
                     new_scalefactor.set(scale_begin.get() * new_zoom);
                     appwindow.canvas().zoom_temporarily_to(new_scalefactor.get());
 
+                    prev_zoom.set(new_zoom);
                     new_zoom
                 };
 
@@ -1143,7 +1147,6 @@ impl RnoteAppWindow {
                 let background = self.canvas().sheet().background().borrow().clone();
                 self.settings_panel().load_background(&background);
 
-                self.canvas().regenerate_content(false, true);
                 self.canvas().set_unsaved_changes(false);
             }
             utils::FileType::Svg => {
@@ -1156,15 +1159,6 @@ impl RnoteAppWindow {
                     na::vector![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]
                 };
                 self.canvas().sheet().import_file_as_svg(pos, file)?;
-
-                self.canvas().regenerate_content(false, true);
-
-                self.canvas()
-                    .sheet()
-                    .selection()
-                    .emit_by_name("redraw", &[])
-                    .unwrap();
-                self.canvas().queue_draw();
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
@@ -1182,16 +1176,6 @@ impl RnoteAppWindow {
                     .sheet()
                     .import_file_as_bitmapimage(pos, file)?;
 
-                self.canvas().regenerate_content(false, true);
-
-                self.canvas()
-                    .sheet()
-                    .selection()
-                    .emit_by_name("redraw", &[])
-                    .unwrap();
-
-                self.canvas().queue_draw();
-
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
             }
@@ -1201,6 +1185,12 @@ impl RnoteAppWindow {
         }
 
         self.canvas().set_empty(false);
+        self.canvas()
+            .sheet()
+            .selection()
+            .emit_by_name("redraw", &[])
+            .unwrap();
+        self.canvas().regenerate_content(false, true);
         Ok(())
     }
 }

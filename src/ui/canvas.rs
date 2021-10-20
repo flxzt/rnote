@@ -876,6 +876,7 @@ impl Canvas {
             ));
     }
 
+    /// regenerating the background rendernodes. use force_regenerate to disable the texture_buffer of the background (for example when changing the background pattern)
     pub fn regenerate_background(&self, force_regenerate: bool) {
         match self.sheet().background().borrow_mut().update_rendernode(
             self.scalefactor(),
@@ -892,6 +893,7 @@ impl Canvas {
         self.queue_draw();
     }
 
+    /// regenerate the rendernodes of the canvas content. force_regenerate disables buffers and regenerates all rendernodes from scratch
     pub fn regenerate_content(&self, force_regenerate: bool) {
         let scalefactor = self.scalefactor();
 
@@ -924,11 +926,12 @@ impl Canvas {
             f64::from(height),
         );
 
-        let node = snapshot.free_to_node().unwrap();
-        render::render_node_to_texture(self.upcast_ref::<Widget>(), &node).unwrap_or_else(|e| {
+        if let Some(node) = snapshot.free_to_node() {
+        render::render_node_to_texture(self.upcast_ref::<Widget>(), &node, self.bounds()).unwrap_or_else(|e| {
             log::error!("{}", e);
             None
         })
+        } else { None }
     }
 
     fn processing_draw_begin(
@@ -962,6 +965,7 @@ impl Canvas {
                     );
 
                     if self.sheet().resize_autoexpand() {
+                        self.regenerate_background(false);
                         self.queue_resize();
                     }
 

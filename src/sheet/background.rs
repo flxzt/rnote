@@ -2,6 +2,7 @@ use std::error::Error;
 
 use gtk4::gsk::IsRenderNode;
 use gtk4::{gdk, glib, gsk, Snapshot, Widget};
+use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -46,7 +47,7 @@ pub fn gen_horizontal_line_pattern(
 
     let mut y_offset = bounds.mins[1] + spacing;
 
-    while y_offset < bounds.maxs[1] {
+    while y_offset <= bounds.maxs[1] {
         group = group.add(
             element::Line::new()
                 .set("stroke-width", line_width)
@@ -72,7 +73,7 @@ pub fn gen_grid_pattern(
     let mut group = element::Group::new();
 
     let mut x_offset = bounds.mins[0] + column_spacing;
-    while x_offset < bounds.maxs[0] {
+    while x_offset <= bounds.maxs[0] {
         // vertical lines
         group = group.add(
             element::Line::new()
@@ -88,7 +89,7 @@ pub fn gen_grid_pattern(
     }
 
     let mut y_offset = bounds.mins[1] + row_spacing;
-    while y_offset < bounds.maxs[1] {
+    while y_offset <= bounds.maxs[1] {
         // horizontal lines
         group = group.add(
             element::Line::new()
@@ -110,6 +111,7 @@ pub fn gen_grid_pattern(
 pub struct Background {
     color: utils::Color,
     pattern: PatternStyle,
+    pattern_size: na::Vector2<f64>,
     #[serde(skip, default = "render::default_rendernode")]
     rendernode: gsk::RenderNode,
     #[serde(skip)]
@@ -130,6 +132,7 @@ impl Default for Background {
                 a: 1.0,
             },
             pattern: PatternStyle::default(),
+            pattern_size: na::vector![32.0, 32.0],
             rendernode: render::default_rendernode(),
             current_scalefactor: 1.0,
             current_bounds: p2d::bounding_volume::AABB::new_invalid(),
@@ -140,6 +143,7 @@ impl Default for Background {
 
 impl Background {
     pub const PATTERN_SIZE_DEFAULT: f64 = 20.0;
+    pub const TILE_MAX_SIZE: f64 = 256.0;
 
     pub fn color(&self) -> utils::Color {
         self.color
@@ -169,30 +173,16 @@ impl Background {
         active_widget: &Widget,
         force_regenerate: bool,
     ) -> Result<(), Box<dyn Error>> {
-        // use texture_buffer if bounds and scale havent changed
-        if !force_regenerate
-            && sheet_bounds == self.current_bounds
-            && self.texture_buffer.is_some()
-            && scalefactor == self.current_scalefactor
-        {
-            if let Some(texture_buffer) = &self.texture_buffer {
-                self.rendernode = gsk::TextureNode::new(
-                    texture_buffer,
-                    &utils::aabb_to_graphene_rect(self.current_bounds),
-                )
-                .upcast();
-                return Ok(());
-            }
-        }
-
-        if let Ok(new_rendernode) = self.gen_rendernode(scalefactor, sheet_bounds, renderer) {
-            let new_texture = render::render_node_to_texture(active_widget, &new_rendernode)?;
+        if let Ok(Some(new_rendernode)) = self.gen_rendernode(
+            scalefactor,
+            sheet_bounds,
+            renderer,
+            active_widget,
+            force_regenerate,
+        ) {
             self.rendernode = new_rendernode;
-            self.texture_buffer = new_texture;
-            self.current_scalefactor = scalefactor;
-            self.current_bounds = sheet_bounds;
         } else {
-            log::error!("failed to gen_rendernode() in update_rendernode() of background");
+            log::warn!("failed to gen_rendernode() in update_rendernode() of background");
             return Ok(());
         }
 
@@ -200,17 +190,91 @@ impl Background {
     }
 
     pub fn gen_rendernode(
-        &self,
+        &mut self,
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
-        renderer.gen_rendernode(
-            sheet_bounds,
-            scalefactor,
-            compose::add_xml_header(self.gen_svg_data(sheet_bounds)?.as_str()).as_str(),
-        )
+        active_widget: &Widget,
+        force_regenerate: bool,
+    ) -> Result<Option<gsk::RenderNode>, Box<dyn Error>> {
+        let snapshot = Snapshot::new();
+
+        // Calculate tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
+        let tile_factor =
+            na::Vector2::<f64>::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
+
+        let tile_width = if tile_factor[0] > 1.0 {
+            tile_factor[0].floor() * self.pattern_size[0]
+        } else {
+            self.pattern_size[0]
+        };
+        let tile_height = if tile_factor[1] > 1.0 {
+            tile_factor[1].floor() * self.pattern_size[1]
+        } else {
+            self.pattern_size[1]
+        };
+        let tile_size = na::vector![tile_width, tile_height];
+
+        let tile_bounds = p2d::bounding_volume::AABB::new(
+            na::point![0.0, 0.0],
+            na::point![tile_size[0], tile_size[1]],
+        );
+        let svg_string = compose::add_xml_header(self.gen_svg_data(tile_bounds)?.as_str());
+
+        if force_regenerate
+            || sheet_bounds != self.current_bounds
+            || scalefactor != self.current_scalefactor
+        {
+            // generating a new buffer texture
+            let new_node =
+                renderer.gen_rendernode(tile_bounds, scalefactor, svg_string.as_str())?;
+
+            let new_texture = render::render_node_to_texture(
+                active_widget,
+                &new_node,
+                utils::aabb_scale(tile_bounds, scalefactor),
+            )?;
+            if let Some(new_texture) = new_texture {
+                self.texture_buffer = Some(new_texture);
+                self.current_scalefactor = scalefactor;
+                self.current_bounds = sheet_bounds;
+            } else {
+                log::error!("failed to generate new texture_buffer for background. render_node_to_texture() returned 'None'")
+            }
+        }
+
+        // Fill with background color just in case there is any space left between the tiles
+        snapshot.append_color(
+            &self.color.to_gdk(),
+            &utils::aabb_to_graphene_rect(utils::aabb_scale(sheet_bounds, scalefactor)),
+        );
+
+        for mut aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
+            // Loosen to avoid borders between the nodes when the texture is placed in between pixels
+            aabb.loosen(1.0 / scalefactor);
+
+            // use the buffered texture to regenerate nodes
+            if let Some(texture_buffer) = &self.texture_buffer {
+                let texture_node = gsk::TextureNode::new(
+                    texture_buffer,
+                    &utils::aabb_to_graphene_rect(utils::aabb_scale(aabb, scalefactor)),
+                )
+                .upcast();
+
+                snapshot.append_node(&texture_node);
+                continue;
+            } else {
+                // Or generate a new node when no texture_buffer is found
+                let new_node = renderer.gen_rendernode(aabb, scalefactor, svg_string.as_str())?;
+
+                snapshot.append_node(&new_node);
+            }
+        }
+
+        Ok(snapshot.free_to_node())
     }
+
+    pub fn gen_texture_buffer(&self) {}
 
     pub fn gen_svg_data(
         &self,
@@ -234,7 +298,7 @@ impl Background {
             PatternStyle::Lines => {
                 group = group.add(gen_horizontal_line_pattern(
                     sheet_bounds,
-                    64.0,
+                    self.pattern_size[1],
                     utils::Color::new(0.3, 0.4, 0.9, 0.5),
                     1.0,
                 ));
@@ -242,8 +306,8 @@ impl Background {
             PatternStyle::Grid => {
                 group = group.add(gen_grid_pattern(
                     sheet_bounds,
-                    32.0,
-                    32.0,
+                    self.pattern_size[0],
+                    self.pattern_size[1],
                     utils::Color::new(0.3, 0.4, 0.9, 0.5),
                     1.0,
                 ));

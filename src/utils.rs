@@ -126,7 +126,7 @@ pub fn now() -> String {
     }
 }
 
-// AABB to graphene Rect
+/// AABB to graphene Rect
 pub fn aabb_to_graphene_rect(aabb: p2d::bounding_volume::AABB) -> graphene::Rect {
     graphene::Rect::new(
         aabb.mins[0] as f32,
@@ -136,7 +136,104 @@ pub fn aabb_to_graphene_rect(aabb: p2d::bounding_volume::AABB) -> graphene::Rect
     )
 }
 
-// Return mins, maxs
+/// splits a aabb into multiple which have the given size. Their union contains the given aabb. The boxes on the edges might extend the given aabb. Used when generating the background
+pub fn split_aabb_extended(
+    aabb: p2d::bounding_volume::AABB,
+    mut splitted_size: na::Vector2<f64>,
+) -> Vec<p2d::bounding_volume::AABB> {
+    let mut splitted_aabbs = Vec::new();
+
+    let mut offset_x = aabb.mins[0];
+    let mut offset_y = aabb.mins[1];
+    let width = aabb.maxs[0] - aabb.mins[0];
+    let height = aabb.maxs[1] - aabb.mins[1];
+
+    if width <= splitted_size[0] {
+        splitted_size[0] = width;
+    }
+    if height <= splitted_size[1] {
+        splitted_size[1] = height;
+    }
+
+    while offset_y < height {
+        while offset_x < width {
+            splitted_aabbs.push(p2d::bounding_volume::AABB::new(
+                na::point![offset_x, offset_y],
+                na::point![offset_x + splitted_size[0], offset_y + splitted_size[1]],
+            ));
+
+            offset_x += splitted_size[0];
+        }
+
+        offset_x = aabb.mins[0];
+        offset_y += splitted_size[1];
+    }
+
+    splitted_aabbs
+}
+
+/// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb. The boxes on the edges are clipped to fit into the given aabb
+pub fn split_aabb(
+    aabb: p2d::bounding_volume::AABB,
+    mut splitted_size: na::Vector2<f64>,
+) -> Vec<p2d::bounding_volume::AABB> {
+    let mut splitted_aabbs = Vec::new();
+
+    let mut offset_x = aabb.mins[0];
+    let mut offset_y = aabb.mins[1];
+    let width = aabb.maxs[0] - aabb.mins[0];
+    let height = aabb.maxs[1] - aabb.mins[1];
+
+    if width <= splitted_size[0] {
+        splitted_size[0] = width;
+    }
+    if height <= splitted_size[1] {
+        splitted_size[1] = height;
+    }
+
+    while offset_y < height - splitted_size[0] {
+        while offset_x < width - splitted_size[1] {
+            splitted_aabbs.push(p2d::bounding_volume::AABB::new(
+                na::point![offset_x, offset_y],
+                na::point![offset_x + splitted_size[0], offset_y + splitted_size[1]],
+            ));
+
+            offset_x += splitted_size[0];
+        }
+        // get the last and clipped rectangle for the current row
+        if offset_x < width {
+            splitted_aabbs.push(p2d::bounding_volume::AABB::new(
+                na::point![offset_x, offset_y],
+                na::point![aabb.maxs[0], offset_y + splitted_size[1]],
+            ));
+        }
+
+        offset_x = aabb.mins[0];
+        offset_y += splitted_size[1];
+    }
+    // get the last and clipped rectangles for the last column
+    if offset_y < height {
+        while offset_x < width - splitted_size[1] {
+            splitted_aabbs.push(p2d::bounding_volume::AABB::new(
+                na::point![offset_x, offset_y],
+                na::point![offset_x + splitted_size[0], aabb.maxs[1]],
+            ));
+
+            offset_x += splitted_size[0];
+        }
+        // get the last and clipped rectangle for the current row
+        if offset_x < width {
+            splitted_aabbs.push(p2d::bounding_volume::AABB::new(
+                na::point![offset_x, offset_y],
+                na::point![aabb.maxs[0], aabb.maxs[1]],
+            ));
+        }
+    }
+
+    splitted_aabbs
+}
+
+/// Return mins, maxs
 pub fn vec2_mins_maxs(
     first: na::Vector2<f64>,
     second: na::Vector2<f64>,
@@ -207,12 +304,8 @@ pub fn aabb_scale(
     scalefactor: f64,
 ) -> p2d::bounding_volume::AABB {
     p2d::bounding_volume::AABB::new(
-        na::Point2::<f64>::from(na::vector![0.0, 0.0].unscale(scalefactor)),
-        na::Point2::<f64>::from(
-            na::vector![aabb.maxs[0] - aabb.mins[0], aabb.maxs[1] - aabb.mins[0]]
-                .unscale(scalefactor)
-                + na::vector![aabb.mins[0], aabb.mins[1]],
-        ),
+        na::Point2::<f64>::from(na::vector![aabb.mins[0], aabb.mins[1]].scale(scalefactor)),
+        na::Point2::<f64>::from(na::vector![aabb.maxs[0], aabb.maxs[1]].scale(scalefactor)),
     )
 }
 

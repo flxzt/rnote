@@ -7,6 +7,8 @@ use gtk4::{
     Native, Widget,
 };
 
+use crate::utils;
+
 #[derive(Debug)]
 pub enum RendererBackend {
     Librsvg,
@@ -179,10 +181,11 @@ pub fn gen_cairosurface(
 pub fn render_node_to_texture(
     active_widget: &Widget,
     node: &gsk::RenderNode,
+    viewport: p2d::bounding_volume::AABB,
 ) -> Result<Option<gdk::Texture>, Box<dyn Error>> {
     if let Some(root) = active_widget.root() {
         if let Some(root_renderer) = root.upcast::<Native>().renderer() {
-            let texture = root_renderer.render_texture(node, None::<&graphene::Rect>);
+            let texture = root_renderer.render_texture(node, Some(&utils::aabb_to_graphene_rect(viewport)));
             return Ok(texture);
         }
     }

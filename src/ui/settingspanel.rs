@@ -413,7 +413,7 @@ impl SettingsPanel {
                 appwindow.canvas().sheet().format().replace_fields(temporary_format);
 
                 appwindow.canvas().sheet().resize_to_format();
-                appwindow.canvas().regenerate_background(false);
+                appwindow.canvas().regenerate_content(true);
             }),
         );
 

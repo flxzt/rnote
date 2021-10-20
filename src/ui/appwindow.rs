@@ -742,6 +742,7 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => @default-return None, move |_canvas_overlay, widget| {
                  match widget.widget_name().as_str() {
                      "selection_modifier" => {
+                        let selectionmodifier = widget.clone().downcast::<SelectionModifier>().unwrap();
                         let scalefactor = appwindow.canvas().scalefactor();
 
                         if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds() {
@@ -760,7 +761,10 @@ impl RnoteAppWindow {
                                 width: (selection_bounds_scaled.maxs[0] -  selection_bounds_scaled.mins[0]).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
                                 height: (selection_bounds_scaled.maxs[1] - selection_bounds_scaled.mins[1]).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
                             })
-                        } else { None }
+                        } else { 
+                            selectionmodifier.set_visible(false);
+                            None
+                        }
                     },
                     _ => { None }
                 }

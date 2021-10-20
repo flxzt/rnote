@@ -4,7 +4,7 @@ mod imp {
         rc::Rc,
     };
 
-    use crate::strokes;
+    use crate::strokes::{self};
 
     use gtk4::{glib, glib::subclass::Signal, prelude::*, subclass::prelude::*};
     use once_cell::sync::Lazy;

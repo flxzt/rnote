@@ -10,6 +10,7 @@ mod imp {
     };
     use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
 
+    use crate::ui::appsettings;
     use crate::{
         app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
         ui::mainheader::MainHeader, ui::penssidebar::PensSideBar,
@@ -260,7 +261,7 @@ mod imp {
                 log::error!("Failed to save window state, {}", &err);
             }
 
-            if let Err(err) = obj.save_state_to_settings() {
+            if let Err(err) = appsettings::save_state_to_settings(&obj) {
                 log::error!("Failed to save app state, {}", &err);
             }
 
@@ -290,7 +291,6 @@ use std::{
     boxed,
     cell::{Cell, RefCell},
     error::Error,
-    path::PathBuf,
     rc::Rc,
 };
 
@@ -300,17 +300,15 @@ use gtk4::{
     EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, Inhibit,
     Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
 };
-use tuple_conv::RepeatedTuple;
 
 use crate::{
     app::RnoteApp,
-    sheet::background::PatternStyle,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     ui::canvas::Canvas,
     ui::develactions::DevelActions,
-    ui::penssidebar::PensSideBar,
     ui::settingspanel::SettingsPanel,
     ui::{actions, selectionmodifier::SelectionModifier, workspacebrowser::WorkspaceBrowser},
+    ui::{appsettings, penssidebar::PensSideBar},
     ui::{dialogs, mainheader::MainHeader},
     utils,
 };
@@ -744,24 +742,23 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => @default-return None, move |_canvas_overlay, widget| {
                  match widget.widget_name().as_str() {
                      "selection_modifier" => {
-                        let selectionmodifier = widget.clone().downcast::<SelectionModifier>().unwrap();
-                        let scalefactor = selectionmodifier.property("scalefactor").unwrap().get::<f64>().unwrap();
+                        let scalefactor = appwindow.canvas().scalefactor();
 
-                         //Some(gdk::Rectangle {x: bounds.x().round() as i32, y: bounds.y().round() as i32, width: bounds.width().round() as i32, height: bounds.height().round() as i32})
-                        if let Some(bounds) = &*appwindow.canvas().sheet().selection().bounds().borrow() {
+                        if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds() {
                             let translate_node_size = (
-                                (bounds.maxs[0] - bounds.mins[0]).round() as i32 - 2 * SelectionModifier::TRANSLATE_NODE_MARGIN,
-                                (bounds.maxs[1] - bounds.mins[1]).round() as i32 - 2 * SelectionModifier::TRANSLATE_NODE_MARGIN,
+                                ((selection_bounds.maxs[0] - selection_bounds.mins[0]) * scalefactor).round() as i32,
+                                ((selection_bounds.maxs[1] - selection_bounds.mins[1]) * scalefactor).round() as i32,
                             );
+                            let selection_bounds_scaled = utils::aabb_scale(selection_bounds, scalefactor);
 
                             appwindow.selection_modifier().translate_node().set_width_request(translate_node_size.0);
                             appwindow.selection_modifier().translate_node().set_height_request(translate_node_size.1);
 
                             Some(gdk::Rectangle {
-                                x: (bounds.mins[0] * scalefactor).round() as i32 - SelectionModifier::RESIZE_NODE_SIZE,
-                                y:  (bounds.mins[1] * scalefactor).round() as i32 - SelectionModifier::RESIZE_NODE_SIZE,
-                                width: ((bounds.maxs[0] -  bounds.mins[0]) * scalefactor).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
-                                height: ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
+                                x: (selection_bounds_scaled.mins[0]).round() as i32 - SelectionModifier::RESIZE_NODE_SIZE,
+                                y:  (selection_bounds_scaled.mins[1]).round() as i32 - SelectionModifier::RESIZE_NODE_SIZE,
+                                width: (selection_bounds_scaled.maxs[0] -  selection_bounds_scaled.mins[0]).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
+                                height: (selection_bounds_scaled.maxs[1] - selection_bounds_scaled.mins[1]).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
                             })
                         } else { None }
                     },
@@ -773,365 +770,7 @@ impl RnoteAppWindow {
         // actions and settings AFTER widget callback declarations
         actions::setup_actions(self);
         actions::setup_accels(self);
-        self.load_settings();
-    }
-
-    pub fn save_state_to_settings(&self) -> Result<(), glib::BoolError> {
-        // Marker Colors
-        let marker_colors: Vec<u32> = self
-            .penssidebar()
-            .marker_page()
-            .colorpicker()
-            .fetch_all_colors()
-            .iter()
-            .map(|color| {
-                let value = color.to_u32();
-                value
-            })
-            .collect();
-        if marker_colors.len() != 8 {
-            log::error!(
-                "Couldn't save marker colors. Vector length does not match settings tuple length"
-            )
-        } else {
-            self.app_settings().set_value(
-                "marker-colors",
-                &(
-                    marker_colors[0],
-                    marker_colors[1],
-                    marker_colors[2],
-                    marker_colors[3],
-                    marker_colors[4],
-                    marker_colors[5],
-                    marker_colors[6],
-                    marker_colors[7],
-                )
-                    .to_variant(),
-            )?;
-        }
-
-        // Brush Colors
-        let brush_colors: Vec<u32> = self
-            .penssidebar()
-            .brush_page()
-            .colorpicker()
-            .fetch_all_colors()
-            .iter()
-            .map(|color| {
-                let value = color.to_u32();
-                value
-            })
-            .collect();
-        if brush_colors.len() != 8 {
-            log::error!(
-                "Couldn't save brush colors. Vector length does not match settings tuple length"
-            )
-        } else {
-            self.app_settings().set_value(
-                "brush-colors",
-                &(
-                    brush_colors[0],
-                    brush_colors[1],
-                    brush_colors[2],
-                    brush_colors[3],
-                    brush_colors[4],
-                    brush_colors[5],
-                    brush_colors[6],
-                    brush_colors[7],
-                )
-                    .to_variant(),
-            )?;
-        }
-
-        // Shaper stroke colors
-        let shaper_stroke_colors: Vec<u32> = self
-            .penssidebar()
-            .shaper_page()
-            .stroke_colorpicker()
-            .fetch_all_colors()
-            .iter()
-            .map(|color| {
-                let value = color.to_u32();
-                value
-            })
-            .collect();
-        if shaper_stroke_colors.len() != 2 {
-            log::error!(
-                "Couldn't save shaper stroke colors. Vector length does not match settings tuple length"
-            )
-        } else {
-            self.app_settings().set_value(
-                "shaper-stroke-colors",
-                &(shaper_stroke_colors[0], shaper_stroke_colors[1]).to_variant(),
-            )?;
-        }
-
-        // Shaper fill colors
-        let shaper_fill_colors: Vec<u32> = self
-            .penssidebar()
-            .shaper_page()
-            .fill_colorpicker()
-            .fetch_all_colors()
-            .iter()
-            .map(|color| {
-                let value = color.to_u32();
-                value
-            })
-            .collect();
-        if shaper_fill_colors.len() != 2 {
-            log::error!(
-                "Couldn't save shaper fill colors. Vector length does not match settings tuple length"
-            )
-        } else {
-            self.app_settings().set_value(
-                "shaper-fill-colors",
-                &(shaper_fill_colors[0], shaper_fill_colors[1]).to_variant(),
-            )?;
-        }
-
-        // Background Color
-        self.app_settings()
-            .set_uint(
-                "background-color",
-                utils::Color::from(self.settings_panel().background_color_choosebutton().rgba())
-                    .to_u32(),
-            )
-            .unwrap();
-
-        // Background pattern
-        self.app_settings()
-            .set_string(
-                "background-pattern",
-                match self.canvas().sheet().background().borrow().pattern() {
-                    PatternStyle::None => "none",
-                    PatternStyle::Lines => "lines",
-                    PatternStyle::Grid => "grid",
-                },
-            )
-            .unwrap();
-
-        // Background Pattern Color
-        self.app_settings()
-            .set_uint(
-                "background-pattern-color",
-                utils::Color::from(
-                    self.settings_panel()
-                        .background_pattern_color_choosebutton()
-                        .rgba(),
-                )
-                .to_u32(),
-            )
-            .unwrap();
-
-        Ok(())
-    }
-
-    // ### Settings are setup only at startup. Setting changes through gsettings / dconf might not be applied until app restarts
-    fn load_settings(&self) {
-        let _priv_ = imp::RnoteAppWindow::from_instance(self);
-
-        // overwriting theme so users can choose dark / light in appmenu
-        //self.settings().set_gtk_theme_name(Some("Adwaita"));
-
-        // Workspace directory
-        self.workspacebrowser().set_primary_path(&PathBuf::from(
-            self.app_settings().string("workspace-dir").as_str(),
-        ));
-
-        // color schemes
-        match self.app_settings().string("color-scheme").as_str() {
-            "default" => self.set_color_scheme(adw::ColorScheme::Default),
-            "force-light" => self.set_color_scheme(adw::ColorScheme::ForceLight),
-            "force-dark" => self.set_color_scheme(adw::ColorScheme::ForceDark),
-            _ => {
-                log::error!("failed to load setting color-scheme, unsupported string as key")
-            }
-        }
-
-        // Marker colors
-        let marker_colors = self
-            .app_settings()
-            .value("marker-colors")
-            .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>()
-            .unwrap();
-        let marker_colors_vec: Vec<utils::Color> = marker_colors
-            .to_vec()
-            .iter()
-            .map(|color_value| utils::Color::from(*color_value))
-            .collect();
-        self.penssidebar()
-            .marker_page()
-            .colorpicker()
-            .load_all_colors(&marker_colors_vec);
-
-        // Brush colors
-        let brush_colors = self
-            .app_settings()
-            .value("brush-colors")
-            .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>()
-            .unwrap();
-        let brush_colors_vec: Vec<utils::Color> = brush_colors
-            .to_vec()
-            .iter()
-            .map(|color_value| utils::Color::from(*color_value))
-            .collect();
-        self.penssidebar()
-            .brush_page()
-            .colorpicker()
-            .load_all_colors(&brush_colors_vec);
-
-        // Shaper stroke colors
-        let brush_colors = self
-            .app_settings()
-            .value("shaper-stroke-colors")
-            .get::<(u32, u32)>()
-            .unwrap();
-        let brush_colors_vec: Vec<utils::Color> = brush_colors
-            .to_vec()
-            .iter()
-            .map(|color_value| utils::Color::from(*color_value))
-            .collect();
-        self.penssidebar()
-            .shaper_page()
-            .stroke_colorpicker()
-            .load_all_colors(&brush_colors_vec);
-
-        // Shaper fill colors
-        let brush_colors = self
-            .app_settings()
-            .value("shaper-fill-colors")
-            .get::<(u32, u32)>()
-            .unwrap();
-        let brush_colors_vec: Vec<utils::Color> = brush_colors
-            .to_vec()
-            .iter()
-            .map(|color_value| utils::Color::from(*color_value))
-            .collect();
-        self.penssidebar()
-            .shaper_page()
-            .fill_colorpicker()
-            .load_all_colors(&brush_colors_vec);
-
-        // Background color
-        let background_color = utils::Color::from(self.app_settings().uint("background-color"));
-        if self.canvas().empty() {
-            self.canvas()
-                .sheet()
-                .background()
-                .borrow_mut()
-                .set_color(background_color);
-        }
-
-        // Background pattern
-        match self.app_settings().string("background-pattern").as_str() {
-            "none" => {
-                self.canvas()
-                    .sheet()
-                    .background()
-                    .borrow_mut()
-                    .set_pattern(PatternStyle::None);
-            }
-            "lines" => self
-                .canvas()
-                .sheet()
-                .background()
-                .borrow_mut()
-                .set_pattern(PatternStyle::Lines),
-            "grid" => self
-                .canvas()
-                .sheet()
-                .background()
-                .borrow_mut()
-                .set_pattern(PatternStyle::Grid),
-            _ => {
-                log::error!("failed to load setting color-scheme, unsupported string as key")
-            }
-        }
-
-        // Background pattern color
-        let background_pattern_color =
-            utils::Color::from(self.app_settings().uint("background-pattern-color"));
-        if self.canvas().empty() {
-            self.canvas()
-                .sheet()
-                .background()
-                .borrow_mut()
-                .set_pattern_color(background_pattern_color);
-        }
-
-        // Ui for right / left handed writers
-        self.application().unwrap().change_action_state(
-            "righthanded",
-            &self.app_settings().boolean("righthanded").to_variant(),
-        );
-        self.application()
-            .unwrap()
-            .activate_action("righthanded", None);
-        self.application()
-            .unwrap()
-            .activate_action("righthanded", None);
-
-        // Touch drawing
-        self.app_settings()
-            .bind("touch-drawing", &self.canvas(), "touch-drawing")
-            .flags(gio::SettingsBindFlags::DEFAULT)
-            .build();
-
-        // Format borders
-        self.canvas()
-            .set_format_borders(self.app_settings().boolean("format-borders"));
-
-        // Autoexpand height
-        let autoexpand_height = self.app_settings().boolean("autoexpand-height");
-        self.canvas()
-            .sheet()
-            .set_autoexpand_height(autoexpand_height);
-        self.mainheader()
-            .pageedit_revealer()
-            .set_reveal_child(!autoexpand_height);
-
-        // Visual Debugging
-        self.app_settings()
-            .bind("visual-debug", &self.canvas(), "visual-debug")
-            .flags(gio::SettingsBindFlags::DEFAULT)
-            .build();
-
-        // Developer mode
-        self.app_settings()
-            .bind(
-                "devel",
-                &self
-                    .penssidebar()
-                    .brush_page()
-                    .templatechooser()
-                    .predefined_template_experimental_listboxrow(),
-                "visible",
-            )
-            .flags(gio::SettingsBindFlags::DEFAULT)
-            .build();
-
-        let action_devel_settings = self
-            .application()
-            .unwrap()
-            .downcast::<RnoteApp>()
-            .unwrap()
-            .lookup_action("devel-settings")
-            .unwrap();
-        action_devel_settings
-            .downcast::<gio::SimpleAction>()
-            .unwrap()
-            .set_enabled(self.app_settings().boolean("devel"));
-
-        self.devel_actions_revealer()
-            .set_reveal_child(self.app_settings().boolean("devel"));
-
-        // Loading the sheet properties into the format settings panel
-        self.settings_panel()
-            .load_format(self.canvas().sheet().format());
-
-        // Avoid already borrowed error
-        let background = self.canvas().sheet().background().borrow().clone();
-        self.settings_panel().load_background(&background);
+        appsettings::load_settings(self);
     }
 
     pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn Error>> {

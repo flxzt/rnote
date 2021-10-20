@@ -648,32 +648,6 @@ impl Canvas {
 
         self.bind_property(
             "scalefactor",
-            &appwindow.selection_modifier(),
-            "scalefactor",
-        )
-        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-        .build();
-
-        self.sheet()
-            .selection()
-            .connect_local(
-                "redraw",
-                false,
-                clone!(@weak self as canvas => @default-return None, move |_| {
-
-                    StrokeStyle::update_all_rendernodes(
-                        &mut *canvas.sheet().selection().strokes().borrow_mut(),
-                        canvas.scalefactor(),
-                        &*canvas.renderer().borrow(),
-                    );
-                    canvas.queue_draw();
-                    None
-                }),
-            )
-            .unwrap();
-
-        self.bind_property(
-            "scalefactor",
             &appwindow.mainheader().canvasmenu().zoomreset_button(),
             "label",
         )
@@ -828,6 +802,7 @@ impl Canvas {
             ]);
         }
         self.set_temporary_zoom(temp_scalefactor / self.scalefactor());
+        self.sheet().selection().set_shown(false);
     }
 
     /// Scales the canvas and its contents to a new scalefactor
@@ -848,6 +823,7 @@ impl Canvas {
         StrokeStyle::complete_all_strokes(&mut *self.sheet().selection().strokes().borrow_mut());
 
         self.regenerate_content(false, true);
+        self.sheet().selection().set_shown(true);
     }
 
     /// Zooms temporarily and then scale the canvas and its contents to a new scalefactor after a given time.

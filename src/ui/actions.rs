@@ -293,7 +293,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.canvas().sheet().set_autoexpand_height(state);
             appwindow.mainheader().pageedit_revealer().set_reveal_child(!state);
 
-            appwindow.canvas().regenerate_background(false, true);
+            appwindow.canvas().queue_resize();
+            appwindow.canvas().queue_draw();
         }),
     );
     app.add_action(&action_autoexpand_height);

@@ -12,7 +12,7 @@ mod imp {
     #[derive(Debug)]
     pub struct Selection {
         pub strokes: Rc<RefCell<Vec<strokes::StrokeStyle>>>,
-        pub bounds: Rc<RefCell<Option<p2d::bounding_volume::AABB>>>,
+        pub bounds: Cell<Option<p2d::bounding_volume::AABB>>,
         pub shown: Cell<bool>,
     }
 
@@ -20,7 +20,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 strokes: Rc::new(RefCell::new(Vec::new())),
-                bounds: Rc::new(RefCell::new(None)),
+                bounds: Cell::new(None),
                 shown: Cell::new(false),
             }
         }
@@ -127,7 +127,7 @@ impl Serialize for Selection {
     {
         let mut state = serializer.serialize_struct("Sheet", 2)?;
         state.serialize_field("strokes", &*self.strokes().borrow())?;
-        state.serialize_field("bounds", &*self.bounds().borrow())?;
+        state.serialize_field("bounds", &self.bounds())?;
         state.serialize_field("shown", &self.shown())?;
         state.end()
     }
@@ -172,7 +172,7 @@ impl<'de> Deserialize<'de> for Selection {
 
                 let selection = Selection::new();
                 *selection.strokes().borrow_mut() = strokes;
-                *selection.bounds().borrow_mut() = bounds;
+                selection.set_bounds(bounds);
                 selection.set_shown(shown);
                 Ok(selection)
             }
@@ -227,7 +227,7 @@ impl<'de> Deserialize<'de> for Selection {
                 let bounds = bounds.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("bounds");
                     log::error!("{}", err);
-                    *selection_default.bounds().borrow()
+                    selection_default.bounds()
                 });
                 let shown = shown.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("shown");
@@ -237,7 +237,7 @@ impl<'de> Deserialize<'de> for Selection {
 
                 let selection = Selection::new();
                 *selection.strokes().borrow_mut() = strokes;
-                *selection.bounds().borrow_mut() = bounds;
+                selection.set_bounds(bounds);
                 selection.set_shown(shown);
                 Ok(selection)
             }
@@ -260,8 +260,12 @@ impl Selection {
         priv_.strokes.clone()
     }
 
-    pub fn bounds(&self) -> Rc<RefCell<Option<p2d::bounding_volume::AABB>>> {
-        imp::Selection::from_instance(self).bounds.clone()
+    pub fn bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+        imp::Selection::from_instance(self).bounds.get()
+    }
+
+    pub fn set_bounds(&self, bounds: Option<p2d::bounding_volume::AABB>) {
+        imp::Selection::from_instance(self).bounds.set(bounds);
     }
 
     pub fn shown(&self) -> bool {
@@ -276,11 +280,19 @@ impl Selection {
         self.connect_local(
             "redraw",
             false,
-            clone!(@weak self as obj, @weak appwindow => @default-return None, move |_args| {
-                appwindow.selection_modifier().queue_resize();
-                appwindow.canvas().queue_resize();
-                appwindow.canvas().queue_draw();
-                None
+            clone!(@weak self as selection, @weak appwindow => @default-return None, move |_args| {
+                    StrokeStyle::update_all_rendernodes(
+                        &mut *selection.strokes().borrow_mut(),
+                        appwindow.canvas().scalefactor(),
+                        &*appwindow.canvas().renderer().borrow(),
+                    );
+
+                    appwindow.selection_modifier().queue_resize();
+                    appwindow.selection_modifier().queue_draw();
+
+                    appwindow.canvas().queue_resize();
+                    appwindow.canvas().queue_draw();
+                    None
             }),
         )
         .unwrap();
@@ -450,8 +462,8 @@ impl Selection {
             other_strokes.remove(i - to_remove_index);
         }
 
-        *self.bounds().borrow_mut() = StrokeStyle::gen_bounds(&self.strokes().borrow());
-
+        self.set_bounds(StrokeStyle::gen_bounds(&self.strokes().borrow()));
+        self.emit_by_name("redraw", &[]).unwrap();
         self.set_shown(!self.strokes().borrow().is_empty())
     }
 
@@ -460,8 +472,7 @@ impl Selection {
 
         priv_.strokes.borrow_mut().push(stroke);
 
-        *self.bounds().borrow_mut() = StrokeStyle::gen_bounds(&self.strokes().borrow());
-
+        self.set_bounds(StrokeStyle::gen_bounds(&self.strokes().borrow()));
         self.emit_by_name("redraw", &[]).unwrap();
         self.set_shown(true);
     }
@@ -475,7 +486,8 @@ impl Selection {
             self.set_shown(false);
         }
 
-        *self.bounds().borrow_mut() = StrokeStyle::gen_bounds(&self.strokes().borrow());
+        self.set_bounds(StrokeStyle::gen_bounds(&self.strokes().borrow()));
+        self.emit_by_name("redraw", &[]).unwrap();
         stroke
     }
 
@@ -494,7 +506,7 @@ impl Selection {
             self.set_shown(true);
         }
 
-        *self.bounds().borrow_mut() = StrokeStyle::gen_bounds(&self.strokes().borrow());
+        self.set_bounds(StrokeStyle::gen_bounds(&self.strokes().borrow()));
         self.emit_by_name("redraw", &[]).unwrap();
         stroke
     }
@@ -507,7 +519,7 @@ impl Selection {
 
         self.set_shown(false);
 
-        *self.bounds().borrow_mut() = StrokeStyle::gen_bounds(&self.strokes().borrow());
+        self.set_bounds(StrokeStyle::gen_bounds(&self.strokes().borrow()));
         self.emit_by_name("redraw", &[]).unwrap();
         selected
     }
@@ -515,8 +527,7 @@ impl Selection {
     pub fn resize_selection(&self, new_bounds: p2d::bounding_volume::AABB) {
         let priv_ = imp::Selection::from_instance(self);
 
-        let selection_bounds = self.bounds().borrow().to_owned();
-        if let Some(selection_bounds) = selection_bounds {
+        if let Some(selection_bounds) = self.bounds() {
             let new_selected: Vec<strokes::StrokeStyle> = self
                 .strokes()
                 .borrow_mut()
@@ -533,7 +544,7 @@ impl Selection {
 
             *priv_.strokes.borrow_mut() = new_selected;
 
-            *self.bounds().borrow_mut() = Some(new_bounds);
+            self.set_bounds(Some(new_bounds));
             self.emit_by_name("redraw", &[]).unwrap();
         }
     }
@@ -592,34 +603,31 @@ impl Selection {
 
         *priv_.strokes.borrow_mut() = new_selected;
 
-        *self.bounds().borrow_mut() = StrokeStyle::gen_bounds(&self.strokes().borrow());
+        self.set_bounds(StrokeStyle::gen_bounds(&self.strokes().borrow()));
         self.emit_by_name("redraw", &[]).unwrap();
     }
 
     pub fn draw(&self, scalefactor: f64, snapshot: &Snapshot) {
         let priv_ = imp::Selection::from_instance(self);
 
+        StrokeStyle::draw_strokes(&priv_.strokes.borrow(), snapshot);
+
         for stroke in priv_.strokes.borrow().iter() {
             match stroke {
                 strokes::StrokeStyle::MarkerStroke(markerstroke) => {
                     self.draw_selected_bounds(markerstroke.bounds, scalefactor, snapshot);
-                    snapshot.append_node(&markerstroke.rendernode);
                 }
                 strokes::StrokeStyle::BrushStroke(brushstroke) => {
                     self.draw_selected_bounds(brushstroke.bounds, scalefactor, snapshot);
-                    snapshot.append_node(&brushstroke.rendernode);
                 }
                 strokes::StrokeStyle::ShapeStroke(shapestroke) => {
                     self.draw_selected_bounds(shapestroke.bounds, scalefactor, snapshot);
-                    snapshot.append_node(&shapestroke.rendernode);
                 }
                 strokes::StrokeStyle::VectorImage(vector_image) => {
                     self.draw_selected_bounds(vector_image.bounds, scalefactor, snapshot);
-                    snapshot.append_node(&vector_image.rendernode);
                 }
                 strokes::StrokeStyle::BitmapImage(bitmapimage) => {
                     self.draw_selected_bounds(bitmapimage.bounds, scalefactor, snapshot);
-                    snapshot.append_node(&bitmapimage.rendernode);
                 }
             }
         }
@@ -628,7 +636,7 @@ impl Selection {
     }
 
     pub fn draw_selection_bounds(&self, scalefactor: f64, snapshot: &Snapshot) {
-        if let Some(bounds) = &*self.bounds().borrow() {
+        if let Some(bounds) = self.bounds() {
             let selection_bounds = graphene::Rect::new(
                 bounds.mins[0] as f32,
                 bounds.mins[1] as f32,
@@ -720,7 +728,7 @@ impl Selection {
     pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), Box<dyn Error>> {
         let priv_ = imp::Selection::from_instance(self);
 
-        if let Some(bounds) = &*self.bounds().borrow() {
+        if let Some(bounds) = self.bounds() {
             let mut data = String::new();
             for stroke in &*priv_.strokes.borrow() {
                 let data_entry =

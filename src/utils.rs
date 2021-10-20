@@ -271,6 +271,7 @@ pub fn aabb_new_positive(
     }
 }
 
+/// clamp a aabb to min size, max size
 pub fn aabb_clamp(
     aabb: p2d::bounding_volume::AABB,
     min: Option<p2d::bounding_volume::AABB>,
@@ -300,6 +301,7 @@ pub fn aabb_clamp(
     )
 }
 
+/// Scale a aabb by the scalefactor
 pub fn aabb_scale(
     aabb: p2d::bounding_volume::AABB,
     scalefactor: f64,

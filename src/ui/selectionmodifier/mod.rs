@@ -1,14 +1,10 @@
 pub mod modifiernode;
 
 mod imp {
-    use std::cell::Cell;
-
     use super::modifiernode::ModifierNode;
-    use crate::ui::canvas::Canvas;
 
     use gtk4::gdk;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-    use once_cell::sync::Lazy;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/selectionmodifier.ui")]
@@ -23,8 +19,6 @@ mod imp {
         pub resize_br: TemplateChild<ModifierNode>,
         #[template_child]
         pub translate_node: TemplateChild<gtk4::Box>,
-
-        pub scalefactor: Cell<f64>,
     }
 
     impl Default for SelectionModifier {
@@ -37,7 +31,6 @@ mod imp {
                 resize_bl: TemplateChild::<ModifierNode>::default(),
                 resize_br: TemplateChild::<ModifierNode>::default(),
                 translate_node: TemplateChild::<gtk4::Box>::default(),
-                scalefactor: Cell::new(Canvas::SCALE_DEFAULT),
             }
         }
     }
@@ -81,75 +74,11 @@ mod imp {
                 gdk::Cursor::from_name("grab", gdk::Cursor::from_name("default", None).as_ref())
                     .as_ref(),
             );
-
-            self.translate_node
-                .get()
-                .set_margin_start(super::SelectionModifier::TRANSLATE_NODE_MARGIN);
-            self.translate_node
-                .get()
-                .set_margin_end(super::SelectionModifier::TRANSLATE_NODE_MARGIN);
-            self.translate_node
-                .get()
-                .set_margin_top(super::SelectionModifier::TRANSLATE_NODE_MARGIN);
-            self.translate_node
-                .get()
-                .set_margin_bottom(super::SelectionModifier::TRANSLATE_NODE_MARGIN);
         }
 
         fn dispose(&self, obj: &Self::Type) {
             while let Some(child) = obj.first_child() {
                 child.unparent();
-            }
-        }
-
-        fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpec::new_double(
-                    // Name
-                    "scalefactor",
-                    // Nickname
-                    "scalefactor",
-                    // Short description
-                    "scalefactor",
-                    // Minimum value
-                    f64::MIN,
-                    // Maximum value
-                    f64::MAX,
-                    // Default value
-                    Canvas::SCALE_DEFAULT,
-                    // The property can be read and written to
-                    glib::ParamFlags::READWRITE,
-                )]
-            });
-            PROPERTIES.as_ref()
-        }
-
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-            match pspec.name() {
-                "scalefactor" => self.scalefactor.get().to_value(),
-                _ => unimplemented!(),
-            }
-        }
-
-        fn set_property(
-            &self,
-            obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
-            match pspec.name() {
-                "scalefactor" => {
-                    let scalefactor: f64 = value
-                        .get::<f64>()
-                        .expect("The value needs to be of type `i32`.")
-                        .clamp(Canvas::SCALE_MIN, Canvas::SCALE_MAX);
-                    self.scalefactor.replace(scalefactor);
-
-                    obj.queue_draw();
-                    obj.queue_resize();
-                }
-                _ => unimplemented!(),
             }
         }
     }
@@ -175,11 +104,8 @@ impl Default for SelectionModifier {
 }
 
 impl SelectionModifier {
-    pub const TRANSLATE_NODE_MARGIN: i32 = 1;
-    pub const TRANSLATE_NODE_SIZE_MIN: i32 = 1;
-    pub const TRANSLATE_NODE_SIZE_MAX: i32 = 192;
     pub const RESIZE_NODE_SIZE: i32 = 22;
-    pub const RESIZE_MIN: f64 = 3.0; // Must be >= TRANSLATE_NODE_SIZE_MIN + 2 * TRANSLATE_NODE_MARGIN
+    pub const SELECTION_MIN: f64 = 3.0; // Must be >= TRANSLATE_NODE_SIZE_MIN
 
     pub fn new() -> Self {
         let selection_modifier: Self =
@@ -224,8 +150,7 @@ impl SelectionModifier {
                 false,
                 clone!(@weak self as obj, @weak appwindow  => @default-return None, move |args| {
 
-                    let selection_bounds = appwindow.canvas().sheet().selection().bounds().borrow().to_owned();
-                    if let Some(selection_bounds) = selection_bounds {
+                    if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds() {
                         let scalefactor = appwindow.canvas().scalefactor();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
                         let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
@@ -237,8 +162,8 @@ impl SelectionModifier {
                         );
                         let min_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
-                                new_bounds.maxs[0] - Self::RESIZE_MIN,
-                                new_bounds.maxs[1] - Self::RESIZE_MIN
+                                new_bounds.maxs[0] - Self::SELECTION_MIN,
+                                new_bounds.maxs[1] - Self::SELECTION_MIN
                             ],
                             na::point![
                                 new_bounds.maxs[0],
@@ -262,8 +187,7 @@ impl SelectionModifier {
                 false,
                 clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
 
-                    let selection_bounds = appwindow.canvas().sheet().selection().bounds().borrow().to_owned();
-                    if let Some(selection_bounds) = selection_bounds {
+                    if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds() {
                         let scalefactor = appwindow.canvas().scalefactor();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
                         let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
@@ -276,10 +200,10 @@ impl SelectionModifier {
                         let min_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
                                 new_bounds.mins[0],
-                                new_bounds.maxs[1] - Self::RESIZE_MIN
+                                new_bounds.maxs[1] - Self::SELECTION_MIN
                             ],
                             na::point![
-                                new_bounds.mins[0] + Self::RESIZE_MIN,
+                                new_bounds.mins[0] + Self::SELECTION_MIN,
                                 new_bounds.maxs[1]
                             ]
                         );
@@ -300,8 +224,7 @@ impl SelectionModifier {
                 false,
                 clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
 
-                    let selection_bounds = appwindow.canvas().sheet().selection().bounds().borrow().to_owned();
-                    if let Some(selection_bounds) = selection_bounds {
+                    if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds(){
                         let scalefactor = appwindow.canvas().scalefactor();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
                         let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
@@ -313,12 +236,12 @@ impl SelectionModifier {
                         );
                         let min_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
-                                new_bounds.maxs[0] - Self::RESIZE_MIN,
+                                new_bounds.maxs[0] - Self::SELECTION_MIN,
                                 new_bounds.mins[1]
                             ],
                             na::point![
                                 new_bounds.maxs[0],
-                                new_bounds.mins[1] + Self::RESIZE_MIN
+                                new_bounds.mins[1] + Self::SELECTION_MIN
                             ]
                         );
                         let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
@@ -338,8 +261,7 @@ impl SelectionModifier {
                 false,
                 clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
 
-                    let selection_bounds = appwindow.canvas().sheet().selection().bounds().borrow().to_owned();
-                    if let Some(selection_bounds) = selection_bounds {
+                    if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds(){
                         let scalefactor = appwindow.canvas().scalefactor();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
                         let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
@@ -355,8 +277,8 @@ impl SelectionModifier {
                                 new_bounds.mins[1]
                             ],
                             na::point![
-                                new_bounds.mins[0] + Self::RESIZE_MIN,
-                                new_bounds.mins[1] + Self::RESIZE_MIN
+                                new_bounds.mins[0] + Self::SELECTION_MIN,
+                                new_bounds.mins[1] + Self::SELECTION_MIN
                             ]
                         );
                         let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);

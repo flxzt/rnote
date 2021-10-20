@@ -49,6 +49,7 @@ rust_sources = files(
     'strokes/bitmapimage.rs',
     'ui/mod.rs',
     'ui/appwindow.rs',
+    'ui/appsettings.rs',
     'ui/actions.rs',
     'ui/develactions.rs',
     'ui/appmenu.rs',

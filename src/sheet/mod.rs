@@ -215,7 +215,7 @@ impl<'de> Deserialize<'de> for Sheet {
                 *sheet.strokes().borrow_mut() = strokes;
                 *sheet.strokes_trash().borrow_mut() = strokes_trash;
                 *sheet.selection().strokes().borrow_mut() = selection.strokes().borrow().clone();
-                *sheet.selection().bounds().borrow_mut() = *selection.bounds().borrow();
+                sheet.selection().set_bounds(selection.bounds());
                 sheet.selection().set_shown(selection.shown());
                 sheet.format().replace_fields(format);
                 *sheet.background().borrow_mut() = background;
@@ -388,7 +388,7 @@ impl<'de> Deserialize<'de> for Sheet {
                 *sheet.strokes().borrow_mut() = strokes;
                 *sheet.strokes_trash().borrow_mut() = strokes_trash;
                 *sheet.selection().strokes().borrow_mut() = selection.strokes().borrow().clone();
-                *sheet.selection().bounds().borrow_mut() = *selection.bounds().borrow();
+                sheet.selection().set_bounds(selection.bounds());
                 sheet.selection().set_shown(selection.shown());
                 sheet.format().replace_fields(format);
                 *sheet.background().borrow_mut() = background;
@@ -797,7 +797,7 @@ impl Sheet {
         *self.strokes().borrow_mut() = sheet.strokes().borrow().clone();
         *self.strokes_trash().borrow_mut() = sheet.strokes().borrow_mut().clone();
         *self.selection().strokes().borrow_mut() = sheet.selection().strokes().borrow().clone();
-        *self.selection().bounds().borrow_mut() = *sheet.selection().bounds().borrow();
+        self.selection().set_bounds(sheet.selection().bounds());
         self.selection().set_shown(sheet.selection().shown());
         self.format().replace_fields(sheet.format());
         *self.background().borrow_mut() = sheet.background().borrow().clone();

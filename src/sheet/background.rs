@@ -53,9 +53,9 @@ pub fn gen_horizontal_line_pattern(
                 .set("stroke-width", line_width)
                 .set("stroke", color.to_css_color())
                 .set("x1", bounds.mins[0])
-                .set("y1", y_offset - line_width / 2.0)
+                .set("y1", y_offset - line_width)
                 .set("x2", bounds.maxs[0])
-                .set("y2", y_offset - line_width / 2.0),
+                .set("y2", y_offset - line_width),
         );
 
         y_offset += spacing
@@ -79,9 +79,9 @@ pub fn gen_grid_pattern(
             element::Line::new()
                 .set("stroke-width", line_width)
                 .set("stroke", color.to_css_color())
-                .set("x1", x_offset - line_width / 2.0)
+                .set("x1", x_offset - line_width)
                 .set("y1", bounds.mins[1])
-                .set("x2", x_offset - line_width / 2.0)
+                .set("x2", x_offset - line_width)
                 .set("y2", bounds.maxs[1]),
         );
 
@@ -96,9 +96,9 @@ pub fn gen_grid_pattern(
                 .set("stroke-width", line_width)
                 .set("stroke", color.to_css_color())
                 .set("x1", bounds.mins[0])
-                .set("y1", y_offset - line_width / 2.0)
+                .set("y1", y_offset - line_width)
                 .set("x2", bounds.maxs[0])
-                .set("y2", y_offset - line_width / 2.0),
+                .set("y2", y_offset - line_width),
         );
 
         y_offset += row_spacing
@@ -271,7 +271,7 @@ impl Background {
 
         for mut aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
             // Loosen to avoid borders between the nodes when the texture is placed in between pixels
-            aabb.loosen(1.0 / scalefactor);
+            aabb.loosen(1.0 / (scalefactor * 2.0));
 
             // use the buffered texture to regenerate nodes
             if let Some(texture_buffer) = &self.texture_buffer {

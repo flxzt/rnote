@@ -56,43 +56,40 @@
   <releases>
     <release version="0.1.5" date="2021-10-21">
       <description>
-        <p>
-          <ul>
-            <li>introducing background patterns</li>
-            <li>improved zooming</li>
-            <li>improved performance</li>
-            <li>saving and loading more settings</li>
-            <li>UI tweaks</li>
-            <li>bug fixes</li>
-          </ul>
-        </p>
+        <p></p>
+        <ul>
+          <li>introducing background patterns</li>
+          <li>improved zooming</li>
+          <li>improved performance</li>
+          <li>saving and loading more settings</li>
+          <li>UI tweaks</li>
+          <li>bug fixes</li>
+        </ul>
       </description>
     </release>
     <release version="0.1.4" date="2021-10-16">
       <description>
-        <p>
-          <ul>
-            <li>UI improvements: sidebar and settings</li>
-            <li>set a background color</li>
-            <li>added ellipse as a rough shape</li>
-            <li>new and improved gestures and shortcuts (zoom with "ctrl+scroll", drag the canvas with the middle mouse button)</li>
-            <li>improved strokes algorithms</li>
-            <li>bug fixes</li>
-          </ul>
-        </p>
+        <p></p>
+        <ul>
+          <li>UI improvements: sidebar and settings</li>
+          <li>set a background color</li>
+          <li>added ellipse as a rough shape</li>
+          <li>new and improved gestures and shortcuts (zoom with "ctrl+scroll", drag the canvas with the middle mouse button)</li>
+          <li>improved strokes algorithms</li>
+          <li>bug fixes</li>
+        </ul>
       </description>
     </release>
     <release version="0.1.3" date="2021-10-08">
       <description>
-        <p>
-          <ul>
-            <li>Introducing rough shapes for a sketched look</li>
-            <li>fill shapes with a color</li>
-            <li>improved shape drawing (broke .rnote file backward compatibility, sorry!)</li>
-            <li>alpha checkerboard background in the colorpicker</li>
-            <li>bug fixes</li>
-          </ul>
-        </p>
+        <p></p>
+        <ul>
+          <li>Introducing rough shapes for a sketched look</li>
+          <li>fill shapes with a color</li>
+          <li>improved shape drawing (broke .rnote file backward compatibility, sorry!)</li>
+          <li>alpha checkerboard background in the colorpicker</li>
+          <li>bug fixes</li>
+        </ul>
       </description>
     </release>
     <release version="0.1.2" date="2021-10-07">

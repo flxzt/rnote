@@ -56,7 +56,7 @@
   <releases>
     <release version="0.1.5" date="2021-10-21">
       <description>
-        <p></p>
+        <p>this release changes:</p>
         <ul>
           <li>introducing background patterns</li>
           <li>improved zooming</li>
@@ -69,7 +69,7 @@
     </release>
     <release version="0.1.4" date="2021-10-16">
       <description>
-        <p></p>
+        <p>this release changes:</p>
         <ul>
           <li>UI improvements: sidebar and settings</li>
           <li>set a background color</li>
@@ -82,7 +82,7 @@
     </release>
     <release version="0.1.3" date="2021-10-08">
       <description>
-        <p></p>
+        <p>this release changes:</p>
         <ul>
           <li>Introducing rough shapes for a sketched look</li>
           <li>fill shapes with a color</li>

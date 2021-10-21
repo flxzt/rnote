@@ -262,7 +262,7 @@ impl Background {
                 self.current_scalefactor = scalefactor;
                 self.current_bounds = sheet_bounds;
             } else {
-                log::error!("failed to generate new texture_buffer for background. render_node_to_texture() returned 'None'")
+                log::warn!("failed to generate new texture_buffer for background. render_node_to_texture() returned 'None'")
             }
         }
 
@@ -282,13 +282,13 @@ impl Background {
             aabb.loosen(1.0 / (scalefactor * 2.0));
 
             // use the buffered texture to regenerate nodes
-            if let Some(texture_buffer) = &self.texture_buffer {
+            if let Some(texture_buffer) = self.texture_buffer.as_ref() {
                 snapshot.append_texture(
                     texture_buffer,
                     &utils::aabb_to_graphene_rect(utils::aabb_scale(aabb, scalefactor)),
                 );
             } else {
-                // Or use a new node when no texture_buffer was generated
+                // Or generate a new node when no texture_buffer was generated
                 let new_node = renderer.gen_rendernode(aabb, scalefactor, svg_string.as_str())?;
 
                 snapshot.append_node(&new_node);

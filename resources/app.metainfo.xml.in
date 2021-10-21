@@ -54,6 +54,20 @@
   </provides>
 
   <releases>
+    <release version="0.1.5" date="2021-10-21">
+      <description>
+        <p>
+          <ul>
+            <li>introducing background patterns</li>
+            <li>improved zooming</li>
+            <li>improved performance</li>
+            <li>saving and loading more settings</li>
+            <li>UI tweaks</li>
+            <li>bug fixes</li>
+          </ul>
+        </p>
+      </description>
+    </release>
     <release version="0.1.4" date="2021-10-16">
       <description>
         <p>

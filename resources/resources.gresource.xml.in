@@ -19,6 +19,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/eraserpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/selectorpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs.ui</file>
         <file compressed="true">icons/scalable/apps/rnote.svg</file>
         <file compressed="true">icons/scalable/apps/rnote-devel.svg</file>

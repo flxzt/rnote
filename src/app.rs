@@ -22,7 +22,8 @@ mod imp {
             penssidebar::selectorpage::SelectorPage, penssidebar::shaperpage::ShaperPage,
             penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
             selectionmodifier::SelectionModifier, settingspanel::SettingsPanel,
-            templatechooser::TemplateChooser, workspacebrowser::WorkspaceBrowser,
+            templatechooser::TemplateChooser, unitentry::UnitEntry,
+            workspacebrowser::WorkspaceBrowser,
         },
         utils,
     };
@@ -107,6 +108,7 @@ mod imp {
             PredefinedFormat::static_type();
             MeasureUnit::static_type();
             PatternStyle::static_type();
+            UnitEntry::static_type();
 
             application.set_resource_base_path(Some(config::APP_IDPATH));
             let res = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))

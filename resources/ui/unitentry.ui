@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### SelectionModifier ### -->
+<interface>
+  <template class="UnitEntry" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout" />
+    </property>
+    <style>
+      <class name="linked" />
+    </style>
+    <child>
+      <object class="GtkAdjustment" id="value_adj">
+        <property name="step-increment">1</property>
+        <property name="upper">999999</property>
+        <property name="lower">-999999</property>
+        <property name="value">32</property>
+      </object>
+      <object class="GtkSpinButton" id="value_spinner">
+        <property name="adjustment">value_adj</property>
+        <property name="vexpand">false</property>
+        <property name="valign">center</property>
+        <property name="wrap">false</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkDropDown" id="unit_dropdown">
+        <property name="width-request">80</property>
+        <property name="model">
+          <object class="AdwEnumListModel">
+            <property name="enum-type">MeasureUnits</property>
+          </object>
+        </property>
+        <property name="expression">
+          <lookup type="AdwEnumListItem" name="nick" />
+        </property>
+      </object>
+    </child>
+  </template>
+</interface>

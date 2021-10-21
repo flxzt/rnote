@@ -1,9 +1,10 @@
 mod imp {
     use adw::prelude::*;
     use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{Adjustment, Button, ColorButton, DropDown, Entry, ToggleButton};
+    use gtk4::{Adjustment, Button, ColorButton, ToggleButton};
 
     use crate::sheet::format::{self, Format};
+    use crate::ui::unitentry::UnitEntry;
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
@@ -20,15 +21,11 @@ mod imp {
         #[template_child]
         pub format_width_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub format_width_entry: TemplateChild<Entry>,
-        #[template_child]
-        pub format_width_unitdropdown: TemplateChild<DropDown>,
+        pub format_width_unitentry: TemplateChild<UnitEntry>,
         #[template_child]
         pub format_height_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub format_height_entry: TemplateChild<Entry>,
-        #[template_child]
-        pub format_height_unitdropdown: TemplateChild<DropDown>,
+        pub format_height_unitentry: TemplateChild<UnitEntry>,
         #[template_child]
         pub format_dpi_row: TemplateChild<adw::ActionRow>,
         #[template_child]
@@ -43,6 +40,10 @@ mod imp {
         pub background_patterns_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub background_pattern_color_choosebutton: TemplateChild<ColorButton>,
+        #[template_child]
+        pub background_pattern_width_unitentry: TemplateChild<UnitEntry>,
+        #[template_child]
+        pub background_pattern_height_unitentry: TemplateChild<UnitEntry>,
     }
 
     #[glib::object_subclass]
@@ -85,35 +86,88 @@ mod imp {
                 }),
             );
 
-            self.format_width_unitdropdown.connect_selected_item_notify(
-                clone!(@weak obj => move |_format_width_unitdropdown| {
-                    obj.update_temporary_format_from_rows();
+            self.format_width_unitentry.get().value_adj().set_lower(1.0);
+            self.format_width_unitentry
+                .get()
+                .value_spinner()
+                .set_increments(10.0, 1000.0);
+            self.format_width_unitentry
+                .get()
+                .value_spinner()
+                .set_digits(1);
+
+            self.format_height_unitentry
+                .get()
+                .value_adj()
+                .set_lower(1.0);
+            self.format_height_unitentry
+                .get()
+                .value_spinner()
+                .set_increments(10.0, 1000.0);
+            self.format_height_unitentry
+                .get()
+                .value_spinner()
+                .set_digits(1);
+
+            self.background_pattern_width_unitentry
+                .get()
+                .value_adj()
+                .set_lower(1.0);
+            self.background_pattern_width_unitentry
+                .get()
+                .value_spinner()
+                .set_increments(1.0, 10.0);
+            self.background_pattern_width_unitentry
+                .get()
+                .value_spinner()
+                .set_digits(1);
+
+            self.background_pattern_height_unitentry
+                .get()
+                .value_adj()
+                .set_lower(1.0);
+            self.background_pattern_height_unitentry
+                .get()
+                .value_spinner()
+                .set_increments(1.0, 10.0);
+            self.background_pattern_height_unitentry
+                .get()
+                .value_spinner()
+                .set_digits(1);
+
+            self.format_width_unitentry.get().connect_notify_local(
+                Some("value"),
+                clone!(@weak obj as settings_panel => move |_format_width_unitentry, _pspec| {
+                    settings_panel.update_temporary_format_from_rows();
                 }),
             );
 
-            self.format_height_unitdropdown
-                .connect_selected_item_notify(
-                    clone!(@weak obj => move |_format_height_unitdropdown| {
-                        obj.update_temporary_format_from_rows();
-                    }),
-                );
-
-            self.format_width_entry.buffer().connect_text_notify(
-                clone!(@weak obj => move |_buffer| {
-                    obj.update_temporary_format_from_rows();
+            self.format_height_unitentry.get().connect_notify_local(
+                Some("value"),
+                clone!(@weak obj as settings_panel => move |_format_height_unitentry, _pspec| {
+                    settings_panel.update_temporary_format_from_rows();
                 }),
             );
 
-            self.format_height_entry.buffer().connect_text_notify(
-                clone!(@weak obj => move |_buffer| {
-                obj.update_temporary_format_from_rows();
+            self.format_width_unitentry.get().connect_notify_local(
+                Some("unit"),
+                clone!(@weak obj as settings_panel => move |_format_width_unitentry, _pspec| {
+                    settings_panel.update_temporary_format_from_rows();
                 }),
             );
 
-            self.format_dpi_adj
-                .connect_value_changed(clone!(@weak obj => move |_format_dpi_adj| {
-                    obj.update_temporary_format_from_rows();
-                }));
+            self.format_height_unitentry.get().connect_notify_local(
+                Some("unit"),
+                clone!(@weak obj as settings_panel => move |_format_height_unitentry, _pspec| {
+                    settings_panel.update_temporary_format_from_rows();
+                }),
+            );
+
+            self.format_dpi_adj.connect_value_changed(
+                clone!(@weak obj as settings_panel => move |_format_dpi_adj| {
+                    settings_panel.update_temporary_format_from_rows();
+                }),
+            );
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -227,37 +281,14 @@ mod imp {
                         preconfigured_dimensions.1 = tmp;
                     }
 
-                    // Setting the unit dropdowns to Mm
-                    let width_unit_listmodel = priv_
-                        .format_width_unitdropdown
-                        .get()
-                        .model()
-                        .unwrap()
-                        .downcast::<adw::EnumListModel>()
-                        .unwrap();
-                    priv_.format_width_unitdropdown.get().set_selected(
-                        width_unit_listmodel.find_position(format::MeasureUnit::Mm as i32),
-                    );
-
-                    let height_unit_listmodel = priv_
-                        .format_height_unitdropdown
-                        .get()
-                        .model()
-                        .unwrap()
-                        .downcast::<adw::EnumListModel>()
-                        .unwrap();
-                    priv_.format_height_unitdropdown.get().set_selected(
-                        height_unit_listmodel.find_position(format::MeasureUnit::Mm as i32),
-                    );
-
-                    let converted_width_px = format::MeasureUnit::convert_measure_units(
+                    let converted_width_mm = format::MeasureUnit::convert_measurement(
                         preconfigured_dimensions.0,
                         format::MeasureUnit::Mm,
                         priv_.temporary_format.dpi(),
                         format::MeasureUnit::Mm,
                         priv_.temporary_format.dpi(),
                     );
-                    let converted_height_px = format::MeasureUnit::convert_measure_units(
+                    let converted_height_mm = format::MeasureUnit::convert_measurement(
                         preconfigured_dimensions.1,
                         format::MeasureUnit::Mm,
                         priv_.temporary_format.dpi(),
@@ -265,15 +296,25 @@ mod imp {
                         priv_.temporary_format.dpi(),
                     );
 
-                    // Setting the entries, which have callbacks to update the temporary format
+                    // Setting the unit dropdowns to Mm
                     priv_
-                        .format_width_entry
-                        .buffer()
-                        .set_text(&converted_width_px.to_string());
+                        .format_width_unitentry
+                        .get()
+                        .set_unit(format::MeasureUnit::Mm);
                     priv_
-                        .format_height_entry
-                        .buffer()
-                        .set_text(&converted_height_px.to_string());
+                        .format_height_unitentry
+                        .get()
+                        .set_unit(format::MeasureUnit::Mm);
+
+                    // setting the values
+                    priv_
+                        .format_width_unitentry
+                        .get()
+                        .set_value(converted_width_mm);
+                    priv_
+                        .format_height_unitentry
+                        .get()
+                        .set_value(converted_height_mm);
                 }
             }
         }
@@ -282,11 +323,13 @@ mod imp {
 
 use adw::prelude::*;
 use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
-use gtk4::{Adjustment, ColorButton, Entry};
+use gtk4::{Adjustment, ColorButton};
 
 use super::appwindow::RnoteAppWindow;
-use crate::sheet::background::{Background, PatternStyle};
+use crate::sheet::background::PatternStyle;
 use crate::sheet::format::{self, Format};
+use crate::sheet::Sheet;
+use crate::ui::unitentry::UnitEntry;
 use crate::utils;
 
 glib::wrapper! {
@@ -350,15 +393,15 @@ impl SettingsPanel {
         }
     }
 
-    pub fn format_width_entry(&self) -> Entry {
+    pub fn format_width_unitentry(&self) -> UnitEntry {
         imp::SettingsPanel::from_instance(self)
-            .format_width_entry
+            .format_width_unitentry
             .clone()
     }
 
-    pub fn format_height_entry(&self) -> Entry {
+    pub fn format_height_unitentry(&self) -> UnitEntry {
         imp::SettingsPanel::from_instance(self)
-            .format_height_entry
+            .format_height_unitentry
             .clone()
     }
 
@@ -386,19 +429,39 @@ impl SettingsPanel {
             .clone()
     }
 
-    pub fn load_format(&self, format: Format) {
-        self.set_predefined_format_variant(format::PredefinedFormat::Custom);
-        self.format_width_entry()
-            .buffer()
-            .set_text(format.width().to_string().as_str());
-        self.format_height_entry()
-            .buffer()
-            .set_text(format.height().to_string().as_str());
-        self.format_dpi_adj().set_value(f64::from(format.dpi()));
-        self.set_format_orientation(format.orientation());
+    pub fn background_pattern_width_unitentry(&self) -> UnitEntry {
+        imp::SettingsPanel::from_instance(self)
+            .background_pattern_width_unitentry
+            .clone()
     }
 
-    pub fn load_background(&self, background: &Background) {
+    pub fn background_pattern_height_unitentry(&self) -> UnitEntry {
+        imp::SettingsPanel::from_instance(self)
+            .background_pattern_height_unitentry
+            .clone()
+    }
+
+    pub fn load_format(&self, sheet: Sheet) {
+        self.set_predefined_format_variant(format::PredefinedFormat::Custom);
+        self.format_dpi_adj().set_value(sheet.format().dpi());
+
+        self.format_width_unitentry()
+            .set_unit(format::MeasureUnit::Px);
+        self.format_width_unitentry()
+            .set_value(f64::from(sheet.format().width()));
+
+        self.format_height_unitentry()
+            .set_unit(format::MeasureUnit::Px);
+        self.format_height_unitentry()
+            .set_value(f64::from(sheet.format().height()));
+
+        self.set_format_orientation(sheet.format().orientation());
+    }
+
+    pub fn load_background(&self, sheet: Sheet) {
+        // Avoid already borrowed errors
+        let background = sheet.background().borrow().clone();
+
         self.background_color_choosebutton()
             .set_rgba(&background.color().to_gdk());
 
@@ -406,6 +469,21 @@ impl SettingsPanel {
 
         self.background_pattern_color_choosebutton()
             .set_rgba(&background.pattern_color().to_gdk());
+
+        // Background pattern Unit Entries
+        self.background_pattern_width_unitentry()
+            .set_dpi(sheet.format().dpi());
+        self.background_pattern_width_unitentry()
+            .set_unit(format::MeasureUnit::Px);
+        self.background_pattern_width_unitentry()
+            .set_value(background.pattern_size()[0]);
+
+        self.background_pattern_height_unitentry()
+            .set_dpi(sheet.format().dpi());
+        self.background_pattern_height_unitentry()
+            .set_unit(format::MeasureUnit::Px);
+        self.background_pattern_height_unitentry()
+            .set_value(background.pattern_size()[1]);
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -413,25 +491,27 @@ impl SettingsPanel {
         let temporary_format = priv_.temporary_format.clone();
 
         // Format
-        priv_.format_revert_button.get().connect_clicked(clone!(@weak self as settingspanel, @weak appwindow => move |_format_revert_button| {
-            let priv_ = imp::SettingsPanel::from_instance(&settingspanel);
-            priv_.temporary_format.replace_fields(appwindow.canvas().sheet().format());
-            let revert_format = appwindow.canvas().sheet().format();
+        priv_.format_revert_button.get().connect_clicked(
+            clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
+                let priv_ = imp::SettingsPanel::from_instance(&settings_panel);
+                priv_.temporary_format.replace_fields(appwindow.canvas().sheet().format());
+                let revert_format = appwindow.canvas().sheet().format();
 
-            // Setting the unit dropdowns to Px
-            let width_unit_listmodel = priv_.format_width_unitdropdown.get().model().unwrap().downcast::<adw::EnumListModel>().unwrap();
-            priv_.format_width_unitdropdown.get().set_selected(width_unit_listmodel.find_position(format::MeasureUnit::Px as i32));
+                settings_panel.set_predefined_format_variant(format::PredefinedFormat::Custom);
 
-            let height_unit_listmodel = priv_.format_height_unitdropdown.get().model().unwrap().downcast::<adw::EnumListModel>().unwrap();
-            priv_.format_height_unitdropdown.get().set_selected(height_unit_listmodel.find_position(format::MeasureUnit::Px as i32));
+                priv_.format_dpi_adj.set_value(revert_format.dpi());
 
-            // Setting the entries, which have callbacks to update the temporary format
-            priv_.format_width_entry.buffer().set_text(&revert_format.width().to_string());
-            priv_.format_height_entry.buffer().set_text(&revert_format.height().to_string());
-            priv_.format_dpi_adj.set_value(f64::from(revert_format.dpi()));
+                // Setting the unit dropdowns to Px
+                settings_panel.format_width_unitentry().set_unit(format::MeasureUnit::Px);
+                settings_panel.format_height_unitentry().set_unit(format::MeasureUnit::Px);
 
-            settingspanel.set_predefined_format_variant(format::PredefinedFormat::Custom);
-        }));
+                // Setting the entries, which have callbacks to update the temporary format
+                settings_panel.format_width_unitentry()
+                    .set_value(f64::from(revert_format.width()));
+                settings_panel.format_height_unitentry()
+                    .set_value(f64::from(revert_format.height()));
+            }),
+        );
 
         priv_.format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
@@ -448,7 +528,7 @@ impl SettingsPanel {
             appwindow.canvas().regenerate_background(true, true);
         }));
 
-        priv_.background_patterns_row.get().connect_selected_item_notify(clone!(@weak appwindow => move |background_patterns_row| {
+        priv_.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |background_patterns_row| {
             if let Some(selected_item) = background_patterns_row.selected_item() {
                 match selected_item
                     .downcast::<adw::EnumListItem>()
@@ -459,13 +539,19 @@ impl SettingsPanel {
                 {
                     "none" => {
                         appwindow.canvas().sheet().background().borrow_mut().set_pattern(PatternStyle::None);
+                        settings_panel.background_pattern_width_unitentry().set_sensitive(false);
+                        settings_panel.background_pattern_height_unitentry().set_sensitive(false);
 
                     },
                     "lines" => {
                         appwindow.canvas().sheet().background().borrow_mut().set_pattern(PatternStyle::Lines);
+                        settings_panel.background_pattern_width_unitentry().set_sensitive(false);
+                        settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
                     "grid" => {
                         appwindow.canvas().sheet().background().borrow_mut().set_pattern(PatternStyle::Grid);
+                        settings_panel.background_pattern_width_unitentry().set_sensitive(true);
+                        settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
                     _ => {
                         log::error!(
@@ -480,6 +566,38 @@ impl SettingsPanel {
 
         priv_.background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
             appwindow.canvas().sheet().background().borrow_mut().set_pattern_color(utils::Color::from(background_pattern_color_choosebutton.rgba()));
+            appwindow.canvas().regenerate_background(true, true);
+        }));
+
+        priv_.background_pattern_width_unitentry.get().connect_notify_local(Some("value"), clone!(@weak appwindow => move |background_pattern_width_entry, _pspec| {
+            let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
+            pattern_size[0] = f64::from(background_pattern_width_entry.value_in_px());
+            appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
+
+            appwindow.canvas().regenerate_background(true, true);
+        }));
+
+        priv_.background_pattern_width_unitentry.get().connect_notify_local(Some("unit"), clone!(@weak appwindow => move |background_pattern_width_entry, _pspec| {
+            let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
+            pattern_size[0] = f64::from(background_pattern_width_entry.value_in_px());
+            appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
+
+            appwindow.canvas().regenerate_background(true, true);
+        }));
+
+        priv_.background_pattern_height_unitentry.get().connect_notify_local(Some("value"), clone!(@weak appwindow => move |background_pattern_height_entry, _pspec| {
+            let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
+            pattern_size[1] = f64::from(background_pattern_height_entry.value_in_px());
+            appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
+
+            appwindow.canvas().regenerate_background(true, true);
+        }));
+
+        priv_.background_pattern_height_unitentry.get().connect_notify_local(Some("unit"), clone!(@weak appwindow => move |background_pattern_height_entry, _pspec| {
+            let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
+            pattern_size[1] = f64::from(background_pattern_height_entry.value_in_px());
+            appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
+
             appwindow.canvas().regenerate_background(true, true);
         }));
     }
@@ -499,117 +617,26 @@ impl SettingsPanel {
         }
 
         // DPI
-        {
-            priv_.temporary_format.set_dpi(
-                (priv_.format_dpi_adj.value().round() as i32)
-                    .clamp(Format::DPI_MIN, Format::DPI_MAX),
-            );
-        }
+        priv_.temporary_format.set_dpi(
+            priv_
+                .format_dpi_adj
+                .value()
+                .clamp(Format::DPI_MIN, Format::DPI_MAX),
+        );
 
-        {
-            // Width
-            if let Some(selected_item_width) = priv_.format_width_unitdropdown.selected_item() {
-                let measure_unit_width = match selected_item_width
-                    .downcast::<adw::EnumListItem>()
-                    .unwrap()
-                    .nick()
-                    .unwrap()
-                    .as_str()
-                {
-                    "px" => Some(format::MeasureUnit::Px),
-                    "mm" => Some(format::MeasureUnit::Mm),
-                    "cm" => Some(format::MeasureUnit::Cm),
-                    _ => None,
-                };
-
-                if let Some(measure_unit_width) = measure_unit_width {
-                    if let Some(width) = priv_
-                        .format_width_entry
-                        .buffer()
-                        .text()
-                        .as_str()
-                        .parse::<f64>()
-                        .ok()
-                    {
-                        let converted_width_px = format::MeasureUnit::convert_measure_units(
-                            f64::from(width),
-                            measure_unit_width,
-                            priv_.temporary_format.dpi(),
-                            format::MeasureUnit::Px,
-                            priv_.temporary_format.dpi(),
-                        )
-                        .round() as i32;
-                        priv_.temporary_format.set_width(
-                            converted_width_px.clamp(Format::WIDTH_MIN, Format::WIDTH_MAX),
-                        );
-
-                        priv_
-                            .format_width_entry
-                            .style_context()
-                            .remove_class("error");
-                        priv_.format_width_entry.style_context().add_class("plain");
-                    } else {
-                        priv_
-                            .format_width_entry
-                            .style_context()
-                            .remove_class("plain");
-                        priv_.format_width_entry.style_context().add_class("error");
-                    }
-                }
-            }
-        }
-
+        // Width
+        priv_.temporary_format.set_width(
+            priv_
+                .format_width_unitentry
+                .value_in_px()
+                .clamp(Format::WIDTH_MIN, Format::WIDTH_MAX),
+        );
         // Height
-        {
-            if let Some(selected_item_height) = priv_.format_height_unitdropdown.selected_item() {
-                let measure_unit_height = match selected_item_height
-                    .downcast::<adw::EnumListItem>()
-                    .unwrap()
-                    .nick()
-                    .unwrap()
-                    .as_str()
-                {
-                    "px" => Some(format::MeasureUnit::Px),
-                    "mm" => Some(format::MeasureUnit::Mm),
-                    "cm" => Some(format::MeasureUnit::Cm),
-                    _ => None,
-                };
-
-                if let Some(measure_unit_height) = measure_unit_height {
-                    if let Some(height) = priv_
-                        .format_height_entry
-                        .buffer()
-                        .text()
-                        .as_str()
-                        .parse::<f64>()
-                        .ok()
-                    {
-                        let converted_height_px = format::MeasureUnit::convert_measure_units(
-                            f64::from(height),
-                            measure_unit_height,
-                            priv_.temporary_format.dpi(),
-                            format::MeasureUnit::Px,
-                            priv_.temporary_format.dpi(),
-                        )
-                        .round() as i32;
-                        priv_.temporary_format.set_height(
-                            converted_height_px.clamp(Format::HEIGHT_MIN, Format::HEIGHT_MAX),
-                        );
-
-                        priv_
-                            .format_height_entry
-                            .style_context()
-                            .remove_class("error");
-                        priv_.format_height_entry.style_context().add_class("plain");
-                    } else {
-                        priv_
-                            .format_height_entry
-                            .style_context()
-                            .remove_class("plain");
-                        priv_.format_height_entry.style_context().add_class("error");
-                    }
-                }
-            }
-        }
+        priv_.temporary_format.set_height(
+            priv_
+                .format_height_unitentry
+                .value_in_px()
+                .clamp(Format::HEIGHT_MIN, Format::HEIGHT_MAX),
+        );
     }
 }

@@ -162,6 +162,22 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         )
         .unwrap();
 
+    // Background pattern size
+    let pattern_size = appwindow
+        .canvas()
+        .sheet()
+        .background()
+        .borrow()
+        .pattern_size();
+    appwindow.app_settings().set_value(
+        "background-pattern-size",
+        &(
+            pattern_size[0].round() as u32,
+            pattern_size[1].round() as u32,
+        )
+            .to_variant(),
+    )?;
+
     Ok(())
 }
 
@@ -257,14 +273,12 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
 
     // Background color
     let background_color = utils::Color::from(appwindow.app_settings().uint("background-color"));
-    if appwindow.canvas().empty() {
-        appwindow
-            .canvas()
-            .sheet()
-            .background()
-            .borrow_mut()
-            .set_color(background_color);
-    }
+    appwindow
+        .canvas()
+        .sheet()
+        .background()
+        .borrow_mut()
+        .set_color(background_color);
 
     // Background pattern
     match appwindow
@@ -300,14 +314,28 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     // Background pattern color
     let background_pattern_color =
         utils::Color::from(appwindow.app_settings().uint("background-pattern-color"));
-    if appwindow.canvas().empty() {
-        appwindow
-            .canvas()
-            .sheet()
-            .background()
-            .borrow_mut()
-            .set_pattern_color(background_pattern_color);
-    }
+    appwindow
+        .canvas()
+        .sheet()
+        .background()
+        .borrow_mut()
+        .set_pattern_color(background_pattern_color);
+
+    // Background pattern size
+    let background_pattern_size = appwindow
+        .app_settings()
+        .value("background-pattern-size")
+        .get::<(u32, u32)>()
+        .unwrap();
+    appwindow
+        .canvas()
+        .sheet()
+        .background()
+        .borrow_mut()
+        .set_pattern_size(na::vector![
+            f64::from(background_pattern_size.0),
+            f64::from(background_pattern_size.1)
+        ]);
 
     // Ui for right / left handed writers
     appwindow.application().unwrap().change_action_state(
@@ -387,9 +415,8 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     // Loading the sheet properties into the format settings panel
     appwindow
         .settings_panel()
-        .load_format(appwindow.canvas().sheet().format());
-
-    // Avoid already borrowed error
-    let background = appwindow.canvas().sheet().background().borrow().clone();
-    appwindow.settings_panel().load_background(&background);
+        .load_format(appwindow.canvas().sheet());
+    appwindow
+        .settings_panel()
+        .load_background(appwindow.canvas().sheet());
 }

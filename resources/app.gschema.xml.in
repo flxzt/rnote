@@ -101,5 +101,9 @@
       <default>0x99c1f1ff</default>
       <summary>Background pattern color encoded as RGBA value (8-bit)</summary>
     </key>
+    <key name="background-pattern-size" type="(uu)">
+      <default>(32, 32)</default>
+      <summary>Background pattern size</summary>
+    </key>
   </schema>
 </schemalist>

@@ -176,6 +176,14 @@ impl Background {
         self.pattern_color = pattern_color;
     }
 
+    pub fn pattern_size(&self) -> na::Vector2<f64> {
+        self.pattern_size
+    }
+
+    pub fn set_pattern_size(&mut self, pattern_size: na::Vector2<f64>) {
+        self.pattern_size = pattern_size;
+    }
+
     pub fn draw(&self, snapshot: &Snapshot) {
         snapshot.append_node(&self.rendernode);
     }
@@ -326,8 +334,8 @@ impl Background {
             PatternStyle::Grid => {
                 group = group.add(gen_grid_pattern(
                     sheet_bounds,
-                    self.pattern_size[0],
                     self.pattern_size[1],
+                    self.pattern_size[0],
                     self.pattern_color,
                     1.0,
                 ));

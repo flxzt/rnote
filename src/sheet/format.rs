@@ -5,13 +5,24 @@ mod imp {
     use once_cell::sync::Lazy;
     use serde::{Deserialize, Serialize};
 
-    #[derive(Debug, Default, Clone, Serialize, Deserialize)]
+    #[derive(Debug, Clone, Serialize, Deserialize)]
     #[serde(default)]
     pub struct Format {
         width: Cell<i32>,
         height: Cell<i32>,
-        dpi: Cell<i32>,
+        dpi: Cell<f64>,
         orientation: Cell<super::Orientation>,
+    }
+
+    impl Default for Format {
+        fn default() -> Self {
+            Self {
+                width: Cell::new(super::Format::WIDTH_DEFAULT),
+                height: Cell::new(super::Format::HEIGHT_DEFAULT),
+                dpi: Cell::new(super::Format::DPI_DEFAULT),
+                orientation: Cell::new(super::Orientation::Portrait),
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -57,7 +68,7 @@ mod imp {
                         // The property can be read and written to
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_int(
+                    glib::ParamSpec::new_double(
                         // Name
                         "dpi",
                         // Nickname
@@ -123,9 +134,9 @@ mod imp {
                     self.height.replace(height);
                 }
                 "dpi" => {
-                    let dpi: i32 = value
-                        .get::<i32>()
-                        .expect("The value needs to be of type `i32`.");
+                    let dpi: f64 = value
+                        .get::<f64>()
+                        .expect("The value needs to be of type `f64`.");
                     self.dpi.replace(dpi);
                 }
                 "orientation" => {
@@ -140,11 +151,12 @@ mod imp {
     }
 }
 
-use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
+use gtk4::{gdk, glib, glib::clone, graphene, gsk, prelude::*, Snapshot};
 use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 
+use crate::ui::appwindow::RnoteAppWindow;
 use crate::utils;
 
 glib::wrapper! {
@@ -315,9 +327,9 @@ impl Format {
     pub const HEIGHT_MAX: i32 = 30000;
     pub const HEIGHT_DEFAULT: i32 = 1754;
 
-    pub const DPI_MIN: i32 = 1;
-    pub const DPI_MAX: i32 = 5000;
-    pub const DPI_DEFAULT: i32 = 96;
+    pub const DPI_MIN: f64 = 1.0;
+    pub const DPI_MAX: f64 = 5000.0;
+    pub const DPI_DEFAULT: f64 = 96.0;
 
     pub const FORMAT_BORDER_COLOR: gdk::RGBA = gdk::RGBA {
         red: 0.6,
@@ -352,11 +364,11 @@ impl Format {
         self.set_property("height", height.to_value()).unwrap();
     }
 
-    pub fn dpi(&self) -> i32 {
-        self.property("dpi").unwrap().get::<i32>().unwrap()
+    pub fn dpi(&self) -> f64 {
+        self.property("dpi").unwrap().get::<f64>().unwrap()
     }
 
-    pub fn set_dpi(&self, dpi: i32) {
+    pub fn set_dpi(&self, dpi: f64) {
         self.set_property("dpi", dpi.to_value()).unwrap();
     }
 
@@ -427,6 +439,16 @@ impl Format {
 
         snapshot.pop();
     }
+
+    pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.connect_notify_local(Some("dpi"), clone!(@weak appwindow => move |format, _pspec| {
+            appwindow.settings_panel().background_pattern_width_unitentry().set_dpi(format.dpi());
+        }));
+
+        self.connect_notify_local(Some("dpi"), clone!(@weak appwindow => move |format, _pspec| {
+            appwindow.settings_panel().background_pattern_height_unitentry().set_dpi(format.dpi());
+        }));
+    }
 }
 
 #[derive(
@@ -491,23 +513,20 @@ pub enum MeasureUnit {
 
 impl Default for MeasureUnit {
     fn default() -> Self {
-        Self::Mm
+        Self::Px
     }
 }
 
 impl MeasureUnit {
     pub const AMOUNT_MM_IN_INCH: f64 = 25.4;
 
-    pub fn convert_measure_units(
+    pub fn convert_measurement(
         value: f64,
         value_unit: MeasureUnit,
-        value_dpi: i32,
+        value_dpi: f64,
         desired_unit: MeasureUnit,
-        desired_dpi: i32,
+        desired_dpi: f64,
     ) -> f64 {
-        let value_dpi = f64::from(value_dpi);
-        let desired_dpi = f64::from(desired_dpi);
-
         let value_in_px = match value_unit {
             MeasureUnit::Px => value,
             MeasureUnit::Mm => (value / Self::AMOUNT_MM_IN_INCH) * value_dpi,

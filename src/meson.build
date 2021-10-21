@@ -70,6 +70,7 @@ rust_sources = files(
     'ui/selectionmodifier/modifiernode.rs',
     'ui/colorpicker/mod.rs',
     'ui/colorpicker/colorsetter.rs',
+    'ui/unitentry.rs',
 )
 
 sources = [rust_sources, rough_rs_rust_sources, cargo_sources]

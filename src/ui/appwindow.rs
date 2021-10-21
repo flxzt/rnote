@@ -554,6 +554,7 @@ impl RnoteAppWindow {
         priv_.settings_panel.get().init(self);
         priv_.selection_modifier.get().init(self);
         priv_.devel_actions.get().init(self);
+        priv_.canvas.get().sheet().format().init(self);
 
         // Loading in input file
         if let Some(input_file) = self
@@ -761,7 +762,7 @@ impl RnoteAppWindow {
                                 width: (selection_bounds_scaled.maxs[0] -  selection_bounds_scaled.mins[0]).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
                                 height: (selection_bounds_scaled.maxs[1] - selection_bounds_scaled.mins[1]).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
                             })
-                        } else { 
+                        } else {
                             selectionmodifier.set_visible(false);
                             None
                         }
@@ -783,12 +784,8 @@ impl RnoteAppWindow {
                 self.canvas().sheet().open_sheet(file)?;
 
                 // Loading the sheet properties into the format settings panel
-                self.settings_panel()
-                    .load_format(self.canvas().sheet().format());
-
-                // Avoid already borrowed error
-                let background = self.canvas().sheet().background().borrow().clone();
-                self.settings_panel().load_background(&background);
+                self.settings_panel().load_format(self.canvas().sheet());
+                self.settings_panel().load_background(self.canvas().sheet());
 
                 self.canvas().set_unsaved_changes(false);
             }

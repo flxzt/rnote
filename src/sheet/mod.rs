@@ -98,15 +98,29 @@ mod imp {
                 }),
             );
 
-            self.format.connect_notify_local(Some("dpi"), clone!(@weak obj => move |format, _| {
-                let new_width = format::MeasureUnit::convert_measure_units(f64::from(format.width()), format::MeasureUnit::Px, obj.format().dpi(), format::MeasureUnit::Px, format.dpi()).round() as i32;
-                let new_height = format::MeasureUnit::convert_measure_units(f64::from(format.height()), format::MeasureUnit::Px, obj.format().dpi(), format::MeasureUnit::Px, format.dpi()).round() as i32;
+            self.format.connect_notify_local(
+                Some("dpi"),
+                clone!(@weak obj => move |format, _| {
+                    let new_width = format::MeasureUnit::convert_measurement(
+                        f64::from(format.width()),
+                        format::MeasureUnit::Px,
+                        obj.format().dpi(),
+                        format::MeasureUnit::Px,
+                        format.dpi());
 
-                obj.set_width(new_width);
-                obj.set_height(new_height);
+                    let new_height = format::MeasureUnit::convert_measurement(
+                        f64::from(format.height()),
+                        format::MeasureUnit::Px,
+                        obj.format().dpi(),
+                        format::MeasureUnit::Px,
+                        format.dpi());
 
-                obj.resize_to_format();
-            }));
+                    obj.set_width(new_width.round() as i32);
+                    obj.set_height(new_height.round() as i32);
+
+                    obj.resize_to_format();
+                }),
+            );
         }
     }
 }

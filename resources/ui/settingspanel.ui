@@ -85,35 +85,11 @@
                         <property name="title">Width</property>
                         <property name="subtitle">Set the format width</property>
                         <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="orientation">horizontal</property>
-                            <property name="hexpand">false</property>
+                          <object class="UnitEntry" id="format_width_unitentry">
                             <property name="vexpand">false</property>
+                            <property name="hexpand">false</property>
+                            <property name="halign">end</property>
                             <property name="valign">center</property>
-                            <style>
-                              <class name="linked" />
-                            </style>
-                            <child>
-                              <object class="GtkEntry" id="format_width_entry">
-                                <property name="input-purpose">digits</property>
-                                <property name="max-length">6</property>
-                                <property name="max-width-chars">6</property>
-                                <property name="xalign">0.9</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkDropDown" id="format_width_unitdropdown">
-                                <property name="width-request">80</property>
-                                <property name="model">
-                                  <object class="AdwEnumListModel">
-                                    <property name="enum-type">MeasureUnits</property>
-                                  </object>
-                                </property>
-                                <property name="expression">
-                                  <lookup type="AdwEnumListItem" name="nick" />
-                                </property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                       </object>
@@ -123,35 +99,11 @@
                         <property name="title">Height</property>
                         <property name="subtitle">Set the format height</property>
                         <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="orientation">horizontal</property>
+                          <object class="UnitEntry" id="format_height_unitentry">
                             <property name="vexpand">false</property>
                             <property name="hexpand">false</property>
+                            <property name="halign">end</property>
                             <property name="valign">center</property>
-                            <style>
-                              <class name="linked" />
-                            </style>
-                            <child>
-                              <object class="GtkEntry" id="format_height_entry">
-                                <property name="input-purpose">digits</property>
-                                <property name="max-length">6</property>
-                                <property name="max-width-chars">6</property>
-                                <property name="xalign">0.9</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkDropDown" id="format_height_unitdropdown">
-                                <property name="width-request">80</property>
-                                <property name="model">
-                                  <object class="AdwEnumListModel">
-                                    <property name="enum-type">MeasureUnits</property>
-                                  </object>
-                                </property>
-                                <property name="expression">
-                                  <lookup type="AdwEnumListItem" name="nick" />
-                                </property>
-                              </object>
-                            </child>
                           </object>
                         </child>
                       </object>
@@ -239,8 +191,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="background_pattern_color_row">
-                        <property name="title">Pattern color</property>
-                        <property name="subtitle">Set the pattern color</property>
+                        <property name="title">Pattern Color</property>
+                        <property name="subtitle">Set the background pattern color</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
@@ -251,6 +203,34 @@
                             <child>
                               <object class="GtkColorButton" id="background_pattern_color_choosebutton"></object>
                             </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="background_pattern_width_row">
+                        <property name="title">Pattern Width</property>
+                        <property name="subtitle">Set the background pattern width</property>
+                        <child type="suffix">
+                          <object class="UnitEntry" id="background_pattern_width_unitentry">
+                            <property name="vexpand">false</property>
+                            <property name="hexpand">false</property>
+                            <property name="halign">end</property>
+                            <property name="valign">center</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="background_pattern_height_row">
+                        <property name="title">Pattern Height</property>
+                        <property name="subtitle">Set the background pattern height</property>
+                        <child type="suffix">
+                          <object class="UnitEntry" id="background_pattern_height_unitentry">
+                            <property name="vexpand">false</property>
+                            <property name="hexpand">false</property>
+                            <property name="halign">end</property>
+                            <property name="valign">center</property>
                           </object>
                         </child>
                       </object>

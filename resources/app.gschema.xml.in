@@ -89,6 +89,14 @@
       )</default>
       <summary>Shape fill colors encoded as RGBA values (8-bit)</summary>
     </key>
+    <key name="format-size" type="(uu)">
+      <default>(1240, 1754)</default>
+      <summary>format size in (width, height)</summary>
+    </key>
+    <key name="format-dpi" type="d">
+      <default>96</default>
+      <summary>Format DPI</summary>
+    </key>
     <key name="background-color" type="u">
       <default>0xffffffff</default>
       <summary>Background color encoded as RGBA value (8-bit)</summary>

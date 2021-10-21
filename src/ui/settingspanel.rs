@@ -577,7 +577,7 @@ impl SettingsPanel {
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
                     let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
-                    pattern_size[1] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
+                    pattern_size[0] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
                     appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
 
                     appwindow.canvas().regenerate_background(true, true);

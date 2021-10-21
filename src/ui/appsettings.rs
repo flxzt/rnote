@@ -119,6 +119,21 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         )?;
     }
 
+    // Format Size
+    appwindow.app_settings().set_value(
+        "format-size",
+        &(
+            appwindow.canvas().sheet().format().width() as u32,
+            appwindow.canvas().sheet().format().height() as u32,
+        )
+            .to_variant(),
+    )?;
+
+    // Format DPI
+    appwindow
+        .app_settings()
+        .set_double("format-dpi", appwindow.canvas().sheet().format().dpi())?;
+
     // Background Color
     appwindow
         .app_settings()
@@ -126,9 +141,12 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
             "background-color",
             utils::Color::from(
                 appwindow
-                    .settings_panel()
-                    .background_color_choosebutton()
-                    .rgba(),
+                    .canvas()
+                    .sheet()
+                    .background()
+                    .borrow()
+                    .color()
+                    .to_gdk(),
             )
             .to_u32(),
         )
@@ -270,6 +288,30 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .shaper_page()
         .fill_colorpicker()
         .load_all_colors(&brush_colors_vec);
+
+    // Format Size
+    let format_size = appwindow
+        .app_settings()
+        .value("format-size")
+        .get::<(u32, u32)>()
+        .unwrap();
+    appwindow
+        .canvas()
+        .sheet()
+        .format()
+        .set_width(format_size.0 as i32);
+    appwindow
+        .canvas()
+        .sheet()
+        .format()
+        .set_height(format_size.1 as i32);
+
+    // Format DPI
+    appwindow
+        .canvas()
+        .sheet()
+        .format()
+        .set_dpi(appwindow.app_settings().double("format-dpi"));
 
     // Background color
     let background_color = utils::Color::from(appwindow.app_settings().uint("background-color"));

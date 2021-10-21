@@ -1,6 +1,5 @@
 use std::error::Error;
 
-use gtk4::gsk::IsRenderNode;
 use gtk4::{gdk, glib, gsk, Snapshot, Widget};
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
@@ -284,18 +283,15 @@ impl Background {
 
             // use the buffered texture to regenerate nodes
             if let Some(texture_buffer) = &self.texture_buffer {
-                let texture_node = gsk::TextureNode::new(
+                snapshot.append_texture(
                     texture_buffer,
                     &utils::aabb_to_graphene_rect(utils::aabb_scale(aabb, scalefactor)),
-                )
-                .upcast();
-
-                snapshot.append_node(&texture_node);
+                );
             } else {
-                // Or generate a new node when no texture_buffer is found
-/*                 let new_node = renderer.gen_rendernode(aabb, scalefactor, svg_string.as_str())?;
+                // Or use a new node when no texture_buffer was generated
+                let new_node = renderer.gen_rendernode(aabb, scalefactor, svg_string.as_str())?;
 
-                snapshot.append_node(&new_node); */
+                snapshot.append_node(&new_node);
             }
         }
 

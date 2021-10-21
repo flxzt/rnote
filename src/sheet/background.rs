@@ -245,6 +245,7 @@ impl Background {
         let svg_string = compose::add_xml_header(self.gen_svg_data(tile_bounds)?.as_str());
 
         if force_regenerate
+            || self.texture_buffer.is_none()
             || sheet_bounds != self.current_bounds
             || scalefactor != self.current_scalefactor
         {
@@ -290,12 +291,11 @@ impl Background {
                 .upcast();
 
                 snapshot.append_node(&texture_node);
-                continue;
             } else {
                 // Or generate a new node when no texture_buffer is found
-                let new_node = renderer.gen_rendernode(aabb, scalefactor, svg_string.as_str())?;
+/*                 let new_node = renderer.gen_rendernode(aabb, scalefactor, svg_string.as_str())?;
 
-                snapshot.append_node(&new_node);
+                snapshot.append_node(&new_node); */
             }
         }
 

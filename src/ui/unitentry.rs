@@ -115,6 +115,21 @@ mod imp {
             }
         }
 
+        fn signals() -> &'static [glib::subclass::Signal] {
+            static SIGNALS: Lazy<Vec<glib::subclass::Signal>> = Lazy::new(|| {
+                vec![glib::subclass::Signal::builder(
+                    // Signal name
+                    "measurement-changed",
+                    // Types of the values which will be sent to the signal handler
+                    &[],
+                    // Type of the value the signal handler sends back
+                    <()>::static_type().into(),
+                )
+                .build()]
+            });
+            SIGNALS.as_ref()
+        }
+
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
@@ -170,6 +185,7 @@ mod imp {
                     let value_ = value.get::<f64>().expect("The value must be of type 'f64'");
                     if value_ != self.value.get() {
                         self.value.replace(value_);
+                        obj.emit_by_name("measurement-changed", &[]).unwrap();
                     }
                 }
                 "unit" => {
@@ -179,19 +195,14 @@ mod imp {
 
                     if unit != self.unit.get() {
                         self.unit.replace(unit);
+                        obj.emit_by_name("measurement-changed", &[]).unwrap();
                     }
                 }
                 "dpi" => {
                     let dpi = value.get::<f64>().expect("The value must be of type 'f64'");
                     if dpi != self.dpi.get() {
-                        obj.set_value(format::MeasureUnit::convert_measurement(
-                            obj.value(),
-                            obj.unit(),
-                            obj.dpi(),
-                            obj.unit(),
-                            dpi,
-                        ));
                         self.dpi.replace(dpi);
+                        obj.emit_by_name("measurement-changed", &[]).unwrap();
                     }
                 }
                 _ => unimplemented!(),

@@ -135,33 +135,37 @@ mod imp {
                 .value_spinner()
                 .set_digits(1);
 
-            self.format_width_unitentry.get().connect_notify_local(
-                Some("value"),
-                clone!(@weak obj as settings_panel => move |_format_width_unitentry, _pspec| {
-                    settings_panel.update_temporary_format_from_rows();
+            self.temporary_format.connect_notify_local(
+                Some("dpi"),
+                clone!(@weak obj as settings_panel => move |format, _pspec| {
+                    settings_panel.format_width_unitentry().set_dpi(format.dpi());
+                    settings_panel.format_height_unitentry().set_dpi(format.dpi());
                 }),
             );
 
-            self.format_height_unitentry.get().connect_notify_local(
-                Some("value"),
-                clone!(@weak obj as settings_panel => move |_format_height_unitentry, _pspec| {
-                    settings_panel.update_temporary_format_from_rows();
-                }),
-            );
+            self.format_width_unitentry
+                .get()
+                .connect_local(
+                    "measurement-changed",
+                    false,
+                    clone!(@weak obj as settings_panel => @default-return None, move |_args| {
+                            settings_panel.update_temporary_format_from_rows();
+                            None
+                    }),
+                )
+                .unwrap();
 
-            self.format_width_unitentry.get().connect_notify_local(
-                Some("unit"),
-                clone!(@weak obj as settings_panel => move |_format_width_unitentry, _pspec| {
-                    settings_panel.update_temporary_format_from_rows();
-                }),
-            );
-
-            self.format_height_unitentry.get().connect_notify_local(
-                Some("unit"),
-                clone!(@weak obj as settings_panel => move |_format_height_unitentry, _pspec| {
-                    settings_panel.update_temporary_format_from_rows();
-                }),
-            );
+            self.format_height_unitentry
+                .get()
+                .connect_local(
+                    "measurement-changed",
+                    false,
+                    clone!(@weak obj as settings_panel => @default-return None, move |_args| {
+                            settings_panel.update_temporary_format_from_rows();
+                            None
+                    }),
+                )
+                .unwrap();
 
             self.format_dpi_adj.connect_value_changed(
                 clone!(@weak obj as settings_panel => move |_format_dpi_adj| {
@@ -443,6 +447,7 @@ impl SettingsPanel {
 
     pub fn load_format(&self, sheet: Sheet) {
         self.set_predefined_format_variant(format::PredefinedFormat::Custom);
+        self.set_format_orientation(sheet.format().orientation());
         self.format_dpi_adj().set_value(sheet.format().dpi());
 
         self.format_width_unitentry()
@@ -454,8 +459,6 @@ impl SettingsPanel {
             .set_unit(format::MeasureUnit::Px);
         self.format_height_unitentry()
             .set_value(f64::from(sheet.format().height()));
-
-        self.set_format_orientation(sheet.format().orientation());
     }
 
     pub fn load_background(&self, sheet: Sheet) {
@@ -569,37 +572,35 @@ impl SettingsPanel {
             appwindow.canvas().regenerate_background(true, true);
         }));
 
-        priv_.background_pattern_width_unitentry.get().connect_notify_local(Some("value"), clone!(@weak appwindow => move |background_pattern_width_entry, _pspec| {
-            let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
-            pattern_size[0] = f64::from(background_pattern_width_entry.value_in_px());
-            appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
+        priv_.background_pattern_width_unitentry.get().connect_local(
+            "measurement-changed",
+            false,
+            clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
+                    let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
+                    pattern_size[1] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
+                    appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
 
-            appwindow.canvas().regenerate_background(true, true);
-        }));
+                    appwindow.canvas().regenerate_background(true, true);
 
-        priv_.background_pattern_width_unitentry.get().connect_notify_local(Some("unit"), clone!(@weak appwindow => move |background_pattern_width_entry, _pspec| {
-            let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
-            pattern_size[0] = f64::from(background_pattern_width_entry.value_in_px());
-            appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
+                    None
+            }),
+        )
+        .unwrap();
 
-            appwindow.canvas().regenerate_background(true, true);
-        }));
+        priv_.background_pattern_height_unitentry.get().connect_local(
+            "measurement-changed",
+            false,
+            clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
+                    let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
+                    pattern_size[1] = f64::from(settings_panel.background_pattern_height_unitentry().value_in_px());
+                    appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
 
-        priv_.background_pattern_height_unitentry.get().connect_notify_local(Some("value"), clone!(@weak appwindow => move |background_pattern_height_entry, _pspec| {
-            let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
-            pattern_size[1] = f64::from(background_pattern_height_entry.value_in_px());
-            appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
+                    appwindow.canvas().regenerate_background(true, true);
 
-            appwindow.canvas().regenerate_background(true, true);
-        }));
-
-        priv_.background_pattern_height_unitentry.get().connect_notify_local(Some("unit"), clone!(@weak appwindow => move |background_pattern_height_entry, _pspec| {
-            let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
-            pattern_size[1] = f64::from(background_pattern_height_entry.value_in_px());
-            appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
-
-            appwindow.canvas().regenerate_background(true, true);
-        }));
+                    None
+            }),
+        )
+        .unwrap();
     }
 
     pub fn update_temporary_format_from_rows(&self) {
@@ -616,7 +617,7 @@ impl SettingsPanel {
                 .set_orientation(format::Orientation::Landscape);
         }
 
-        // DPI
+        // DPI (before width, height)
         priv_.temporary_format.set_dpi(
             priv_
                 .format_dpi_adj

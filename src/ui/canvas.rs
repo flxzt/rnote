@@ -17,17 +17,17 @@ mod imp {
 
     #[derive(Debug)]
     pub struct Canvas {
-        pub pens: Rc<RefCell<Pens>>,         // accessed via pens()
-        pub current_pen: Rc<Cell<PenStyle>>, // accessed via current_pen()
-        pub sheet: Sheet,                    // is a GObject
-        pub scalefactor: Cell<f64>,          // is a property
-        pub temporary_zoom: Cell<f64>,       // is a property
-        pub visual_debug: Cell<bool>,        // is a property
-        pub touch_drawing: Cell<bool>,       // is a property
-        pub unsaved_changes: Cell<bool>,     // is a property
-        pub empty: Cell<bool>,               // is a property
+        pub pens: Rc<RefCell<Pens>>,
+        pub current_pen: Rc<Cell<PenStyle>>,
+        pub sheet: Sheet,
+        pub scalefactor: Cell<f64>,
+        pub temporary_zoom: Cell<f64>,
+        pub visual_debug: Cell<bool>,
+        pub touch_drawing: Cell<bool>,
+        pub unsaved_changes: Cell<bool>,
+        pub empty: Cell<bool>,
         pub format_borders: Cell<bool>,
-        pub cursor: gdk::Cursor, // is a property
+        pub cursor: gdk::Cursor,
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
@@ -46,7 +46,7 @@ mod imp {
                 .build();
 
             // mouse gesture handlers have a guard to not handle emulated pointer events ( e.g. coming from touch input )
-            // matching different input methods with gdk4::InputSource or gdk4::DeviceToolType did NOT WORK unfortunately, IDK why
+            // matching different input methods with gdk4::InputSource or gdk4::DeviceToolType did NOT WORK unfortunately, dont know why
             let mouse_drawing_gesture = GestureDrag::builder()
                 .name("mouse_drawing_gesture")
                 .button(gdk::BUTTON_PRIMARY)
@@ -111,8 +111,6 @@ mod imp {
             obj.add_controller(&self.mouse_drawing_gesture);
             obj.add_controller(&self.touch_drawing_gesture);
 
-            obj.regenerate_content(true, true);
-
             self.preview.set_widget(Some(obj));
         }
 
@@ -124,6 +122,7 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                // The temporary zoom factor (multiplied on top of scalefactor!) which is used when doing zoom gestures ( to avoid strokes redrawing )
                 vec![
                     glib::ParamSpec::new_double(
                         "temporary-zoom",
@@ -134,6 +133,7 @@ mod imp {
                         1.0,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // The scalefactor of the canvas in relation to the sheet
                     glib::ParamSpec::new_double(
                         "scalefactor",
                         "scalefactor",
@@ -143,6 +143,7 @@ mod imp {
                         super::Canvas::SCALE_DEFAULT,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Visual debugging, which shows bounding boxes, hitboxes, ... (enable in developer action menu)
                     glib::ParamSpec::new_boolean(
                         "visual-debug",
                         "visual-debug",
@@ -150,6 +151,7 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Wether to enable touch drawing
                     glib::ParamSpec::new_boolean(
                         "touch-drawing",
                         "touch-drawing",
@@ -157,6 +159,7 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Flag for any unsaved changes on the canvas. Propagates to the application 'unsaved-changes' property
                     glib::ParamSpec::new_boolean(
                         "unsaved-changes",
                         "unsaved-changes",
@@ -164,6 +167,7 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Wether the canvas is empty
                     glib::ParamSpec::new_boolean(
                         "empty",
                         "empty",
@@ -243,6 +247,9 @@ mod imp {
                 "empty" => {
                     let empty: bool = value.get().expect("The value needs to be of type `bool`.");
                     self.empty.replace(empty);
+                    if empty {
+                        obj.set_unsaved_changes(false);
+                    }
                 }
                 _ => unimplemented!(),
             }
@@ -353,6 +360,7 @@ mod imp {
             );
         }
 
+        // Draw bounds, positions, .. for visual debugging purposes
         fn draw_debug(&self, snapshot: &Snapshot) {
             let scalefactor = self.scalefactor.get();
 
@@ -611,6 +619,7 @@ impl Canvas {
         imp::Canvas::from_instance(self).renderer.clone()
     }
 
+    /// The bounds of the sheet scaled to the current canvas scalefactor
     pub fn sheet_bounds_scaled(&self) -> p2d::bounding_volume::AABB {
         p2d::bounding_volume::AABB::new(
             na::point![
@@ -624,6 +633,7 @@ impl Canvas {
         )
     }
 
+    // The bounds of the canvas
     pub fn bounds(&self) -> p2d::bounding_volume::AABB {
         p2d::bounding_volume::AABB::new(
             na::point![f64::from(0.0), f64::from(0.0)],
@@ -898,6 +908,7 @@ impl Canvas {
         self.regenerate_background(force_regenerate, redraw);
     }
 
+    /// Captures the current content of the canvas as a gdk::Texture
     pub fn capture_current_content(&self, size: na::Vector2<f64>) -> Option<gdk::Texture> {
         let snapshot = Snapshot::new();
         self.preview().snapshot(
@@ -917,6 +928,7 @@ impl Canvas {
         }
     }
 
+    /// Process the beginning of a stroke drawing
     fn processing_draw_begin(
         &self,
         _appwindow: &RnoteAppWindow,
@@ -984,6 +996,7 @@ impl Canvas {
         self.queue_draw();
     }
 
+    /// Process the motion of a strokes drawing
     fn processing_draw_motion(
         &self,
         appwindow: &RnoteAppWindow,
@@ -1047,6 +1060,7 @@ impl Canvas {
         self.queue_draw();
     }
 
+    /// Process the end of a strokes drawing
     fn processing_draw_end(
         &self,
         appwindow: &RnoteAppWindow,
@@ -1099,7 +1113,7 @@ impl Canvas {
         self.queue_draw();
     }
 
-    // Map Stylus input to the position on a sheet
+    /// Map Stylus input to the position on a sheet
     fn map_inputdata(&self, data_entries: &mut VecDeque<InputData>, offset: na::Vector2<f64>) {
         *data_entries = data_entries
             .iter()
@@ -1112,7 +1126,7 @@ impl Canvas {
             .collect();
     }
 
-    // Filter inputdata to sheet bounds
+    /// Filter inputdata to sheet bounds
     fn filter_mapped_inputdata(&self, data_entries: &mut VecDeque<InputData>) {
         let priv_ = imp::Canvas::from_instance(self);
 
@@ -1141,7 +1155,7 @@ impl Canvas {
         data_entries
     }
 
-    // Retreives available input axes, defaults if not available. X and Y is already available from closure, and should not retreived from .axis() (because of gtk-rs weirdness)
+    /// Retreives available input axes, defaults if not available. X and Y is already available from closure, and should not retreived from .axis() (because of gtk-rs weirdness)
     fn retreive_stylus_inputdata(
         gesture_stylus: &GestureStylus,
         with_backlog: bool,
@@ -1178,6 +1192,7 @@ impl Canvas {
     }
 }
 
+/// functions and consts for visual debugging
 mod debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
 

@@ -148,10 +148,6 @@ impl CanvasMenu {
         let priv_ = imp::CanvasMenu::from_instance(self);
         let zoomreset_button = priv_.zoom_reset_button.get();
 
-        priv_
-            .righthanded_toggle
-            .set_group(Some(&priv_.lefthanded_toggle.get()));
-
         priv_.righthanded_toggle.connect_toggled(clone!(@weak appwindow => move |righthanded_toggle| {
             appwindow.application().unwrap().change_action_state("righthanded", &righthanded_toggle.is_active().to_variant());
         }));

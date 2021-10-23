@@ -7,6 +7,15 @@ pub mod render;
 pub mod shapestroke;
 pub mod vectorimage;
 
+/*
+Conventions:
+Coordinates in 2d space: origin is thought of in top-left corner of the screen.
+Vectors / Matrices in 2D space:
+    Vector2: first element is the x-axis, second element is the y-axis
+    Matrix2: representing bounds / a rectangle, the coordinate (0,0) is the x-axis of the upper-left corner, (0,1) is the y-axis of the upper-left corner,
+        (1,0) is the x-axis of the bottom-right corner, (1,1) is the y-axis of the bottom-right corner.
+*/
+
 use crate::{pens::PenStyle, pens::Pens};
 
 use self::{

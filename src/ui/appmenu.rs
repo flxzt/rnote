@@ -121,11 +121,6 @@ impl AppMenu {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.light_theme_toggle()
-            .set_group(Some(&self.default_theme_toggle()));
-
-        self.dark_theme_toggle()
-            .set_group(Some(&self.default_theme_toggle()));
 
         self.default_theme_toggle().connect_toggled(
             clone!(@weak appwindow => move |default_theme_toggle| {

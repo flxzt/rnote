@@ -106,8 +106,6 @@
                 <child>
                   <object class="GtkShortcutsShortcut">
                     <property name="title" context="shortcut window">Duplicate current selection</property>
-                    <property name="action-name">app.duplicate-selection</property>
-                    <property name="shortcut-type">accelerator</property>
                     <property name="accelerator">&lt;ctrl&gt;v</property>
                   </object>
                 </child>

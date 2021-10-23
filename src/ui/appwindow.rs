@@ -116,19 +116,9 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-            let flap = self.flap.get();
-            let flap_box = self.flap_box.get();
-            let flap_resizer = self.flap_resizer.get();
-            let flap_resizer_box = self.flap_resizer_box.get();
-            let workspace_headerbar = self.flap_header.get();
-            let flapreveal_toggle = self.flapreveal_toggle.get();
-
             let _windowsettings = obj.settings();
-            //windowsettings.set_gtk_application_prefer_dark_theme(true);
 
-            flap.set_locked(true);
-            flap.set_fold_policy(adw::FlapFoldPolicy::Auto);
-
+            // Load the application css
             let css = CssProvider::new();
             css.load_from_resource((String::from(config::APP_IDPATH) + "ui/custom.css").as_str());
 
@@ -138,6 +128,60 @@ mod imp {
                 &css,
                 gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
             );
+
+            self.setup_flap(obj);
+
+            // Load latest window state
+            obj.load_window_size();
+        }
+    }
+
+    impl WidgetImpl for RnoteAppWindow {}
+
+    impl WindowImpl for RnoteAppWindow {
+        // Save window state right before the window will be closed
+        fn close_request(&self, obj: &Self::Type) -> Inhibit {
+            if let Err(err) = obj.save_window_size() {
+                log::error!("Failed to save window state, {}", &err);
+            }
+
+            if let Err(err) = appsettings::save_state_to_settings(&obj) {
+                log::error!("Failed to save app state, {}", &err);
+            }
+
+            // Save current sheet
+            if obj
+                .application()
+                .unwrap()
+                .downcast::<RnoteApp>()
+                .unwrap()
+                .unsaved_changes()
+            {
+                dialogs::dialog_quit_save(obj);
+            } else {
+                obj.destroy();
+            }
+            // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
+            Inhibit(true)
+        }
+    }
+
+    impl ApplicationWindowImpl for RnoteAppWindow {}
+    impl AdwWindowImpl for RnoteAppWindow {}
+    impl AdwApplicationWindowImpl for RnoteAppWindow {}
+
+    impl RnoteAppWindow {
+        // Setting up the sidebar flap
+        fn setup_flap(&self, obj: &super::RnoteAppWindow) {
+            let flap = self.flap.get();
+            let flap_box = self.flap_box.get();
+            let flap_resizer = self.flap_resizer.get();
+            let flap_resizer_box = self.flap_resizer_box.get();
+            let workspace_headerbar = self.flap_header.get();
+            let flapreveal_toggle = self.flapreveal_toggle.get();
+
+            flap.set_locked(true);
+            flap.set_fold_policy(adw::FlapFoldPolicy::Auto);
 
             let expanded_revealed = Rc::new(Cell::new(flap.reveals_flap()));
 
@@ -196,7 +240,7 @@ mod imp {
                 .build();
             self.flap_resizer.add_controller(&resizer_drag_gesture);
 
-            // Dirty hack to stop resizing when it is switching from non-folded to folded or vice versa
+            // Dirty hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
             let prev_folded = Rc::new(Cell::new(flap.is_folded()));
 
             resizer_drag_gesture.connect_drag_begin(clone!(@strong prev_folded, @weak flap, @weak flap_box => move |_resizer_drag_gesture, _x , _y| {
@@ -246,45 +290,8 @@ mod imp {
                     }
                 }),
             );
-
-            // Load latest window state
-            obj.load_window_size();
         }
     }
-
-    impl WidgetImpl for RnoteAppWindow {}
-
-    impl WindowImpl for RnoteAppWindow {
-        // Save window state right before the window will be closed
-        fn close_request(&self, obj: &Self::Type) -> Inhibit {
-            if let Err(err) = obj.save_window_size() {
-                log::error!("Failed to save window state, {}", &err);
-            }
-
-            if let Err(err) = appsettings::save_state_to_settings(&obj) {
-                log::error!("Failed to save app state, {}", &err);
-            }
-
-            // Save current sheet
-            if obj
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .unsaved_changes()
-            {
-                dialogs::dialog_quit_save(obj);
-            } else {
-                obj.destroy();
-            }
-            // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
-            Inhibit(true)
-        }
-    }
-
-    impl ApplicationWindowImpl for RnoteAppWindow {}
-    impl AdwWindowImpl for RnoteAppWindow {}
-    impl AdwApplicationWindowImpl for RnoteAppWindow {}
 }
 
 use std::{
@@ -523,6 +530,7 @@ impl RnoteAppWindow {
         }
     }
 
+    /// Get the viewport of the canvas inside the canvas_scroller
     pub fn canvas_scroller_viewport(&self) -> Option<p2d::bounding_volume::AABB> {
         let pos = if let (Some(hadjustment), Some(vadjustment)) = (
             self.canvas_scroller().hadjustment(),
@@ -778,6 +786,7 @@ impl RnoteAppWindow {
         appsettings::load_settings(self);
     }
 
+    /// Loads in a file of any supported type into the current sheet.
     pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn Error>> {
         match utils::FileType::lookup_file_type(file) {
             utils::FileType::Rnote => {

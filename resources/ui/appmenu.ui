@@ -48,11 +48,11 @@
           <section>
             <item>
               <attribute name="label">Keyboard Shortcuts</attribute>
-              <attribute name="action">app.keyboard-shortcuts</attribute>
+              <attribute name="action">win.keyboard-shortcuts</attribute>
             </item>
             <item>
               <attribute name="label">About Rnote</attribute>
-              <attribute name="action">app.about</attribute>
+              <attribute name="action">win.about</attribute>
             </item>
           </section>
         </menu>
@@ -86,6 +86,7 @@
                 <property name="width-request">50</property>
                 <property name="halign">center</property>
                 <property name="valign">start</property>
+                <property name="group">default_theme_toggle</property>
                 <style>
                   <class name="light_theme_toggle" />
                   <class name="circular" />
@@ -99,6 +100,7 @@
                 <property name="width-request">50</property>
                 <property name="halign">center</property>
                 <property name="valign">start</property>
+                <property name="group">default_theme_toggle</property>
                 <style>
                   <class name="dark_theme_toggle" />
                   <class name="circular" />

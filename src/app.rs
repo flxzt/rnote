@@ -46,6 +46,7 @@ mod imp {
     impl ObjectImpl for RnoteApp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                // Any unsaved changes of the current application state
                 vec![glib::ParamSpec::new_boolean(
                     "unsaved-changes",
                     "unsaved-changes",
@@ -84,7 +85,7 @@ mod imp {
 
     impl ApplicationImpl for RnoteApp {
         fn activate(&self, application: &Self::Type) {
-            // Custom buildable Widgets must be initalized
+            // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
             DevelActions::static_type();
             Sheet::static_type();
@@ -110,6 +111,7 @@ mod imp {
             PatternStyle::static_type();
             UnitEntry::static_type();
 
+            // Load the resource
             application.set_resource_base_path(Some(config::APP_IDPATH));
             let res = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
                 .expect("Could not load gresource file");
@@ -123,7 +125,7 @@ mod imp {
                 .expect("failed to get icon theme for appwindow");
             app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
-            application.finish_up(&appwindow);
+            application.prepare_show(&appwindow);
             appwindow.show();
         }
 
@@ -205,7 +207,8 @@ impl RnoteApp {
         }
     }
 
-    pub fn finish_up(&self, appwindow: &RnoteAppWindow) {
+    // Anything that needs to be done right before showing the appwindow
+    pub fn prepare_show(&self, appwindow: &RnoteAppWindow) {
         appwindow.canvas().regenerate_content(true, true);
     }
 }

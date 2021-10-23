@@ -49,7 +49,6 @@ mod imp {
     impl WidgetImpl for SelectorPage {}
 }
 
-use crate::app::RnoteApp;
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, Orientable, Widget};
 
@@ -81,11 +80,11 @@ impl SelectorPage {
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.delete_button().connect_clicked(clone!(@weak appwindow => move |_| {
-            appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().activate_action("delete-selection", None);
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "delete-selection", None);
         }));
 
         self.duplicate_button().connect_clicked(clone!(@weak appwindow => move |_| {
-            appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().activate_action("duplicate-selection", None);
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "duplicate-selection", None);
         }));
     }
 }

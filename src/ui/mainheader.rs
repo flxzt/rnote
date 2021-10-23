@@ -213,31 +213,31 @@ impl MainHeader {
 
         priv_.marker_toggle.get().connect_active_notify(clone!(@weak appwindow => move |marker_toggle| {
             if marker_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("current-pen", Some(&"marker".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"marker".to_variant()));
             }
         }));
 
         priv_.brush_toggle.get().connect_active_notify(clone!(@weak appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("current-pen", Some(&"brush".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush".to_variant()));
             }
         }));
 
         priv_.shaper_toggle.get().connect_active_notify(clone!(@weak appwindow => move |shaper_toggle| {
             if shaper_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("current-pen", Some(&"shaper".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper".to_variant()));
             }
         }));
 
         priv_.eraser_toggle.get().connect_active_notify(clone!(@weak appwindow => move |eraser_toggle| {
             if eraser_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("current-pen", Some(&"eraser".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser".to_variant()));
             }
         }));
 
         priv_.selector_toggle.get().connect_active_notify(clone!(@weak appwindow => move |selector_toggle| {
             if selector_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("current-pen", Some(&"selector".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector".to_variant()));
             }
         }));
 
@@ -245,14 +245,14 @@ impl MainHeader {
             .undo_button
             .get()
             .connect_clicked(clone!(@weak appwindow => move |_| {
-                appwindow.application().unwrap().activate_action("undo-stroke", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "undo-stroke", None);
             }));
 
         priv_
             .redo_button
             .get()
             .connect_clicked(clone!(@weak appwindow => move |_| {
-                appwindow.application().unwrap().activate_action("redo-stroke", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "redo-stroke", None);
             }));
     }
 }

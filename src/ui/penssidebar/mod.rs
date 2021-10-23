@@ -169,19 +169,19 @@ impl PensSideBar {
                 if let Some(child_name) = sidebar_stack.visible_child_name() {
                     match child_name.to_value().get::<String>().unwrap().as_str() {
                         "marker_page" => {
-                            appwindow.application().unwrap().activate_action("current-pen", Some(&"marker".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"marker".to_variant()));
                         },
                         "brush_page" => {
-                            appwindow.application().unwrap().activate_action("current-pen", Some(&"brush".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush".to_variant()));
                         },
                         "shaper_page" => {
-                            appwindow.application().unwrap().activate_action("current-pen", Some(&"shaper".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper".to_variant()));
                         },
                         "eraser_page" => {
-                            appwindow.application().unwrap().activate_action("current-pen", Some(&"eraser".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser".to_variant()));
                         }
                         "selector_page" => {
-                            appwindow.application().unwrap().activate_action("current-pen", Some(&"selector".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector".to_variant()));
                         }
                         _ => {}
                     };

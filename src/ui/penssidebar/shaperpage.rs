@@ -311,14 +311,14 @@ impl ShaperPage {
         // Smooth / Rough shape toggle
         self.drawstyle_smooth_toggle().connect_active_notify(clone!(@weak appwindow => move |drawstyle_smooth_toggle| {
             if drawstyle_smooth_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("shaper-drawstyle", Some(&"smooth".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-drawstyle", Some(&"smooth".to_variant()));
                 appwindow.penssidebar().shaper_page().roughconfig_revealer().set_reveal_child(false);
             }
         }));
 
         self.drawstyle_rough_toggle().connect_active_notify(clone!(@weak appwindow => move |drawstyle_rough_toggle| {
             if drawstyle_rough_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("shaper-drawstyle", Some(&"rough".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-drawstyle", Some(&"rough".to_variant()));
                 appwindow.penssidebar().shaper_page().roughconfig_revealer().set_reveal_child(true);
             }
         }));
@@ -326,7 +326,7 @@ impl ShaperPage {
         // Shape toggles
         self.line_toggle().connect_active_notify(clone!(@weak self as shaperpage, @weak appwindow => move |line_toggle| {
             if line_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("current-shape", Some(&"line".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-shape", Some(&"line".to_variant()));
             } else {
                 shaperpage.fill_revealer().set_reveal_child(true);
             }
@@ -334,13 +334,13 @@ impl ShaperPage {
 
         self.rectangle_toggle().connect_active_notify(clone!(@weak appwindow => move |rectangle_toggle| {
             if rectangle_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("current-shape", Some(&"rectangle".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-shape", Some(&"rectangle".to_variant()));
             }
         }));
 
         self.ellipse_toggle().connect_active_notify(clone!(@weak appwindow => move |ellipse_toggle| {
             if ellipse_toggle.is_active() {
-                appwindow.application().unwrap().activate_action("current-shape", Some(&"ellipse".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-shape", Some(&"ellipse".to_variant()));
             }
         }));
     }

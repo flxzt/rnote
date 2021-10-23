@@ -154,25 +154,25 @@ impl CanvasMenu {
 
         priv_.zoom_fit_width_button.connect_clicked(
             clone!(@weak appwindow => move |_zoom_fit_width_button| {
-                appwindow.application().unwrap().activate_action("zoom-fit-width", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-fit-width", None);
             }),
         );
 
         priv_.zoom_reset_button.connect_clicked(
             clone!(@weak appwindow => move |_zoomreset_button| {
-                appwindow.application().unwrap().activate_action("zoom-reset", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-reset", None);
             }),
         );
 
         priv_.zoom_in_button.connect_clicked(
             clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_in_button| {
-                appwindow.application().unwrap().activate_action("zoom-in", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-in", None);
             }),
         );
 
         priv_.zoom_out_button.connect_clicked(
             clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_out_button| {
-                appwindow.application().unwrap().activate_action("zoom-out", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-out", None);
             }),
         );
     }

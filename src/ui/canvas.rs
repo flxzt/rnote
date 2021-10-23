@@ -736,8 +736,6 @@ impl Canvas {
                     gdk::DeviceToolType::Pen => { },
                     gdk::DeviceToolType::Eraser => {
                     appwindow
-                        .application()
-                        .unwrap()
                         .change_action_state("tmperaser", &true.to_variant());
                     }
                     _ => { canvas.current_pen().set(PenStyle::Unkown) },
@@ -1070,8 +1068,6 @@ impl Canvas {
         self.set_cursor(Some(&self.cursor()));
 
         appwindow
-            .application()
-            .unwrap()
             .change_action_state("tmperaser", &false.to_variant());
 
         if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {

@@ -136,7 +136,7 @@ impl WorkspaceBrowser {
 
         priv_.open_workspace_button.get().connect_clicked(
             clone!(@weak appwindow => move |_open_workspace_button| {
-                appwindow.application().unwrap().activate_action("open-workspace", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "open-workspace", None);
             }),
         );
 

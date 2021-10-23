@@ -8,8 +8,9 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType, PositionType,
-    PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
+    gdk, gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType,
+    PositionType, PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator,
+    Snapshot, Unit,
 };
 
 /* Actions follow this principle:
@@ -27,6 +28,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     let action_quit = gio::SimpleAction::new("quit", None);
     app.add_action(&action_quit);
+    let action_close_active = gio::SimpleAction::new("close-active", None);
+    appwindow.add_action(&action_close_active);
     let action_about = gio::SimpleAction::new("about", None);
     appwindow.add_action(&action_about);
     let action_keyboard_shortcuts_dialog = gio::SimpleAction::new("keyboard-shortcuts", None);
@@ -119,10 +122,14 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
     app.add_action(&action_righthanded);
 
-
     // Quit App
     action_quit.connect_activate(clone!(@weak appwindow => move |_, _| {
         appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().quit();
+    }));
+
+    // Close active window
+    action_close_active.connect_activate(clone!(@weak appwindow => move |_, _| {
+        appwindow.close();
     }));
 
     // About Dialog
@@ -597,6 +604,7 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
         .unwrap();
 
     app.set_accels_for_action("app.quit", &["<Ctrl>q"]);
+    app.set_accels_for_action("win.close-active", &["<Ctrl>w"]);
     app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
     app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
     app.set_accels_for_action("win.open-appmenu", &["F10"]);

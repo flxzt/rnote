@@ -1,4 +1,5 @@
 mod imp {
+    use crate::config;
     use crate::ui::{appmenu::AppMenu, canvasmenu::CanvasMenu};
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Image, Revealer,
@@ -62,6 +63,12 @@ mod imp {
     impl ObjectImpl for MainHeader {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+
+        self
+            .header_icon_image
+            .get()
+            .set_icon_name(Some(config::APP_ID));
+
         }
 
         fn dispose(&self, obj: &Self::Type) {

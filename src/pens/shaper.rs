@@ -33,96 +33,12 @@ impl DrawStyle {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default)]
-pub struct LineConfig {
-    width: f64,
-    pub color: Option<utils::Color>,
-    pub fill: Option<utils::Color>,
-}
-
-impl Default for LineConfig {
-    fn default() -> Self {
-        Self {
-            width: Shaper::WIDTH_DEFAULT,
-            color: Shaper::COLOR_DEFAULT,
-            fill: Shaper::FILL_DEFAULT,
-        }
-    }
-}
-
-impl LineConfig {
-    pub fn width(&self) -> f64 {
-        self.width
-    }
-
-    pub fn set_width(&mut self, width: f64) {
-        self.width = width.clamp(Shaper::WIDTH_MIN, Shaper::WIDTH_MAX);
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(default)]
-pub struct RectangleConfig {
-    width: f64,
-    pub color: Option<utils::Color>,
-    pub fill: Option<utils::Color>,
-}
-
-impl Default for RectangleConfig {
-    fn default() -> Self {
-        Self {
-            width: Shaper::WIDTH_DEFAULT,
-            color: Shaper::COLOR_DEFAULT,
-            fill: Shaper::FILL_DEFAULT,
-        }
-    }
-}
-
-impl RectangleConfig {
-    pub fn width(&self) -> f64 {
-        self.width
-    }
-
-    pub fn set_width(&mut self, width: f64) {
-        self.width = width.clamp(Shaper::WIDTH_MIN, Shaper::WIDTH_MAX);
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(default)]
-pub struct EllipseConfig {
-    width: f64,
-    pub color: Option<utils::Color>,
-    pub fill: Option<utils::Color>,
-}
-
-impl Default for EllipseConfig {
-    fn default() -> Self {
-        Self {
-            width: Shaper::WIDTH_DEFAULT,
-            color: Shaper::COLOR_DEFAULT,
-            fill: Shaper::FILL_DEFAULT,
-        }
-    }
-}
-
-impl EllipseConfig {
-    pub fn width(&self) -> f64 {
-        self.width
-    }
-
-    pub fn set_width(&mut self, width: f64) {
-        self.width = width.clamp(Shaper::WIDTH_MIN, Shaper::WIDTH_MAX);
-    }
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(default)]
 pub struct Shaper {
     pub current_shape: CurrentShape,
     pub drawstyle: DrawStyle,
-    pub line_config: LineConfig,
-    pub rectangle_config: RectangleConfig,
-    pub ellipse_config: EllipseConfig,
+    width: f64,
+    color: Option<utils::Color>,
+    fill: Option<utils::Color>,
     pub roughconfig: rough_rs::options::Options,
 }
 
@@ -131,9 +47,9 @@ impl Default for Shaper {
         Self {
             current_shape: CurrentShape::default(),
             drawstyle: DrawStyle::default(),
-            line_config: LineConfig::default(),
-            rectangle_config: RectangleConfig::default(),
-            ellipse_config: EllipseConfig::default(),
+            width: Shaper::WIDTH_DEFAULT,
+            color: Shaper::COLOR_DEFAULT,
+            fill: Shaper::FILL_DEFAULT,
             roughconfig: rough_rs::options::Options::default(),
         }
     }
@@ -151,6 +67,30 @@ impl Shaper {
         a: 1.0,
     });
     pub const FILL_DEFAULT: Option<utils::Color> = None;
+
+    pub fn width(&self) -> f64 {
+        self.width
+    }
+
+    pub fn set_width(&mut self, width: f64) {
+        self.width = width.clamp(Shaper::WIDTH_MIN, Shaper::WIDTH_MAX);
+    }
+
+    pub fn color(&self) -> Option<utils::Color> {
+        self.color
+    }
+
+    pub fn set_color(&mut self, color: Option<utils::Color>) {
+        self.color = color;
+    }
+
+    pub fn fill(&self) -> Option<utils::Color> {
+        self.fill
+    }
+
+    pub fn set_fill(&mut self, fill: Option<utils::Color>) {
+        self.fill = fill;
+    }
 
     pub fn apply_roughconfig_onto(&self, options: &mut rough_rs::options::Options) {
         options.roughness = self.roughconfig.roughness();

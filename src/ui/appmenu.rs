@@ -121,7 +121,6 @@ impl AppMenu {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-
         self.default_theme_toggle().connect_toggled(
             clone!(@weak appwindow => move |default_theme_toggle| {
                 if default_theme_toggle.is_active() {

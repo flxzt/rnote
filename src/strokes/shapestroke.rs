@@ -120,16 +120,16 @@ impl StrokeBehaviour for ShapeStroke {
             } => match self.shaper.drawstyle {
                 DrawStyle::Smooth => {
                     *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                        + na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width());
+                        + na::Vector2::<f64>::from_element(self.shaper.width());
                     *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                        - na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width());
+                        - na::Vector2::<f64>::from_element(self.shaper.width());
                 }
                 DrawStyle::Rough => {
                     *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                        + na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width())
+                        + na::Vector2::<f64>::from_element(self.shaper.width())
                         + na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
                     *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                        - na::Vector2::<f64>::from_element(self.shaper.rectangle_config.width())
+                        - na::Vector2::<f64>::from_element(self.shaper.width())
                         - na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
                 }
             },
@@ -147,19 +147,19 @@ impl StrokeBehaviour for ShapeStroke {
                     DrawStyle::Smooth => {
                         *pos = center;
 
-                        *radius_x = (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0
-                            - self.shaper.ellipse_config.width();
-                        *radius_y = (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
-                            - self.shaper.ellipse_config.width();
+                        *radius_x =
+                            (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0 - self.shaper.width();
+                        *radius_y =
+                            (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0 - self.shaper.width();
                     }
                     DrawStyle::Rough => {
                         *pos = center;
 
                         *radius_x = (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0
-                            - self.shaper.ellipse_config.width()
+                            - self.shaper.width()
                             - DrawStyle::ROUGH_MARGIN;
                         *radius_y = (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
-                            - self.shaper.ellipse_config.width()
+                            - self.shaper.width()
                             - DrawStyle::ROUGH_MARGIN;
                     }
                 }
@@ -175,13 +175,13 @@ impl StrokeBehaviour for ShapeStroke {
         let element: svg::node::element::Element = match self.shape_style {
             ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
-                    let color = if let Some(color) = self.shaper.line_config.color {
+                    let color = if let Some(color) = self.shaper.color() {
                         color.to_css_color()
                     } else {
                         String::from("none")
                     };
 
-                    let fill = if let Some(fill) = self.shaper.line_config.fill {
+                    let fill = if let Some(fill) = self.shaper.fill() {
                         fill.to_css_color()
                     } else {
                         String::from("none")
@@ -193,24 +193,24 @@ impl StrokeBehaviour for ShapeStroke {
                         .set("x2", end[0] + offset[0])
                         .set("y2", end[1] + offset[1])
                         .set("stroke", color)
-                        .set("stroke-width", self.shaper.line_config.width())
+                        .set("stroke-width", self.shaper.width())
                         .set("fill", fill)
                         .into()
                 }
                 shaper::DrawStyle::Rough => {
                     let mut rough_config = self.shaper.roughconfig.clone();
 
-                    if let Some(color) = self.shaper.line_config.color {
+                    if let Some(color) = self.shaper.color() {
                         rough_config.stroke = Some(rough_rs::utils::Color::new(
                             color.r, color.g, color.b, color.a,
                         ));
                     }
-                    if let Some(fill) = self.shaper.line_config.fill {
+                    if let Some(fill) = self.shaper.fill() {
                         rough_config.fill =
                             Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
                     }
 
-                    rough_config.stroke_width = self.shaper.line_config.width();
+                    rough_config.stroke_width = self.shaper.width();
                     rough_config.seed = self.seed;
 
                     let mut rough_generator =
@@ -223,12 +223,12 @@ impl StrokeBehaviour for ShapeStroke {
             },
             ShapeStyle::Rectangle { ref start, ref end } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
-                    let color = if let Some(color) = self.shaper.rectangle_config.color {
+                    let color = if let Some(color) = self.shaper.color() {
                         color.to_css_color()
                     } else {
                         String::from("none")
                     };
-                    let fill = if let Some(fill) = self.shaper.rectangle_config.fill {
+                    let fill = if let Some(fill) = self.shaper.fill() {
                         fill.to_css_color()
                     } else {
                         String::from("none")
@@ -242,24 +242,24 @@ impl StrokeBehaviour for ShapeStroke {
                         .set("width", maxs[0] - mins[0])
                         .set("height", maxs[1] - mins[1])
                         .set("stroke", color)
-                        .set("stroke-width", self.shaper.rectangle_config.width())
+                        .set("stroke-width", self.shaper.width())
                         .set("fill", fill)
                         .into()
                 }
                 shaper::DrawStyle::Rough => {
                     let mut rough_config = self.shaper.roughconfig.clone();
 
-                    if let Some(color) = self.shaper.rectangle_config.color {
+                    if let Some(color) = self.shaper.color() {
                         rough_config.stroke = Some(rough_rs::utils::Color::new(
                             color.r, color.g, color.b, color.a,
                         ));
                     }
-                    if let Some(fill) = self.shaper.rectangle_config.fill {
+                    if let Some(fill) = self.shaper.fill() {
                         rough_config.fill =
                             Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
                     }
 
-                    rough_config.stroke_width = self.shaper.rectangle_config.width();
+                    rough_config.stroke_width = self.shaper.width();
                     rough_config.seed = self.seed;
 
                     let mut rough_generator =
@@ -276,12 +276,12 @@ impl StrokeBehaviour for ShapeStroke {
                 ref radius_y,
             } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
-                    let color = if let Some(color) = self.shaper.ellipse_config.color {
+                    let color = if let Some(color) = self.shaper.color() {
                         color.to_css_color()
                     } else {
                         String::from("none")
                     };
-                    let fill = if let Some(fill) = self.shaper.ellipse_config.fill {
+                    let fill = if let Some(fill) = self.shaper.fill() {
                         fill.to_css_color()
                     } else {
                         String::from("none")
@@ -293,24 +293,24 @@ impl StrokeBehaviour for ShapeStroke {
                         .set("rx", *radius_x)
                         .set("ry", *radius_y)
                         .set("stroke", color)
-                        .set("stroke-width", self.shaper.ellipse_config.width())
+                        .set("stroke-width", self.shaper.width())
                         .set("fill", fill)
                         .into()
                 }
                 shaper::DrawStyle::Rough => {
                     let mut rough_config = self.shaper.roughconfig.clone();
 
-                    if let Some(color) = self.shaper.ellipse_config.color {
+                    if let Some(color) = self.shaper.color() {
                         rough_config.stroke = Some(rough_rs::utils::Color::new(
                             color.r, color.g, color.b, color.a,
                         ));
                     }
-                    if let Some(fill) = self.shaper.ellipse_config.fill {
+                    if let Some(fill) = self.shaper.fill() {
                         rough_config.fill =
                             Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
                     }
 
-                    rough_config.stroke_width = self.shaper.ellipse_config.width();
+                    rough_config.stroke_width = self.shaper.width();
                     rough_config.seed = self.seed;
 
                     let mut rough_generator =
@@ -425,28 +425,25 @@ impl ShapeStroke {
         match self.shape_style {
             ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
-                    self.bounds = utils::aabb_new_positive(*start, *end)
-                        .loosened(self.shaper.line_config.width() * 0.5);
+                    self.bounds =
+                        utils::aabb_new_positive(*start, *end).loosened(self.shaper.width() * 0.5);
                 }
                 shaper::DrawStyle::Rough => {
                     self.bounds = utils::aabb_new_positive(*start, *end)
                         // TODO what are the actual bounds for a rough line?
-                        .loosened(self.shaper.line_config.width() * 0.5 + DrawStyle::ROUGH_MARGIN);
+                        .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN);
                 }
             },
             ShapeStyle::Rectangle { ref start, ref end } => {
                 match self.shaper.drawstyle {
                     shaper::DrawStyle::Smooth => {
                         self.bounds = utils::aabb_new_positive(*start, *end)
-                            .loosened(self.shaper.rectangle_config.width() * 0.5);
+                            .loosened(self.shaper.width() * 0.5);
                     }
                     shaper::DrawStyle::Rough => {
                         self.bounds = utils::aabb_new_positive(*start, *end)
                             // TODO what are the actual bounds for a rough rect?
-                            .loosened(
-                                self.shaper.rectangle_config.width() * 0.5
-                                    + DrawStyle::ROUGH_MARGIN,
-                            );
+                            .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN);
                     }
                 };
             }
@@ -460,7 +457,7 @@ impl ShapeStroke {
                         na::vector![pos[0] - radius_x, pos[1] - radius_y],
                         na::vector![pos[0] + radius_x, pos[1] + radius_y],
                     )
-                    .loosened(self.shaper.ellipse_config.width());
+                    .loosened(self.shaper.width());
                 }
                 shaper::DrawStyle::Rough => {
                     self.bounds = utils::aabb_new_positive(
@@ -468,7 +465,7 @@ impl ShapeStroke {
                         na::vector![pos[0] + radius_x, pos[1] + radius_y],
                     )
                     // TODO what are the actual bounds for a rough ellipse?
-                    .loosened(self.shaper.ellipse_config.width() + DrawStyle::ROUGH_MARGIN);
+                    .loosened(self.shaper.width() + DrawStyle::ROUGH_MARGIN);
                 }
             },
         }

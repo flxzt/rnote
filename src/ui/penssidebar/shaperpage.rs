@@ -207,11 +207,7 @@ impl ShaperPage {
         // Shape stroke width
         self.width_resetbutton().connect_clicked(
             clone!(@weak width_adj, @weak appwindow => move |_| {
-                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(Shaper::WIDTH_DEFAULT);
-                width_adj.set_value(Shaper::WIDTH_DEFAULT);
-                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(Shaper::WIDTH_DEFAULT);
-                width_adj.set_value(Shaper::WIDTH_DEFAULT);
-                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(Shaper::WIDTH_DEFAULT);
+                appwindow.canvas().pens().borrow_mut().shaper.set_width(Shaper::WIDTH_DEFAULT);
                 width_adj.set_value(Shaper::WIDTH_DEFAULT);
             }),
         );
@@ -223,24 +219,19 @@ impl ShaperPage {
         self.width_adj().set_value(Shaper::WIDTH_DEFAULT);
         self.width_adj()
             .connect_value_changed(clone!(@weak appwindow => move |width_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.line_config.set_width(width_adj.value());
-                appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.set_width(width_adj.value());
-                appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.set_width(width_adj.value());
+                appwindow.canvas().pens().borrow_mut().shaper.set_width(width_adj.value());
             }));
 
         // Stroke color
         self.stroke_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
             let color = stroke_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().shaper.line_config.color = Some(utils::Color::from(color));
-            appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.color = Some(utils::Color::from(color));
-            appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.color = Some(utils::Color::from(color));
+            appwindow.canvas().pens().borrow_mut().shaper.set_color(Some(utils::Color::from(color)));
         }));
 
         // Fill color
         self.fill_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |fill_colorpicker, _paramspec| {
             let color = fill_colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().shaper.rectangle_config.fill = Some(utils::Color::from(color));
-            appwindow.canvas().pens().borrow_mut().shaper.ellipse_config.fill = Some(utils::Color::from(color));
+            appwindow.canvas().pens().borrow_mut().shaper.set_fill(Some(utils::Color::from(color)));
         }));
 
         // Roughness

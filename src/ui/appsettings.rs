@@ -7,7 +7,12 @@ use gtk4::{gio, glib, prelude::*};
 use tuple_conv::RepeatedTuple;
 
 pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::BoolError> {
-    // Marker Colors
+    // Marker
+    appwindow.app_settings().set_double(
+        "marker-width",
+        appwindow.canvas().pens().borrow().marker.width(),
+    )?;
+
     let marker_colors: Vec<u32> = appwindow
         .penssidebar()
         .marker_page()
@@ -40,7 +45,12 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         )?;
     }
 
-    // Brush Colors
+    // Brush
+    appwindow.app_settings().set_double(
+        "brush-width",
+        appwindow.canvas().pens().borrow().brush.width(),
+    )?;
+
     let brush_colors: Vec<u32> = appwindow
         .penssidebar()
         .brush_page()
@@ -73,7 +83,12 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         )?;
     }
 
-    // Shaper stroke colors
+    // Shaper
+    appwindow.app_settings().set_double(
+        "shaper-width",
+        appwindow.canvas().pens().borrow().shaper.width(),
+    )?;
+
     let shaper_stroke_colors: Vec<u32> = appwindow
         .penssidebar()
         .shaper_page()
@@ -118,6 +133,12 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
             &(shaper_fill_colors[0], shaper_fill_colors[1]).to_variant(),
         )?;
     }
+
+    // Eraser
+    appwindow.app_settings().set_double(
+        "eraser-width",
+        appwindow.canvas().pens().borrow().eraser.width(),
+    )?;
 
     // Format Size
     appwindow.app_settings().set_value(
@@ -221,7 +242,20 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         }
     }
 
-    // Marker colors
+    // Marker
+    let marker_width = appwindow.app_settings().double("marker-width");
+    appwindow
+        .penssidebar()
+        .marker_page()
+        .width_adj()
+        .set_value(marker_width);
+    appwindow
+        .canvas()
+        .pens()
+        .borrow_mut()
+        .marker
+        .set_width(marker_width);
+
     let marker_colors = appwindow
         .app_settings()
         .value("marker-colors")
@@ -238,7 +272,20 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .colorpicker()
         .load_all_colors(&marker_colors_vec);
 
-    // Brush colors
+    // Brush
+    let brush_width = appwindow.app_settings().double("brush-width");
+    appwindow
+        .penssidebar()
+        .brush_page()
+        .width_adj()
+        .set_value(brush_width);
+    appwindow
+        .canvas()
+        .pens()
+        .borrow_mut()
+        .brush
+        .set_width(brush_width);
+
     let brush_colors = appwindow
         .app_settings()
         .value("brush-colors")
@@ -255,13 +302,26 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .colorpicker()
         .load_all_colors(&brush_colors_vec);
 
-    // Shaper stroke colors
-    let brush_colors = appwindow
+    // Shaper
+    let shaper_width = appwindow.app_settings().double("shaper-width");
+    appwindow
+        .penssidebar()
+        .shaper_page()
+        .width_adj()
+        .set_value(shaper_width);
+    appwindow
+        .canvas()
+        .pens()
+        .borrow_mut()
+        .shaper
+        .set_width(shaper_width);
+
+    let shaper_colors = appwindow
         .app_settings()
         .value("shaper-stroke-colors")
         .get::<(u32, u32)>()
         .unwrap();
-    let brush_colors_vec: Vec<utils::Color> = brush_colors
+    let shaper_colors_vec: Vec<utils::Color> = shaper_colors
         .to_vec()
         .iter()
         .map(|color_value| utils::Color::from(*color_value))
@@ -270,15 +330,14 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .penssidebar()
         .shaper_page()
         .stroke_colorpicker()
-        .load_all_colors(&brush_colors_vec);
+        .load_all_colors(&shaper_colors_vec);
 
-    // Shaper fill colors
-    let brush_colors = appwindow
+    let shaper_fill = appwindow
         .app_settings()
         .value("shaper-fill-colors")
         .get::<(u32, u32)>()
         .unwrap();
-    let brush_colors_vec: Vec<utils::Color> = brush_colors
+    let shaper_fill_vec: Vec<utils::Color> = shaper_fill
         .to_vec()
         .iter()
         .map(|color_value| utils::Color::from(*color_value))
@@ -287,7 +346,21 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .penssidebar()
         .shaper_page()
         .fill_colorpicker()
-        .load_all_colors(&brush_colors_vec);
+        .load_all_colors(&shaper_fill_vec);
+
+    // Eraser
+    let eraser_width = appwindow.app_settings().double("eraser-width");
+    appwindow
+        .penssidebar()
+        .eraser_page()
+        .width_adj()
+        .set_value(eraser_width);
+    appwindow
+        .canvas()
+        .pens()
+        .borrow_mut()
+        .eraser
+        .set_width(eraser_width);
 
     // Format Size
     let format_size = appwindow

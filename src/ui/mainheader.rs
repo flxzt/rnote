@@ -64,11 +64,9 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-        self
-            .header_icon_image
-            .get()
-            .set_icon_name(Some(config::APP_ID));
-
+            self.header_icon_image
+                .get()
+                .set_icon_name(Some(config::APP_ID));
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -80,9 +78,7 @@ mod imp {
     impl WidgetImpl for MainHeader {}
 }
 
-use crate::{
-    ui::appmenu::AppMenu, ui::appwindow::RnoteAppWindow, ui::canvasmenu::CanvasMenu,
-};
+use crate::{ui::appmenu::AppMenu, ui::appwindow::RnoteAppWindow, ui::canvasmenu::CanvasMenu};
 
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Button, Image, Revealer, ToggleButton,

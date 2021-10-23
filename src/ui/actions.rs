@@ -8,9 +8,8 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType,
-    PositionType, PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator,
-    Snapshot, Unit,
+    gdk, gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType, PositionType,
+    PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
 };
 
 /* Actions follow this principle:

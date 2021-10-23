@@ -1067,7 +1067,9 @@ impl Canvas {
         self.set_unsaved_changes(true);
         self.set_cursor(Some(&self.cursor()));
 
-        appwindow.downcast_ref::<RnoteAppWindow>().unwrap()
+        appwindow
+            .downcast_ref::<RnoteAppWindow>()
+            .unwrap()
             .change_action_state("tmperaser", &false.to_variant());
 
         if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {

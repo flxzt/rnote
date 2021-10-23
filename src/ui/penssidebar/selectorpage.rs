@@ -79,9 +79,10 @@ impl SelectorPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.delete_button().connect_clicked(clone!(@weak appwindow => move |_| {
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "delete-selection", None);
-        }));
+        self.delete_button()
+            .connect_clicked(clone!(@weak appwindow => move |_| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "delete-selection", None);
+            }));
 
         self.duplicate_button().connect_clicked(clone!(@weak appwindow => move |_| {
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "duplicate-selection", None);

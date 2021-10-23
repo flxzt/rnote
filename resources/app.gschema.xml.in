@@ -49,6 +49,10 @@
       <default>"./"</default>
       <summary>Workspace directory</summary>
     </key>
+    <key name="marker-width" type="d">
+      <default>2</default>
+      <summary>Marker width in px</summary>
+    </key>
     <key name="marker-colors" type="(uuuuuuuu)">
       <default>(
         0x000000ff,
@@ -61,6 +65,10 @@
         0xe01b24ff
       )</default>
       <summary>Marker colors encoded as RGBA values (8-bit)</summary>
+    </key>
+    <key name="brush-width" type="d">
+      <default>6</default>
+      <summary>Brush width in px</summary>
     </key>
     <key name="brush-colors" type="(uuuuuuuu)">
       <default>(
@@ -75,6 +83,10 @@
       )</default>
       <summary>Brush colors encoded as RGBA values (8-bit)</summary>
     </key>
+    <key name="shaper-width" type="d">
+      <default>2</default>
+      <summary>Brush width in px</summary>
+    </key>
     <key name="shaper-stroke-colors" type="(uu)">
       <default>(
         0x000000ff,
@@ -88,6 +100,10 @@
         0x62a0ea99
       )</default>
       <summary>Shape fill colors encoded as RGBA values (8-bit)</summary>
+    </key>
+    <key name="eraser-width" type="d">
+      <default>30</default>
+      <summary>Eraser width in px</summary>
     </key>
     <key name="format-size" type="(uu)">
       <default>(1240, 1754)</default>

@@ -30,8 +30,8 @@ mod imp {
 
     #[derive(Debug, Default)]
     pub struct RnoteApp {
-        pub input_file: Rc<RefCell<Option<gio::File>>>,
-        pub output_file: Rc<RefCell<Option<gio::File>>>,
+        pub input_file: RefCell<Option<gio::File>>,
+        pub output_file: RefCell<Option<gio::File>>,
         pub unsaved_changes: Cell<bool>,
         pub rng: Rc<RefCell<rand::rngs::ThreadRng>>,
     }
@@ -176,14 +176,27 @@ impl RnoteApp {
         .expect("failed to create RnoteApp")
     }
 
-    pub fn input_file(&self) -> Rc<RefCell<Option<gio::File>>> {
-        let priv_ = imp::RnoteApp::from_instance(self);
-        priv_.input_file.clone()
+    pub fn input_file(&self) -> Option<gio::File> {
+        imp::RnoteApp::from_instance(self)
+            .input_file
+            .borrow()
+            .clone()
     }
 
-    pub fn output_file(&self) -> Rc<RefCell<Option<gio::File>>> {
-        let priv_ = imp::RnoteApp::from_instance(self);
-        priv_.output_file.clone()
+    pub fn set_input_file(&self, input_file: Option<gio::File>) {
+        *imp::RnoteApp::from_instance(self).input_file.borrow_mut() = input_file;
+    }
+
+    pub fn output_file(&self) -> Option<gio::File> {
+        imp::RnoteApp::from_instance(self)
+            .output_file
+            .borrow()
+            .clone()
+    }
+
+    pub fn set_output_file(&self, output_file: Option<&gio::File>, appwindow: &RnoteAppWindow) {
+        appwindow.set_title_for_file(output_file);
+        *imp::RnoteApp::from_instance(self).output_file.borrow_mut() = output_file.cloned();
     }
 
     pub fn rng(&self) -> Rc<RefCell<rand::rngs::ThreadRng>> {

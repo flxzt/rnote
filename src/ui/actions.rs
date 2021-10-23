@@ -488,14 +488,14 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Save sheet
     action_save_sheet.connect_activate(clone!(@weak appwindow => move |_, _| {
-        if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow().is_none() {
+        if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().is_none() {
             dialogs::dialog_save_sheet_as(&appwindow);
         }
 
-        if let Some(output_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow().to_owned() {
+        if let Some(output_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().to_owned() {
             if let Err(e) = appwindow.canvas().sheet().save_sheet(&output_file) {
                 log::error!("failed to save sheet, {}", e);
-                *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow_mut() = None;
+                appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
             } else {
             }
         }

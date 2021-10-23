@@ -6,8 +6,8 @@
       <object class="GtkBinLayout" />
     </property>
     <child>
-      <object class="GtkLabel" id="main_title">
-        <property name="label"></property>
+      <object class="AdwWindowTitle" id="main_title">
+        <property name="title">New Document</property>
       </object>
       <object class="AdwHeaderBar" id="headerbar">
         <property name="height-request">49</property>

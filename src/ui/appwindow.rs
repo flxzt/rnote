@@ -548,6 +548,33 @@ impl RnoteAppWindow {
         ))
     }
 
+    pub fn set_title_for_file(&self, file: Option<&gio::File>) {
+        if let Some(file) = file {
+            match file.query_info::<gio::Cancellable>(
+                "standard::*",
+                gio::FileQueryInfoFlags::NONE,
+                None,
+            ) {
+                Ok(fileinfo) => {
+                    self.mainheader()
+                        .main_title()
+                        .set_title(fileinfo.display_name().as_str());
+                    if let Some(path) = file.path() {
+                        self.mainheader()
+                            .main_title()
+                            .set_subtitle(&path.to_string_lossy());
+                    }
+                }
+                Err(e) => {
+                    log::error!("failed to query fileinfo for file {:?}, {}", file, e);
+                }
+            }
+        } else {
+            self.mainheader().main_title().set_title("New Document");
+            self.mainheader().main_title().set_subtitle("");
+        }
+    }
+
     // Must be called after application is associated with it else it fails
     pub fn init(&self) {
         let priv_ = imp::RnoteAppWindow::from_instance(self);
@@ -571,7 +598,6 @@ impl RnoteAppWindow {
             .downcast::<RnoteApp>()
             .unwrap()
             .input_file()
-            .borrow()
             .to_owned()
         {
             if self
@@ -797,6 +823,16 @@ impl RnoteAppWindow {
                 self.settings_panel().load_background(self.canvas().sheet());
 
                 self.canvas().set_unsaved_changes(false);
+                self.application()
+                    .unwrap()
+                    .downcast::<RnoteApp>()
+                    .unwrap()
+                    .set_input_file(None);
+                self.application()
+                    .unwrap()
+                    .downcast::<RnoteApp>()
+                    .unwrap()
+                    .set_output_file(Some(file), self);
             }
             utils::FileType::Svg => {
                 let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
@@ -811,6 +847,11 @@ impl RnoteAppWindow {
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
+                self.application()
+                    .unwrap()
+                    .downcast::<RnoteApp>()
+                    .unwrap()
+                    .set_input_file(None);
             }
             utils::FileType::BitmapImage => {
                 let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
@@ -827,9 +868,19 @@ impl RnoteAppWindow {
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
+                self.application()
+                    .unwrap()
+                    .downcast::<RnoteApp>()
+                    .unwrap()
+                    .set_input_file(None);
             }
             utils::FileType::Folder | utils::FileType::Unknown => {
                 log::warn!("tried to open unsupported file type.");
+                self.application()
+                    .unwrap()
+                    .downcast::<RnoteApp>()
+                    .unwrap()
+                    .set_input_file(None);
             }
         }
 

@@ -323,8 +323,7 @@ impl WorkspaceBrowser {
 
                 match utils::FileType::lookup_file_type(&file) {
                     utils::FileType::Rnote => {
-                        *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().borrow_mut() = Some(file.clone());
-                        *appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().borrow_mut() = Some(file.clone());
+                        appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(Some(file.clone()));
 
                         if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().unsaved_changes() {
                             dialogs::dialog_open_overwrite(&appwindow);

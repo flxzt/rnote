@@ -12,6 +12,8 @@ mod imp {
         #[template_child]
         pub headerbar: TemplateChild<adw::HeaderBar>,
         #[template_child]
+        pub main_title: TemplateChild<adw::WindowTitle>,
+        #[template_child]
         pub header_icon_image: TemplateChild<Image>,
         #[template_child]
         pub menus_box: TemplateChild<gtk4::Box>,
@@ -104,6 +106,10 @@ impl MainHeader {
 
     pub fn headerbar(&self) -> adw::HeaderBar {
         imp::MainHeader::from_instance(self).headerbar.get()
+    }
+
+    pub fn main_title(&self) -> adw::WindowTitle {
+        imp::MainHeader::from_instance(self).main_title.get()
     }
 
     pub fn header_icon_image(&self) -> Image {

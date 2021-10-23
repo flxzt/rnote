@@ -74,7 +74,7 @@ mod imp {
 }
 
 use crate::{
-    config, ui::appmenu::AppMenu, ui::appwindow::RnoteAppWindow, ui::canvasmenu::CanvasMenu,
+    ui::appmenu::AppMenu, ui::appwindow::RnoteAppWindow, ui::canvasmenu::CanvasMenu,
 };
 
 use gtk4::{
@@ -173,28 +173,6 @@ impl MainHeader {
         let priv_ = imp::MainHeader::from_instance(self);
 
         priv_
-            .header_icon_image
-            .get()
-            .set_icon_name(Some(config::APP_ID));
-
-        priv_
-            .brush_toggle
-            .get()
-            .set_group(Some(&priv_.marker_toggle.get()));
-        priv_
-            .shaper_toggle
-            .get()
-            .set_group(Some(&priv_.marker_toggle.get()));
-        priv_
-            .eraser_toggle
-            .get()
-            .set_group(Some(&priv_.marker_toggle.get()));
-        priv_
-            .selector_toggle
-            .get()
-            .set_group(Some(&priv_.marker_toggle.get()));
-
-        priv_
             .headerbar
             .get()
             .bind_property(
@@ -260,20 +238,14 @@ impl MainHeader {
             .undo_button
             .get()
             .connect_clicked(clone!(@weak appwindow => move |_| {
-                appwindow.canvas().sheet().undo_last_stroke();
-                appwindow.canvas().regenerate_background(false, true);
-                appwindow.canvas().queue_resize();
-                appwindow.canvas().queue_draw();
+                appwindow.application().unwrap().activate_action("undo-stroke", None);
             }));
 
         priv_
             .redo_button
             .get()
             .connect_clicked(clone!(@weak appwindow => move |_| {
-                appwindow.canvas().sheet().redo_last_stroke();
-                appwindow.canvas().regenerate_background(false, true);
-                appwindow.canvas().queue_resize();
-                appwindow.canvas().queue_draw();
+                appwindow.application().unwrap().activate_action("redo-stroke", None);
             }));
     }
 }

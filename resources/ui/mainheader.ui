@@ -112,6 +112,7 @@
                 <property name="icon_name">brush-symbolic</property>
                 <property name="tooltip_text">Brush</property>
                 <property name="hexpand">true</property>
+                <property name="group">marker_toggle</property>
               </object>
             </child>
             <child>
@@ -119,6 +120,7 @@
                 <property name="icon_name">shaper-symbolic</property>
                 <property name="tooltip_text">Shaper</property>
                 <property name="hexpand">true</property>
+                <property name="group">marker_toggle</property>
               </object>
             </child>
             <child>
@@ -126,6 +128,7 @@
                 <property name="icon_name">eraser-symbolic</property>
                 <property name="tooltip_text">Eraser</property>
                 <property name="hexpand">true</property>
+                <property name="group">marker_toggle</property>
               </object>
             </child>
             <child>
@@ -133,6 +136,7 @@
                 <property name="icon_name">selector-symbolic</property>
                 <property name="tooltip_text">Selector</property>
                 <property name="hexpand">true</property>
+                <property name="group">marker_toggle</property>
               </object>
             </child>
           </object>

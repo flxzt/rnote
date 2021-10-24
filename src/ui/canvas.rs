@@ -105,6 +105,8 @@ mod imp {
             obj.set_hexpand(false);
             obj.set_vexpand(false);
             obj.set_can_target(true);
+            obj.set_focusable(true);
+            obj.set_can_focus(true);
             obj.set_cursor(Some(&self.cursor));
 
             obj.add_controller(&self.stylus_drawing_gesture);

@@ -1,4 +1,5 @@
 mod imp {
+    use gtk4::PropagationPhase;
     use gtk4::{
         glib, glib::clone, glib::subclass::*, prelude::*, subclass::prelude::*, BinLayout,
         GestureDrag, Image,
@@ -42,19 +43,22 @@ mod imp {
 
             obj.set_css_classes(&["modifiernode"]);
 
-            let gesture_drag = GestureDrag::new();
+            let drag_gesture = GestureDrag::builder()
+                .name("modifiernode_drag_gesture")
+                .propagation_phase(PropagationPhase::Capture)
+                .build();
 
-            gesture_drag.connect_drag_begin(clone!(@weak obj => move |_gesture_drag, x, y| {
+            drag_gesture.connect_drag_begin(clone!(@weak obj => move |_gesture_drag, x, y| {
                 obj.emit_by_name("offset-begin", &[&utils::BoxedPos {x, y} ]).unwrap();
             }));
-            gesture_drag.connect_drag_update(clone!(@weak obj => move |_gesture_drag, x, y| {
+            drag_gesture.connect_drag_update(clone!(@weak obj => move |_gesture_drag, x, y| {
                 obj.emit_by_name("offset-update", &[&utils::BoxedPos {x, y} ]).unwrap();
             }));
-            gesture_drag.connect_drag_end(clone!(@weak obj => move |_gesture_drag, x, y| {
+            drag_gesture.connect_drag_end(clone!(@weak obj => move |_gesture_drag, x, y| {
                 obj.emit_by_name("offset-end", &[&utils::BoxedPos {x, y} ]).unwrap();
             }));
 
-            obj.add_controller(&gesture_drag);
+            obj.add_controller(&drag_gesture);
         }
 
         fn signals() -> &'static [glib::subclass::Signal] {

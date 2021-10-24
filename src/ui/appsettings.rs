@@ -457,14 +457,6 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         "righthanded",
         &appwindow.app_settings().boolean("righthanded").to_variant(),
     );
-    appwindow
-        .application()
-        .unwrap()
-        .activate_action("righthanded", None);
-    appwindow
-        .application()
-        .unwrap()
-        .activate_action("righthanded", None);
 
     // Touch drawing
     appwindow

@@ -292,7 +292,7 @@ impl SelectionModifier {
 
         let translate_drag_gesture = GestureDrag::builder()
             .name("translate_drag")
-            .propagation_phase(PropagationPhase::Bubble)
+            .propagation_phase(PropagationPhase::Capture)
             .build();
         priv_.translate_node.add_controller(&translate_drag_gesture);
         translate_drag_gesture.connect_drag_update(

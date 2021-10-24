@@ -278,15 +278,9 @@ mod imp {
             self.flap.get().connect_flap_position_notify(
                 clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box => move |flap| {
                     if flap.flap_position() == PackType::Start {
-                            flap_resizer_box.remove::<gtk4::Box>(&flap_box);
-                            flap_resizer_box.remove::<gtk4::Box>(&flap_resizer);
-                            flap_resizer_box.prepend::<gtk4::Box>(&flap_box);
-                            flap_resizer_box.append::<gtk4::Box>(&flap_resizer);
+                            flap_resizer_box.reorder_child_after::<gtk4::Box, gtk4::Box>(&flap_resizer, Some(&flap_box));
                     } else {
-                            flap_resizer_box.remove::<gtk4::Box>(&flap_resizer);
-                            flap_resizer_box.remove::<gtk4::Box>(&flap_box);
-                            flap_resizer_box.prepend::<gtk4::Box>(&flap_resizer);
-                            flap_resizer_box.append::<gtk4::Box>(&flap_box);
+                            flap_resizer_box.reorder_child_after::<gtk4::Box, gtk4::Box>(&flap_box, Some(&flap_resizer));
                     }
                 }),
             );
@@ -585,11 +579,18 @@ impl RnoteAppWindow {
         priv_.mainheader.get().canvasmenu().init(self);
         priv_.mainheader.get().appmenu().init(self);
         priv_.penssidebar.get().init(self);
+        priv_.penssidebar.get().marker_page().init(self);
+        priv_.penssidebar.get().brush_page().init(self);
+        priv_.penssidebar.get().brush_page().templatechooser().init(self);
+        priv_.penssidebar.get().shaper_page().init(self);
+        priv_.penssidebar.get().eraser_page().init(self);
+        priv_.penssidebar.get().selector_page().init(self);
         priv_.canvas.get().sheet().selection().init(self);
         priv_.settings_panel.get().init(self);
         priv_.selection_modifier.get().init(self);
         priv_.devel_actions.get().init(self);
         priv_.canvas.get().sheet().format().init(self);
+
 
         // Loading in input file
         if let Some(input_file) = self
@@ -616,14 +617,10 @@ impl RnoteAppWindow {
         self.flap_header().connect_show_end_title_buttons_notify(
             clone!(@weak self as appwindow => move |_files_headerbar| {
                 if appwindow.flap_header().shows_end_title_buttons() {
-                    //appwindow.mainheader().menus_box().remove(&appwindow.mainheader().canvasmenu());
                     appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
-                    //appwindow.flap_menus_box().append(&appwindow.mainheader().canvasmenu());
                     appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
                 } else {
-                    //appwindow.flap_menus_box().remove(&appwindow.mainheader().canvasmenu());
                     appwindow.flap_menus_box().remove(&appwindow.mainheader().appmenu());
-                    //appwindow.mainheader().menus_box().append(&appwindow.mainheader().canvasmenu());
                     appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
                 }
             }),

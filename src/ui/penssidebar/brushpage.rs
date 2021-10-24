@@ -111,12 +111,8 @@ impl BrushPage {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let width_adj = self.width_adj();
 
-        self.templatechooser().init(appwindow);
-
         self.width_adj().set_lower(Brush::WIDTH_MIN);
-
         self.width_adj().set_upper(Brush::WIDTH_MAX);
-
         self.width_adj().set_value(Brush::WIDTH_DEFAULT);
 
         self.colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |colorpicker, _paramspec| {

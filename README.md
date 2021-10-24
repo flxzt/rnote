@@ -1,5 +1,5 @@
 <div align="center">
-<img src="resources/icons/scalable/apps/rnote.svg" width="384"></img>
+<img src="resources/icons/scalable/apps/rnote.svg" width="256"></img>
 </div><br><br><br>
 
 <div align="start">
@@ -72,7 +72,7 @@ If you don't have an IDE or extension to handle building flatpaks, you can also 
 First the Gnome 41 SDK is needed:
 
 ```bash
-flatpak install org.gnome.Sdk//40 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//41
+flatpak install org.gnome.Sdk//41 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//41
 ```
 
 **Build**  

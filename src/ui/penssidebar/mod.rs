@@ -188,11 +188,5 @@ impl PensSideBar {
                 };
             }),
         );
-
-        self.marker_page().init(appwindow);
-        self.brush_page().init(appwindow);
-        self.shaper_page().init(appwindow);
-        self.eraser_page().init(appwindow);
-        self.selector_page().init(appwindow);
     }
 }

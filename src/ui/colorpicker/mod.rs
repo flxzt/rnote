@@ -281,7 +281,7 @@ mod imp {
             let currentcolor_setter1 = &*self.currentcolor_setter1;
 
             for setter_button in &*self.currentcolor_setters.borrow_mut() {
-                setterbox.remove(setter_button);
+                setter_button.unparent();
             }
             self.currentcolor_setters.borrow_mut().clear();
 

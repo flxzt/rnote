@@ -125,7 +125,7 @@ mod imp {
                 .expect("failed to get icon theme for appwindow");
             app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
-            application.prepare_show(&appwindow);
+            application.setup_app(&appwindow);
             appwindow.show();
         }
 
@@ -150,7 +150,7 @@ mod imp {
 
 use std::{cell::RefCell, rc::Rc};
 
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
 
 use crate::config;
 use crate::ui::appwindow::RnoteAppWindow;
@@ -195,7 +195,7 @@ impl RnoteApp {
     }
 
     pub fn set_output_file(&self, output_file: Option<&gio::File>, appwindow: &RnoteAppWindow) {
-        appwindow.set_title_for_file(output_file);
+        appwindow.mainheader().set_title_for_file(output_file);
         *imp::RnoteApp::from_instance(self).output_file.borrow_mut() = output_file.cloned();
     }
 
@@ -221,7 +221,11 @@ impl RnoteApp {
     }
 
     // Anything that needs to be done right before showing the appwindow
-    pub fn prepare_show(&self, appwindow: &RnoteAppWindow) {
+    pub fn setup_app(&self, appwindow: &RnoteAppWindow) {
+        self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |app, _pspec| {
+            appwindow.mainheader().main_title_unsaved_indicator().set_visible(app.unsaved_changes());
+        }));
+
         appwindow.canvas().regenerate_content(true, true);
     }
 }

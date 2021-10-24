@@ -2,7 +2,7 @@ mod imp {
     use crate::config;
     use crate::ui::{appmenu::AppMenu, canvasmenu::CanvasMenu};
     use gtk4::{
-        glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Image, Revealer,
+        glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Image, Label, Revealer,
         ToggleButton, Widget,
     };
 
@@ -13,6 +13,8 @@ mod imp {
         pub headerbar: TemplateChild<adw::HeaderBar>,
         #[template_child]
         pub main_title: TemplateChild<adw::WindowTitle>,
+        #[template_child]
+        pub main_title_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
         pub header_icon_image: TemplateChild<Image>,
         #[template_child]
@@ -83,8 +85,8 @@ mod imp {
 use crate::{ui::appmenu::AppMenu, ui::appwindow::RnoteAppWindow, ui::canvasmenu::CanvasMenu};
 
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Button, Image, Revealer, ToggleButton,
-    Widget,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, Image, Label, Revealer,
+    ToggleButton, Widget,
 };
 
 glib::wrapper! {
@@ -110,6 +112,12 @@ impl MainHeader {
 
     pub fn main_title(&self) -> adw::WindowTitle {
         imp::MainHeader::from_instance(self).main_title.get()
+    }
+
+    pub fn main_title_unsaved_indicator(&self) -> Label {
+        imp::MainHeader::from_instance(self)
+            .main_title_unsaved_indicator
+            .get()
     }
 
     pub fn header_icon_image(&self) -> Image {
@@ -256,5 +264,29 @@ impl MainHeader {
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "redo-stroke", None);
             }));
+    }
+
+    pub fn set_title_for_file(&self, file: Option<&gio::File>) {
+        if let Some(file) = file {
+            match file.query_info::<gio::Cancellable>(
+                "standard::*",
+                gio::FileQueryInfoFlags::NONE,
+                None,
+            ) {
+                Ok(fileinfo) => {
+                    self.main_title()
+                        .set_title(fileinfo.display_name().as_str());
+                    if let Some(path) = file.path() {
+                        self.main_title().set_subtitle(&path.to_string_lossy());
+                    }
+                }
+                Err(e) => {
+                    log::error!("failed to query fileinfo for file {:?}, {}", file, e);
+                }
+            }
+        } else {
+            self.main_title().set_title("New Document");
+            self.main_title().set_subtitle("Draft");
+        }
     }
 }

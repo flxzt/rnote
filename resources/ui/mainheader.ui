@@ -6,12 +6,24 @@
       <object class="GtkBinLayout" />
     </property>
     <child>
-      <object class="AdwWindowTitle" id="main_title">
-        <property name="title">New Document</property>
+      <object class="GtkBox" id="main_titlebox">
+        <child>
+          <object class="GtkLabel" id="main_title_unsaved_indicator">
+            <property name="label">•</property>
+            <property name="visible">false</property>
+          </object>
+        </child>
+        <child type="end">
+          <object class="AdwWindowTitle" id="main_title">
+            <property name="title">New Document</property>
+            <property name="subtitle">Draft</property>
+          </object>
+        </child>
       </object>
+
       <object class="AdwHeaderBar" id="headerbar">
         <property name="height-request">49</property>
-        <property name="title-widget">main_title</property>
+        <property name="title-widget">main_titlebox</property>
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">

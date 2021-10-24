@@ -281,7 +281,7 @@ impl MainHeader {
                     }
                 }
                 Err(e) => {
-                    log::error!("failed to query fileinfo for file {:?}, {}", file, e);
+                    log::warn!("failed to query fileinfo for file {:?}, {}", file, e);
                 }
             }
         } else {

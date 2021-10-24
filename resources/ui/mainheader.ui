@@ -7,6 +7,8 @@
     </property>
     <child>
       <object class="GtkBox" id="main_titlebox">
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
         <child>
           <object class="GtkLabel" id="main_title_unsaved_indicator">
             <property name="label">•</property>

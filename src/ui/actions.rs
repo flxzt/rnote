@@ -497,6 +497,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                 log::error!("failed to save sheet, {}", e);
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
             } else {
+                appwindow.canvas().set_unsaved_changes(false);
             }
         }
     }));

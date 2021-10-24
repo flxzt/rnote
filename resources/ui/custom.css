@@ -1,9 +1,9 @@
 headerbar {
-    background-color: @theme_bg_color;
+    background-color: @theme_base_color;
 }
 
-listview {
-    /*background-color: @theme_bg_color;*/
+.header_icon_image {
+    filter: drop-shadow(0px 0px 2px darker(darker(@theme_bg_color)));
 }
 
 .canvas_scroller {
@@ -20,21 +20,25 @@ listview {
 }
 
 .devel_actions {
-    background-color: @theme_bg_color;
+    background-color: @theme_base_color;
 }
 
 .flap_resizer {
-    background-color: @theme_bg_color;
+    background-color: @theme_base_color;
     transition: all 0.2s ease-out;
 }
 
 .flap_resizer:hover {
     background-color: steelblue;
-    box-shadow: 0 0 12px darker(steelblue);
+    box-shadow: 0 0 8px darker(steelblue);
 }
 
 .flap_box {
     background-color: @theme_bg_color;
+}
+
+.workspace_grid {
+    background-color: @theme_base_color;
 }
 
 .light_theme_toggle {
@@ -67,11 +71,6 @@ listview {
     box-shadow: 0 0 15px sienna;
 }
 
-.shaperconfig_stack {
-    border: 1px solid darker(@theme_bg_color);
-    border-radius: 6px;
-}
-
 .setter-button {
     padding: 0 0 0 0;
     background-blend-mode: screen;
@@ -79,8 +78,4 @@ listview {
         linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188),
         linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188);
     background-size: 20px 20px; background-position: 0px 0px, 10px 10px;
-}
-
-.settings_panel {
-    /*background-color: mix(@theme_bg_color, darker(@theme_bg_color), 0.2);*/
 }

@@ -22,14 +22,13 @@
           </object>
         </child>
       </object>
-
       <object class="AdwHeaderBar" id="headerbar">
-        <property name="height-request">49</property>
+        <property name="height-request">50</property>
         <property name="title-widget">main_titlebox</property>
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
-            <property name="width_request">48</property>
+            <property name="width_request">50</property>
             <property name="margin-start">0</property>
             <property name="margin-end">0</property>
             <property name="margin-top">0</property>
@@ -38,12 +37,20 @@
               <object class="GtkImage" id="header_icon_image">
                 <property name="visible">true</property>
                 <property name="margin-start">12</property>
-                <property name="margin-end">6</property>
+                <property name="margin-end">12</property>
                 <property name="margin-top">6</property>
                 <property name="margin-bottom">6</property>
                 <property name="pixel-size">24</property>
+                <style>
+                  <class name="header_icon_image" />
+                </style>
               </object>
             </child>
+          </object>
+        </child>
+        <child type="start">
+          <object class="GtkSeparator">
+            <property name="orientation">vertical</property>
           </object>
         </child>
         <child type="start">

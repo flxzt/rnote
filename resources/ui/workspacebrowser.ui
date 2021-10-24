@@ -72,7 +72,7 @@
         <child>
           <object class="GtkBox">
             <style>
-              <class name="linked" />
+              <class name="linked"/>
             </style>
             <child>
               <object class="GtkButton" id="workspace_pathup_button">

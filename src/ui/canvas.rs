@@ -28,6 +28,7 @@ mod imp {
         pub empty: Cell<bool>,
         pub format_borders: Cell<bool>,
         pub cursor: gdk::Cursor,
+        pub motion_cursor: gdk::Cursor,
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
@@ -74,6 +75,16 @@ mod imp {
                     &gdk::Texture::from_resource(
                         (String::from(config::APP_IDPATH)
                             + "icons/scalable/actions/canvas-cursor-symbolic.svg")
+                            .as_str(),
+                    ),
+                    8,
+                    8,
+                    gdk::Cursor::from_name("default", None).as_ref(),
+                ),
+                motion_cursor: gdk::Cursor::from_texture(
+                    &gdk::Texture::from_resource(
+                        (String::from(config::APP_IDPATH)
+                            + "icons/scalable/actions/canvas-motion-cursor-symbolic.svg")
                             .as_str(),
                     ),
                     8,
@@ -546,6 +557,11 @@ impl Canvas {
         priv_.cursor.clone()
     }
 
+    pub fn motion_cursor(&self) -> gdk::Cursor {
+        let priv_ = imp::Canvas::from_instance(self);
+        priv_.motion_cursor.clone()
+    }
+
     pub fn sheet(&self) -> Sheet {
         imp::Canvas::from_instance(self).sheet.clone()
     }
@@ -948,7 +964,7 @@ impl Canvas {
                 self.filter_mapped_inputdata(data_entries);
 
                 if let Some(inputdata) = data_entries.pop_back() {
-                    self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
+                    self.set_cursor(Some(&self.motion_cursor()));
 
                     self.sheet().elements_trash().borrow_mut().clear();
 

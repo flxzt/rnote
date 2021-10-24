@@ -2,10 +2,6 @@ headerbar {
     background-color: @theme_base_color;
 }
 
-.header_icon_image {
-    filter: drop-shadow(0px 0px 2px darker(darker(@theme_bg_color)));
-}
-
 .canvas_scroller {
     background-color: rgba(120, 120, 130, 0.2);
 }
@@ -35,10 +31,6 @@ headerbar {
 
 .flap_box {
     background-color: @theme_bg_color;
-}
-
-.workspace_grid {
-    background-color: @theme_base_color;
 }
 
 .light_theme_toggle {

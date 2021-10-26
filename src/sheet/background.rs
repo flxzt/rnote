@@ -297,7 +297,7 @@ impl Background {
 
         snapshot.pop();
 
-        Ok(snapshot.free_to_node())
+        Ok(snapshot.to_node())
     }
 
     pub fn gen_svg_data(

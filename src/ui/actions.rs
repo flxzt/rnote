@@ -565,7 +565,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             cx.clip();
             cx.translate(0.0, y_offset);
 
-            if let Some(node) = snapshot.free_to_node() {
+            if let Some(node) = snapshot.to_node() {
                 node.draw(&cx);
             } else {
                 log::error!("failed to get rendernode for created snapshot while printing page no {}", page_nr);

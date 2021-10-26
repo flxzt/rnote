@@ -933,7 +933,7 @@ impl Canvas {
             size[1],
         );
 
-        if let Some(node) = snapshot.free_to_node() {
+        if let Some(node) = snapshot.to_node() {
             render::render_node_to_texture(self.upcast_ref::<Widget>(), &node, self.bounds())
                 .unwrap_or_else(|e| {
                     log::error!("{}", e);

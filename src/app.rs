@@ -224,6 +224,11 @@ impl RnoteApp {
     pub fn setup_app(&self, appwindow: &RnoteAppWindow) {
         self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |app, _pspec| {
             appwindow.mainheader().main_title_unsaved_indicator().set_visible(app.unsaved_changes());
+            if app.unsaved_changes() {
+                appwindow.mainheader().main_title().add_css_class("unsaved_changes");
+            } else {
+                appwindow.mainheader().main_title().remove_css_class("unsaved_changes");
+            }
         }));
 
         appwindow.canvas().regenerate_content(true, true);

@@ -19,6 +19,9 @@
           <object class="AdwWindowTitle" id="main_title">
             <property name="title">New Document</property>
             <property name="subtitle">Draft</property>
+            <style>
+              <class name="main_title" />
+            </style>
           </object>
         </child>
       </object>
@@ -43,6 +46,7 @@
                 <property name="pixel-size">24</property>
                 <style>
                   <class name="header_icon_image" />
+                  <class name="lowres-icon" />
                 </style>
               </object>
             </child>

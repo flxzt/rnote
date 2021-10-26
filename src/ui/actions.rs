@@ -498,6 +498,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
             } else {
                 appwindow.canvas().set_unsaved_changes(false);
+/*                 appwindow.canvas_progress_ba().set_visible(true);
+                appwindow.canvas_progress_bar().pulse(); */
             }
         }
     }));

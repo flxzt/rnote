@@ -272,6 +272,8 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                         } else {
                             appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
                             appwindow.canvas().set_unsaved_changes(false);
+                            appwindow.canvas_progress_bar().set_visible(true);
+                            appwindow.canvas_progress_bar().pulse();
                         }
                     },
                     None => { log::error!("Can't save file as. No file selected.")},

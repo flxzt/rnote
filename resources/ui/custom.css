@@ -1,5 +1,6 @@
-headerbar {
-    background-color: @theme_base_color;
+.main_title.unsaved_changes .title {
+    font-style: italic;
+    transition: font-style 0.2s;
 }
 
 .canvas_scroller {
@@ -15,22 +16,13 @@ headerbar {
     color: rgba(0, 200, 20, 255);
 }
 
-.devel_actions {
-    background-color: @theme_base_color;
-}
-
 .flap_resizer {
-    background-color: @theme_base_color;
     transition: all 0.2s ease-out;
 }
 
 .flap_resizer:hover {
     background-color: steelblue;
     box-shadow: 0 0 8px darker(steelblue);
-}
-
-.flap_box {
-    background-color: @theme_bg_color;
 }
 
 .light_theme_toggle {

@@ -5,10 +5,10 @@ mod imp {
     use adw::{prelude::*, subclass::prelude::*};
     use gtk4::{
         gdk, gio, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
-        FileChooserNative, Grid, Inhibit, Overlay, PackType, Picture, ScrolledWindow, StyleContext,
+        FileChooserNative, Grid, Inhibit, Overlay, PackType, ScrolledWindow, StyleContext,
         ToggleButton,
     };
-    use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
+    use gtk4::{GestureDrag, ProgressBar, PropagationPhase, Revealer, Separator};
 
     use crate::ui::appsettings;
     use crate::{
@@ -36,7 +36,7 @@ mod imp {
         #[template_child]
         pub canvas_overlay: TemplateChild<Overlay>,
         #[template_child]
-        pub canvas_resize_preview: TemplateChild<Picture>,
+        pub canvas_progress_bar: TemplateChild<ProgressBar>,
         #[template_child]
         pub settings_panel: TemplateChild<SettingsPanel>,
         #[template_child]
@@ -78,7 +78,7 @@ mod imp {
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
                 canvas_overlay: TemplateChild::<Overlay>::default(),
-                canvas_resize_preview: TemplateChild::<Picture>::default(),
+                canvas_progress_bar: TemplateChild::<ProgressBar>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
                 selection_modifier: TemplateChild::<SelectionModifier>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
@@ -299,7 +299,7 @@ use adw::prelude::*;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
     EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, Inhibit,
-    Overlay, Picture, PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
+    Overlay, ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
 };
 
 use crate::{
@@ -368,9 +368,9 @@ impl RnoteAppWindow {
         imp::RnoteAppWindow::from_instance(self).canvas.get()
     }
 
-    pub fn canvas_resize_preview(&self) -> Picture {
+    pub fn canvas_progress_bar(&self) -> ProgressBar {
         imp::RnoteAppWindow::from_instance(self)
-            .canvas_resize_preview
+            .canvas_progress_bar
             .get()
     }
 
@@ -554,7 +554,12 @@ impl RnoteAppWindow {
         priv_.penssidebar.get().init(self);
         priv_.penssidebar.get().marker_page().init(self);
         priv_.penssidebar.get().brush_page().init(self);
-        priv_.penssidebar.get().brush_page().templatechooser().init(self);
+        priv_
+            .penssidebar
+            .get()
+            .brush_page()
+            .templatechooser()
+            .init(self);
         priv_.penssidebar.get().shaper_page().init(self);
         priv_.penssidebar.get().eraser_page().init(self);
         priv_.penssidebar.get().selector_page().init(self);
@@ -563,7 +568,6 @@ impl RnoteAppWindow {
         priv_.selection_modifier.get().init(self);
         priv_.devel_actions.get().init(self);
         priv_.canvas.get().sheet().format().init(self);
-
 
         // Loading in input file
         if let Some(input_file) = self
@@ -587,9 +591,21 @@ impl RnoteAppWindow {
             }
         }
 
-        self.flap_header().connect_show_end_title_buttons_notify(
-            clone!(@weak self as appwindow => move |_files_headerbar| {
-                if appwindow.flap_header().shows_end_title_buttons() {
+        self.flap().connect_reveal_flap_notify(
+            clone!(@weak self as appwindow => move |flap| {
+                if flap.reveals_flap() && !flap.is_folded() {
+                    appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
+                    appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
+                } else {
+                    appwindow.flap_menus_box().remove(&appwindow.mainheader().appmenu());
+                    appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
+                }
+            }),
+        );
+
+        self.flap().connect_folded_notify(
+            clone!(@weak self as appwindow => move |flap| {
+                if flap.reveals_flap() && !flap.is_folded() {
                     appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
                     appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
                 } else {
@@ -771,6 +787,9 @@ impl RnoteAppWindow {
                             None
                         }
                     },
+                    "canvas_progress_bar" => {
+                        None
+                    }
                     _ => { None }
                 }
             }),

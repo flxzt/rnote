@@ -25,34 +25,46 @@
     box-shadow: 0 0 8px darker(steelblue);
 }
 
+.default_theme_toggle {
+    background-color: grey;
+    transition: all 0.2s ease-out;
+}
+
+.default_theme_toggle:hover {
+    background-color: #d2d2d2;
+}
+
+.default_theme_toggle:checked {
+    background-color: grey;
+    box-shadow: 0 0 10px steelblue;
+}
+
 .light_theme_toggle {
-    background: white;
-    box-shadow: 0 0 15px darkgray;
+    background-color: white;
     transition: all 0.2s ease-out;
 }
 
 .light_theme_toggle:hover {
-    background: #d2d2d2;
+    background-color: #d2d2d2;
 }
 
 .light_theme_toggle:checked {
-    background: white;
-    box-shadow: 0 0 15px steelblue;
+    background-color: white;
+    box-shadow: 0 0 10px steelblue;
 }
 
 .dark_theme_toggle {
-    background: black;
-    box-shadow: 0 0 15px darkgray;
+    background-color: black;
     transition: all 0.2s ease-out;
 }
 
 .dark_theme_toggle:hover {
-    background: #2e2e2e;
+    background-color: #2e2e2e;
 }
 
 .dark_theme_toggle:checked {
-    background: black;
-    box-shadow: 0 0 15px sienna;
+    background-color: black;
+    box-shadow: 0 0 10px steelblue;
 }
 
 .setter-button {

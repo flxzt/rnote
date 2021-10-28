@@ -2,7 +2,7 @@ mod imp {
     use gtk4::{
         gio, glib, prelude::*, subclass::prelude::*, Align, Box, CompositeTemplate, DirectoryList,
         FileFilter, FilterListModel, Image, Label, ListBox, ListBoxRow, MenuButton, Orientation,
-        Popover, TextView, Widget,
+        Popover, Widget,
     };
 
     use crate::pens::brush;
@@ -19,7 +19,7 @@ mod imp {
         #[template_child]
         pub help_popover: TemplateChild<Popover>,
         #[template_child]
-        pub help_text: TemplateChild<TextView>,
+        pub help_text: TemplateChild<Label>,
         #[template_child]
         pub predefined_templates_list: TemplateChild<ListBox>,
         #[template_child]
@@ -39,7 +39,7 @@ mod imp {
                 chooser_popover: TemplateChild::<Popover>::default(),
                 help_button: TemplateChild::<MenuButton>::default(),
                 help_popover: TemplateChild::<Popover>::default(),
-                help_text: TemplateChild::<TextView>::default(),
+                help_text: TemplateChild::<Label>::default(),
                 predefined_templates_list: TemplateChild::<ListBox>::default(),
                 predefined_template_experimental_listboxrow: TemplateChild::<ListBoxRow>::default(),
                 custom_templates_list: TemplateChild::<ListBox>::default(),
@@ -141,7 +141,7 @@ use std::path;
 use crate::{config, pens::brush, ui::appwindow::RnoteAppWindow, utils};
 use gtk4::{
     gio, glib, glib::clone, prelude::*, subclass::prelude::*, ListBoxRow, MenuButton, Popover,
-    TextBuffer, Widget,
+    Widget,
 };
 
 glib::wrapper! {
@@ -251,10 +251,7 @@ impl TemplateChooser {
 
     pub fn set_help_text(&self, text: &str) {
         let priv_ = imp::TemplateChooser::from_instance(self);
-
-        let help_text_buffer = TextBuffer::builder().text(text).build();
-        priv_.help_text.get().set_buffer(Some(&help_text_buffer));
-        priv_.help_text.get().queue_resize();
+        priv_.help_text.get().set_label(text);
     }
 
     pub fn set_templates_path(&self, path: &path::Path) -> Result<(), ()> {

@@ -150,15 +150,20 @@
                 <child>
                   <object class="GtkScrolledWindow">
                     <property name="width-request">600</property>
-                    <property name="height-request">500</property>
+                    <property name="height-request">600</property>
                     <property name="hscrollbar-policy">never</property>
-                    <property name="hexpand">true</property>
+                    <property name="hexpand">false</property>
                     <property name="vexpand">true</property>
                     <property name="halign">fill</property>
                     <property name="valign">fill</property>
+                    <property name="propagate-natural-width">false</property>
+                    <property name="propagate-natural-height">false</property>
                     <child>
-                      <object class="GtkTextView" id="help_text">
-                        <property name="width-request">600</property>
+                      <object class="GtkLabel" id="help_text">
+                        <style>
+                          <class name="body" />
+                          <class name="link" />
+                        </style>
                         <property name="hexpand">false</property>
                         <property name="vexpand">false</property>
                         <property name="halign">start</property>
@@ -167,12 +172,12 @@
                         <property name="margin_bottom">12</property>
                         <property name="margin_start">12</property>
                         <property name="margin_end">12</property>
-                        <property name="editable">false</property>
+                        <property name="wrap">true</property>
                         <property name="wrap-mode">word</property>
-                        <property name="justification">fill</property>
+                        <property name="justify">fill</property>
+                        <property name="use-markup">true</property>
                       </object>
                     </child>
-
                   </object>
                 </child>
               </object>

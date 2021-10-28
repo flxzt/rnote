@@ -29,7 +29,7 @@
             <item>
               <attribute name="label">Endless sheet</attribute>
               <attribute name="toggle" />
-              <attribute name="action">win.autoexpand-height</attribute>
+              <attribute name="action">app.autoexpand-height</attribute>
             </item>
             <item>
               <attribute name="label">Show format borders</attribute>

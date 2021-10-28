@@ -54,6 +54,16 @@
   </provides>
 
   <releases>
+    <release version="0.1.6" date="2021-10-28">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>introducing dots as background pattern</li>
+          <li>UI tweaks</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.5" date="2021-10-21">
       <description>
         <p>this release changes:</p>

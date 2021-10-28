@@ -50,7 +50,7 @@
       <summary>Workspace directory</summary>
     </key>
     <key name="marker-width" type="d">
-      <default>2</default>
+      <default>3</default>
       <summary>Marker width in px</summary>
     </key>
     <key name="marker-colors" type="(uuuuuuuu)">
@@ -67,7 +67,7 @@
       <summary>Marker colors encoded as RGBA values (8-bit)</summary>
     </key>
     <key name="brush-width" type="d">
-      <default>6</default>
+      <default>8</default>
       <summary>Brush width in px</summary>
     </key>
     <key name="brush-colors" type="(uuuuuuuu)">
@@ -106,7 +106,7 @@
       <summary>Eraser width in px</summary>
     </key>
     <key name="format-size" type="(uu)">
-      <default>(1240, 1754)</default>
+      <default>(1123, 1587)</default>
       <summary>format size in (width, height)</summary>
     </key>
     <key name="format-dpi" type="d">

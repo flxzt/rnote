@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use gtk4::{gdk, glib, gsk, Snapshot, Widget};
+use gtk4::{gdk, glib, gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
@@ -49,20 +49,20 @@ pub fn gen_horizontal_line_pattern(
     let mut y_offset = bounds.mins[1] + spacing;
 
     if spacing > 1.0 {
-    while y_offset <= bounds.maxs[1] {
-        group = group.add(
-            element::Line::new()
-                .set("stroke-width", line_width)
-                .set("stroke", color.to_css_color())
-                .set("x1", bounds.mins[0])
-                .set("y1", y_offset - line_width)
-                .set("x2", bounds.maxs[0])
-                .set("y2", y_offset - line_width),
-        );
+        while y_offset <= bounds.maxs[1] {
+            group = group.add(
+                element::Line::new()
+                    .set("stroke-width", line_width)
+                    .set("stroke", color.to_css_color())
+                    .set("x1", bounds.mins[0])
+                    .set("y1", y_offset - line_width)
+                    .set("x2", bounds.maxs[0])
+                    .set("y2", y_offset - line_width),
+            );
 
-        y_offset += spacing
+            y_offset += spacing
+        }
     }
-}
 
     group.into()
 }
@@ -77,38 +77,38 @@ pub fn gen_grid_pattern(
     let mut group = element::Group::new();
 
     if column_spacing > 1.0 && row_spacing > 1.0 {
-    let mut x_offset = bounds.mins[0] + column_spacing;
-    while x_offset <= bounds.maxs[0] {
-        // vertical lines
-        group = group.add(
-            element::Line::new()
-                .set("stroke-width", line_width)
-                .set("stroke", color.to_css_color())
-                .set("x1", x_offset - line_width)
-                .set("y1", bounds.mins[1])
-                .set("x2", x_offset - line_width)
-                .set("y2", bounds.maxs[1]),
-        );
+        let mut x_offset = bounds.mins[0] + column_spacing;
+        while x_offset <= bounds.maxs[0] {
+            // vertical lines
+            group = group.add(
+                element::Line::new()
+                    .set("stroke-width", line_width)
+                    .set("stroke", color.to_css_color())
+                    .set("x1", x_offset - line_width)
+                    .set("y1", bounds.mins[1])
+                    .set("x2", x_offset - line_width)
+                    .set("y2", bounds.maxs[1]),
+            );
 
-        x_offset += column_spacing
+            x_offset += column_spacing
+        }
+
+        let mut y_offset = bounds.mins[1] + row_spacing;
+        while y_offset <= bounds.maxs[1] {
+            // horizontal lines
+            group = group.add(
+                element::Line::new()
+                    .set("stroke-width", line_width)
+                    .set("stroke", color.to_css_color())
+                    .set("x1", bounds.mins[0])
+                    .set("y1", y_offset - line_width)
+                    .set("x2", bounds.maxs[0])
+                    .set("y2", y_offset - line_width),
+            );
+
+            y_offset += row_spacing
+        }
     }
-
-    let mut y_offset = bounds.mins[1] + row_spacing;
-    while y_offset <= bounds.maxs[1] {
-        // horizontal lines
-        group = group.add(
-            element::Line::new()
-                .set("stroke-width", line_width)
-                .set("stroke", color.to_css_color())
-                .set("x1", bounds.mins[0])
-                .set("y1", y_offset - line_width)
-                .set("x2", bounds.maxs[0])
-                .set("y2", y_offset - line_width),
-        );
-
-        y_offset += row_spacing
-    }
-}
     group.into()
 }
 
@@ -123,26 +123,26 @@ pub fn gen_dots_pattern(
 
     // Only generate pattern if spacings are sufficiently large
     if column_spacing > 1.0 && row_spacing > 1.0 {
-    let mut x_offset = bounds.mins[0] + column_spacing;
-    while x_offset <= bounds.maxs[0] {
-        let mut y_offset = bounds.mins[1] + row_spacing;
-        while y_offset <= bounds.maxs[1] {
-            // row by row
-            group = group.add(
-                element::Rectangle::new()
-                    .set("stroke", "none")
-                    .set("fill", color.to_css_color())
-                    .set("x", x_offset - dots_width)
-                    .set("y", y_offset - dots_width)
-                    .set("width", dots_width)
-                    .set("height", dots_width),
-            );
+        let mut x_offset = bounds.mins[0] + column_spacing;
+        while x_offset <= bounds.maxs[0] {
+            let mut y_offset = bounds.mins[1] + row_spacing;
+            while y_offset <= bounds.maxs[1] {
+                // row by row
+                group = group.add(
+                    element::Rectangle::new()
+                        .set("stroke", "none")
+                        .set("fill", color.to_css_color())
+                        .set("x", x_offset - dots_width)
+                        .set("y", y_offset - dots_width)
+                        .set("width", dots_width)
+                        .set("height", dots_width),
+                );
 
-            y_offset += row_spacing;
+                y_offset += row_spacing;
+            }
+
+            x_offset += column_spacing;
         }
-
-        x_offset += column_spacing;
-    }
     }
 
     group.into()
@@ -162,7 +162,7 @@ pub struct Background {
     #[serde(skip)]
     current_bounds: p2d::bounding_volume::AABB,
     #[serde(skip)]
-    texture_buffer: Option<gdk::Texture>,
+    texture_buffer: Option<gdk::MemoryTexture>,
 }
 
 impl Default for Background {
@@ -192,7 +192,7 @@ impl Default for Background {
 
 impl Background {
     pub const PATTERN_SIZE_DEFAULT: f64 = 20.0;
-    pub const TILE_MAX_SIZE: f64 = 256.0;
+    pub const TILE_MAX_SIZE: f64 = 512.0;
 
     pub fn color(&self) -> utils::Color {
         self.color
@@ -235,14 +235,12 @@ impl Background {
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
         renderer: &render::Renderer,
-        active_widget: &Widget,
         force_regenerate: bool,
     ) -> Result<(), Box<dyn Error>> {
         if let Ok(Some(new_rendernode)) = self.gen_rendernode(
             scalefactor,
             sheet_bounds,
             renderer,
-            active_widget,
             force_regenerate,
         ) {
             self.rendernode = new_rendernode;
@@ -259,7 +257,6 @@ impl Background {
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
         renderer: &render::Renderer,
-        active_widget: &Widget,
         force_regenerate: bool,
     ) -> Result<Option<gsk::RenderNode>, Box<dyn Error>> {
         let snapshot = Snapshot::new();
@@ -292,14 +289,18 @@ impl Background {
             || scalefactor != self.current_scalefactor
         {
             // generating a new buffer texture
-            let new_node =
+            /*          let new_node =
                 renderer.gen_rendernode(tile_bounds, scalefactor, svg_string.as_str())?;
 
             let new_texture = render::render_node_to_texture(
                 active_widget,
                 &new_node,
                 utils::aabb_scale(tile_bounds, scalefactor),
-            )?;
+            )?; */
+
+            let new_texture = Some(render::cairosurface_to_memtexture(
+                render::gen_cairosurface_librsvg(&tile_bounds, scalefactor, svg_string.as_str())?,
+            )?);
             if let Some(new_texture) = new_texture {
                 self.texture_buffer = Some(new_texture);
                 self.current_scalefactor = scalefactor;

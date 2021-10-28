@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::{error::Error, ops::Deref};
 
 use gtk4::{
     gdk, gdk_pixbuf, gio, glib, graphene,
@@ -139,7 +139,7 @@ pub fn default_rendernode() -> gsk::RenderNode {
     gsk::CairoNode::new(&bounds).upcast()
 }
 
-pub fn gen_cairosurface(
+pub fn gen_cairosurface_librsvg(
     bounds: &p2d::bounding_volume::AABB,
     scalefactor: f64,
     svg: &str,
@@ -154,8 +154,6 @@ pub fn gen_cairosurface(
     surface.set_device_scale(scalefactor, scalefactor);
 
     let cx = cairo::Context::new(&surface).expect("Failed to create a cairo context");
-
-    cx.set_source_rgba(0.0, 0.0, 0.0, 0.0);
 
     let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
     let handle = librsvg::Loader::new()
@@ -176,6 +174,37 @@ pub fn gen_cairosurface(
         .expect("failed to stroke() cairo context onto cairo surface.");
 
     Ok(surface)
+}
+
+/// Expects Imagesurface in ARgb32 premultiplied Format !
+pub fn cairosurface_to_memtexture(
+    mut surface: cairo::ImageSurface,
+) -> Result<gdk::MemoryTexture, Box<dyn Error>> {
+    let width = surface.width();
+    let height = surface.height();
+    let stride = surface.stride();
+
+    let data = surface.data()?;
+    let bytes = data.deref();
+
+    // switch bytes around
+    let bytes: Vec<u8> = bytes
+        .iter()
+        .zip(bytes.iter().skip(1))
+        .zip(bytes.iter().skip(2))
+        .zip(bytes.iter().skip(3))
+        .step_by(4)
+        .map(|(((first, second), third), forth)| [*first, *second, *third, *forth])
+        .flatten()
+        .collect();
+
+    Ok(gdk::MemoryTexture::new(
+        width,
+        height,
+        gdk::MemoryFormat::B8g8r8a8Premultiplied,
+        &glib::Bytes::from(&bytes),
+        stride as usize,
+    ))
 }
 
 pub fn render_node_to_texture(

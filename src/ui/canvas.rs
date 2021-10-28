@@ -887,7 +887,6 @@ impl Canvas {
             self.scalefactor(),
             self.sheet().bounds(),
             &*self.renderer().borrow(),
-            self.upcast_ref::<Widget>(),
             force_regenerate,
         ) {
             Err(e) => {

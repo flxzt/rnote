@@ -48,6 +48,7 @@ pub fn gen_horizontal_line_pattern(
 
     let mut y_offset = bounds.mins[1] + spacing;
 
+    if spacing > 1.0 {
     while y_offset <= bounds.maxs[1] {
         group = group.add(
             element::Line::new()
@@ -61,6 +62,8 @@ pub fn gen_horizontal_line_pattern(
 
         y_offset += spacing
     }
+}
+
     group.into()
 }
 
@@ -73,6 +76,7 @@ pub fn gen_grid_pattern(
 ) -> svg::node::element::Element {
     let mut group = element::Group::new();
 
+    if column_spacing > 1.0 && row_spacing > 1.0 {
     let mut x_offset = bounds.mins[0] + column_spacing;
     while x_offset <= bounds.maxs[0] {
         // vertical lines
@@ -104,6 +108,7 @@ pub fn gen_grid_pattern(
 
         y_offset += row_spacing
     }
+}
     group.into()
 }
 
@@ -116,6 +121,8 @@ pub fn gen_dots_pattern(
 ) -> svg::node::element::Element {
     let mut group = element::Group::new();
 
+    // Only generate pattern if spacings are sufficiently large
+    if column_spacing > 1.0 && row_spacing > 1.0 {
     let mut x_offset = bounds.mins[0] + column_spacing;
     while x_offset <= bounds.maxs[0] {
         let mut y_offset = bounds.mins[1] + row_spacing;
@@ -131,10 +138,11 @@ pub fn gen_dots_pattern(
                     .set("height", dots_width),
             );
 
-            y_offset += row_spacing
+            y_offset += row_spacing;
         }
 
-        x_offset += column_spacing
+        x_offset += column_spacing;
+    }
     }
 
     group.into()
@@ -167,7 +175,7 @@ impl Default for Background {
                 a: 1.0,
             },
             pattern: PatternStyle::default(),
-            pattern_size: na::vector![32.0, 32.0],
+            pattern_size: na::Vector2::<f64>::from_element(Self::PATTERN_SIZE_DEFAULT),
             pattern_color: utils::Color {
                 r: 0.3,
                 g: 0.7,
@@ -377,7 +385,7 @@ impl Background {
                     self.pattern_size[1],
                     self.pattern_size[0],
                     self.pattern_color,
-                    1.0,
+                    2.0,
                 ));
             }
         }

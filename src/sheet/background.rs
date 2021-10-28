@@ -28,11 +28,13 @@ pub enum PatternStyle {
     Lines,
     #[genum(name = "Grid", nick = "grid")]
     Grid,
+    #[genum(name = "Dots", nick = "dots")]
+    Dots,
 }
 
 impl Default for PatternStyle {
     fn default() -> Self {
-        Self::None
+        Self::Dots
     }
 }
 
@@ -102,6 +104,39 @@ pub fn gen_grid_pattern(
 
         y_offset += row_spacing
     }
+    group.into()
+}
+
+pub fn gen_dots_pattern(
+    bounds: p2d::bounding_volume::AABB,
+    row_spacing: f64,
+    column_spacing: f64,
+    color: utils::Color,
+    dots_width: f64,
+) -> svg::node::element::Element {
+    let mut group = element::Group::new();
+
+    let mut x_offset = bounds.mins[0] + column_spacing;
+    while x_offset <= bounds.maxs[0] {
+        let mut y_offset = bounds.mins[1] + row_spacing;
+        while y_offset <= bounds.maxs[1] {
+            // row by row
+            group = group.add(
+                element::Rectangle::new()
+                    .set("stroke", "none")
+                    .set("fill", color.to_css_color())
+                    .set("x", x_offset - dots_width)
+                    .set("y", y_offset - dots_width)
+                    .set("width", dots_width)
+                    .set("height", dots_width),
+            );
+
+            y_offset += row_spacing
+        }
+
+        x_offset += column_spacing
+    }
+
     group.into()
 }
 
@@ -329,6 +364,15 @@ impl Background {
             }
             PatternStyle::Grid => {
                 group = group.add(gen_grid_pattern(
+                    sheet_bounds,
+                    self.pattern_size[1],
+                    self.pattern_size[0],
+                    self.pattern_color,
+                    1.0,
+                ));
+            }
+            PatternStyle::Dots => {
+                group = group.add(gen_dots_pattern(
                     sheet_bounds,
                     self.pattern_size[1],
                     self.pattern_size[0],

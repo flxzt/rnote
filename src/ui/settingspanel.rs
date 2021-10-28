@@ -556,6 +556,11 @@ impl SettingsPanel {
                         settings_panel.background_pattern_width_unitentry().set_sensitive(true);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
+                    "dots" => {
+                        appwindow.canvas().sheet().background().borrow_mut().set_pattern(PatternStyle::Dots);
+                        settings_panel.background_pattern_width_unitentry().set_sensitive(true);
+                        settings_panel.background_pattern_height_unitentry().set_sensitive(true);
+                    },
                     _ => {
                         log::error!(
                             "invalid nick string when selecting a format in predefined_formats_row"

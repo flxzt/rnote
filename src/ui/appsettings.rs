@@ -182,6 +182,7 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
                 PatternStyle::None => "none",
                 PatternStyle::Lines => "lines",
                 PatternStyle::Grid => "grid",
+                PatternStyle::Dots => "dots",
             },
         )
         .unwrap();
@@ -421,6 +422,12 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
             .background()
             .borrow_mut()
             .set_pattern(PatternStyle::Grid),
+        "dots" => appwindow
+            .canvas()
+            .sheet()
+            .background()
+            .borrow_mut()
+            .set_pattern(PatternStyle::Dots),
         _ => {
             log::error!("failed to load setting color-scheme, unsupported string as key")
         }

@@ -1,7 +1,7 @@
 use std::{error::Error, ops::Deref};
 
 use gtk4::{
-    gdk, gdk_pixbuf, gio, glib, graphene,
+    gdk, gio, glib, graphene,
     gsk::{self, IsRenderNode},
     prelude::*,
     Native, Widget,
@@ -98,6 +98,9 @@ impl Renderer {
             ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as f32,
             ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as f32,
         );
+        let width = ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as i32;
+        let height = ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as i32;
+        let stride = 4 * width as usize;
 
         let rtree = usvg::Tree::from_data(svg.as_bytes(), &self.usvg_options.to_ref())?;
 
@@ -118,19 +121,16 @@ impl Renderer {
         )
         .unwrap();
 
-        //pixmap.save_png(&PathBuf::from("./tests/output/stroke_resvg.png"))?;
-        let pixbuf = gdk_pixbuf::Pixbuf::from_bytes(
-            &glib::Bytes::from(pixmap.data()),
-            gdk_pixbuf::Colorspace::Rgb,
-            true,
-            8,
-            node_bounds.width().round() as i32,
-            node_bounds.height().round() as i32,
-            4 * node_bounds.width().round() as i32,
-        );
-        let texture = gdk::Texture::for_pixbuf(&pixbuf);
+        let bytes = pixmap.data();
 
-        Ok(gsk::TextureNode::new(&texture, &node_bounds).upcast())
+        let memtexture = gdk::MemoryTexture::new(
+            width,
+            height,
+            gdk::MemoryFormat::R8g8b8a8Premultiplied,
+            &glib::Bytes::from(&bytes),
+            stride,
+        );
+        Ok(gsk::TextureNode::new(&memtexture, &node_bounds).upcast())
     }
 }
 

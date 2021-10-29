@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use gtk4::{gdk, glib, gsk, Snapshot};
+use gtk4::{glib, gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
@@ -161,8 +161,6 @@ pub struct Background {
     current_scalefactor: f64,
     #[serde(skip)]
     current_bounds: p2d::bounding_volume::AABB,
-    #[serde(skip)]
-    texture_buffer: Option<gdk::MemoryTexture>,
 }
 
 impl Default for Background {
@@ -185,7 +183,6 @@ impl Default for Background {
             rendernode: render::default_rendernode(),
             current_scalefactor: 1.0,
             current_bounds: p2d::bounding_volume::AABB::new_invalid(),
-            texture_buffer: None,
         }
     }
 }
@@ -234,19 +231,23 @@ impl Background {
         &mut self,
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
-        renderer: &render::Renderer,
+        _renderer: &render::Renderer,
         force_regenerate: bool,
     ) -> Result<(), Box<dyn Error>> {
-        if let Ok(Some(new_rendernode)) = self.gen_rendernode(
-            scalefactor,
-            sheet_bounds,
-            renderer,
-            force_regenerate,
-        ) {
-            self.rendernode = new_rendernode;
-        } else {
-            log::warn!("failed to gen_rendernode() in update_rendernode() of background");
-            return Ok(());
+        if force_regenerate
+            || sheet_bounds != self.current_bounds
+            || scalefactor != self.current_scalefactor
+        {
+            if let Ok(Some(new_rendernode)) =
+                self.gen_rendernode(scalefactor, sheet_bounds)
+            {
+                self.current_scalefactor = scalefactor;
+                self.current_bounds = sheet_bounds;
+                self.rendernode = new_rendernode;
+            } else {
+                log::warn!("failed to gen_rendernode() in update_rendernode() of background");
+                return Ok(());
+            }
         }
 
         Ok(())
@@ -256,8 +257,6 @@ impl Background {
         &mut self,
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
-        renderer: &render::Renderer,
-        force_regenerate: bool,
     ) -> Result<Option<gsk::RenderNode>, Box<dyn Error>> {
         let snapshot = Snapshot::new();
 
@@ -282,34 +281,6 @@ impl Background {
             na::point![tile_size[0], tile_size[1]],
         );
         let svg_string = compose::add_xml_header(self.gen_svg_data(tile_bounds)?.as_str());
-
-        if force_regenerate
-            || self.texture_buffer.is_none()
-            || sheet_bounds != self.current_bounds
-            || scalefactor != self.current_scalefactor
-        {
-            // generating a new buffer texture
-            /*          let new_node =
-                renderer.gen_rendernode(tile_bounds, scalefactor, svg_string.as_str())?;
-
-            let new_texture = render::render_node_to_texture(
-                active_widget,
-                &new_node,
-                utils::aabb_scale(tile_bounds, scalefactor),
-            )?; */
-
-            let new_texture = Some(render::cairosurface_to_memtexture(
-                render::gen_cairosurface_librsvg(&tile_bounds, scalefactor, svg_string.as_str())?,
-            )?);
-            if let Some(new_texture) = new_texture {
-                self.texture_buffer = Some(new_texture);
-                self.current_scalefactor = scalefactor;
-                self.current_bounds = sheet_bounds;
-            } else {
-                log::warn!("failed to generate new texture_buffer for background. render_node_to_texture() returned 'None'")
-            }
-        }
-
         snapshot.push_clip(&utils::aabb_to_graphene_rect(utils::aabb_scale(
             sheet_bounds,
             scalefactor,
@@ -321,22 +292,22 @@ impl Background {
             &utils::aabb_to_graphene_rect(utils::aabb_scale(sheet_bounds, scalefactor)),
         );
 
-        for mut aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
-            // Loosen to avoid borders between the nodes when the texture is placed in between pixels
-            aabb.loosen(1.0 / (scalefactor * 2.0));
+        let new_texture = Some(render::cairosurface_to_memtexture(
+            render::gen_cairosurface_librsvg(&tile_bounds, scalefactor, svg_string.as_str())?,
+        )?);
+        if let Some(new_texture) = new_texture {
+            for mut aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
+                // Loosen to avoid borders between the nodes when the texture is placed in between pixels
+                aabb.loosen(1.0 / (scalefactor * 2.0));
 
-            // use the buffered texture to regenerate nodes
-            if let Some(texture_buffer) = self.texture_buffer.as_ref() {
+                // use the buffered texture to regenerate nodes
                 snapshot.append_texture(
-                    texture_buffer,
+                    &new_texture,
                     &utils::aabb_to_graphene_rect(utils::aabb_scale(aabb, scalefactor)),
                 );
-            } else {
-                // Or generate a new node when no texture_buffer was generated
-                let new_node = renderer.gen_rendernode(aabb, scalefactor, svg_string.as_str())?;
-
-                snapshot.append_node(&new_node);
             }
+        } else {
+            log::warn!("failed to generate new texture_buffer for background. render_node_to_texture() returned 'None'")
         }
 
         snapshot.pop();

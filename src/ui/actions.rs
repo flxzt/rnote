@@ -521,8 +521,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         })); */
 
         print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
-            log::debug!("draw-page signal callback started");
-
             let cx = match print_cx.cairo_context() {
                 None => { return; }
                 Some(cx) => { cx }

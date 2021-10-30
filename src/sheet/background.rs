@@ -239,17 +239,6 @@ impl Background {
             || scalefactor != self.current_scalefactor
         {
             if let Ok(Some(new_rendernode)) = self.gen_rendernode(scalefactor, sheet_bounds) {
-                log::debug!("generated new background rendernodes");
-                log::debug!(
-                    "current_scalefactor: {} --- scalefactor: {}",
-                    self.current_scalefactor,
-                    scalefactor
-                );
-                log::debug!(
-                    "current_bounds: {:?} --- bounds: {:?}",
-                    self.current_bounds,
-                    sheet_bounds
-                );
                 self.current_scalefactor = scalefactor;
                 self.current_bounds = sheet_bounds;
                 self.rendernode = new_rendernode;

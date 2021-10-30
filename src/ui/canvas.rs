@@ -1184,8 +1184,6 @@ impl Canvas {
 
         if with_backlog {
             if let Some(backlog) = gesture_stylus.backlog() {
-                log::debug!("{}", backlog.len());
-
                 for logentry in backlog {
                     let axes = logentry.axes();
                     let x = axes[1];

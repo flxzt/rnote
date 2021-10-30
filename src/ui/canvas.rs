@@ -890,7 +890,7 @@ impl Canvas {
             force_regenerate,
         ) {
             Err(e) => {
-                log::error!("{}", e)
+                log::error!("failed to regenerate background, {}", e)
             }
             Ok(_) => {}
         }
@@ -979,8 +979,9 @@ impl Canvas {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
 
-                    self.sheet().resize_autoexpand();
-                    self.regenerate_background(false, true);
+                    if self.sheet().resize_autoexpand() {
+                        self.regenerate_background(false, true);
+                    }
                 }
             }
             PenStyle::Eraser => {
@@ -1034,8 +1035,10 @@ impl Canvas {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
 
-                    self.sheet().resize_autoexpand();
-                    self.regenerate_background(false, true);
+                    if self.sheet().resize_autoexpand() {
+                        self.regenerate_background(false, true);
+                    }
+                    self.queue_draw();
                 }
             }
             PenStyle::Eraser => {
@@ -1050,10 +1053,12 @@ impl Canvas {
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.pens().borrow_mut().eraser.current_input = Some(inputdata);
 
-                    self.sheet().remove_colliding_strokes(
+                    if self.sheet().remove_colliding_strokes(
                         &self.pens().borrow().eraser,
                         canvas_scroller_viewport_descaled,
-                    );
+                    ) {
+                        self.regenerate_background(false, true);
+                    }
                 }
             }
             PenStyle::Selector => {
@@ -1066,13 +1071,11 @@ impl Canvas {
                         .borrow_mut()
                         .selector
                         .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
+                    self.queue_draw();
                 }
             }
             PenStyle::Unkown => {}
         }
-
-        self.queue_resize();
-        self.queue_draw();
     }
 
     /// Process the end of a strokes drawing

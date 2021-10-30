@@ -81,24 +81,6 @@ mod imp {
     impl ObjectImpl for Sheet {
         fn constructed(&self, obj: &Self::Type) {
             self.format.connect_notify_local(
-                Some("width"),
-                clone!(@weak obj => move |format, _| {
-                    obj.set_width(format.width());
-
-                    obj.resize_to_format();
-                }),
-            );
-
-            self.format.connect_notify_local(
-                Some("height"),
-                clone!(@weak obj => move |format, _| {
-                    obj.set_height(format.height());
-
-                    obj.resize_to_format();
-                }),
-            );
-
-            self.format.connect_notify_local(
                 Some("dpi"),
                 clone!(@weak obj => move |format, _| {
                     let new_width = format::MeasureUnit::convert_measurement(
@@ -622,12 +604,12 @@ impl Sheet {
         }
     }
 
-    // returns true if resizing is needed
+    /// returns true if resizing is needed
     pub fn remove_colliding_strokes(
         &self,
         eraser: &Eraser,
         viewport: Option<p2d::bounding_volume::AABB>,
-    ) {
+    ) -> bool {
         let priv_ = imp::Sheet::from_instance(self);
 
         if let Some(ref eraser_current_input) = eraser.current_input {
@@ -700,11 +682,12 @@ impl Sheet {
                 .borrow_mut()
                 .append(&mut removed_strokes);
 
-            self.resize_autoexpand();
-        };
+            self.resize_autoexpand()
+        } else {
+            false
+        }
     }
 
-    // Returns true if resizing is needed
     pub fn clear(&self) {
         let priv_ = imp::Sheet::from_instance(self);
 
@@ -713,14 +696,22 @@ impl Sheet {
         priv_.selection.strokes().borrow_mut().clear();
     }
 
-    pub fn resize_autoexpand(&self) {
+    // Returns true if resizing is needed
+    pub fn resize_autoexpand(&self) -> bool {
+        let mut resizing_needed = false;
         if self.autoexpand_height() {
             let new_height = self.calc_height();
 
+            if new_height != self.height() {
+                resizing_needed = true;
+            }
             self.set_height(new_height);
         }
+
+        resizing_needed
     }
 
+    /// Resizing needed after calling this
     pub fn resize_to_format(&self) {
         let priv_ = imp::Sheet::from_instance(self);
         if self.autoexpand_height() {

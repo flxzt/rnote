@@ -238,9 +238,18 @@ impl Background {
             || sheet_bounds != self.current_bounds
             || scalefactor != self.current_scalefactor
         {
-            if let Ok(Some(new_rendernode)) =
-                self.gen_rendernode(scalefactor, sheet_bounds)
-            {
+            if let Ok(Some(new_rendernode)) = self.gen_rendernode(scalefactor, sheet_bounds) {
+                log::debug!("generated new background rendernodes");
+                log::debug!(
+                    "current_scalefactor: {} --- scalefactor: {}",
+                    self.current_scalefactor,
+                    scalefactor
+                );
+                log::debug!(
+                    "current_bounds: {:?} --- bounds: {:?}",
+                    self.current_bounds,
+                    sheet_bounds
+                );
                 self.current_scalefactor = scalefactor;
                 self.current_bounds = sheet_bounds;
                 self.rendernode = new_rendernode;
@@ -292,22 +301,20 @@ impl Background {
             &utils::aabb_to_graphene_rect(utils::aabb_scale(sheet_bounds, scalefactor)),
         );
 
-        let new_texture = Some(render::cairosurface_to_memtexture(
-            render::gen_cairosurface_librsvg(&tile_bounds, scalefactor, svg_string.as_str())?,
-        )?);
-        if let Some(new_texture) = new_texture {
-            for mut aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
-                // Loosen to avoid borders between the nodes when the texture is placed in between pixels
-                aabb.loosen(1.0 / (scalefactor * 2.0));
+        let new_texture = render::cairosurface_to_memtexture(render::gen_cairosurface_librsvg(
+            &tile_bounds,
+            scalefactor,
+            svg_string.as_str(),
+        )?)?;
+        for mut aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
+            // Loosen to avoid borders between the nodes when the texture is placed in between pixels
+            aabb.loosen(1.0 / (scalefactor * 2.0));
 
-                // use the buffered texture to regenerate nodes
-                snapshot.append_texture(
-                    &new_texture,
-                    &utils::aabb_to_graphene_rect(utils::aabb_scale(aabb, scalefactor)),
-                );
-            }
-        } else {
-            log::warn!("failed to generate new texture_buffer for background. render_node_to_texture() returned 'None'")
+            // use the buffered texture to regenerate nodes
+            snapshot.append_texture(
+                &new_texture,
+                &utils::aabb_to_graphene_rect(utils::aabb_scale(aabb, scalefactor)),
+            );
         }
 
         snapshot.pop();

@@ -26,6 +26,7 @@ rust_sources = files(
     'main.rs',
     'config.rs',
     'globals.rs',
+    'input.rs',
     'app.rs',
     'utils.rs',
     'sheet/mod.rs',

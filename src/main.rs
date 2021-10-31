@@ -7,6 +7,7 @@ pub mod sheet;
 pub mod strokes;
 pub mod ui;
 pub mod utils;
+pub mod input;
 
 use gtk4::prelude::*;
 extern crate nalgebra as na;

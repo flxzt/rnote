@@ -1,5 +1,6 @@
 use std::path;
 
+use crate::strokes::render;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{app::RnoteApp, sheet::background::PatternStyle, utils};
 
@@ -240,6 +241,19 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         "force-dark" => appwindow.set_color_scheme(adw::ColorScheme::ForceDark),
         _ => {
             log::error!("failed to load setting color-scheme, unsupported string as key")
+        }
+    }
+
+    // renderer backend
+    match appwindow.app_settings().string("renderer-backend").as_str() {
+        "librsvg" => {
+            appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Librsvg;
+        }
+        "resvg" => {
+            appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Resvg;
+        }
+        _ => {
+            log::error!("failed to load setting renderer-backend, unsupported string as key")
         }
     }
 

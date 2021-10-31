@@ -88,35 +88,27 @@ impl Renderer {
 
     pub fn gen_rendernode_backend_resvg(
         &self,
-        bounds: p2d::bounding_volume::AABB,
+        svg_bounds: p2d::bounding_volume::AABB,
         scalefactor: f64,
         svg: &str,
     ) -> Result<gsk::RenderNode, Box<dyn Error>> {
         let node_bounds = graphene::Rect::new(
-            (bounds.mins[0] * scalefactor).floor() as f32,
-            (bounds.mins[1] * scalefactor).floor() as f32,
-            ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as f32,
-            ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as f32,
+            (svg_bounds.mins[0].floor() * scalefactor) as f32,
+            (svg_bounds.mins[1].floor() * scalefactor) as f32,
+            ((svg_bounds.maxs[0] - svg_bounds.mins[0]).ceil() * scalefactor) as f32,
+            ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * scalefactor) as f32,
         );
-        let width = ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as i32;
-        let height = ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as i32;
+        let width = ((svg_bounds.maxs[0] - svg_bounds.mins[0]).ceil() * scalefactor).round() as i32;
+        let height = ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * scalefactor).round() as i32;
         let stride = 4 * width as usize;
 
         let rtree = usvg::Tree::from_data(svg.as_bytes(), &self.usvg_options.to_ref())?;
 
-        //let pixmap_size = rtree.svg_node().size.to_screen_size();
-        let mut pixmap = tiny_skia::Pixmap::new(
-            node_bounds.width().round() as u32,
-            node_bounds.height().round() as u32,
-        )
-        .unwrap();
+        let mut pixmap = tiny_skia::Pixmap::new(width as u32, height as u32).unwrap();
 
         resvg::render(
             &rtree,
-            usvg::FitTo::Size(
-                node_bounds.width().round() as u32,
-                node_bounds.height().round() as u32,
-            ),
+            usvg::FitTo::Size(width as u32, height as u32),
             pixmap.as_mut(),
         )
         .unwrap();

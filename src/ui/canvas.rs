@@ -988,10 +988,6 @@ impl Canvas {
                     if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
-
-                    if self.sheet().resize_autoexpand() {
-                        self.regenerate_background(false, true);
-                    }
                 }
             }
             PenStyle::Eraser => {
@@ -1055,9 +1051,6 @@ impl Canvas {
                         stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
                     }
 
-                    if self.sheet().resize_autoexpand() {
-                        self.regenerate_background(false, true);
-                    }
                     self.queue_draw();
                 }
             }
@@ -1114,6 +1107,10 @@ impl Canvas {
 
         if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {
             stroke.complete_stroke();
+        }
+
+        if self.sheet().resize_autoexpand() {
+            self.regenerate_background(false, true);
         }
 
         let scalefactor = self.scalefactor();

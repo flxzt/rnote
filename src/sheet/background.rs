@@ -1,7 +1,6 @@
 use std::error::Error;
 
 use gtk4::{glib, gsk, Snapshot};
-use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -295,10 +294,7 @@ impl Background {
             scalefactor,
             svg_string.as_str(),
         )?)?;
-        for mut aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
-            // Loosen to avoid borders between the nodes when the texture is placed in between pixels
-            aabb.loosen(1.0 / (scalefactor * 2.0));
-
+        for aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
             // use the buffered texture to regenerate nodes
             snapshot.append_texture(
                 &new_texture,

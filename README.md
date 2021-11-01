@@ -33,7 +33,7 @@ Rnote is available as  a flatpak on Flathub:
     * with the ability to move them up and down the history / layers
 * Stroke trash restorer
     *  with a preview of the deleted strokes
-* Dual sheet view (e.g. one for imported pdfs and one for extra notes)
+* Stylus buttons configuration to map them to different actions or switch to different pens 
 
 ## To-Do
 - [x] switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
@@ -46,6 +46,8 @@ Rnote is available as  a flatpak on Flathub:
     (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
 - [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
+- [ ] make as much as possible parallel, especially rendering and actions which affect many strokes.
+- [ ] implement text fields
 
 ## Screenshots
 

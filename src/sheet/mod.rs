@@ -604,12 +604,12 @@ impl Sheet {
         }
     }
 
-    /// returns true if resizing is needed
+    /// remove any colliding stroke
     pub fn remove_colliding_strokes(
         &self,
         eraser: &Eraser,
         viewport: Option<p2d::bounding_volume::AABB>,
-    ) -> bool {
+    ) {
         let priv_ = imp::Sheet::from_instance(self);
 
         if let Some(ref eraser_current_input) = eraser.current_input {
@@ -682,9 +682,6 @@ impl Sheet {
                 .borrow_mut()
                 .append(&mut removed_strokes);
 
-            self.resize_autoexpand()
-        } else {
-            false
         }
     }
 

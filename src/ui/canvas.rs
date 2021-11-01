@@ -1066,12 +1066,15 @@ impl Canvas {
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.pens().borrow_mut().eraser.current_input = Some(inputdata);
 
-                    if self.sheet().remove_colliding_strokes(
+
+                    self.sheet().remove_colliding_strokes(
                         &self.pens().borrow().eraser,
                         canvas_scroller_viewport_descaled,
-                    ) {
+                    );
+                    if self.sheet().resize_autoexpand() {
                         self.regenerate_background(false, true);
                     }
+                    self.queue_draw();
                 }
             }
             PenStyle::Selector => {

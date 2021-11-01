@@ -74,7 +74,7 @@ mod imp {
                 cursor: gdk::Cursor::from_texture(
                     &gdk::Texture::from_resource(
                         (String::from(config::APP_IDPATH)
-                            + "icons/scalable/actions/canvas-cursor-symbolic.svg")
+                            + "icons/scalable/actions/canvas-cursor.svg")
                             .as_str(),
                     ),
                     8,
@@ -84,7 +84,7 @@ mod imp {
                 motion_cursor: gdk::Cursor::from_texture(
                     &gdk::Texture::from_resource(
                         (String::from(config::APP_IDPATH)
-                            + "icons/scalable/actions/canvas-motion-cursor-symbolic.svg")
+                            + "icons/scalable/actions/canvas-motion-cursor.svg")
                             .as_str(),
                     ),
                     8,

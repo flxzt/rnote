@@ -24,8 +24,18 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <path
-     id="rect1077"
-     style="fill:#3f3f3f;stroke:none;fill-opacity:1"
-     d="M 0 0 L 0 16 L 16 16 L 16 0 L 0 0 z M 1 1 L 15 1 L 15 15 L 1 15 L 1 1 z " />
+  <ellipse
+     style="fill:none;fill-opacity:1;stroke:#f1f1f1;stroke-width:0.976066;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path5295-3"
+     cx="7.999999"
+     cy="8.000001"
+     rx="1.7774128"
+     ry="1.7774136" />
+  <ellipse
+     style="fill:none;fill-opacity:1;stroke:#3f3f3f;stroke-width:0.833479;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     id="path5295"
+     cx="7.9998465"
+     cy="7.9998484"
+     rx="1.3119712"
+     ry="1.3119717" />
 </svg>

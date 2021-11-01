@@ -59,6 +59,9 @@
         <p>this release changes:</p>
         <ul>
           <li>introducing dots as background pattern</li>
+          <li>added undo, redo, close app and close active window shortcuts</li>
+          <li>added current file as title, with unsaved changes indicator</li>
+          <li>improved background rendering</li>
           <li>UI tweaks</li>
           <li>bug fixes</li>
         </ul>

@@ -54,7 +54,7 @@
   </provides>
 
   <releases>
-    <release version="0.1.6" date="2021-10-28">
+    <release version="0.1.6" date="2021-11-01">
       <description>
         <p>this release changes:</p>
         <ul>

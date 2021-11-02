@@ -31,6 +31,7 @@
     border-color: #2e2e2e;
     transition: all 0.2s ease-out;
     background-blend-mode: normal;
+    filter: brightness(100%);
     background-image:
         linear-gradient(135deg, black 50%, white 50%, white 100%, black 100%, black),
         linear-gradient(135deg, black 50%, white 50%, white 100%, black 100%, black);
@@ -38,7 +39,7 @@
 }
 
 .default_theme_toggle:hover {
-    background-color: #d2d2d288;
+    filter: brightness(80%);
 }
 
 .default_theme_toggle:checked {
@@ -50,11 +51,12 @@
     border-style: solid;
     border-width: 2px;
     border-color: @borders;
+    filter: brightness(100%);
     transition: all 0.2s ease-out;
 }
 
 .light_theme_toggle:hover {
-    background-color: #dddddd;
+    filter: brightness(80%);
 }
 
 .light_theme_toggle:checked {
@@ -66,22 +68,14 @@
     border-style: solid;
     border-width: 2px;
     border-color: @borders;
+    filter: brightness(100%);
     transition: all 0.2s ease-out;
 }
 
 .dark_theme_toggle:hover {
-    background-color: #222222;
+    filter: brightness(120%);
 }
 
 .dark_theme_toggle:checked {
     border-color: steelblue;
-}
-
-.setter-button {
-    padding: 0 0 0 0;
-    background-blend-mode: screen;
-    background-image:
-        linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188),
-        linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188);
-    background-size: 20px 20px; background-position: 0px 0px, 10px 10px;
 }

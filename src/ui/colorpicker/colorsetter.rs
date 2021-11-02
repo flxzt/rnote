@@ -167,15 +167,29 @@ mod imp {
             let parsed = format!(
                 "
 .setter-button {{
+    padding: 0 0 0 0;
+    background-blend-mode: screen;
+    background-image:
+        linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188),
+        linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188);
+    background-size: 20px 20px; background-position: 0px 0px, 10px 10px;
+    border-color: @borders;
+    border-style: solid;
+    border-width: 1px;
+    filter: brightness(100%);
     margin{0}: 10px;
     background-color: rgba({3}, {4}, {5}, {6:.3});
-    transition: margin{0} 0.2s ease-out, border-radius 0.2s ease-out;
+    transition: margin{0} 0.2s ease-out, border-radius 0.2s ease-out, filter 0.2s ease-out;
     {1}
 }}
 
 .setter-button:checked {{
     margin{0}: 0px;
     {2}
+}}
+
+.setter-button:hover {{
+    filter: brightness(90%);
 }}
 ",
                 position_string,

@@ -6,7 +6,7 @@
   <project_license>GPL-3.0</project_license>
   <name>Rnote</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
-  <summary>Create handwritten notes</summary>
+  <summary>Note taking with ease</summary>
 
   <categories>
     <category>Gnome</category>

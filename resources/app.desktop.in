@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Rnote
-Comment=A simple note taking application
+Comment=Note taking with ease
 Icon=@APP_ID@
 #DBusActivatable=true
 Exec=@APP_NAME@ %f

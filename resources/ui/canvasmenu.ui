@@ -124,7 +124,6 @@
             </child>
             <child>
               <object class="GtkButton" id="zoom_fit_width_button">
-                <property name="margin-start">6</property>
                 <layout>
                   <property name="column">1</property>
                   <property name="row">0</property>

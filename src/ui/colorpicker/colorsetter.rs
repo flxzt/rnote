@@ -179,7 +179,7 @@ mod imp {
     filter: brightness(100%);
     margin{0}: 10px;
     background-color: rgba({3}, {4}, {5}, {6:.3});
-    transition: margin{0} 0.2s ease-out, border-radius 0.2s ease-out, filter 0.2s ease-out;
+    transition: margin{0} 0.15s ease-out, border-radius 0.15s ease-out, filter 0.15s ease-out;
     {1}
 }}
 

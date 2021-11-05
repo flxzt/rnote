@@ -591,29 +591,29 @@ impl RnoteAppWindow {
             }
         }
 
-        self.flap().connect_reveal_flap_notify(
-            clone!(@weak self as appwindow => move |flap| {
+        self.flap()
+            .connect_reveal_flap_notify(clone!(@weak self as appwindow => move |flap| {
+                if appwindow.mainheader().appmenu().parent().is_some() {
+                    appwindow.mainheader().appmenu().unparent();
+                }
                 if flap.reveals_flap() && !flap.is_folded() {
-                    appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
                     appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
                 } else {
-                    appwindow.flap_menus_box().remove(&appwindow.mainheader().appmenu());
                     appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
                 }
-            }),
-        );
+            }));
 
-        self.flap().connect_folded_notify(
-            clone!(@weak self as appwindow => move |flap| {
+        self.flap()
+            .connect_folded_notify(clone!(@weak self as appwindow => move |flap| {
+                if appwindow.mainheader().appmenu().parent().is_some() {
+                    appwindow.mainheader().appmenu().unparent();
+                }
                 if flap.reveals_flap() && !flap.is_folded() {
-                    appwindow.mainheader().menus_box().remove(&appwindow.mainheader().appmenu());
                     appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
                 } else {
-                    appwindow.flap_menus_box().remove(&appwindow.mainheader().appmenu());
                     appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
                 }
-            }),
-        );
+            }));
 
         // zoom scrolling with <ctrl> + scroll
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()

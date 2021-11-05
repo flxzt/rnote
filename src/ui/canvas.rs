@@ -672,6 +672,15 @@ impl Canvas {
         .flags(glib::BindingFlags::DEFAULT)
         .build();
 
+        self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |app, _pspec| {
+            appwindow.mainheader().main_title_unsaved_indicator().set_visible(app.unsaved_changes());
+            if app.unsaved_changes() {
+                appwindow.mainheader().main_title().add_css_class("unsaved_changes");
+            } else {
+                appwindow.mainheader().main_title().remove_css_class("unsaved_changes");
+            }
+        }));
+
         self.bind_property(
             "scalefactor",
             &appwindow.mainheader().canvasmenu().zoomreset_button(),

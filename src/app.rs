@@ -150,7 +150,7 @@ mod imp {
 
 use std::{cell::RefCell, rc::Rc};
 
-use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
+use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 
 use crate::config;
 use crate::ui::appwindow::RnoteAppWindow;
@@ -222,14 +222,6 @@ impl RnoteApp {
 
     // Anything that needs to be done right before showing the appwindow
     pub fn setup_app(&self, appwindow: &RnoteAppWindow) {
-        self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |app, _pspec| {
-            appwindow.mainheader().main_title_unsaved_indicator().set_visible(app.unsaved_changes());
-            if app.unsaved_changes() {
-                appwindow.mainheader().main_title().add_css_class("unsaved_changes");
-            } else {
-                appwindow.mainheader().main_title().remove_css_class("unsaved_changes");
-            }
-        }));
 
         appwindow.canvas().regenerate_content(true, true);
     }

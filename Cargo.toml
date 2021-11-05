@@ -39,3 +39,4 @@ librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
 resvg = "0.18"
 usvg = "0.18"
 tiny-skia = "0.6.1"
+slotmap = { version = "1.0", features = ["serde"] }

@@ -99,7 +99,8 @@ impl Renderer {
             ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * scalefactor) as f32,
         );
         let width = ((svg_bounds.maxs[0] - svg_bounds.mins[0]).ceil() * scalefactor).round() as i32;
-        let height = ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * scalefactor).round() as i32;
+        let height =
+            ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * scalefactor).round() as i32;
         let stride = 4 * width as usize;
 
         let rtree = usvg::Tree::from_data(svg.as_bytes(), &self.usvg_options.to_ref())?;

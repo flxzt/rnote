@@ -4,8 +4,8 @@ use gtk4::{glib, gsk, Snapshot};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-use crate::strokes::{compose, render};
 use crate::utils;
+use crate::{compose, render};
 
 #[derive(
     Debug,

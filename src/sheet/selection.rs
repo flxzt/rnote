@@ -97,8 +97,9 @@ mod imp {
 use std::{cell::RefCell, error::Error, rc::Rc};
 
 use crate::{
+    compose,
     pens::selector::Selector,
-    strokes::{self, compose, StrokeBehaviour, StrokeStyle},
+    strokes::{self, StrokeBehaviour, StrokeStyle},
     ui::appwindow::RnoteAppWindow,
 };
 use gtk4::{

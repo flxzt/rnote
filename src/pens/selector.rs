@@ -1,7 +1,7 @@
 use std::error::Error;
 
-use crate::strokes::{compose, render, InputData};
-use crate::utils;
+use crate::strokes::InputData;
+use crate::{compose, render, utils};
 
 use gtk4::{gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;

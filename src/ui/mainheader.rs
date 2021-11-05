@@ -277,7 +277,9 @@ impl MainHeader {
                     self.main_title()
                         .set_title(fileinfo.display_name().as_str());
                     if let Some(path) = file.path() {
-                        self.main_title().set_subtitle(&String::from(glib::path_get_dirname(path).to_string_lossy() + "/"));
+                        self.main_title().set_subtitle(&String::from(
+                            glib::path_get_dirname(path).to_string_lossy() + "/",
+                        ));
                     }
                 }
                 Err(e) => {

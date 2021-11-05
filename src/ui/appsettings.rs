@@ -1,8 +1,7 @@
 use std::path;
 
-use crate::strokes::render;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{app::RnoteApp, sheet::background::PatternStyle, utils};
+use crate::{app::RnoteApp, render, sheet::background::PatternStyle, utils};
 
 use gtk4::{gio, glib, prelude::*};
 use tuple_conv::RepeatedTuple;

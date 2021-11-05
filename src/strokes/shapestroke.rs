@@ -1,6 +1,6 @@
 use super::{Element, StrokeBehaviour};
+use crate::compose;
 use crate::pens::shaper::{self, DrawStyle};
-use crate::strokes::compose;
 use crate::utils;
 use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render};
 

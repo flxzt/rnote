@@ -1,6 +1,6 @@
 use std::{error::Error, io};
 
-use crate::strokes::{compose, render};
+use crate::{compose, render};
 use gtk4::gsk;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};

@@ -5,7 +5,8 @@ use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    strokes::{brushstroke::BrushStroke, compose, render, Element, StrokeBehaviour},
+    compose, render,
+    strokes::{brushstroke::BrushStroke, Element, StrokeBehaviour},
     utils,
 };
 

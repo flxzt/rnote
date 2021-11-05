@@ -5,9 +5,11 @@ pub mod selection;
 use std::{cell::RefCell, error::Error, rc::Rc};
 
 use crate::{
+    compose,
     pens::eraser::Eraser,
+    render,
     sheet::selection::Selection,
-    strokes::{self, compose, render::Renderer, Element, StrokeBehaviour, StrokeStyle},
+    strokes::{self, Element, StrokeBehaviour, StrokeStyle},
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     utils::{self, FileType},
 };
@@ -532,7 +534,7 @@ impl Sheet {
         &mut self,
         n_elements: usize,
         scalefactor: f64,
-        renderer: &Renderer,
+        renderer: &render::Renderer,
     ) {
         let priv_ = imp::Sheet::from_instance(self);
 
@@ -569,7 +571,7 @@ impl Sheet {
         &mut self,
         n_elements: usize,
         scalefactor: f64,
-        renderer: &Renderer,
+        renderer: &render::Renderer,
     ) {
         let priv_ = imp::Sheet::from_instance(self);
 
@@ -681,7 +683,6 @@ impl Sheet {
                 .strokes_trash
                 .borrow_mut()
                 .append(&mut removed_strokes);
-
         }
     }
 

@@ -13,7 +13,7 @@ Vectors / Matrices in 2D space:
         (1,0) is the x-axis of the bottom-right corner, (1,1) is the y-axis of the bottom-right corner.
 */
 
-use crate::{pens::PenStyle, pens::Pens};
+use crate::{pens::PenStyle, pens::Pens, render};
 
 use self::{
     bitmapimage::BitmapImage, brushstroke::BrushStroke, markerstroke::MarkerStroke,
@@ -26,6 +26,29 @@ use gtk4::{gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
+use slotmap::{HopSlotMap, SecondaryMap};
+
+/* slotmap::new_key_type! {
+    struct StrokeKey;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StrokeState {
+    stroke_keys: Vec<StrokeKey>,
+    strokes: HopSlotMap<StrokeKey, StrokeStyle>,
+    #[serde(skip)]
+    render_component: SecondaryMap<StrokeKey, gsk::RenderNode>,
+}
+
+impl Default for StrokeState {
+    fn default() -> Self {
+        Self {
+            stroke_keys: Vec::new(),
+            strokes: HopSlotMap::with_key(),
+            render_component: SecondaryMap::new(),
+        }
+    }
+} */
 
 pub trait StrokeBehaviour {
     // returns the bounds of the type

@@ -1,16 +1,16 @@
 use std::error::Error;
 
 use crate::{
+    compose, curves,
     pens::brush::{self, Brush},
-    strokes::{compose, render, Element},
+    render,
+    strokes::{Element, StrokeBehaviour},
     utils,
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
-
-use super::{curves, StrokeBehaviour};
 
 // Struct field names are also used in brushstroke template, reminder to be careful when renaming
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]

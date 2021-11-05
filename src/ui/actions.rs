@@ -3,7 +3,7 @@ use std::{cell::Cell, rc::Rc};
 use crate::{
     app::RnoteApp,
     pens::{shaper, PenStyle},
-    strokes::render,
+    render,
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
 };

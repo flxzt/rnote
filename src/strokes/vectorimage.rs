@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use crate::strokes::{compose, render};
+use crate::{compose, render};
 
 use gtk4::gsk;
 use serde::{Deserialize, Serialize};

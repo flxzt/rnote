@@ -28,7 +28,7 @@ use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
-/* slotmap::new_key_type! {
+slotmap::new_key_type! {
     struct StrokeKey;
 }
 
@@ -48,7 +48,7 @@ impl Default for StrokeState {
             render_component: SecondaryMap::new(),
         }
     }
-} */
+}
 
 pub trait StrokeBehaviour {
     // returns the bounds of the type

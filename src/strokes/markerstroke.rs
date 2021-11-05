@@ -2,15 +2,15 @@ use std::error::Error;
 
 use crate::{
     pens::marker::Marker,
-    strokes::{self, compose, render, Element},
-    utils,
+    strokes::{self, Element},
+    utils, compose, render, curves
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
-use super::{curves, StrokeBehaviour};
+use super::{StrokeBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]

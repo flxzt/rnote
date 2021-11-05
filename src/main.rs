@@ -8,6 +8,9 @@ pub mod strokes;
 pub mod ui;
 pub mod utils;
 pub mod input;
+pub mod curves;
+pub mod compose;
+pub mod render;
 
 use gtk4::prelude::*;
 extern crate nalgebra as na;

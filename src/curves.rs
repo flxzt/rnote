@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use super::Element;
+use crate::strokes::Element;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default)]

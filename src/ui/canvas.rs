@@ -5,7 +5,7 @@ mod imp {
     use super::debug;
     use crate::config;
     use crate::pens::{PenStyle, Pens};
-    use crate::strokes::render;
+    use crate::render;
     use crate::{sheet::Sheet, strokes};
 
     use gtk4::{
@@ -498,9 +498,9 @@ mod imp {
     }
 }
 
-use crate::strokes::{render, Element, StrokeStyle};
+use crate::strokes::{Element, StrokeStyle};
 use crate::{
-    app::RnoteApp, pens::PenStyle, pens::Pens, sheet::Sheet, strokes::InputData,
+    app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, strokes::InputData,
     strokes::StrokeBehaviour, ui::appwindow::RnoteAppWindow,
 };
 use crate::{input, utils};
@@ -1074,7 +1074,6 @@ impl Canvas {
 
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.pens().borrow_mut().eraser.current_input = Some(inputdata);
-
 
                     self.sheet().remove_colliding_strokes(
                         &self.pens().borrow().eraser,

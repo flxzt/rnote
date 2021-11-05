@@ -2009,6 +2009,7 @@ dependencies = [
  "rough-rs",
  "serde",
  "serde_json",
+ "slotmap",
  "svg",
  "tera",
  "tiny-skia",
@@ -2263,6 +2264,16 @@ name = "slab"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c307a32c1c5c437f38c7fd45d753050587732ba8628319fbdf12a7e289ccc590"
+
+[[package]]
+name = "slotmap"
+version = "1.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1e08e261d0e8f5c43123b7adf3e4ca1690d655377ac93a03b2c9d3e98de1342"
+dependencies = [
+ "serde",
+ "version_check",
+]
 
 [[package]]
 name = "slug"

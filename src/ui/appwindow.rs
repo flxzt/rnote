@@ -291,7 +291,6 @@ mod imp {
 use std::{
     boxed,
     cell::{Cell, RefCell},
-    error::Error,
     rc::Rc,
 };
 
@@ -563,7 +562,6 @@ impl RnoteAppWindow {
         priv_.penssidebar.get().shaper_page().init(self);
         priv_.penssidebar.get().eraser_page().init(self);
         priv_.penssidebar.get().selector_page().init(self);
-        priv_.canvas.get().sheet().selection().init(self);
         priv_.settings_panel.get().init(self);
         priv_.selection_modifier.get().init(self);
         priv_.devel_actions.get().init(self);
@@ -759,19 +757,21 @@ impl RnoteAppWindow {
         );
 
         // This dictates the overlay children position and size
+        // resizing happens through the overlay when the canvas size changes.
         self.canvas_overlay().connect_get_child_position(
             clone!(@weak self as appwindow => @default-return None, move |_canvas_overlay, widget| {
                  match widget.widget_name().as_str() {
                      "selection_modifier" => {
                         let selectionmodifier = widget.clone().downcast::<SelectionModifier>().unwrap();
                         let scalefactor = appwindow.canvas().scalefactor();
+                        let temporary_zoom = appwindow.canvas().temporary_zoom();
 
-                        if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds() {
+                        if let Some(selection_bounds) = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds {
                             let translate_node_size = (
-                                ((selection_bounds.maxs[0] - selection_bounds.mins[0]) * scalefactor).round() as i32,
-                                ((selection_bounds.maxs[1] - selection_bounds.mins[1]) * scalefactor).round() as i32,
+                                ((selection_bounds.maxs[0] - selection_bounds.mins[0]) * scalefactor * temporary_zoom).round() as i32,
+                                ((selection_bounds.maxs[1] - selection_bounds.mins[1]) * scalefactor * temporary_zoom).round() as i32,
                             );
-                            let selection_bounds_scaled = utils::aabb_scale(selection_bounds, scalefactor);
+                            let selection_bounds_scaled = utils::aabb_scale(selection_bounds, scalefactor * temporary_zoom);
 
                             appwindow.selection_modifier().translate_node().set_width_request(translate_node_size.0);
                             appwindow.selection_modifier().translate_node().set_height_request(translate_node_size.1);
@@ -802,7 +802,7 @@ impl RnoteAppWindow {
     }
 
     /// Loads in a file of any supported type into the current sheet.
-    pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn Error>> {
+    pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn std::error::Error>> {
         match utils::FileType::lookup_file_type(file) {
             utils::FileType::Rnote => {
                 self.canvas().sheet().open_sheet(file)?;
@@ -874,12 +874,7 @@ impl RnoteAppWindow {
         }
 
         self.canvas().set_empty(false);
-        self.canvas()
-            .sheet()
-            .selection()
-            .emit_by_name("redraw", &[])
-            .unwrap();
-        self.canvas().regenerate_content(false, true);
+        self.canvas().regenerate_content(true, true);
         Ok(())
     }
 }

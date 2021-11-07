@@ -5,8 +5,7 @@ mod imp {
     use super::debug;
     use crate::config;
     use crate::pens::{PenStyle, Pens};
-    use crate::render;
-    use crate::{sheet::Sheet, strokes};
+    use crate::sheet::Sheet;
 
     use gtk4::{
         gdk, glib, graphene, gsk, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
@@ -26,13 +25,11 @@ mod imp {
         pub touch_drawing: Cell<bool>,
         pub unsaved_changes: Cell<bool>,
         pub empty: Cell<bool>,
-        pub format_borders: Cell<bool>,
         pub cursor: gdk::Cursor,
         pub motion_cursor: gdk::Cursor,
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
-        pub renderer: Rc<RefCell<render::Renderer>>,
         pub preview: WidgetPaintable,
         pub texture_buffer: RefCell<Option<gdk::Texture>>,
         pub zoom_timeout: RefCell<Option<glib::SourceId>>,
@@ -70,7 +67,6 @@ mod imp {
                 touch_drawing: Cell::new(false),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
-                format_borders: Cell::new(true),
                 cursor: gdk::Cursor::from_texture(
                     &gdk::Texture::from_resource(
                         (String::from(config::APP_IDPATH)
@@ -94,7 +90,6 @@ mod imp {
                 stylus_drawing_gesture,
                 mouse_drawing_gesture,
                 touch_drawing_gesture,
-                renderer: Rc::new(RefCell::new(render::Renderer::default())),
                 preview: WidgetPaintable::new::<Widget>(None),
                 texture_buffer: RefCell::new(None),
                 zoom_timeout: RefCell::new(None),
@@ -231,6 +226,7 @@ mod imp {
                         .expect("The value needs to be of type `f64`.")
                         .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
                     self.scalefactor.replace(scalefactor);
+                    self.sheet.strokes_state().borrow_mut().scalefactor = scalefactor;
                     obj.queue_resize();
                     obj.queue_draw();
                 }
@@ -322,15 +318,32 @@ mod imp {
                     snapshot,
                 );
 
+                let sheet_bounds_scaled = graphene::Rect::new(
+                    self.sheet.x() as f32 * scalefactor as f32,
+                    self.sheet.y() as f32 * scalefactor as f32,
+                    self.sheet.width() as f32 * scalefactor as f32,
+                    self.sheet.height() as f32 * scalefactor as f32,
+                );
+
+                // Clip sheet and stroke drawing to sheet bounds
+                snapshot.push_clip(&sheet_bounds_scaled);
+
                 self.sheet.draw(scalefactor, snapshot);
 
-                self.sheet.selection().draw(scalefactor, snapshot);
+                self.sheet.strokes_state().borrow().draw_strokes(snapshot);
+
+                snapshot.pop();
+
+                self.sheet
+                    .strokes_state()
+                    .borrow()
+                    .draw_selection(scalefactor, snapshot);
 
                 self.pens
                     .borrow()
                     .draw(self.current_pen.get(), snapshot, scalefactor);
 
-                if self.format_borders.get() {
+                if self.sheet.format_borders() {
                     self.sheet
                         .format()
                         .draw(self.sheet.bounds(), snapshot, scalefactor);
@@ -344,16 +357,16 @@ mod imp {
     }
 
     impl Canvas {
-        pub const SHADOW_WIDTH: f64 = 15.0;
+        pub const SHADOW_WIDTH: f64 = 30.0;
 
         pub fn draw_shadow(&self, bounds: &graphene::Rect, width: f64, snapshot: &Snapshot) {
             let shadow_color = gdk::RGBA {
-                red: 0.0,
-                green: 0.0,
-                blue: 0.0,
-                alpha: 0.5,
+                red: 0.1,
+                green: 0.1,
+                blue: 0.1,
+                alpha: 0.3,
             };
-            let corner_radius = graphene::Size::new(width as f32, width as f32);
+            let corner_radius = graphene::Size::new(width as f32 / 4.0, width as f32 / 4.0);
 
             let rounded_rect = gsk::RoundedRect::new(
                 bounds.clone(),
@@ -418,90 +431,18 @@ mod imp {
                 snapshot,
             );
 
-            for stroke in self.sheet.strokes().borrow().iter() {
-                match stroke {
-                    strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                        for element in markerstroke.elements.iter() {
-                            debug::draw_pos(
-                                element.inputdata().pos(),
-                                debug::COLOR_POS,
-                                scalefactor,
-                                snapshot,
-                            )
-                        }
-                        for &hitbox_elem in markerstroke.hitbox.iter() {
-                            debug::draw_bounds(
-                                hitbox_elem,
-                                debug::COLOR_STROKE_HITBOX,
-                                scalefactor,
-                                snapshot,
-                            );
-                        }
-                        debug::draw_bounds(
-                            markerstroke.bounds,
-                            debug::COLOR_STROKE_BOUNDS,
-                            scalefactor,
-                            snapshot,
-                        );
-                    }
-                    strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                        for element in brushstroke.elements.iter() {
-                            debug::draw_pos(
-                                element.inputdata().pos(),
-                                debug::COLOR_POS,
-                                scalefactor,
-                                snapshot,
-                            )
-                        }
-                        for &hitbox_elem in brushstroke.hitbox.iter() {
-                            debug::draw_bounds(
-                                hitbox_elem,
-                                debug::COLOR_STROKE_HITBOX,
-                                scalefactor,
-                                snapshot,
-                            );
-                        }
-                        debug::draw_bounds(
-                            brushstroke.bounds,
-                            debug::COLOR_STROKE_BOUNDS,
-                            scalefactor,
-                            snapshot,
-                        );
-                    }
-                    strokes::StrokeStyle::ShapeStroke(shapestroke) => {
-                        debug::draw_bounds(
-                            shapestroke.bounds,
-                            debug::COLOR_STROKE_BOUNDS,
-                            scalefactor,
-                            snapshot,
-                        );
-                    }
-                    strokes::StrokeStyle::VectorImage(vectorimage) => {
-                        debug::draw_bounds(
-                            vectorimage.bounds,
-                            debug::COLOR_STROKE_BOUNDS,
-                            scalefactor,
-                            snapshot,
-                        );
-                    }
-                    strokes::StrokeStyle::BitmapImage(bitmapimage) => {
-                        debug::draw_bounds(
-                            bitmapimage.bounds,
-                            debug::COLOR_STROKE_BOUNDS,
-                            scalefactor,
-                            snapshot,
-                        );
-                    }
-                }
-            }
+            self.sheet
+                .strokes_state()
+                .borrow()
+                .draw_debug(scalefactor, snapshot);
         }
     }
 }
 
-use crate::strokes::{Element, StrokeStyle};
+use crate::strokes::Element;
 use crate::{
     app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, strokes::InputData,
-    strokes::StrokeBehaviour, ui::appwindow::RnoteAppWindow,
+    ui::appwindow::RnoteAppWindow,
 };
 use crate::{input, utils};
 
@@ -619,20 +560,6 @@ impl Canvas {
                 log::error!("failed to set property `empty` of `Canvas`, {}", e)
             }
         }
-    }
-
-    pub fn format_borders(&self) -> bool {
-        let priv_ = imp::Canvas::from_instance(self);
-        priv_.format_borders.get()
-    }
-
-    pub fn set_format_borders(&self, format_borders: bool) {
-        let priv_ = imp::Canvas::from_instance(self);
-        priv_.format_borders.set(format_borders);
-    }
-
-    pub fn renderer(&self) -> Rc<RefCell<render::Renderer>> {
-        imp::Canvas::from_instance(self).renderer.clone()
     }
 
     /// The bounds of the sheet scaled to the current canvas scalefactor
@@ -755,7 +682,6 @@ impl Canvas {
                 let mut data_entries = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
                 input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![0.0, 0.0]);
 
-                canvas.pens().borrow_mut().selector.clear_path();
 
                 match device_tool.tool_type() {
                     gdk::DeviceToolType::Pen => { },
@@ -835,7 +761,6 @@ impl Canvas {
             ]);
         }
         self.set_temporary_zoom(temp_scalefactor / self.scalefactor());
-        self.sheet().selection().set_shown(false);
     }
 
     /// Scales the canvas and its contents to a new scalefactor
@@ -851,12 +776,12 @@ impl Canvas {
         self.set_scalefactor(scalefactor);
 
         // regenerating bounds, hitboxes,..
-        StrokeStyle::complete_all_strokes(&mut *self.sheet().strokes().borrow_mut());
-        StrokeStyle::complete_all_strokes(&mut *self.sheet().strokes_trash().borrow_mut());
-        StrokeStyle::complete_all_strokes(&mut *self.sheet().selection().strokes().borrow_mut());
+        self.sheet()
+            .strokes_state()
+            .borrow_mut()
+            .complete_all_strokes();
 
         self.regenerate_content(false, true);
-        self.sheet().selection().set_shown(true);
     }
 
     /// Zooms temporarily and then scale the canvas and its contents to a new scalefactor after a given time.
@@ -893,7 +818,7 @@ impl Canvas {
         match self.sheet().background().borrow_mut().update_rendernode(
             self.scalefactor(),
             self.sheet().bounds(),
-            &*self.renderer().borrow(),
+            &self.sheet().strokes_state().borrow().renderer,
             force_regenerate,
         ) {
             Err(e) => {
@@ -909,23 +834,7 @@ impl Canvas {
 
     /// regenerate the rendernodes of the canvas content. force_regenerate disables buffers and regenerates all rendernodes from scratch
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
-        let scalefactor = self.scalefactor();
-
-        StrokeStyle::update_all_rendernodes(
-            &mut *self.sheet().strokes().borrow_mut(),
-            scalefactor,
-            &*self.renderer().borrow(),
-        );
-        StrokeStyle::update_all_rendernodes(
-            &mut *self.sheet().strokes_trash().borrow_mut(),
-            scalefactor,
-            &*self.renderer().borrow(),
-        );
-        StrokeStyle::update_all_rendernodes(
-            &mut *self.sheet().selection().strokes().borrow_mut(),
-            scalefactor,
-            &*self.renderer().borrow(),
-        );
+        self.sheet().strokes_state().borrow_mut().update_rendering();
 
         self.regenerate_background(force_regenerate, redraw);
     }
@@ -953,22 +862,20 @@ impl Canvas {
     /// Process the beginning of a stroke drawing
     fn processing_draw_begin(
         &self,
-        _appwindow: &RnoteAppWindow,
+        appwindow: &RnoteAppWindow,
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
         self.set_unsaved_changes(true);
         self.set_empty(false);
-
-        // deselect all strokes from selection and readding them to the sheet
-        if !self.sheet().selection().strokes().borrow().is_empty() {
-            let mut strokes = self.sheet().selection().remove_strokes();
-            self.sheet().strokes().borrow_mut().append(&mut strokes);
-        }
+        self.sheet().strokes_state().borrow_mut().deselect();
+        appwindow.selection_modifier().set_visible(false);
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
+                self.set_cursor(Some(&self.motion_cursor()));
+
                 let filter_bounds = p2d::bounding_volume::AABB::new(
                     na::point![
                         priv_.sheet.x() as f64 - Self::INPUT_OVERSHOOT,
@@ -982,21 +889,16 @@ impl Canvas {
                 input::filter_mapped_inputdata(filter_bounds, data_entries);
 
                 if let Some(inputdata) = data_entries.pop_back() {
-                    self.set_cursor(Some(&self.motion_cursor()));
-
-                    self.sheet().elements_trash().borrow_mut().clear();
-
-                    StrokeStyle::new_stroke(
-                        &mut *self.sheet().strokes().borrow_mut(),
+                    self.sheet().strokes_state().borrow_mut().new_stroke(
                         Element::new(inputdata),
                         self.current_pen().get(),
                         &self.pens().borrow(),
                     );
 
-                    // update the rendernode of the current stroke
-                    if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {
-                        stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
-                    }
+                    self.sheet()
+                        .strokes_state()
+                        .borrow_mut()
+                        .update_rendering_newest_stroke();
                 }
             }
             PenStyle::Eraser => {
@@ -1010,20 +912,19 @@ impl Canvas {
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
 
-                    self.pens().borrow_mut().selector.set_shown(true);
                     self.pens().borrow_mut().selector.new_path(inputdata);
+                    self.pens().borrow_mut().selector.set_shown(true);
 
                     // update the rendernode of the current stroke
-                    self.pens()
-                        .borrow_mut()
-                        .selector
-                        .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
+                    self.pens().borrow_mut().selector.update_rendernode(
+                        self.scalefactor(),
+                        &self.sheet().strokes_state().borrow().renderer,
+                    );
                 }
             }
             PenStyle::Unkown => {}
         }
 
-        self.queue_resize();
         self.queue_draw();
     }
 
@@ -1050,15 +951,10 @@ impl Canvas {
                 input::filter_mapped_inputdata(filter_bounds, data_entries);
 
                 for inputdata in data_entries {
-                    StrokeStyle::add_to_last_stroke(
-                        &mut *self.sheet().strokes().borrow_mut(),
-                        Element::new(inputdata.clone()),
-                        &self.pens().borrow(),
-                    );
-
-                    if let Some(stroke) = &mut self.sheet().strokes().borrow_mut().last_mut() {
-                        stroke.update_rendernode(self.scalefactor(), &*self.renderer().borrow());
-                    }
+                    self.sheet()
+                        .strokes_state()
+                        .borrow_mut()
+                        .add_to_last_stroke(Element::new(inputdata.clone()), &self.pens().borrow());
 
                     self.queue_draw();
                 }
@@ -1075,12 +971,15 @@ impl Canvas {
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.pens().borrow_mut().eraser.current_input = Some(inputdata);
 
-                    self.sheet().remove_colliding_strokes(
-                        &self.pens().borrow().eraser,
-                        canvas_scroller_viewport_descaled,
-                    );
-                    if self.sheet().resize_autoexpand() {
-                        self.regenerate_background(false, true);
+                    self.sheet()
+                        .strokes_state()
+                        .borrow_mut()
+                        .trash_colliding_strokes(
+                            &self.pens().borrow().eraser,
+                            canvas_scroller_viewport_descaled,
+                        );
+                    if self.sheet().resize_endless() {
+                        self.regenerate_background(false, false);
                     }
                     self.queue_draw();
                 }
@@ -1091,10 +990,10 @@ impl Canvas {
                         .borrow_mut()
                         .selector
                         .push_elem(inputdata.clone());
-                    self.pens()
-                        .borrow_mut()
-                        .selector
-                        .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
+                    self.pens().borrow_mut().selector.update_rendernode(
+                        self.scalefactor(),
+                        &self.sheet().strokes_state().borrow().renderer,
+                    );
                     self.queue_draw();
                 }
             }
@@ -1108,7 +1007,6 @@ impl Canvas {
         appwindow: &RnoteAppWindow,
         _data_entries: &mut VecDeque<InputData>,
     ) {
-        self.set_unsaved_changes(true);
         self.set_cursor(Some(&self.cursor()));
 
         appwindow
@@ -1116,52 +1014,64 @@ impl Canvas {
             .unwrap()
             .change_action_state("tmperaser", &false.to_variant());
 
-        if let Some(stroke) = self.sheet().strokes().borrow_mut().last_mut() {
-            stroke.complete_stroke();
+        // complete the last stroke
+        let last_key = self.sheet().strokes_state().borrow().last_stroke_key();
+        if let Some(last_key) = last_key {
+            self.sheet()
+                .strokes_state()
+                .borrow_mut()
+                .complete_stroke(last_key);
         }
-
-        if self.sheet().resize_autoexpand() {
-            self.regenerate_background(false, true);
-        }
-
-        let scalefactor = self.scalefactor();
-        let canvas_scroller_viewport_descaled =
-            if let Some(viewport) = appwindow.canvas_scroller_viewport() {
-                Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
-            } else {
-                None
-            };
 
         match self.current_pen().get() {
             PenStyle::Selector => {
-                self.sheet().selection().update_selection(
-                    &self.pens().borrow().selector,
-                    &mut self.sheet().strokes().borrow_mut(),
-                    canvas_scroller_viewport_descaled,
-                );
+                let scalefactor = self.scalefactor();
 
-                self.pens().borrow_mut().selector.clear_path();
-                self.pens()
+                let canvas_scroller_viewport_descaled =
+                    if let Some(viewport) = appwindow.canvas_scroller_viewport() {
+                        Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
+                    } else {
+                        None
+                    };
+
+                self.sheet()
+                    .strokes_state()
                     .borrow_mut()
-                    .selector
-                    .update_rendernode(self.scalefactor(), &*self.renderer().borrow());
+                    .update_selection_for_selector(
+                        &self.pens().borrow().selector,
+                        canvas_scroller_viewport_descaled,
+                    );
+
+                // Show the selection modifier if selection bounds are some
+                appwindow.selection_modifier().set_visible(
+                    self.sheet()
+                        .strokes_state()
+                        .borrow()
+                        .selection_bounds
+                        .is_some(),
+                );
             }
             PenStyle::Marker
             | PenStyle::Brush
             | PenStyle::Shaper
             | PenStyle::Eraser
-            | PenStyle::Unkown => {
-                self.pens().borrow_mut().eraser.set_shown(false);
-                self.pens().borrow_mut().selector.set_shown(false);
-            }
+            | PenStyle::Unkown => {}
         }
 
+        self.pens().borrow_mut().eraser.set_shown(false);
+        self.pens().borrow_mut().selector.set_shown(false);
+        self.pens().borrow_mut().selector.clear_path();
+
+        if self.sheet().resize_endless() {
+            self.regenerate_background(false, false);
+        }
+        self.queue_resize();
         self.queue_draw();
     }
 }
 
 /// functions and consts for visual debugging
-mod debug {
+pub mod debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
 
     pub const COLOR_POS: gdk::RGBA = gdk::RGBA {

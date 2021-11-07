@@ -138,10 +138,6 @@ impl SelectionModifier {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::SelectionModifier::from_instance(self);
 
-        self.bind_property("visible", &appwindow.canvas().sheet().selection(), "shown")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
-
         priv_
             .resize_tl
             .get()
@@ -150,7 +146,8 @@ impl SelectionModifier {
                 false,
                 clone!(@weak self as obj, @weak appwindow  => @default-return None, move |args| {
 
-                    if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds() {
+                    let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+                    if let Some(selection_bounds) = selection_bounds {
                         let scalefactor = appwindow.canvas().scalefactor();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
                         let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
@@ -172,7 +169,10 @@ impl SelectionModifier {
                         );
                         let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
 
-                        appwindow.canvas().sheet().selection().resize_selection(new_bounds);
+                        appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+
+                        obj.queue_resize();
+                        appwindow.canvas().queue_draw();
                     }
                     None
                 }),
@@ -187,7 +187,8 @@ impl SelectionModifier {
                 false,
                 clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
 
-                    if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds() {
+                    let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+                    if let Some(selection_bounds) = selection_bounds {
                         let scalefactor = appwindow.canvas().scalefactor();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
                         let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
@@ -209,7 +210,10 @@ impl SelectionModifier {
                         );
                         let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
 
-                        appwindow.canvas().sheet().selection().resize_selection(new_bounds);
+                        appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+
+                        obj.queue_resize();
+                        appwindow.canvas().queue_draw();
                     }
                     None
                 }),
@@ -224,7 +228,8 @@ impl SelectionModifier {
                 false,
                 clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
 
-                    if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds(){
+                    let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+                    if let Some(selection_bounds) = selection_bounds {
                         let scalefactor = appwindow.canvas().scalefactor();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
                         let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
@@ -246,7 +251,10 @@ impl SelectionModifier {
                         );
                         let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
 
-                        appwindow.canvas().sheet().selection().resize_selection(new_bounds);
+                        appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+
+                        obj.queue_resize();
+                        appwindow.canvas().queue_draw();
                     }
                     None
                 }),
@@ -261,7 +269,8 @@ impl SelectionModifier {
                 false,
                 clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
 
-                    if let Some(selection_bounds) = appwindow.canvas().sheet().selection().bounds(){
+                    let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+                    if let Some(selection_bounds) = selection_bounds {
                         let scalefactor = appwindow.canvas().scalefactor();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
                         let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
@@ -283,7 +292,10 @@ impl SelectionModifier {
                         );
                         let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
 
-                        appwindow.canvas().sheet().selection().resize_selection(new_bounds);
+                        appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+
+                        obj.queue_resize();
+                        appwindow.canvas().queue_draw();
                     }
                     None
                 }),
@@ -300,7 +312,10 @@ impl SelectionModifier {
                 let scalefactor = appwindow.canvas().scalefactor();
                 let offset = na::vector![x.round() / scalefactor, y.round() / scalefactor];
 
-                appwindow.canvas().sheet().selection().translate_selection(offset);
+                appwindow.canvas().sheet().strokes_state().borrow_mut().translate_selection(offset);
+
+                obj.queue_resize();
+                appwindow.canvas().queue_draw();
             }),
         );
     }

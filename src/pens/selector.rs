@@ -1,16 +1,16 @@
-use std::error::Error;
-
 use crate::strokes::InputData;
 use crate::{compose, render, utils};
 
 use gtk4::{gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
+use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Selector {
     pub path: Vec<InputData>,
     pub bounds: Option<p2d::bounding_volume::AABB>,
+    #[serde(skip, default = "render::default_rendernode")]
     pub rendernode: gsk::RenderNode,
     shown: bool,
 }
@@ -80,7 +80,7 @@ impl Selector {
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
         if let Some(bounds) = self.bounds {
             let svg = compose::wrap_svg(
                 self.gen_svg_path(na::vector![0.0, 0.0])?.as_str(),
@@ -111,7 +111,10 @@ impl Selector {
         }
     }
 
-    pub fn gen_svg_path(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
+    pub fn gen_svg_path(
+        &self,
+        offset: na::Vector2<f64>,
+    ) -> Result<String, Box<dyn std::error::Error>> {
         let mut svg = String::new();
         let mut data = element::path::Data::new();
 

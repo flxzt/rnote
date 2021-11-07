@@ -8,7 +8,7 @@ use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum ShapeStyle {
     Line {
         start: na::Vector2<f64>, // The position of the line start
@@ -32,8 +32,6 @@ pub struct ShapeStroke {
     pub shaper: Shaper,
     pub bounds: p2d::bounding_volume::AABB,
     pub seed: Option<u64>,
-    #[serde(skip, default = "render::default_rendernode")]
-    pub rendernode: gsk::RenderNode,
 }
 
 impl Default for ShapeStroke {
@@ -328,14 +326,6 @@ impl StrokeBehaviour for ShapeStroke {
         Ok(svg)
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
-        if let Ok(rendernode) = self.gen_rendernode(scalefactor, renderer) {
-            self.rendernode = rendernode;
-        } else {
-            log::error!("failed to gen_rendernode() in update_rendernode() of shapestroke");
-        }
-    }
-
     fn gen_rendernode(
         &self,
         scalefactor: f64,
@@ -385,7 +375,6 @@ impl ShapeStroke {
             shaper,
             bounds,
             seed,
-            rendernode: render::default_rendernode(),
         };
 
         shapestroke.update_bounds();

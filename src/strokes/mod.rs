@@ -4,6 +4,11 @@ pub mod markerstroke;
 pub mod shapestroke;
 pub mod vectorimage;
 
+pub mod chrono_comp;
+pub mod render_comp;
+pub mod selection_comp;
+pub mod trash_comp;
+
 /*
 Conventions:
 Coordinates in 2d space: origin is thought of in top-left corner of the screen.
@@ -14,39 +19,269 @@ Vectors / Matrices in 2D space:
 */
 
 use crate::{pens::PenStyle, pens::Pens, render};
+use chrono_comp::ChronoComponent;
+use render_comp::RenderComponent;
+use selection_comp::SelectionComponent;
+use trash_comp::TrashComponent;
 
 use self::{
     bitmapimage::BitmapImage, brushstroke::BrushStroke, markerstroke::MarkerStroke,
     shapestroke::ShapeStroke, vectorimage::VectorImage,
 };
 
-use std::error::Error;
-
-use gtk4::{gsk, Snapshot};
+use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
 slotmap::new_key_type! {
-    struct StrokeKey;
+    pub struct StrokeKey;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct StrokeState {
-    stroke_keys: Vec<StrokeKey>,
+pub struct StrokesState {
+    // Components
     strokes: HopSlotMap<StrokeKey, StrokeStyle>,
+    render_components: SecondaryMap<StrokeKey, Option<RenderComponent>>,
+    trash_components: SecondaryMap<StrokeKey, Option<TrashComponent>>,
+    selection_components: SecondaryMap<StrokeKey, Option<SelectionComponent>>,
+    chrono_components: SecondaryMap<StrokeKey, Option<ChronoComponent>>,
+
+    // Other state
+    /// value is equal chrono_component of the newest inserted stroke.
+    chrono_counter: u64,
     #[serde(skip)]
-    render_component: SecondaryMap<StrokeKey, gsk::RenderNode>,
+    pub scalefactor: f64, // changes with the canvas scalefactor
+    #[serde(skip)]
+    pub renderer: render::Renderer,
+    pub selection_bounds: Option<p2d::bounding_volume::AABB>,
 }
 
-impl Default for StrokeState {
+impl Default for StrokesState {
     fn default() -> Self {
         Self {
-            stroke_keys: Vec::new(),
             strokes: HopSlotMap::with_key(),
-            render_component: SecondaryMap::new(),
+            trash_components: SecondaryMap::new(),
+            selection_components: SecondaryMap::new(),
+            render_components: SecondaryMap::new(),
+            chrono_components: SecondaryMap::new(),
+
+            chrono_counter: 0,
+            scalefactor: 1.0,
+            renderer: render::Renderer::default(),
+            selection_bounds: None,
         }
+    }
+}
+
+impl StrokesState {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    // returns true if resizing is needed
+    pub fn new_stroke(
+        &mut self,
+        element: Element,
+        current_pen: PenStyle,
+        pens: &Pens,
+    ) -> Option<StrokeKey> {
+        match current_pen {
+            PenStyle::Marker => {
+                let markerstroke =
+                    StrokeStyle::MarkerStroke(MarkerStroke::new(element, pens.marker.clone()));
+
+                Some(self.insert_stroke(markerstroke))
+            }
+            PenStyle::Brush => {
+                let brushstroke =
+                    StrokeStyle::BrushStroke(BrushStroke::new(element, pens.brush.clone()));
+
+                Some(self.insert_stroke(brushstroke))
+            }
+            PenStyle::Shaper => {
+                let shapestroke =
+                    StrokeStyle::ShapeStroke(ShapeStroke::new(element, pens.shaper.clone()));
+
+                Some(self.insert_stroke(shapestroke))
+            }
+            PenStyle::Eraser | PenStyle::Selector | PenStyle::Unkown => None,
+        }
+    }
+
+    pub fn insert_stroke(&mut self, stroke: StrokeStyle) -> StrokeKey {
+        let key = self.strokes.insert(stroke);
+        self.chrono_counter += 1;
+
+        self.trash_components
+            .insert(key, Some(TrashComponent::default()));
+        self.selection_components
+            .insert(key, Some(SelectionComponent::default()));
+        self.render_components
+            .insert(key, Some(RenderComponent::default()));
+        self.chrono_components
+            .insert(key, Some(ChronoComponent::new(self.chrono_counter)));
+
+        self.update_rendering_for_stroke(key);
+        key
+    }
+
+    pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<StrokeStyle> {
+        self.trash_components.remove(key);
+        self.selection_components.remove(key);
+        self.render_components.remove(key);
+        self.chrono_components.remove(key);
+
+        self.strokes.remove(key)
+    }
+
+    pub fn last_stroke_key(&self) -> Option<StrokeKey> {
+        let mut sorted = self
+            .chrono_components
+            .iter()
+            .filter_map(|(key, chrono_comp)| {
+                if let (Some(Some(trash_comp)), Some(chrono_comp)) =
+                    (self.trash_components.get(key), chrono_comp)
+                {
+                    if !trash_comp.trashed {
+                        return Some((key, chrono_comp.t));
+                    }
+                }
+                None
+            })
+            .collect::<Vec<(StrokeKey, u64)>>();
+        sorted.sort_unstable_by(|first, second| first.1.cmp(&second.1));
+
+        let last_stroke_key = sorted.last().copied();
+        if let Some(last_stroke_key) = last_stroke_key {
+            Some(last_stroke_key.0)
+        } else {
+            None
+        }
+    }
+
+    /// returns key to last stroke
+    pub fn add_to_last_stroke(&mut self, element: Element, pens: &Pens) -> StrokeKey {
+        let key = if let Some((key, stroke)) = self.strokes.iter_mut().last() {
+            match stroke {
+                StrokeStyle::MarkerStroke(ref mut markerstroke) => {
+                    markerstroke.push_elem(element);
+                }
+                StrokeStyle::BrushStroke(ref mut brushstroke) => {
+                    brushstroke.push_elem(element);
+                }
+                StrokeStyle::ShapeStroke(ref mut shapestroke) => {
+                    shapestroke.update_shape(element);
+                }
+                StrokeStyle::VectorImage(_vectorimage) => {}
+                StrokeStyle::BitmapImage(_bitmapimage) => {}
+            }
+            key
+        } else {
+            self.insert_stroke(StrokeStyle::BrushStroke(BrushStroke::new(
+                element,
+                pens.brush.clone(),
+            )))
+        };
+
+        self.update_rendering_for_stroke(key);
+
+        key
+    }
+
+    /// Clears every stroke and every component
+    pub fn clear(&mut self) {
+        self.chrono_counter = 0;
+
+        self.strokes.clear();
+        self.trash_components.clear();
+        self.selection_components.clear();
+        self.render_components.clear();
+        self.chrono_components.clear();
+    }
+
+    /// Returns the key to the completed stroke
+    pub fn complete_stroke(&mut self, key: StrokeKey) {
+        if let Some(stroke) = self.strokes.get_mut(key) {
+            match stroke {
+                StrokeStyle::MarkerStroke(ref mut markerstroke) => {
+                    markerstroke.complete_stroke();
+                }
+                StrokeStyle::BrushStroke(ref mut brushstroke) => {
+                    brushstroke.complete_stroke();
+                }
+                StrokeStyle::ShapeStroke(shapestroke) => {
+                    shapestroke.complete_stroke();
+                }
+                StrokeStyle::VectorImage(ref mut _vectorimage) => {}
+                StrokeStyle::BitmapImage(ref mut _bitmapimage) => {}
+            }
+        }
+
+        self.update_rendering_for_stroke(key);
+    }
+
+    pub fn complete_all_strokes(&mut self) {
+        let keys: Vec<StrokeKey> = self.strokes.keys().collect();
+        keys.iter().for_each(|key| {
+            self.complete_stroke(*key);
+        });
+    }
+
+    /// Calculates the height needed to fit all strokes
+    pub fn calc_height(&self) -> i32 {
+        let new_height = if let Some(stroke) = self
+            .strokes
+            .values()
+            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
+        {
+            // max_by_key() returns the element, so we need to extract the height again
+            stroke.bounds().maxs[1].round() as i32
+        } else {
+            0
+        };
+
+        new_height
+    }
+
+    /// Generates the bounds needed to fit the strokes
+    pub fn gen_bounds<'a>(
+        &self,
+        mut keys: impl Iterator<Item = &'a StrokeKey>,
+    ) -> Option<p2d::bounding_volume::AABB> {
+        if let Some(first_key) = keys.next() {
+            if let Some(first) = self.strokes.get(*first_key) {
+                let mut bounds = match first {
+                    StrokeStyle::MarkerStroke(markerstroke) => markerstroke.bounds,
+                    StrokeStyle::BrushStroke(brushstroke) => brushstroke.bounds,
+                    StrokeStyle::ShapeStroke(shapestroke) => shapestroke.bounds,
+                    StrokeStyle::VectorImage(vectorimage) => vectorimage.bounds,
+                    StrokeStyle::BitmapImage(bitmapimage) => bitmapimage.bounds,
+                };
+
+                keys.for_each(|key| match self.strokes.get(*key) {
+                    Some(StrokeStyle::MarkerStroke(markerstroke)) => {
+                        bounds.merge(&markerstroke.bounds);
+                    }
+                    Some(StrokeStyle::BrushStroke(brushstroke)) => {
+                        bounds.merge(&brushstroke.bounds);
+                    }
+                    Some(StrokeStyle::ShapeStroke(shapestroke)) => {
+                        bounds.merge(&shapestroke.bounds);
+                    }
+                    Some(StrokeStyle::VectorImage(vectorimage)) => {
+                        bounds.merge(&vectorimage.bounds);
+                    }
+                    Some(StrokeStyle::BitmapImage(bitmapimage)) => {
+                        bounds.merge(&bitmapimage.bounds);
+                    }
+                    None => {}
+                });
+                return Some(bounds);
+            }
+        }
+        None
     }
 }
 
@@ -58,15 +293,13 @@ pub trait StrokeBehaviour {
     // resizes the type to the desired new_bounds
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB);
     // gen_svg_data() generates the svg elements as a String, without the xml header or the svg root.
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>>;
-    // updates the rendernodes for the type implementing this trait
-    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer);
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>>;
     // generates and returns the rendernode for this type
     fn gen_rendernode(
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>>;
+    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>>;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -128,7 +361,7 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.gen_svg_data(offset),
             Self::BrushStroke(brushstroke) => brushstroke.gen_svg_data(offset),
@@ -138,31 +371,11 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
-        match self {
-            Self::MarkerStroke(markerstroke) => {
-                markerstroke.update_rendernode(scalefactor, renderer);
-            }
-            Self::BrushStroke(brushstroke) => {
-                brushstroke.update_rendernode(scalefactor, renderer);
-            }
-            Self::ShapeStroke(shapestroke) => {
-                shapestroke.update_rendernode(scalefactor, renderer);
-            }
-            Self::VectorImage(vectorimage) => {
-                vectorimage.update_rendernode(scalefactor, renderer);
-            }
-            Self::BitmapImage(bitmapimage) => {
-                bitmapimage.update_rendernode(scalefactor, renderer);
-            }
-        }
-    }
-
     fn gen_rendernode(
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(scalefactor, renderer),
             Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(scalefactor, renderer),
@@ -176,160 +389,6 @@ impl StrokeBehaviour for StrokeStyle {
 impl Default for StrokeStyle {
     fn default() -> Self {
         Self::MarkerStroke(MarkerStroke::default())
-    }
-}
-
-impl StrokeStyle {
-    pub fn complete_stroke(&mut self) {
-        match self {
-            StrokeStyle::MarkerStroke(markerstroke) => {
-                markerstroke.complete_stroke();
-            }
-            StrokeStyle::BrushStroke(brushstroke) => {
-                brushstroke.complete_stroke();
-            }
-            StrokeStyle::ShapeStroke(shapestroke) => {
-                shapestroke.complete_stroke();
-            }
-            StrokeStyle::VectorImage(_vectorimage) => {}
-            StrokeStyle::BitmapImage(_bitmapimage) => {}
-        }
-    }
-
-    pub fn complete_all_strokes(strokes: &mut Vec<Self>) {
-        for stroke in strokes {
-            stroke.complete_stroke();
-        }
-    }
-
-    pub fn gen_bounds(strokes: &[Self]) -> Option<p2d::bounding_volume::AABB> {
-        let mut strokes_iter = strokes.iter();
-
-        if let Some(first) = strokes_iter.next() {
-            let mut bounds = match first {
-                StrokeStyle::MarkerStroke(markerstroke) => markerstroke.bounds,
-                StrokeStyle::BrushStroke(brushstroke) => brushstroke.bounds,
-                StrokeStyle::ShapeStroke(shapestroke) => shapestroke.bounds,
-                StrokeStyle::VectorImage(vectorimage) => vectorimage.bounds,
-                StrokeStyle::BitmapImage(bitmapimage) => bitmapimage.bounds,
-            };
-
-            for stroke in strokes_iter {
-                match stroke {
-                    StrokeStyle::MarkerStroke(markerstroke) => {
-                        bounds.merge(&markerstroke.bounds);
-                    }
-                    StrokeStyle::BrushStroke(brushstroke) => {
-                        bounds.merge(&brushstroke.bounds);
-                    }
-                    StrokeStyle::ShapeStroke(shapestroke) => {
-                        bounds.merge(&shapestroke.bounds);
-                    }
-                    StrokeStyle::VectorImage(vectorimage) => {
-                        bounds.merge(&vectorimage.bounds);
-                    }
-                    StrokeStyle::BitmapImage(bitmapimage) => {
-                        bounds.merge(&bitmapimage.bounds);
-                    }
-                }
-            }
-            Some(bounds)
-        } else {
-            None
-        }
-    }
-
-    // returns true if resizing is needed
-    pub fn new_stroke(
-        strokes: &mut Vec<Self>,
-        element: Element,
-        current_pen: PenStyle,
-        pens: &Pens,
-    ) {
-        match current_pen {
-            PenStyle::Marker => {
-                strokes.push(StrokeStyle::MarkerStroke(MarkerStroke::new(
-                    element,
-                    pens.marker.clone(),
-                )));
-            }
-            PenStyle::Brush => {
-                strokes.push(StrokeStyle::BrushStroke(BrushStroke::new(
-                    element,
-                    pens.brush.clone(),
-                )));
-            }
-            PenStyle::Shaper => {
-                strokes.push(StrokeStyle::ShapeStroke(ShapeStroke::new(
-                    element,
-                    pens.shaper.clone(),
-                )));
-            }
-            PenStyle::Eraser | PenStyle::Selector | PenStyle::Unkown => {}
-        }
-    }
-
-    #[allow(dead_code)]
-    pub fn remove_from_strokes(strokes: &mut Vec<Self>, indices: Vec<usize>) {
-        for (to_remove_index, i) in indices.iter().enumerate() {
-            strokes.remove(i - to_remove_index);
-        }
-    }
-
-    // returns true if resizing is needed
-    pub fn add_to_last_stroke(strokes: &mut Vec<Self>, element: Element, pens: &Pens) {
-        if let Some(strokes) = strokes.last_mut() {
-            match strokes {
-                StrokeStyle::MarkerStroke(ref mut markerstroke) => {
-                    markerstroke.push_elem(element);
-                }
-                StrokeStyle::BrushStroke(ref mut brushstroke) => {
-                    brushstroke.push_elem(element);
-                }
-                StrokeStyle::ShapeStroke(ref mut shapestroke) => {
-                    shapestroke.update_shape(element);
-                }
-                StrokeStyle::VectorImage(_vectorimage) => {}
-                StrokeStyle::BitmapImage(_bitmapimage) => {}
-            }
-        } else {
-            strokes.push(StrokeStyle::BrushStroke(BrushStroke::new(
-                element,
-                pens.brush.clone(),
-            )));
-        }
-    }
-
-    pub fn update_all_rendernodes(
-        strokes: &mut Vec<Self>,
-        scalefactor: f64,
-        renderer: &render::Renderer,
-    ) {
-        for stroke in strokes {
-            stroke.update_rendernode(scalefactor, renderer);
-        }
-    }
-
-    pub fn draw_strokes(strokes: &[Self], snapshot: &Snapshot) {
-        for stroke in strokes.iter() {
-            match stroke {
-                StrokeStyle::MarkerStroke(markerstroke) => {
-                    snapshot.append_node(&markerstroke.rendernode);
-                }
-                StrokeStyle::BrushStroke(brushstroke) => {
-                    snapshot.append_node(&brushstroke.rendernode);
-                }
-                StrokeStyle::ShapeStroke(shapestroke) => {
-                    snapshot.append_node(&shapestroke.rendernode);
-                }
-                StrokeStyle::VectorImage(vectorimage) => {
-                    snapshot.append_node(&vectorimage.rendernode);
-                }
-                StrokeStyle::BitmapImage(bitmapimage) => {
-                    snapshot.append_node(&bitmapimage.rendernode);
-                }
-            }
-        }
     }
 }
 

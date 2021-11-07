@@ -86,14 +86,14 @@ impl DevelActions {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.element_stepback_button()
             .connect_clicked(clone!(@weak appwindow => move |_| {
-                appwindow.canvas().sheet().undo_elements_last_stroke(1, appwindow.canvas().scalefactor(), &*appwindow.canvas().renderer().borrow());
+                //appwindow.canvas().sheet().undo_elements_last_stroke(1, appwindow.canvas().scalefactor(), &*appwindow.canvas().renderer().borrow());
 
                 appwindow.canvas().queue_draw();
             }));
 
         self.element_stepforward_button()
             .connect_clicked(clone!(@weak appwindow => move |_| {
-                appwindow.canvas().sheet().redo_elements_last_stroke(1, appwindow.canvas().scalefactor(), &*appwindow.canvas().renderer().borrow());
+                //appwindow.canvas().sheet().redo_elements_last_stroke(1, appwindow.canvas().scalefactor(), &*appwindow.canvas().renderer().borrow());
 
                 appwindow.canvas().queue_draw();
             }));

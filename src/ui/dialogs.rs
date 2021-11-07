@@ -52,9 +52,8 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
         clone!(@weak appwindow => move |dialog_clear_sheet, responsetype| {
             match responsetype {
                 ResponseType::Ok => {
-                    appwindow.canvas().sheet().clear();
-                    appwindow.canvas().sheet().selection().strokes().borrow_mut().clear();
-                    appwindow.canvas().sheet().selection().set_shown(false);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().clear();
+                    appwindow.selection_modifier().set_visible(false);
                     appwindow.canvas().set_unsaved_changes(false);
                     appwindow.canvas().set_empty(true);
                     appwindow.canvas().regenerate_content(true, true);
@@ -83,8 +82,8 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
 
-                appwindow.canvas().sheet().clear();
-                appwindow.canvas().sheet().selection().set_shown(false);
+                appwindow.canvas().sheet().strokes_state().borrow_mut().clear();
+                appwindow.selection_modifier().set_visible(false);
                 appwindow.canvas().set_unsaved_changes(false);
                 appwindow.canvas().set_empty(true);
                 appwindow.canvas().regenerate_content(true, true);
@@ -360,7 +359,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     match dialog_export_selection.file() {
                         Some(file) => {
-                            if let Err(e) = appwindow.canvas().sheet().selection().export_selection_as_svg(file) {
+                            if let Err(e) = appwindow.canvas().sheet().strokes_state().borrow().export_selection_as_svg(file) {
                                 log::error!("exporting selection failed with error `{}`", e);
                             }
                         },

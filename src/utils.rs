@@ -1,6 +1,5 @@
 use gtk4::{gdk, gio, glib, graphene, prelude::*};
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 use std::ops::Deref;
 use std::path::PathBuf;
 use tera::Tera;
@@ -312,7 +311,9 @@ pub fn aabb_scale(
     )
 }
 
-pub fn load_string_from_resource(resource_path: &str) -> Result<String, Box<dyn Error>> {
+pub fn load_string_from_resource(
+    resource_path: &str,
+) -> Result<String, Box<dyn std::error::Error>> {
     let imported_string = String::from_utf8(
         gio::resources_lookup_data(resource_path, gio::ResourceLookupFlags::NONE)?
             .deref()
@@ -322,7 +323,7 @@ pub fn load_string_from_resource(resource_path: &str) -> Result<String, Box<dyn 
     Ok(imported_string)
 }
 
-pub fn load_file_contents(file: &gio::File) -> Result<String, Box<dyn Error>> {
+pub fn load_file_contents(file: &gio::File) -> Result<String, Box<dyn std::error::Error>> {
     let (result, _) = file.load_contents::<gio::Cancellable>(None)?;
     let contents = String::from_utf8(result)?;
     Ok(contents)
@@ -339,7 +340,7 @@ pub fn try_add_template(
     templates: &mut Tera,
     template_name: &str,
     template_str: &str,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn std::error::Error>> {
     templates.add_raw_template(template_name, template_str)?;
     Ok(())
 }

@@ -1,74 +1,45 @@
 pub mod background;
 pub mod format;
-pub mod selection;
-
-use std::{cell::RefCell, error::Error, rc::Rc};
-
-use crate::{
-    compose,
-    pens::eraser::Eraser,
-    render,
-    sheet::selection::Selection,
-    strokes::{self, Element, StrokeBehaviour, StrokeStyle},
-    strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
-    utils::{self, FileType},
-};
-
-use self::{background::Background, format::Format};
-
-use gtk4::{gio, glib, graphene, prelude::*, subclass::prelude::*, Snapshot};
-use p2d::bounding_volume::BoundingVolume;
-use serde::de::{self, Deserializer, Visitor};
-use serde::ser::SerializeStruct;
-use serde::{Deserialize, Serialize};
 
 mod imp {
     use std::cell::Cell;
     use std::{cell::RefCell, rc::Rc};
 
     use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
+    use once_cell::sync::Lazy;
 
     use crate::sheet::format;
-    use crate::sheet::selection::Selection;
-    use crate::strokes::{self, Element};
+    use crate::strokes;
 
     use super::{Background, Format};
 
     #[derive(Debug)]
     pub struct Sheet {
-        pub strokes: Rc<RefCell<Vec<strokes::StrokeStyle>>>,
-
-        // Skipped by serde Serialize and Deserialize trait implementation
-        pub strokes_trash: Rc<RefCell<Vec<strokes::StrokeStyle>>>,
-        // Skipped by serde Serialize and Deserialize trait implementation
-        pub elements_trash: Rc<RefCell<Vec<Element>>>,
-
-        pub selection: Selection,
+        pub strokes_state: Rc<RefCell<strokes::StrokesState>>,
         pub format: Format,
         pub background: Rc<RefCell<Background>>,
         pub x: Cell<i32>,
         pub y: Cell<i32>,
         pub width: Cell<i32>,
         pub height: Cell<i32>,
-        pub autoexpand_height: Cell<bool>,
         pub padding_bottom: Cell<i32>,
+        pub endless_sheet: Cell<bool>,
+        pub format_borders: Cell<bool>,
     }
 
     impl Default for Sheet {
         fn default() -> Self {
             Self {
-                strokes: Rc::new(RefCell::new(Vec::new())),
-                strokes_trash: Rc::new(RefCell::new(Vec::new())),
-                elements_trash: Rc::new(RefCell::new(Vec::new())),
-                selection: Selection::new(),
+                strokes_state: Rc::new(RefCell::new(strokes::StrokesState::default())),
                 format: Format::default(),
                 background: Rc::new(RefCell::new(Background::default())),
                 x: Cell::new(0),
                 y: Cell::new(0),
                 width: Cell::new(Format::default().width()),
                 height: Cell::new(Format::default().height()),
-                autoexpand_height: Cell::new(true),
                 padding_bottom: Cell::new(Format::default().height()),
+                endless_sheet: Cell::new(true),
+                format_borders: Cell::new(true),
             }
         }
     }
@@ -106,8 +77,61 @@ mod imp {
                 }),
             );
         }
+
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                vec![glib::ParamSpec::new_boolean(
+                    "endless-sheet",
+                    "endless-sheet",
+                    "endless-sheet",
+                    false,
+                    glib::ParamFlags::READWRITE,
+                )]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn set_property(
+            &self,
+            _obj: &Self::Type,
+            _id: usize,
+            value: &glib::Value,
+            pspec: &glib::ParamSpec,
+        ) {
+            match pspec.name() {
+                "endless-sheet" => {
+                    self.endless_sheet
+                        .replace(value.get::<bool>().expect("Value not of type `bool`"));
+                }
+                _ => panic!("invalid property name"),
+            }
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "endless-sheet" => self.endless_sheet.get().to_value(),
+                _ => panic!("invalid property name"),
+            }
+        }
     }
 }
+
+use std::{cell::RefCell, rc::Rc};
+
+use crate::{
+    compose, strokes,
+    strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokesState},
+    utils::{self, FileType},
+};
+
+use self::{background::Background, format::Format};
+
+use gtk4::{gio, glib, graphene, prelude::*, subclass::prelude::*, Snapshot};
+use p2d::bounding_volume::BoundingVolume;
+use serde::de::{self, Deserializer, Visitor};
+use serde::ser::SerializeStruct;
+use serde::{Deserialize, Serialize};
+
 
 glib::wrapper! {
     pub struct Sheet(ObjectSubclass<imp::Sheet>);
@@ -125,17 +149,16 @@ impl Serialize for Sheet {
         S: serde::Serializer,
     {
         let mut state = serializer.serialize_struct("Sheet", 12)?;
-        state.serialize_field("strokes", &*self.strokes().borrow())?;
-        state.serialize_field("strokes_trash", &*self.strokes_trash().borrow())?;
-        state.serialize_field("selection", &self.selection())?;
+        state.serialize_field("strokes_state", &*self.strokes_state().borrow())?;
         state.serialize_field("format", &self.format())?;
         state.serialize_field("background", &self.background())?;
         state.serialize_field("x", &self.x())?;
         state.serialize_field("y", &self.y())?;
         state.serialize_field("width", &self.width())?;
         state.serialize_field("height", &self.height())?;
-        state.serialize_field("autoexpand_height", &self.autoexpand_height())?;
+        state.serialize_field("endless_sheet", &self.endless_sheet())?;
         state.serialize_field("padding_bottom", &self.padding_bottom())?;
+        state.serialize_field("format-borders", &self.format_borders())?;
         state.end()
     }
 }
@@ -149,17 +172,16 @@ impl<'de> Deserialize<'de> for Sheet {
         #[serde(field_identifier, rename_all = "lowercase")]
         #[allow(non_camel_case_types)]
         enum Field {
-            strokes,
-            strokes_trash,
-            selection,
+            strokes_state,
             format,
             background,
             x,
             y,
             width,
             height,
-            autoexpand_height,
             padding_bottom,
+            endless_sheet,
+            format_borders,
             unknown,
         }
 
@@ -175,54 +197,48 @@ impl<'de> Deserialize<'de> for Sheet {
             where
                 A: de::SeqAccess<'de>,
             {
-                let strokes = seq
+                let strokes_state = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                let strokes_trash = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(1, &self))?;
-                let selection: Selection = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(2, &self))?;
                 let format: Format = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(3, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(1, &self))?;
                 let background = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(4, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(2, &self))?;
                 let x = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(5, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(3, &self))?;
                 let y = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(6, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(4, &self))?;
                 let width = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(7, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(5, &self))?;
                 let height = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(8, &self))?;
-                let autoexpand_height = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(9, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(6, &self))?;
                 let padding_bottom = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(10, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(7, &self))?;
+                let endless_sheet = seq
+                    .next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(8, &self))?;
+                let format_borders = seq
+                    .next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(9, &self))?;
 
                 let sheet = Sheet::new();
-                *sheet.strokes().borrow_mut() = strokes;
-                *sheet.strokes_trash().borrow_mut() = strokes_trash;
-                *sheet.selection().strokes().borrow_mut() = selection.strokes().borrow().clone();
-                sheet.selection().set_bounds(selection.bounds());
-                sheet.selection().set_shown(selection.shown());
+                *sheet.strokes_state().borrow_mut() = strokes_state;
                 sheet.format().replace_fields(format);
                 *sheet.background().borrow_mut() = background;
                 sheet.set_x(x);
                 sheet.set_y(y);
                 sheet.set_width(width);
                 sheet.set_height(height);
-                sheet.set_autoexpand_height(autoexpand_height);
+                sheet.set_endless_sheet(endless_sheet);
                 sheet.set_padding_bottom(padding_bottom);
+                sheet.set_format_borders(format_borders);
 
                 Ok(sheet)
             }
@@ -231,17 +247,16 @@ impl<'de> Deserialize<'de> for Sheet {
             where
                 A: de::MapAccess<'de>,
             {
-                let mut strokes = None;
-                let mut strokes_trash = None;
-                let mut selection = None;
+                let mut strokes_state = None;
                 let mut format = None;
                 let mut background = None;
                 let mut x = None;
                 let mut y = None;
                 let mut width = None;
                 let mut height = None;
-                let mut autoexpand_height = None;
                 let mut padding_bottom = None;
+                let mut endless_sheet = None;
+                let mut format_borders = None;
 
                 while let Some(key) = match map.next_key() {
                     Ok(key) => key,
@@ -251,23 +266,11 @@ impl<'de> Deserialize<'de> for Sheet {
                     }
                 } {
                     match key {
-                        Field::strokes => {
-                            if strokes.is_some() {
-                                return Err(de::Error::duplicate_field("strokes"));
+                        Field::strokes_state => {
+                            if strokes_state.is_some() {
+                                return Err(de::Error::duplicate_field("strokes_state"));
                             }
-                            strokes = Some(map.next_value()?);
-                        }
-                        Field::strokes_trash => {
-                            if strokes_trash.is_some() {
-                                return Err(de::Error::duplicate_field("strokes_trash"));
-                            }
-                            strokes_trash = Some(map.next_value()?);
-                        }
-                        Field::selection => {
-                            if selection.is_some() {
-                                return Err(de::Error::duplicate_field("selection"));
-                            }
-                            selection = Some(map.next_value()?);
+                            strokes_state = Some(map.next_value()?);
                         }
                         Field::format => {
                             if format.is_some() {
@@ -305,17 +308,23 @@ impl<'de> Deserialize<'de> for Sheet {
                             }
                             height = Some(map.next_value()?);
                         }
-                        Field::autoexpand_height => {
-                            if autoexpand_height.is_some() {
-                                return Err(de::Error::duplicate_field("autoexpand_height"));
-                            }
-                            autoexpand_height = Some(map.next_value()?);
-                        }
                         Field::padding_bottom => {
                             if padding_bottom.is_some() {
                                 return Err(de::Error::duplicate_field("padding_bottom"));
                             }
                             padding_bottom = Some(map.next_value()?);
+                        }
+                        Field::endless_sheet => {
+                            if endless_sheet.is_some() {
+                                return Err(de::Error::duplicate_field("endless_sheet"));
+                            }
+                            endless_sheet = Some(map.next_value()?);
+                        }
+                        Field::format_borders => {
+                            if format_borders.is_some() {
+                                return Err(de::Error::duplicate_field("format_borders"));
+                            }
+                            format_borders = Some(map.next_value()?);
                         }
                         Field::unknown => {
                             // throw away the value
@@ -326,20 +335,10 @@ impl<'de> Deserialize<'de> for Sheet {
 
                 let sheet_default = Sheet::default();
 
-                let strokes = strokes.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("strokes");
+                let strokes_state = strokes_state.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("strokes_state");
                     log::error!("{}", err);
-                    Vec::new()
-                });
-                let strokes_trash = strokes_trash.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("strokes_trash");
-                    log::error!("{}", err);
-                    Vec::new()
-                });
-                let selection = selection.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("selection");
-                    log::error!("{}", err);
-                    Selection::default()
+                    StrokesState::new()
                 });
                 let format = format.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("format");
@@ -371,31 +370,33 @@ impl<'de> Deserialize<'de> for Sheet {
                     log::error!("{}", err);
                     sheet_default.height()
                 });
-                let autoexpand_height = autoexpand_height.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("autoexpand_height");
-                    log::error!("{}", err);
-                    sheet_default.autoexpand_height()
-                });
                 let padding_bottom = padding_bottom.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("padding_bottom");
                     log::error!("{}", err);
                     sheet_default.padding_bottom()
                 });
+                let endless_sheet = endless_sheet.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("endless_sheet");
+                    log::error!("{}", err);
+                    sheet_default.endless_sheet()
+                });
+                let format_borders = format_borders.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("format_borders");
+                    log::error!("{}", err);
+                    sheet_default.format_borders()
+                });
 
                 let sheet = Sheet::new();
-                *sheet.strokes().borrow_mut() = strokes;
-                *sheet.strokes_trash().borrow_mut() = strokes_trash;
-                *sheet.selection().strokes().borrow_mut() = selection.strokes().borrow().clone();
-                sheet.selection().set_bounds(selection.bounds());
-                sheet.selection().set_shown(selection.shown());
+                *sheet.strokes_state().borrow_mut() = strokes_state;
                 sheet.format().replace_fields(format);
                 *sheet.background().borrow_mut() = background;
                 sheet.set_x(x);
                 sheet.set_y(y);
                 sheet.set_width(width);
                 sheet.set_height(height);
-                sheet.set_autoexpand_height(autoexpand_height);
                 sheet.set_padding_bottom(padding_bottom);
+                sheet.set_endless_sheet(endless_sheet);
+                sheet.set_format_borders(format_borders);
 
                 Ok(sheet)
             }
@@ -411,8 +412,9 @@ impl<'de> Deserialize<'de> for Sheet {
             "y",
             "width",
             "height",
-            "autoexpand_height",
             "padding_bottom",
+            "endless_sheet",
+            "format_borders",
         ];
         deserializer.deserialize_struct("Sheet", FIELDS, SheetVisitor)
     }
@@ -424,20 +426,8 @@ impl Sheet {
         sheet
     }
 
-    pub fn strokes(&self) -> Rc<RefCell<Vec<StrokeStyle>>> {
-        imp::Sheet::from_instance(self).strokes.clone()
-    }
-
-    pub fn strokes_trash(&self) -> Rc<RefCell<Vec<StrokeStyle>>> {
-        imp::Sheet::from_instance(self).strokes_trash.clone()
-    }
-
-    pub fn elements_trash(&self) -> Rc<RefCell<Vec<Element>>> {
-        imp::Sheet::from_instance(self).elements_trash.clone()
-    }
-
-    pub fn selection(&self) -> Selection {
-        imp::Sheet::from_instance(self).selection.clone()
+    pub fn strokes_state(&self) -> Rc<RefCell<StrokesState>> {
+        imp::Sheet::from_instance(self).strokes_state.clone()
     }
 
     pub fn x(&self) -> i32 {
@@ -472,23 +462,6 @@ impl Sheet {
         imp::Sheet::from_instance(self).height.set(height);
     }
 
-    pub fn autoexpand_height(&self) -> bool {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.autoexpand_height.get()
-    }
-
-    pub fn set_autoexpand_height(&self, autoexpand_height: bool) {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.autoexpand_height.set(autoexpand_height);
-
-        self.resize_to_format();
-    }
-
-    pub fn format(&self) -> Format {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.format.clone()
-    }
-
     pub fn padding_bottom(&self) -> i32 {
         imp::Sheet::from_instance(self).padding_bottom.get()
     }
@@ -497,6 +470,33 @@ impl Sheet {
         imp::Sheet::from_instance(self)
             .padding_bottom
             .set(padding_bottom);
+    }
+
+    pub fn endless_sheet(&self) -> bool {
+        let priv_ = imp::Sheet::from_instance(self);
+        priv_.endless_sheet.get()
+    }
+
+    pub fn set_endless_sheet(&self, endless_sheet: bool) {
+        let priv_ = imp::Sheet::from_instance(self);
+        priv_.endless_sheet.set(endless_sheet);
+
+        self.resize_to_format();
+    }
+
+    pub fn format_borders(&self) -> bool {
+        let priv_ = imp::Sheet::from_instance(self);
+        priv_.format_borders.get()
+    }
+
+    pub fn set_format_borders(&self, format_borders: bool) {
+        let priv_ = imp::Sheet::from_instance(self);
+        priv_.format_borders.set(format_borders);
+    }
+
+    pub fn format(&self) -> Format {
+        let priv_ = imp::Sheet::from_instance(self);
+        priv_.format.clone()
     }
 
     pub fn background(&self) -> Rc<RefCell<Background>> {
@@ -510,195 +510,11 @@ impl Sheet {
         )
     }
 
-    /// Resize needed after calling this
-    pub fn undo_last_stroke(&self) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        if let Some(removed_stroke) = priv_.strokes.borrow_mut().pop() {
-            priv_.strokes_trash.borrow_mut().push(removed_stroke);
-        }
-        self.resize_to_format();
-    }
-
-    /// Resize needed after calling this
-    pub fn redo_last_stroke(&self) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        if let Some(restored_stroke) = priv_.strokes_trash.borrow_mut().pop() {
-            priv_.strokes.borrow_mut().push(restored_stroke);
-        }
-        self.resize_to_format();
-    }
-
-    pub fn undo_elements_last_stroke(
-        &mut self,
-        n_elements: usize,
-        scalefactor: f64,
-        renderer: &render::Renderer,
-    ) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        if let Some(last_stroke) = priv_.strokes.borrow_mut().last_mut() {
-            match last_stroke {
-                StrokeStyle::MarkerStroke(markerstroke) => {
-                    for _i in 1..=n_elements {
-                        if let Some(element) = markerstroke.pop_elem() {
-                            priv_.elements_trash.borrow_mut().push(element);
-
-                            markerstroke.update_rendernode(scalefactor, renderer);
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                StrokeStyle::BrushStroke(brushstroke) => {
-                    for _i in 1..=n_elements {
-                        if let Some(element) = brushstroke.pop_elem() {
-                            priv_.elements_trash.borrow_mut().push(element);
-
-                            brushstroke.update_rendernode(scalefactor, renderer);
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-
-    pub fn redo_elements_last_stroke(
-        &mut self,
-        n_elements: usize,
-        scalefactor: f64,
-        renderer: &render::Renderer,
-    ) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        if let Some(last_stroke) = priv_.strokes.borrow_mut().last_mut() {
-            match last_stroke {
-                StrokeStyle::MarkerStroke(markerstroke) => {
-                    for _i in 1..=n_elements {
-                        if let Some(element) = priv_.elements_trash.borrow_mut().pop() {
-                            markerstroke.push_elem(element);
-                            markerstroke.complete_stroke();
-
-                            markerstroke.update_rendernode(scalefactor, renderer);
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                StrokeStyle::BrushStroke(brushstroke) => {
-                    for _i in 1..=n_elements {
-                        if let Some(element) = priv_.elements_trash.borrow_mut().pop() {
-                            brushstroke.push_elem(element);
-                            brushstroke.complete_stroke();
-
-                            brushstroke.update_rendernode(scalefactor, renderer);
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                _ => {}
-            }
-        }
-    }
-
-    /// remove any colliding stroke
-    pub fn remove_colliding_strokes(
-        &self,
-        eraser: &Eraser,
-        viewport: Option<p2d::bounding_volume::AABB>,
-    ) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        if let Some(ref eraser_current_input) = eraser.current_input {
-            let eraser_bounds = p2d::bounding_volume::AABB::new(
-                na::Point2::from(
-                    eraser_current_input.pos()
-                        - na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
-                ),
-                na::Point2::from(
-                    eraser_current_input.pos()
-                        + na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
-                ),
-            );
-
-            let mut removed_strokes: Vec<strokes::StrokeStyle> = Vec::new();
-
-            priv_.strokes.borrow_mut().retain(|stroke| {
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return true;
-                    }
-                }
-                match stroke {
-                    strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                        // First check markerstroke bounds, then conditionally check hitbox
-                        if eraser_bounds.intersects(&markerstroke.bounds) {
-                            for hitbox_elem in markerstroke.hitbox.iter() {
-                                if eraser_bounds.intersects(hitbox_elem) {
-                                    removed_strokes.push(stroke.clone());
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                        // First check markerstroke bounds, then conditionally check hitbox
-                        if eraser_bounds.intersects(&brushstroke.bounds) {
-                            for hitbox_elem in brushstroke.hitbox.iter() {
-                                if eraser_bounds.intersects(hitbox_elem) {
-                                    removed_strokes.push(stroke.clone());
-                                    return false;
-                                }
-                            }
-                        }
-                    }
-                    strokes::StrokeStyle::ShapeStroke(shapestroke) => {
-                        if eraser_bounds.intersects(&shapestroke.bounds) {
-                            removed_strokes.push(stroke.clone());
-                            return false;
-                        }
-                    }
-                    strokes::StrokeStyle::VectorImage(vectorimage) => {
-                        if eraser_bounds.intersects(&vectorimage.bounds) {
-                            removed_strokes.push(stroke.clone());
-                            return false;
-                        }
-                    }
-                    strokes::StrokeStyle::BitmapImage(bitmapimage) => {
-                        if eraser_bounds.intersects(&bitmapimage.bounds) {
-                            removed_strokes.push(stroke.clone());
-                            return false;
-                        }
-                    }
-                }
-
-                true
-            });
-            priv_
-                .strokes_trash
-                .borrow_mut()
-                .append(&mut removed_strokes);
-        }
-    }
-
-    pub fn clear(&self) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        priv_.strokes.borrow_mut().clear();
-        priv_.strokes_trash.borrow_mut().clear();
-        priv_.selection.strokes().borrow_mut().clear();
-    }
-
     // Returns true if resizing is needed
-    pub fn resize_autoexpand(&self) -> bool {
+    pub fn resize_endless(&self) -> bool {
         let mut resizing_needed = false;
-        if self.autoexpand_height() {
-            let new_height = self.calc_height();
+        if self.endless_sheet() {
+            let new_height = self.strokes_state().borrow().calc_height() + self.padding_bottom();
 
             if new_height != self.height() {
                 resizing_needed = true;
@@ -712,18 +528,19 @@ impl Sheet {
     /// Resizing needed after calling this
     pub fn resize_to_format(&self) {
         let priv_ = imp::Sheet::from_instance(self);
-        if self.autoexpand_height() {
+        if self.endless_sheet() {
             self.set_padding_bottom(priv_.format.height());
 
-            let new_height = self.calc_height();
+            let new_height = self.strokes_state().borrow().calc_height() + self.padding_bottom();
 
             if new_height != self.height() {
                 self.set_height(new_height);
             }
         } else {
-            self.set_padding_bottom(0);
+            // set padding_bottom to 1 because then 'fraction'.ceil() is at least 1
+            self.set_padding_bottom(1);
 
-            let new_height = self.calc_height();
+            let new_height = self.strokes_state().borrow().calc_height() + self.padding_bottom();
             self.set_height(
                 (new_height as f64 / priv_.format.height() as f64).ceil() as i32
                     * priv_.format.height(),
@@ -731,47 +548,11 @@ impl Sheet {
         }
     }
 
-    pub fn calc_height(&self) -> i32 {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        let new_height = if let Some(stroke) =
-            priv_.strokes.borrow().iter().max_by_key(|&stroke| {
-                stroke.bounds().maxs[1].round() as i32 + self.padding_bottom()
-            }) {
-            // max_by_key() returns the element, so we need to extract the height again
-            stroke.bounds().maxs[1].round() as i32 + self.padding_bottom()
-        } else {
-            // Strokes are empty so resizing to format height
-            priv_.format.height()
-        };
-
-        new_height
-    }
-
     pub fn calc_n_pages(&self) -> i32 {
         if self.format().height() > 0 {
             self.height() / self.format().height()
         } else {
             0
-        }
-    }
-
-    pub fn remove_strokes(&self, indices: Vec<usize>) {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        for i in indices.iter() {
-            let mut index: Option<usize> = None;
-            if priv_.strokes.borrow().get(*i).is_some() {
-                index = Some(*i);
-            } else {
-                log::error!(
-                    "remove_strokes() failed at index {}, index is out of bounds",
-                    i
-                );
-            }
-            if let Some(index) = index {
-                priv_.strokes.borrow_mut().remove(index);
-            }
         }
     }
 
@@ -786,38 +567,28 @@ impl Sheet {
         );
 
         snapshot.push_clip(&sheet_bounds_scaled);
-
         priv_.background.borrow().draw(snapshot);
-
-        StrokeStyle::draw_strokes(&priv_.strokes.borrow(), snapshot);
-
         snapshot.pop();
     }
 
-    pub fn open_sheet(&self, file: &gio::File) -> Result<(), Box<dyn Error>> {
+    pub fn open_sheet(&self, file: &gio::File) -> Result<(), Box<dyn std::error::Error>> {
         let sheet: Sheet = serde_json::from_str(&utils::load_file_contents(file)?)?;
 
-        *self.strokes().borrow_mut() = sheet.strokes().borrow().clone();
-        *self.strokes_trash().borrow_mut() = sheet.strokes().borrow_mut().clone();
-        *self.selection().strokes().borrow_mut() = sheet.selection().strokes().borrow().clone();
-        self.selection().set_bounds(sheet.selection().bounds());
-        self.selection().set_shown(sheet.selection().shown());
+        *self.strokes_state().borrow_mut() = sheet.strokes_state().borrow().clone();
         self.format().replace_fields(sheet.format());
         *self.background().borrow_mut() = sheet.background().borrow().clone();
         self.set_x(sheet.x());
         self.set_y(sheet.y());
         self.set_width(sheet.width());
         self.set_height(sheet.height());
-        self.set_autoexpand_height(sheet.autoexpand_height());
         self.set_padding_bottom(sheet.padding_bottom());
+        self.set_endless_sheet(sheet.endless_sheet());
 
-        StrokeStyle::complete_all_strokes(&mut *self.strokes().borrow_mut());
-        StrokeStyle::complete_all_strokes(&mut *self.strokes_trash().borrow_mut());
-        StrokeStyle::complete_all_strokes(&mut *self.selection().strokes().borrow_mut());
+        self.strokes_state().borrow_mut().complete_all_strokes();
         Ok(())
     }
 
-    pub fn save_sheet(&self, file: &gio::File) -> Result<(), Box<dyn Error>> {
+    pub fn save_sheet(&self, file: &gio::File) -> Result<(), Box<dyn std::error::Error>> {
         match FileType::lookup_file_type(file) {
             FileType::Rnote => {
                 let json_output = serde_json::to_string(self)?;
@@ -838,7 +609,7 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), Box<dyn Error>> {
+    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), Box<dyn std::error::Error>> {
         let priv_ = imp::Sheet::from_instance(self);
 
         let sheet_bounds = p2d::bounding_volume::AABB::new(
@@ -857,11 +628,13 @@ impl Sheet {
                 .as_str(),
         );
 
-        for stroke in &*priv_.strokes.borrow() {
-            let data_entry = stroke.gen_svg_data(na::vector![0.0, 0.0])?;
-
-            data.push_str(&data_entry);
-        }
+        data.push_str(
+            &priv_
+                .strokes_state
+                .borrow()
+                .gen_svg_from_strokes()?
+                .as_str(),
+        );
 
         data = compose::wrap_svg(
             data.as_str(),
@@ -887,20 +660,22 @@ impl Sheet {
         &self,
         pos: na::Vector2<f64>,
         file: &gio::File,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let priv_ = imp::Sheet::from_instance(self);
 
         let svg = utils::load_file_contents(file)?;
 
-        priv_
-            .strokes
-            .borrow_mut()
-            .append(&mut priv_.selection.remove_strokes());
+        priv_.strokes_state.borrow_mut().deselect();
 
         let vector_image = VectorImage::import_from_svg(svg.as_str(), pos, None).unwrap();
+        let inserted = priv_
+            .strokes_state
+            .borrow_mut()
+            .insert_stroke(strokes::StrokeStyle::VectorImage(vector_image));
         priv_
-            .selection
-            .push_to_selection(strokes::StrokeStyle::VectorImage(vector_image));
+            .strokes_state
+            .borrow_mut()
+            .set_selected(inserted, true);
 
         Ok(())
     }
@@ -909,20 +684,22 @@ impl Sheet {
         &self,
         pos: na::Vector2<f64>,
         file: &gio::File,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let priv_ = imp::Sheet::from_instance(self);
 
-        priv_
-            .strokes
-            .borrow_mut()
-            .append(&mut priv_.selection.remove_strokes());
+        priv_.strokes_state.borrow_mut().deselect();
 
         let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
         let bitmapimage = BitmapImage::import_from_image_bytes(&file_bytes, pos).unwrap();
 
+        let inserted = priv_
+            .strokes_state
+            .borrow_mut()
+            .insert_stroke(strokes::StrokeStyle::BitmapImage(bitmapimage));
         priv_
-            .selection
-            .push_to_selection(strokes::StrokeStyle::BitmapImage(bitmapimage));
+            .strokes_state
+            .borrow_mut()
+            .set_selected(inserted, true);
 
         Ok(())
     }

@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use gtk4::{glib, gsk, Snapshot};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
@@ -232,7 +230,7 @@ impl Background {
         sheet_bounds: p2d::bounding_volume::AABB,
         _renderer: &render::Renderer,
         force_regenerate: bool,
-    ) -> Result<(), Box<dyn Error>> {
+    ) -> Result<(), Box<dyn std::error::Error>> {
         if force_regenerate
             || sheet_bounds != self.current_bounds
             || scalefactor != self.current_scalefactor
@@ -254,7 +252,7 @@ impl Background {
         &mut self,
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
-    ) -> Result<Option<gsk::RenderNode>, Box<dyn Error>> {
+    ) -> Result<Option<gsk::RenderNode>, Box<dyn std::error::Error>> {
         let snapshot = Snapshot::new();
 
         // Calculate tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
@@ -310,7 +308,7 @@ impl Background {
     pub fn gen_svg_data(
         &self,
         sheet_bounds: p2d::bounding_volume::AABB,
-    ) -> Result<String, Box<dyn Error>> {
+    ) -> Result<String, Box<dyn std::error::Error>> {
         let mut svg = String::from("");
 
         let mut group = element::Group::new();

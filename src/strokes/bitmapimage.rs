@@ -1,4 +1,4 @@
-use std::{error::Error, io};
+use std::io;
 
 use crate::{compose, render};
 use gtk4::gsk;
@@ -29,8 +29,6 @@ pub struct BitmapImage {
     pub format: Format,
     pub bounds: p2d::bounding_volume::AABB,
     pub intrinsic_size: na::Vector2<f64>,
-    #[serde(skip, default = "render::default_rendernode")]
-    pub rendernode: gsk::RenderNode,
 }
 
 impl Default for BitmapImage {
@@ -40,7 +38,6 @@ impl Default for BitmapImage {
             format: Format::Png,
             bounds: p2d::bounding_volume::AABB::new_invalid(),
             intrinsic_size: na::vector![0.0, 0.0],
-            rendernode: render::default_rendernode(),
         }
     }
 }
@@ -64,7 +61,7 @@ impl StrokeBehaviour for BitmapImage {
         self.bounds = new_bounds;
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
         let mut cx = tera::Context::new();
 
         let x = 0.0;
@@ -108,19 +105,11 @@ impl StrokeBehaviour for BitmapImage {
         Ok(svg)
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
-        if let Ok(rendernode) = self.gen_rendernode(scalefactor, renderer) {
-            self.rendernode = rendernode;
-        } else {
-            log::error!("failed to gen_rendernode() in update_renderonode() of markerstroke");
-        }
-    }
-
     fn gen_rendernode(
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
         renderer.gen_rendernode(
             self.bounds,
             scalefactor,
@@ -138,7 +127,7 @@ impl BitmapImage {
     pub fn import_from_image_bytes<P>(
         to_be_read: P,
         pos: na::Vector2<f64>,
-    ) -> Result<Self, Box<dyn Error>>
+    ) -> Result<Self, Box<dyn std::error::Error>>
     where
         P: AsRef<[u8]>,
     {
@@ -166,18 +155,6 @@ impl BitmapImage {
             format,
             bounds,
             intrinsic_size,
-            rendernode: render::default_rendernode(),
         })
     }
-
-    /*     pub fn import_from_pdf_bytes<P>(
-        to_be_read: P,
-        pos: na::Vector2<f64>,
-    ) -> Result<Self, Box<dyn Error>>
-    where
-        P: AsRef<[u8]>,
-    {
-
-        Ok(())
-    } */
 }

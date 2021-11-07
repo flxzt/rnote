@@ -22,8 +22,6 @@ pub struct MarkerStroke {
     pub bounds: p2d::bounding_volume::AABB,
     #[serde(skip)]
     pub hitbox: Vec<p2d::bounding_volume::AABB>,
-    #[serde(skip, default = "render::default_rendernode")]
-    pub rendernode: gsk::RenderNode,
 }
 
 impl Default for MarkerStroke {
@@ -159,14 +157,6 @@ impl StrokeBehaviour for MarkerStroke {
         Ok(svg)
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
-        if let Ok(rendernode) = self.gen_rendernode(scalefactor, renderer) {
-            self.rendernode = rendernode;
-        } else {
-            log::error!("failed to gen_rendernode() in update_rendernode() of markerstroke");
-        }
-    }
-
     fn gen_rendernode(
         &self,
         scalefactor: f64,
@@ -202,7 +192,6 @@ impl MarkerStroke {
             marker,
             bounds,
             hitbox,
-            rendernode: render::default_rendernode(),
         };
 
         // Pushing with push_elem() instead filling vector, because bounds are getting updated there too

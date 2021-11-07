@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::utils;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum CurrentShape {
     Line,
     Rectangle,
@@ -15,7 +15,7 @@ impl Default for CurrentShape {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum DrawStyle {
     Smooth,
     Rough,
@@ -31,7 +31,7 @@ impl DrawStyle {
     pub const ROUGH_MARGIN: f64 = 8.0;
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Shaper {
     pub current_shape: CurrentShape,

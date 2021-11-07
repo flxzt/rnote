@@ -175,10 +175,10 @@ pub fn gen_cubbez_w_catmull_rom(
 
     // Creating cubic bezier with catmull-rom
     let start = second.inputdata().pos();
-    let cp1 =
-        second.inputdata().pos() + (third.inputdata().pos() - first.inputdata().pos()) / (6.0 * tension);
-    let cp2 =
-        third.inputdata().pos() - (forth.inputdata().pos() - second.inputdata().pos()) / (6.0 * tension);
+    let cp1 = second.inputdata().pos()
+        + (third.inputdata().pos() - first.inputdata().pos()) / (6.0 * tension);
+    let cp2 = third.inputdata().pos()
+        - (forth.inputdata().pos() - second.inputdata().pos()) / (6.0 * tension);
     let end = third.inputdata().pos();
 
     let cubic_bezier = CubicBezier {

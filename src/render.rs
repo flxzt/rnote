@@ -1,4 +1,4 @@
-use std::{error::Error, ops::Deref};
+use std::ops::Deref;
 
 use gtk4::{
     gdk, gio, glib, graphene,
@@ -9,13 +9,13 @@ use gtk4::{
 
 use crate::utils;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum RendererBackend {
     Librsvg,
     Resvg,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Renderer {
     pub backend: RendererBackend,
     pub usvg_options: usvg::Options,
@@ -39,7 +39,7 @@ impl Renderer {
         bounds: p2d::bounding_volume::AABB,
         scalefactor: f64,
         svg: &str,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
         match self.backend {
             RendererBackend::Librsvg => {
                 self.gen_rendernode_backend_librsvg(bounds, scalefactor, svg)
@@ -53,7 +53,7 @@ impl Renderer {
         bounds: p2d::bounding_volume::AABB,
         scalefactor: f64,
         svg: &str,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
         let caironode_bounds = graphene::Rect::new(
             (bounds.mins[0] * scalefactor).floor() as f32,
             (bounds.mins[1] * scalefactor).floor() as f32,
@@ -91,7 +91,7 @@ impl Renderer {
         svg_bounds: p2d::bounding_volume::AABB,
         scalefactor: f64,
         svg: &str,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
         let node_bounds = graphene::Rect::new(
             (svg_bounds.mins[0].floor() * scalefactor) as f32,
             (svg_bounds.mins[1].floor() * scalefactor) as f32,
@@ -136,7 +136,7 @@ pub fn gen_cairosurface_librsvg(
     bounds: &p2d::bounding_volume::AABB,
     scalefactor: f64,
     svg: &str,
-) -> Result<cairo::ImageSurface, Box<dyn Error>> {
+) -> Result<cairo::ImageSurface, Box<dyn std::error::Error>> {
     let width_scaled = (scalefactor * (bounds.maxs[0] - bounds.mins[0])).round() as i32;
     let height_scaled = (scalefactor * (bounds.maxs[1] - bounds.mins[1])).round() as i32;
 
@@ -172,7 +172,7 @@ pub fn gen_cairosurface_librsvg(
 /// Expects Imagesurface in ARgb32 premultiplied Format !
 pub fn cairosurface_to_memtexture(
     mut surface: cairo::ImageSurface,
-) -> Result<gdk::MemoryTexture, Box<dyn Error>> {
+) -> Result<gdk::MemoryTexture, Box<dyn std::error::Error>> {
     let width = surface.width();
     let height = surface.height();
     let stride = surface.stride();
@@ -204,7 +204,7 @@ pub fn render_node_to_texture(
     active_widget: &Widget,
     node: &gsk::RenderNode,
     viewport: p2d::bounding_volume::AABB,
-) -> Result<Option<gdk::Texture>, Box<dyn Error>> {
+) -> Result<Option<gdk::Texture>, Box<dyn std::error::Error>> {
     if let Some(root) = active_widget.root() {
         if let Some(root_renderer) = root.upcast::<Native>().renderer() {
             let texture =

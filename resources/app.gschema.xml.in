@@ -37,9 +37,9 @@
       <default>true</default>
       <summary>user is right or left handed</summary>
     </key>
-    <key name="autoexpand-height" type="b">
+    <key name="endless-sheet" type="b">
       <default>false</default>
-      <summary>Autoexpand sheet height ( also called "endless sheet" )</summary>
+      <summary>endless sheet</summary>
     </key>
     <key name="format-borders" type="b">
       <default>false</default>

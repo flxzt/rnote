@@ -246,10 +246,22 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     // renderer backend
     match appwindow.app_settings().string("renderer-backend").as_str() {
         "librsvg" => {
-            appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Librsvg;
+            appwindow
+                .canvas()
+                .sheet()
+                .strokes_state()
+                .borrow_mut()
+                .renderer
+                .backend = render::RendererBackend::Librsvg;
         }
         "resvg" => {
-            appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Resvg;
+            appwindow
+                .canvas()
+                .sheet()
+                .strokes_state()
+                .borrow_mut()
+                .renderer
+                .backend = render::RendererBackend::Resvg;
         }
         _ => {
             log::error!("failed to load setting renderer-backend, unsupported string as key")
@@ -488,18 +500,19 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     // Format borders
     appwindow
         .canvas()
+        .sheet()
         .set_format_borders(appwindow.app_settings().boolean("format-borders"));
 
-    // Autoexpand height
-    let autoexpand_height = appwindow.app_settings().boolean("autoexpand-height");
+    // endless sheet
+    let endless_sheet = appwindow.app_settings().boolean("endless-sheet");
     appwindow
         .canvas()
         .sheet()
-        .set_autoexpand_height(autoexpand_height);
+        .set_endless_sheet(endless_sheet);
     appwindow
         .mainheader()
         .pageedit_revealer()
-        .set_reveal_child(!autoexpand_height);
+        .set_reveal_child(!endless_sheet);
 
     // Visual Debugging
     appwindow

@@ -116,8 +116,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     app.add_action(&action_touch_drawing);
     let action_sheet_format_borders = appwindow.app_settings().create_action("format-borders");
     app.add_action(&action_sheet_format_borders);
-    let action_autoexpand_height = appwindow.app_settings().create_action("autoexpand-height");
-    app.add_action(&action_autoexpand_height);
+    let action_endless_sheet = appwindow.app_settings().create_action("endless-sheet");
+    app.add_action(&action_endless_sheet);
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
     app.add_action(&action_righthanded);
 
@@ -186,10 +186,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         let state = action_renderer_backend.state().unwrap().get::<String>().expect("wrong type for state of 'action_renderer_backend' must be of type String");
         match state.as_str() {
             "librsvg" => {
-                appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Librsvg;
+                appwindow.canvas().sheet().strokes_state().borrow_mut().renderer.backend = render::RendererBackend::Librsvg;
             },
             "resvg" => {
-                appwindow.canvas().renderer().borrow_mut().backend = render::RendererBackend::Resvg;
+                appwindow.canvas().sheet().strokes_state().borrow_mut().renderer.backend = render::RendererBackend::Resvg;
             },
             _ => {
                 log::error!("invalid state of action_renderer_backend");
@@ -298,22 +298,21 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         }),
     );
 
-    // Delete Selection
+    // Trash Selection
     action_delete_selection.connect_activate(
         clone!(@weak appwindow => move |_action_delete_selection, _| {
-                    let mut strokes = appwindow.canvas().sheet().selection().remove_strokes();
-                    appwindow.canvas().sheet().strokes_trash().borrow_mut().append(&mut strokes);
+            appwindow.canvas().sheet().strokes_state().borrow_mut().trash_selection();
+
+            appwindow.canvas().queue_draw();
         }),
     );
 
     // Duplicate Selection
     action_duplicate_selection.connect_activate(
         clone!(@weak appwindow => move |_action_duplicate_selection, _| {
-                    let mut strokes = (*appwindow.canvas().sheet().selection().strokes().borrow()).clone();
-                    appwindow.canvas().sheet().strokes().borrow_mut().append(&mut strokes);
+            appwindow.canvas().sheet().strokes_state().borrow_mut().duplicate_selection();
 
-                    let offset = na::vector![20.0, 20.0];
-                    appwindow.canvas().sheet().selection().translate_selection(offset);
+            appwindow.canvas().queue_draw();
         }),
     );
 
@@ -321,21 +320,20 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     action_sheet_format_borders.connect_state_notify(
         clone!(@weak appwindow => move |action_sheet_format_borders| {
             let state = action_sheet_format_borders.state().unwrap().get::<bool>().unwrap();
-                appwindow.canvas().set_format_borders(state);
+                appwindow.canvas().sheet().set_format_borders(state);
                 appwindow.canvas().queue_draw();
         }),
     );
 
-    // Autoexpand height
-    action_autoexpand_height.connect_state_notify(
-        clone!(@weak appwindow => move |action_autoexpand_height| {
-            let state = action_autoexpand_height.state().unwrap().get::<bool>().unwrap();
+    // Endless Sheet
+    action_endless_sheet.connect_state_notify(
+        clone!(@weak appwindow => move |action_endless_sheet| {
+            let state = action_endless_sheet.state().unwrap().get::<bool>().unwrap();
 
-            appwindow.canvas().sheet().set_autoexpand_height(state);
+            appwindow.canvas().sheet().set_endless_sheet(state);
             appwindow.mainheader().pageedit_revealer().set_reveal_child(!state);
 
-            appwindow.canvas().queue_resize();
-            appwindow.canvas().queue_draw();
+            appwindow.canvas().regenerate_background(true, true);
         }),
     );
 
@@ -404,16 +402,18 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Undo stroke
     action_undo_stroke.connect_activate(clone!(@weak appwindow => move |_,_| {
-        appwindow.canvas().sheet().undo_last_stroke();
-        appwindow.canvas().regenerate_background(false, true);
+        appwindow.canvas().sheet().strokes_state().borrow_mut().undo_last_stroke();
+        appwindow.canvas().sheet().resize_to_format();
         appwindow.canvas().queue_resize();
+        appwindow.canvas().regenerate_background(false, true);
     }));
 
     // Redo stroke
     action_redo_stroke.connect_activate(clone!(@weak appwindow => move |_,_| {
-        appwindow.canvas().sheet().redo_last_stroke();
-        appwindow.canvas().regenerate_background(false, true);
+        appwindow.canvas().sheet().strokes_state().borrow_mut().redo_last_stroke();
+        appwindow.canvas().sheet().resize_to_format();
         appwindow.canvas().queue_resize();
+        appwindow.canvas().regenerate_background(false, true);
     }));
 
     // Zoom reset

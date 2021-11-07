@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use gtk4::{gdk, gio};
 use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
@@ -76,7 +74,9 @@ impl Brush {
     }
 }
 
-pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), Box<dyn Error>> {
+pub fn validate_brush_template_for_file(
+    file: &gio::File,
+) -> Result<(), Box<dyn std::error::Error>> {
     let mut rng = rand::thread_rng();
     let strokes_uniform = Uniform::from(0..=3);
 

@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use crate::{compose, render};
 
 use gtk4::gsk;
@@ -13,8 +11,6 @@ pub struct VectorImage {
     pub bounds: p2d::bounding_volume::AABB,
     pub intrinsic_size: na::Vector2<f64>,
     pub svg_data: String,
-    #[serde(skip, default = "render::default_rendernode")]
-    pub rendernode: gsk::RenderNode,
 }
 
 impl Default for VectorImage {
@@ -23,7 +19,6 @@ impl Default for VectorImage {
             bounds: p2d::bounding_volume::AABB::new_invalid(),
             intrinsic_size: na::vector![0.0, 0.0],
             svg_data: String::default(),
-            rendernode: render::default_rendernode(),
         }
     }
 }
@@ -43,7 +38,7 @@ impl StrokeBehaviour for VectorImage {
         self.bounds = new_bounds;
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
         let bounds = p2d::bounding_volume::AABB::new(
             na::point![
                 self.bounds.mins[0] + offset[0],
@@ -70,19 +65,11 @@ impl StrokeBehaviour for VectorImage {
         Ok(svg)
     }
 
-    fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
-        if let Ok(rendernode) = self.gen_rendernode(scalefactor, renderer) {
-            self.rendernode = rendernode;
-        } else {
-            log::error!("failed to gen_rendernode() in update_rendernode() of vectorimage");
-        }
-    }
-
     fn gen_rendernode(
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
         renderer.gen_rendernode(
             self.bounds,
             scalefactor,
@@ -101,7 +88,7 @@ impl VectorImage {
         svg: &str,
         pos: na::Vector2<f64>,
         bounds: Option<p2d::bounding_volume::AABB>,
-    ) -> Result<Self, Box<dyn Error>> {
+    ) -> Result<Self, Box<dyn std::error::Error>> {
         let (intrinsic_size, bounds) = if let Some(bounds) = bounds {
             (
                 na::vector![
@@ -129,7 +116,6 @@ impl VectorImage {
             bounds,
             intrinsic_size,
             svg_data,
-            rendernode: render::default_rendernode(),
         };
 
         Ok(vector_image)

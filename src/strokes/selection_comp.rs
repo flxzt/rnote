@@ -96,8 +96,9 @@ impl StrokesState {
                         if let Some(Some(trash_comp)) = self.trash_components.get_mut(key) {
                             trash_comp.trashed = true;
                         }
-                        if let Some(Some(render_comp)) = self.render_components.get_mut(key) {
-                            render_comp.render = false;
+                        if let Some(Some(chrono_comp)) = self.chrono_components.get_mut(key) {
+                            self.chrono_counter += 1;
+                            chrono_comp.t = self.chrono_counter;
                         }
                     }
                 }

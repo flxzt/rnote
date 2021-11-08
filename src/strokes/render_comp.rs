@@ -134,8 +134,14 @@ impl StrokesState {
     pub fn draw_strokes(&self, snapshot: &Snapshot) {
         self.render_components
             .iter()
-            .filter(|(key, _render_comp)| {
-                self.does_render(*key).unwrap_or_else(|| false)
+            .filter(|(key, render_comp)| {
+                let does_render = if let Some(render_comp) = render_comp {
+                    render_comp.render
+                } else {
+                    false
+                };
+
+                does_render
                     && !(self.trashed(*key).unwrap_or_else(|| true))
             })
             .for_each(|(_key, render_comp)| {
@@ -179,9 +185,16 @@ impl StrokesState {
 
         self.render_components
             .iter()
-            .filter(|(key, _render_comp)| {
-                self.does_render(*key).unwrap_or_else(|| false)
-                    && !(self.trashed(*key).unwrap_or_else(|| true))
+            .filter(|(key, render_comp)| {
+                let does_render = if let Some(render_comp) = render_comp {
+                    render_comp.render
+                } else {
+                    false
+                };
+
+                does_render
+                    && !(self.trashed(*key).unwrap_or_else(|| false))
+                    && (self.selected(*key).unwrap_or_else(|| false))
             })
             .for_each(|(key, render_comp)| {
                 snapshot.append_node(&render_comp.as_ref().unwrap().rendernode);

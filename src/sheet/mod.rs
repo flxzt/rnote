@@ -158,7 +158,7 @@ impl Serialize for Sheet {
         state.serialize_field("height", &self.height())?;
         state.serialize_field("endless_sheet", &self.endless_sheet())?;
         state.serialize_field("padding_bottom", &self.padding_bottom())?;
-        state.serialize_field("format-borders", &self.format_borders())?;
+        state.serialize_field("format_borders", &self.format_borders())?;
         state.end()
     }
 }

@@ -141,8 +141,7 @@ impl StrokesState {
                     false
                 };
 
-                does_render
-                    && !(self.trashed(*key).unwrap_or_else(|| true))
+                does_render && !(self.trashed(*key).unwrap_or_else(|| true))
             })
             .for_each(|(_key, render_comp)| {
                 snapshot.append_node(&render_comp.as_ref().unwrap().rendernode);
@@ -269,7 +268,12 @@ impl StrokesState {
         self.strokes.iter().for_each(|(key, stroke)| {
             if let Some(Some(render_comp)) = self.render_components.get(key) {
                 // Blur debug rendering for strokes which are normally hidden
-                if !render_comp.render {
+                let trashed = if let Some(Some(trash_comp)) = self.trash_components.get(key) {
+                    trash_comp.trashed
+                } else {
+                    false
+                };
+                if !render_comp.render || trashed {
                     snapshot.push_blur(3.0);
                     snapshot.push_opacity(0.2);
                 }

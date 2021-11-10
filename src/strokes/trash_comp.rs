@@ -37,7 +37,7 @@ impl StrokesState {
             Some(trash_comp.trashed)
         } else {
             log::warn!(
-                "failed to get trash_comp of stroke for key {:?}, invalid key used or stroke does not support trashing",
+                "failed to get trash_comp of stroke with key {:?}, invalid key used or stroke does not support trashing",
                 key
             );
             None
@@ -54,7 +54,7 @@ impl StrokesState {
             }
         } else {
             log::warn!(
-                "failed to get trash_comp of stroke for key {:?}, invalid key used or stroke does not support trashing",
+                "failed to get trash_comp of stroke with key {:?}, invalid key used or stroke does not support trashing",
                 key
             );
         }

@@ -803,6 +803,8 @@ impl RnoteAppWindow {
 
     /// Loads in a file of any supported type into the current sheet.
     pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn std::error::Error>> {
+        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+
         match utils::FileType::lookup_file_type(file) {
             utils::FileType::Rnote => {
                 self.canvas().sheet().open_sheet(file)?;
@@ -812,16 +814,12 @@ impl RnoteAppWindow {
                 self.settings_panel().load_background(self.canvas().sheet());
 
                 self.canvas().set_unsaved_changes(false);
-                self.application()
-                    .unwrap()
-                    .downcast::<RnoteApp>()
-                    .unwrap()
-                    .set_input_file(None);
-                self.application()
-                    .unwrap()
-                    .downcast::<RnoteApp>()
-                    .unwrap()
-                    .set_output_file(Some(file), self);
+                app.set_input_file(None);
+                app.set_output_file(Some(file), self);
+
+                self.canvas().set_unsaved_changes(false);
+                self.canvas().set_empty(false);
+                self.canvas().regenerate_content(true, true);
             }
             utils::FileType::Svg => {
                 let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
@@ -836,11 +834,11 @@ impl RnoteAppWindow {
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
-                self.application()
-                    .unwrap()
-                    .downcast::<RnoteApp>()
-                    .unwrap()
-                    .set_input_file(None);
+                app.set_input_file(None);
+
+                self.canvas().set_unsaved_changes(true);
+                self.canvas().set_empty(false);
+                self.canvas().regenerate_content(true, true);
             }
             utils::FileType::BitmapImage => {
                 let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
@@ -857,24 +855,21 @@ impl RnoteAppWindow {
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
-                self.application()
-                    .unwrap()
-                    .downcast::<RnoteApp>()
-                    .unwrap()
-                    .set_input_file(None);
+                app.set_input_file(None);
+
+                self.canvas().set_unsaved_changes(true);
+                self.canvas().set_empty(false);
+                self.canvas().regenerate_content(true, true);
             }
-            utils::FileType::Folder | utils::FileType::Unknown => {
-                log::warn!("tried to open unsupported file type.");
-                self.application()
-                    .unwrap()
-                    .downcast::<RnoteApp>()
-                    .unwrap()
-                    .set_input_file(None);
+            utils::FileType::Folder => {
+                log::warn!("tried to open folder as sheet.");
+            }
+            utils::FileType::Unknown => {
+                log::warn!("tried to open a unsupported file type.");
+                app.set_input_file(None);
             }
         }
 
-        self.canvas().set_empty(false);
-        self.canvas().regenerate_content(true, true);
         Ok(())
     }
 }

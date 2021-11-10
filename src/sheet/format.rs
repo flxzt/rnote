@@ -386,7 +386,7 @@ impl Format {
             .unwrap();
     }
 
-    pub fn replace_fields(&self, format: Self) {
+    pub fn import_format(&self, format: Self) {
         self.set_width(format.width());
         self.set_height(format.height());
         self.set_dpi(format.dpi());

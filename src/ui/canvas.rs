@@ -39,7 +39,6 @@ mod imp {
         fn default() -> Self {
             let stylus_drawing_gesture = GestureStylus::builder()
                 .name("stylus_drawing_gesture")
-                .n_points(2)
                 .propagation_phase(PropagationPhase::Target)
                 .build();
 
@@ -227,6 +226,7 @@ mod imp {
                         .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
                     self.scalefactor.replace(scalefactor);
                     self.sheet.strokes_state().borrow_mut().scalefactor = scalefactor;
+
                     obj.queue_resize();
                     obj.queue_draw();
                 }
@@ -234,6 +234,7 @@ mod imp {
                     let visual_debug: bool =
                         value.get().expect("The value needs to be of type `bool`.");
                     self.visual_debug.replace(visual_debug);
+
                     obj.queue_draw();
                 }
                 "touch-drawing" => {
@@ -272,24 +273,24 @@ mod imp {
 
         fn measure(
             &self,
-            widget: &Self::Type,
+            _widget: &Self::Type,
             orientation: Orientation,
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
             if orientation == Orientation::Vertical {
-                let minimal_height = (f64::from(widget.sheet().height())
+                let minimal_height = (f64::from(self.sheet.height())
                     * self.scalefactor.get()
                     * self.temporary_zoom.get()
-                    + f64::from(widget.sheet().y()))
+                    + f64::from(self.sheet.y()))
                 .round() as i32;
                 let natural_height = minimal_height;
 
                 (minimal_height, natural_height, -1, -1)
             } else {
-                let minimal_width = (f64::from(widget.sheet().width())
+                let minimal_width = (f64::from(self.sheet.width())
                     * self.scalefactor.get()
                     * self.temporary_zoom.get()
-                    + f64::from(widget.sheet().x()))
+                    + f64::from(self.sheet.x()))
                 .round() as i32;
                 let natural_width = minimal_width;
 
@@ -564,14 +565,16 @@ impl Canvas {
 
     /// The bounds of the sheet scaled to the current canvas scalefactor
     pub fn sheet_bounds_scaled(&self) -> p2d::bounding_volume::AABB {
+        let scalefactor = self.scalefactor();
+        
         p2d::bounding_volume::AABB::new(
             na::point![
-                f64::from(self.sheet().x()) * self.scalefactor(),
-                f64::from(self.sheet().y()) * self.scalefactor()
+                f64::from(self.sheet().x()) * scalefactor,
+                f64::from(self.sheet().y()) * scalefactor
             ],
             na::point![
-                f64::from(self.width()) * self.scalefactor(),
-                f64::from(self.height()) * self.scalefactor()
+                f64::from(self.width()) * scalefactor,
+                f64::from(self.height()) * scalefactor
             ],
         )
     }
@@ -755,7 +758,7 @@ impl Canvas {
 
         // Only capture when texture_buffer is resetted (= None)
         if priv_.texture_buffer.borrow().is_none() {
-            *priv_.texture_buffer.borrow_mut() = self.capture_current_content(na::vector![
+            *priv_.texture_buffer.borrow_mut() = self.current_content_as_texture(na::vector![
                 f64::from(self.width()),
                 f64::from(self.height())
             ]);
@@ -813,12 +816,12 @@ impl Canvas {
             ));
     }
 
-    /// regenerating the background rendernodes. use force_regenerate to disable the texture_buffer of the background (for example when changing the background pattern)
+    /// regenerating the background rendernodes.
+    /// use force_regenerate to force regeneration of the texture_cache of the background (for example when changing the background pattern)
     pub fn regenerate_background(&self, force_regenerate: bool, redraw: bool) {
         match self.sheet().background().borrow_mut().update_rendernode(
             self.scalefactor(),
             self.sheet().bounds(),
-            &self.sheet().strokes_state().borrow().renderer,
             force_regenerate,
         ) {
             Err(e) => {
@@ -832,7 +835,7 @@ impl Canvas {
         }
     }
 
-    /// regenerate the rendernodes of the canvas content. force_regenerate disables buffers and regenerates all rendernodes from scratch
+    /// regenerate the rendernodes of the canvas content. force_regenerate  regenerates all rendernodes from scratch
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
         self.sheet().strokes_state().borrow_mut().update_rendering();
 
@@ -840,7 +843,7 @@ impl Canvas {
     }
 
     /// Captures the current content of the canvas as a gdk::Texture
-    pub fn capture_current_content(&self, size: na::Vector2<f64>) -> Option<gdk::Texture> {
+    pub fn current_content_as_texture(&self, size: na::Vector2<f64>) -> Option<gdk::Texture> {
         let snapshot = Snapshot::new();
         self.preview().snapshot(
             snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(),
@@ -866,6 +869,8 @@ impl Canvas {
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
+
+        let scalefactor = self.scalefactor();
 
         self.set_unsaved_changes(true);
         self.set_empty(false);
@@ -917,7 +922,7 @@ impl Canvas {
 
                     // update the rendernode of the current stroke
                     self.pens().borrow_mut().selector.update_rendernode(
-                        self.scalefactor(),
+                        scalefactor,
                         &self.sheet().strokes_state().borrow().renderer,
                     );
                 }
@@ -935,6 +940,8 @@ impl Canvas {
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
+
+        let scalefactor = self.scalefactor();
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
@@ -960,7 +967,6 @@ impl Canvas {
                 }
             }
             PenStyle::Eraser => {
-                let scalefactor = self.scalefactor();
                 let canvas_scroller_viewport_descaled =
                     if let Some(viewport) = appwindow.canvas_scroller_viewport() {
                         Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
@@ -991,7 +997,7 @@ impl Canvas {
                         .selector
                         .push_elem(inputdata.clone());
                     self.pens().borrow_mut().selector.update_rendernode(
-                        self.scalefactor(),
+                        scalefactor,
                         &self.sheet().strokes_state().borrow().renderer,
                     );
                     self.queue_draw();
@@ -1007,6 +1013,8 @@ impl Canvas {
         appwindow: &RnoteAppWindow,
         _data_entries: &mut VecDeque<InputData>,
     ) {
+        let scalefactor = self.scalefactor();
+
         self.set_cursor(Some(&self.cursor()));
 
         appwindow
@@ -1025,8 +1033,6 @@ impl Canvas {
 
         match self.current_pen().get() {
             PenStyle::Selector => {
-                let scalefactor = self.scalefactor();
-
                 let canvas_scroller_viewport_descaled =
                     if let Some(viewport) = appwindow.canvas_scroller_viewport() {
                         Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
@@ -1070,7 +1076,7 @@ impl Canvas {
     }
 }
 
-/// functions and consts for visual debugging
+/// fmodule for visual debugging
 pub mod debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
 

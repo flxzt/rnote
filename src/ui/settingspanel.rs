@@ -497,7 +497,7 @@ impl SettingsPanel {
         priv_.format_revert_button.get().connect_clicked(
             clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
                 let priv_ = imp::SettingsPanel::from_instance(&settings_panel);
-                priv_.temporary_format.replace_fields(appwindow.canvas().sheet().format());
+                priv_.temporary_format.import_format(appwindow.canvas().sheet().format());
                 let revert_format = appwindow.canvas().sheet().format();
 
                 settings_panel.set_predefined_format_variant(format::PredefinedFormat::Custom);
@@ -518,7 +518,7 @@ impl SettingsPanel {
 
         priv_.format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
-                appwindow.canvas().sheet().format().replace_fields(temporary_format);
+                appwindow.canvas().sheet().format().import_format(temporary_format);
 
                 appwindow.canvas().sheet().resize_to_format();
                 appwindow.canvas().regenerate_content(true, true);

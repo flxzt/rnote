@@ -230,7 +230,7 @@ impl<'de> Deserialize<'de> for Sheet {
 
                 let sheet = Sheet::new();
                 *sheet.strokes_state().borrow_mut() = strokes_state;
-                sheet.format().replace_fields(format);
+                sheet.format().import_format(format);
                 *sheet.background().borrow_mut() = background;
                 sheet.set_x(x);
                 sheet.set_y(y);
@@ -388,7 +388,7 @@ impl<'de> Deserialize<'de> for Sheet {
 
                 let sheet = Sheet::new();
                 *sheet.strokes_state().borrow_mut() = strokes_state;
-                sheet.format().replace_fields(format);
+                sheet.format().import_format(format);
                 *sheet.background().borrow_mut() = background;
                 sheet.set_x(x);
                 sheet.set_y(y);
@@ -574,9 +574,10 @@ impl Sheet {
     pub fn open_sheet(&self, file: &gio::File) -> Result<(), Box<dyn std::error::Error>> {
         let sheet: Sheet = serde_json::from_str(&utils::load_file_contents(file)?)?;
 
-        *self.strokes_state().borrow_mut() = sheet.strokes_state().borrow().clone();
-        self.format().replace_fields(sheet.format());
-        *self.background().borrow_mut() = sheet.background().borrow().clone();
+        self.strokes_state().borrow_mut().import_state(&*sheet.strokes_state().borrow());
+
+        self.format().import_format(sheet.format());
+        self.background().borrow_mut().import_background(&*sheet.background().borrow());
         self.set_x(sheet.x());
         self.set_y(sheet.y());
         self.set_width(sheet.width());
@@ -584,7 +585,6 @@ impl Sheet {
         self.set_padding_bottom(sheet.padding_bottom());
         self.set_endless_sheet(sheet.endless_sheet());
 
-        self.strokes_state().borrow_mut().complete_all_strokes();
         Ok(())
     }
 

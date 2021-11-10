@@ -2,8 +2,7 @@ use gtk4::{glib, gsk, Snapshot};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-use crate::utils;
-use crate::{compose, render};
+use crate::{utils, compose, render};
 
 #[derive(
     Debug,
@@ -188,6 +187,14 @@ impl Background {
     pub const PATTERN_SIZE_DEFAULT: f64 = 20.0;
     pub const TILE_MAX_SIZE: f64 = 512.0;
 
+    pub fn import_background(&mut self, background: &Self) {
+        self.color = background.color;
+        self.pattern = background.pattern;
+        self.pattern_size = background.pattern_size;
+        self.pattern_color = background.pattern_color;
+        self.pattern_color = background.pattern_color;
+    }
+
     pub fn color(&self) -> utils::Color {
         self.color
     }
@@ -228,7 +235,6 @@ impl Background {
         &mut self,
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
-        _renderer: &render::Renderer,
         force_regenerate: bool,
     ) -> Result<(), Box<dyn std::error::Error>> {
         if force_regenerate

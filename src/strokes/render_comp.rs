@@ -49,22 +49,18 @@ impl StrokesState {
     }
 
     pub fn set_render(&mut self, key: StrokeKey, render: bool) {
-        if let Some(render_component) = self.render_components.get_mut(key) {
-            if let Some(render_component) = render_component {
-                render_component.render = render;
-            } else {
-                log::warn!("Stroke with key {:?} does not support rendering", key);
-            }
+        if let Some(Some(render_component)) = self.render_components.get_mut(key) {
+            render_component.render = render;
         } else {
             log::warn!(
-                "failed to get render_comp of stroke for key {:?}, invalid key used or stroke does not support rendering",
+                "failed to get render_comp of stroke with key {:?}, invalid key used or stroke does not support rendering",
                 key
             );
         }
     }
 
     pub fn update_rendering_newest_stroke(&mut self) {
-        let key = self.strokes.keys().last();
+        let key = self.last_stroke_key();
         if let Some(key) = key {
             self.update_rendering_for_stroke(key);
         }
@@ -100,24 +96,14 @@ impl StrokesState {
             }
         } else {
             log::warn!(
-                "failed to get stroke for StrokeKey {:?}, invalid key used or render component not found",
+                "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
                 key
             );
         }
     }
 
     pub fn update_rendering(&mut self) {
-        let keys = self
-            .render_components
-            .iter()
-            .filter_map(|(key, render_comp)| {
-                if render_comp.is_some() {
-                    Some(key)
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<StrokeKey>>();
+        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
         keys.iter().for_each(|key| {
             self.update_rendering_for_stroke(*key);
@@ -126,6 +112,7 @@ impl StrokesState {
 
     pub fn update_rendering_for_selection(&mut self) {
         let selection_keys = self.selection_keys();
+
         selection_keys.iter().for_each(|key| {
             self.update_rendering_for_stroke(*key);
         });
@@ -266,14 +253,12 @@ impl StrokesState {
 
     pub fn draw_debug(&self, scalefactor: f64, snapshot: &Snapshot) {
         self.strokes.iter().for_each(|(key, stroke)| {
-            if let Some(Some(render_comp)) = self.render_components.get(key) {
-                // Blur debug rendering for strokes which are normally hidden
-                let trashed = if let Some(Some(trash_comp)) = self.trash_components.get(key) {
-                    trash_comp.trashed
-                } else {
-                    false
-                };
-                if !render_comp.render || trashed {
+            // Blur debug rendering for strokes which are normally hidden
+            if let (Some(Some(render_comp)), Some(Some(trash_comp))) = (
+                self.render_components.get(key),
+                self.trash_components.get(key),
+            ) {
+                if render_comp.render && trash_comp.trashed {
                     snapshot.push_blur(3.0);
                     snapshot.push_opacity(0.2);
                 }
@@ -352,8 +337,11 @@ impl StrokesState {
                     );
                 }
             }
-            if let Some(Some(render_comp)) = self.render_components.get(key) {
-                if !render_comp.render {
+            if let (Some(Some(render_comp)), Some(Some(trash_comp))) = (
+                self.render_components.get(key),
+                self.trash_components.get(key),
+            ) {
+                if render_comp.render && trash_comp.trashed {
                     snapshot.pop();
                     snapshot.pop();
                 }

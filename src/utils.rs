@@ -136,7 +136,9 @@ pub fn aabb_to_graphene_rect(aabb: p2d::bounding_volume::AABB) -> graphene::Rect
     )
 }
 
-/// splits a aabb into multiple which have the given size. Their union contains the given aabb. The boxes on the edges might extend the given aabb. Used when generating the background
+/// splits a aabb into multiple which have the given size. Their union contains the given aabb. 
+/// The boxes on the edges might extend the given aabb, so clipping these AABB probably is needed.
+/// Used when generating the background
 pub fn split_aabb_extended(
     aabb: p2d::bounding_volume::AABB,
     mut splitted_size: na::Vector2<f64>,
@@ -308,6 +310,16 @@ pub fn aabb_scale(
     p2d::bounding_volume::AABB::new(
         na::Point2::<f64>::from(na::vector![aabb.mins[0], aabb.mins[1]].scale(scalefactor)),
         na::Point2::<f64>::from(na::vector![aabb.maxs[0], aabb.maxs[1]].scale(scalefactor)),
+    )
+}
+
+pub fn aabb_translate(
+    aabb: p2d::bounding_volume::AABB,
+    offset: na::Vector2<f64>
+) -> p2d::bounding_volume::AABB {
+    p2d::bounding_volume::AABB::new(
+        na::point![aabb.mins[0] + offset[0], aabb.mins[1] + offset[1]],
+        na::point![aabb.maxs[0] + offset[0], aabb.maxs[1] + offset[1]]
     )
 }
 

@@ -201,6 +201,16 @@ impl StrokesState {
         self.chrono_components.clear();
     }
 
+    pub fn import_state(&mut self, strokes_state: &Self) {
+        self.clear();
+        self.strokes = strokes_state.strokes.clone();
+        self.trash_components = strokes_state.trash_components.clone();
+        self.render_components = strokes_state.render_components.clone();
+        self.render_components = strokes_state.render_components.clone();
+
+        self.update_rendering();
+    }
+
     /// Returns the key to the completed stroke
     pub fn complete_stroke(&mut self, key: StrokeKey) {
         if let Some(stroke) = self.strokes.get_mut(key) {

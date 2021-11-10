@@ -223,8 +223,11 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
 
 // ### Settings are setup only at startup. Setting changes through gsettings / dconf might not be applied until app restarts
 pub fn load_settings(appwindow: &RnoteAppWindow) {
-    // overwriting theme so users can choose dark / light in appmenu
-    //appwindow.settings().set_gtk_theme_name(Some("Adwaita"));
+    let app = appwindow
+        .application()
+        .unwrap()
+        .downcast::<RnoteApp>()
+        .unwrap();
 
     // Workspace directory
     appwindow
@@ -536,11 +539,7 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .flags(gio::SettingsBindFlags::DEFAULT)
         .build();
 
-    let action_devel_settings = appwindow
-        .application()
-        .unwrap()
-        .downcast::<RnoteApp>()
-        .unwrap()
+    let action_devel_settings = app
         .lookup_action("devel-settings")
         .unwrap();
     action_devel_settings

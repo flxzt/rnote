@@ -1,4 +1,4 @@
-use crate::compose;
+use crate::{compose, utils};
 use crate::pens::selector::Selector;
 use crate::strokes::render_comp::RenderComponent;
 use crate::strokes::trash_comp::TrashComponent;
@@ -171,8 +171,11 @@ impl StrokesState {
 
         self.strokes.iter().for_each(|(key, stroke)| {
             // Skip if stroke is hidden
-            if let Some(Some(render_comp)) = self.render_components.get(key) {
-                if !render_comp.render {
+            if let (Some(Some(render_comp)), Some(Some(trash_comp))) = (
+                self.render_components.get(key),
+                self.trash_components.get(key),
+            ) {
+                if !render_comp.render || trash_comp.trashed {
                     return;
                 }
             }
@@ -182,56 +185,47 @@ impl StrokesState {
                     return;
                 }
             }
-            match stroke {
-                StrokeStyle::MarkerStroke(markerstroke) => {
-                    if selector_bounds.contains(&markerstroke.bounds) {
-                        if let Some(Some(selection_comp)) = self.selection_components.get_mut(key) {
+            if let Some(Some(selection_comp)) = self.selection_components.get_mut(key) {
+                // Default to not selected, check if selected
+                selection_comp.selected = false;
+
+                match stroke {
+                    StrokeStyle::MarkerStroke(markerstroke) => {
+                        if selector_bounds.contains(&markerstroke.bounds) {
                             selection_comp.selected = true;
-                        }
-                    } else if selector_bounds.intersects(&markerstroke.bounds) {
-                        for hitbox_elem in markerstroke.hitbox.iter() {
-                            if !selector_bounds.contains(hitbox_elem) {
-                                return;
+                        } else if selector_bounds.intersects(&markerstroke.bounds) {
+                            for hitbox_elem in markerstroke.hitbox.iter() {
+                                if !selector_bounds.contains(hitbox_elem) {
+                                    return;
+                                }
                             }
-                        }
-                        if let Some(Some(selection_comp)) = self.selection_components.get_mut(key) {
                             selection_comp.selected = true;
                         }
                     }
-                }
-                StrokeStyle::BrushStroke(brushstroke) => {
-                    if selector_bounds.contains(&brushstroke.bounds) {
-                        if let Some(Some(selection_comp)) = self.selection_components.get_mut(key) {
+                    StrokeStyle::BrushStroke(brushstroke) => {
+                        if selector_bounds.contains(&brushstroke.bounds) {
                             selection_comp.selected = true;
-                        }
-                    } else if selector_bounds.intersects(&brushstroke.bounds) {
-                        for hitbox_elem in brushstroke.hitbox.iter() {
-                            if !selector_bounds.contains(hitbox_elem) {
-                                return;
+                        } else if selector_bounds.intersects(&brushstroke.bounds) {
+                            for hitbox_elem in brushstroke.hitbox.iter() {
+                                if !selector_bounds.contains(hitbox_elem) {
+                                    return;
+                                }
                             }
-                        }
-                        if let Some(Some(selection_comp)) = self.selection_components.get_mut(key) {
                             selection_comp.selected = true;
                         }
                     }
-                }
-                StrokeStyle::ShapeStroke(shapestroke) => {
-                    if selector_bounds.contains(&shapestroke.bounds) {
-                        if let Some(Some(selection_comp)) = self.selection_components.get_mut(key) {
+                    StrokeStyle::ShapeStroke(shapestroke) => {
+                        if selector_bounds.contains(&shapestroke.bounds) {
                             selection_comp.selected = true;
                         }
                     }
-                }
-                StrokeStyle::VectorImage(vector_image) => {
-                    if selector_bounds.contains(&vector_image.bounds) {
-                        if let Some(Some(selection_comp)) = self.selection_components.get_mut(key) {
+                    StrokeStyle::VectorImage(vector_image) => {
+                        if selector_bounds.contains(&vector_image.bounds) {
                             selection_comp.selected = true;
                         }
                     }
-                }
-                StrokeStyle::BitmapImage(vector_image) => {
-                    if selector_bounds.contains(&vector_image.bounds) {
-                        if let Some(Some(selection_comp)) = self.selection_components.get_mut(key) {
+                    StrokeStyle::BitmapImage(vector_image) => {
+                        if selector_bounds.contains(&vector_image.bounds) {
                             selection_comp.selected = true;
                         }
                     }
@@ -241,12 +235,14 @@ impl StrokesState {
 
         if self.selection_len() != selection_len_prev {
             self.update_selection_bounds();
+            self.update_rendering_for_selection();
             true
         } else {
             false
         }
     }
 
+    /// Resizing the selection with its contents to the new bounds
     pub fn resize_selection(&mut self, new_bounds: p2d::bounding_volume::AABB) {
         fn calc_new_stroke_bounds(
             stroke: &StrokeStyle,
@@ -301,6 +297,7 @@ impl StrokesState {
         }
     }
 
+    /// Translate the selection with its contents with an offset relative to the current position
     pub fn translate_selection(&mut self, offset: na::Vector2<f64>) {
         self.strokes.iter_mut().for_each(|(key, stroke)| {
             if let Some(Some(selection_comp)) = self.selection_components.get(key) {
@@ -310,7 +307,11 @@ impl StrokesState {
             }
         });
 
-        self.update_selection_bounds();
+        self.selection_bounds = if let Some(bounds) = self.selection_bounds {
+            Some(utils::aabb_translate(bounds, offset))
+        } else {
+            None
+        };
         self.update_rendering_for_selection();
     }
 

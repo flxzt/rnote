@@ -316,8 +316,8 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     match dialog_import_file.file() {
                         Some(file) => {
-                            if appwindow.load_in_file(&file).is_err() {
-                                log::error!("failed to load_in_file() on import");
+                            if let Err(e) = appwindow.load_in_file(&file) {
+                                log::error!("failed to load_in_file() on import, {}", e);
                             }
                         },
                         None => { log::error!("unable to import file. No file selected.")},

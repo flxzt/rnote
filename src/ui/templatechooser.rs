@@ -257,7 +257,7 @@ impl TemplateChooser {
     pub fn set_templates_path(&self, path: &path::Path) -> Result<(), ()> {
         let priv_ = imp::TemplateChooser::from_instance(self);
 
-        log::debug!("setting path for brush templates_dirlist: `{:?}`", path);
+        log::info!("setting path for brush templates_dirlist: `{:?}`", path);
         if let Some(templates_dir) = self.create_populate_templates_dir(path) {
             priv_.templates_dirlist.set_file(Some(&templates_dir));
             Ok(())

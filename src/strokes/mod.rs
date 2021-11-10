@@ -43,10 +43,10 @@ slotmap::new_key_type! {
 pub struct StrokesState {
     // Components
     strokes: HopSlotMap<StrokeKey, StrokeStyle>,
-    render_components: SecondaryMap<StrokeKey, Option<RenderComponent>>,
     trash_components: SecondaryMap<StrokeKey, Option<TrashComponent>>,
     selection_components: SecondaryMap<StrokeKey, Option<SelectionComponent>>,
     chrono_components: SecondaryMap<StrokeKey, Option<ChronoComponent>>,
+    render_components: SecondaryMap<StrokeKey, Option<RenderComponent>>,
 
     // Other state
     /// value is equal chrono_component of the newest inserted stroke.
@@ -64,8 +64,8 @@ impl Default for StrokesState {
             strokes: HopSlotMap::with_key(),
             trash_components: SecondaryMap::new(),
             selection_components: SecondaryMap::new(),
-            render_components: SecondaryMap::new(),
             chrono_components: SecondaryMap::new(),
+            render_components: SecondaryMap::new(),
 
             chrono_counter: 0,
             scalefactor: 1.0,
@@ -130,8 +130,8 @@ impl StrokesState {
     pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<StrokeStyle> {
         self.trash_components.remove(key);
         self.selection_components.remove(key);
-        self.render_components.remove(key);
         self.chrono_components.remove(key);
+        self.render_components.remove(key);
 
         self.strokes.remove(key)
     }
@@ -197,15 +197,16 @@ impl StrokesState {
         self.strokes.clear();
         self.trash_components.clear();
         self.selection_components.clear();
-        self.render_components.clear();
         self.chrono_components.clear();
+        self.render_components.clear();
     }
 
     pub fn import_state(&mut self, strokes_state: &Self) {
         self.clear();
         self.strokes = strokes_state.strokes.clone();
         self.trash_components = strokes_state.trash_components.clone();
-        self.render_components = strokes_state.render_components.clone();
+        self.selection_components = strokes_state.selection_components.clone();
+        self.chrono_components = strokes_state.chrono_components.clone();
         self.render_components = strokes_state.render_components.clone();
 
         self.update_rendering();

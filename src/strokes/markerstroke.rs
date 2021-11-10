@@ -87,59 +87,62 @@ impl StrokeBehaviour for MarkerStroke {
     }
 
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
-        let mut commands = Vec::new();
-
-        for (i, (((first, second), third), forth)) in self
+        let commands: Vec<path::Command> = self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
             .enumerate()
-        {
-            if let Some(mut cubic_bezier) =
-                curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
-            {
-                cubic_bezier.start += offset;
-                cubic_bezier.cp1 += offset;
-                cubic_bezier.cp2 += offset;
-                cubic_bezier.end += offset;
+            .map(|(i, (((first, second), third), forth))| {
+                let mut commands = Vec::new();
+                if let Some(mut cubic_bezier) =
+                    curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
+                {
+                    cubic_bezier.start += offset;
+                    cubic_bezier.cp1 += offset;
+                    cubic_bezier.cp2 += offset;
+                    cubic_bezier.end += offset;
 
-                if i == 0 {
-                    commands.push(path::Command::Move(
-                        path::Position::Absolute,
-                        path::Parameters::from((cubic_bezier.start[0], cubic_bezier.start[1])),
-                    ));
+                    if i == 0 {
+                        commands.push(path::Command::Move(
+                            path::Position::Absolute,
+                            path::Parameters::from((cubic_bezier.start[0], cubic_bezier.start[1])),
+                        ));
+                    } else {
+                        commands.push(path::Command::CubicCurve(
+                            path::Position::Absolute,
+                            path::Parameters::from((
+                                (cubic_bezier.cp1[0], cubic_bezier.cp1[1]),
+                                (cubic_bezier.cp2[0], cubic_bezier.cp2[1]),
+                                (cubic_bezier.end[0], cubic_bezier.end[1]),
+                            )),
+                        ));
+                    }
                 } else {
-                    commands.push(path::Command::CubicCurve(
-                        path::Position::Absolute,
-                        path::Parameters::from((
-                            (cubic_bezier.cp1[0], cubic_bezier.cp1[1]),
-                            (cubic_bezier.cp2[0], cubic_bezier.cp2[1]),
-                            (cubic_bezier.end[0], cubic_bezier.end[1]),
-                        )),
-                    ));
+                    if i == 0 {
+                        commands.push(path::Command::Move(
+                            path::Position::Absolute,
+                            path::Parameters::from((
+                                second.inputdata.pos()[0],
+                                second.inputdata.pos()[1],
+                            )),
+                        ));
+                    } else {
+                        commands.push(path::Command::Line(
+                            path::Position::Absolute,
+                            path::Parameters::from((
+                                third.inputdata.pos()[0],
+                                third.inputdata.pos()[1],
+                            )),
+                        ));
+                    }
                 }
-            } else {
-                if i == 0 {
-                    commands.push(path::Command::Move(
-                        path::Position::Absolute,
-                        path::Parameters::from((
-                            second.inputdata.pos()[0],
-                            second.inputdata.pos()[1],
-                        )),
-                    ));
-                } else {
-                    commands.push(path::Command::Line(
-                        path::Position::Absolute,
-                        path::Parameters::from((
-                            third.inputdata.pos()[0],
-                            third.inputdata.pos()[1],
-                        )),
-                    ));
-                }
-            }
-        }
+
+                commands
+            })
+            .flatten()
+            .collect();
 
         let svg = if !commands.is_empty() {
             let path = svg::node::element::Path::new()

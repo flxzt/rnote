@@ -283,62 +283,68 @@ impl BrushStroke {
         &self,
         offset: na::Vector2<f64>,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        let mut commands = Vec::new();
-
-        for (i, (((first, second), third), forth)) in self
+        let commands: Vec<path::Command> = self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
             .enumerate()
-        {
-            let start_width = second.inputdata.pressure() * self.brush.width();
-            let end_width = third.inputdata.pressure() * self.brush.width();
+            .map(|(i, (((first, second), third), forth))| {
+                let mut commands = Vec::new();
 
-            if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
-            {
-                cubbez.start += offset;
-                cubbez.cp1 += offset;
-                cubbez.cp2 += offset;
-                cubbez.end += offset;
+                let start_width = second.inputdata.pressure() * self.brush.width();
+                let end_width = third.inputdata.pressure() * self.brush.width();
 
-                let n_splits = 8;
-                for (i, line) in curves::approx_cubbez_with_lines(cubbez, n_splits)
-                    .iter()
-                    .enumerate()
+                if let Some(mut cubbez) =
+                    curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
                 {
-                    let line_start_width = start_width
-                        + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_splits));
-                    let line_end_width = start_width
-                        + (end_width - start_width)
-                            * (f64::from(i as i32 + 1) / f64::from(n_splits));
+                    cubbez.start += offset;
+                    cubbez.cp1 += offset;
+                    cubbez.cp2 += offset;
+                    cubbez.end += offset;
 
+                    let n_splits = 8;
+                    for (i, line) in curves::approx_cubbez_with_lines(cubbez, n_splits)
+                        .iter()
+                        .enumerate()
+                    {
+                        let line_start_width = start_width
+                            + (end_width - start_width)
+                                * (f64::from(i as i32) / f64::from(n_splits));
+                        let line_end_width = start_width
+                            + (end_width - start_width)
+                                * (f64::from(i as i32 + 1) / f64::from(n_splits));
+
+                        commands.append(&mut compose::compose_linear_variable_width(
+                            *line,
+                            line_start_width,
+                            line_end_width,
+                            true,
+                        ));
+                    }
+                } else if let Some(mut line) = curves::gen_line(second, third) {
+                    line.start += offset;
+                    line.end += offset;
+
+                    if i == 0 {
+                        commands.push(path::Command::Move(
+                            path::Position::Absolute,
+                            path::Parameters::from((line.start[0], line.start[1])),
+                        ));
+                    }
                     commands.append(&mut compose::compose_linear_variable_width(
-                        *line,
-                        line_start_width,
-                        line_end_width,
+                        line,
+                        start_width,
+                        end_width,
                         true,
                     ));
                 }
-            } else if let Some(mut line) = curves::gen_line(second, third) {
-                line.start += offset;
-                line.end += offset;
 
-                if i == 0 {
-                    commands.push(path::Command::Move(
-                        path::Position::Absolute,
-                        path::Parameters::from((line.start[0], line.start[1])),
-                    ));
-                }
-                commands.append(&mut compose::compose_linear_variable_width(
-                    line,
-                    start_width,
-                    end_width,
-                    true,
-                ));
-            }
-        }
+                commands
+            })
+            .flatten()
+            .collect();
 
         let path = svg::node::element::Path::new()
             .set("stroke", "none")
@@ -353,65 +359,47 @@ impl BrushStroke {
         &self,
         offset: na::Vector2<f64>,
     ) -> Result<String, Box<dyn std::error::Error>> {
-        let mut commands = Vec::new();
-
-        for (((first, second), third), forth) in self
+        let commands: Vec<path::Command> = self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
-        {
-            let start_width = second.inputdata.pressure() * self.brush.width();
-            let end_width = third.inputdata.pressure() * self.brush.width();
+            .map(|(((first, second), third), forth)| {
+                let mut commands = Vec::new();
+                let start_width = second.inputdata.pressure() * self.brush.width();
+                let end_width = third.inputdata.pressure() * self.brush.width();
 
-            if let Some(mut cubic_bezier) =
-                curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
-            {
-                cubic_bezier.start += offset;
-                cubic_bezier.cp1 += offset;
-                cubic_bezier.cp2 += offset;
-                cubic_bezier.end += offset;
+                if let Some(mut cubic_bezier) =
+                    curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
+                {
+                    cubic_bezier.start += offset;
+                    cubic_bezier.cp1 += offset;
+                    cubic_bezier.cp2 += offset;
+                    cubic_bezier.end += offset;
 
-                commands.append(&mut compose::compose_cubbez_variable_width(
-                    cubic_bezier,
-                    start_width,
-                    end_width,
-                    true,
-                ));
-            } else if let Some(mut line) = curves::gen_line(first, second) {
-                line.start += offset;
-                line.end += offset;
+                    commands.append(&mut compose::compose_cubbez_variable_width(
+                        cubic_bezier,
+                        start_width,
+                        end_width,
+                        true,
+                    ));
+                } else if let Some(mut line) = curves::gen_line(first, second) {
+                    line.start += offset;
+                    line.end += offset;
 
-                commands.append(&mut compose::compose_linear_variable_width(
-                    line,
-                    start_width,
-                    end_width,
-                    true,
-                ));
-            }
+                    commands.append(&mut compose::compose_linear_variable_width(
+                        line,
+                        start_width,
+                        end_width,
+                        true,
+                    ));
+                }
 
-            // Debugging
-            /*             let end_offset_dist = width_end / 2.0;
-            let end_unit_norm = compose::vector2_unit_norm(cubic_bezier.end - cubic_bezier.cp2);
-            let end_offset = end_unit_norm * end_offset_dist;
-
-            commands.push(path::Command::Move(
-                path::Position::Absolute,
-                path::Parameters::from((
-                    (cubic_bezier.end + 1.2 * end_offset)[0],
-                    (cubic_bezier.end + 1.2 * end_offset)[1],
-                )),
-            ));
-            commands.push(path::Command::Line(
-                path::Position::Absolute,
-                path::Parameters::from((
-                    (cubic_bezier.end + 2.2 * end_offset)[0],
-                    (cubic_bezier.end + 2.2 * end_offset)[1],
-                )),
-            ));
-            commands.push(path::Command::Close); */
-        }
+                commands
+            })
+            .flatten()
+            .collect();
 
         let svg = if !commands.is_empty() {
             let path = svg::node::element::Path::new()

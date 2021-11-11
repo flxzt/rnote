@@ -7,6 +7,7 @@ use crate::{
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
@@ -285,10 +286,10 @@ impl BrushStroke {
     ) -> Result<String, Box<dyn std::error::Error>> {
         let commands: Vec<path::Command> = self
             .elements
-            .iter()
-            .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
+            .par_iter()
+            .zip(self.elements.par_iter().skip(1))
+            .zip(self.elements.par_iter().skip(2))
+            .zip(self.elements.par_iter().skip(3))
             .enumerate()
             .map(|(i, (((first, second), third), forth))| {
                 let mut commands = Vec::new();
@@ -361,10 +362,10 @@ impl BrushStroke {
     ) -> Result<String, Box<dyn std::error::Error>> {
         let commands: Vec<path::Command> = self
             .elements
-            .iter()
-            .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
+            .par_iter()
+            .zip(self.elements.par_iter().skip(1))
+            .zip(self.elements.par_iter().skip(2))
+            .zip(self.elements.par_iter().skip(3))
             .map(|(((first, second), third), forth)| {
                 let mut commands = Vec::new();
                 let start_width = second.inputdata.pressure() * self.brush.width();
@@ -442,10 +443,10 @@ impl BrushStroke {
 
         let teraelements = self
             .elements
-            .iter()
-            .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
+            .par_iter()
+            .zip(self.elements.par_iter().skip(1))
+            .zip(self.elements.par_iter().skip(2))
+            .zip(self.elements.par_iter().skip(3))
             .map(|(((first, second), third), fourth)| {
                 (
                     TeraElement {

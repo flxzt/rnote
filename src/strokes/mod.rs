@@ -31,6 +31,7 @@ use self::{
 
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
+use rayon::prelude::*;
 use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -43,14 +44,14 @@ slotmap::new_key_type! {
 pub struct StrokesState {
     // Components
     strokes: HopSlotMap<StrokeKey, StrokeStyle>,
-    trash_components: SecondaryMap<StrokeKey, Option<TrashComponent>>,
-    selection_components: SecondaryMap<StrokeKey, Option<SelectionComponent>>,
-    chrono_components: SecondaryMap<StrokeKey, Option<ChronoComponent>>,
-    render_components: SecondaryMap<StrokeKey, Option<RenderComponent>>,
+    trash_components: SecondaryMap<StrokeKey, TrashComponent>,
+    selection_components: SecondaryMap<StrokeKey, SelectionComponent>,
+    chrono_components: SecondaryMap<StrokeKey, ChronoComponent>,
+    render_components: SecondaryMap<StrokeKey, RenderComponent>,
 
     // Other state
-    /// value is equal chrono_component of the newest inserted stroke.
-    chrono_counter: u64,
+    /// value is equal chrono_component of the newest inserted or modified stroke.
+    chrono_counter: u32,
     #[serde(skip)]
     pub scalefactor: f64, // changes with the canvas scalefactor
     #[serde(skip)]
@@ -115,13 +116,13 @@ impl StrokesState {
         self.chrono_counter += 1;
 
         self.trash_components
-            .insert(key, Some(TrashComponent::default()));
+            .insert(key, TrashComponent::default());
         self.selection_components
-            .insert(key, Some(SelectionComponent::default()));
+            .insert(key, SelectionComponent::default());
         self.render_components
-            .insert(key, Some(RenderComponent::default()));
+            .insert(key, RenderComponent::default());
         self.chrono_components
-            .insert(key, Some(ChronoComponent::new(self.chrono_counter)));
+            .insert(key, ChronoComponent::new(self.chrono_counter));
 
         self.update_rendering_for_stroke(key);
         key
@@ -137,12 +138,16 @@ impl StrokesState {
     }
 
     pub fn last_stroke_key(&self) -> Option<StrokeKey> {
-        let mut sorted = self
-            .chrono_components
+        let chrono_components = &self.chrono_components;
+        let trash_components = &self.trash_components;
+
+        let mut sorted: Vec<(StrokeKey, u32)> = 
+            chrono_components
             .iter()
+            .par_bridge()
             .filter_map(|(key, chrono_comp)| {
-                if let (Some(Some(trash_comp)), Some(chrono_comp)) =
-                    (self.trash_components.get(key), chrono_comp)
+                if let (Some(trash_comp), chrono_comp) =
+                    (trash_components.get(key), chrono_comp)
                 {
                     if !trash_comp.trashed {
                         return Some((key, chrono_comp.t));
@@ -150,7 +155,7 @@ impl StrokesState {
                 }
                 None
             })
-            .collect::<Vec<(StrokeKey, u64)>>();
+            .collect();
         sorted.sort_unstable_by(|first, second| first.1.cmp(&second.1));
 
         let last_stroke_key = sorted.last().copied();
@@ -163,8 +168,8 @@ impl StrokesState {
 
     /// returns key to last stroke
     pub fn add_to_last_stroke(&mut self, element: Element, pens: &Pens) -> StrokeKey {
-        let key = if let Some((key, stroke)) = self.strokes.iter_mut().last() {
-            match stroke {
+        let key = if let Some(key) = self.last_stroke_key() {
+            match self.strokes.get_mut(key).unwrap() {
                 StrokeStyle::MarkerStroke(ref mut markerstroke) => {
                     markerstroke.push_elem(element);
                 }

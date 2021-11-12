@@ -5,7 +5,7 @@ use gtk4::gsk;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};
 
-use super::StrokeBehaviour;
+use crate::strokes::strokestyle::StrokeBehaviour;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Format {

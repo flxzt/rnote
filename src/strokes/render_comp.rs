@@ -1,5 +1,6 @@
-use super::{StrokeBehaviour, StrokeKey, StrokeStyle, StrokesState};
+use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::render;
+use crate::strokes::strokestyle::StrokeBehaviour;
 use crate::ui::canvas;
 
 use gtk4::{gdk, graphene, gsk, Snapshot};
@@ -243,7 +244,7 @@ impl StrokesState {
                 StrokeStyle::MarkerStroke(markerstroke) => {
                     for element in markerstroke.elements.iter() {
                         canvas::debug::draw_pos(
-                            element.inputdata().pos(),
+                            element.inputdata.pos(),
                             canvas::debug::COLOR_POS,
                             scalefactor,
                             snapshot,
@@ -267,7 +268,7 @@ impl StrokesState {
                 StrokeStyle::BrushStroke(brushstroke) => {
                     for element in brushstroke.elements.iter() {
                         canvas::debug::draw_pos(
-                            element.inputdata().pos(),
+                            element.inputdata.pos(),
                             canvas::debug::COLOR_POS,
                             scalefactor,
                             snapshot,

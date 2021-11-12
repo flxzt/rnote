@@ -118,8 +118,9 @@ mod imp {
 
 use std::{cell::RefCell, rc::Rc};
 
+use crate::strokes::strokestyle::StrokeStyle;
 use crate::{
-    compose, strokes,
+    compose,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokesState},
     utils::{self, FileType},
 };
@@ -131,7 +132,6 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
-
 
 glib::wrapper! {
     pub struct Sheet(ObjectSubclass<imp::Sheet>);
@@ -574,10 +574,14 @@ impl Sheet {
     pub fn open_sheet(&self, file: &gio::File) -> Result<(), Box<dyn std::error::Error>> {
         let sheet: Sheet = serde_json::from_str(&utils::load_file_contents(file)?)?;
 
-        self.strokes_state().borrow_mut().import_state(&*sheet.strokes_state().borrow());
+        self.strokes_state()
+            .borrow_mut()
+            .import_state(&*sheet.strokes_state().borrow());
 
         self.format().import_format(sheet.format());
-        self.background().borrow_mut().import_background(&*sheet.background().borrow());
+        self.background()
+            .borrow_mut()
+            .import_background(&*sheet.background().borrow());
         self.set_x(sheet.x());
         self.set_y(sheet.y());
         self.set_width(sheet.width());
@@ -671,7 +675,7 @@ impl Sheet {
         let inserted = priv_
             .strokes_state
             .borrow_mut()
-            .insert_stroke(strokes::StrokeStyle::VectorImage(vector_image));
+            .insert_stroke(StrokeStyle::VectorImage(vector_image));
         priv_
             .strokes_state
             .borrow_mut()
@@ -695,7 +699,7 @@ impl Sheet {
         let inserted = priv_
             .strokes_state
             .borrow_mut()
-            .insert_stroke(strokes::StrokeStyle::BitmapImage(bitmapimage));
+            .insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
         priv_
             .strokes_state
             .borrow_mut()

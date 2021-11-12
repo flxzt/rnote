@@ -3,7 +3,8 @@ use crate::strokes::render_comp::RenderComponent;
 use crate::strokes::trash_comp::TrashComponent;
 use crate::{compose, utils};
 
-use super::{StrokeBehaviour, StrokeKey, StrokeStyle, StrokesState};
+use super::{StrokeKey, StrokeStyle, StrokesState};
+use crate::strokes::strokestyle::StrokeBehaviour;
 
 use gtk4::{gio, prelude::*};
 use p2d::bounding_volume::BoundingVolume;

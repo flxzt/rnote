@@ -508,10 +508,7 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
 
     // endless sheet
     let endless_sheet = appwindow.app_settings().boolean("endless-sheet");
-    appwindow
-        .canvas()
-        .sheet()
-        .set_endless_sheet(endless_sheet);
+    appwindow.canvas().sheet().set_endless_sheet(endless_sheet);
     appwindow
         .mainheader()
         .pageedit_revealer()
@@ -539,9 +536,7 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .flags(gio::SettingsBindFlags::DEFAULT)
         .build();
 
-    let action_devel_settings = app
-        .lookup_action("devel-settings")
-        .unwrap();
+    let action_devel_settings = app.lookup_action("devel-settings").unwrap();
     action_devel_settings
         .downcast::<gio::SimpleAction>()
         .unwrap()

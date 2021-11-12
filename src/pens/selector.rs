@@ -1,4 +1,4 @@
-use crate::strokes::InputData;
+use crate::strokes::strokestyle::InputData;
 use crate::{compose, render, utils};
 
 use gtk4::{gsk, Snapshot};

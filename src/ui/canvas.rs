@@ -440,10 +440,9 @@ mod imp {
     }
 }
 
-use crate::strokes::Element;
+use crate::strokes::strokestyle::{Element, InputData};
 use crate::{
-    app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, strokes::InputData,
-    ui::appwindow::RnoteAppWindow,
+    app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow,
 };
 use crate::{input, utils};
 
@@ -566,7 +565,7 @@ impl Canvas {
     /// The bounds of the sheet scaled to the current canvas scalefactor
     pub fn sheet_bounds_scaled(&self) -> p2d::bounding_volume::AABB {
         let scalefactor = self.scalefactor();
-        
+
         p2d::bounding_volume::AABB::new(
             na::point![
                 f64::from(self.sheet().x()) * scalefactor,

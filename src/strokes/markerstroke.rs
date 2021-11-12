@@ -13,7 +13,7 @@ use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
-use super::StrokeBehaviour;
+use crate::strokes::strokestyle::StrokeBehaviour;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]

@@ -13,8 +13,6 @@ impl Default for ChronoComponent {
 
 impl ChronoComponent {
     pub fn new(t: u32) -> Self {
-        Self {
-            t,
-        }
+        Self { t }
     }
 }

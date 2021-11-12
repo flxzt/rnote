@@ -3,7 +3,7 @@ use crate::{compose, render};
 use gtk4::gsk;
 use serde::{Deserialize, Serialize};
 
-use super::StrokeBehaviour;
+use super::strokestyle::StrokeBehaviour;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]

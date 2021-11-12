@@ -1,5 +1,5 @@
 use crate::pens::eraser::Eraser;
-use crate::strokes::{StrokeBehaviour, StrokeStyle};
+use crate::strokes::strokestyle::{StrokeBehaviour, StrokeStyle};
 
 use super::{StrokeKey, StrokesState};
 
@@ -56,14 +56,11 @@ impl StrokesState {
         let chrono_components = &self.chrono_components;
         let trash_components = &self.trash_components;
 
-        let mut sorted = 
-            chrono_components
+        let mut sorted = chrono_components
             .iter()
             .par_bridge()
             .filter_map(|(key, chrono_comp)| {
-                if let (Some(trash_comp), chrono_comp) =
-                    (trash_components.get(key), chrono_comp)
-                {
+                if let (Some(trash_comp), chrono_comp) = (trash_components.get(key), chrono_comp) {
                     if trash_comp.trashed {
                         return Some((key, chrono_comp.t));
                     }
@@ -137,9 +134,7 @@ impl StrokesState {
                         if eraser_bounds.intersects(&markerstroke.bounds) {
                             for hitbox_elem in markerstroke.hitbox.iter() {
                                 if eraser_bounds.intersects(hitbox_elem) {
-                                    if let Some(trash_comp) =
-                                        self.trash_components.get_mut(key)
-                                    {
+                                    if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                         trash_comp.trashed = true;
 
                                         if let Some(chrono_comp) =
@@ -160,9 +155,7 @@ impl StrokesState {
                         if eraser_bounds.intersects(&brushstroke.bounds) {
                             for hitbox_elem in brushstroke.hitbox.iter() {
                                 if eraser_bounds.intersects(hitbox_elem) {
-                                    if let Some(trash_comp) =
-                                        self.trash_components.get_mut(key)
-                                    {
+                                    if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                         trash_comp.trashed = true;
 
                                         if let Some(chrono_comp) =
@@ -183,8 +176,7 @@ impl StrokesState {
                             if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                 trash_comp.trashed = true;
 
-                                if let Some(chrono_comp) = self.chrono_components.get_mut(key)
-                                {
+                                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
                                     self.chrono_counter += 1;
                                     chrono_comp.t = self.chrono_counter;
                                 }
@@ -198,8 +190,7 @@ impl StrokesState {
                             if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                 trash_comp.trashed = true;
 
-                                if let Some(chrono_comp) = self.chrono_components.get_mut(key)
-                                {
+                                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
                                     self.chrono_counter += 1;
                                     chrono_comp.t = self.chrono_counter;
                                 }
@@ -213,8 +204,7 @@ impl StrokesState {
                             if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                 trash_comp.trashed = true;
 
-                                if let Some(chrono_comp) = self.chrono_components.get_mut(key)
-                                {
+                                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
                                     self.chrono_counter += 1;
                                     chrono_comp.t = self.chrono_counter;
                                 }

@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     compose, render,
-    strokes::{brushstroke::BrushStroke, Element, StrokeBehaviour},
+    strokes::brushstroke::BrushStroke,
+    strokes::strokestyle::{Element, StrokeBehaviour},
     utils,
 };
 

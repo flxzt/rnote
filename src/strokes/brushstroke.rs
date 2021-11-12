@@ -1,10 +1,10 @@
+use crate::strokes::strokestyle::{Element, StrokeBehaviour};
 use crate::{
     compose, curves,
     pens::brush::{self, Brush},
-    render,
-    strokes::{Element, StrokeBehaviour},
-    utils,
+    render, utils,
 };
+
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use rayon::prelude::*;

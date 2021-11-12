@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::strokes::Element;
+use crate::strokes::strokestyle::Element;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default)]
@@ -174,12 +174,12 @@ pub fn gen_cubbez_w_catmull_rom(
     let tension = 1.0;
 
     // Creating cubic bezier with catmull-rom
-    let start = second.inputdata().pos();
-    let cp1 = second.inputdata().pos()
-        + (third.inputdata().pos() - first.inputdata().pos()) / (6.0 * tension);
-    let cp2 = third.inputdata().pos()
-        - (forth.inputdata().pos() - second.inputdata().pos()) / (6.0 * tension);
-    let end = third.inputdata().pos();
+    let start = second.inputdata.pos();
+    let cp1 =
+        second.inputdata.pos() + (third.inputdata.pos() - first.inputdata.pos()) / (6.0 * tension);
+    let cp2 =
+        third.inputdata.pos() - (forth.inputdata.pos() - second.inputdata.pos()) / (6.0 * tension);
+    let end = third.inputdata.pos();
 
     let cubic_bezier = CubicBezier {
         start,
@@ -199,8 +199,8 @@ pub fn gen_cubbez_w_catmull_rom(
 
 pub fn gen_line(first: &Element, second: &Element) -> Option<Line> {
     let line = Line {
-        start: first.inputdata().pos(),
-        end: second.inputdata().pos(),
+        start: first.inputdata.pos(),
+        end: second.inputdata.pos(),
     };
 
     let start_to_end = line.end - line.start;

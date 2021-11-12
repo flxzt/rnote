@@ -1,7 +1,7 @@
 use gtk4::{gdk, GestureStylus};
 use std::collections::VecDeque;
 
-use crate::strokes::InputData;
+use crate::strokes::strokestyle::InputData;
 
 /// Map Stylus input to the position on a sheet
 pub fn map_inputdata(

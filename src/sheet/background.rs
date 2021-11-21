@@ -2,7 +2,7 @@ use gtk4::{glib, gsk, Snapshot};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-use crate::{compose, render, utils};
+use crate::{compose, geometry, render, utils};
 
 #[derive(
     Debug,
@@ -241,13 +241,23 @@ impl Background {
             || sheet_bounds != self.current_bounds
             || scalefactor != self.current_scalefactor
         {
-            if let Ok(Some(new_rendernode)) = self.gen_rendernode(scalefactor, sheet_bounds) {
-                self.current_scalefactor = scalefactor;
-                self.current_bounds = sheet_bounds;
-                self.rendernode = new_rendernode;
-            } else {
-                log::warn!("failed to gen_rendernode() in update_rendernode() of background");
-                return Ok(());
+            match self.gen_rendernode(scalefactor, sheet_bounds) {
+                Ok(Some(new_rendernode)) => {
+                    self.current_scalefactor = scalefactor;
+                    self.current_bounds = sheet_bounds;
+                    self.rendernode = new_rendernode;
+                }
+                Err(e) => {
+                    log::error!(
+                        "gen_rendernode() failed in update_rendernode() of background with Err: {}",
+                        e
+                    );
+                }
+                _ => {
+                    log::error!(
+                        "gen_rendernode() returned None in update_rendernode() of background"
+                    );
+                }
             }
         }
 
@@ -258,7 +268,7 @@ impl Background {
         &mut self,
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
-    ) -> Result<Option<gsk::RenderNode>, Box<dyn std::error::Error>> {
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let snapshot = Snapshot::new();
 
         // Calculate tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
@@ -282,7 +292,7 @@ impl Background {
             na::point![tile_size[0], tile_size[1]],
         );
         let svg_string = compose::add_xml_header(self.gen_svg_data(tile_bounds)?.as_str());
-        snapshot.push_clip(&utils::aabb_to_graphene_rect(utils::aabb_scale(
+        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
             sheet_bounds,
             scalefactor,
         )));
@@ -290,21 +300,33 @@ impl Background {
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_color(
             &self.color.to_gdk(),
-            &utils::aabb_to_graphene_rect(utils::aabb_scale(sheet_bounds, scalefactor)),
+            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(sheet_bounds, scalefactor)),
         );
 
-        let new_texture = render::cairosurface_to_memtexture(render::gen_cairosurface_librsvg(
-            &tile_bounds,
-            scalefactor,
-            svg_string.as_str(),
-        )?)?;
-        for aabb in utils::split_aabb_extended(sheet_bounds, tile_size) {
-            // use the buffered texture to regenerate nodes
-            snapshot.append_texture(
-                &new_texture,
-                &utils::aabb_to_graphene_rect(utils::aabb_scale(aabb, scalefactor)),
-            );
-        }
+        match render::gen_image_librsvg(tile_bounds, scalefactor, svg_string.as_str()) {
+            Ok(background_image) => {
+                match render::image_to_memtexture(background_image) {
+                    Ok(new_texture) => {
+                        for aabb in geometry::split_aabb_extended(sheet_bounds, tile_size) {
+                            // use the buffered texture to regenerate nodes
+                            snapshot.append_texture(
+                                &new_texture,
+                                &geometry::aabb_to_graphene_rect(geometry::aabb_scale(
+                                    aabb,
+                                    scalefactor,
+                                )),
+                            );
+                        }
+                    }
+                    Err(e) => {
+                        log::error!("image_to_memtexture() for background failed, {}", e);
+                    }
+                };
+            }
+            Err(e) => {
+                log::error!("gen_image_librsvg() for background failed, {}", e);
+            }
+        };
 
         snapshot.pop();
 
@@ -314,7 +336,7 @@ impl Background {
     pub fn gen_svg_data(
         &self,
         sheet_bounds: p2d::bounding_volume::AABB,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> Result<String, anyhow::Error> {
         let mut svg = String::from("");
 
         let mut group = element::Group::new();
@@ -357,7 +379,13 @@ impl Background {
                 ));
             }
         }
-        svg.push_str(rough_rs::node_to_string(&group)?.as_str());
+        svg.push_str(
+            rough_rs::node_to_string(&group)
+                .map_err(|e| {
+                    anyhow::anyhow!("rough_rs::node_to_string() failed for background, {}", e)
+                })?
+                .as_str(),
+        );
 
         let svg = compose::wrap_svg(svg.as_str(), Some(sheet_bounds), None, false, false);
         //println!("{}", svg);

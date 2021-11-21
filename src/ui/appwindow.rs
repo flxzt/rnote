@@ -303,6 +303,7 @@ use gtk4::{
 
 use crate::{
     app::RnoteApp,
+    geometry,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     ui::canvas::Canvas,
     ui::develactions::DevelActions,
@@ -771,7 +772,7 @@ impl RnoteAppWindow {
                                 ((selection_bounds.maxs[0] - selection_bounds.mins[0]) * scalefactor * temporary_zoom).round() as i32,
                                 ((selection_bounds.maxs[1] - selection_bounds.mins[1]) * scalefactor * temporary_zoom).round() as i32,
                             );
-                            let selection_bounds_scaled = utils::aabb_scale(selection_bounds, scalefactor * temporary_zoom);
+                            let selection_bounds_scaled = geometry::aabb_scale(selection_bounds, scalefactor * temporary_zoom);
 
                             appwindow.selection_modifier().translate_node().set_width_request(translate_node_size.0);
                             appwindow.selection_modifier().translate_node().set_height_request(translate_node_size.1);

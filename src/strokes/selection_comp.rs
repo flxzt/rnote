@@ -1,7 +1,7 @@
 use crate::pens::selector::Selector;
 use crate::strokes::render_comp::RenderComponent;
 use crate::strokes::trash_comp::TrashComponent;
-use crate::{compose, utils};
+use crate::{compose, geometry};
 
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::strokes::strokestyle::StrokeBehaviour;
@@ -323,7 +323,7 @@ impl StrokesState {
         });
 
         self.selection_bounds = if let Some(bounds) = self.selection_bounds {
-            Some(utils::aabb_translate(bounds, offset))
+            Some(geometry::aabb_translate(bounds, offset))
         } else {
             None
         };

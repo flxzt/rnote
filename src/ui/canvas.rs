@@ -444,7 +444,7 @@ use crate::strokes::strokestyle::{Element, InputData};
 use crate::{
     app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow,
 };
-use crate::{input, utils};
+use crate::{geometry, input};
 
 use std::cell::Cell;
 use std::cell::RefCell;
@@ -851,7 +851,7 @@ impl Canvas {
         );
 
         if let Some(node) = snapshot.to_node() {
-            render::render_node_to_texture(self.upcast_ref::<Widget>(), &node, self.bounds())
+            render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, self.bounds())
                 .unwrap_or_else(|e| {
                     log::error!("{}", e);
                     None
@@ -968,7 +968,7 @@ impl Canvas {
             PenStyle::Eraser => {
                 let canvas_scroller_viewport_descaled =
                     if let Some(viewport) = appwindow.canvas_scroller_viewport() {
-                        Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
+                        Some(geometry::aabb_scale(viewport, 1.0 / scalefactor))
                     } else {
                         None
                     };
@@ -1034,7 +1034,7 @@ impl Canvas {
             PenStyle::Selector => {
                 let canvas_scroller_viewport_descaled =
                     if let Some(viewport) = appwindow.canvas_scroller_viewport() {
-                        Some(utils::aabb_scale(viewport, 1.0 / scalefactor))
+                        Some(geometry::aabb_scale(viewport, 1.0 / scalefactor))
                     } else {
                         None
                     };

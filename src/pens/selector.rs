@@ -80,7 +80,7 @@ impl Selector {
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
+    ) -> Result<gsk::RenderNode, anyhow::Error> {
         if let Some(bounds) = self.bounds {
             let svg = compose::wrap_svg(
                 self.gen_svg_path(na::vector![0.0, 0.0])?.as_str(),
@@ -111,10 +111,7 @@ impl Selector {
         }
     }
 
-    pub fn gen_svg_path(
-        &self,
-        offset: na::Vector2<f64>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn gen_svg_path(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
         let mut svg = String::new();
         let mut data = element::path::Data::new();
 
@@ -134,7 +131,14 @@ impl Selector {
             .set("stroke-dasharray", "4 6")
             .set("fill", Self::FILL_COLOR.to_css_color());
 
-        svg += rough_rs::node_to_string(&svg_path)?.as_str();
+        svg += rough_rs::node_to_string(&svg_path)
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "rough_rs::node_to_string failed in gen_svg_path() for selector, {}",
+                    e
+                )
+            })?
+            .as_str();
 
         Ok(svg)
     }

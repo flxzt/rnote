@@ -1,18 +1,37 @@
 use std::ops::Deref;
 
+use anyhow::Context;
 use gtk4::{
     gdk, gio, glib, graphene,
     gsk::{self, IsRenderNode},
     prelude::*,
-    Native, Widget,
+    Native, Snapshot, Widget,
 };
+use rayon::prelude::*;
 
-use crate::utils;
+use crate::geometry;
 
 #[derive(Debug, Clone)]
 pub enum RendererBackend {
     Librsvg,
     Resvg,
+}
+
+#[derive(Debug, Clone)]
+pub struct Image {
+    data: Vec<u8>,
+    /// bounds in the coordinate space of the sheet
+    bounds: p2d::bounding_volume::AABB,
+    /// width of the data
+    data_width: i32,
+    /// height of the data
+    data_height: i32,
+}
+
+#[derive(Debug, Clone)]
+pub struct Svg {
+    pub svg_data: String,
+    pub bounds: p2d::bounding_volume::AABB,
 }
 
 #[derive(Debug, Clone)]
@@ -39,21 +58,32 @@ impl Renderer {
         bounds: p2d::bounding_volume::AABB,
         scalefactor: f64,
         svg: &str,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
+    ) -> Result<gsk::RenderNode, anyhow::Error> {
         match self.backend {
-            RendererBackend::Librsvg => {
-                self.gen_rendernode_backend_librsvg(bounds, scalefactor, svg)
-            }
-            RendererBackend::Resvg => self.gen_rendernode_backend_resvg(bounds, scalefactor, svg),
+            RendererBackend::Librsvg => self.gen_rendernode_librsvg(bounds, scalefactor, svg),
+            RendererBackend::Resvg => self.gen_rendernode_resvg(bounds, scalefactor, svg),
         }
     }
 
-    pub fn gen_rendernode_backend_librsvg(
+    pub fn gen_rendernode_par(
+        &self,
+        scalefactor: f64,
+        svgs: &[Svg],
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+        self.gen_rendernode_par_librsvg(scalefactor, svgs)
+    }
+
+    pub fn gen_rendernode_librsvg(
         &self,
         bounds: p2d::bounding_volume::AABB,
         scalefactor: f64,
         svg: &str,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
+    ) -> Result<gsk::RenderNode, anyhow::Error> {
+        if bounds.extents()[0] < 0.0 || bounds.extents()[1] < 0.0 {
+            return Err(anyhow::anyhow!(
+                "gen_rendernode_librsvg() failed, bounds extents are < 0.0"
+            ));
+        }
         let caironode_bounds = graphene::Rect::new(
             (bounds.mins[0] * scalefactor).floor() as f32,
             (bounds.mins[1] * scalefactor).floor() as f32,
@@ -64,7 +94,7 @@ impl Renderer {
         let new_caironode = gsk::CairoNode::new(&caironode_bounds);
         let cx = new_caironode
             .draw_context()
-            .expect("failed to get cairo draw_context() from new_caironode");
+            .context("failed to get cairo draw_context() from new_caironode")?;
 
         let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
 
@@ -86,12 +116,12 @@ impl Renderer {
         Ok(new_caironode.upcast())
     }
 
-    pub fn gen_rendernode_backend_resvg(
+    pub fn gen_rendernode_resvg(
         &self,
         svg_bounds: p2d::bounding_volume::AABB,
         scalefactor: f64,
         svg: &str,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
+    ) -> Result<gsk::RenderNode, anyhow::Error> {
         let node_bounds = graphene::Rect::new(
             (svg_bounds.mins[0].floor() * scalefactor) as f32,
             (svg_bounds.mins[1].floor() * scalefactor) as f32,
@@ -125,6 +155,49 @@ impl Renderer {
         );
         Ok(gsk::TextureNode::new(&memtexture, &node_bounds).upcast())
     }
+
+    pub fn gen_rendernode_par_librsvg(
+        &self,
+        scalefactor: f64,
+        svgs: &[Svg],
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+        let snapshot = Snapshot::new();
+
+        // Parallel iteration to generate the pixel data
+        svgs.par_iter()
+            .filter_map(
+                |svg| match gen_image_librsvg(svg.bounds, scalefactor, &svg.svg_data) {
+                    Ok(image) => Some(image),
+                    Err(e) => {
+                        log::error!(
+                            "gen_image_librsvg() in gen_rendernode_par_librsvg() failed, {}",
+                            e
+                        );
+                        None
+                    }
+                },
+            )
+            .collect::<Vec<Image>>()
+            // Rendernodes are not Sync or Send, so sequentially iterating here
+            .iter()
+            .for_each(|image| {
+                snapshot.append_texture(
+                    &gdk::MemoryTexture::new(
+                        image.data_width,
+                        image.data_height,
+                        gdk::MemoryFormat::B8g8r8a8Premultiplied,
+                        &glib::Bytes::from(&image.data),
+                        (image.data_width * 4) as usize,
+                    ),
+                    &geometry::aabb_to_graphene_rect(geometry::aabb_scale(
+                        image.bounds,
+                        scalefactor,
+                    )),
+                )
+            });
+
+        Ok(snapshot.to_node())
+    }
 }
 
 pub fn default_rendernode() -> gsk::RenderNode {
@@ -132,83 +205,80 @@ pub fn default_rendernode() -> gsk::RenderNode {
     gsk::CairoNode::new(&bounds).upcast()
 }
 
-pub fn gen_cairosurface_librsvg(
-    bounds: &p2d::bounding_volume::AABB,
+pub fn gen_image_librsvg(
+    bounds: p2d::bounding_volume::AABB,
     scalefactor: f64,
     svg: &str,
-) -> Result<cairo::ImageSurface, Box<dyn std::error::Error>> {
+) -> Result<Image, anyhow::Error> {
     let width_scaled = (scalefactor * (bounds.maxs[0] - bounds.mins[0])).round() as i32;
     let height_scaled = (scalefactor * (bounds.maxs[1] - bounds.mins[1])).round() as i32;
 
-    let surface =
-        cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled).unwrap();
+    let mut surface =
+        cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled)
+            .map_err(|e| anyhow::anyhow!("create ImageSurface failed, {}", e))?;
 
     // the ImageSurface has scaled size. Draw onto it in the unscaled, original coordinates, and will get scaled with this method .set_device_scale()
-    surface.set_device_scale(scalefactor, scalefactor);
+    //surface.set_device_scale(scalefactor, scalefactor);
 
-    let cx = cairo::Context::new(&surface).expect("Failed to create a cairo context");
+    // Context in new scope, else accessing the surface data fails with a borrow error
+    {
+        let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+        cx.scale(scalefactor, scalefactor);
 
-    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
-    let handle = librsvg::Loader::new()
-        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
-        .expect("failed to parse xml into librsvg");
-    let renderer = librsvg::CairoRenderer::new(&handle);
-    renderer.render_document(
-        &cx,
-        &cairo::Rectangle {
-            x: 0.0,
-            y: 0.0,
-            width: bounds.maxs[0] - bounds.mins[0],
-            height: bounds.maxs[1] - bounds.mins[1],
-        },
-    )?;
+        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
+        let handle = librsvg::Loader::new()
+            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
+            .context("read stream to librsvg Loader failed")?;
+        let renderer = librsvg::CairoRenderer::new(&handle);
+        renderer
+            .render_document(
+                &cx,
+                &cairo::Rectangle {
+                    x: 0.0,
+                    y: 0.0,
+                    width: bounds.maxs[0] - bounds.mins[0],
+                    height: bounds.maxs[1] - bounds.mins[1],
+                },
+            )
+            .context("librsvg render document failed")?;
 
-    cx.stroke()
-        .expect("failed to stroke() cairo context onto cairo surface.");
+        cx.stroke()
+            .context("cairo stroke() for rendered context failed")?;
+    }
 
-    Ok(surface)
+    let data = surface
+        .data()
+        .context("accessing imagesurface data failed")?;
+    return Ok(Image {
+        data: data.to_vec(),
+        bounds,
+        data_width: width_scaled,
+        data_height: height_scaled,
+    });
 }
 
 /// Expects Imagesurface in ARgb32 premultiplied Format !
-pub fn cairosurface_to_memtexture(
-    mut surface: cairo::ImageSurface,
-) -> Result<gdk::MemoryTexture, Box<dyn std::error::Error>> {
-    let width = surface.width();
-    let height = surface.height();
-    let stride = surface.stride();
-
-    let data = surface.data()?;
-    let bytes = data.deref();
-
-    // switch bytes around
-    let bytes: Vec<u8> = bytes
-        .iter()
-        .zip(bytes.iter().skip(1))
-        .zip(bytes.iter().skip(2))
-        .zip(bytes.iter().skip(3))
-        .step_by(4)
-        .map(|(((first, second), third), forth)| [*first, *second, *third, *forth])
-        .flatten()
-        .collect();
+pub fn image_to_memtexture(image: Image) -> Result<gdk::MemoryTexture, anyhow::Error> {
+    let bytes = image.data.deref();
 
     Ok(gdk::MemoryTexture::new(
-        width,
-        height,
+        image.data_width,
+        image.data_height,
         gdk::MemoryFormat::B8g8r8a8Premultiplied,
-        &glib::Bytes::from(&bytes),
-        stride as usize,
+        &glib::Bytes::from(bytes),
+        (image.data_width * 4) as usize,
     ))
 }
 
-pub fn render_node_to_texture(
+pub fn rendernode_to_texture(
     active_widget: &Widget,
     node: &gsk::RenderNode,
     viewport: p2d::bounding_volume::AABB,
-) -> Result<Option<gdk::Texture>, Box<dyn std::error::Error>> {
+) -> Result<Option<gdk::Texture>, anyhow::Error> {
     if let Some(root) = active_widget.root() {
         if let Some(root_renderer) = root.upcast::<Native>().renderer() {
-            let texture =
-                root_renderer.render_texture(node, Some(&utils::aabb_to_graphene_rect(viewport)));
+            let texture = root_renderer
+                .render_texture(node, Some(&geometry::aabb_to_graphene_rect(viewport)));
             return Ok(texture);
         }
     }

@@ -19,13 +19,13 @@ pub trait StrokeBehaviour {
     // resizes the type to the desired new_bounds
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB);
     // gen_svg_data() generates the svg elements as a String, without the xml header or the svg root.
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>>;
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error>;
     // generates and returns the rendernode for this type
     fn gen_rendernode(
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>>;
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error>;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -87,7 +87,7 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.gen_svg_data(offset),
             Self::BrushStroke(brushstroke) => brushstroke.gen_svg_data(offset),
@@ -101,7 +101,7 @@ impl StrokeBehaviour for StrokeStyle {
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(scalefactor, renderer),
             Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(scalefactor, renderer),

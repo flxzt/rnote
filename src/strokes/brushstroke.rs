@@ -1,8 +1,9 @@
+use crate::geometry;
 use crate::strokes::strokestyle::{Element, StrokeBehaviour};
 use crate::{
     compose, curves,
     pens::brush::{self, Brush},
-    render, utils,
+    render,
 };
 
 use gtk4::gsk;
@@ -94,12 +95,60 @@ impl StrokeBehaviour for BrushStroke {
         self.hitbox = self.gen_hitbox();
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
         match self.brush.current_style {
-            brush::BrushStyle::Linear => self.linear_svg_data(offset),
-            brush::BrushStyle::CubicBezier => self.cubbez_svg_data(offset),
-            brush::BrushStyle::CustomTemplate(_) => self.templates_svg_data(offset),
-            brush::BrushStyle::Experimental => self.experimental_svg_data(offset),
+            brush::BrushStyle::Linear => Ok(compose::wrap_svg(
+                &self
+                    .linear_svg_data(offset, false)?
+                    .iter()
+                    .map(|svg| &svg.svg_data)
+                    .fold(String::from(""), |first, second| {
+                        first + "\n" + second.as_str()
+                    }),
+                Some(self.bounds),
+                Some(self.bounds),
+                true,
+                false,
+            )),
+            brush::BrushStyle::CubicBezier => Ok(compose::wrap_svg(
+                &self
+                    .cubbez_svg_data(offset, false)?
+                    .iter()
+                    .map(|svg| &svg.svg_data)
+                    .fold(String::from(""), |first, second| {
+                        first + "\n" + second.as_str()
+                    }),
+                Some(self.bounds),
+                Some(self.bounds),
+                true,
+                false,
+            )),
+            brush::BrushStyle::CustomTemplate(_) => {
+                if let Some(template_svg) = self.templates_svg_data(offset)? {
+                    Ok(compose::wrap_svg(
+                        template_svg.svg_data.as_str(),
+                        Some(self.bounds),
+                        Some(self.bounds),
+                        true,
+                        false,
+                    ))
+                } else {
+                    Ok(String::from(""))
+                }
+            }
+            brush::BrushStyle::Experimental => {
+                if let Some(experimental_svg) = self.experimental_svg_data(offset)? {
+                    Ok(compose::wrap_svg(
+                        experimental_svg.svg_data.as_str(),
+                        Some(self.bounds),
+                        Some(self.bounds),
+                        true,
+                        false,
+                    ))
+                } else {
+                    Ok(String::from(""))
+                }
+            }
         }
     }
 
@@ -107,16 +156,26 @@ impl StrokeBehaviour for BrushStroke {
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
-        let svg = compose::wrap_svg(
-            self.gen_svg_data(na::vector![0.0, 0.0]).unwrap().as_str(),
-            Some(self.bounds),
-            Some(self.bounds),
-            true,
-            false,
-        );
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+        let offset = na::vector![0.0, 0.0];
+        let svgs: Vec<render::Svg> = match self.brush.current_style {
+            brush::BrushStyle::Linear => self.linear_svg_data(offset, true)?,
+            brush::BrushStyle::CubicBezier => self.cubbez_svg_data(offset, true)?,
+            /*brush::BrushStyle::CustomTemplate(_) => vec![self.templates_svg_data(offset)?],
+            brush::BrushStyle::Experimental => vec![self.experimental_svg_data(offset)?], */
+            _ => {
+                vec![]
+            }
+        };
 
-        renderer.gen_rendernode(self.bounds, scalefactor, svg.as_str())
+        Ok(renderer
+            .gen_rendernode_par(scalefactor, &svgs)
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "gen_rendernode_par() failed in gen_rendernode() for brushstroke, {}",
+                    e
+                )
+            })?)
     }
 }
 
@@ -260,12 +319,12 @@ impl BrushStroke {
                 brush_width
             };
 
-            utils::aabb_new_positive(
+            geometry::aabb_new_positive(
                 first - na::vector![brush_x / 2.0, brush_y / 2.0],
                 first + delta + na::vector![brush_x / 2.0, brush_y / 2.0],
             )
         } else {
-            utils::aabb_new_positive(
+            geometry::aabb_new_positive(
                 first
                     - na::vector![
                         (Self::HITBOX_DEFAULT + brush_width) / 2.0,
@@ -283,19 +342,26 @@ impl BrushStroke {
     pub fn linear_svg_data(
         &self,
         offset: na::Vector2<f64>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
-        let commands: Vec<path::Command> = self
+        svg_root: bool,
+    ) -> Result<Vec<render::Svg>, anyhow::Error> {
+        if self.elements.len() <= 1 {
+            return Ok(vec![]);
+        }
+
+        let commands: Vec<render::Svg> = self
             .elements
             .par_iter()
             .zip(self.elements.par_iter().skip(1))
             .zip(self.elements.par_iter().skip(2))
             .zip(self.elements.par_iter().skip(3))
             .enumerate()
-            .map(|(i, (((first, second), third), forth))| {
+            .filter_map(|(i, (((first, second), third), forth))| {
                 let mut commands = Vec::new();
 
                 let start_width = second.inputdata.pressure() * self.brush.width();
                 let end_width = third.inputdata.pressure() * self.brush.width();
+
+                let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
                 if let Some(mut cubbez) =
                     curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
@@ -305,11 +371,23 @@ impl BrushStroke {
                     cubbez.cp2 += offset;
                     cubbez.end += offset;
 
-                    let n_splits = 8;
+                    // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.start));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+
+                    bounds.loosen(start_width.max(end_width));
+                    // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
+                    bounds = geometry::aabb_ceil(bounds);
+
+                    // Number of splits for the bezier curve approximation
+                    let n_splits = 7;
                     for (i, line) in curves::approx_cubbez_with_lines(cubbez, n_splits)
                         .iter()
                         .enumerate()
                     {
+                        // splitted line start / end widths are a linear interpolation between the start and end width / n splits
                         let line_start_width = start_width
                             + (end_width - start_width)
                                 * (f64::from(i as i32) / f64::from(n_splits));
@@ -342,45 +420,75 @@ impl BrushStroke {
                     ));
                 }
 
-                commands
+                let path = svg::node::element::Path::new()
+                    .set("stroke", "none")
+                    //.set("stroke", self.brush.color.to_css_color())
+                    //.set("stroke-width", 1.0)
+                    .set("fill", self.brush.color.to_css_color())
+                    .set("d", path::Data::from(commands));
+
+                match rough_rs::node_to_string(&path) {
+                    Ok(mut svg_data) => {
+                        if svg_root {
+
+                        svg_data =
+                            compose::wrap_svg(&svg_data, Some(bounds), Some(bounds), true, false);
+                        }
+                        Some(render::Svg { svg_data, bounds })
+                    }
+                    Err(e) => {
+                        log::error!("rough_rs::node_to_string() failed in linear_svg_data() of brushstroke, {}", e);
+                        None
+                    }
+                }
             })
-            .flatten()
             .collect();
 
-        let path = svg::node::element::Path::new()
-            .set("stroke", "none")
-            .set("fill", self.brush.color.to_css_color())
-            .set("d", path::Data::from(commands));
-        let svg = rough_rs::node_to_string(&path)?.to_string();
-
-        Ok(svg)
+        Ok(commands)
     }
 
     pub fn cubbez_svg_data(
         &self,
         offset: na::Vector2<f64>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
-        let commands: Vec<path::Command> = self
+        svg_root: bool,
+    ) -> Result<Vec<render::Svg>, anyhow::Error> {
+        if self.elements.len() <= 1 {
+            return Ok(vec![]);
+        }
+
+        let svgs: Vec<render::Svg> = self
             .elements
             .par_iter()
             .zip(self.elements.par_iter().skip(1))
             .zip(self.elements.par_iter().skip(2))
             .zip(self.elements.par_iter().skip(3))
-            .map(|(((first, second), third), forth)| {
+            .filter_map(|(((first, second), third), forth)| {
                 let mut commands = Vec::new();
                 let start_width = second.inputdata.pressure() * self.brush.width();
                 let end_width = third.inputdata.pressure() * self.brush.width();
 
-                if let Some(mut cubic_bezier) =
+                let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+
+                if let Some(mut cubbez) =
                     curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
                 {
-                    cubic_bezier.start += offset;
-                    cubic_bezier.cp1 += offset;
-                    cubic_bezier.cp2 += offset;
-                    cubic_bezier.end += offset;
+                    cubbez.start += offset;
+                    cubbez.cp1 += offset;
+                    cubbez.cp2 += offset;
+                    cubbez.end += offset;
+
+                    // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.start));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+
+                    bounds.loosen(start_width.max(end_width));
+                    // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
+                    bounds = geometry::aabb_ceil(bounds);
 
                     commands.append(&mut compose::compose_cubbez_variable_width(
-                        cubic_bezier,
+                        cubbez,
                         start_width,
                         end_width,
                         true,
@@ -396,82 +504,111 @@ impl BrushStroke {
                         true,
                     ));
                 }
+                let path = svg::node::element::Path::new()
+                    // avoids gaps between each section
+                    .set("stroke", self.brush.color.to_css_color())
+                    .set("stroke-width", 1.0)
+                    .set("stroke-linejoin", "round")
+                    .set("stroke-linecap", "round")
+                    .set("fill", self.brush.color.to_css_color())
+                    .set("d", path::Data::from(commands));
 
-                commands
+                match rough_rs::node_to_string(&path) {
+                    Ok(mut svg_data) => {
+                        if svg_root {
+
+                        svg_data =
+                            compose::wrap_svg(&svg_data, Some(bounds), Some(bounds), true, false);
+                        }
+                        Some(render::Svg { svg_data, bounds })
+                    }
+                    Err(e) => {
+                        log::error!("rough_rs::node_to_string() failed in cubbez_svg_data() of brushstroke, {}", e);
+                        None
+                    }
+                }
             })
-            .flatten()
             .collect();
 
-        let svg = if !commands.is_empty() {
-            let path = svg::node::element::Path::new()
-                /*                 .set(
-                    "stroke",
-                    crate::utils::Color::new(0.0, 0.5, 0.5, 1.0).to_css_color(),
-                ) */
-                // avoids gaps between each section
-                .set("stroke", self.brush.color.to_css_color())
-                .set("stroke-width", 0.5)
-                .set("stroke-linejoin", "round")
-                .set("stroke-linecap", "round")
-                .set("fill", self.brush.color.to_css_color())
-                .set("d", path::Data::from(commands));
-            rough_rs::node_to_string(&path)?.to_string()
-        } else {
-            String::from("")
-        };
-
         //println!("{}", svg);
-        Ok(svg)
+        Ok(svgs)
     }
 
     pub fn experimental_svg_data(
         &self,
         _offset: na::Vector2<f64>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
-        Ok(String::from(""))
+    ) -> Result<Option<render::Svg>, anyhow::Error> {
+        Ok(None)
     }
 
     pub fn templates_svg_data(
         &self,
         offset: na::Vector2<f64>,
-    ) -> Result<String, Box<dyn std::error::Error>> {
+    ) -> Result<Option<render::Svg>, anyhow::Error> {
+        if self.elements.len() <= 1 {
+            return Ok(None);
+        }
+
         let mut cx = tera::Context::new();
 
         let color = self.brush.color.to_css_color();
         let width = self.brush.width();
         let sensitivity = self.brush.sensitivity();
 
-        let teraelements = self
-            .elements
+        let mut bounds: Vec<p2d::bounding_volume::AABB> =
+            Vec::with_capacity(self.elements.len() / 4);
+        let mut teraelements: Vec<(TeraElement, TeraElement, TeraElement, TeraElement)> =
+            Vec::with_capacity(self.elements.len() / 4);
+
+        self.elements
             .par_iter()
             .zip(self.elements.par_iter().skip(1))
             .zip(self.elements.par_iter().skip(2))
             .zip(self.elements.par_iter().skip(3))
             .map(|(((first, second), third), fourth)| {
+                let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+
+                bounds.take_point(na::Point2::<f64>::from(first.inputdata.pos()));
+                bounds.take_point(na::Point2::<f64>::from(second.inputdata.pos()));
+                bounds.take_point(na::Point2::<f64>::from(third.inputdata.pos()));
+                bounds.take_point(na::Point2::<f64>::from(fourth.inputdata.pos()));
+
+                bounds.loosen(Brush::TEMPLATE_BOUNDS_PADDING);
+                // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
+                bounds = geometry::aabb_ceil(bounds);
+
                 (
-                    TeraElement {
-                        pressure: first.inputdata.pressure(),
-                        x: first.inputdata.pos()[0] + offset[0],
-                        y: first.inputdata.pos()[1] + offset[1],
-                    },
-                    TeraElement {
-                        pressure: second.inputdata.pressure(),
-                        x: second.inputdata.pos()[0] + offset[0],
-                        y: second.inputdata.pos()[1] + offset[1],
-                    },
-                    TeraElement {
-                        pressure: third.inputdata.pressure(),
-                        x: third.inputdata.pos()[0] + offset[0],
-                        y: third.inputdata.pos()[1] + offset[1],
-                    },
-                    TeraElement {
-                        pressure: fourth.inputdata.pressure(),
-                        x: fourth.inputdata.pos()[0] + offset[0],
-                        y: fourth.inputdata.pos()[1] + offset[1],
-                    },
+                    bounds,
+                    (
+                        TeraElement {
+                            pressure: first.inputdata.pressure(),
+                            x: first.inputdata.pos()[0] + offset[0],
+                            y: first.inputdata.pos()[1] + offset[1],
+                        },
+                        TeraElement {
+                            pressure: second.inputdata.pressure(),
+                            x: second.inputdata.pos()[0] + offset[0],
+                            y: second.inputdata.pos()[1] + offset[1],
+                        },
+                        TeraElement {
+                            pressure: third.inputdata.pressure(),
+                            x: third.inputdata.pos()[0] + offset[0],
+                            y: third.inputdata.pos()[1] + offset[1],
+                        },
+                        TeraElement {
+                            pressure: fourth.inputdata.pressure(),
+                            x: fourth.inputdata.pos()[0] + offset[0],
+                            y: fourth.inputdata.pos()[1] + offset[1],
+                        },
+                    ),
                 )
             })
-            .collect::<Vec<(TeraElement, TeraElement, TeraElement, TeraElement)>>();
+            .unzip_into_vecs(&mut bounds, &mut teraelements);
+
+        let bounds = bounds.iter().fold(
+            p2d::bounding_volume::AABB::new_invalid(),
+            |first, second| first.merged(second),
+        );
 
         cx.insert("color", &color);
         cx.insert("width", &width);
@@ -479,13 +616,13 @@ impl BrushStroke {
         cx.insert("attributes", "");
         cx.insert("elements", &teraelements);
 
-        let svg = if let brush::BrushStyle::CustomTemplate(templ) = &self.brush.current_style {
-            tera::Tera::one_off(templ.as_str(), &cx, false)?
+        if let brush::BrushStyle::CustomTemplate(templ) = &self.brush.current_style {
+            let svg_data = tera::Tera::one_off(templ.as_str(), &cx, false)?;
+            return Ok(Some(render::Svg { svg_data, bounds }));
         } else {
-            log::error!("template_svg_data() called, but brush is not BrushStyle::CustomTemplate");
-            String::from("")
+            return Err(anyhow::anyhow!(
+                "template_svg_data() called, but brush is not BrushStyle::CustomTemplate"
+            ));
         };
-
-        Ok(svg)
     }
 }

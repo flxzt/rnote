@@ -88,6 +88,7 @@ mod imp {
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use gtk4::{GestureDrag, PropagationPhase};
 
+use crate::geometry;
 use crate::{
     ui::appwindow::RnoteAppWindow, ui::selectionmodifier::modifiernode::ModifierNode, utils,
 };
@@ -167,7 +168,7 @@ impl SelectionModifier {
                                 new_bounds.maxs[1]
                             ]
                         );
-                        let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
+                        let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
 
                         appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
 
@@ -208,7 +209,7 @@ impl SelectionModifier {
                                 new_bounds.maxs[1]
                             ]
                         );
-                        let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
+                        let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
 
                         appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
 
@@ -249,7 +250,7 @@ impl SelectionModifier {
                                 new_bounds.mins[1] + Self::SELECTION_MIN
                             ]
                         );
-                        let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
+                        let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
 
                         appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
 
@@ -290,7 +291,7 @@ impl SelectionModifier {
                                 new_bounds.mins[1] + Self::SELECTION_MIN
                             ]
                         );
-                        let new_bounds = utils::aabb_clamp(new_bounds, Some(min_bounds), None);
+                        let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
 
                         appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
 

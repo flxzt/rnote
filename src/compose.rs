@@ -25,7 +25,14 @@ pub fn strip_svg_root(svg: &str) -> String {
     String::from(re.replace_all(svg, ""))
 }
 
-pub const SVG_WRAP_TEMPL_STR: &str = r#"
+pub fn wrap_svg(
+    data: &str,
+    bounds: Option<p2d::bounding_volume::AABB>,
+    viewbox: Option<p2d::bounding_volume::AABB>,
+    xml_header: bool,
+    preserve_aspectratio: bool,
+) -> String {
+    const SVG_WRAP_TEMPL_STR: &str = r#"
 <svg
   x="{{x}}"
   y="{{y}}"
@@ -40,21 +47,13 @@ pub const SVG_WRAP_TEMPL_STR: &str = r#"
   {{data}}
 </svg>
 "#;
-
-pub fn wrap_svg(
-    data: &str,
-    bounds: Option<p2d::bounding_volume::AABB>,
-    viewbox: Option<p2d::bounding_volume::AABB>,
-    xml_header: bool,
-    preserve_aspectratio: bool,
-) -> String {
     let mut cx = tera::Context::new();
 
     let (x, y, width, height) = if let Some(bounds) = bounds {
-        let x = format!("{}", bounds.mins[0].floor() as i32);
-        let y = format!("{}", bounds.mins[1].floor() as i32);
-        let width = format!("{}", (bounds.maxs[0] - bounds.mins[0]).ceil() as i32);
-        let height = format!("{}", (bounds.maxs[1] - bounds.mins[1]).ceil() as i32);
+        let x = format!("{:.3}", bounds.mins[0]);
+        let y = format!("{:.3}", bounds.mins[1]);
+        let width = format!("{:.3}", bounds.maxs[0] - bounds.mins[0]);
+        let height = format!("{:.3}", bounds.maxs[1] - bounds.mins[1]);
 
         (x, y, width, height)
     } else {
@@ -98,7 +97,9 @@ pub fn wrap_svg(
     output
 }
 
-pub const SVG_PATTERN_TEMPL_STR: &str = r#"
+/// patterns are rendered rather slow, so this should be used carefully!
+pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB) -> String {
+    const SVG_PATTERN_TEMPL_STR: &str = r#"
 <defs>
     <pattern
         id="{{id}}"
@@ -112,14 +113,11 @@ pub const SVG_PATTERN_TEMPL_STR: &str = r#"
     </pattern>
 </defs>
 "#;
-
-/// patterns are rendered rather slow, so this should be used carefully!
-pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB) -> String {
     let mut cx = tera::Context::new();
-    let x = format!("{:3}", bounds.mins[0].round());
-    let y = format!("{:3}", bounds.mins[1].round());
-    let width = format!("{:3}", (bounds.maxs[0] - bounds.mins[0]).round());
-    let height = format!("{:3}", (bounds.maxs[1] - bounds.mins[1]).round());
+    let x = format!("{:3}", bounds.mins[0]);
+    let y = format!("{:3}", bounds.mins[1]);
+    let width = format!("{:3}", bounds.maxs[0] - bounds.mins[0]);
+    let height = format!("{:3}", bounds.maxs[1] - bounds.mins[1]);
     cx.insert("id", &id);
     cx.insert("x", &x);
     cx.insert("y", &y);
@@ -216,6 +214,13 @@ pub fn compose_linear_variable_width(
             (line.end + direction_unit_norm * (-end_offset_dist))[1],
         )),
     ));
+    commands.push(path::Command::Line(
+        path::Position::Absolute,
+        path::Parameters::from((
+            (line.end + direction_unit_norm * (-end_offset_dist))[0],
+            (line.end + direction_unit_norm * (-end_offset_dist))[1],
+        )),
+    ));
     commands.append(&mut compose_linear_offsetted(
         line_reverse,
         end_offset_dist,
@@ -230,6 +235,13 @@ pub fn compose_linear_variable_width(
             0.0,
             0.0,
             0.0,
+            (line_reverse.end + direction_unit_norm * (start_offset_dist))[0],
+            (line_reverse.end + direction_unit_norm * (start_offset_dist))[1],
+        )),
+    ));
+    commands.push(path::Command::Line(
+        path::Position::Absolute,
+        path::Parameters::from((
             (line_reverse.end + direction_unit_norm * (start_offset_dist))[0],
             (line_reverse.end + direction_unit_norm * (start_offset_dist))[1],
         )),
@@ -254,7 +266,7 @@ pub fn compose_quadbez_offsetted(
 
     let added_unit_norms = start_unit_norm + end_unit_norm;
 
-    // Not sure if lerping is mathematically correct?
+    // TODO: find better algo for the offset distance of the control point than the average between start and end offset
     let cp_offset_dist = (start_offset_dist + end_offset_dist) / 2.0;
 
     let cp_offset =
@@ -286,7 +298,7 @@ pub fn compose_quadbez_offsetted(
     commands
 }
 
-// Offsetted quad bezier approximation, see "precise offsetting of quadratic bezier curves"
+/// Offsetted quad bezier approximation, see "precise offsetting of quadratic bezier curves"
 pub fn compose_quadbez_offsetted_w_subdivision(
     quad_bezier: curves::QuadBezier,
     start_offset_dist: f64,

@@ -51,6 +51,8 @@ impl Brush {
     pub const SENSITIVITY_MAX: f64 = 1.0;
     pub const SENSITIVITY_DEFAULT: f64 = 0.5;
 
+    pub const TEMPLATE_BOUNDS_PADDING: f64 = 50.0;
+
     pub const COLOR_DEFAULT: gdk::RGBA = gdk::RGBA {
         red: 0.0,
         green: 0.0,

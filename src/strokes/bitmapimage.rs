@@ -61,7 +61,7 @@ impl StrokeBehaviour for BitmapImage {
         self.bounds = new_bounds;
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
         let mut cx = tera::Context::new();
 
         let x = 0.0;
@@ -109,12 +109,12 @@ impl StrokeBehaviour for BitmapImage {
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
-        renderer.gen_rendernode(
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+        Ok(Some(renderer.gen_rendernode(
             self.bounds,
             scalefactor,
             compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
-        )
+        )?))
     }
 }
 

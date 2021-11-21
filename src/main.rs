@@ -3,6 +3,7 @@ pub mod app;
 pub mod compose;
 pub mod config;
 pub mod curves;
+pub mod geometry;
 pub mod globals;
 pub mod input;
 pub mod pens;

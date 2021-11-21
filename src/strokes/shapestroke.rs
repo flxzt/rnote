@@ -1,7 +1,6 @@
-use crate::compose;
 use crate::pens::shaper::{self, DrawStyle};
 use crate::strokes::strokestyle::{Element, StrokeBehaviour};
-use crate::utils;
+use crate::{compose, geometry};
 use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render};
 
 use gtk4::gsk;
@@ -167,7 +166,7 @@ impl StrokeBehaviour for ShapeStroke {
         self.bounds = new_bounds;
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
         let mut svg = String::new();
 
         let element: svg::node::element::Element = match self.shape_style {
@@ -232,7 +231,7 @@ impl StrokeBehaviour for ShapeStroke {
                         String::from("none")
                     };
 
-                    let (mins, maxs) = utils::vec2_mins_maxs(*start, *end);
+                    let (mins, maxs) = geometry::vec2_mins_maxs(*start, *end);
 
                     svg::node::element::Rectangle::new()
                         .set("x", mins[0] + offset[0])
@@ -321,7 +320,14 @@ impl StrokeBehaviour for ShapeStroke {
             },
         };
 
-        svg += rough_rs::node_to_string(&element)?.as_str();
+        svg += rough_rs::node_to_string(&element)
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "rough_rs::node_to_string() failed in gen_svg_data() for a shapestroke, {}",
+                    e
+                )
+            })?
+            .as_str();
         //println!("{}", svg);
         Ok(svg)
     }
@@ -330,7 +336,7 @@ impl StrokeBehaviour for ShapeStroke {
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let svg = compose::wrap_svg(
             self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
             Some(self.bounds),
@@ -338,7 +344,11 @@ impl StrokeBehaviour for ShapeStroke {
             true,
             false,
         );
-        renderer.gen_rendernode(self.bounds, scalefactor, svg.as_str())
+        Ok(Some(renderer.gen_rendernode(
+            self.bounds,
+            scalefactor,
+            svg.as_str(),
+        )?))
     }
 }
 
@@ -414,11 +424,11 @@ impl ShapeStroke {
         match self.shape_style {
             ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
-                    self.bounds =
-                        utils::aabb_new_positive(*start, *end).loosened(self.shaper.width() * 0.5);
+                    self.bounds = geometry::aabb_new_positive(*start, *end)
+                        .loosened(self.shaper.width() * 0.5);
                 }
                 shaper::DrawStyle::Rough => {
-                    self.bounds = utils::aabb_new_positive(*start, *end)
+                    self.bounds = geometry::aabb_new_positive(*start, *end)
                         // TODO what are the actual bounds for a rough line?
                         .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN);
                 }
@@ -426,11 +436,11 @@ impl ShapeStroke {
             ShapeStyle::Rectangle { ref start, ref end } => {
                 match self.shaper.drawstyle {
                     shaper::DrawStyle::Smooth => {
-                        self.bounds = utils::aabb_new_positive(*start, *end)
+                        self.bounds = geometry::aabb_new_positive(*start, *end)
                             .loosened(self.shaper.width() * 0.5);
                     }
                     shaper::DrawStyle::Rough => {
-                        self.bounds = utils::aabb_new_positive(*start, *end)
+                        self.bounds = geometry::aabb_new_positive(*start, *end)
                             // TODO what are the actual bounds for a rough rect?
                             .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN);
                     }
@@ -442,14 +452,14 @@ impl ShapeStroke {
                 ref radius_y,
             } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
-                    self.bounds = utils::aabb_new_positive(
+                    self.bounds = geometry::aabb_new_positive(
                         na::vector![pos[0] - radius_x, pos[1] - radius_y],
                         na::vector![pos[0] + radius_x, pos[1] + radius_y],
                     )
                     .loosened(self.shaper.width());
                 }
                 shaper::DrawStyle::Rough => {
-                    self.bounds = utils::aabb_new_positive(
+                    self.bounds = geometry::aabb_new_positive(
                         na::vector![pos[0] - radius_x, pos[1] - radius_y],
                         na::vector![pos[0] + radius_x, pos[1] + radius_y],
                     )

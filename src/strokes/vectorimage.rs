@@ -38,7 +38,7 @@ impl StrokeBehaviour for VectorImage {
         self.bounds = new_bounds;
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn std::error::Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
         let bounds = p2d::bounding_volume::AABB::new(
             na::point![
                 self.bounds.mins[0] + offset[0],
@@ -69,12 +69,12 @@ impl StrokeBehaviour for VectorImage {
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn std::error::Error>> {
-        renderer.gen_rendernode(
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+        Ok(Some(renderer.gen_rendernode(
             self.bounds,
             scalefactor,
             compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
-        )
+        )?))
     }
 }
 

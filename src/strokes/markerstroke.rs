@@ -1,11 +1,8 @@
-use std::error::Error;
-
 use crate::{
-    compose, curves,
+    compose, curves, geometry,
     pens::marker::Marker,
     render,
     strokes::{self, Element},
-    utils,
 };
 use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
@@ -87,7 +84,11 @@ impl StrokeBehaviour for MarkerStroke {
         self.hitbox = self.gen_hitbox();
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, Box<dyn Error>> {
+    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
+        if self.elements.len() <= 1 {
+            return Ok(String::from(""));
+        }
+
         let commands: Vec<path::Command> = self
             .elements
             .par_iter()
@@ -153,7 +154,14 @@ impl StrokeBehaviour for MarkerStroke {
                 .set("stroke-linecap", "round")
                 .set("fill", "none")
                 .set("d", path::Data::from(commands));
-            rough_rs::node_to_string(&path)?.to_string()
+            rough_rs::node_to_string(&path)
+                .map_err(|e| {
+                    anyhow::anyhow!(
+                        "rough_rs::node_to_string failed in gen_svg_data() for a markerstroke, {}",
+                        e
+                    )
+                })?
+                .to_string()
         } else {
             String::from("")
         };
@@ -165,7 +173,7 @@ impl StrokeBehaviour for MarkerStroke {
         &self,
         scalefactor: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, Box<dyn Error>> {
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let svg = compose::wrap_svg(
             self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
             Some(self.bounds),
@@ -173,7 +181,11 @@ impl StrokeBehaviour for MarkerStroke {
             true,
             false,
         );
-        renderer.gen_rendernode(self.bounds, scalefactor, svg.as_str())
+        Ok(Some(renderer.gen_rendernode(
+            self.bounds,
+            scalefactor,
+            svg.as_str(),
+        )?))
     }
 }
 
@@ -303,12 +315,12 @@ impl MarkerStroke {
                 marker_width
             };
 
-            utils::aabb_new_positive(
+            geometry::aabb_new_positive(
                 first - na::vector![marker_x / 2.0, marker_y / 2.0],
                 first + delta + na::vector![marker_x / 2.0, marker_y / 2.0],
             )
         } else {
-            utils::aabb_new_positive(
+            geometry::aabb_new_positive(
                 first
                     - na::vector![
                         (Self::HITBOX_DEFAULT + marker_width) / 2.0,
@@ -329,7 +341,7 @@ impl MarkerStroke {
         strokes
     }
 
-    pub fn export_to_svg(&self, xml_header: bool) -> Result<String, Box<dyn Error>> {
+    pub fn export_to_svg(&self, xml_header: bool) -> Result<String, anyhow::Error> {
         let svg = compose::wrap_svg(
             Self::gen_svg_data(self, na::vector![0.0, 0.0])?.as_str(),
             Some(self.bounds),

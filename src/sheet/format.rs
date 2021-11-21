@@ -156,8 +156,8 @@ use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 
+use crate::geometry;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::utils;
 
 glib::wrapper! {
     pub struct Format(ObjectSubclass<imp::Format>);
@@ -404,7 +404,7 @@ impl Format {
 
         let mut offset_y = sheet_bounds.mins[1];
 
-        snapshot.push_clip(&utils::aabb_to_graphene_rect(utils::aabb_scale(
+        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
             sheet_bounds,
             scalefactor,
         )));

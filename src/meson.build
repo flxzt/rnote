@@ -29,6 +29,7 @@ rust_sources = files(
     'input.rs',
     'app.rs',
     'utils.rs',
+    'geometry.rs',
     'curves.rs',
     'compose.rs',
     'render.rs',

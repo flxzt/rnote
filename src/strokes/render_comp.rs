@@ -72,16 +72,17 @@ impl StrokesState {
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
             match stroke.gen_rendernode(self.scalefactor, &self.renderer) {
-                Ok(node) => {
+                Ok(Some(node)) => {
                     render_comp.rendernode = node;
                 }
                 Err(e) => {
                     log::error!(
-                        "Failed to generate rendernode on stroke with key: {:?}, {}",
+                        "Failed to generate rendernode for stroke with key: {:?}, {}",
                         key,
                         e
                     )
                 }
+                _ => {}
             }
         } else {
             log::warn!(

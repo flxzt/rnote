@@ -124,7 +124,7 @@ impl StrokeBehaviour for BrushStroke {
                 false,
             )),
             brush::BrushStyle::CustomTemplate(_) => {
-                if let Some(template_svg) = self.templates_svg_data(offset)? {
+                if let Some(template_svg) = self.templates_svg_data(offset, false)? {
                     Ok(compose::wrap_svg(
                         template_svg.svg_data.as_str(),
                         Some(self.bounds),
@@ -137,7 +137,7 @@ impl StrokeBehaviour for BrushStroke {
                 }
             }
             brush::BrushStyle::Experimental => {
-                if let Some(experimental_svg) = self.experimental_svg_data(offset)? {
+                if let Some(experimental_svg) = self.experimental_svg_data(offset, false)? {
                     Ok(compose::wrap_svg(
                         experimental_svg.svg_data.as_str(),
                         Some(self.bounds),
@@ -161,10 +161,19 @@ impl StrokeBehaviour for BrushStroke {
         let svgs: Vec<render::Svg> = match self.brush.current_style {
             brush::BrushStyle::Linear => self.linear_svg_data(offset, true)?,
             brush::BrushStyle::CubicBezier => self.cubbez_svg_data(offset, true)?,
-            /*brush::BrushStyle::CustomTemplate(_) => vec![self.templates_svg_data(offset)?],
-            brush::BrushStyle::Experimental => vec![self.experimental_svg_data(offset)?], */
-            _ => {
-                vec![]
+            brush::BrushStyle::CustomTemplate(_) => {
+                if let Some(template_svg_data) = self.templates_svg_data(offset, true)? {
+                    vec![template_svg_data]
+                } else {
+                    vec![]
+                }
+            }
+            brush::BrushStyle::Experimental => {
+                if let Some(experimental_svg_data) = self.experimental_svg_data(offset, true)? {
+                    vec![experimental_svg_data]
+                } else {
+                    vec![]
+                }
             }
         };
 
@@ -530,13 +539,13 @@ impl BrushStroke {
             })
             .collect();
 
-        //println!("{}", svg);
         Ok(svgs)
     }
 
     pub fn experimental_svg_data(
         &self,
         _offset: na::Vector2<f64>,
+        _svg_root: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
         Ok(None)
     }
@@ -544,6 +553,7 @@ impl BrushStroke {
     pub fn templates_svg_data(
         &self,
         offset: na::Vector2<f64>,
+        svg_root: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
         if self.elements.len() <= 1 {
             return Ok(None);
@@ -617,7 +627,10 @@ impl BrushStroke {
         cx.insert("elements", &teraelements);
 
         if let brush::BrushStyle::CustomTemplate(templ) = &self.brush.current_style {
-            let svg_data = tera::Tera::one_off(templ.as_str(), &cx, false)?;
+            let mut svg_data = tera::Tera::one_off(templ.as_str(), &cx, false)?;
+            if svg_root {
+                svg_data = compose::wrap_svg(&svg_data, Some(bounds), Some(bounds), true, false);
+            }
             return Ok(Some(render::Svg { svg_data, bounds }));
         } else {
             return Err(anyhow::anyhow!(

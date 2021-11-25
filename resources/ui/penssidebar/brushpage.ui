@@ -93,21 +93,10 @@
       </object>
     </child>
     <child>
-      <object class="GtkImage">
-        <property name="icon_name">brush-templates-symbolic</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">7</property>
-        </layout>
-      </object>
-    </child>
-    <child>
       <object class="TemplateChooser" id="templatechooser">
         <layout>
           <property name="column">0</property>
-          <property name="row">8</property>
+          <property name="row">7</property>
         </layout>
       </object>
     </child>

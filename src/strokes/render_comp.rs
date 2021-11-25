@@ -67,6 +67,14 @@ impl StrokesState {
         }
     }
 
+    pub fn update_rendering(&mut self) {
+        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
+
+        keys.iter().for_each(|key| {
+            self.update_rendering_for_stroke(*key);
+        })
+    }
+
     pub fn update_rendering_for_stroke(&mut self, key: StrokeKey) {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
@@ -90,14 +98,6 @@ impl StrokesState {
                 key
             );
         }
-    }
-
-    pub fn update_rendering(&mut self) {
-        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
-
-        keys.iter().for_each(|key| {
-            self.update_rendering_for_stroke(*key);
-        })
     }
 
     pub fn update_rendering_for_selection(&mut self) {

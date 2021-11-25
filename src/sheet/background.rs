@@ -305,23 +305,13 @@ impl Background {
 
         match render::gen_image_librsvg(tile_bounds, scalefactor, svg_string.as_str()) {
             Ok(background_image) => {
-                match render::image_to_memtexture(background_image) {
-                    Ok(new_texture) => {
-                        for aabb in geometry::split_aabb_extended(sheet_bounds, tile_size) {
-                            // use the buffered texture to regenerate nodes
-                            snapshot.append_texture(
-                                &new_texture,
-                                &geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-                                    aabb,
-                                    scalefactor,
-                                )),
-                            );
-                        }
-                    }
-                    Err(e) => {
-                        log::error!("image_to_memtexture() for background failed, {}", e);
-                    }
-                };
+                let new_texture = render::image_to_memtexture(&background_image);
+                for aabb in geometry::split_aabb_extended(sheet_bounds, tile_size) {
+                    snapshot.append_texture(
+                        &new_texture,
+                        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, scalefactor)),
+                    );
+                }
             }
             Err(e) => {
                 log::error!("gen_image_librsvg() for background failed, {}", e);

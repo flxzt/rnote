@@ -70,7 +70,16 @@ impl Renderer {
         scalefactor: f64,
         svgs: &[Svg],
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        self.gen_rendernode_par_librsvg(scalefactor, svgs)
+        let images = self.gen_images_par_librsvg(scalefactor, svgs);
+
+        let snapshot = Snapshot::new();
+
+        // Rendernodes are not Sync or Send, so sequentially iterating here
+        images.iter().for_each(|image| {
+            snapshot.append_node(&image_to_texturenode(image, scalefactor));
+        });
+
+        Ok(snapshot.to_node())
     }
 
     pub fn gen_rendernode_librsvg(
@@ -79,11 +88,12 @@ impl Renderer {
         scalefactor: f64,
         svg: &str,
     ) -> Result<gsk::RenderNode, anyhow::Error> {
-        if bounds.extents()[0] < 0.0 || bounds.extents()[1] < 0.0 {
+        if bounds.maxs[0] - bounds.mins[0] < 0.0 || bounds.maxs[1] - bounds.mins[1] < 0.0 {
             return Err(anyhow::anyhow!(
-                "gen_rendernode_librsvg() failed, bounds extents are < 0.0"
+                "gen_rendernode_librsvg() failed, bounds width/ height is < 0.0"
             ));
         }
+
         let caironode_bounds = graphene::Rect::new(
             (bounds.mins[0] * scalefactor).floor() as f32,
             (bounds.mins[1] * scalefactor).floor() as f32,
@@ -156,14 +166,8 @@ impl Renderer {
         Ok(gsk::TextureNode::new(&memtexture, &node_bounds).upcast())
     }
 
-    pub fn gen_rendernode_par_librsvg(
-        &self,
-        scalefactor: f64,
-        svgs: &[Svg],
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        let snapshot = Snapshot::new();
-
-        // Parallel iteration to generate the pixel data
+    pub fn gen_images_par_librsvg(&self, scalefactor: f64, svgs: &[Svg]) -> Vec<Image> {
+        // Parallel iteration to generate the texture images
         svgs.par_iter()
             .filter_map(
                 |svg| match gen_image_librsvg(svg.bounds, scalefactor, &svg.svg_data) {
@@ -178,25 +182,6 @@ impl Renderer {
                 },
             )
             .collect::<Vec<Image>>()
-            // Rendernodes are not Sync or Send, so sequentially iterating here
-            .iter()
-            .for_each(|image| {
-                snapshot.append_texture(
-                    &gdk::MemoryTexture::new(
-                        image.data_width,
-                        image.data_height,
-                        gdk::MemoryFormat::B8g8r8a8Premultiplied,
-                        &glib::Bytes::from(&image.data),
-                        (image.data_width * 4) as usize,
-                    ),
-                    &geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-                        image.bounds,
-                        scalefactor,
-                    )),
-                )
-            });
-
-        Ok(snapshot.to_node())
     }
 }
 
@@ -257,17 +242,28 @@ pub fn gen_image_librsvg(
     });
 }
 
-/// Expects Imagesurface in ARgb32 premultiplied Format !
-pub fn image_to_memtexture(image: Image) -> Result<gdk::MemoryTexture, anyhow::Error> {
+/// Expects Image pixels in ARgb32 premultiplied Format !
+pub fn image_to_memtexture(image: &Image) -> gdk::MemoryTexture {
     let bytes = image.data.deref();
 
-    Ok(gdk::MemoryTexture::new(
+    gdk::MemoryTexture::new(
         image.data_width,
         image.data_height,
         gdk::MemoryFormat::B8g8r8a8Premultiplied,
         &glib::Bytes::from(bytes),
         (image.data_width * 4) as usize,
-    ))
+    )
+}
+
+/// Expects Image pixels in ARgb32 premultiplied Format !
+pub fn image_to_texturenode(image: &Image, scalefactor: f64) -> gsk::TextureNode {
+    let image_bounds = image.bounds;
+    let memtexture = image_to_memtexture(image);
+
+    gsk::TextureNode::new(
+        &memtexture,
+        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(image_bounds, scalefactor)),
+    )
 }
 
 pub fn rendernode_to_texture(

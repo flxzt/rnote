@@ -50,6 +50,7 @@ impl StrokesState {
     pub fn set_selected(&mut self, key: StrokeKey, selected: bool) {
         if let Some(selection_comp) = self.selection_components.get_mut(key) {
             selection_comp.selected = selected;
+            self.update_selection_bounds();
         } else {
             log::warn!(
                 "failed to get selection_component for stroke with key {:?}, invalid key used or stroke does not support selecting",
@@ -342,10 +343,7 @@ impl StrokesState {
         Ok(data)
     }
 
-    pub fn export_selection_as_svg(
-        &self,
-        file: gio::File,
-    ) -> Result<(), anyhow::Error> {
+    pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
         if let Some(selection_bounds) = self.selection_bounds {
             let mut data = self
                 .selection_keys()

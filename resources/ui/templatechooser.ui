@@ -13,7 +13,7 @@
             <property name="direction">left</property>
             <property name="margin_top">6</property>
             <property name="margin_bottom">3</property>
-            <property name="icon_name">brush-templates-symbolic</property>
+            <property name="icon_name">pen-brush-templates-symbolic</property>
             <property name="tooltip_text">Template chooser</property>
             <property name="hexpand">true</property>
             <property name="popover">chooser_popover</property>

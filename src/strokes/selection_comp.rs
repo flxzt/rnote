@@ -330,7 +330,7 @@ impl StrokesState {
         self.update_rendering_for_selection();
     }
 
-    pub fn gen_svg_from_strokes(&self) -> Result<String, Box<dyn std::error::Error>> {
+    pub fn gen_svg_from_strokes(&self) -> Result<String, anyhow::Error> {
         let mut data = String::new();
 
         for stroke in self.strokes.values() {
@@ -345,7 +345,7 @@ impl StrokesState {
     pub fn export_selection_as_svg(
         &self,
         file: gio::File,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), anyhow::Error> {
         if let Some(selection_bounds) = self.selection_bounds {
             let mut data = self
                 .selection_keys()

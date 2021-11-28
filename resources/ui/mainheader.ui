@@ -126,7 +126,7 @@
             </style>
             <child>
               <object class="GtkToggleButton" id="marker_toggle">
-                <property name="icon_name">marker-symbolic</property>
+                <property name="icon_name">pen-marker-symbolic</property>
                 <property name="tooltip_text">Marker</property>
                 <property name="hexpand">true</property>
                 <property name="active">true</property>
@@ -134,7 +134,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="brush_toggle">
-                <property name="icon_name">brush-symbolic</property>
+                <property name="icon_name">pen-brush-symbolic</property>
                 <property name="tooltip_text">Brush</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
@@ -142,7 +142,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="shaper_toggle">
-                <property name="icon_name">shaper-symbolic</property>
+                <property name="icon_name">pen-shaper-symbolic</property>
                 <property name="tooltip_text">Shaper</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
@@ -150,7 +150,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="eraser_toggle">
-                <property name="icon_name">eraser-symbolic</property>
+                <property name="icon_name">pen-eraser-symbolic</property>
                 <property name="tooltip_text">Eraser</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
@@ -158,7 +158,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="selector_toggle">
-                <property name="icon_name">selector-symbolic</property>
+                <property name="icon_name">pen-selector-symbolic</property>
                 <property name="tooltip_text">Selector</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>

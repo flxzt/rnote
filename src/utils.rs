@@ -128,7 +128,7 @@ pub fn now() -> String {
 
 pub fn load_string_from_resource(
     resource_path: &str,
-) -> Result<String, Box<dyn std::error::Error>> {
+) -> Result<String, anyhow::Error> {
     let imported_string = String::from_utf8(
         gio::resources_lookup_data(resource_path, gio::ResourceLookupFlags::NONE)?
             .deref()
@@ -138,7 +138,7 @@ pub fn load_string_from_resource(
     Ok(imported_string)
 }
 
-pub fn load_file_contents(file: &gio::File) -> Result<String, Box<dyn std::error::Error>> {
+pub fn load_file_contents(file: &gio::File) -> Result<String, anyhow::Error> {
     let (result, _) = file.load_contents::<gio::Cancellable>(None)?;
     let contents = String::from_utf8(result)?;
     Ok(contents)
@@ -155,7 +155,7 @@ pub fn try_add_template(
     templates: &mut Tera,
     template_name: &str,
     template_str: &str,
-) -> Result<(), Box<dyn std::error::Error>> {
+) -> Result<(), anyhow::Error> {
     templates.add_raw_template(template_name, template_str)?;
     Ok(())
 }
@@ -179,10 +179,10 @@ pub fn app_config_base_dirpath() -> Option<PathBuf> {
 #[derive(Debug)]
 pub enum FileType {
     Folder,
-    Rnote,
-    Svg,
-    BitmapImage,
-    Unknown,
+    RnoteFile,
+    VectorImageFile,
+    BitmapImageFile,
+    UnknownFile,
 }
 
 impl FileType {
@@ -195,10 +195,10 @@ impl FileType {
                     if let Some(content_type) = info.content_type() {
                         match content_type.as_str() {
                             "image/svg+xml" => {
-                                return Self::Svg;
+                                return Self::VectorImageFile;
                             }
                             "image/png" | "image/jpeg" => {
-                                return Self::BitmapImage;
+                                return Self::BitmapImageFile;
                             }
                             _ => {}
                         }
@@ -209,7 +209,7 @@ impl FileType {
                 }
                 _ => {
                     log::debug!("unkown file type");
-                    return Self::Unknown;
+                    return Self::UnknownFile;
                 }
             }
         } else {
@@ -220,7 +220,7 @@ impl FileType {
             if let Some(extension_str) = path.extension() {
                 match &*extension_str.to_string_lossy() {
                     "rnote" => {
-                        return Self::Rnote;
+                        return Self::RnoteFile;
                     }
                     _ => {}
                 }
@@ -229,6 +229,6 @@ impl FileType {
             log::warn!("no path for file");
         };
 
-        Self::Unknown
+        Self::UnknownFile
     }
 }

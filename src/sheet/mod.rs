@@ -571,7 +571,7 @@ impl Sheet {
         snapshot.pop();
     }
 
-    pub fn open_sheet(&self, file: &gio::File) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn open_sheet(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         let sheet: Sheet = serde_json::from_str(&utils::load_file_contents(file)?)?;
 
         self.strokes_state()
@@ -592,9 +592,9 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn save_sheet(&self, file: &gio::File) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn save_sheet(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         match FileType::lookup_file_type(file) {
-            FileType::Rnote => {
+            FileType::RnoteFile => {
                 let json_output = serde_json::to_string(self)?;
                 let output_stream = file.replace::<gio::Cancellable>(
                     None,
@@ -613,7 +613,7 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
         let sheet_bounds = p2d::bounding_volume::AABB::new(
@@ -664,7 +664,7 @@ impl Sheet {
         &self,
         pos: na::Vector2<f64>,
         file: &gio::File,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
         let svg = utils::load_file_contents(file)?;
@@ -688,7 +688,7 @@ impl Sheet {
         &self,
         pos: na::Vector2<f64>,
         file: &gio::File,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
         priv_.strokes_state.borrow_mut().deselect();

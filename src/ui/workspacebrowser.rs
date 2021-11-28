@@ -322,18 +322,19 @@ impl WorkspaceBrowser {
                 let file = file.downcast::<gio::File>().unwrap();
 
                 match utils::FileType::lookup_file_type(&file) {
-                    utils::FileType::Rnote => {
+                    utils::FileType::RnoteFile => {
+                        // Setting input file to hand it to the open overwrite dialog
                         appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(Some(file.clone()));
 
                         if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().unsaved_changes() {
                             dialogs::dialog_open_overwrite(&appwindow);
                         } else if let Err(e) = appwindow.load_in_file(&file) {
-                            log::error!("failed to load in input file, {}", e);
+                            log::error!("failed to load in file with FileType::RnoteFile, {}", e);
                         }
                     },
-                    utils::FileType::Svg | utils::FileType::BitmapImage => {
+                    utils::FileType::VectorImageFile | utils::FileType::BitmapImageFile => {
                         if let Err(e) = appwindow.load_in_file(&file) {
-                            log::error!("failed to load in input file, {}", e);
+                            log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile, {}", e);
                         }
                     },
                     utils::FileType::Folder => {
@@ -341,7 +342,7 @@ impl WorkspaceBrowser {
                             appwindow.workspacebrowser().set_primary_path(&path);
                         }
                     },
-                    utils::FileType::Unknown => {
+                    utils::FileType::UnknownFile => {
                             log::warn!("tried to open unsupported file type.");
                     }
                 }

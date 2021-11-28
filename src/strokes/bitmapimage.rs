@@ -127,7 +127,7 @@ impl BitmapImage {
     pub fn import_from_image_bytes<P>(
         to_be_read: P,
         pos: na::Vector2<f64>,
-    ) -> Result<Self, Box<dyn std::error::Error>>
+    ) -> Result<Self, anyhow::Error>
     where
         P: AsRef<[u8]>,
     {
@@ -136,7 +136,7 @@ impl BitmapImage {
             Some(image::ImageFormat::Png) => Format::Png,
             Some(image::ImageFormat::Jpeg) => Format::Jpeg,
             _ => {
-                return Err("unsupported format.".into());
+                return Err(anyhow::Error::msg("unsupported format."));
             }
         };
 

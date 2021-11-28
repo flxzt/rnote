@@ -302,6 +302,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     action_delete_selection.connect_activate(
         clone!(@weak appwindow => move |_action_delete_selection, _| {
             appwindow.canvas().sheet().strokes_state().borrow_mut().trash_selection();
+            appwindow.selection_modifier().set_visible(false);
 
             appwindow.canvas().queue_draw();
         }),

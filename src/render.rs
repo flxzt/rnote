@@ -200,7 +200,7 @@ pub fn gen_image_librsvg(
 
     let mut surface =
         cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled)
-            .map_err(|e| anyhow::anyhow!("create ImageSurface failed, {}", e))?;
+            .map_err(|e| anyhow::anyhow!("create ImageSurface with dimensions ({}, {}) failed, {}", width_scaled, height_scaled, e))?;
 
     // the ImageSurface has scaled size. Draw onto it in the unscaled, original coordinates, and will get scaled with this method .set_device_scale()
     //surface.set_device_scale(scalefactor, scalefactor);

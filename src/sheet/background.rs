@@ -236,7 +236,7 @@ impl Background {
         scalefactor: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
         force_regenerate: bool,
-    ) -> Result<(), Box<dyn std::error::Error>> {
+    ) -> Result<(), anyhow::Error> {
         if force_regenerate
             || sheet_bounds != self.current_bounds
             || scalefactor != self.current_scalefactor

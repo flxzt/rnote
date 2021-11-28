@@ -17,7 +17,7 @@
     <property name="margin_end">6</property>
     <child>
       <object class="GtkImage">
-        <property name="icon_name">eraser-symbolic</property>
+        <property name="icon_name">pen-eraser-symbolic</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
         <layout>

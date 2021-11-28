@@ -289,7 +289,6 @@ mod imp {
 }
 
 use std::{
-    boxed,
     cell::{Cell, RefCell},
     rc::Rc,
 };
@@ -803,11 +802,11 @@ impl RnoteAppWindow {
     }
 
     /// Loads in a file of any supported type into the current sheet.
-    pub fn load_in_file(&self, file: &gio::File) -> Result<(), boxed::Box<dyn std::error::Error>> {
+    pub fn load_in_file(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         match utils::FileType::lookup_file_type(file) {
-            utils::FileType::Rnote => {
+            utils::FileType::RnoteFile => {
                 self.canvas().sheet().open_sheet(file)?;
 
                 // Loading the sheet properties into the format settings panel
@@ -822,7 +821,7 @@ impl RnoteAppWindow {
                 self.canvas().set_empty(false);
                 self.canvas().regenerate_content(true, true);
             }
-            utils::FileType::Svg => {
+            utils::FileType::VectorImageFile => {
                 let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
                     na::vector![
                         VectorImage::OFFSET_X_DEFAULT,
@@ -840,8 +839,9 @@ impl RnoteAppWindow {
                 self.canvas().set_unsaved_changes(true);
                 self.canvas().set_empty(false);
                 self.canvas().regenerate_content(true, true);
+                self.selection_modifier().set_visible(true);
             }
-            utils::FileType::BitmapImage => {
+            utils::FileType::BitmapImageFile => {
                 let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
                     na::vector![
                         BitmapImage::OFFSET_X_DEFAULT,
@@ -861,11 +861,12 @@ impl RnoteAppWindow {
                 self.canvas().set_unsaved_changes(true);
                 self.canvas().set_empty(false);
                 self.canvas().regenerate_content(true, true);
+                self.selection_modifier().set_visible(true);
             }
             utils::FileType::Folder => {
                 log::warn!("tried to open folder as sheet.");
             }
-            utils::FileType::Unknown => {
+            utils::FileType::UnknownFile => {
                 log::warn!("tried to open a unsupported file type.");
                 app.set_input_file(None);
             }

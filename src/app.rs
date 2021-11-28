@@ -132,7 +132,7 @@ mod imp {
         fn open(&self, application: &Self::Type, files: &[gio::File], _hint: &str) {
             for file in files {
                 match utils::FileType::lookup_file_type(file) {
-                    utils::FileType::Unknown => {
+                    utils::FileType::UnknownFile => {
                         log::warn!("tried to open unsupported file type");
                     }
                     _ => {

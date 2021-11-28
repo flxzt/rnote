@@ -88,7 +88,7 @@ impl VectorImage {
         svg: &str,
         pos: na::Vector2<f64>,
         bounds: Option<p2d::bounding_volume::AABB>,
-    ) -> Result<Self, Box<dyn std::error::Error>> {
+    ) -> Result<Self, anyhow::Error> {
         let (intrinsic_size, bounds) = if let Some(bounds) = bounds {
             (
                 na::vector![

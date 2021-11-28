@@ -353,11 +353,8 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        if self.elements.len() <= 1 {
-            return Ok(vec![]);
-        }
 
-        let commands: Vec<render::Svg> = self
+        let svgs: Vec<render::Svg> = self
             .elements
             .par_iter()
             .zip(self.elements.par_iter().skip(1))
@@ -453,7 +450,7 @@ impl BrushStroke {
             })
             .collect();
 
-        Ok(commands)
+        Ok(svgs)
     }
 
     pub fn cubbez_svg_data(
@@ -461,9 +458,6 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        if self.elements.len() <= 1 {
-            return Ok(vec![]);
-        }
 
         let svgs: Vec<render::Svg> = self
             .elements
@@ -555,7 +549,8 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
-        if self.elements.len() <= 1 {
+        // return None if not enough elements to form at least one segment
+        if self.elements.len() < 4 {
             return Ok(None);
         }
 

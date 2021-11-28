@@ -353,7 +353,6 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
-
         let svgs: Vec<render::Svg> = self
             .elements
             .par_iter()
@@ -412,6 +411,9 @@ impl BrushStroke {
                     line.start += offset;
                     line.end += offset;
 
+                    bounds.take_point(na::Point2::<f64>::from(line.start));
+                    bounds.take_point(na::Point2::<f64>::from(line.end));
+
                     if i == 0 {
                         commands.push(path::Command::Move(
                             path::Position::Absolute,
@@ -424,6 +426,8 @@ impl BrushStroke {
                         end_width,
                         true,
                     ));
+                } else {
+                    return None;
                 }
 
                 let path = svg::node::element::Path::new()
@@ -458,7 +462,6 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
-
         let svgs: Vec<render::Svg> = self
             .elements
             .par_iter()
@@ -500,12 +503,17 @@ impl BrushStroke {
                     line.start += offset;
                     line.end += offset;
 
+                    bounds.take_point(na::Point2::<f64>::from(line.start));
+                    bounds.take_point(na::Point2::<f64>::from(line.end));
+
                     commands.append(&mut compose::compose_linear_variable_width(
                         line,
                         start_width,
                         end_width,
                         true,
                     ));
+                } else {
+                    return None;
                 }
                 let path = svg::node::element::Path::new()
                     // avoids gaps between each section

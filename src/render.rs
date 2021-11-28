@@ -173,6 +173,7 @@ impl Renderer {
                 |svg| match gen_image_librsvg(svg.bounds, scalefactor, &svg.svg_data) {
                     Ok(image) => Some(image),
                     Err(e) => {
+                        //println!("{}\n", svg.svg_data.as_str());
                         log::error!(
                             "gen_image_librsvg() in gen_rendernode_par_librsvg() failed, {}",
                             e
@@ -201,9 +202,6 @@ pub fn gen_image_librsvg(
     let mut surface =
         cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled)
             .map_err(|e| anyhow::anyhow!("create ImageSurface with dimensions ({}, {}) failed, {}", width_scaled, height_scaled, e))?;
-
-    // the ImageSurface has scaled size. Draw onto it in the unscaled, original coordinates, and will get scaled with this method .set_device_scale()
-    //surface.set_device_scale(scalefactor, scalefactor);
 
     // Context in new scope, else accessing the surface data fails with a borrow error
     {

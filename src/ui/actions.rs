@@ -8,8 +8,8 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, ArrowType, Grid, PackType, PositionType,
-    PrintOperation, PrintOperationAction, Revealer, ScrolledWindow, Separator, Snapshot, Unit,
+    gdk, gio, glib, glib::clone, prelude::*, ArrowType, PackType, PositionType, PrintOperation,
+    PrintOperationAction, Snapshot, Unit,
 };
 
 /* Actions follow this principle:
@@ -344,10 +344,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         if action_righthanded.state().unwrap().get::<bool>().unwrap() {
             appwindow.mainheader().canvasmenu().righthanded_toggle().set_active(true);
 
-            appwindow.main_grid().remove::<Grid>(&appwindow.sidebar_grid());
-            appwindow.main_grid().remove::<Separator>(&appwindow.sidebar_sep());
-            appwindow.main_grid().remove::<Revealer>(&appwindow.devel_actions_revealer());
-            appwindow.main_grid().remove::<ScrolledWindow>(&appwindow.canvas_scroller());
+            appwindow.main_grid().remove(&appwindow.sidebar_grid());
+            appwindow.main_grid().remove(&appwindow.sidebar_sep());
+            appwindow.main_grid().remove(&appwindow.devel_actions_revealer());
+            appwindow.main_grid().remove(&appwindow.canvas_scroller());
             appwindow.main_grid().attach(&appwindow.sidebar_grid(), 0, 1 ,1, 2);
             appwindow.main_grid().attach(&appwindow.sidebar_sep(), 1, 1 ,1, 2);
             appwindow.main_grid().attach(&appwindow.devel_actions_revealer(), 2, 1 ,1, 1);
@@ -370,10 +370,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         } else {
             appwindow.mainheader().canvasmenu().lefthanded_toggle().set_active(true);
 
-            appwindow.main_grid().remove::<Revealer>(&appwindow.devel_actions_revealer());
-            appwindow.main_grid().remove::<ScrolledWindow>(&appwindow.canvas_scroller());
-            appwindow.main_grid().remove::<Separator>(&appwindow.sidebar_sep());
-            appwindow.main_grid().remove::<Grid>(&appwindow.sidebar_grid());
+            appwindow.main_grid().remove(&appwindow.devel_actions_revealer());
+            appwindow.main_grid().remove(&appwindow.canvas_scroller());
+            appwindow.main_grid().remove(&appwindow.sidebar_sep());
+            appwindow.main_grid().remove(&appwindow.sidebar_grid());
             appwindow.main_grid().attach(&appwindow.devel_actions_revealer(), 0, 1 ,1, 1);
             appwindow.main_grid().attach(&appwindow.canvas_scroller(), 0, 2 ,1, 1);
             appwindow.main_grid().attach(&appwindow.sidebar_sep(), 1, 1 ,1, 2);

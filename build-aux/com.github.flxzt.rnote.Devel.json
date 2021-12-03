@@ -85,6 +85,23 @@
             ]
         },
         {
+            "name": "poppler",
+            "buildsystem": "cmake-ninja",
+            "config-opts": [
+                "-DCMAKE_INSTALL_LIBDIR=/app/lib",
+                "-DCMAKE_INSTALL_INCLUDEDIR=/app/include",
+                "-DENABLE_BOOST=OFF",
+                "-DENABLE_LIBOPENJPEG=none"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://poppler.freedesktop.org/poppler-21.12.0.tar.xz",
+                    "sha256": "acb840c2c1ec07d07e53c57c4b3a1ff3e3ee2d888d44e1e9f2f01aaf16814de7"
+                }
+            ]
+        },
+        {
             "name": "rnote",
             "buildsystem": "meson",
             "run-tests": true,

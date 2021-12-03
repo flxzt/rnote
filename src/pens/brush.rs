@@ -77,9 +77,7 @@ impl Brush {
     }
 }
 
-pub fn validate_brush_template_for_file(
-    file: &gio::File,
-) -> Result<(), anyhow::Error> {
+pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), anyhow::Error> {
     let mut rng = rand::thread_rng();
     let strokes_uniform = Uniform::from(0..=3);
 

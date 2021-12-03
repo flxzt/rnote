@@ -126,9 +126,7 @@ pub fn now() -> String {
     }
 }
 
-pub fn load_string_from_resource(
-    resource_path: &str,
-) -> Result<String, anyhow::Error> {
+pub fn load_string_from_resource(resource_path: &str) -> Result<String, anyhow::Error> {
     let imported_string = String::from_utf8(
         gio::resources_lookup_data(resource_path, gio::ResourceLookupFlags::NONE)?
             .deref()
@@ -182,6 +180,7 @@ pub enum FileType {
     RnoteFile,
     VectorImageFile,
     BitmapImageFile,
+    Pdf,
     UnknownFile,
 }
 
@@ -199,6 +198,9 @@ impl FileType {
                             }
                             "image/png" | "image/jpeg" => {
                                 return Self::BitmapImageFile;
+                            }
+                            "application/pdf" => {
+                                return Self::Pdf;
                             }
                             _ => {}
                         }

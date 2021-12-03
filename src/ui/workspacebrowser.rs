@@ -23,7 +23,8 @@ mod imp {
 
     impl Default for WorkspaceBrowser {
         fn default() -> Self {
-            let primary_dirlist = DirectoryList::new::<gio::File>(Some("standard::*"), None);
+            let primary_dirlist =
+                DirectoryList::new(Some("standard::*"), None as Option<&gio::File>);
             primary_dirlist.set_monitored(true);
 
             Self {
@@ -246,6 +247,7 @@ impl WorkspaceBrowser {
         filefilter.add_mime_type("image/svg+xml");
         filefilter.add_mime_type("image/png");
         filefilter.add_mime_type("image/jpeg");
+        filefilter.add_mime_type("application/pdf");
         filefilter.add_mime_type("inode/directory");
         let filefilter_model =
             FilterListModel::new(Some(&priv_.primary_dirlist), Some(&filefilter));
@@ -332,9 +334,9 @@ impl WorkspaceBrowser {
                             log::error!("failed to load in file with FileType::RnoteFile, {}", e);
                         }
                     },
-                    utils::FileType::VectorImageFile | utils::FileType::BitmapImageFile => {
+                    utils::FileType::VectorImageFile | utils::FileType::BitmapImageFile | utils::FileType::Pdf => {
                         if let Err(e) = appwindow.load_in_file(&file) {
-                            log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile, {}", e);
+                            log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
                         }
                     },
                     utils::FileType::Folder => {
@@ -382,6 +384,6 @@ impl WorkspaceBrowser {
     pub fn remove_primary_path(&self) {
         let priv_ = imp::WorkspaceBrowser::from_instance(self);
 
-        priv_.primary_dirlist.set_file::<gio::File>(None);
+        priv_.primary_dirlist.set_file(None as Option<&gio::File>);
     }
 }

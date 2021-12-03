@@ -44,6 +44,7 @@ dependency('glib-2.0', version: '>= 2.66')
 dependency('gio-2.0', version: '>= 2.66')
 dependency('gtk4', version: '>= 4.4.0')
 dependency('libadwaita-1', version: '>= 1.0.0-alpha.3')
+dependency('poppler-glib', version: '>= 21.08')
 
 cargo = find_program('cargo', required: true)
 cargo_script = find_program('build-aux/cargo.sh')

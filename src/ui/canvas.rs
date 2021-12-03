@@ -89,7 +89,7 @@ mod imp {
                 stylus_drawing_gesture,
                 mouse_drawing_gesture,
                 touch_drawing_gesture,
-                preview: WidgetPaintable::new::<Widget>(None),
+                preview: WidgetPaintable::new(None as Option<&Widget>),
                 texture_buffer: RefCell::new(None),
                 zoom_timeout: RefCell::new(None),
             }

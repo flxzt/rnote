@@ -293,10 +293,12 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
     filter.add_mime_type("image/svg+xml");
     filter.add_mime_type("image/png");
     filter.add_mime_type("image/jpeg");
+    filter.add_mime_type("application/pdf");
     filter.add_pattern("*.svg");
     filter.add_pattern("*.png");
     filter.add_pattern("*.jpg");
-    filter.set_name(Some("PNG / SVG / JPG file"));
+    filter.add_pattern("*.pdf");
+    filter.set_name(Some("PNG / SVG / JPG / PDF file"));
 
     let dialog_import_file: FileChooserNative = FileChooserNative::builder()
         .title("Import File")

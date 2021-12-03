@@ -278,9 +278,9 @@ mod imp {
             self.flap.get().connect_flap_position_notify(
                 clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box => move |flap| {
                     if flap.flap_position() == PackType::Start {
-                            flap_resizer_box.reorder_child_after::<gtk4::Box, gtk4::Box>(&flap_resizer, Some(&flap_box));
+                            flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
                     } else {
-                            flap_resizer_box.reorder_child_after::<gtk4::Box, gtk4::Box>(&flap_box, Some(&flap_resizer));
+                            flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
                     }
                 }),
             );
@@ -853,6 +853,26 @@ impl RnoteAppWindow {
                 self.canvas()
                     .sheet()
                     .import_file_as_bitmapimage(pos, file)?;
+
+                self.canvas().set_unsaved_changes(true);
+                self.mainheader().selector_toggle().set_active(true);
+                app.set_input_file(None);
+
+                self.canvas().set_unsaved_changes(true);
+                self.canvas().set_empty(false);
+                self.canvas().regenerate_content(true, true);
+                self.selection_modifier().set_visible(true);
+            }
+            utils::FileType::Pdf => {
+                let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
+                    na::vector![
+                        BitmapImage::OFFSET_X_DEFAULT,
+                        vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
+                    ]
+                } else {
+                    na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
+                };
+                self.canvas().sheet().import_file_as_pdf(pos, file)?;
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);

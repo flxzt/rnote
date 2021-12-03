@@ -17,13 +17,6 @@ pub struct QuadBezier {
     pub end: na::Vector2<f64>,
 }
 
-#[derive(Debug, Default, Clone, Copy)]
-pub struct QuadBezierVariableOffset {
-    quad: QuadBezier,
-    start_offset: f64,
-    end_offset: f64,
-}
-
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default)]
 pub struct CubicBezier {

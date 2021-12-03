@@ -200,8 +200,16 @@ pub fn gen_image_librsvg(
     let height_scaled = (scalefactor * (bounds.maxs[1] - bounds.mins[1])).round() as i32;
 
     let mut surface =
-        cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled)
-            .map_err(|e| anyhow::anyhow!("create ImageSurface with dimensions ({}, {}) failed, {}", width_scaled, height_scaled, e))?;
+        cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled).map_err(
+            |e| {
+                anyhow::anyhow!(
+                    "create ImageSurface with dimensions ({}, {}) failed, {}",
+                    width_scaled,
+                    height_scaled,
+                    e
+                )
+            },
+        )?;
 
     // Context in new scope, else accessing the surface data fails with a borrow error
     {

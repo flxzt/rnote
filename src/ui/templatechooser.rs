@@ -31,7 +31,8 @@ mod imp {
 
     impl Default for TemplateChooser {
         fn default() -> Self {
-            let templates_dirlist = DirectoryList::new::<gio::File>(Some("standard::*"), None);
+            let templates_dirlist =
+                DirectoryList::new(Some("standard::*"), None as Option<&gio::File>);
             templates_dirlist.set_monitored(true);
 
             Self {
@@ -197,7 +198,7 @@ impl TemplateChooser {
         priv_.predefined_templates_list.connect_row_selected(
             clone!(@weak appwindow, @weak templates_dirlist, @weak custom_templates_list => move |_predefined_templates_list, selection| {
                 if let Some(selection) = selection {
-                    custom_templates_list.select_row::<ListBoxRow>(None);
+                    custom_templates_list.select_row(None as Option<&ListBoxRow>);
 
                     match selection.widget_name().as_str() {
                         "predefined_template_linear_row" => { 
@@ -220,7 +221,7 @@ impl TemplateChooser {
         priv_.custom_templates_list.connect_row_selected(
             clone!(@weak appwindow, @weak templates_dirlist, @weak predefined_templates_list => move |_custom_templates_list, selection| {
                 if let Some(selection) = selection {
-                    predefined_templates_list.select_row::<ListBoxRow>(None);
+                    predefined_templates_list.select_row(None as Option<&ListBoxRow>);
 
                     if let Some(object) = templates_dirlist.item(selection.index() as u32) {
                         let file = object.downcast::<gio::FileInfo>().unwrap().attribute_object("standard::file")

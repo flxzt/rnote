@@ -1,6 +1,7 @@
 use std::io;
 
 use crate::{compose, render};
+use anyhow::Context;
 use gtk4::gsk;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};
@@ -121,8 +122,8 @@ impl StrokeBehaviour for BitmapImage {
 impl BitmapImage {
     pub const SIZE_X_DEFAULT: f64 = 500.0;
     pub const SIZE_Y_DEFAULT: f64 = 500.0;
-    pub const OFFSET_X_DEFAULT: f64 = 28.0;
-    pub const OFFSET_Y_DEFAULT: f64 = 28.0;
+    pub const OFFSET_X_DEFAULT: f64 = 32.0;
+    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
 
     pub fn import_from_image_bytes<P>(
         to_be_read: P,
@@ -156,5 +157,84 @@ impl BitmapImage {
             bounds,
             intrinsic_size,
         })
+    }
+
+    pub fn import_from_pdf_bytes(
+        to_be_read: &[u8],
+        pos: na::Vector2<f64>,
+        page_width: Option<i32>,
+    ) -> Result<Vec<Self>, anyhow::Error> {
+        let doc = poppler::Document::from_data(to_be_read, None)?;
+
+        let mut images = Vec::new();
+
+        for i in 0..doc.n_pages() {
+            if let Some(page) = doc.page(i) {
+                let intrinsic_size = page.size();
+                let (width, height, scalefactor) = if let Some(page_width) = page_width {
+                    let scalefactor = f64::from(page_width) / intrinsic_size.0;
+
+                    (
+                        page_width,
+                        (intrinsic_size.1 * scalefactor).round() as i32,
+                        scalefactor,
+                    )
+                } else {
+                    (
+                        intrinsic_size.0.round() as i32,
+                        intrinsic_size.1.round() as i32,
+                        1.0,
+                    )
+                };
+                let x = pos[0].round() as i32;
+                let y = pos[1].round() as i32
+                    + i * (height + (Self::OFFSET_Y_DEFAULT.round() / 2.0) as i32);
+
+                let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
+                    .map_err(|e| {
+                        anyhow::anyhow!(
+                            "create ImageSurface with dimensions ({}, {}) failed, {}",
+                            width,
+                            height,
+                            e
+                        )
+                    })?;
+
+                {
+                    let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+                    cx.scale(scalefactor, scalefactor);
+
+                    // Set margin to white
+                    cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
+                    cx.paint()?;
+
+                    page.render(&cx);
+
+                    cx.scale(1.0 / scalefactor, 1.0 / scalefactor);
+
+                    // Draw outline around page
+                    cx.set_source_rgba(0.7, 0.5, 0.5, 1.0);
+                    let line_width = 1.0;
+                    cx.set_line_width(line_width);
+                    cx.rectangle(
+                        f64::from(0) + line_width / 2.0,
+                        f64::from(0) + line_width / 2.0,
+                        f64::from(width) - line_width,
+                        f64::from(height) - line_width,
+                    );
+                    cx.stroke()?;
+                }
+
+                let mut png_data: Vec<u8> = Vec::new();
+                surface.write_to_png(&mut png_data)?;
+
+                images.push(Self::import_from_image_bytes(
+                    &png_data,
+                    na::vector![f64::from(x), f64::from(y)],
+                )?);
+            }
+        }
+
+        Ok(images)
     }
 }

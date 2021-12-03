@@ -54,6 +54,18 @@
   </provides>
 
   <releases>
+    <release version="0.1.7" date="2021-12-03">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>new feature: PDF import</li>
+          <li>refactoring code into an ECS pattern</li>
+          <li>performance improvements in stroke rendering, selecting, erasing by parallelizing these operations</li>
+          <li>minor UI improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.1.6" date="2021-11-01">
       <description>
         <p>this release changes:</p>

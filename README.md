@@ -18,7 +18,7 @@ Rnote aims to be a simple but functional note taking application for freehand dr
 One main consideration is that it is vector based, which should make it very flexible in editing and altering the contents.
 
 **Disclaimer**  
-This is my first Rust and GTK project and I am learning as I go along. It might blow up your computer. ;)
+This is my first Rust and GTK project and I am learning as I go along. Expect some bugs and crashes.
 
 ## Installation
 Rnote is available as  a flatpak on Flathub:
@@ -33,25 +33,29 @@ Rnote is available as  a flatpak on Flathub:
     * with the ability to move them up and down the history / layers
 * Stroke trash restorer
     *  with a preview of the deleted strokes
-* Stylus buttons configuration to map them to different actions or switch to different pens 
+* Stylus buttons configuration to map them to different actions and / or pen types 
+* Sticky selection: drag along parts of the selected strokes based on the proximity of a round pen tool
+* Locked strokes: Selection mode to toggle the mutability of strokes
 
 ## To-Do
 - [x] switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
 - [ ] template deduplication when loading in .rnote save files.
-- [x] printing / PDF export
-- [ ] PDF import
-- [x] picture import
+- [x] printing & PDF export
+- [x] PDF import
+- [x] vector & bitmap picture import
 - [ ] export as bitmap picture
 - [x] implement bezier curve stroke with variable stroke width
     (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
 - [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
-- [ ] make as much as possible parallel, especially rendering and actions which affect many strokes.
+- [x] parallelizing rendering and actions which affect many strokes.
+- [ ] limit rendering to visible strokes based on the current viewport of the canvas ( culling )
 - [ ] implement text fields
+- [ ] implement optional stroke smoothing
 
 ## Screenshots
 
-If you have drawn something beautiful in Rnote and want to share it, let me know so I can include it as a screenshot. :)
+If you have drawn something cool in Rnote and want to share it, let me know so I can include it as a screenshot. :)
 
 ![main_window_dark](./resources/screenshots/main_window_dark.png)
 ![main_window_light](./resources/screenshots/main_window_light.png)

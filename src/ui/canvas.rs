@@ -331,7 +331,10 @@ mod imp {
 
                 self.sheet.draw(scalefactor, snapshot);
 
-                self.sheet.strokes_state().borrow().draw_strokes(snapshot);
+                self.sheet
+                    .strokes_state()
+                    .borrow()
+                    .draw_strokes(snapshot, None);
 
                 snapshot.pop();
 
@@ -836,7 +839,10 @@ impl Canvas {
 
     /// regenerate the rendernodes of the canvas content. force_regenerate  regenerates all rendernodes from scratch
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
-        self.sheet().strokes_state().borrow_mut().update_rendering();
+        self.sheet()
+            .strokes_state()
+            .borrow_mut()
+            .update_rendering(None);
 
         self.regenerate_background(force_regenerate, redraw);
     }

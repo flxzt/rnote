@@ -4,6 +4,7 @@ use crate::strokes::strokestyle::StrokeBehaviour;
 use crate::ui::canvas;
 
 use gtk4::{gdk, graphene, gsk, Snapshot};
+use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -67,11 +68,39 @@ impl StrokesState {
         }
     }
 
-    pub fn update_rendering(&mut self) {
+    pub fn update_rendering(&mut self, viewport: Option<p2d::bounding_volume::AABB>) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
         keys.iter().for_each(|key| {
-            self.update_rendering_for_stroke(*key);
+            if let (Some(stroke), Some(render_comp)) =
+                (self.strokes.get(*key), self.render_components.get_mut(*key))
+            {
+                // skip if stroke is not in viewport
+                if let Some(viewport) = viewport {
+                    if !viewport.intersects(&stroke.bounds()) {
+                        return;
+                    }
+                }
+
+                match stroke.gen_rendernode(self.scalefactor, &self.renderer) {
+                    Ok(Some(node)) => {
+                        render_comp.rendernode = node;
+                    }
+                    Err(e) => {
+                        log::error!(
+                            "Failed to generate rendernode for stroke with key: {:?}, {}",
+                            key,
+                            e
+                        )
+                    }
+                    _ => {}
+                }
+            } else {
+                log::warn!(
+                    "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
+                    key
+                );
+            }
         })
     }
 
@@ -108,14 +137,22 @@ impl StrokesState {
         });
     }
 
-    pub fn draw_strokes(&self, snapshot: &Snapshot) {
+    pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<p2d::bounding_volume::AABB>) {
         self.render_components
             .iter()
             .filter(|(key, render_comp)| {
                 render_comp.render && !(self.trashed(*key).unwrap_or_else(|| true))
             })
-            .for_each(|(_key, render_comp)| {
-                snapshot.append_node(&render_comp.rendernode);
+            .for_each(|(key, render_comp)| {
+                if let Some(stroke) = self.strokes.get(key) {
+                    // skip if stroke is not in viewport
+                    if let Some(viewport) = viewport {
+                        if !viewport.intersects(&stroke.bounds()) {
+                            return;
+                        }
+                    }
+                    snapshot.append_node(&render_comp.rendernode);
+                }
             });
     }
 

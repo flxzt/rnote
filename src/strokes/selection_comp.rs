@@ -110,24 +110,6 @@ impl StrokesState {
         self.selection_bounds = self.gen_bounds(self.selection_keys().iter());
     }
 
-    pub fn trash_selection(&mut self) {
-        self.selection_components
-            .iter_mut()
-            .for_each(|(key, selection_comp)| {
-                if selection_comp.selected {
-                    selection_comp.selected = false;
-                    if let Some(trash_comp) = self.trash_components.get_mut(key) {
-                        trash_comp.trashed = true;
-                    }
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                        self.chrono_counter += 1;
-                        chrono_comp.t = self.chrono_counter;
-                    }
-                }
-            });
-        self.selection_bounds = None;
-    }
-
     pub fn deselect(&mut self) {
         self.selection_components
             .iter_mut()

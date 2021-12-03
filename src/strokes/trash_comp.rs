@@ -104,6 +104,24 @@ impl StrokesState {
         }
     }
 
+    pub fn trash_selection(&mut self) {
+        self.selection_components
+            .iter_mut()
+            .for_each(|(key, selection_comp)| {
+                if selection_comp.selected {
+                    selection_comp.selected = false;
+                    if let Some(trash_comp) = self.trash_components.get_mut(key) {
+                        trash_comp.trashed = true;
+                    }
+                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                        self.chrono_counter += 1;
+                        chrono_comp.t = self.chrono_counter;
+                    }
+                }
+            });
+        self.selection_bounds = None;
+    }
+
     /// trash strokes that collide with the eraser
     pub fn trash_colliding_strokes(
         &mut self,
@@ -185,8 +203,9 @@ impl StrokesState {
                             return;
                         }
                     }
-                    StrokeStyle::VectorImage(vectorimage) => {
-                        if eraser_bounds.intersects(&vectorimage.bounds) {
+                    StrokeStyle::VectorImage(_vectorimage) => {
+                        // Ignore VectorImage for now
+/*                         if eraser_bounds.intersects(&vectorimage.bounds) {
                             if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                 trash_comp.trashed = true;
 
@@ -197,10 +216,11 @@ impl StrokesState {
                             }
 
                             return;
-                        }
+                        } */
                     }
-                    StrokeStyle::BitmapImage(bitmapimage) => {
-                        if eraser_bounds.intersects(&bitmapimage.bounds) {
+                    StrokeStyle::BitmapImage(_bitmapimage) => {
+                        // Ignore BitmapImage for now
+/*                         if eraser_bounds.intersects(&bitmapimage.bounds) {
                             if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                 trash_comp.trashed = true;
 
@@ -211,7 +231,7 @@ impl StrokesState {
                             }
 
                             return;
-                        }
+                        } */
                     }
                 }
             });

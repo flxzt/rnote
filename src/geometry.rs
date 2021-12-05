@@ -176,14 +176,14 @@ pub fn aabb_clamp(
     )
 }
 
-/// Scale a aabb by the scalefactor
+/// Scale a aabb by the zoom
 pub fn aabb_scale(
     aabb: p2d::bounding_volume::AABB,
-    scalefactor: f64,
+    zoom: f64,
 ) -> p2d::bounding_volume::AABB {
     p2d::bounding_volume::AABB::new(
-        na::Point2::<f64>::from(na::vector![aabb.mins[0], aabb.mins[1]].scale(scalefactor)),
-        na::Point2::<f64>::from(na::vector![aabb.maxs[0], aabb.maxs[1]].scale(scalefactor)),
+        na::Point2::<f64>::from(na::vector![aabb.mins[0], aabb.mins[1]].scale(zoom)),
+        na::Point2::<f64>::from(na::vector![aabb.maxs[0], aabb.maxs[1]].scale(zoom)),
     )
 }
 

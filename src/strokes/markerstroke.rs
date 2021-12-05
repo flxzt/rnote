@@ -171,7 +171,7 @@ impl StrokeBehaviour for MarkerStroke {
 
     fn gen_rendernode(
         &self,
-        scalefactor: f64,
+        zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let svg = compose::wrap_svg(
@@ -183,7 +183,7 @@ impl StrokeBehaviour for MarkerStroke {
         );
         Ok(Some(renderer.gen_rendernode(
             self.bounds,
-            scalefactor,
+            zoom,
             svg.as_str(),
         )?))
     }

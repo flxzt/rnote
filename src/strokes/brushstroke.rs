@@ -154,7 +154,7 @@ impl StrokeBehaviour for BrushStroke {
 
     fn gen_rendernode(
         &self,
-        scalefactor: f64,
+        zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let offset = na::vector![0.0, 0.0];
@@ -178,7 +178,7 @@ impl StrokeBehaviour for BrushStroke {
         };
 
         Ok(renderer
-            .gen_rendernode_par(scalefactor, &svgs)
+            .gen_rendernode_par(zoom, &svgs)
             .map_err(|e| {
                 anyhow::anyhow!(
                     "gen_rendernode_par() failed in gen_rendernode() for brushstroke, {}",

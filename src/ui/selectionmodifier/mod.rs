@@ -1,6 +1,6 @@
 pub mod modifiernode;
 
-mod imp {
+pub mod imp {
     use super::modifiernode::ModifierNode;
 
     use gtk4::gdk;
@@ -54,6 +54,8 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
+            obj.set_focusable(true);
+
             self.resize_tl
                 .image()
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
@@ -86,7 +88,7 @@ mod imp {
 }
 
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
-use gtk4::{GestureDrag, PropagationPhase};
+use gtk4::{EventSequenceState, GestureDrag, PropagationPhase};
 
 use crate::geometry;
 use crate::{
@@ -149,9 +151,9 @@ impl SelectionModifier {
 
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
-                        let scalefactor = appwindow.canvas().scalefactor();
+                        let zoom = appwindow.canvas().zoom();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                        let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
+                        let offset = na::vector![offset.x.round() / zoom, offset.y.round() / zoom];
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -190,9 +192,9 @@ impl SelectionModifier {
 
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
-                        let scalefactor = appwindow.canvas().scalefactor();
+                        let zoom = appwindow.canvas().zoom();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                        let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
+                        let offset = na::vector![offset.x.round() / zoom, offset.y.round() / zoom];
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -231,9 +233,9 @@ impl SelectionModifier {
 
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
-                        let scalefactor = appwindow.canvas().scalefactor();
+                        let zoom = appwindow.canvas().zoom();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                        let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
+                        let offset = na::vector![offset.x.round() / zoom, offset.y.round() / zoom];
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -272,9 +274,9 @@ impl SelectionModifier {
 
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
-                        let scalefactor = appwindow.canvas().scalefactor();
+                        let zoom = appwindow.canvas().zoom();
                         let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                        let offset = na::vector![offset.x.round() / scalefactor, offset.y.round() / scalefactor];
+                        let offset = na::vector![offset.x.round() / zoom, offset.y.round() / zoom];
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -308,10 +310,15 @@ impl SelectionModifier {
             .propagation_phase(PropagationPhase::Capture)
             .build();
         priv_.translate_node.add_controller(&translate_drag_gesture);
+        translate_drag_gesture.connect_drag_begin(
+            clone!(@weak self as obj, @weak appwindow => move |translate_drag_gesture, _x, _y| {
+                translate_drag_gesture.set_state(EventSequenceState::Claimed);
+            }),
+        );
         translate_drag_gesture.connect_drag_update(
             clone!(@weak self as obj, @weak appwindow => move |_translate_drag_gesture, x, y| {
-                let scalefactor = appwindow.canvas().scalefactor();
-                let offset = na::vector![x.round() / scalefactor, y.round() / scalefactor];
+                let zoom = appwindow.canvas().zoom();
+                let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
                 appwindow.canvas().sheet().strokes_state().borrow_mut().translate_selection(offset);
 

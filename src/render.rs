@@ -56,27 +56,27 @@ impl Renderer {
     pub fn gen_rendernode(
         &self,
         bounds: p2d::bounding_volume::AABB,
-        scalefactor: f64,
+        zoom: f64,
         svg: &str,
     ) -> Result<gsk::RenderNode, anyhow::Error> {
         match self.backend {
-            RendererBackend::Librsvg => self.gen_rendernode_librsvg(bounds, scalefactor, svg),
-            RendererBackend::Resvg => self.gen_rendernode_resvg(bounds, scalefactor, svg),
+            RendererBackend::Librsvg => self.gen_rendernode_librsvg(bounds, zoom, svg),
+            RendererBackend::Resvg => self.gen_rendernode_resvg(bounds, zoom, svg),
         }
     }
 
     pub fn gen_rendernode_par(
         &self,
-        scalefactor: f64,
+        zoom: f64,
         svgs: &[Svg],
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        let images = self.gen_images_par_librsvg(scalefactor, svgs);
+        let images = self.gen_images_par_librsvg(zoom, svgs);
 
         let snapshot = Snapshot::new();
 
         // Rendernodes are not Sync or Send, so sequentially iterating here
         images.iter().for_each(|image| {
-            snapshot.append_node(&image_to_texturenode(image, scalefactor));
+            snapshot.append_node(&image_to_texturenode(image, zoom));
         });
 
         Ok(snapshot.to_node())
@@ -85,7 +85,7 @@ impl Renderer {
     pub fn gen_rendernode_librsvg(
         &self,
         bounds: p2d::bounding_volume::AABB,
-        scalefactor: f64,
+        zoom: f64,
         svg: &str,
     ) -> Result<gsk::RenderNode, anyhow::Error> {
         if bounds.maxs[0] - bounds.mins[0] < 0.0 || bounds.maxs[1] - bounds.mins[1] < 0.0 {
@@ -95,10 +95,10 @@ impl Renderer {
         }
 
         let caironode_bounds = graphene::Rect::new(
-            (bounds.mins[0] * scalefactor).floor() as f32,
-            (bounds.mins[1] * scalefactor).floor() as f32,
-            ((bounds.maxs[0] - bounds.mins[0]) * scalefactor).ceil() as f32,
-            ((bounds.maxs[1] - bounds.mins[1]) * scalefactor).ceil() as f32,
+            (bounds.mins[0] * zoom).floor() as f32,
+            (bounds.mins[1] * zoom).floor() as f32,
+            ((bounds.maxs[0] - bounds.mins[0]) * zoom).ceil() as f32,
+            ((bounds.maxs[1] - bounds.mins[1]) * zoom).ceil() as f32,
         );
 
         let new_caironode = gsk::CairoNode::new(&caironode_bounds);
@@ -117,10 +117,10 @@ impl Renderer {
         librsvg_renderer.render_document(
             &cx,
             &cairo::Rectangle {
-                x: (bounds.mins[0].floor() * scalefactor),
-                y: (bounds.mins[1].floor() * scalefactor),
-                width: ((bounds.maxs[0] - bounds.mins[0]).ceil() * scalefactor),
-                height: ((bounds.maxs[1] - bounds.mins[1]).ceil() * scalefactor),
+                x: (bounds.mins[0].floor() * zoom),
+                y: (bounds.mins[1].floor() * zoom),
+                width: ((bounds.maxs[0] - bounds.mins[0]).ceil() * zoom),
+                height: ((bounds.maxs[1] - bounds.mins[1]).ceil() * zoom),
             },
         )?;
         Ok(new_caironode.upcast())
@@ -129,18 +129,18 @@ impl Renderer {
     pub fn gen_rendernode_resvg(
         &self,
         svg_bounds: p2d::bounding_volume::AABB,
-        scalefactor: f64,
+        zoom: f64,
         svg: &str,
     ) -> Result<gsk::RenderNode, anyhow::Error> {
         let node_bounds = graphene::Rect::new(
-            (svg_bounds.mins[0].floor() * scalefactor) as f32,
-            (svg_bounds.mins[1].floor() * scalefactor) as f32,
-            ((svg_bounds.maxs[0] - svg_bounds.mins[0]).ceil() * scalefactor) as f32,
-            ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * scalefactor) as f32,
+            (svg_bounds.mins[0].floor() * zoom) as f32,
+            (svg_bounds.mins[1].floor() * zoom) as f32,
+            ((svg_bounds.maxs[0] - svg_bounds.mins[0]).ceil() * zoom) as f32,
+            ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * zoom) as f32,
         );
-        let width = ((svg_bounds.maxs[0] - svg_bounds.mins[0]).ceil() * scalefactor).round() as i32;
+        let width = ((svg_bounds.maxs[0] - svg_bounds.mins[0]).ceil() * zoom).round() as i32;
         let height =
-            ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * scalefactor).round() as i32;
+            ((svg_bounds.maxs[1] - svg_bounds.mins[1]).ceil() * zoom).round() as i32;
         let stride = 4 * width as usize;
 
         let rtree = usvg::Tree::from_data(svg.as_bytes(), &self.usvg_options.to_ref())?;
@@ -166,14 +166,13 @@ impl Renderer {
         Ok(gsk::TextureNode::new(&memtexture, &node_bounds).upcast())
     }
 
-    pub fn gen_images_par_librsvg(&self, scalefactor: f64, svgs: &[Svg]) -> Vec<Image> {
+    pub fn gen_images_par_librsvg(&self, zoom: f64, svgs: &[Svg]) -> Vec<Image> {
         // Parallel iteration to generate the texture images
         svgs.par_iter()
             .filter_map(
-                |svg| match gen_image_librsvg(svg.bounds, scalefactor, &svg.svg_data) {
+                |svg| match gen_image_librsvg(svg.bounds, zoom, &svg.svg_data) {
                     Ok(image) => Some(image),
                     Err(e) => {
-                        //println!("{}\n", svg.svg_data.as_str());
                         log::error!(
                             "gen_image_librsvg() in gen_rendernode_par_librsvg() failed, {}",
                             e
@@ -193,11 +192,11 @@ pub fn default_rendernode() -> gsk::RenderNode {
 
 pub fn gen_image_librsvg(
     bounds: p2d::bounding_volume::AABB,
-    scalefactor: f64,
+    zoom: f64,
     svg: &str,
 ) -> Result<Image, anyhow::Error> {
-    let width_scaled = (scalefactor * (bounds.maxs[0] - bounds.mins[0])).round() as i32;
-    let height_scaled = (scalefactor * (bounds.maxs[1] - bounds.mins[1])).round() as i32;
+    let width_scaled = (zoom * (bounds.maxs[0] - bounds.mins[0])).round() as i32;
+    let height_scaled = (zoom * (bounds.maxs[1] - bounds.mins[1])).round() as i32;
 
     let mut surface =
         cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled).map_err(
@@ -214,7 +213,7 @@ pub fn gen_image_librsvg(
     // Context in new scope, else accessing the surface data fails with a borrow error
     {
         let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
-        cx.scale(scalefactor, scalefactor);
+        cx.scale(zoom, zoom);
 
         let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
         let handle = librsvg::Loader::new()
@@ -262,25 +261,31 @@ pub fn image_to_memtexture(image: &Image) -> gdk::MemoryTexture {
 }
 
 /// Expects Image pixels in ARgb32 premultiplied Format !
-pub fn image_to_texturenode(image: &Image, scalefactor: f64) -> gsk::TextureNode {
+pub fn image_to_texturenode(image: &Image, zoom: f64) -> gsk::TextureNode {
     let image_bounds = image.bounds;
     let memtexture = image_to_memtexture(image);
 
     gsk::TextureNode::new(
         &memtexture,
-        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(image_bounds, scalefactor)),
+        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(image_bounds, zoom)),
     )
 }
 
 pub fn rendernode_to_texture(
     active_widget: &Widget,
     node: &gsk::RenderNode,
-    viewport: p2d::bounding_volume::AABB,
+    viewport: Option<p2d::bounding_volume::AABB>,
 ) -> Result<Option<gdk::Texture>, anyhow::Error> {
+    let viewport = if let Some(viewport) = viewport {
+        Some(geometry::aabb_to_graphene_rect(viewport))
+    } else {
+        None
+    };
+
     if let Some(root) = active_widget.root() {
         if let Some(root_renderer) = root.upcast::<Native>().renderer() {
             let texture = root_renderer
-                .render_texture(node, Some(&geometry::aabb_to_graphene_rect(viewport)));
+                .render_texture(node, viewport.as_ref());
             return Ok(texture);
         }
     }

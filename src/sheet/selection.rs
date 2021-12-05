@@ -283,12 +283,9 @@ impl Selection {
             clone!(@weak self as selection, @weak appwindow => @default-return None, move |_args| {
                     StrokeStyle::update_all_rendernodes(
                         &mut *selection.strokes().borrow_mut(),
-                        appwindow.canvas().scalefactor(),
+                        appwindow.canvas().zoom(),
                         &*appwindow.canvas().renderer().borrow(),
                     );
-
-                    appwindow.selection_modifier().queue_resize();
-                    appwindow.selection_modifier().queue_draw();
 
                     appwindow.canvas().queue_resize();
                     appwindow.canvas().queue_draw();
@@ -607,7 +604,7 @@ impl Selection {
         self.emit_by_name("redraw", &[]).unwrap();
     }
 
-    pub fn draw(&self, scalefactor: f64, snapshot: &Snapshot) {
+    pub fn draw(&self, zoom: f64, snapshot: &Snapshot) {
         let priv_ = imp::Selection::from_instance(self);
 
         StrokeStyle::draw_strokes(&priv_.strokes.borrow(), snapshot);
@@ -615,27 +612,27 @@ impl Selection {
         for stroke in priv_.strokes.borrow().iter() {
             match stroke {
                 strokes::StrokeStyle::MarkerStroke(markerstroke) => {
-                    self.draw_selected_bounds(markerstroke.bounds, scalefactor, snapshot);
+                    self.draw_selected_bounds(markerstroke.bounds, zoom, snapshot);
                 }
                 strokes::StrokeStyle::BrushStroke(brushstroke) => {
-                    self.draw_selected_bounds(brushstroke.bounds, scalefactor, snapshot);
+                    self.draw_selected_bounds(brushstroke.bounds, zoom, snapshot);
                 }
                 strokes::StrokeStyle::ShapeStroke(shapestroke) => {
-                    self.draw_selected_bounds(shapestroke.bounds, scalefactor, snapshot);
+                    self.draw_selected_bounds(shapestroke.bounds, zoom, snapshot);
                 }
                 strokes::StrokeStyle::VectorImage(vector_image) => {
-                    self.draw_selected_bounds(vector_image.bounds, scalefactor, snapshot);
+                    self.draw_selected_bounds(vector_image.bounds, zoom, snapshot);
                 }
                 strokes::StrokeStyle::BitmapImage(bitmapimage) => {
-                    self.draw_selected_bounds(bitmapimage.bounds, scalefactor, snapshot);
+                    self.draw_selected_bounds(bitmapimage.bounds, zoom, snapshot);
                 }
             }
         }
 
-        self.draw_selection_bounds(scalefactor, snapshot);
+        self.draw_selection_bounds(zoom, snapshot);
     }
 
-    pub fn draw_selection_bounds(&self, scalefactor: f64, snapshot: &Snapshot) {
+    pub fn draw_selection_bounds(&self, zoom: f64, snapshot: &Snapshot) {
         if let Some(bounds) = self.bounds() {
             let selection_bounds = graphene::Rect::new(
                 bounds.mins[0] as f32,
@@ -643,7 +640,7 @@ impl Selection {
                 (bounds.maxs[0] - bounds.mins[0]) as f32,
                 (bounds.maxs[1] - bounds.mins[1]) as f32,
             )
-            .scale(scalefactor as f32, scalefactor as f32);
+            .scale(zoom as f32, zoom as f32);
 
             let selection_border_color = gdk::RGBA {
                 red: 0.49,
@@ -694,7 +691,7 @@ impl Selection {
     pub fn draw_selected_bounds(
         &self,
         bounds: p2d::bounding_volume::AABB,
-        scalefactor: f64,
+        zoom: f64,
         snapshot: &Snapshot,
     ) {
         let bounds = graphene::Rect::new(
@@ -703,7 +700,7 @@ impl Selection {
             (bounds.maxs[0] - bounds.mins[0]) as f32,
             (bounds.maxs[1] - bounds.mins[1]) as f32,
         )
-        .scale(scalefactor as f32, scalefactor as f32);
+        .scale(zoom as f32, zoom as f32);
         let border_color = gdk::RGBA {
             red: 0.0,
             green: 0.2,

@@ -18,8 +18,6 @@ mod imp {
         pub strokes_state: Rc<RefCell<strokes::StrokesState>>,
         pub format: Format,
         pub background: Rc<RefCell<Background>>,
-        pub x: Cell<i32>,
-        pub y: Cell<i32>,
         pub width: Cell<i32>,
         pub height: Cell<i32>,
         pub padding_bottom: Cell<i32>,
@@ -33,8 +31,6 @@ mod imp {
                 strokes_state: Rc::new(RefCell::new(strokes::StrokesState::default())),
                 format: Format::default(),
                 background: Rc::new(RefCell::new(Background::default())),
-                x: Cell::new(0),
-                y: Cell::new(0),
                 width: Cell::new(Format::default().width()),
                 height: Cell::new(Format::default().height()),
                 padding_bottom: Cell::new(Format::default().height()),
@@ -152,8 +148,6 @@ impl Serialize for Sheet {
         state.serialize_field("strokes_state", &*self.strokes_state().borrow())?;
         state.serialize_field("format", &self.format())?;
         state.serialize_field("background", &self.background())?;
-        state.serialize_field("x", &self.x())?;
-        state.serialize_field("y", &self.y())?;
         state.serialize_field("width", &self.width())?;
         state.serialize_field("height", &self.height())?;
         state.serialize_field("endless_sheet", &self.endless_sheet())?;
@@ -175,8 +169,6 @@ impl<'de> Deserialize<'de> for Sheet {
             strokes_state,
             format,
             background,
-            x,
-            y,
             width,
             height,
             padding_bottom,
@@ -206,12 +198,6 @@ impl<'de> Deserialize<'de> for Sheet {
                 let background = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(2, &self))?;
-                let x = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(3, &self))?;
-                let y = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(4, &self))?;
                 let width = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(5, &self))?;
@@ -232,8 +218,6 @@ impl<'de> Deserialize<'de> for Sheet {
                 *sheet.strokes_state().borrow_mut() = strokes_state;
                 sheet.format().import_format(format);
                 *sheet.background().borrow_mut() = background;
-                sheet.set_x(x);
-                sheet.set_y(y);
                 sheet.set_width(width);
                 sheet.set_height(height);
                 sheet.set_endless_sheet(endless_sheet);
@@ -250,8 +234,6 @@ impl<'de> Deserialize<'de> for Sheet {
                 let mut strokes_state = None;
                 let mut format = None;
                 let mut background = None;
-                let mut x = None;
-                let mut y = None;
                 let mut width = None;
                 let mut height = None;
                 let mut padding_bottom = None;
@@ -283,18 +265,6 @@ impl<'de> Deserialize<'de> for Sheet {
                                 return Err(de::Error::duplicate_field("background"));
                             }
                             background = Some(map.next_value()?);
-                        }
-                        Field::x => {
-                            if x.is_some() {
-                                return Err(de::Error::duplicate_field("x"));
-                            }
-                            x = Some(map.next_value()?);
-                        }
-                        Field::y => {
-                            if y.is_some() {
-                                return Err(de::Error::duplicate_field("y"));
-                            }
-                            y = Some(map.next_value()?);
                         }
                         Field::width => {
                             if width.is_some() {
@@ -350,16 +320,6 @@ impl<'de> Deserialize<'de> for Sheet {
                     log::error!("{}", err);
                     Background::default()
                 });
-                let x = x.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("x");
-                    log::error!("{}", err);
-                    sheet_default.x()
-                });
-                let y = y.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("y");
-                    log::error!("{}", err);
-                    sheet_default.y()
-                });
                 let width = width.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("width");
                     log::error!("{}", err);
@@ -390,8 +350,6 @@ impl<'de> Deserialize<'de> for Sheet {
                 *sheet.strokes_state().borrow_mut() = strokes_state;
                 sheet.format().import_format(format);
                 *sheet.background().borrow_mut() = background;
-                sheet.set_x(x);
-                sheet.set_y(y);
                 sheet.set_width(width);
                 sheet.set_height(height);
                 sheet.set_padding_bottom(padding_bottom);
@@ -428,22 +386,6 @@ impl Sheet {
 
     pub fn strokes_state(&self) -> Rc<RefCell<StrokesState>> {
         imp::Sheet::from_instance(self).strokes_state.clone()
-    }
-
-    pub fn x(&self) -> i32 {
-        imp::Sheet::from_instance(self).x.get()
-    }
-
-    pub fn set_x(&self, x: i32) {
-        imp::Sheet::from_instance(self).x.set(x)
-    }
-
-    pub fn y(&self) -> i32 {
-        imp::Sheet::from_instance(self).y.get()
-    }
-
-    pub fn set_y(&self, y: i32) {
-        imp::Sheet::from_instance(self).y.set(y)
     }
 
     pub fn width(&self) -> i32 {
@@ -505,7 +447,7 @@ impl Sheet {
 
     pub fn bounds(&self) -> p2d::bounding_volume::AABB {
         p2d::bounding_volume::AABB::new(
-            na::point![f64::from(self.x()), f64::from(self.y())],
+            na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
     }
@@ -556,14 +498,14 @@ impl Sheet {
         }
     }
 
-    pub fn draw(&self, scalefactor: f64, snapshot: &Snapshot) {
+    pub fn draw(&self, zoom: f64, snapshot: &Snapshot) {
         let priv_ = imp::Sheet::from_instance(self);
 
         let sheet_bounds_scaled = graphene::Rect::new(
-            self.x() as f32 * scalefactor as f32,
-            self.y() as f32 * scalefactor as f32,
-            self.width() as f32 * scalefactor as f32,
-            self.height() as f32 * scalefactor as f32,
+            0.0,
+            0.0,
+            self.width() as f32 * zoom as f32,
+            self.height() as f32 * zoom as f32,
         );
 
         snapshot.push_clip(&sheet_bounds_scaled);
@@ -582,8 +524,6 @@ impl Sheet {
         self.background()
             .borrow_mut()
             .import_background(&*sheet.background().borrow());
-        self.set_x(sheet.x());
-        self.set_y(sheet.y());
         self.set_width(sheet.width());
         self.set_height(sheet.height());
         self.set_padding_bottom(sheet.padding_bottom());
@@ -613,15 +553,11 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
-        let priv_ = imp::Sheet::from_instance(self);
+    pub fn gen_svg(&self) -> Result<String, anyhow::Error> {
 
         let sheet_bounds = p2d::bounding_volume::AABB::new(
-            na::point![f64::from(self.x()), f64::from(self.y())],
-            na::point![
-                f64::from(self.x() + self.width()),
-                f64::from(self.y() + self.height())
-            ],
+            na::point![0.0, 0.0],
+            na::point![f64::from(self.width()), f64::from(self.height())],
         );
         let mut data = String::new();
 
@@ -633,8 +569,8 @@ impl Sheet {
         );
 
         data.push_str(
-            &priv_
-                .strokes_state
+            &self
+                .strokes_state()
                 .borrow()
                 .gen_svg_from_strokes()?
                 .as_str(),
@@ -647,6 +583,12 @@ impl Sheet {
             true,
             true,
         );
+
+        Ok(data)
+    }
+
+    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
+        let data = self.gen_svg()?;
 
         let output_stream = file.replace::<gio::Cancellable>(
             None,

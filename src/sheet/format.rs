@@ -397,7 +397,7 @@ impl Format {
         &self,
         sheet_bounds: p2d::bounding_volume::AABB,
         snapshot: &Snapshot,
-        scalefactor: f64,
+        zoom: f64,
     ) {
         let border_radius = graphene::Size::new(0.0, 0.0);
         let border_width = 2.0;
@@ -406,15 +406,15 @@ impl Format {
 
         snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
             sheet_bounds,
-            scalefactor,
+            zoom,
         )));
 
         while offset_y < sheet_bounds.maxs[1] {
             let border_bounds = graphene::Rect::new(
-                (sheet_bounds.mins[0] * scalefactor) as f32,
-                (offset_y * scalefactor) as f32 - border_width / 2.0,
-                (f64::from(self.width()) * scalefactor) as f32,
-                ((offset_y + f64::from(self.height())) * scalefactor) as f32 + border_width / 2.0,
+                (sheet_bounds.mins[0] * zoom) as f32,
+                (offset_y * zoom) as f32 - border_width / 2.0,
+                (f64::from(self.width()) * zoom) as f32,
+                ((offset_y + f64::from(self.height())) * zoom) as f32 + border_width / 2.0,
             );
 
             let rounded_rect = gsk::RoundedRect::new(

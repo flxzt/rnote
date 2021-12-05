@@ -82,7 +82,7 @@ impl StrokesState {
                     }
                 }
 
-                match stroke.gen_rendernode(self.scalefactor, &self.renderer) {
+                match stroke.gen_rendernode(self.zoom, &self.renderer) {
                     Ok(Some(node)) => {
                         render_comp.rendernode = node;
                     }
@@ -108,7 +108,7 @@ impl StrokesState {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
-            match stroke.gen_rendernode(self.scalefactor, &self.renderer) {
+            match stroke.gen_rendernode(self.zoom, &self.renderer) {
                 Ok(Some(node)) => {
                     render_comp.rendernode = node;
                 }
@@ -156,10 +156,10 @@ impl StrokesState {
             });
     }
 
-    pub fn draw_selection(&self, scalefactor: f64, snapshot: &Snapshot) {
+    pub fn draw_selection(&self, zoom: f64, snapshot: &Snapshot) {
         fn draw_selected_bounds(
             bounds: p2d::bounding_volume::AABB,
-            scalefactor: f64,
+            zoom: f64,
             snapshot: &Snapshot,
         ) {
             let bounds = graphene::Rect::new(
@@ -168,7 +168,7 @@ impl StrokesState {
                 (bounds.maxs[0] - bounds.mins[0]) as f32,
                 (bounds.maxs[1] - bounds.mins[1]) as f32,
             )
-            .scale(scalefactor as f32, scalefactor as f32);
+            .scale(zoom as f32, zoom as f32);
             let border_color = gdk::RGBA {
                 red: 0.0,
                 green: 0.2,
@@ -202,15 +202,15 @@ impl StrokesState {
                 if let Some(selection_comp) = self.selection_components.get(key) {
                     if selection_comp.selected {
                         if let Some(stroke) = self.strokes.get(key) {
-                            draw_selected_bounds(stroke.bounds(), scalefactor, snapshot);
+                            draw_selected_bounds(stroke.bounds(), zoom, snapshot);
                         }
                     }
                 }
             });
-        self.draw_selection_bounds(scalefactor, snapshot);
+        self.draw_selection_bounds(zoom, snapshot);
     }
 
-    pub fn draw_selection_bounds(&self, scalefactor: f64, snapshot: &Snapshot) {
+    pub fn draw_selection_bounds(&self, zoom: f64, snapshot: &Snapshot) {
         if let Some(selection_bounds) = self.selection_bounds {
             let selection_bounds = graphene::Rect::new(
                 selection_bounds.mins[0] as f32,
@@ -218,7 +218,7 @@ impl StrokesState {
                 (selection_bounds.maxs[0] - selection_bounds.mins[0]) as f32,
                 (selection_bounds.maxs[1] - selection_bounds.mins[1]) as f32,
             )
-            .scale(scalefactor as f32, scalefactor as f32);
+            .scale(zoom as f32, zoom as f32);
 
             let selection_border_color = gdk::RGBA {
                 red: 0.49,
@@ -266,7 +266,7 @@ impl StrokesState {
         }
     }
 
-    pub fn draw_debug(&self, scalefactor: f64, snapshot: &Snapshot) {
+    pub fn draw_debug(&self, zoom: f64, snapshot: &Snapshot) {
         self.strokes.iter().for_each(|(key, stroke)| {
             // Blur debug rendering for strokes which are normally hidden
             if let (Some(render_comp), Some(trash_comp)) = (
@@ -284,7 +284,7 @@ impl StrokesState {
                         canvas::debug::draw_pos(
                             element.inputdata.pos(),
                             canvas::debug::COLOR_POS,
-                            scalefactor,
+                            zoom,
                             snapshot,
                         )
                     }
@@ -292,14 +292,14 @@ impl StrokesState {
                         canvas::debug::draw_bounds(
                             hitbox_elem,
                             canvas::debug::COLOR_STROKE_HITBOX,
-                            scalefactor,
+                            zoom,
                             snapshot,
                         );
                     }
                     canvas::debug::draw_bounds(
                         markerstroke.bounds,
                         canvas::debug::COLOR_STROKE_BOUNDS,
-                        scalefactor,
+                        zoom,
                         snapshot,
                     );
                 }
@@ -308,7 +308,7 @@ impl StrokesState {
                         canvas::debug::draw_pos(
                             element.inputdata.pos(),
                             canvas::debug::COLOR_POS,
-                            scalefactor,
+                            zoom,
                             snapshot,
                         )
                     }
@@ -316,14 +316,14 @@ impl StrokesState {
                         canvas::debug::draw_bounds(
                             hitbox_elem,
                             canvas::debug::COLOR_STROKE_HITBOX,
-                            scalefactor,
+                            zoom,
                             snapshot,
                         );
                     }
                     canvas::debug::draw_bounds(
                         brushstroke.bounds,
                         canvas::debug::COLOR_STROKE_BOUNDS,
-                        scalefactor,
+                        zoom,
                         snapshot,
                     );
                 }
@@ -331,7 +331,7 @@ impl StrokesState {
                     canvas::debug::draw_bounds(
                         shapestroke.bounds,
                         canvas::debug::COLOR_STROKE_BOUNDS,
-                        scalefactor,
+                        zoom,
                         snapshot,
                     );
                 }
@@ -339,7 +339,7 @@ impl StrokesState {
                     canvas::debug::draw_bounds(
                         vectorimage.bounds,
                         canvas::debug::COLOR_STROKE_BOUNDS,
-                        scalefactor,
+                        zoom,
                         snapshot,
                     );
                 }
@@ -347,7 +347,7 @@ impl StrokesState {
                     canvas::debug::draw_bounds(
                         bitmapimage.bounds,
                         canvas::debug::COLOR_STROKE_BOUNDS,
-                        scalefactor,
+                        zoom,
                         snapshot,
                     );
                 }

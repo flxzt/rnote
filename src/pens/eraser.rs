@@ -48,17 +48,17 @@ impl Eraser {
         self.shown = shown;
     }
 
-    pub fn draw(&self, scalefactor: f64, snapshot: &Snapshot) {
+    pub fn draw(&self, zoom: f64, snapshot: &Snapshot) {
         if !self.shown {
             return;
         };
 
         if let Some(ref current_input) = self.current_input {
             let bounds = graphene::Rect::new(
-                (((current_input.pos()[0]) - self.width / 2.0) * scalefactor) as f32,
-                (((current_input.pos()[1]) - self.width / 2.0) * scalefactor) as f32,
-                (self.width * scalefactor) as f32,
-                (self.width * scalefactor) as f32,
+                (((current_input.pos()[0]) - self.width / 2.0) * zoom) as f32,
+                (((current_input.pos()[1]) - self.width / 2.0) * zoom) as f32,
+                (self.width * zoom) as f32,
+                (self.width * zoom) as f32,
             );
             let border_color = gdk::RGBA {
                 red: 0.8,

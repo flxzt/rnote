@@ -8,7 +8,7 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, ArrowType, PackType, PositionType, PrintOperation,
+    gio, glib, glib::clone, prelude::*, ArrowType, PackType, PositionType, PrintOperation,
     PrintOperationAction, Snapshot, Unit,
 };
 
@@ -302,7 +302,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     action_delete_selection.connect_activate(
         clone!(@weak appwindow => move |_action_delete_selection, _| {
             appwindow.canvas().sheet().strokes_state().borrow_mut().trash_selection();
-            appwindow.selection_modifier().set_visible(false);
+            appwindow.canvas().selection_modifier().set_visible(false);
 
             appwindow.canvas().queue_draw();
         }),
@@ -425,22 +425,22 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let new_scalefactor = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
-        appwindow.canvas().scale_to(new_scalefactor);
+        let new_zoom = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
+        appwindow.canvas().scale_to(new_zoom);
         appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Zoom in
     action_zoomin.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let new_scalefactor = appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom() + Canvas::ZOOM_ACTION_DELTA;
-        appwindow.canvas().scale_to(new_scalefactor);
+        let new_zoom = appwindow.canvas().zoom() * appwindow.canvas().temporary_zoom() + Canvas::ZOOM_ACTION_DELTA;
+        appwindow.canvas().scale_to(new_zoom);
         appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Zoom out
     action_zoomout.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let new_scalefactor = appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom() - Canvas::ZOOM_ACTION_DELTA;
-        appwindow.canvas().scale_to(new_scalefactor);
+        let new_zoom = appwindow.canvas().zoom() * appwindow.canvas().temporary_zoom() - Canvas::ZOOM_ACTION_DELTA;
+        appwindow.canvas().scale_to(new_zoom);
         appwindow.canvas().regenerate_background(true, true);
     }));
 
@@ -531,29 +531,38 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             let width_scale = (print_cx.width() + margin_left + margin_right) / f64::from(appwindow.canvas().sheet().format().width());
             let height_scale = (print_cx.height() + margin_top + margin_bottom) / f64::from(appwindow.canvas().sheet().format().height());
-            let print_scalefactor = width_scale.min(height_scale);
-            let y_offset = - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * print_scalefactor);
-
-            let app_scalefactor = appwindow.canvas().scalefactor();
-            appwindow.canvas().scale_to(print_scalefactor);
-            appwindow.canvas().regenerate_content(true, false);
+            let print_zoom = width_scale.min(height_scale);
+            let y_offset = - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * print_zoom);
 
             let snapshot = Snapshot::new();
 
             let format_bounds_scaled = p2d::bounding_volume::AABB::new(
                 na::point![0.0, 0.0],
-                na::point![f64::from(appwindow.canvas().sheet().format().width()) * print_scalefactor,f64::from(appwindow.canvas().sheet().format().height()) * print_scalefactor]
+                na::point![f64::from(appwindow.canvas().sheet().format().width()) * print_zoom,f64::from(appwindow.canvas().sheet().format().height()) * print_zoom]
             );
-            let sheet_size_scaled = na::vector![
-                f64::from(appwindow.canvas().sheet().width()) * print_scalefactor,
-                f64::from(appwindow.canvas().sheet().height()) * print_scalefactor
-            ];
+            let sheet_bounds= p2d::bounding_volume::AABB::new(
+                na::point![0.0, 0.0],
+                na::point![
+                    f64::from(appwindow.canvas().sheet().width()),
+                    f64::from(appwindow.canvas().sheet().height())
+                ]
+            );
 
-            appwindow.canvas().preview().snapshot(
-                snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(),
-                sheet_size_scaled[0],
-                sheet_size_scaled[1],
-            );
+            match appwindow.canvas().sheet().gen_svg() {
+                Ok(svg) => {
+                    match appwindow.canvas().sheet().strokes_state().borrow().renderer.gen_rendernode(sheet_bounds, print_zoom, svg.as_str() ) {
+                        Ok(node) => {
+                            snapshot.append_node(&node);
+                        }
+                        Err(e) => {
+                            log::error!("renderer.gen_rendernode() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
+                        }
+                    }
+                },
+                Err(e) => {
+                    log::error!("gen_svg() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
+                }
+            }
 
             cx.rectangle(
                 format_bounds_scaled.mins[0],
@@ -567,11 +576,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             if let Some(node) = snapshot.to_node() {
                 node.draw(&cx);
             } else {
-                log::error!("failed to get rendernode for created snapshot while printing page no {}", page_nr);
+                log::error!("snapshot.to_node() for created snapshot while printing page: {}", page_nr);
             };
-
-            appwindow.canvas().scale_to(app_scalefactor);
-            appwindow.canvas().regenerate_content(true, true);
         }));
 
         if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){

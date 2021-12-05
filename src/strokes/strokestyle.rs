@@ -23,7 +23,7 @@ pub trait StrokeBehaviour {
     // generates and returns the rendernode for this type
     fn gen_rendernode(
         &self,
-        scalefactor: f64,
+        zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error>;
 }
@@ -99,15 +99,15 @@ impl StrokeBehaviour for StrokeStyle {
 
     fn gen_rendernode(
         &self,
-        scalefactor: f64,
+        zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         match self {
-            Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(scalefactor, renderer),
-            Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(scalefactor, renderer),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_rendernode(scalefactor, renderer),
-            Self::VectorImage(vectorimage) => vectorimage.gen_rendernode(scalefactor, renderer),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_rendernode(scalefactor, renderer),
+            Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(zoom, renderer),
+            Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(zoom, renderer),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_rendernode(zoom, renderer),
+            Self::VectorImage(vectorimage) => vectorimage.gen_rendernode(zoom, renderer),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_rendernode(zoom, renderer),
         }
     }
 }

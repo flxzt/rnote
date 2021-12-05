@@ -154,7 +154,7 @@ pub struct Background {
     #[serde(skip, default = "render::default_rendernode")]
     rendernode: gsk::RenderNode,
     #[serde(skip)]
-    current_scalefactor: f64,
+    current_zoom: f64,
     #[serde(skip)]
     current_bounds: p2d::bounding_volume::AABB,
 }
@@ -177,7 +177,7 @@ impl Default for Background {
                 a: 1.0,
             },
             rendernode: render::default_rendernode(),
-            current_scalefactor: 1.0,
+            current_zoom: 1.0,
             current_bounds: p2d::bounding_volume::AABB::new_invalid(),
         }
     }
@@ -233,17 +233,17 @@ impl Background {
 
     pub fn update_rendernode(
         &mut self,
-        scalefactor: f64,
+        zoom: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
         force_regenerate: bool,
     ) -> Result<(), anyhow::Error> {
         if force_regenerate
             || sheet_bounds != self.current_bounds
-            || scalefactor != self.current_scalefactor
+            || zoom != self.current_zoom
         {
-            match self.gen_rendernode(scalefactor, sheet_bounds) {
+            match self.gen_rendernode(zoom, sheet_bounds) {
                 Ok(Some(new_rendernode)) => {
-                    self.current_scalefactor = scalefactor;
+                    self.current_zoom = zoom;
                     self.current_bounds = sheet_bounds;
                     self.rendernode = new_rendernode;
                 }
@@ -266,7 +266,7 @@ impl Background {
 
     pub fn gen_rendernode(
         &mut self,
-        scalefactor: f64,
+        zoom: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let snapshot = Snapshot::new();
@@ -294,22 +294,22 @@ impl Background {
         let svg_string = compose::add_xml_header(self.gen_svg_data(tile_bounds)?.as_str());
         snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
             sheet_bounds,
-            scalefactor,
+            zoom,
         )));
 
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_color(
             &self.color.to_gdk(),
-            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(sheet_bounds, scalefactor)),
+            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(sheet_bounds, zoom)),
         );
 
-        match render::gen_image_librsvg(tile_bounds, scalefactor, svg_string.as_str()) {
+        match render::gen_image_librsvg(tile_bounds, zoom, svg_string.as_str()) {
             Ok(background_image) => {
                 let new_texture = render::image_to_memtexture(&background_image);
                 for aabb in geometry::split_aabb_extended(sheet_bounds, tile_size) {
                     snapshot.append_texture(
                         &new_texture,
-                        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, scalefactor)),
+                        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, zoom)),
                     );
                 }
             }
@@ -378,7 +378,6 @@ impl Background {
         );
 
         let svg = compose::wrap_svg(svg.as_str(), Some(sheet_bounds), None, false, false);
-        //println!("{}", svg);
         Ok(svg)
     }
 }

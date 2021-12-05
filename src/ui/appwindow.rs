@@ -5,16 +5,14 @@ mod imp {
     use adw::{prelude::*, subclass::prelude::*};
     use gtk4::{
         gdk, gio, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
-        FileChooserNative, Grid, Inhibit, Overlay, PackType, ScrolledWindow, StyleContext,
-        ToggleButton,
+        FileChooserNative, Grid, Inhibit, PackType, ScrolledWindow, StyleContext, ToggleButton,
     };
-    use gtk4::{GestureDrag, ProgressBar, PropagationPhase, Revealer, Separator};
+    use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
 
     use crate::ui::appsettings;
     use crate::{
         app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
-        ui::mainheader::MainHeader, ui::penssidebar::PensSideBar,
-        ui::selectionmodifier::SelectionModifier, ui::settingspanel::SettingsPanel,
+        ui::mainheader::MainHeader, ui::penssidebar::PensSideBar, ui::settingspanel::SettingsPanel,
         ui::workspacebrowser::WorkspaceBrowser,
     };
 
@@ -34,13 +32,7 @@ mod imp {
         #[template_child]
         pub canvas: TemplateChild<Canvas>,
         #[template_child]
-        pub canvas_overlay: TemplateChild<Overlay>,
-        #[template_child]
-        pub canvas_progress_bar: TemplateChild<ProgressBar>,
-        #[template_child]
         pub settings_panel: TemplateChild<SettingsPanel>,
-        #[template_child]
-        pub selection_modifier: TemplateChild<SelectionModifier>,
         #[template_child]
         pub sidebar_grid: TemplateChild<Grid>,
         #[template_child]
@@ -77,10 +69,7 @@ mod imp {
                 devel_actions: TemplateChild::<DevelActions>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
-                canvas_overlay: TemplateChild::<Overlay>::default(),
-                canvas_progress_bar: TemplateChild::<ProgressBar>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
-                selection_modifier: TemplateChild::<SelectionModifier>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
                 sidebar_sep: TemplateChild::<Separator>::default(),
                 flap: TemplateChild::<adw::Flap>::default(),
@@ -297,17 +286,16 @@ use adw::prelude::*;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
     EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, Inhibit,
-    Overlay, ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
+    PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
 };
 
 use crate::{
     app::RnoteApp,
-    geometry,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     ui::canvas::Canvas,
     ui::develactions::DevelActions,
     ui::settingspanel::SettingsPanel,
-    ui::{actions, selectionmodifier::SelectionModifier, workspacebrowser::WorkspaceBrowser},
+    ui::{actions, workspacebrowser::WorkspaceBrowser},
     ui::{appsettings, penssidebar::PensSideBar},
     ui::{dialogs, mainheader::MainHeader},
     utils,
@@ -357,31 +345,13 @@ impl RnoteAppWindow {
             .get()
     }
 
-    pub fn canvas_overlay(&self) -> Overlay {
-        imp::RnoteAppWindow::from_instance(self)
-            .canvas_overlay
-            .get()
-    }
-
     pub fn canvas(&self) -> Canvas {
         imp::RnoteAppWindow::from_instance(self).canvas.get()
-    }
-
-    pub fn canvas_progress_bar(&self) -> ProgressBar {
-        imp::RnoteAppWindow::from_instance(self)
-            .canvas_progress_bar
-            .get()
     }
 
     pub fn settings_panel(&self) -> SettingsPanel {
         imp::RnoteAppWindow::from_instance(self)
             .settings_panel
-            .get()
-    }
-
-    pub fn selection_modifier(&self) -> SelectionModifier {
-        imp::RnoteAppWindow::from_instance(self)
-            .selection_modifier
             .get()
     }
 
@@ -498,49 +468,6 @@ impl RnoteAppWindow {
         }
     }
 
-    /// The point parameter has the coordinate space of the sheet, NOT of the scrolled window!
-    pub fn canvas_scroller_center_around_point_on_sheet(&self, point: (f64, f64)) {
-        let scroller_dimensions = (
-            f64::from(self.canvas_scroller().width()),
-            f64::from(self.canvas_scroller().height()),
-        );
-        let canvas_dimensions = (
-            f64::from(self.canvas().width()),
-            f64::from(self.canvas().height()),
-        );
-
-        if canvas_dimensions.0 > scroller_dimensions.0 {
-            self.canvas_scroller().hadjustment().unwrap().set_value(
-                (point.0 * self.canvas().scalefactor() * self.canvas().temporary_zoom())
-                    - scroller_dimensions.0 * 0.5,
-            );
-        }
-        if canvas_dimensions.1 > scroller_dimensions.1 {
-            self.canvas_scroller().vadjustment().unwrap().set_value(
-                (point.1 * self.canvas().scalefactor() * self.canvas().temporary_zoom())
-                    - scroller_dimensions.1 * 0.5,
-            );
-        }
-    }
-
-    /// Get the viewport of the canvas inside the canvas_scroller
-    pub fn canvas_scroller_viewport(&self) -> Option<p2d::bounding_volume::AABB> {
-        let pos = if let (Some(hadjustment), Some(vadjustment)) = (
-            self.canvas_scroller().hadjustment(),
-            self.canvas_scroller().vadjustment(),
-        ) {
-            na::vector![hadjustment.value(), vadjustment.value()]
-        } else {
-            return None;
-        };
-        let width = f64::from(self.canvas_scroller().width());
-        let height = f64::from(self.canvas_scroller().height());
-        Some(p2d::bounding_volume::AABB::new(
-            na::Point2::<f64>::from(pos),
-            na::point![pos[0] + width, pos[1] + height],
-        ))
-    }
-
     // Must be called after application is associated with it else it fails
     pub fn init(&self) {
         let priv_ = imp::RnoteAppWindow::from_instance(self);
@@ -563,9 +490,9 @@ impl RnoteAppWindow {
         priv_.penssidebar.get().eraser_page().init(self);
         priv_.penssidebar.get().selector_page().init(self);
         priv_.settings_panel.get().init(self);
-        priv_.selection_modifier.get().init(self);
         priv_.devel_actions.get().init(self);
         priv_.canvas.get().sheet().format().init(self);
+        priv_.canvas.get().selection_modifier().init(self);
 
         // Loading in input file
         if let Some(input_file) = self
@@ -621,24 +548,25 @@ impl RnoteAppWindow {
             .build();
 
         canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
+            let total_zoom = appwindow.canvas().total_zoom();
             if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom();
-                let new_scalefactor = appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom() - delta;
+                let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * total_zoom;
+                let new_zoom = total_zoom - delta;
 
                 // the sheet position BEFORE scaling
-                let sheet_center_pos = (
-                    ((appwindow.canvas_scroller().hadjustment().unwrap().value()
-                        + f64::from(appwindow.canvas_scroller().width()) * 0.5) / (appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom()))
-                        + f64::from(appwindow.canvas().sheet().x()),
-                    ((appwindow.canvas_scroller().vadjustment().unwrap().value()
+                let sheet_center_pos = na::vector![
+                    ((appwindow.canvas().hadjustment().unwrap().value()
+                        + f64::from(appwindow.canvas_scroller().width()) * 0.5) / total_zoom)
+                        ,
+                    ((appwindow.canvas().vadjustment().unwrap().value()
                     + f64::from(appwindow.canvas_scroller().height()) * 0.5)
-                    / (appwindow.canvas().scalefactor() * appwindow.canvas().temporary_zoom())) + f64::from(appwindow.canvas().sheet().y())
-                );
+                    / total_zoom)
+                ];
 
-                appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_scalefactor, Canvas::ZOOM_TIMEOUT_TIME);
+                appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
 
-                // Reposition scroller center to the stored sheet position
-                appwindow.canvas_scroller_center_around_point_on_sheet(sheet_center_pos);
+                // Reposition scroller center to the previous sheet position
+                appwindow.canvas().center_around_coord_on_sheet(sheet_center_pos);
                 // Stop event propagation
                 Inhibit(true)
             } else {
@@ -648,26 +576,47 @@ impl RnoteAppWindow {
         self.canvas_scroller()
             .add_controller(&canvas_zoom_scroll_controller);
 
+        // Move Canvas with touch gesture
+        let canvas_touch_drag_gesture = GestureDrag::builder()
+            .name("canvas_touch_drag_gesture")
+            .touch_only(true)
+            .propagation_phase(PropagationPhase::Bubble)
+            .build();
+
+        let touch_drag_start_x = Rc::new(Cell::new(0.0));
+        let touch_drag_start_y = Rc::new(Cell::new(0.0));
+
+        canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong touch_drag_start_x, @strong touch_drag_start_y, @weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
+            touch_drag_start_x.set(appwindow.canvas().hadjustment().unwrap().value());
+            touch_drag_start_y.set(appwindow.canvas().vadjustment().unwrap().value());
+        }));
+        canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start_x, @strong touch_drag_start_y, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
+            appwindow.canvas().hadjustment().unwrap().set_value(touch_drag_start_x.get() - x);
+            appwindow.canvas().vadjustment().unwrap().set_value(touch_drag_start_y.get() - y);
+        }));
+        self.canvas_scroller()
+            .add_controller(&canvas_touch_drag_gesture);
+
         // Move Canvas with middle mouse button
-        let canvas_move_drag_gesture = GestureDrag::builder()
-            .name("canvas_move_drag_gesture")
+        let canvas_mouse_drag_gesture = GestureDrag::builder()
+            .name("canvas_mouse_drag_gesture")
             .button(gdk::BUTTON_MIDDLE)
             .propagation_phase(PropagationPhase::Capture)
             .build();
-
-        let move_start_x = Rc::new(Cell::new(0.0));
-        let move_start_y = Rc::new(Cell::new(0.0));
-
-        canvas_move_drag_gesture.connect_drag_begin(clone!(@strong move_start_x, @strong move_start_y, @weak self as appwindow => move |_canvas_move_motion_controller, _x, _y| {
-            move_start_x.set(appwindow.canvas_scroller().hadjustment().unwrap().value());
-            move_start_y.set(appwindow.canvas_scroller().vadjustment().unwrap().value());
-        }));
-        canvas_move_drag_gesture.connect_drag_update(clone!(@strong move_start_x, @strong move_start_y, @weak self as appwindow => move |_canvas_move_motion_controller, x, y| {
-            appwindow.canvas_scroller().hadjustment().unwrap().set_value(move_start_x.get() - x);
-            appwindow.canvas_scroller().vadjustment().unwrap().set_value(move_start_y.get() - y);
-        }));
         self.canvas_scroller()
-            .add_controller(&canvas_move_drag_gesture);
+            .add_controller(&canvas_mouse_drag_gesture);
+
+        let mouse_drag_start_x = Rc::new(Cell::new(0.0));
+        let mouse_drag_start_y = Rc::new(Cell::new(0.0));
+
+        canvas_mouse_drag_gesture.connect_drag_begin(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
+            mouse_drag_start_x.set(appwindow.canvas().hadjustment().unwrap().value());
+            mouse_drag_start_y.set(appwindow.canvas().vadjustment().unwrap().value());
+        }));
+        canvas_mouse_drag_gesture.connect_drag_update(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+            appwindow.canvas().hadjustment().unwrap().set_value(mouse_drag_start_x.get() - x);
+            appwindow.canvas().vadjustment().unwrap().set_value(mouse_drag_start_y.get() - y);
+        }));
 
         // Canvas gesture zooming with preview and dragging
         let canvas_zoom_gesture = GestureZoom::builder()
@@ -678,27 +627,27 @@ impl RnoteAppWindow {
 
         let prev_zoom = Rc::new(Cell::new(1_f64));
         let scale_begin = Rc::new(Cell::new(1_f64));
-        let new_scalefactor = Rc::new(Cell::new(self.canvas().scalefactor()));
+        let new_zoom = Rc::new(Cell::new(self.canvas().zoom()));
         let zoomgesture_canvasscroller_start_pos = Rc::new(Cell::new((0.0, 0.0)));
         let zoomgesture_bbcenter_start: Rc<Cell<Option<(f64, f64)>>> = Rc::new(Cell::new(None));
 
         canvas_zoom_gesture.connect_begin(clone!(
             @strong scale_begin,
             @strong prev_zoom,
-            @strong new_scalefactor,
+            @strong new_zoom,
             @strong zoomgesture_canvasscroller_start_pos,
             @strong zoomgesture_bbcenter_start,
             @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
-            scale_begin.set(appwindow.canvas().scalefactor());
-            new_scalefactor.set(appwindow.canvas().scalefactor());
+            scale_begin.set(appwindow.canvas().zoom());
+            new_zoom.set(appwindow.canvas().zoom());
 
             prev_zoom.set(1.0);
-            appwindow.canvas().zoom_temporarily_to(appwindow.canvas().scalefactor());
+            appwindow.canvas().zoom_temporarily_to(appwindow.canvas().zoom());
 
             zoomgesture_canvasscroller_start_pos.set(
                 (
-                    appwindow.canvas_scroller().hadjustment().unwrap().value(),
-                    appwindow.canvas_scroller().vadjustment().unwrap().value()
+                    appwindow.canvas().hadjustment().unwrap().value(),
+                    appwindow.canvas().vadjustment().unwrap().value()
                 )
             );
             if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
@@ -709,15 +658,15 @@ impl RnoteAppWindow {
         }));
 
         canvas_zoom_gesture.connect_scale_changed(
-            clone!(@strong scale_begin, @strong new_scalefactor, @strong prev_zoom, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, new_zoom| {
-                let new_zoom = if scale_begin.get() * new_zoom > Canvas::SCALE_MAX || scale_begin.get() * new_zoom < Canvas::SCALE_MIN {
+            clone!(@strong scale_begin, @strong new_zoom, @strong prev_zoom, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, zoom| {
+                let new_zoom = if scale_begin.get() * zoom > Canvas::SCALE_MAX || scale_begin.get() * zoom < Canvas::SCALE_MIN {
                     prev_zoom.get()
                 } else {
-                    new_scalefactor.set(scale_begin.get() * new_zoom);
-                    appwindow.canvas().zoom_temporarily_to(new_scalefactor.get());
+                    new_zoom.set(scale_begin.get() * zoom);
+                    appwindow.canvas().zoom_temporarily_to(new_zoom.get());
 
-                    prev_zoom.set(new_zoom);
-                    new_zoom
+                    prev_zoom.set(zoom);
+                    zoom
                 };
 
                 if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
@@ -727,10 +676,10 @@ impl RnoteAppWindow {
                             bbcenter.1 - bbcenter_start.1 * new_zoom
                         );
 
-                        appwindow.canvas_scroller().hadjustment().unwrap().set_value(
+                        appwindow.canvas().hadjustment().unwrap().set_value(
                             zoomgesture_canvasscroller_start_pos.get().0 * new_zoom - bbcenter_delta.0
                         );
-                        appwindow.canvas_scroller().vadjustment().unwrap().set_value(
+                        appwindow.canvas().vadjustment().unwrap().set_value(
                             zoomgesture_canvasscroller_start_pos.get().1 * new_zoom - bbcenter_delta.1
                         );
                     } else {
@@ -750,48 +699,9 @@ impl RnoteAppWindow {
         );
 
         canvas_zoom_gesture.connect_end(
-            clone!(@strong scale_begin, @strong new_scalefactor, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+            clone!(@strong scale_begin, @strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
                 zoomgesture_bbcenter_start.set(None);
-                appwindow.canvas().scale_to(new_scalefactor.get());
-            }),
-        );
-
-        // This dictates the overlay children position and size
-        // resizing happens through the overlay when the canvas size changes.
-        self.canvas_overlay().connect_get_child_position(
-            clone!(@weak self as appwindow => @default-return None, move |_canvas_overlay, widget| {
-                 match widget.widget_name().as_str() {
-                     "selection_modifier" => {
-                        let selectionmodifier = widget.clone().downcast::<SelectionModifier>().unwrap();
-                        let scalefactor = appwindow.canvas().scalefactor();
-                        let temporary_zoom = appwindow.canvas().temporary_zoom();
-
-                        if let Some(selection_bounds) = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds {
-                            let translate_node_size = (
-                                ((selection_bounds.maxs[0] - selection_bounds.mins[0]) * scalefactor * temporary_zoom).round() as i32,
-                                ((selection_bounds.maxs[1] - selection_bounds.mins[1]) * scalefactor * temporary_zoom).round() as i32,
-                            );
-                            let selection_bounds_scaled = geometry::aabb_scale(selection_bounds, scalefactor * temporary_zoom);
-
-                            appwindow.selection_modifier().translate_node().set_width_request(translate_node_size.0);
-                            appwindow.selection_modifier().translate_node().set_height_request(translate_node_size.1);
-
-                            Some(gdk::Rectangle {
-                                x: (selection_bounds_scaled.mins[0]).round() as i32 - SelectionModifier::RESIZE_NODE_SIZE,
-                                y:  (selection_bounds_scaled.mins[1]).round() as i32 - SelectionModifier::RESIZE_NODE_SIZE,
-                                width: (selection_bounds_scaled.maxs[0] -  selection_bounds_scaled.mins[0]).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
-                                height: (selection_bounds_scaled.maxs[1] - selection_bounds_scaled.mins[1]).round() as i32 + 2 * SelectionModifier::RESIZE_NODE_SIZE,
-                            })
-                        } else {
-                            selectionmodifier.set_visible(false);
-                            None
-                        }
-                    },
-                    "canvas_progress_bar" => {
-                        None
-                    }
-                    _ => { None }
-                }
+                appwindow.canvas().scale_to(new_zoom.get());
             }),
         );
 
@@ -822,7 +732,7 @@ impl RnoteAppWindow {
                 self.canvas().regenerate_content(true, true);
             }
             utils::FileType::VectorImageFile => {
-                let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
+                let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
                     na::vector![
                         VectorImage::OFFSET_X_DEFAULT,
                         vadjustment.value() + VectorImage::OFFSET_Y_DEFAULT
@@ -839,10 +749,10 @@ impl RnoteAppWindow {
                 self.canvas().set_unsaved_changes(true);
                 self.canvas().set_empty(false);
                 self.canvas().regenerate_content(true, true);
-                self.selection_modifier().set_visible(true);
+                self.canvas().selection_modifier().set_visible(true);
             }
             utils::FileType::BitmapImageFile => {
-                let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
+                let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
                     na::vector![
                         BitmapImage::OFFSET_X_DEFAULT,
                         vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
@@ -861,10 +771,10 @@ impl RnoteAppWindow {
                 self.canvas().set_unsaved_changes(true);
                 self.canvas().set_empty(false);
                 self.canvas().regenerate_content(true, true);
-                self.selection_modifier().set_visible(true);
+                self.canvas().selection_modifier().set_visible(true);
             }
             utils::FileType::Pdf => {
-                let pos = if let Some(vadjustment) = self.canvas_scroller().vadjustment() {
+                let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
                     na::vector![
                         BitmapImage::OFFSET_X_DEFAULT,
                         vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
@@ -881,7 +791,7 @@ impl RnoteAppWindow {
                 self.canvas().set_unsaved_changes(true);
                 self.canvas().set_empty(false);
                 self.canvas().regenerate_content(true, true);
-                self.selection_modifier().set_visible(true);
+                self.canvas().selection_modifier().set_visible(true);
             }
             utils::FileType::Folder => {
                 log::warn!("tried to open folder as sheet.");

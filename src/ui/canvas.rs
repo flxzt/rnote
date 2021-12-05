@@ -3,23 +3,28 @@ mod imp {
     use std::rc::Rc;
 
     use super::debug;
-    use crate::config;
     use crate::pens::{PenStyle, Pens};
     use crate::sheet::Sheet;
+    use crate::ui::canvaslayout::CanvasLayout;
+    use crate::ui::selectionmodifier::SelectionModifier;
+    use crate::{config, geometry};
 
     use gtk4::{
         gdk, glib, graphene, gsk, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
-        Orientation, PropagationPhase, SizeRequestMode, Snapshot, Widget, WidgetPaintable,
+        PropagationPhase, Snapshot, Widget,
     };
+    use gtk4::{AccessibleRole, Adjustment, Scrollable, ScrollablePolicy};
 
     use once_cell::sync::Lazy;
+    use p2d::bounding_volume::BoundingVolume;
 
     #[derive(Debug)]
     pub struct Canvas {
         pub pens: Rc<RefCell<Pens>>,
         pub current_pen: Rc<Cell<PenStyle>>,
         pub sheet: Sheet,
-        pub scalefactor: Cell<f64>,
+        pub sheet_margin: Cell<f64>,
+        pub zoom: Cell<f64>,
         pub temporary_zoom: Cell<f64>,
         pub visual_debug: Cell<bool>,
         pub touch_drawing: Cell<bool>,
@@ -30,9 +35,18 @@ mod imp {
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
-        pub preview: WidgetPaintable,
         pub texture_buffer: RefCell<Option<gdk::Texture>>,
+        pub texture_buffer_pos: Cell<Option<na::Vector2<f64>>>,
         pub zoom_timeout: RefCell<Option<glib::SourceId>>,
+
+        pub hadjustment: RefCell<Option<Adjustment>>,
+        pub hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
+        pub vadjustment: RefCell<Option<Adjustment>>,
+        pub vadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
+        pub hscroll_policy: Cell<ScrollablePolicy>,
+        pub vscroll_policy: Cell<ScrollablePolicy>,
+
+        pub selection_modifier: SelectionModifier,
     }
 
     impl Default for Canvas {
@@ -53,14 +67,15 @@ mod imp {
             let touch_drawing_gesture = GestureDrag::builder()
                 .name("touch_drawing_gesture")
                 .touch_only(true)
-                .propagation_phase(PropagationPhase::Target)
+                .propagation_phase(PropagationPhase::Bubble)
                 .build();
 
             Self {
                 pens: Rc::new(RefCell::new(Pens::default())),
                 current_pen: Rc::new(Cell::new(PenStyle::default())),
                 sheet: Sheet::default(),
-                scalefactor: Cell::new(super::Canvas::SCALE_DEFAULT),
+                sheet_margin: Cell::new(super::Canvas::SHADOW_WIDTH),
+                zoom: Cell::new(super::Canvas::SCALE_DEFAULT),
                 temporary_zoom: Cell::new(1.0),
                 visual_debug: Cell::new(false),
                 touch_drawing: Cell::new(false),
@@ -89,9 +104,18 @@ mod imp {
                 stylus_drawing_gesture,
                 mouse_drawing_gesture,
                 touch_drawing_gesture,
-                preview: WidgetPaintable::new(None as Option<&Widget>),
                 texture_buffer: RefCell::new(None),
+                texture_buffer_pos: Cell::new(None),
                 zoom_timeout: RefCell::new(None),
+
+                hadjustment: RefCell::new(None),
+                hadjustment_signal: RefCell::new(None),
+                vadjustment: RefCell::new(None),
+                vadjustment_signal: RefCell::new(None),
+                hscroll_policy: Cell::new(ScrollablePolicy::Minimum),
+                vscroll_policy: Cell::new(ScrollablePolicy::Minimum),
+
+                selection_modifier: SelectionModifier::default(),
             }
         }
     }
@@ -100,12 +124,23 @@ mod imp {
     impl ObjectSubclass for Canvas {
         const NAME: &'static str = "Canvas";
         type Type = super::Canvas;
-        type ParentType = gtk4::Widget;
+        type ParentType = Widget;
+        type Interfaces = (Scrollable,);
+
+        fn class_init(klass: &mut Self::Class) {
+            klass.set_accessible_role(AccessibleRole::Img);
+            klass.set_layout_manager_type::<CanvasLayout>();
+        }
+
+        fn new() -> Self {
+            Self::default()
+        }
     }
 
     impl ObjectImpl for Canvas {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
+            self.selection_modifier.set_parent(obj);
 
             obj.set_hexpand(false);
             obj.set_vexpand(false);
@@ -117,8 +152,6 @@ mod imp {
             obj.add_controller(&self.stylus_drawing_gesture);
             obj.add_controller(&self.mouse_drawing_gesture);
             obj.add_controller(&self.touch_drawing_gesture);
-
-            self.preview.set_widget(Some(obj));
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -129,8 +162,21 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                // The temporary zoom factor (multiplied on top of scalefactor!) which is used when doing zoom gestures ( to avoid strokes redrawing )
+                let interface: glib::object::InterfaceRef<Scrollable> =
+                    glib::Interface::from_type(Scrollable::static_type()).unwrap();
+
+                // The temporary zoom factor (multiplied on top of zoom!) which is used when doing zoom gestures ( to avoid strokes redrawing )
                 vec![
+                    // The margin of the sheet in px when zoom = 1.0
+                    glib::ParamSpec::new_double(
+                        "sheet-margin",
+                        "sheet-margin",
+                        "sheet-margin",
+                        f64::MIN,
+                        f64::MAX,
+                        super::Canvas::SHADOW_WIDTH,
+                        glib::ParamFlags::READWRITE,
+                    ),
                     glib::ParamSpec::new_double(
                         "temporary-zoom",
                         "temporary-zoom",
@@ -140,11 +186,11 @@ mod imp {
                         1.0,
                         glib::ParamFlags::READWRITE,
                     ),
-                    // The scalefactor of the canvas in relation to the sheet
+                    // The zoom of the canvas in relation to the sheet
                     glib::ParamSpec::new_double(
-                        "scalefactor",
-                        "scalefactor",
-                        "scalefactor",
+                        "zoom",
+                        "zoom",
+                        "zoom",
                         f64::MIN,
                         f64::MAX,
                         super::Canvas::SCALE_DEFAULT,
@@ -182,6 +228,23 @@ mod imp {
                         true,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // Scrollable properties
+                    glib::ParamSpec::new_override(
+                        "hscroll-policy",
+                        &interface.find_property("hscroll-policy").unwrap(),
+                    ),
+                    glib::ParamSpec::new_override(
+                        "vscroll-policy",
+                        &interface.find_property("vscroll-policy").unwrap(),
+                    ),
+                    glib::ParamSpec::new_override(
+                        "hadjustment",
+                        &interface.find_property("hadjustment").unwrap(),
+                    ),
+                    glib::ParamSpec::new_override(
+                        "vadjustment",
+                        &interface.find_property("vadjustment").unwrap(),
+                    ),
                 ]
             });
             PROPERTIES.as_ref()
@@ -189,12 +252,17 @@ mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
+                "sheet-margin" => self.sheet_margin.get().to_value(),
                 "temporary-zoom" => self.temporary_zoom.get().to_value(),
-                "scalefactor" => self.scalefactor.get().to_value(),
+                "zoom" => self.zoom.get().to_value(),
                 "visual-debug" => self.visual_debug.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 "empty" => self.empty.get().to_value(),
+                "hadjustment" => self.hadjustment.borrow().to_value(),
+                "vadjustment" => self.vadjustment.borrow().to_value(),
+                "hscroll-policy" => self.hscroll_policy.get().to_value(),
+                "vscroll-policy" => self.vscroll_policy.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -207,25 +275,35 @@ mod imp {
             pspec: &glib::ParamSpec,
         ) {
             match pspec.name() {
+                "sheet-margin" => {
+                    let sheet_margin = value
+                        .get::<f64>()
+                        .expect("The value needs to be of type `f64`.");
+
+                    self.sheet_margin.replace(sheet_margin);
+                }
                 "temporary-zoom" => {
                     let temporary_zoom = value
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`.")
                         .clamp(
-                            super::Canvas::SCALE_MIN / self.scalefactor.get(),
-                            super::Canvas::SCALE_MAX / self.scalefactor.get(),
+                            super::Canvas::SCALE_MIN / self.zoom.get(),
+                            super::Canvas::SCALE_MAX / self.zoom.get(),
                         );
+
                     self.temporary_zoom.replace(temporary_zoom);
+
                     obj.queue_resize();
                     obj.queue_draw();
                 }
-                "scalefactor" => {
-                    let scalefactor: f64 = value
+                "zoom" => {
+                    let zoom: f64 = value
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`.")
                         .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
-                    self.scalefactor.replace(scalefactor);
-                    self.sheet.strokes_state().borrow_mut().scalefactor = scalefactor;
+                    self.zoom.replace(zoom);
+
+                    self.sheet.strokes_state().borrow_mut().zoom = zoom;
 
                     obj.queue_resize();
                     obj.queue_draw();
@@ -261,104 +339,123 @@ mod imp {
                         obj.set_unsaved_changes(false);
                     }
                 }
+                "hadjustment" => {
+                    let hadjustment = value.get().unwrap();
+                    obj.set_hadjustment(hadjustment);
+                }
+                "hscroll-policy" => {
+                    let hscroll_policy = value.get().unwrap();
+                    self.hscroll_policy.replace(hscroll_policy);
+                }
+                "vadjustment" => {
+                    let vadjustment = value.get().unwrap();
+                    obj.set_vadjustment(vadjustment);
+                }
+                "vscroll-policy" => {
+                    let vscroll_policy = value.get().unwrap();
+                    self.vscroll_policy.replace(vscroll_policy);
+                }
                 _ => unimplemented!(),
             }
         }
     }
 
     impl WidgetImpl for Canvas {
-        fn request_mode(&self, _widget: &Self::Type) -> SizeRequestMode {
-            SizeRequestMode::ConstantSize
-        }
+        // request_mode(), measure(), allocate() overrides happen in the CanvasLayout LayoutManager
 
-        fn measure(
-            &self,
-            _widget: &Self::Type,
-            orientation: Orientation,
-            _for_size: i32,
-        ) -> (i32, i32, i32, i32) {
-            if orientation == Orientation::Vertical {
-                let minimal_height = (f64::from(self.sheet.height())
-                    * self.scalefactor.get()
-                    * self.temporary_zoom.get()
-                    + f64::from(self.sheet.y()))
-                .round() as i32;
-                let natural_height = minimal_height;
+        fn snapshot(&self, widget: &Self::Type, snapshot: &gtk4::Snapshot) {
+            let zoom = widget.zoom();
+            let temporary_zoom = widget.temporary_zoom();
+            let total_zoom = widget.total_zoom();
+            let hadj = widget.hadjustment().unwrap();
+            let vadj = widget.vadjustment().unwrap();
+            let sheet_margin = self.sheet_margin.get();
+            let sheet_bounds_in_canvas_coords = widget.sheet_bounds_in_canvas_coords();
 
-                (minimal_height, natural_height, -1, -1)
-            } else {
-                let minimal_width = (f64::from(self.sheet.width())
-                    * self.scalefactor.get()
-                    * self.temporary_zoom.get()
-                    + f64::from(self.sheet.x()))
-                .round() as i32;
-                let natural_width = minimal_width;
+            // Clip everything outside the current view
+            snapshot.push_clip(&graphene::Rect::new(
+                0.0 as f32,
+                0.0 as f32,
+                widget.width() as f32,
+                widget.height() as f32,
+            ));
 
-                (minimal_width, natural_width, -1, -1)
-            }
-        }
+            snapshot.save();
 
-        fn snapshot(&self, _widget: &Self::Type, snapshot: &gtk4::Snapshot) {
-            let temporary_zoom = self.temporary_zoom.get();
-            let scalefactor = self.scalefactor.get();
+            snapshot.translate(&graphene::Point::new(
+                (-hadj.value()) as f32,
+                (-vadj.value()) as f32,
+            ));
 
-            let sheet_bounds_scaled = graphene::Rect::new(
-                self.sheet.x() as f32 * scalefactor as f32,
-                self.sheet.y() as f32 * scalefactor as f32,
-                self.sheet.width() as f32 * scalefactor as f32,
-                self.sheet.height() as f32 * scalefactor as f32,
+            self.draw_shadow(
+                &geometry::aabb_to_graphene_rect(sheet_bounds_in_canvas_coords),
+                Self::SHADOW_WIDTH * total_zoom,
+                snapshot,
             );
 
-            if let Some(texture_buffer) = &*self.texture_buffer.borrow() {
-                snapshot.scale(temporary_zoom as f32, temporary_zoom as f32);
-                snapshot.append_texture(texture_buffer, &sheet_bounds_scaled);
-            } else {
-                self.draw_shadow(
-                    &sheet_bounds_scaled,
-                    Self::SHADOW_WIDTH * scalefactor,
-                    snapshot,
-                );
+            if let (Some(texture_buffer), Some(pos)) = (
+                &*self.texture_buffer.borrow(),
+                self.texture_buffer_pos.get(),
+            ) {
+                let zoomed_texture_bounds =
+                    geometry::aabb_translate(widget.content_bounds(), pos * temporary_zoom);
 
-                let sheet_bounds_scaled = graphene::Rect::new(
-                    self.sheet.x() as f32 * scalefactor as f32,
-                    self.sheet.y() as f32 * scalefactor as f32,
-                    self.sheet.width() as f32 * scalefactor as f32,
-                    self.sheet.height() as f32 * scalefactor as f32,
+                snapshot.append_texture(
+                    texture_buffer,
+                    &geometry::aabb_to_graphene_rect(zoomed_texture_bounds),
                 );
+            } else {
+                // From here in scaled sheet coordinate space
+                snapshot.translate(&graphene::Point::new(
+                    (sheet_margin * zoom) as f32,
+                    (sheet_margin * zoom) as f32,
+                ));
 
                 // Clip sheet and stroke drawing to sheet bounds
-                snapshot.push_clip(&sheet_bounds_scaled);
+                snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
+                    widget.sheet().bounds(),
+                    zoom,
+                )));
 
-                self.sheet.draw(scalefactor, snapshot);
+                self.sheet.draw(zoom, snapshot);
 
                 self.sheet
                     .strokes_state()
                     .borrow()
-                    .draw_strokes(snapshot, None);
+                    .draw_strokes(snapshot, Some(widget.viewport_in_sheet_coords()));
 
                 snapshot.pop();
 
                 self.sheet
                     .strokes_state()
                     .borrow()
-                    .draw_selection(scalefactor, snapshot);
+                    .draw_selection(zoom, snapshot);
 
                 self.pens
                     .borrow()
-                    .draw(self.current_pen.get(), snapshot, scalefactor);
+                    .draw(self.current_pen.get(), snapshot, zoom);
 
                 if self.sheet.format_borders() {
                     self.sheet
                         .format()
-                        .draw(self.sheet.bounds(), snapshot, scalefactor);
+                        .draw(self.sheet.bounds(), snapshot, zoom);
                 }
 
                 if self.visual_debug.get() {
-                    self.draw_debug(snapshot);
+                    self.draw_debug(widget, snapshot);
                 }
             }
+
+            // Draw the children
+            snapshot.restore();
+
+            widget.snapshot_child(&self.selection_modifier, &snapshot);
+
+            snapshot.pop();
         }
     }
+
+    impl ScrollableImpl for Canvas {}
 
     impl Canvas {
         pub const SHADOW_WIDTH: f64 = 30.0;
@@ -385,14 +482,14 @@ mod imp {
                 &shadow_color,
                 0.0,
                 0.0,
-                width as f32,
-                width as f32,
+                (width / 2.0) as f32,
+                (width / 2.0) as f32,
             );
         }
 
         // Draw bounds, positions, .. for visual debugging purposes
-        fn draw_debug(&self, snapshot: &Snapshot) {
-            let scalefactor = self.scalefactor.get();
+        fn draw_debug(&self, widget: &super::Canvas, snapshot: &Snapshot) {
+            let zoom = self.zoom.get();
 
             match self.current_pen.get() {
                 PenStyle::Eraser => {
@@ -401,7 +498,7 @@ mod imp {
                             debug::draw_pos(
                                 current_input.pos(),
                                 debug::COLOR_POS_ALT,
-                                scalefactor,
+                                zoom,
                                 snapshot,
                             );
                         }
@@ -413,7 +510,7 @@ mod imp {
                             debug::draw_bounds(
                                 bounds,
                                 debug::COLOR_SELECTOR_BOUNDS,
-                                scalefactor,
+                                zoom,
                                 snapshot,
                             );
                         }
@@ -431,19 +528,23 @@ mod imp {
                     ],
                 ),
                 debug::COLOR_SHEET_BOUNDS,
-                scalefactor,
+                zoom,
                 snapshot,
             );
+
+            let viewport = widget.viewport_in_sheet_coords().tightened(1.0);
+            debug::draw_bounds(viewport, debug::COLOR_STROKE_BOUNDS, zoom, snapshot);
 
             self.sheet
                 .strokes_state()
                 .borrow()
-                .draw_debug(scalefactor, snapshot);
+                .draw_debug(zoom, snapshot);
         }
     }
 }
 
 use crate::strokes::strokestyle::{Element, InputData};
+use crate::ui::selectionmodifier::SelectionModifier;
 use crate::{
     app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow,
 };
@@ -455,12 +556,14 @@ use std::collections::VecDeque;
 use std::rc::Rc;
 use std::time;
 
-use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*, WidgetPaintable};
-use gtk4::{EventSequenceState, Snapshot, Widget};
+use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*};
+use gtk4::{Adjustment, EventSequenceState, Scrollable, Snapshot, Widget};
+use p2d::bounding_volume::BoundingVolume;
 
 glib::wrapper! {
     pub struct Canvas(ObjectSubclass<imp::Canvas>)
-        @extends gtk4::Widget;
+        @extends gtk4::Widget,
+        @implements Scrollable;
 }
 
 impl Default for Canvas {
@@ -520,17 +623,22 @@ impl Canvas {
             .unwrap();
     }
 
-    pub fn scalefactor(&self) -> f64 {
-        self.property("scalefactor").unwrap().get::<f64>().unwrap()
+    pub fn sheet_margin(&self) -> f64 {
+        self.property("sheet-margin").unwrap().get::<f64>().unwrap()
     }
 
-    fn set_scalefactor(&self, scalefactor: f64) {
-        self.set_property("scalefactor", scalefactor.to_value())
+    #[allow(dead_code)]
+    fn set_sheet_margin(&self, sheet_margin: f64) {
+        self.set_property("sheet-margin", sheet_margin.to_value())
             .unwrap();
     }
 
-    pub fn preview(&self) -> WidgetPaintable {
-        imp::Canvas::from_instance(self).preview.clone()
+    pub fn zoom(&self) -> f64 {
+        self.property("zoom").unwrap().get::<f64>().unwrap()
+    }
+
+    fn set_zoom(&self, zoom: f64) {
+        self.set_property("zoom", zoom.to_value()).unwrap();
     }
 
     pub fn unsaved_changes(&self) -> bool {
@@ -565,28 +673,44 @@ impl Canvas {
         }
     }
 
-    /// The bounds of the sheet scaled to the current canvas scalefactor
-    pub fn sheet_bounds_scaled(&self) -> p2d::bounding_volume::AABB {
-        let scalefactor = self.scalefactor();
+    fn set_hadjustment(&self, adj: Option<Adjustment>) {
+        let self_ = imp::Canvas::from_instance(self);
+        if let Some(signal_id) = self_.hadjustment_signal.borrow_mut().take() {
+            let old_adj = self_.hadjustment.borrow().as_ref().unwrap().clone();
+            old_adj.disconnect(signal_id);
+        }
 
-        p2d::bounding_volume::AABB::new(
-            na::point![
-                f64::from(self.sheet().x()) * scalefactor,
-                f64::from(self.sheet().y()) * scalefactor
-            ],
-            na::point![
-                f64::from(self.width()) * scalefactor,
-                f64::from(self.height()) * scalefactor
-            ],
-        )
+        if let Some(ref adjustment) = adj {
+            let signal_id =
+                adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
+                    canvas.queue_allocate();
+                    canvas.queue_draw();
+                }));
+            self_.hadjustment_signal.replace(Some(signal_id));
+        }
+        self_.hadjustment.replace(adj);
     }
 
-    // The bounds of the canvas
-    pub fn bounds(&self) -> p2d::bounding_volume::AABB {
-        p2d::bounding_volume::AABB::new(
-            na::point![f64::from(0.0), f64::from(0.0)],
-            na::point![f64::from(self.width()), f64::from(self.height())],
-        )
+    fn set_vadjustment(&self, adj: Option<Adjustment>) {
+        let self_ = imp::Canvas::from_instance(self);
+        if let Some(signal_id) = self_.vadjustment_signal.borrow_mut().take() {
+            let old_adj = self_.vadjustment.borrow().as_ref().unwrap().clone();
+            old_adj.disconnect(signal_id);
+        }
+
+        if let Some(ref adjustment) = adj {
+            let signal_id =
+                adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
+                    canvas.queue_allocate();
+                    canvas.queue_draw();
+                }));
+            self_.vadjustment_signal.replace(Some(signal_id));
+        }
+        self_.vadjustment.replace(adj);
+    }
+
+    pub fn selection_modifier(&self) -> SelectionModifier {
+        imp::Canvas::from_instance(self).selection_modifier.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -614,13 +738,13 @@ impl Canvas {
         }));
 
         self.bind_property(
-            "scalefactor",
+            "zoom",
             &appwindow.mainheader().canvasmenu().zoomreset_button(),
             "label",
         )
         .transform_to(|_, value| {
-            let scalefactor = value.get::<f64>().unwrap();
-            Some(format!("{:.0}%", scalefactor * 100.0).to_value())
+            let zoom = value.get::<f64>().unwrap();
+            Some(format!("{:.0}%", zoom * 100.0).to_value())
         })
         .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE)
         .build();
@@ -637,7 +761,8 @@ impl Canvas {
                     mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
 
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
-                    input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![0.0, 0.0]);
+
+                    input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
                     canvas.processing_draw_begin(&appwindow, &mut data_entries);
                 }
@@ -653,7 +778,8 @@ impl Canvas {
 
                 if let Some(start_point) = mouse_drawing_gesture.start_point() {
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
-                    input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![start_point.0, start_point.1]);
+
+                    input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
 
                     canvas.processing_draw_motion(&appwindow, &mut data_entries);
                 }
@@ -669,10 +795,11 @@ impl Canvas {
                     }
 
                     if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
-                    input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![start_point.0, start_point.1]);
+                        let mut data_entries = input::retreive_pointer_inputdata(x, y);
 
-                    canvas.processing_draw_end(&appwindow, &mut data_entries);
+                        input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
+
+                        canvas.processing_draw_end(&appwindow, &mut data_entries);
                     }
                 }
             }),
@@ -685,8 +812,8 @@ impl Canvas {
 
                 // Disable backlog, only allowed in motion signal handler
                 let mut data_entries = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
-                input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![0.0, 0.0]);
 
+                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
                 match device_tool.tool_type() {
                     gdk::DeviceToolType::Pen => { },
@@ -705,7 +832,8 @@ impl Canvas {
             if stylus_drawing_gesture.device_tool().is_some() {
                 // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
                 let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
-                input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![0.0, 0.0]);
+
+                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
                 canvas.processing_draw_motion(&appwindow, &mut data_entries);
             }
@@ -715,7 +843,7 @@ impl Canvas {
             clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
                 let mut data_entries = input::retreive_stylus_inputdata(gesture_stylus, false, x, y);
 
-                input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![0.0, 0.0]);
+                input::map_inputdata(canvas.zoom(), &mut data_entries, na::vector![0.0, 0.0]);
                 canvas.processing_draw_end(&appwindow, &mut data_entries);
             }),
         );
@@ -727,7 +855,8 @@ impl Canvas {
 
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
 
-                input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![0.0, 0.0]);
+                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
+
                 canvas.processing_draw_begin(&appwindow, &mut data_entries);
             }),
         );
@@ -735,7 +864,8 @@ impl Canvas {
         priv_.touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
-                input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![start_point.0, start_point.1]);
+
+                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
 
                 canvas.processing_draw_motion(&appwindow, &mut data_entries);
             }
@@ -745,7 +875,8 @@ impl Canvas {
             clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
-                input::map_inputdata(canvas.scalefactor(), &mut data_entries, na::vector![start_point.0, start_point.1]);
+
+                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
 
                 canvas.processing_draw_end(&appwindow, &mut data_entries);
                 }
@@ -753,32 +884,161 @@ impl Canvas {
         );
     }
 
-    /// Zoom temporarily to a new scalefactor, not rescaling the contents while doing it.
+    pub fn total_zoom(&self) -> f64 {
+        self.zoom() * self.temporary_zoom()
+    }
+
+    /// The widget bounds in its coordinate space. Is the bounds of the view, not the bounds of the scaled sheet!
+    pub fn bounds(&self) -> p2d::bounding_volume::AABB {
+        p2d::bounding_volume::AABB::new(
+            na::point![0.0, 0.0],
+            na::point![f64::from(self.width()), f64::from(self.height())],
+        )
+    }
+
+    /// The bounds of the drawn content, meaning the bounds of the scaled sheet + margin
+    pub fn content_bounds(&self) -> p2d::bounding_volume::AABB {
+        let total_zoom = self.total_zoom();
+
+        self.sheet_bounds_in_canvas_coords()
+            .loosened(self.sheet_margin() * total_zoom)
+    }
+
+    /// The bounds of the sheet in the coordinate space of the canvas
+    pub fn sheet_bounds_in_canvas_coords(&self) -> p2d::bounding_volume::AABB {
+        let total_zoom = self.total_zoom();
+        let sheet_margin = self.sheet_margin();
+
+        p2d::bounding_volume::AABB::new(
+            na::point![sheet_margin * total_zoom, sheet_margin * total_zoom],
+            na::point![
+                (sheet_margin + f64::from(self.sheet().width())) * total_zoom,
+                (sheet_margin + f64::from(self.sheet().height())) * total_zoom
+            ],
+        )
+    }
+
+    /// transforming coordinates of canvas coordinate space into sheet coordinate space
+    pub fn transform_canvas_coords_to_sheet_coords(
+        &self,
+        canvas_coords: na::Vector2<f64>,
+    ) -> na::Vector2<f64> {
+        let total_zoom = self.total_zoom();
+
+        canvas_coords
+            - na::vector![
+                self.sheet_margin() * total_zoom,
+                self.sheet_margin() * total_zoom
+            ]
+            + na::vector![
+                self.hadjustment().unwrap().value(),
+                self.vadjustment().unwrap().value()
+            ]
+    }
+
+    /// transforming coordinates of canvas coordinate space into sheet coordinate space
+    pub fn transform_sheet_coords_to_canvas_coords(
+        &self,
+        sheet_coords: na::Vector2<f64>,
+    ) -> na::Vector2<f64> {
+        let total_zoom = self.total_zoom();
+
+        sheet_coords
+            + na::vector![
+                self.sheet_margin() * total_zoom,
+                self.sheet_margin() * total_zoom
+            ]
+            - na::vector![
+                self.hadjustment().unwrap().value(),
+                self.vadjustment().unwrap().value()
+            ]
+    }
+
+    /// The view of the parent scroller onto the Canvas
+    pub fn viewport(&self) -> p2d::bounding_volume::AABB {
+        let parent = self.parent().unwrap();
+        let (parent_width, parent_height) = (f64::from(parent.width()), f64::from(parent.height()));
+        let (parent_offset_x, parent_offset_y) = self
+            .translate_coordinates(&parent, 0.0, 0.0)
+            .unwrap_or_else(|| (0.0, 0.0));
+
+        let (x, y) = (
+            self.hadjustment().unwrap().value() - parent_offset_x,
+            self.vadjustment().unwrap().value() - parent_offset_y,
+        );
+        let viewport = p2d::bounding_volume::AABB::new(
+            na::point![x, y],
+            na::point![x + parent_width, y + parent_height],
+        );
+
+        viewport
+    }
+
+    /// The viewport transformed to match the coordinate space of the sheet
+    pub fn viewport_in_sheet_coords(&self) -> p2d::bounding_volume::AABB {
+        let mut viewport = self.viewport();
+        let total_zoom = self.total_zoom();
+        let sheet_margin = self.sheet_margin();
+
+        viewport = geometry::aabb_translate(
+            geometry::aabb_scale(viewport, 1.0 / total_zoom),
+            -na::vector![sheet_margin, sheet_margin],
+        );
+
+        viewport
+    }
+
+    /// The point parameter has the coordinate space of the sheet!
+    pub fn center_around_coord_on_sheet(&self, coord: na::Vector2<f64>) {
+        let (parent_width, parent_height) = (
+            f64::from(self.parent().unwrap().width()),
+            f64::from(self.parent().unwrap().height()),
+        );
+        let total_zoom = self.total_zoom();
+        let sheet_margin = self.sheet_margin();
+
+        let (canvas_width, canvas_height) = (
+            f64::from(self.sheet().width()) * total_zoom,
+            f64::from(self.sheet().height()) * total_zoom,
+        );
+
+        if canvas_width > parent_width {
+            self.hadjustment()
+                .unwrap()
+                .set_value(((sheet_margin + coord[0]) * total_zoom) - parent_width * 0.5);
+        }
+        if canvas_height > parent_height {
+            self.vadjustment()
+                .unwrap()
+                .set_value(((sheet_margin + coord[1]) * total_zoom) - parent_height * 0.5);
+        }
+    }
+
+    /// Zoom temporarily to a new zoom, not rescaling the contents while doing it.
     /// To scale the content and reset the zoom, use scale_to().
-    pub fn zoom_temporarily_to(&self, temp_scalefactor: f64) {
+    pub fn zoom_temporarily_to(&self, temp_zoom: f64) {
         let priv_ = imp::Canvas::from_instance(self);
+        let hadj = self.hadjustment().unwrap();
+        let vadj = self.vadjustment().unwrap();
 
         // Only capture when texture_buffer is resetted (= None)
         if priv_.texture_buffer.borrow().is_none() {
-            *priv_.texture_buffer.borrow_mut() = self.current_content_as_texture(na::vector![
-                f64::from(self.width()),
-                f64::from(self.height())
-            ]);
+            *priv_.texture_buffer.borrow_mut() = self.current_content_as_texture();
+            priv_
+                .texture_buffer_pos
+                .set(Some(na::vector![hadj.value(), vadj.value()]));
         }
-        self.set_temporary_zoom(temp_scalefactor / self.scalefactor());
+        self.set_temporary_zoom(temp_zoom / self.zoom());
     }
 
-    /// Scales the canvas and its contents to a new scalefactor
-    pub fn scale_to(&self, scalefactor: f64) {
+    /// Scales the canvas and its contents to a new zoom
+    pub fn scale_to(&self, zoom: f64) {
         let priv_ = imp::Canvas::from_instance(self);
 
-        /*         if let Some(texture_buffer) = &*priv_.texture_buffer.borrow() {
-            texture_buffer.save_to_png(Path::new("./tests/canvas.png"));
-        } */
-
         *priv_.texture_buffer.borrow_mut() = None;
+        priv_.texture_buffer_pos.set(None);
         self.set_temporary_zoom(1.0);
-        self.set_scalefactor(scalefactor);
+        self.set_zoom(zoom);
 
         // regenerating bounds, hitboxes,..
         self.sheet()
@@ -789,11 +1049,11 @@ impl Canvas {
         self.regenerate_content(false, true);
     }
 
-    /// Zooms temporarily and then scale the canvas and its contents to a new scalefactor after a given time.
+    /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.
     /// Repeated calls to this function reset the timeout.
     pub fn zoom_temporarily_then_scale_to_after_timeout(
         &self,
-        scalefactor: f64,
+        zoom: f64,
         timeout_time: time::Duration,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
@@ -802,7 +1062,7 @@ impl Canvas {
             glib::source::source_remove(zoom_timeout);
         }
 
-        self.zoom_temporarily_to(scalefactor);
+        self.zoom_temporarily_to(zoom);
 
         priv_
             .zoom_timeout
@@ -812,7 +1072,7 @@ impl Canvas {
                 clone!(@weak self as canvas => move || {
                     let priv_ = imp::Canvas::from_instance(&canvas);
 
-                    canvas.scale_to(scalefactor);
+                    canvas.scale_to(zoom);
                     priv_.zoom_timeout.borrow_mut().take();
                 }),
             ));
@@ -822,7 +1082,7 @@ impl Canvas {
     /// use force_regenerate to force regeneration of the texture_cache of the background (for example when changing the background pattern)
     pub fn regenerate_background(&self, force_regenerate: bool, redraw: bool) {
         match self.sheet().background().borrow_mut().update_rendernode(
-            self.scalefactor(),
+            self.zoom(),
             self.sheet().bounds(),
             force_regenerate,
         ) {
@@ -848,52 +1108,58 @@ impl Canvas {
     }
 
     /// Captures the current content of the canvas as a gdk::Texture
-    pub fn current_content_as_texture(&self, size: na::Vector2<f64>) -> Option<gdk::Texture> {
+    pub fn current_content_as_texture(&self) -> Option<gdk::Texture> {
+        let priv_ = imp::Canvas::from_instance(self);
         let snapshot = Snapshot::new();
-        self.preview().snapshot(
-            snapshot.dynamic_cast_ref::<gdk::Snapshot>().unwrap(),
-            size[0],
-            size[1],
-        );
+        let bounds = self.content_bounds();
 
-        if let Some(node) = snapshot.to_node() {
-            render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, self.bounds())
-                .unwrap_or_else(|e| {
-                    log::error!("{}", e);
-                    None
-                })
+        self.selection_modifier().set_visible(false);
+
+        priv_.snapshot(self, &snapshot);
+
+        let texture = if let Some(node) = snapshot.to_node() {
+            let texture =
+                render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, Some(bounds))
+                    .unwrap_or_else(|e| {
+                        log::error!("{}", e);
+                        None
+                    });
+            //log::debug!("saving texture");
+            //texture.as_ref().unwrap().save_to_png("./tests/texture.png");
+            texture
         } else {
             None
-        }
+        };
+
+        self.selection_modifier().set_visible(true);
+
+        texture
     }
 
     /// Process the beginning of a stroke drawing
     fn processing_draw_begin(
         &self,
-        appwindow: &RnoteAppWindow,
+        _appwindow: &RnoteAppWindow,
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
-        let scalefactor = self.scalefactor();
+        let zoom = self.zoom();
 
         self.set_unsaved_changes(true);
         self.set_empty(false);
         self.sheet().strokes_state().borrow_mut().deselect();
-        appwindow.selection_modifier().set_visible(false);
+        self.selection_modifier().set_visible(false);
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
                 self.set_cursor(Some(&self.motion_cursor()));
 
                 let filter_bounds = p2d::bounding_volume::AABB::new(
+                    na::point![-Self::INPUT_OVERSHOOT, -Self::INPUT_OVERSHOOT],
                     na::point![
-                        priv_.sheet.x() as f64 - Self::INPUT_OVERSHOOT,
-                        priv_.sheet.y() as f64 - Self::INPUT_OVERSHOOT
-                    ],
-                    na::point![
-                        (priv_.sheet.x() + priv_.sheet.width()) as f64 + Self::INPUT_OVERSHOOT,
-                        (priv_.sheet.y() + priv_.sheet.height()) as f64 + Self::INPUT_OVERSHOOT
+                        (priv_.sheet.width()) as f64 + Self::INPUT_OVERSHOOT,
+                        (priv_.sheet.height()) as f64 + Self::INPUT_OVERSHOOT
                     ],
                 );
                 input::filter_mapped_inputdata(filter_bounds, data_entries);
@@ -926,10 +1192,10 @@ impl Canvas {
                     self.pens().borrow_mut().selector.set_shown(true);
 
                     // update the rendernode of the current stroke
-                    self.pens().borrow_mut().selector.update_rendernode(
-                        scalefactor,
-                        &self.sheet().strokes_state().borrow().renderer,
-                    );
+                    self.pens()
+                        .borrow_mut()
+                        .selector
+                        .update_rendernode(zoom, &self.sheet().strokes_state().borrow().renderer);
                 }
             }
             PenStyle::Unkown => {}
@@ -941,23 +1207,20 @@ impl Canvas {
     /// Process the motion of a strokes drawing
     fn processing_draw_motion(
         &self,
-        appwindow: &RnoteAppWindow,
+        _appwindow: &RnoteAppWindow,
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
-        let scalefactor = self.scalefactor();
+        let zoom = self.zoom();
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
                 let filter_bounds = p2d::bounding_volume::AABB::new(
+                    na::point![-Self::INPUT_OVERSHOOT, -Self::INPUT_OVERSHOOT],
                     na::point![
-                        priv_.sheet.x() as f64 - Self::INPUT_OVERSHOOT,
-                        priv_.sheet.y() as f64 - Self::INPUT_OVERSHOOT
-                    ],
-                    na::point![
-                        (priv_.sheet.x() + priv_.sheet.width()) as f64 + Self::INPUT_OVERSHOOT,
-                        (priv_.sheet.y() + priv_.sheet.height()) as f64 + Self::INPUT_OVERSHOOT
+                        (priv_.sheet.width()) as f64 + Self::INPUT_OVERSHOOT,
+                        (priv_.sheet.height()) as f64 + Self::INPUT_OVERSHOOT
                     ],
                 );
                 input::filter_mapped_inputdata(filter_bounds, data_entries);
@@ -972,13 +1235,6 @@ impl Canvas {
                 }
             }
             PenStyle::Eraser => {
-                let canvas_scroller_viewport_descaled =
-                    if let Some(viewport) = appwindow.canvas_scroller_viewport() {
-                        Some(geometry::aabb_scale(viewport, 1.0 / scalefactor))
-                    } else {
-                        None
-                    };
-
                 if let Some(inputdata) = data_entries.pop_back() {
                     self.pens().borrow_mut().eraser.current_input = Some(inputdata);
 
@@ -987,7 +1243,7 @@ impl Canvas {
                         .borrow_mut()
                         .trash_colliding_strokes(
                             &self.pens().borrow().eraser,
-                            canvas_scroller_viewport_descaled,
+                            Some(self.viewport_in_sheet_coords()),
                         );
                     if self.sheet().resize_endless() {
                         self.regenerate_background(false, false);
@@ -1001,10 +1257,10 @@ impl Canvas {
                         .borrow_mut()
                         .selector
                         .push_elem(inputdata.clone());
-                    self.pens().borrow_mut().selector.update_rendernode(
-                        scalefactor,
-                        &self.sheet().strokes_state().borrow().renderer,
-                    );
+                    self.pens()
+                        .borrow_mut()
+                        .selector
+                        .update_rendernode(zoom, &self.sheet().strokes_state().borrow().renderer);
                     self.queue_draw();
                 }
             }
@@ -1018,8 +1274,6 @@ impl Canvas {
         appwindow: &RnoteAppWindow,
         _data_entries: &mut VecDeque<InputData>,
     ) {
-        let scalefactor = self.scalefactor();
-
         self.set_cursor(Some(&self.cursor()));
 
         appwindow
@@ -1038,23 +1292,16 @@ impl Canvas {
 
         match self.current_pen().get() {
             PenStyle::Selector => {
-                let canvas_scroller_viewport_descaled =
-                    if let Some(viewport) = appwindow.canvas_scroller_viewport() {
-                        Some(geometry::aabb_scale(viewport, 1.0 / scalefactor))
-                    } else {
-                        None
-                    };
-
                 self.sheet()
                     .strokes_state()
                     .borrow_mut()
                     .update_selection_for_selector(
                         &self.pens().borrow().selector,
-                        canvas_scroller_viewport_descaled,
+                        Some(self.viewport_in_sheet_coords()),
                     );
 
                 // Show the selection modifier if selection bounds are some
-                appwindow.selection_modifier().set_visible(
+                self.selection_modifier().set_visible(
                     self.sheet()
                         .strokes_state()
                         .borrow()
@@ -1125,7 +1372,7 @@ pub mod debug {
     pub fn draw_bounds(
         bounds: p2d::bounding_volume::AABB,
         color: gdk::RGBA,
-        scalefactor: f64,
+        zoom: f64,
         snapshot: &Snapshot,
     ) {
         let bounds = graphene::Rect::new(
@@ -1137,7 +1384,7 @@ pub mod debug {
 
         let border_width = 1.5;
         let rounded_rect = gsk::RoundedRect::new(
-            bounds.scale(scalefactor as f32, scalefactor as f32),
+            bounds.scale(zoom as f32, zoom as f32),
             graphene::Size::zero(),
             graphene::Size::zero(),
             graphene::Size::zero(),
@@ -1151,17 +1398,12 @@ pub mod debug {
         )
     }
 
-    pub fn draw_pos(
-        pos: na::Vector2<f64>,
-        color: gdk::RGBA,
-        scalefactor: f64,
-        snapshot: &Snapshot,
-    ) {
+    pub fn draw_pos(pos: na::Vector2<f64>, color: gdk::RGBA, zoom: f64, snapshot: &Snapshot) {
         snapshot.append_color(
             &color,
             &graphene::Rect::new(
-                (scalefactor * pos[0] - 1.0) as f32,
-                (scalefactor * pos[1] - 1.0) as f32,
+                (zoom * pos[0] - 1.0) as f32,
+                (zoom * pos[1] - 1.0) as f32,
                 2.0,
                 2.0,
             ),

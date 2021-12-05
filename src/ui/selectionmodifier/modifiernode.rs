@@ -1,7 +1,7 @@
 mod imp {
-    use gtk4::PropagationPhase;
+    use gtk4::{PropagationPhase, EventSequenceState};
     use gtk4::{
-        glib, glib::clone, glib::subclass::*, prelude::*, subclass::prelude::*, BinLayout,
+        gdk, glib, glib::clone, glib::subclass::*, prelude::*, subclass::prelude::*, BinLayout,
         GestureDrag, Image,
     };
     use once_cell::sync::Lazy;
@@ -42,19 +42,21 @@ mod imp {
             self.image.set_parent(obj);
 
             obj.set_css_classes(&["modifiernode"]);
+            obj.set_cursor(gdk::Cursor::from_name("default", None).as_ref());
 
             let drag_gesture = GestureDrag::builder()
                 .name("modifiernode_drag_gesture")
                 .propagation_phase(PropagationPhase::Capture)
                 .build();
 
-            drag_gesture.connect_drag_begin(clone!(@weak obj => move |_gesture_drag, x, y| {
+            drag_gesture.connect_drag_begin(clone!(@weak obj => move |drag_gesture, x, y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
                 obj.emit_by_name("offset-begin", &[&utils::BoxedPos {x, y} ]).unwrap();
             }));
-            drag_gesture.connect_drag_update(clone!(@weak obj => move |_gesture_drag, x, y| {
+            drag_gesture.connect_drag_update(clone!(@weak obj => move |_drag_gesture, x, y| {
                 obj.emit_by_name("offset-update", &[&utils::BoxedPos {x, y} ]).unwrap();
             }));
-            drag_gesture.connect_drag_end(clone!(@weak obj => move |_gesture_drag, x, y| {
+            drag_gesture.connect_drag_end(clone!(@weak obj => move |_drag_gesture, x, y| {
                 obj.emit_by_name("offset-end", &[&utils::BoxedPos {x, y} ]).unwrap();
             }));
 

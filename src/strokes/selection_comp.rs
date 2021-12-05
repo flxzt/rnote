@@ -316,11 +316,27 @@ impl StrokesState {
     pub fn gen_svg_from_strokes(&self) -> Result<String, anyhow::Error> {
         let mut data = String::new();
 
-        for stroke in self.strokes.values() {
-            let data_entry = stroke.gen_svg_data(na::vector![0.0, 0.0])?;
-
-            data.push_str(&data_entry.as_str());
-        }
+        self.render_components
+            .iter()
+            .filter_map(|(key, render_comp)| {
+                if render_comp.render && !self.trashed(key).unwrap_or_else(|| true) {
+                    Some(key)
+                } else {
+                    None
+                }
+            })
+            .for_each(|key| {
+                if let Some(stroke) = self.strokes.get(key) {
+                    match stroke.gen_svg_data(na::vector![0.0, 0.0]) {
+                        Ok(data_entry) => {
+                            data.push_str(&data_entry.as_str());
+                        }
+                        Err(e) => {
+                            log::error!("gen_svg_data() failed for stroke with key {:?} in gen_svg_from_strokes(), {}", key, e);
+                        }
+                    }
+                }
+            });
 
         Ok(data)
     }

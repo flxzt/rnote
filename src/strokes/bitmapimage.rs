@@ -108,12 +108,12 @@ impl StrokeBehaviour for BitmapImage {
 
     fn gen_rendernode(
         &self,
-        scalefactor: f64,
+        zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         Ok(Some(renderer.gen_rendernode(
             self.bounds,
-            scalefactor,
+            zoom,
             compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
         )?))
     }
@@ -171,13 +171,13 @@ impl BitmapImage {
         for i in 0..doc.n_pages() {
             if let Some(page) = doc.page(i) {
                 let intrinsic_size = page.size();
-                let (width, height, scalefactor) = if let Some(page_width) = page_width {
-                    let scalefactor = f64::from(page_width) / intrinsic_size.0;
+                let (width, height, zoom) = if let Some(page_width) = page_width {
+                    let zoom = f64::from(page_width) / intrinsic_size.0;
 
                     (
                         page_width,
-                        (intrinsic_size.1 * scalefactor).round() as i32,
-                        scalefactor,
+                        (intrinsic_size.1 * zoom).round() as i32,
+                        zoom,
                     )
                 } else {
                     (
@@ -202,7 +202,7 @@ impl BitmapImage {
 
                 {
                     let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
-                    cx.scale(scalefactor, scalefactor);
+                    cx.scale(zoom, zoom);
 
                     // Set margin to white
                     cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
@@ -210,7 +210,7 @@ impl BitmapImage {
 
                     page.render(&cx);
 
-                    cx.scale(1.0 / scalefactor, 1.0 / scalefactor);
+                    cx.scale(1.0 / zoom, 1.0 / zoom);
 
                     // Draw outline around page
                     cx.set_source_rgba(0.7, 0.5, 0.5, 1.0);

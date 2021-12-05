@@ -53,7 +53,7 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Ok => {
                     appwindow.canvas().sheet().strokes_state().borrow_mut().clear();
-                    appwindow.selection_modifier().set_visible(false);
+                    appwindow.canvas().selection_modifier().set_visible(false);
                     appwindow.canvas().set_unsaved_changes(false);
                     appwindow.canvas().set_empty(true);
                     appwindow.canvas().regenerate_content(true, true);
@@ -83,7 +83,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
 
                 appwindow.canvas().sheet().strokes_state().borrow_mut().clear();
-                appwindow.selection_modifier().set_visible(false);
+                appwindow.canvas().selection_modifier().set_visible(false);
                 appwindow.canvas().set_unsaved_changes(false);
                 appwindow.canvas().set_empty(true);
                 appwindow.canvas().regenerate_content(true, true);
@@ -271,8 +271,6 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                         } else {
                             appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
                             appwindow.canvas().set_unsaved_changes(false);
-                            appwindow.canvas_progress_bar().set_visible(true);
-                            appwindow.canvas_progress_bar().pulse();
                         }
                     },
                     None => { log::error!("Can't save file as. No file selected.")},

@@ -78,7 +78,6 @@ impl Color {
             | ((((self.g * 255.0).round() as u32) & 0xff) << 16)
             | ((((self.b * 255.0).round() as u32) & 0xff) << 8)
             | ((((self.a * 255.0).round() as u32) & 0xff) << 0);
-        //println!("to_u32: {:x?}", value);
 
         value
     }
@@ -106,7 +105,6 @@ impl From<gdk::RGBA> for Color {
 // u32 encoded as RGBA
 impl From<u32> for Color {
     fn from(value: u32) -> Self {
-        //println!("from u32: {:x?}", value);
         Self {
             r: ((value >> 24) & 0xff) as f32 / 255.0,
             g: ((value >> 16) & 0xff) as f32 / 255.0,

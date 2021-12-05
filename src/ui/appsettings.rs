@@ -3,7 +3,7 @@ use std::path;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{app::RnoteApp, render, sheet::background::PatternStyle, utils};
 
-use gtk4::{gio, glib, prelude::*};
+use gtk4::{gio, glib, glib::clone, prelude::*};
 use tuple_conv::RepeatedTuple;
 
 pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::BoolError> {
@@ -499,6 +499,21 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .bind("touch-drawing", &appwindow.canvas(), "touch-drawing")
         .flags(gio::SettingsBindFlags::DEFAULT)
         .build();
+    appwindow.app_settings().connect_changed(
+        Some("touch-drawing"),
+        clone!(@weak appwindow => move |appsettings, _key_str| {
+            let touch_drawing = appsettings.boolean("touch-drawing");
+
+            appwindow.canvas_scroller().set_overlay_scrolling(!touch_drawing);
+
+            // Changing PolicyType to Automatic is not behaving as expected, not sure why
+/*             if touch_drawing {
+                appwindow.canvas_scroller().set_policy(PolicyType::Always, PolicyType::Always);
+            } else {
+                appwindow.canvas_scroller().set_policy(PolicyType::Automatic, PolicyType::Automatic);
+            } */
+        }),
+    );
 
     // Format borders
     appwindow

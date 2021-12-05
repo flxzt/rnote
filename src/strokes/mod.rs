@@ -50,7 +50,7 @@ pub struct StrokesState {
     /// value is equal chrono_component of the newest inserted or modified stroke.
     chrono_counter: u32,
     #[serde(skip)]
-    pub scalefactor: f64, // changes with the canvas scalefactor
+    pub zoom: f64, // changes with the canvas zoom
     #[serde(skip)]
     pub renderer: render::Renderer,
     pub selection_bounds: Option<p2d::bounding_volume::AABB>,
@@ -66,7 +66,7 @@ impl Default for StrokesState {
             render_components: SecondaryMap::new(),
 
             chrono_counter: 0,
-            scalefactor: 1.0,
+            zoom: 1.0,
             renderer: render::Renderer::default(),
             selection_bounds: None,
         }

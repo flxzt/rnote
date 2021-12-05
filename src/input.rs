@@ -5,7 +5,7 @@ use crate::strokes::strokestyle::InputData;
 
 /// Map Stylus input to the position on a sheet
 pub fn map_inputdata(
-    scalefactor: f64,
+    zoom: f64,
     data_entries: &mut VecDeque<InputData>,
     offset: na::Vector2<f64>,
 ) {
@@ -13,7 +13,7 @@ pub fn map_inputdata(
         .iter()
         .map(|inputdata| {
             InputData::new(
-                (inputdata.pos() + offset).scale(1.0 / scalefactor),
+                (inputdata.pos() + offset).scale(1.0 / zoom),
                 inputdata.pressure(),
             )
         })
@@ -54,7 +54,7 @@ pub fn retreive_stylus_inputdata(
                 let x = axes[1];
                 let y = axes[2];
                 let pressure = axes[5];
-                //println!("{:?}", axes);
+                //log::debug!("{:?}", axes);
                 data_entries.push_back(InputData::new(na::vector![x, y], pressure));
             }
         }

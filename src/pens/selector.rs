@@ -70,15 +70,15 @@ impl Selector {
         self.path.clear();
     }
 
-    pub fn update_rendernode(&mut self, scalefactor: f64, renderer: &render::Renderer) {
+    pub fn update_rendernode(&mut self, zoom: f64, renderer: &render::Renderer) {
         self.rendernode = self
-            .gen_rendernode(scalefactor, renderer)
+            .gen_rendernode(zoom, renderer)
             .expect("failed to gen_rendernode() in update_rendernode() of selector");
     }
 
     pub fn gen_rendernode(
         &self,
-        scalefactor: f64,
+        zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<gsk::RenderNode, anyhow::Error> {
         if let Some(bounds) = self.bounds {
@@ -89,7 +89,7 @@ impl Selector {
                 true,
                 false,
             );
-            renderer.gen_rendernode(bounds, scalefactor, svg.as_str())
+            renderer.gen_rendernode(bounds, zoom, svg.as_str())
         } else {
             Ok(render::default_rendernode())
         }

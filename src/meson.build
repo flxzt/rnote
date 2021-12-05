@@ -59,6 +59,7 @@ rust_sources = files(
     'ui/develactions.rs',
     'ui/appmenu.rs',
     'ui/canvas.rs',
+    'ui/canvaslayout.rs',
     'ui/canvasmenu.rs',
     'ui/settingspanel.rs',
     'ui/mainheader.rs',

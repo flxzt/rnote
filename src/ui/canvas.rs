@@ -364,7 +364,6 @@ mod imp {
         // request_mode(), measure(), allocate() overrides happen in the CanvasLayout LayoutManager
 
         fn snapshot(&self, widget: &Self::Type, snapshot: &gtk4::Snapshot) {
-            let zoom = widget.zoom();
             let temporary_zoom = widget.temporary_zoom();
             let total_zoom = widget.total_zoom();
             let hadj = widget.hadjustment().unwrap();
@@ -397,6 +396,21 @@ mod imp {
                 &*self.texture_buffer.borrow(),
                 self.texture_buffer_pos.get(),
             ) {
+                snapshot.save();
+
+                // From here in scaled sheet coordinate space
+                snapshot.translate(&graphene::Point::new(
+                    (sheet_margin * total_zoom) as f32,
+                    (sheet_margin * total_zoom) as f32,
+                ));
+
+                if self.sheet.format_borders() {
+                    self.sheet
+                        .format()
+                        .draw(self.sheet.bounds(), snapshot, total_zoom);
+                }
+                snapshot.restore();
+
                 let zoomed_texture_bounds =
                     geometry::aabb_translate(widget.content_bounds(), pos * temporary_zoom);
 
@@ -407,17 +421,17 @@ mod imp {
             } else {
                 // From here in scaled sheet coordinate space
                 snapshot.translate(&graphene::Point::new(
-                    (sheet_margin * zoom) as f32,
-                    (sheet_margin * zoom) as f32,
+                    (sheet_margin * total_zoom) as f32,
+                    (sheet_margin * total_zoom) as f32,
                 ));
 
                 // Clip sheet and stroke drawing to sheet bounds
                 snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
                     widget.sheet().bounds(),
-                    zoom,
+                    total_zoom,
                 )));
 
-                self.sheet.draw(zoom, snapshot);
+                self.sheet.draw(total_zoom, snapshot);
 
                 self.sheet
                     .strokes_state()
@@ -429,16 +443,16 @@ mod imp {
                 self.sheet
                     .strokes_state()
                     .borrow()
-                    .draw_selection(zoom, snapshot);
+                    .draw_selection(total_zoom, snapshot);
 
                 self.pens
                     .borrow()
-                    .draw(self.current_pen.get(), snapshot, zoom);
+                    .draw(self.current_pen.get(), snapshot, total_zoom);
 
                 if self.sheet.format_borders() {
                     self.sheet
                         .format()
-                        .draw(self.sheet.bounds(), snapshot, zoom);
+                        .draw(self.sheet.bounds(), snapshot, total_zoom);
                 }
 
                 if self.visual_debug.get() {

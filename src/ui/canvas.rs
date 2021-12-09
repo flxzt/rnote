@@ -128,7 +128,7 @@ mod imp {
         type Interfaces = (Scrollable,);
 
         fn class_init(klass: &mut Self::Class) {
-            klass.set_accessible_role(AccessibleRole::Img);
+            klass.set_accessible_role(AccessibleRole::Widget);
             klass.set_layout_manager_type::<CanvasLayout>();
         }
 

@@ -286,7 +286,7 @@ use adw::prelude::*;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
     EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, Inhibit,
-    PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
+    PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton, EventSequenceState,
 };
 
 use crate::{
@@ -638,23 +638,25 @@ impl RnoteAppWindow {
             @strong zoomgesture_canvasscroller_start_pos,
             @strong zoomgesture_bbcenter_start,
             @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
-            scale_begin.set(appwindow.canvas().zoom());
-            new_zoom.set(appwindow.canvas().zoom());
+                canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
-            prev_zoom.set(1.0);
-            appwindow.canvas().zoom_temporarily_to(appwindow.canvas().zoom());
+                scale_begin.set(appwindow.canvas().zoom());
+                new_zoom.set(appwindow.canvas().zoom());
 
-            zoomgesture_canvasscroller_start_pos.set(
-                (
-                    appwindow.canvas().hadjustment().unwrap().value(),
-                    appwindow.canvas().vadjustment().unwrap().value()
-                )
-            );
-            if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
-                zoomgesture_bbcenter_start.set(Some(
-                    bbcenter
-                ));
-            }
+                prev_zoom.set(1.0);
+                appwindow.canvas().zoom_temporarily_to(appwindow.canvas().zoom());
+
+                zoomgesture_canvasscroller_start_pos.set(
+                    (
+                        appwindow.canvas().hadjustment().unwrap().value(),
+                        appwindow.canvas().vadjustment().unwrap().value()
+                    )
+                );
+                if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
+                    zoomgesture_bbcenter_start.set(Some(
+                        bbcenter
+                    ));
+                }
         }));
 
         canvas_zoom_gesture.connect_scale_changed(
@@ -693,13 +695,17 @@ impl RnoteAppWindow {
         );
 
         canvas_zoom_gesture.connect_cancel(
-            clone!(@strong scale_begin, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+            clone!(@strong scale_begin, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
+                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
+
                 zoomgesture_bbcenter_start.set(None);
             }),
         );
 
         canvas_zoom_gesture.connect_end(
-            clone!(@strong scale_begin, @strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_gesture_zoom, _eventsequence| {
+            clone!(@strong scale_begin, @strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
+                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
+
                 zoomgesture_bbcenter_start.set(None);
                 appwindow.canvas().scale_to(new_zoom.get());
             }),

@@ -3,7 +3,6 @@ pub mod appmenu;
 pub mod appsettings;
 pub mod appwindow;
 pub mod canvas;
-pub mod canvaslayout;
 pub mod canvasmenu;
 pub mod colorpicker;
 pub mod develactions;

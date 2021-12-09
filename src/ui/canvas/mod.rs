@@ -1,3 +1,5 @@
+pub mod canvaslayout;
+
 mod imp {
     use std::cell::{Cell, RefCell};
     use std::rc::Rc;
@@ -5,7 +7,7 @@ mod imp {
     use super::debug;
     use crate::pens::{PenStyle, Pens};
     use crate::sheet::Sheet;
-    use crate::ui::canvaslayout::CanvasLayout;
+    use super::canvaslayout::CanvasLayout;
     use crate::ui::selectionmodifier::SelectionModifier;
     use crate::{config, geometry};
 

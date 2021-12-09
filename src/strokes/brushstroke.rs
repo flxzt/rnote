@@ -177,14 +177,12 @@ impl StrokeBehaviour for BrushStroke {
             }
         };
 
-        Ok(renderer
-            .gen_rendernode_par(zoom, &svgs)
-            .map_err(|e| {
-                anyhow::anyhow!(
-                    "gen_rendernode_par() failed in gen_rendernode() for brushstroke, {}",
-                    e
-                )
-            })?)
+        Ok(renderer.gen_rendernode_par(zoom, &svgs).map_err(|e| {
+            anyhow::anyhow!(
+                "gen_rendernode_par() failed in gen_rendernode() for brushstroke, {}",
+                e
+            )
+        })?)
     }
 }
 

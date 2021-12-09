@@ -1,9 +1,9 @@
 mod imp {
-    use gtk4::{PropagationPhase, EventSequenceState};
     use gtk4::{
         gdk, glib, glib::clone, glib::subclass::*, prelude::*, subclass::prelude::*, BinLayout,
         GestureDrag, Image,
     };
+    use gtk4::{EventSequenceState, PropagationPhase};
     use once_cell::sync::Lazy;
 
     use crate::utils;

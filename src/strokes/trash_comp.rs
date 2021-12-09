@@ -205,7 +205,7 @@ impl StrokesState {
                     }
                     StrokeStyle::VectorImage(_vectorimage) => {
                         // Ignore VectorImage for now
-/*                         if eraser_bounds.intersects(&vectorimage.bounds) {
+                        /*                         if eraser_bounds.intersects(&vectorimage.bounds) {
                             if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                 trash_comp.trashed = true;
 
@@ -220,7 +220,7 @@ impl StrokesState {
                     }
                     StrokeStyle::BitmapImage(_bitmapimage) => {
                         // Ignore BitmapImage for now
-/*                         if eraser_bounds.intersects(&bitmapimage.bounds) {
+                        /*                         if eraser_bounds.intersects(&bitmapimage.bounds) {
                             if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                 trash_comp.trashed = true;
 

@@ -4,11 +4,7 @@ use std::collections::VecDeque;
 use crate::strokes::strokestyle::InputData;
 
 /// Map Stylus input to the position on a sheet
-pub fn map_inputdata(
-    zoom: f64,
-    data_entries: &mut VecDeque<InputData>,
-    offset: na::Vector2<f64>,
-) {
+pub fn map_inputdata(zoom: f64, data_entries: &mut VecDeque<InputData>, offset: na::Vector2<f64>) {
     *data_entries = data_entries
         .iter()
         .map(|inputdata| {

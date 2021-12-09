@@ -393,12 +393,7 @@ impl Format {
         self.set_orientation(format.orientation());
     }
 
-    pub fn draw(
-        &self,
-        sheet_bounds: p2d::bounding_volume::AABB,
-        snapshot: &Snapshot,
-        zoom: f64,
-    ) {
+    pub fn draw(&self, sheet_bounds: p2d::bounding_volume::AABB, snapshot: &Snapshot, zoom: f64) {
         let border_radius = graphene::Size::new(0.0, 0.0);
         let border_width = 2.0;
 

@@ -174,11 +174,7 @@ impl BitmapImage {
                 let (width, height, zoom) = if let Some(page_width) = page_width {
                     let zoom = f64::from(page_width) / intrinsic_size.0;
 
-                    (
-                        page_width,
-                        (intrinsic_size.1 * zoom).round() as i32,
-                        zoom,
-                    )
+                    (page_width, (intrinsic_size.1 * zoom).round() as i32, zoom)
                 } else {
                     (
                         intrinsic_size.0.round() as i32,

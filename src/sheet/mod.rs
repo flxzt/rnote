@@ -554,7 +554,6 @@ impl Sheet {
     }
 
     pub fn gen_svg(&self) -> Result<String, anyhow::Error> {
-
         let sheet_bounds = p2d::bounding_volume::AABB::new(
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],

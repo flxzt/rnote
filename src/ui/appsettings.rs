@@ -502,17 +502,17 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     appwindow.app_settings().connect_changed(
         Some("touch-drawing"),
         clone!(@weak appwindow => move |appsettings, _key_str| {
-            let touch_drawing = appsettings.boolean("touch-drawing");
+                    let touch_drawing = appsettings.boolean("touch-drawing");
 
-            appwindow.canvas_scroller().set_overlay_scrolling(!touch_drawing);
+                    appwindow.canvas_scroller().set_overlay_scrolling(!touch_drawing);
 
-            // Changing PolicyType to Automatic is not behaving as expected, not sure why
-/*             if touch_drawing {
-                appwindow.canvas_scroller().set_policy(PolicyType::Always, PolicyType::Always);
-            } else {
-                appwindow.canvas_scroller().set_policy(PolicyType::Automatic, PolicyType::Automatic);
-            } */
-        }),
+                    // Changing PolicyType to Automatic is not behaving as expected, not sure why
+        /*             if touch_drawing {
+                        appwindow.canvas_scroller().set_policy(PolicyType::Always, PolicyType::Always);
+                    } else {
+                        appwindow.canvas_scroller().set_policy(PolicyType::Automatic, PolicyType::Automatic);
+                    } */
+                }),
     );
 
     // Format borders

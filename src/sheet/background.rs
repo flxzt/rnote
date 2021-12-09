@@ -237,10 +237,7 @@ impl Background {
         sheet_bounds: p2d::bounding_volume::AABB,
         force_regenerate: bool,
     ) -> Result<(), anyhow::Error> {
-        if force_regenerate
-            || sheet_bounds != self.current_bounds
-            || zoom != self.current_zoom
-        {
+        if force_regenerate || sheet_bounds != self.current_bounds || zoom != self.current_zoom {
             match self.gen_rendernode(zoom, sheet_bounds) {
                 Ok(Some(new_rendernode)) => {
                     self.current_zoom = zoom;

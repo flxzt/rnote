@@ -63,6 +63,12 @@ mod imp {
             obj.add_controller(&drag_gesture);
         }
 
+        fn dispose(&self, obj: &Self::Type) {
+            while let Some(child) = obj.first_child() {
+                child.unparent();
+            }
+        }
+
         fn signals() -> &'static [glib::subclass::Signal] {
             static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
                 vec![

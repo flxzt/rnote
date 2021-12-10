@@ -50,18 +50,14 @@ mod imp {
                     * total_zoom)
                     .round() as i32;
 
-                let minimum_height = natural_height;
-
-                (minimum_height, natural_height, -1, -1)
+                (0, natural_height, -1, -1)
             } else {
                 let natural_width = ((2.0 * canvas.sheet_margin()
                     + f64::from(canvas.sheet().width()))
                     * total_zoom)
                     .round() as i32;
 
-                let minimum_width = natural_width;
-
-                (minimum_width, natural_width, -1, -1)
+                (0, natural_width, -1, -1)
             }
         }
 

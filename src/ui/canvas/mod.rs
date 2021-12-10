@@ -1099,7 +1099,7 @@ impl Canvas {
 
     /// regenerating the background rendernodes.
     /// use force_regenerate to force regeneration of the texture_cache of the background (for example when changing the background pattern)
-    pub fn regenerate_background(&self, force_regenerate: bool, force_redraw: bool) {
+    pub fn regenerate_background(&self, force_regenerate: bool, redraw: bool) {
         match self.sheet().background().borrow_mut().update_rendernode(
             self.zoom(),
             self.sheet().bounds(),
@@ -1110,7 +1110,7 @@ impl Canvas {
             }
             Ok(_) => {}
         }
-        if force_redraw {
+        if redraw {
             self.queue_resize();
             self.queue_draw();
         }

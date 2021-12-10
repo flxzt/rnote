@@ -109,11 +109,11 @@ impl StrokesState {
         self.deselect_all_strokes();
 
         selected.iter().for_each(|&key| {
-            let key = self.insert_stroke(self.strokes.get(key).unwrap().clone());
-            self.set_selected(key, true);
+            let new_key = self.insert_stroke(self.strokes.get(key).unwrap().clone());
+            self.set_selected(new_key, true);
 
             // Offsetting the new selected stroke to make the duplication apparent to the user
-            let new_stroke = self.strokes.get_mut(key).unwrap();
+            let new_stroke = self.strokes.get_mut(new_key).unwrap();
             new_stroke.translate(offset);
         });
 

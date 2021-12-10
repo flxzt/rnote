@@ -651,7 +651,7 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn import_file_as_pdf(
+    pub fn import_file_as_pdf_bitmap(
         &self,
         pos: na::Vector2<f64>,
         file: &gio::File,
@@ -672,6 +672,38 @@ impl Sheet {
                 .strokes_state
                 .borrow_mut()
                 .insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
+
+            priv_
+                .strokes_state
+                .borrow_mut()
+                .set_selected(inserted, true);
+        }
+        self.resize_to_format();
+
+        Ok(())
+    }
+
+    pub fn import_file_as_pdf_vector(
+        &self,
+        pos: na::Vector2<f64>,
+        file: &gio::File,
+    ) -> Result<(), anyhow::Error> {
+        let priv_ = imp::Sheet::from_instance(self);
+
+        priv_.strokes_state.borrow_mut().deselect_all_strokes();
+
+        let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
+        let pages = VectorImage::import_from_pdf_bytes(
+            &file_bytes,
+            pos,
+            Some(self.width() - 2 * VectorImage::OFFSET_X_DEFAULT.round() as i32),
+        )?;
+
+        for page in pages {
+            let inserted = priv_
+                .strokes_state
+                .borrow_mut()
+                .insert_stroke(StrokeStyle::VectorImage(page));
 
             priv_
                 .strokes_state

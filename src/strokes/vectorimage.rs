@@ -1,5 +1,8 @@
+use std::path::Path;
+
 use crate::{compose, render};
 
+use anyhow::Context;
 use gtk4::gsk;
 use serde::{Deserialize, Serialize};
 
@@ -119,5 +122,80 @@ impl VectorImage {
         };
 
         Ok(vector_image)
+    }
+
+    pub fn import_from_pdf_bytes(
+        to_be_read: &[u8],
+        _pos: na::Vector2<f64>,
+        page_width: Option<i32>,
+    ) -> Result<Vec<Self>, anyhow::Error> {
+        let doc = poppler::Document::from_data(to_be_read, None)?;
+
+        let images = Vec::new();
+
+        for i in 0..doc.n_pages() {
+            if let Some(page) = doc.page(i) {
+                let intrinsic_size = page.size();
+                let (width, height, zoom) = if let Some(page_width) = page_width {
+                    let zoom = f64::from(page_width) / intrinsic_size.0;
+
+                    (f64::from(page_width), (intrinsic_size.1 * zoom), zoom)
+                } else {
+                    (intrinsic_size.0, intrinsic_size.1, 1.0)
+                };
+                /*
+                let x = pos[0];
+                let y = pos[1] + f64::from(i) * (height + Self::OFFSET_Y_DEFAULT / 2.0);
+
+                let bounds = p2d::bounding_volume::AABB::new(
+                    na::point![x, y],
+                    na::point![x + width, y + height],
+                ); */
+
+                let surface =
+                    cairo::SvgSurface::new(width, height, None::<&Path>).map_err(|e| {
+                        anyhow::anyhow!(
+                            "create SvgSurface with dimensions ({}, {}) failed, {}",
+                            width,
+                            height,
+                            e
+                        )
+                    })?;
+
+                {
+                    let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+                    cx.scale(zoom, zoom);
+
+                    // Set margin to white
+                    cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
+                    cx.paint()?;
+
+                    page.render(&cx);
+
+                    cx.scale(1.0 / zoom, 1.0 / zoom);
+
+                    // Draw outline around page
+                    cx.set_source_rgba(0.7, 0.5, 0.5, 1.0);
+
+                    let line_width = 1.0;
+                    cx.set_line_width(line_width);
+                    cx.rectangle(
+                        f64::from(0) + line_width / 2.0,
+                        f64::from(0) + line_width / 2.0,
+                        f64::from(width) - line_width,
+                        f64::from(height) - line_width,
+                    );
+                    cx.stroke()?;
+                }
+
+                /*                 images.push(Self::import_from_svg(
+                    &svg.into_owned(),
+                    na::vector![x, y],
+                    Some(bounds),
+                )?); */
+            }
+        }
+
+        Ok(images)
     }
 }

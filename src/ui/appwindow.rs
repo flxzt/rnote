@@ -714,6 +714,10 @@ impl RnoteAppWindow {
             }),
         );
 
+        // Gesture Grouping
+        canvas_mouse_drag_gesture.group_with(&canvas_touch_drag_gesture);
+        canvas_zoom_gesture.group_with(&canvas_touch_drag_gesture);
+
         // actions and settings AFTER widget callback declarations
         actions::setup_actions(self);
         actions::setup_accels(self);
@@ -791,7 +795,7 @@ impl RnoteAppWindow {
                 } else {
                     na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
                 };
-                self.canvas().sheet().import_file_as_pdf(pos, file)?;
+                self.canvas().sheet().import_file_as_pdf_bitmap(pos, file)?;
 
                 self.canvas().set_unsaved_changes(true);
                 self.mainheader().selector_toggle().set_active(true);
@@ -799,7 +803,7 @@ impl RnoteAppWindow {
 
                 self.canvas().set_unsaved_changes(true);
                 self.canvas().set_empty(false);
-                self.canvas().regenerate_content(true, true);
+                self.canvas().regenerate_content(false, true);
                 self.canvas().selection_modifier().set_visible(true);
             }
             utils::FileType::Folder => {

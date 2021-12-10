@@ -91,9 +91,7 @@ use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use gtk4::{EventSequenceState, GestureDrag, PropagationPhase};
 
 use crate::geometry;
-use crate::{
-    ui::appwindow::RnoteAppWindow, ui::selectionmodifier::modifiernode::ModifierNode, utils,
-};
+use crate::{ui::appwindow::RnoteAppWindow, ui::selectionmodifier::modifiernode::ModifierNode};
 
 glib::wrapper! {
     pub struct SelectionModifier(ObjectSubclass<imp::SelectionModifier>)
@@ -141,19 +139,24 @@ impl SelectionModifier {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::SelectionModifier::from_instance(self);
 
-        priv_
-            .resize_tl
-            .get()
-            .connect_local(
-                "offset-update",
-                false,
-                clone!(@weak self as obj, @weak appwindow  => @default-return None, move |args| {
+        let resize_tl_drag_gesture = GestureDrag::builder()
+            .name("resize_tl_drag_gesture")
+            .propagation_phase(PropagationPhase::Capture)
+            .build();
+        priv_.resize_tl.add_controller(&resize_tl_drag_gesture);
 
+        resize_tl_drag_gesture.connect_drag_begin(
+            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+            }),
+        );
+        resize_tl_drag_gesture
+            .connect_drag_update(
+                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
                         let zoom = appwindow.canvas().zoom();
-                        let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                        let offset = na::vector![offset.x.round() / zoom, offset.y.round() / zoom];
+                        let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -177,24 +180,26 @@ impl SelectionModifier {
                         obj.queue_resize();
                         appwindow.canvas().queue_draw();
                     }
-                    None
-                }),
-            )
-            .unwrap();
+                })
+            );
 
-        priv_
-            .resize_tr
-            .get()
-            .connect_local(
-                "offset-update",
-                false,
-                clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
+        let resize_tr_drag_gesture = GestureDrag::builder()
+            .name("resize_tr_drag_gesture")
+            .propagation_phase(PropagationPhase::Capture)
+            .build();
+        priv_.resize_tr.add_controller(&resize_tr_drag_gesture);
 
+        resize_tr_drag_gesture.connect_drag_begin(
+            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+            }),
+        );
+        resize_tr_drag_gesture.connect_drag_update(
+                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
                         let zoom = appwindow.canvas().zoom();
-                        let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                        let offset = na::vector![offset.x.round() / zoom, offset.y.round() / zoom];
+                        let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -218,24 +223,27 @@ impl SelectionModifier {
                         obj.queue_resize();
                         appwindow.canvas().queue_draw();
                     }
-                    None
                 }),
-            )
-            .unwrap();
+            );
 
-        priv_
-            .resize_bl
-            .get()
-            .connect_local(
-                "offset-update",
-                false,
-                clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
+        let resize_bl_drag_gesture = GestureDrag::builder()
+            .name("resize_bl_drag_gesture")
+            .propagation_phase(PropagationPhase::Capture)
+            .build();
+        priv_.resize_bl.add_controller(&resize_bl_drag_gesture);
+
+        resize_bl_drag_gesture.connect_drag_begin(
+            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+            }),
+        );
+        resize_bl_drag_gesture.connect_drag_update(
+                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
 
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
                         let zoom = appwindow.canvas().zoom();
-                        let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                        let offset = na::vector![offset.x.round() / zoom, offset.y.round() / zoom];
+                        let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -259,24 +267,26 @@ impl SelectionModifier {
                         obj.queue_resize();
                         appwindow.canvas().queue_draw();
                     }
-                    None
                 }),
-            )
-            .unwrap();
+            );
 
-        priv_
-            .resize_br
-            .get()
-            .connect_local(
-                "offset-update",
-                false,
-                clone!(@weak self as obj, @weak appwindow => @default-return None, move |args| {
+        let resize_br_drag_gesture = GestureDrag::builder()
+            .name("resize_br_drag_gesture")
+            .propagation_phase(PropagationPhase::Capture)
+            .build();
+        priv_.resize_br.add_controller(&resize_br_drag_gesture);
 
+        resize_br_drag_gesture.connect_drag_begin(
+            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+            }),
+        );
+        resize_br_drag_gesture.connect_drag_update(
+                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
                         let zoom = appwindow.canvas().zoom();
-                        let offset = args[1].get::<utils::BoxedPos>().unwrap();
-                        let offset = na::vector![offset.x.round() / zoom, offset.y.round() / zoom];
+                        let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -300,16 +310,15 @@ impl SelectionModifier {
                         obj.queue_resize();
                         appwindow.canvas().queue_draw();
                     }
-                    None
                 }),
-            )
-            .unwrap();
+            );
 
         let translate_drag_gesture = GestureDrag::builder()
             .name("translate_drag")
             .propagation_phase(PropagationPhase::Capture)
             .build();
         priv_.translate_node.add_controller(&translate_drag_gesture);
+
         translate_drag_gesture.connect_drag_begin(
             clone!(@weak self as obj, @weak appwindow => move |translate_drag_gesture, _x, _y| {
                 translate_drag_gesture.set_state(EventSequenceState::Claimed);
@@ -326,5 +335,11 @@ impl SelectionModifier {
                 appwindow.canvas().queue_draw();
             }),
         );
+
+        // Gesture Grouping
+        resize_tr_drag_gesture.group_with(&resize_tl_drag_gesture);
+        resize_bl_drag_gesture.group_with(&resize_tl_drag_gesture);
+        resize_br_drag_gesture.group_with(&resize_tl_drag_gesture);
+        translate_drag_gesture.group_with(&resize_tl_drag_gesture);
     }
 }

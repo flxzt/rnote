@@ -182,9 +182,9 @@ impl BitmapImage {
                         1.0,
                     )
                 };
-                let x = pos[0].round() as i32;
-                let y = pos[1].round() as i32
-                    + i * (height + (Self::OFFSET_Y_DEFAULT.round() / 2.0) as i32);
+                let x = pos[0];
+                let y = pos[1]
+                    + f64::from(i) * (f64::from(height) + Self::OFFSET_Y_DEFAULT.round() / 2.0);
 
                 let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                     .map_err(|e| {
@@ -224,10 +224,7 @@ impl BitmapImage {
                 let mut png_data: Vec<u8> = Vec::new();
                 surface.write_to_png(&mut png_data)?;
 
-                images.push(Self::import_from_image_bytes(
-                    &png_data,
-                    na::vector![f64::from(x), f64::from(y)],
-                )?);
+                images.push(Self::import_from_image_bytes(&png_data, na::vector![x, y])?);
             }
         }
 

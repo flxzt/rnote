@@ -1,12 +1,5 @@
 mod imp {
-    use gtk4::{
-        gdk, glib, glib::clone, glib::subclass::*, prelude::*, subclass::prelude::*, BinLayout,
-        GestureDrag, Image,
-    };
-    use gtk4::{EventSequenceState, PropagationPhase};
-    use once_cell::sync::Lazy;
-
-    use crate::utils;
+    use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, BinLayout, Image};
 
     #[derive(Debug)]
     pub struct ModifierNode {
@@ -38,73 +31,16 @@ mod imp {
     impl ObjectImpl for ModifierNode {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-
             self.image.set_parent(obj);
 
             obj.set_css_classes(&["modifiernode"]);
             obj.set_cursor(gdk::Cursor::from_name("default", None).as_ref());
-
-            let drag_gesture = GestureDrag::builder()
-                .name("modifiernode_drag_gesture")
-                .propagation_phase(PropagationPhase::Capture)
-                .build();
-
-            drag_gesture.connect_drag_begin(clone!(@weak obj => move |drag_gesture, x, y| {
-                drag_gesture.set_state(EventSequenceState::Claimed);
-                obj.emit_by_name("offset-begin", &[&utils::BoxedPos {x, y} ]).unwrap();
-            }));
-            drag_gesture.connect_drag_update(clone!(@weak obj => move |_drag_gesture, x, y| {
-                obj.emit_by_name("offset-update", &[&utils::BoxedPos {x, y} ]).unwrap();
-            }));
-            drag_gesture.connect_drag_end(clone!(@weak obj => move |_drag_gesture, x, y| {
-                obj.emit_by_name("offset-end", &[&utils::BoxedPos {x, y} ]).unwrap();
-            }));
-
-            obj.add_controller(&drag_gesture);
         }
 
         fn dispose(&self, obj: &Self::Type) {
             while let Some(child) = obj.first_child() {
                 child.unparent();
             }
-        }
-
-        fn signals() -> &'static [glib::subclass::Signal] {
-            static SIGNALS: Lazy<Vec<Signal>> = Lazy::new(|| {
-                vec![
-                    // sends absolute coordinates when offset begins
-                    Signal::builder(
-                        // Signal name
-                        "offset-begin",
-                        // Types of the values which will be sent to the signal handler
-                        &[utils::BoxedPos::static_type().into()],
-                        // Type of the value the signal handler sends back
-                        <()>::static_type().into(),
-                    )
-                    .build(),
-                    // sends relative coordinates to offset start
-                    Signal::builder(
-                        // Signal name
-                        "offset-update",
-                        // Types of the values which will be sent to the signal handler
-                        &[utils::BoxedPos::static_type().into()],
-                        // Type of the value the signal handler sends back
-                        <()>::static_type().into(),
-                    )
-                    .build(),
-                    // sends relative coordinates to offset start
-                    Signal::builder(
-                        // Signal name
-                        "offset-end",
-                        // Types of the values which will be sent to the signal handler
-                        &[utils::BoxedPos::static_type().into()],
-                        // Type of the value the signal handler sends back
-                        <()>::static_type().into(),
-                    )
-                    .build(),
-                ]
-            });
-            SIGNALS.as_ref()
         }
     }
     impl WidgetImpl for ModifierNode {}

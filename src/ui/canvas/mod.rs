@@ -72,6 +72,10 @@ mod imp {
                 .propagation_phase(PropagationPhase::Bubble)
                 .build();
 
+            // Gesture grouping
+            mouse_drawing_gesture.group_with(&stylus_drawing_gesture);
+            touch_drawing_gesture.group_with(&stylus_drawing_gesture);
+
             Self {
                 pens: Rc::new(RefCell::new(Pens::default())),
                 current_pen: Rc::new(Cell::new(PenStyle::default())),

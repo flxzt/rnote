@@ -27,8 +27,7 @@ nalgebra-glm = { version = "0.15"}
 parry2d-f64 = { version = "0.7", features = ["serde-serialize"] }
 svg = "0.10.0"
 gtk4 = {version = "0.3", features = ["v4_4"]}
-adw = {version = "0.1.0-alpha-6", package="libadwaita"}
-libadwaita-sys = "0.1.0-alpha-6"
+adw = {version = "0.1.0-beta-1", package="libadwaita"}
 poppler-rs = "0.18"
 once_cell = "1.8"
 base64 = "0.13"

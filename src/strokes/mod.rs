@@ -10,15 +10,6 @@ pub mod render_comp;
 pub mod selection_comp;
 pub mod trash_comp;
 
-/*
-Conventions:
-Coordinates in 2d space: origin is thought of in top-left corner of the screen.
-Vectors / Matrices in 2D space:
-    Vector2: first element is the x-axis, second element is the y-axis
-    Matrix2: representing bounds / a rectangle, the coordinate (0,0) is the x-axis of the upper-left corner, (0,1) is the y-axis of the upper-left corner,
-        (1,0) is the x-axis of the bottom-right corner, (1,1) is the y-axis of the bottom-right corner.
-*/
-
 use crate::{pens::PenStyle, pens::Pens, render};
 use chrono_comp::ChronoComponent;
 use render_comp::RenderComponent;
@@ -29,7 +20,6 @@ use self::strokestyle::{Element, StrokeBehaviour, StrokeStyle};
 use self::{brushstroke::BrushStroke, markerstroke::MarkerStroke, shapestroke::ShapeStroke};
 
 use p2d::bounding_volume::BoundingVolume;
-use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
@@ -78,7 +68,6 @@ impl StrokesState {
         Self::default()
     }
 
-    // returns true if resizing is needed
     pub fn new_stroke(
         &mut self,
         element: Element,
@@ -104,7 +93,10 @@ impl StrokesState {
 
                 Some(self.insert_stroke(shapestroke))
             }
-            PenStyle::Eraser | PenStyle::Selector | PenStyle::Unkown => None,
+            PenStyle::Eraser | PenStyle::Selector | PenStyle::Unkown => {
+                log::warn!("tried inserting a new stroke with an unsupported PenStyle");
+                None
+            }
         }
     }
 
@@ -133,35 +125,9 @@ impl StrokesState {
         self.strokes.remove(key)
     }
 
-    pub fn last_stroke_key(&self) -> Option<StrokeKey> {
-        let chrono_components = &self.chrono_components;
-        let trash_components = &self.trash_components;
-
-        let mut sorted: Vec<(StrokeKey, u32)> = chrono_components
-            .iter()
-            .par_bridge()
-            .filter_map(|(key, chrono_comp)| {
-                if let (Some(trash_comp), chrono_comp) = (trash_components.get(key), chrono_comp) {
-                    if !trash_comp.trashed {
-                        return Some((key, chrono_comp.t));
-                    }
-                }
-                None
-            })
-            .collect();
-        sorted.sort_unstable_by(|first, second| first.1.cmp(&second.1));
-
-        let last_stroke_key = sorted.last().copied();
-        if let Some(last_stroke_key) = last_stroke_key {
-            Some(last_stroke_key.0)
-        } else {
-            None
-        }
-    }
-
     /// returns key to last stroke
-    pub fn add_to_last_stroke(&mut self, element: Element, pens: &Pens) -> StrokeKey {
-        let key = if let Some(key) = self.last_stroke_key() {
+    pub fn add_to_last_stroke(&mut self, element: Element) -> Option<StrokeKey> {
+        if let Some(key) = self.last_stroke_key() {
             match self.strokes.get_mut(key).unwrap() {
                 StrokeStyle::MarkerStroke(ref mut markerstroke) => {
                     markerstroke.push_elem(element);
@@ -175,17 +141,13 @@ impl StrokesState {
                 StrokeStyle::VectorImage(_vectorimage) => {}
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
             }
-            key
+
+            self.update_rendering_for_stroke(key);
+            Some(key)
         } else {
-            self.insert_stroke(StrokeStyle::BrushStroke(BrushStroke::new(
-                element,
-                pens.brush.clone(),
-            )))
-        };
-
-        self.update_rendering_for_stroke(key);
-
-        key
+            log::warn!("tried add_to_last_stroke() while there is no last stroke");
+            None
+        }
     }
 
     /// Clears every stroke and every component
@@ -207,7 +169,7 @@ impl StrokesState {
         self.chrono_components = strokes_state.chrono_components.clone();
         self.render_components = strokes_state.render_components.clone();
 
-        self.update_rendering(None);
+        self.update_rendering_current_view(None, true);
     }
 
     /// Returns the key to the completed stroke
@@ -227,8 +189,6 @@ impl StrokesState {
                 StrokeStyle::BitmapImage(ref mut _bitmapimage) => {}
             }
         }
-
-        self.update_rendering_for_stroke(key);
     }
 
     pub fn complete_all_strokes(&mut self) {

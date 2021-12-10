@@ -12,6 +12,7 @@ pub struct RenderComponent {
     pub render: bool,
     #[serde(skip, default = "render::default_rendernode")]
     pub rendernode: gsk::RenderNode,
+    regenerate_flag: bool,
 }
 
 impl Default for RenderComponent {
@@ -19,6 +20,7 @@ impl Default for RenderComponent {
         Self {
             render: true,
             rendernode: render::default_rendernode(),
+            regenerate_flag: true,
         }
     }
 }
@@ -53,6 +55,14 @@ impl StrokesState {
         }
     }
 
+    pub fn reset_regeneration_flag_all_strokes(&mut self) {
+        self.render_components
+            .iter_mut()
+            .for_each(|(_key, render_comp)| {
+                render_comp.regenerate_flag = true;
+            });
+    }
+
     pub fn update_rendering_newest_stroke(&mut self) {
         let last_stroke_key = self.last_stroke_key();
         if let Some(key) = last_stroke_key {
@@ -68,16 +78,25 @@ impl StrokesState {
         }
     }
 
-    pub fn update_rendering(&mut self, viewport: Option<p2d::bounding_volume::AABB>) {
+    pub fn update_rendering_current_view(
+        &mut self,
+        viewport: Option<p2d::bounding_volume::AABB>,
+        force_regenerate: bool,
+    ) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
         keys.iter().for_each(|key| {
             if let (Some(stroke), Some(render_comp)) =
                 (self.strokes.get(*key), self.render_components.get_mut(*key))
             {
-                // skip if stroke is not in viewport
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
+                // skip if stroke is not in viewport or does not need regeneration
+                if !force_regenerate {
+                    if let Some(viewport) = viewport {
+                        if !viewport.intersects(&stroke.bounds()) {
+                            return;
+                        }
+                    }
+                    if !render_comp.regenerate_flag {
                         return;
                     }
                 }
@@ -85,6 +104,7 @@ impl StrokesState {
                 match stroke.gen_rendernode(self.zoom, &self.renderer) {
                     Ok(Some(node)) => {
                         render_comp.rendernode = node;
+                        render_comp.regenerate_flag = false;
                     }
                     Err(e) => {
                         log::error!(
@@ -111,6 +131,7 @@ impl StrokesState {
             match stroke.gen_rendernode(self.zoom, &self.renderer) {
                 Ok(Some(node)) => {
                     render_comp.rendernode = node;
+                    render_comp.regenerate_flag = false;
                 }
                 Err(e) => {
                     log::error!(
@@ -130,21 +151,26 @@ impl StrokesState {
     }
 
     pub fn update_rendering_for_selection(&mut self) {
-        let selection_keys = self.selection_keys();
+        let selection_keys = self.keys_selection();
 
-        selection_keys.iter().for_each(|key| {
-            self.update_rendering_for_stroke(*key);
+        selection_keys.iter().for_each(|&key| {
+            self.update_rendering_for_stroke(key);
         });
     }
 
     pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<p2d::bounding_volume::AABB>) {
-        self.render_components
+        let chrono_sorted = self.keys_sorted_chrono();
+
+        chrono_sorted
             .iter()
-            .filter(|(key, render_comp)| {
-                render_comp.render && !(self.trashed(*key).unwrap_or_else(|| true))
+            .filter(|&&key| {
+                self.does_render(key).unwrap_or_else(|| false)
+                    && !(self.trashed(key).unwrap_or_else(|| true))
             })
-            .for_each(|(key, render_comp)| {
-                if let Some(stroke) = self.strokes.get(key) {
+            .for_each(|&key| {
+                if let (Some(stroke), Some(render_comp)) =
+                    (self.strokes.get(key), self.render_components.get(key))
+                {
                     // skip if stroke is not in viewport
                     if let Some(viewport) = viewport {
                         if !viewport.intersects(&stroke.bounds()) {
@@ -190,20 +216,25 @@ impl StrokesState {
             );
         }
 
-        self.render_components
+        let chrono_sorted = self.keys_sorted_chrono();
+
+        chrono_sorted
             .iter()
-            .filter(|(key, render_comp)| {
-                render_comp.render
+            .filter(|&key| {
+                self.does_render(*key).unwrap_or_else(|| false)
                     && !(self.trashed(*key).unwrap_or_else(|| false))
                     && (self.selected(*key).unwrap_or_else(|| false))
             })
-            .for_each(|(key, render_comp)| {
-                snapshot.append_node(&render_comp.rendernode);
-                if let Some(selection_comp) = self.selection_components.get(key) {
+            .for_each(|&key| {
+                let render_comp = self.render_components.get(key).unwrap();
+
+                if let (Some(selection_comp), Some(stroke)) =
+                    (self.selection_components.get(key), self.strokes.get(key))
+                {
                     if selection_comp.selected {
-                        if let Some(stroke) = self.strokes.get(key) {
-                            draw_selected_bounds(stroke.bounds(), zoom, snapshot);
-                        }
+                        snapshot.append_node(&render_comp.rendernode);
+
+                        draw_selected_bounds(stroke.bounds(), zoom, snapshot);
                     }
                 }
             });
@@ -269,13 +300,20 @@ impl StrokesState {
     pub fn draw_debug(&self, zoom: f64, snapshot: &Snapshot) {
         self.strokes.iter().for_each(|(key, stroke)| {
             // Blur debug rendering for strokes which are normally hidden
-            if let (Some(render_comp), Some(trash_comp)) = (
-                self.render_components.get(key),
-                self.trash_components.get(key),
-            ) {
-                if render_comp.render && trash_comp.trashed {
-                    snapshot.push_blur(3.0);
-                    snapshot.push_opacity(0.2);
+            if let Some(render_comp) = self.render_components.get(key) {
+                if let Some(trash_comp) = self.trash_components.get(key) {
+                    if render_comp.render && trash_comp.trashed {
+                        snapshot.push_blur(3.0);
+                        snapshot.push_opacity(0.2);
+                    }
+                }
+                if render_comp.regenerate_flag {
+                    canvas::debug::draw_fill(
+                        stroke.bounds(),
+                        canvas::debug::COLOR_STROKE_REGENERATE_FLAG,
+                        zoom,
+                        snapshot,
+                    );
                 }
             }
             match stroke {

@@ -1,6 +1,4 @@
 use crate::pens::selector::Selector;
-use crate::strokes::render_comp::RenderComponent;
-use crate::strokes::trash_comp::TrashComponent;
 use crate::{compose, geometry};
 
 use super::{StrokeKey, StrokeStyle, StrokesState};
@@ -23,6 +21,9 @@ impl Default for SelectionComponent {
 }
 
 impl SelectionComponent {
+    pub const SELECTION_DUPLICATION_OFFSET_X: f64 = 20.0;
+    pub const SELECTION_DUPLICATION_OFFSET_Y: f64 = 20.0;
+
     pub fn new(selected: bool) -> Self {
         Self { selected }
     }
@@ -46,10 +47,18 @@ impl StrokesState {
         }
     }
 
-    /// N
+    /// Sets if the stroke is currently selected
     pub fn set_selected(&mut self, key: StrokeKey, selected: bool) {
         if let Some(selection_comp) = self.selection_components.get_mut(key) {
             selection_comp.selected = selected;
+
+            if selected {
+                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                    self.chrono_counter += 1;
+                    chrono_comp.t = self.chrono_counter;
+                }
+            }
+
             self.update_selection_bounds();
         } else {
             log::warn!(
@@ -59,7 +68,8 @@ impl StrokesState {
         }
     }
 
-    pub fn selection_keys(&self) -> Vec<StrokeKey> {
+    /// Returns all keys for the selection
+    pub fn keys_selection(&self) -> Vec<StrokeKey> {
         self.selection_components
             .iter()
             .par_bridge()
@@ -73,44 +83,15 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn last_selection_key(&self) -> Option<StrokeKey> {
-        let chrono_components = &self.chrono_components;
-        let trash_components = &self.trash_components;
-        let selection_components = &self.selection_components;
-
-        let mut sorted: Vec<(StrokeKey, u32)> = chrono_components
-            .iter()
-            .par_bridge()
-            .filter_map(|(key, chrono_comp)| {
-                if let (Some(trash_comp), Some(selection_comp)) =
-                    (trash_components.get(key), selection_components.get(key))
-                {
-                    if !trash_comp.trashed && selection_comp.selected {
-                        return Some((key, chrono_comp.t));
-                    }
-                }
-                None
-            })
-            .collect();
-        sorted.sort_unstable_by(|first, second| first.1.cmp(&second.1));
-
-        let last_selection_key = sorted.last().copied();
-        if let Some(last_stroke_key) = last_selection_key {
-            Some(last_stroke_key.0)
-        } else {
-            None
-        }
-    }
-
     pub fn selection_len(&self) -> usize {
-        self.selection_keys().len()
+        self.keys_selection().len()
     }
 
     pub fn update_selection_bounds(&mut self) {
-        self.selection_bounds = self.gen_bounds(self.selection_keys().iter());
+        self.selection_bounds = self.gen_bounds(self.keys_selection().iter());
     }
 
-    pub fn deselect(&mut self) {
+    pub fn deselect_all_strokes(&mut self) {
         self.selection_components
             .iter_mut()
             .for_each(|(_key, selection_comp)| selection_comp.selected = false);
@@ -119,37 +100,22 @@ impl StrokesState {
     }
 
     pub fn duplicate_selection(&mut self) {
-        let offset = na::vector![20.0, 20.0];
+        let offset = na::vector![
+            SelectionComponent::SELECTION_DUPLICATION_OFFSET_X,
+            SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
+        ];
 
-        self.selection_components
-            .iter_mut()
-            .filter_map(|(key, selection_comp)| {
-                if selection_comp.selected {
-                    selection_comp.selected = false;
-                    let dup_key = self.strokes.insert(self.strokes.get(key).unwrap().clone());
+        let selected = self.keys_selection();
+        self.deselect_all_strokes();
 
-                    Some(dup_key)
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<StrokeKey>>()
-            // Need to collect to avoid borrow errors
-            .iter()
-            .for_each(|dup_key| {
-                self.selection_components
-                    .insert(*dup_key, SelectionComponent::new(true));
-                self.render_components
-                    .insert(*dup_key, RenderComponent::default());
-                self.trash_components
-                    .insert(*dup_key, TrashComponent::default());
+        selected.iter().for_each(|&key| {
+            let key = self.insert_stroke(self.strokes.get(key).unwrap().clone());
+            self.set_selected(key, true);
 
-                // Offsetting the new selection to make the duplication apparent to the user
-                if let Some(stroke) = self.strokes.get_mut(*dup_key) {
-                    stroke.translate(offset);
-                }
-                self.update_rendering_for_stroke(*dup_key);
-            });
+            // Offsetting the new selected stroke to make the duplication apparent to the user
+            let new_stroke = self.strokes.get_mut(key).unwrap();
+            new_stroke.translate(offset);
+        });
 
         self.update_selection_bounds();
     }
@@ -167,7 +133,7 @@ impl StrokesState {
             return false;
         };
 
-        self.strokes.iter().for_each(|(key, stroke)| {
+        self.strokes.iter_mut().for_each(|(key, stroke)| {
             // Skip if stroke is hidden
             if let (Some(render_comp), Some(trash_comp)) = (
                 self.render_components.get(key),
@@ -184,7 +150,7 @@ impl StrokesState {
                 }
             }
             if let Some(selection_comp) = self.selection_components.get_mut(key) {
-                // Default to not selected, check if selected
+                // Default to not selected, check for if selected
                 selection_comp.selected = false;
 
                 match stroke {
@@ -198,6 +164,11 @@ impl StrokesState {
                                 }
                             }
                             selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
                         }
                     }
                     StrokeStyle::BrushStroke(brushstroke) => {
@@ -210,21 +181,41 @@ impl StrokesState {
                                 }
                             }
                             selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
                         }
                     }
                     StrokeStyle::ShapeStroke(shapestroke) => {
                         if selector_bounds.contains(&shapestroke.bounds) {
                             selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
                         }
                     }
                     StrokeStyle::VectorImage(vector_image) => {
                         if selector_bounds.contains(&vector_image.bounds) {
                             selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
                         }
                     }
                     StrokeStyle::BitmapImage(vector_image) => {
                         if selector_bounds.contains(&vector_image.bounds) {
                             selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
                         }
                     }
                 }
@@ -344,7 +335,7 @@ impl StrokesState {
     pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
         if let Some(selection_bounds) = self.selection_bounds {
             let mut data = self
-                .selection_keys()
+                .keys_selection()
                 .iter()
                 .filter_map(|key| self.strokes.get(*key))
                 .filter_map(|stroke| {

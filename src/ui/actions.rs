@@ -313,7 +313,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         clone!(@weak appwindow => move |_action_duplicate_selection, _| {
             appwindow.canvas().sheet().strokes_state().borrow_mut().duplicate_selection();
 
-            appwindow.canvas().queue_draw();
+            appwindow.canvas().regenerate_content(false, true);
         }),
     );
 
@@ -419,28 +419,28 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Zoom reset
     action_zoom_reset.connect_activate(clone!(@weak appwindow => move |_,_| {
-        appwindow.canvas().scale_to(Canvas::SCALE_DEFAULT);
+        appwindow.canvas().zoom_to(Canvas::SCALE_DEFAULT);
         appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
         let new_zoom = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
-        appwindow.canvas().scale_to(new_zoom);
+        appwindow.canvas().zoom_to(new_zoom);
         appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Zoom in
     action_zoomin.connect_activate(clone!(@weak appwindow => move |_,_| {
         let new_zoom = appwindow.canvas().zoom() * appwindow.canvas().temporary_zoom() + Canvas::ZOOM_ACTION_DELTA;
-        appwindow.canvas().scale_to(new_zoom);
+        appwindow.canvas().zoom_to(new_zoom);
         appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Zoom out
     action_zoomout.connect_activate(clone!(@weak appwindow => move |_,_| {
         let new_zoom = appwindow.canvas().zoom() * appwindow.canvas().temporary_zoom() - Canvas::ZOOM_ACTION_DELTA;
-        appwindow.canvas().scale_to(new_zoom);
+        appwindow.canvas().zoom_to(new_zoom);
         appwindow.canvas().regenerate_background(true, true);
     }));
 
@@ -499,8 +499,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
             } else {
                 appwindow.canvas().set_unsaved_changes(false);
-/*                 appwindow.canvas_progress_ba().set_visible(true);
-                appwindow.canvas_progress_bar().pulse(); */
             }
         }
     }));

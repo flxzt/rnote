@@ -610,7 +610,7 @@ impl Sheet {
 
         let svg = utils::load_file_contents(file)?;
 
-        priv_.strokes_state.borrow_mut().deselect();
+        priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
         let vector_image = VectorImage::import_from_svg(svg.as_str(), pos, None).unwrap();
         let inserted = priv_
@@ -632,7 +632,7 @@ impl Sheet {
     ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
-        priv_.strokes_state.borrow_mut().deselect();
+        priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
         let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
         let bitmapimage = BitmapImage::import_from_image_bytes(&file_bytes, pos)?;
@@ -658,7 +658,7 @@ impl Sheet {
     ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
-        priv_.strokes_state.borrow_mut().deselect();
+        priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
         let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
         let bitmapimages = BitmapImage::import_from_pdf_bytes(

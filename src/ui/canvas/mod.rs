@@ -4,10 +4,10 @@ mod imp {
     use std::cell::{Cell, RefCell};
     use std::rc::Rc;
 
+    use super::canvaslayout::CanvasLayout;
     use super::debug;
     use crate::pens::{PenStyle, Pens};
     use crate::sheet::Sheet;
-    use super::canvaslayout::CanvasLayout;
     use crate::ui::selectionmodifier::SelectionModifier;
     use crate::{config, geometry};
 
@@ -536,13 +536,7 @@ mod imp {
             }
 
             debug::draw_bounds(
-                p2d::bounding_volume::AABB::new(
-                    na::point![0.0, 0.0],
-                    na::point![
-                        f64::from(self.sheet.width()),
-                        f64::from(self.sheet.height())
-                    ],
-                ),
+                self.sheet.bounds(),
                 debug::COLOR_SHEET_BOUNDS,
                 zoom,
                 snapshot,
@@ -699,6 +693,8 @@ impl Canvas {
         if let Some(ref adjustment) = adj {
             let signal_id =
                 adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
+                    canvas.regenerate_content(false, false);
+
                     canvas.queue_allocate();
                     canvas.queue_draw();
                 }));
@@ -717,6 +713,8 @@ impl Canvas {
         if let Some(ref adjustment) = adj {
             let signal_id =
                 adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
+                    canvas.regenerate_content(false, false);
+
                     canvas.queue_allocate();
                     canvas.queue_draw();
                 }));
@@ -1047,8 +1045,8 @@ impl Canvas {
         self.set_temporary_zoom(temp_zoom / self.zoom());
     }
 
-    /// Scales the canvas and its contents to a new zoom
-    pub fn scale_to(&self, zoom: f64) {
+    /// zooms the canvas and its contents to a new zoom
+    pub fn zoom_to(&self, zoom: f64) {
         let priv_ = imp::Canvas::from_instance(self);
 
         *priv_.texture_buffer.borrow_mut() = None;
@@ -1061,6 +1059,11 @@ impl Canvas {
             .strokes_state()
             .borrow_mut()
             .complete_all_strokes();
+
+        self.sheet()
+            .strokes_state()
+            .borrow_mut()
+            .reset_regeneration_flag_all_strokes();
 
         self.regenerate_content(false, true);
     }
@@ -1088,7 +1091,7 @@ impl Canvas {
                 clone!(@weak self as canvas => move || {
                     let priv_ = imp::Canvas::from_instance(&canvas);
 
-                    canvas.scale_to(zoom);
+                    canvas.zoom_to(zoom);
                     priv_.zoom_timeout.borrow_mut().take();
                 }),
             ));
@@ -1096,7 +1099,7 @@ impl Canvas {
 
     /// regenerating the background rendernodes.
     /// use force_regenerate to force regeneration of the texture_cache of the background (for example when changing the background pattern)
-    pub fn regenerate_background(&self, force_regenerate: bool, redraw: bool) {
+    pub fn regenerate_background(&self, force_regenerate: bool, force_redraw: bool) {
         match self.sheet().background().borrow_mut().update_rendernode(
             self.zoom(),
             self.sheet().bounds(),
@@ -1107,18 +1110,18 @@ impl Canvas {
             }
             Ok(_) => {}
         }
-        if redraw {
+        if force_redraw {
             self.queue_resize();
             self.queue_draw();
         }
     }
 
-    /// regenerate the rendernodes of the canvas content. force_regenerate  regenerates all rendernodes from scratch
+    /// regenerate the rendernodes of the canvas content. Some(viewport): only regenerate rendernodes inside the viewport. force_regenerate regenerate all rendernodes from scratch. redraw: queue canvas redrawing
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
         self.sheet()
             .strokes_state()
             .borrow_mut()
-            .update_rendering(None);
+            .update_rendering_current_view(Some(self.viewport_in_sheet_coords()), force_regenerate);
 
         self.regenerate_background(force_regenerate, redraw);
     }
@@ -1164,7 +1167,10 @@ impl Canvas {
 
         self.set_unsaved_changes(true);
         self.set_empty(false);
-        self.sheet().strokes_state().borrow_mut().deselect();
+        self.sheet()
+            .strokes_state()
+            .borrow_mut()
+            .deselect_all_strokes();
         self.selection_modifier().set_visible(false);
 
         match self.current_pen().get() {
@@ -1245,7 +1251,7 @@ impl Canvas {
                     self.sheet()
                         .strokes_state()
                         .borrow_mut()
-                        .add_to_last_stroke(Element::new(inputdata.clone()), &self.pens().borrow());
+                        .add_to_last_stroke(Element::new(inputdata.clone()));
 
                     self.queue_draw();
                 }
@@ -1304,6 +1310,11 @@ impl Canvas {
                 .strokes_state()
                 .borrow_mut()
                 .complete_stroke(last_key);
+
+            self.sheet()
+                .strokes_state()
+                .borrow_mut()
+                .update_rendering_for_stroke(last_key);
         }
 
         match self.current_pen().get() {
@@ -1348,6 +1359,8 @@ impl Canvas {
 pub mod debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
 
+    use crate::geometry;
+
     pub const COLOR_POS: gdk::RGBA = gdk::RGBA {
         red: 1.0,
         green: 0.0,
@@ -1372,6 +1385,14 @@ pub mod debug {
         blue: 0.8,
         alpha: 1.0,
     };
+
+    pub const COLOR_STROKE_REGENERATE_FLAG: gdk::RGBA = gdk::RGBA {
+        red: 0.9,
+        green: 0.0,
+        blue: 0.0,
+        alpha: 0.3,
+    };
+
     pub const COLOR_SELECTOR_BOUNDS: gdk::RGBA = gdk::RGBA {
         red: 1.0,
         green: 0.0,
@@ -1423,6 +1444,18 @@ pub mod debug {
                 2.0,
                 2.0,
             ),
+        );
+    }
+
+    pub fn draw_fill(
+        rect: p2d::bounding_volume::AABB,
+        color: gdk::RGBA,
+        zoom: f64,
+        snapshot: &Snapshot,
+    ) {
+        snapshot.append_color(
+            &color,
+            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(rect, zoom)),
         );
     }
 }

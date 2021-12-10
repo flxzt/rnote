@@ -285,8 +285,8 @@ use std::{
 use adw::prelude::*;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
-    EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, Inhibit,
-    PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton, EventSequenceState,
+    EventControllerScrollFlags, EventSequenceState, FileChooserNative, GestureDrag, GestureZoom,
+    Grid, Inhibit, PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
 };
 
 use crate::{
@@ -556,11 +556,14 @@ impl RnoteAppWindow {
                 // the sheet position BEFORE scaling
                 let sheet_center_pos = na::vector![
                     ((appwindow.canvas().hadjustment().unwrap().value()
-                        + f64::from(appwindow.canvas_scroller().width()) * 0.5) / total_zoom)
+                        + f64::from(appwindow.canvas_scroller().width()) * 0.5
+                        + appwindow.canvas().sheet_margin())
+                        / total_zoom)
                         ,
                     ((appwindow.canvas().vadjustment().unwrap().value()
-                    + f64::from(appwindow.canvas_scroller().height()) * 0.5)
-                    / total_zoom)
+                        + f64::from(appwindow.canvas_scroller().height()) * 0.5
+                        + appwindow.canvas().sheet_margin())
+                        / total_zoom)
                 ];
 
                 appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
@@ -707,7 +710,7 @@ impl RnoteAppWindow {
                 canvas_zoom_gesture.set_state(EventSequenceState::Denied);
 
                 zoomgesture_bbcenter_start.set(None);
-                appwindow.canvas().scale_to(new_zoom.get());
+                appwindow.canvas().zoom_to(new_zoom.get());
             }),
         );
 

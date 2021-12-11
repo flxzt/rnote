@@ -87,8 +87,8 @@ pub mod imp {
     impl WidgetImpl for SelectionModifier {}
 }
 
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use gtk4::{EventSequenceState, GestureDrag, PropagationPhase};
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 
 use crate::geometry;
 use crate::{ui::appwindow::RnoteAppWindow, ui::selectionmodifier::modifiernode::ModifierNode};
@@ -137,6 +137,14 @@ impl SelectionModifier {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.init_resize_tl_node(appwindow);
+        self.init_resize_tr_node(appwindow);
+        self.init_resize_bl_node(appwindow);
+        self.init_resize_br_node(appwindow);
+        self.init_translate_node(appwindow);
+    }
+
+    pub fn init_resize_tl_node(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::SelectionModifier::from_instance(self);
 
         let resize_tl_drag_gesture = GestureDrag::builder()
@@ -182,6 +190,10 @@ impl SelectionModifier {
                     }
                 })
             );
+    }
+
+    pub fn init_resize_tr_node(&self, appwindow: &RnoteAppWindow) {
+        let priv_ = imp::SelectionModifier::from_instance(self);
 
         let resize_tr_drag_gesture = GestureDrag::builder()
             .name("resize_tr_drag_gesture")
@@ -225,6 +237,10 @@ impl SelectionModifier {
                     }
                 }),
             );
+    }
+
+    pub fn init_resize_bl_node(&self, appwindow: &RnoteAppWindow) {
+        let priv_ = imp::SelectionModifier::from_instance(self);
 
         let resize_bl_drag_gesture = GestureDrag::builder()
             .name("resize_bl_drag_gesture")
@@ -233,17 +249,21 @@ impl SelectionModifier {
         priv_.resize_bl.add_controller(&resize_bl_drag_gesture);
 
         resize_bl_drag_gesture.connect_drag_begin(
-            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, _x, _y| {
+            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, x, y| {
                 drag_gesture.set_state(EventSequenceState::Claimed);
             }),
         );
         resize_bl_drag_gesture.connect_drag_update(
-                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
+                clone!(@weak self as obj, @weak appwindow => move |drag_gesture, x, y| {
 
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {
                         let zoom = appwindow.canvas().zoom();
                         let offset = na::vector![x.round() / zoom, y.round() / zoom];
+
+/*                         if drag_gesture.current_event_state().contains(gdk::ModifierType::SHIFT_MASK) {
+                            offset = geometry::restrict_offset_to_aabb_aspect_ratio(start_bounds, offset);
+                        } */
 
                         let new_bounds = p2d::bounding_volume::AABB::new(
                             na::point![
@@ -269,6 +289,10 @@ impl SelectionModifier {
                     }
                 }),
             );
+    }
+
+    pub fn init_resize_br_node(&self, appwindow: &RnoteAppWindow) {
+        let priv_ = imp::SelectionModifier::from_instance(self);
 
         let resize_br_drag_gesture = GestureDrag::builder()
             .name("resize_br_drag_gesture")
@@ -312,6 +336,10 @@ impl SelectionModifier {
                     }
                 }),
             );
+    }
+
+    pub fn init_translate_node(&self, appwindow: &RnoteAppWindow) {
+        let priv_ = imp::SelectionModifier::from_instance(self);
 
         let translate_drag_gesture = GestureDrag::builder()
             .name("translate_drag")
@@ -335,11 +363,5 @@ impl SelectionModifier {
                 appwindow.canvas().queue_draw();
             }),
         );
-
-        // Gesture Grouping
-        resize_tr_drag_gesture.group_with(&resize_tl_drag_gesture);
-        resize_bl_drag_gesture.group_with(&resize_tl_drag_gesture);
-        resize_br_drag_gesture.group_with(&resize_tl_drag_gesture);
-        translate_drag_gesture.group_with(&resize_tl_drag_gesture);
     }
 }

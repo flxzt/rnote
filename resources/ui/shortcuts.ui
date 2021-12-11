@@ -132,6 +132,18 @@
                 </child>
                 <child>
                   <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window">Copy selection into clipboard</property>
+                    <property name="accelerator">&lt;ctrl&gt;c</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window">Paste clipboard as selection</property>
+                    <property name="accelerator">&lt;ctrl&gt;v</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
                     <property name="title" context="shortcut window">Enable temporary Eraser</property>
                     <property name="accelerator">d</property>
                   </object>

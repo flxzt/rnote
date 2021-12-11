@@ -314,40 +314,7 @@ impl StrokesState {
         self.update_rendering_for_selection();
     }
 
-    pub fn gen_svg_from_strokes(&self) -> Result<String, anyhow::Error> {
-        let strokes = &self.strokes;
-
-        let keys = self
-            .render_components
-            .iter()
-            .filter_map(|(key, render_comp)| {
-                if render_comp.render && !self.trashed(key).unwrap_or_else(|| true) {
-                    Some(key)
-                } else {
-                    None
-                }
-            })
-            .collect::<Vec<StrokeKey>>();
-
-        let data: String = keys.par_iter()
-            .map(|&key| {
-                if let Some(stroke) = strokes.get(key) {
-                    match stroke.gen_svg_data(na::vector![0.0, 0.0]) {
-                        Ok(data_entry) => {
-                            return data_entry
-                        }
-                        Err(e) => {
-                            log::error!("gen_svg_data() failed for stroke with key {:?} in gen_svg_from_strokes(), {}", key, e);
-                        }
-                    }
-                }
-                String::new()
-            }).collect::<Vec<String>>().join("\n");
-
-        Ok(data)
-    }
-
-    pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
+    pub fn gen_svg_selection(&self) -> Result<Option<String>, anyhow::Error> {
         if let Some(selection_bounds) = self.selection_bounds {
             let mut data = self
                 .keys_selection()
@@ -378,6 +345,14 @@ impl StrokesState {
                 false,
             );
 
+            Ok(Some(data))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
+        if let Some(data) = self.gen_svg_selection()? {
             let output_stream = file.replace::<gio::Cancellable>(
                 None,
                 false,

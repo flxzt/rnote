@@ -12,6 +12,7 @@ pub mod trash_comp;
 
 use crate::{pens::PenStyle, pens::Pens, render};
 use chrono_comp::ChronoComponent;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
@@ -251,5 +252,38 @@ impl StrokesState {
             }
         }
         None
+    }
+
+    pub fn gen_svg_all_strokes(&self) -> Result<String, anyhow::Error> {
+        let strokes = &self.strokes;
+
+        let keys = self
+            .render_components
+            .iter()
+            .filter_map(|(key, render_comp)| {
+                if render_comp.render && !self.trashed(key).unwrap_or_else(|| true) {
+                    Some(key)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<StrokeKey>>();
+
+        let data: String = keys.par_iter()
+            .map(|&key| {
+                if let Some(stroke) = strokes.get(key) {
+                    match stroke.gen_svg_data(na::vector![0.0, 0.0]) {
+                        Ok(data_entry) => {
+                            return data_entry
+                        }
+                        Err(e) => {
+                            log::error!("gen_svg_data() failed for stroke with key {:?} in gen_svg_from_strokes(), {}", key, e);
+                        }
+                    }
+                }
+                String::new()
+            }).collect::<Vec<String>>().join("\n");
+
+        Ok(data)
     }
 }

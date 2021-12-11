@@ -133,6 +133,8 @@ impl BitmapImage {
         P: AsRef<[u8]>,
     {
         let reader = Reader::new(io::Cursor::new(&to_be_read)).with_guessed_format()?;
+        log::debug!("BitmapImage detected format: {:?}", reader.format());
+
         let format = match reader.format() {
             Some(image::ImageFormat::Png) => Format::Png,
             Some(image::ImageFormat::Jpeg) => Format::Jpeg,

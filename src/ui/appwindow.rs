@@ -279,6 +279,7 @@ mod imp {
 
 use std::{
     cell::{Cell, RefCell},
+    path::Path,
     rc::Rc,
 };
 
@@ -730,81 +731,20 @@ impl RnoteAppWindow {
 
         match utils::FileType::lookup_file_type(file) {
             utils::FileType::RnoteFile => {
-                self.canvas().sheet().open_sheet(file)?;
-
-                // Loading the sheet properties into the format settings panel
-                self.settings_panel().load_format(self.canvas().sheet());
-                self.settings_panel().load_background(self.canvas().sheet());
-
-                self.canvas().set_unsaved_changes(false);
-                app.set_input_file(None);
-                app.set_output_file(Some(file), self);
-
-                self.canvas().set_unsaved_changes(false);
-                self.canvas().set_empty(false);
-                self.canvas().regenerate_content(true, true);
+                let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
+                self.load_in_rnote_bytes(&file_bytes, file.path())?;
             }
             utils::FileType::VectorImageFile => {
-                let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
-                    na::vector![
-                        VectorImage::OFFSET_X_DEFAULT,
-                        vadjustment.value() + VectorImage::OFFSET_Y_DEFAULT
-                    ]
-                } else {
-                    na::vector![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]
-                };
-                self.canvas().sheet().import_file_as_svg(pos, file)?;
-
-                self.canvas().set_unsaved_changes(true);
-                self.mainheader().selector_toggle().set_active(true);
-                app.set_input_file(None);
-
-                self.canvas().set_unsaved_changes(true);
-                self.canvas().set_empty(false);
-                self.canvas().regenerate_content(true, true);
-                self.canvas().selection_modifier().set_visible(true);
+                let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
+                self.load_in_vectorimage_bytes(&file_bytes)?;
             }
             utils::FileType::BitmapImageFile => {
-                let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
-                    na::vector![
-                        BitmapImage::OFFSET_X_DEFAULT,
-                        vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
-                    ]
-                } else {
-                    na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
-                };
-                self.canvas()
-                    .sheet()
-                    .import_file_as_bitmapimage(pos, file)?;
-
-                self.canvas().set_unsaved_changes(true);
-                self.mainheader().selector_toggle().set_active(true);
-                app.set_input_file(None);
-
-                self.canvas().set_unsaved_changes(true);
-                self.canvas().set_empty(false);
-                self.canvas().regenerate_content(true, true);
-                self.canvas().selection_modifier().set_visible(true);
+                let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
+                self.load_in_bitmapimage_bytes(&file_bytes)?;
             }
             utils::FileType::Pdf => {
-                let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
-                    na::vector![
-                        BitmapImage::OFFSET_X_DEFAULT,
-                        vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
-                    ]
-                } else {
-                    na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
-                };
-                self.canvas().sheet().import_file_as_pdf_bitmap(pos, file)?;
-
-                self.canvas().set_unsaved_changes(true);
-                self.mainheader().selector_toggle().set_active(true);
-                app.set_input_file(None);
-
-                self.canvas().set_unsaved_changes(true);
-                self.canvas().set_empty(false);
-                self.canvas().regenerate_content(false, true);
-                self.canvas().selection_modifier().set_visible(true);
+                let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
+                self.load_in_pdf_bytes(&file_bytes)?;
             }
             utils::FileType::Folder => {
                 log::warn!("tried to open folder as sheet.");
@@ -814,6 +754,110 @@ impl RnoteAppWindow {
                 app.set_input_file(None);
             }
         }
+
+        Ok(())
+    }
+
+    pub fn load_in_rnote_bytes<P>(&self, bytes: &[u8], path: Option<P>) -> Result<(), anyhow::Error>
+    where
+        P: AsRef<Path>,
+    {
+        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        self.canvas().sheet().open_sheet(bytes)?;
+
+        // Loading the sheet properties into the format settings panel
+        self.settings_panel().load_format(self.canvas().sheet());
+        self.settings_panel().load_background(self.canvas().sheet());
+
+        self.canvas().set_unsaved_changes(false);
+        app.set_input_file(None);
+        if let Some(path) = path {
+            let file = gio::File::for_path(path);
+            app.set_output_file(Some(&file), self);
+        }
+
+        self.canvas().set_unsaved_changes(false);
+        self.canvas().set_empty(false);
+        self.canvas().regenerate_content(true, true);
+
+        Ok(())
+    }
+
+    pub fn load_in_vectorimage_bytes(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+
+        let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
+            na::vector![
+                VectorImage::OFFSET_X_DEFAULT,
+                vadjustment.value() + VectorImage::OFFSET_Y_DEFAULT
+            ]
+        } else {
+            na::vector![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]
+        };
+        self.canvas().sheet().import_bytes_as_svg(pos, bytes)?;
+
+        self.canvas().set_unsaved_changes(true);
+        self.mainheader().selector_toggle().set_active(true);
+        app.set_input_file(None);
+
+        self.canvas().set_unsaved_changes(true);
+        self.canvas().set_empty(false);
+        self.canvas().regenerate_content(true, true);
+        self.canvas().selection_modifier().set_visible(true);
+
+        Ok(())
+    }
+
+    pub fn load_in_bitmapimage_bytes(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+
+        let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
+            na::vector![
+                BitmapImage::OFFSET_X_DEFAULT,
+                vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
+            ]
+        } else {
+            na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
+        };
+        self.canvas()
+            .sheet()
+            .import_bytes_as_bitmapimage(pos, bytes)?;
+
+        self.canvas().set_unsaved_changes(true);
+        self.mainheader().selector_toggle().set_active(true);
+        app.set_input_file(None);
+
+        self.canvas().set_unsaved_changes(true);
+        self.canvas().set_empty(false);
+        self.canvas().regenerate_content(true, true);
+        self.canvas().selection_modifier().set_visible(true);
+
+        Ok(())
+    }
+
+    pub fn load_in_pdf_bytes(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+
+        let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
+            na::vector![
+                BitmapImage::OFFSET_X_DEFAULT,
+                vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
+            ]
+        } else {
+            na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
+        };
+        self.canvas()
+            .sheet()
+            .import_bytes_as_pdf_bitmap(pos, bytes)?;
+
+        self.canvas().set_unsaved_changes(true);
+        self.mainheader().selector_toggle().set_active(true);
+        app.set_input_file(None);
+
+        self.canvas().set_unsaved_changes(true);
+        self.canvas().set_empty(false);
+        self.canvas().regenerate_content(false, true);
+        self.canvas().selection_modifier().set_visible(true);
 
         Ok(())
     }

@@ -118,7 +118,7 @@ use crate::strokes::strokestyle::StrokeStyle;
 use crate::{
     compose,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokesState},
-    utils::{self, FileType},
+    utils::FileType,
 };
 
 use self::{background::Background, format::Format};
@@ -513,8 +513,8 @@ impl Sheet {
         snapshot.pop();
     }
 
-    pub fn open_sheet(&self, file: &gio::File) -> Result<(), anyhow::Error> {
-        let sheet: Sheet = serde_json::from_str(&utils::load_file_contents(file)?)?;
+    pub fn open_sheet(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+        let sheet: Sheet = serde_json::from_str(&String::from_utf8_lossy(bytes))?;
 
         self.strokes_state()
             .borrow_mut()
@@ -571,7 +571,7 @@ impl Sheet {
             &self
                 .strokes_state()
                 .borrow()
-                .gen_svg_from_strokes()?
+                .gen_svg_all_strokes()?
                 .as_str(),
         );
 
@@ -601,18 +601,17 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn import_file_as_svg(
+    pub fn import_bytes_as_svg(
         &self,
         pos: na::Vector2<f64>,
-        file: &gio::File,
+        bytes: &[u8],
     ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
-
-        let svg = utils::load_file_contents(file)?;
+        let svg = String::from_utf8_lossy(bytes);
 
         priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
-        let vector_image = VectorImage::import_from_svg(svg.as_str(), pos, None).unwrap();
+        let vector_image = VectorImage::import_from_svg(&svg, pos, None).unwrap();
         let inserted = priv_
             .strokes_state
             .borrow_mut()
@@ -625,17 +624,16 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn import_file_as_bitmapimage(
+    pub fn import_bytes_as_bitmapimage(
         &self,
         pos: na::Vector2<f64>,
-        file: &gio::File,
+        bytes: &[u8],
     ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
         priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
-        let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
-        let bitmapimage = BitmapImage::import_from_image_bytes(&file_bytes, pos)?;
+        let bitmapimage = BitmapImage::import_from_image_bytes(bytes, pos)?;
 
         let inserted = priv_
             .strokes_state
@@ -651,18 +649,17 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn import_file_as_pdf_bitmap(
+    pub fn import_bytes_as_pdf_bitmap(
         &self,
         pos: na::Vector2<f64>,
-        file: &gio::File,
+        bytes: &[u8],
     ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
         priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
-        let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
         let bitmapimages = BitmapImage::import_from_pdf_bytes(
-            &file_bytes,
+            bytes,
             pos,
             Some(self.width() - 2 * BitmapImage::OFFSET_X_DEFAULT.round() as i32),
         )?;
@@ -683,18 +680,17 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn import_file_as_pdf_vector(
+    pub fn import_bytes_as_pdf_vector(
         &self,
         pos: na::Vector2<f64>,
-        file: &gio::File,
+        bytes: &[u8],
     ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
         priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
-        let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
         let pages = VectorImage::import_from_pdf_bytes(
-            &file_bytes,
+            bytes,
             pos,
             Some(self.width() - 2 * VectorImage::OFFSET_X_DEFAULT.round() as i32),
         )?;

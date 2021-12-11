@@ -8,7 +8,7 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, ArrowType, PackType, PositionType, PrintOperation,
+    gdk, gio, glib, glib::clone, prelude::*, ArrowType, PackType, PositionType, PrintOperation,
     PrintOperationAction, Snapshot, Unit,
 };
 
@@ -80,6 +80,11 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     appwindow.add_action(&action_export_selection_as_svg);
     let action_export_sheet_as_svg = gio::SimpleAction::new("export-sheet-as-svg", None);
     appwindow.add_action(&action_export_sheet_as_svg);
+    let action_clipboard_copy_selection = gio::SimpleAction::new("clipboard-copy-selection", None);
+    appwindow.add_action(&action_clipboard_copy_selection);
+    let action_clipboard_paste_selection =
+        gio::SimpleAction::new("clipboard-paste-selection", None);
+    appwindow.add_action(&action_clipboard_paste_selection);
 
     let action_tmperaser = gio::SimpleAction::new_stateful(
         "tmperaser",
@@ -598,6 +603,86 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     action_export_sheet_as_svg.connect_activate(clone!(@weak appwindow => move |_,_| {
         dialogs::dialog_export_sheet(&appwindow);
     }));
+
+    // Clipboard copy selection
+    action_clipboard_copy_selection.connect_activate(clone!(@weak appwindow => move |_, _| {
+        match appwindow.canvas().sheet().strokes_state().borrow().gen_svg_selection() {
+            Ok(Some(selection_svg)) => {
+                let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(selection_svg.as_bytes()));
+                match appwindow.clipboard().set_content(Some(&svg_content_provider)) {
+                    Ok(_) => {
+                    }
+                    Err(e) => {
+                        log::error!("copy selection into clipboard failed in clipboard().set_content(), {}", e);
+                    }
+                }
+            }
+            Ok(None) => {
+
+            }
+            Err(e) => {
+                log::error!("copy selection into clipboard failed in gen_svg_selection(), {}", e);
+            }
+        }
+    }));
+
+    // Clipboard paste as selection
+    action_clipboard_paste_selection.connect_activate(clone!(@weak appwindow => move |_, _| {
+        let clipboard = appwindow.clipboard();
+        if let Some(formats) = clipboard.formats() {
+            for mime_type in formats.mime_types() {
+                    match mime_type.as_str() {
+                        "image/svg+xml" => {
+                            appwindow.clipboard().read_text_async(gio::NONE_CANCELLABLE, clone!(@weak appwindow => move |text_res| {
+                                match text_res {
+                                    Ok(Some(text)) => {
+                                        appwindow.load_in_vectorimage_bytes(text.as_bytes()).unwrap_or_else(|e| {
+                                            log::error!("failed to paste clipboard as VectorImage, load_in_vectorimage_bytes() returned Err, {}", e);
+                                        });
+                                    }
+                                    Ok(None) => {
+                                    }
+                                    Err(e) => {
+                                        log::error!("failed to paste clipboard as VectorImage, text in callback is Err, {}", e);
+
+                                    }
+                                }
+                            }));
+                        }
+/*                         "image/png" | "image/jpeg" => {
+                            appwindow.clipboard().read_texture_async(gio::NONE_CANCELLABLE, clone!(@weak appwindow => move |texture_res| {
+                                match texture_res {
+                                    Ok(Some(texture)) => {
+                                        let mut texture_bytes: Vec<u8> = Vec::new();
+                                        texture.download(&mut texture_bytes, texture.width() as usize * 4);
+
+                                        if let Some(image) = image::ImageBuffer::<image::Bgra<u8>, Vec<u8>>::from_vec(texture.width() as u32, texture.height() as u32, texture_bytes) {
+                                            let mut image_bytes = Vec::<u8>::new();
+                                            image::DynamicImage::ImageBgra8(image).write_to(&mut image_bytes, image::ImageOutputFormat::Png).unwrap_or_else(|e| {
+                                                log::error!("failed to paste clipboard as BitmapImage, DynamicImage.write_to() returned Err, {}", e);
+                                            });
+
+                                            appwindow.load_in_bitmapimage_bytes(&image_bytes).unwrap_or_else(|e| {
+                                                log::error!("failed to paste clipboard as BitmapImage, load_in_vectorimage_bytes() returned Err, {}", e);
+                                            });
+                                        };
+
+
+                                    }
+                                    Ok(None) => {
+                                    }
+                                    Err(e) => {
+                                        log::error!("failed to paste clipboard as BitmapImage, texture in callback is Err, {}", e);
+                                    }
+                                }
+                            }));
+                        } */
+                        // Pdfs are not supported in the clipboard
+                        _ => {}
+                    }
+            }
+        }
+    }));
 }
 
 // ### Accelerators / Keyboard Shortcuts
@@ -627,4 +712,6 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
     app.set_accels_for_action("win.delete-selection", &["Delete"]);
     app.set_accels_for_action("win.duplicate-selection", &["<Ctrl>d"]);
     app.set_accels_for_action("win.tmperaser(true)", &["d"]);
+    app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
+    app.set_accels_for_action("win.clipboard-paste-selection", &["<Ctrl>v"]);
 }

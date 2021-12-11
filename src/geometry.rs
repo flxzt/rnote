@@ -1,5 +1,23 @@
 use gtk4::graphene;
 
+/// Match offset to the aspect ratio of the AABB
+pub fn restrict_offset_to_aabb_aspect_ratio(
+    aabb: p2d::bounding_volume::AABB,
+    offset: na::Vector2<f64>,
+) -> na::Vector2<f64> {
+    let aspect_ratio = aabb.extents()[1] / aabb.extents()[0];
+    let offsetted_aspect_ratio = (aabb.extents()[1] + offset[1]) / (aabb.extents()[0] + offset[0]);
+
+    if offsetted_aspect_ratio > aspect_ratio {
+        let scalefactor = aabb.extents()[1] / (aabb.extents()[1] - offset[1]);
+        na::vector![aabb.extents()[0] - aabb.extents()[0] * scalefactor, offset[1]]
+    } else {
+        let scalefactor = aabb.extents()[0] / (aabb.extents()[0] - offset[0]);
+        na::vector![ offset[0], aabb.extents()[1] - aabb.extents()[1] * scalefactor]
+    }
+    //na::vector![0.0, offset[1]]
+}
+
 /// AABB to graphene Rect
 pub fn aabb_to_graphene_rect(aabb: p2d::bounding_volume::AABB) -> graphene::Rect {
     graphene::Rect::new(

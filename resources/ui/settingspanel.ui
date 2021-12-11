@@ -31,9 +31,9 @@
                 <property name="orientation">vertical</property>
                 <property name="spacing">32</property>
                 <property name="margin-top">32</property>
-                <property name="margin-bottom">12</property>
-                <property name="margin-start">12</property>
-                <property name="margin-end">12</property>
+                <property name="margin-bottom">24</property>
+                <property name="margin-start">24</property>
+                <property name="margin-end">24</property>
                 <!-- Format Group -->
                 <child>
                   <object class="AdwPreferencesGroup">

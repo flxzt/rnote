@@ -118,7 +118,7 @@
         <child type="end">
           <object class="GtkBox" id="pens_togglebox">
             <property name="homogeneous">true</property>
-            <property name="width_request">400</property>
+            <property name="width_request">360</property>
             <property name="margin-start">6</property>
             <property name="margin-end">6</property>
             <style>

@@ -85,11 +85,26 @@
                 <property name="orientation">vertical</property>
                 <property name="hexpand">false</property>
                 <child>
-                  <object class="PensSideBar" id="penssidebar">
+                  <object class="GtkScrolledWindow">
                     <layout>
                       <property name="column">0</property>
                       <property name="row">0</property>
                     </layout>
+                    <property name="propagate-natural-width">true</property>
+                    <property name="propagate-natural-height">true</property>
+                    <property name="overlay-scrolling">true</property>
+                    <property name="hscrollbar-policy">never</property>
+                    <property name="vscrollbar-policy">automatic</property>
+                    <property name="hexpand">false</property>
+                    <property name="halign">fill</property>
+                    <property name="vexpand">true</property>
+                    <property name="valign">fill</property>
+                    <property name="min-content-height">240</property>
+                    <child>
+                      <object class="PensSideBar" id="penssidebar">
+                        <property name="width_request">48</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
@@ -99,7 +114,7 @@
                       <property name="row">1</property>
                     </layout>
                     <property name="orientation">vertical</property>
-                    <property name="vexpand">true</property>
+                    <property name="vexpand">false</property>
                     <property name="valign">end</property>
                   </object>
                 </child>

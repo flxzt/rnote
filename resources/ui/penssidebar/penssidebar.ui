@@ -16,9 +16,7 @@
             <property name="name">marker_page</property>
             <property name="title">Marker</property>
             <property name="child">
-              <object class="MarkerPage" id="marker_page">
-                <property name="width_request">48</property>
-              </object>
+              <object class="MarkerPage" id="marker_page"></object>
             </property>
           </object>
         </child>
@@ -29,9 +27,7 @@
             <property name="name">brush_page</property>
             <property name="title">Brush</property>
             <property name="child">
-              <object class="BrushPage" id="brush_page">
-                <property name="width_request">48</property>
-              </object>
+              <object class="BrushPage" id="brush_page"></object>
             </property>
           </object>
         </child>
@@ -42,9 +38,7 @@
             <property name="name">shaper_page</property>
             <property name="title">Shaper</property>
             <property name="child">
-              <object class="ShaperPage" id="shaper_page">
-                <property name="width_request">48</property>
-              </object>
+              <object class="ShaperPage" id="shaper_page"></object>
             </property>
           </object>
         </child>
@@ -55,9 +49,7 @@
             <property name="name">eraser_page</property>
             <property name="title">Eraser</property>
             <property name="child">
-              <object class="EraserPage" id="eraser_page">
-                <property name="width_request">48</property>
-              </object>
+              <object class="EraserPage" id="eraser_page"></object>
             </property>
           </object>
         </child>
@@ -68,9 +60,7 @@
             <property name="name">selector_page</property>
             <property name="title">Selector</property>
             <property name="child">
-              <object class="SelectorPage" id="selector_page">
-                <property name="width_request">48</property>
-              </object>
+              <object class="SelectorPage" id="selector_page"></object>
             </property>
           </object>
         </child>

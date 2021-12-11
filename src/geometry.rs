@@ -10,10 +10,16 @@ pub fn restrict_offset_to_aabb_aspect_ratio(
 
     if offsetted_aspect_ratio > aspect_ratio {
         let scalefactor = aabb.extents()[1] / (aabb.extents()[1] - offset[1]);
-        na::vector![aabb.extents()[0] - aabb.extents()[0] * scalefactor, offset[1]]
+        na::vector![
+            aabb.extents()[0] - aabb.extents()[0] * scalefactor,
+            offset[1]
+        ]
     } else {
         let scalefactor = aabb.extents()[0] / (aabb.extents()[0] - offset[0]);
-        na::vector![ offset[0], aabb.extents()[1] - aabb.extents()[1] * scalefactor]
+        na::vector![
+            offset[0],
+            aabb.extents()[1] - aabb.extents()[1] * scalefactor
+        ]
     }
     //na::vector![0.0, offset[1]]
 }

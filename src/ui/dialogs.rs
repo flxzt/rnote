@@ -142,7 +142,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                 ResponseType::Ok => {
                     dialog_open_input_file.close();
                     if let Some(input_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().as_ref() {
-                        if let Err(e) = appwindow.load_in_file(input_file) {
+                        if let Err(e) = appwindow.load_in_file(input_file, None) {
                             log::error!("failed to load in input file, {}", e);
                         }
                     }
@@ -316,7 +316,7 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     match dialog_import_file.file() {
                         Some(file) => {
-                            if let Err(e) = appwindow.load_in_file(&file) {
+                            if let Err(e) = appwindow.load_in_file(&file, None) {
                                 log::error!("failed to load_in_file() on import, {}", e);
                             }
                         },

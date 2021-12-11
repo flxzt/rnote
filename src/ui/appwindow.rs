@@ -512,7 +512,7 @@ impl RnoteAppWindow {
                 .unsaved_changes()
             {
                 dialogs::dialog_open_overwrite(self);
-            } else if let Err(e) = self.load_in_file(&input_file) {
+            } else if let Err(e) = self.load_in_file(&input_file, None) {
                 log::error!("failed to load in input file, {}", e);
             }
         }
@@ -725,8 +725,43 @@ impl RnoteAppWindow {
         appsettings::load_settings(self);
     }
 
+    pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {
+        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        match utils::FileType::lookup_file_type(&file) {
+            utils::FileType::RnoteFile => {
+                // Setting input file to hand it to the open overwrite dialog
+                app.set_input_file(Some(file.clone()));
+
+                if app.unsaved_changes() {
+                    dialogs::dialog_open_overwrite(self);
+                } else if let Err(e) = self.load_in_file(&file, target_pos) {
+                    log::error!("failed to load in file with FileType::RnoteFile, {}", e);
+                }
+            }
+            utils::FileType::VectorImageFile
+            | utils::FileType::BitmapImageFile
+            | utils::FileType::Pdf => {
+                if let Err(e) = self.load_in_file(&file, target_pos) {
+                    log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
+                }
+            }
+            utils::FileType::Folder => {
+                if let Some(path) = file.path() {
+                    self.workspacebrowser().set_primary_path(&path);
+                }
+            }
+            utils::FileType::UnknownFile => {
+                log::warn!("tried to open unsupported file type.");
+            }
+        }
+    }
+
     /// Loads in a file of any supported type into the current sheet.
-    pub fn load_in_file(&self, file: &gio::File) -> Result<(), anyhow::Error> {
+    pub fn load_in_file(
+        &self,
+        file: &gio::File,
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         match utils::FileType::lookup_file_type(file) {
@@ -736,15 +771,15 @@ impl RnoteAppWindow {
             }
             utils::FileType::VectorImageFile => {
                 let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
-                self.load_in_vectorimage_bytes(&file_bytes)?;
+                self.load_in_vectorimage_bytes(&file_bytes, target_pos)?;
             }
             utils::FileType::BitmapImageFile => {
                 let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
-                self.load_in_bitmapimage_bytes(&file_bytes)?;
+                self.load_in_bitmapimage_bytes(&file_bytes, target_pos)?;
             }
             utils::FileType::Pdf => {
                 let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
-                self.load_in_pdf_bytes(&file_bytes)?;
+                self.load_in_pdf_bytes(&file_bytes, target_pos)?;
             }
             utils::FileType::Folder => {
                 log::warn!("tried to open folder as sheet.");
@@ -783,17 +818,23 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_vectorimage_bytes(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+    pub fn load_in_vectorimage_bytes(
+        &self,
+        bytes: &[u8],
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
-        let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
-            na::vector![
-                VectorImage::OFFSET_X_DEFAULT,
-                vadjustment.value() + VectorImage::OFFSET_Y_DEFAULT
-            ]
-        } else {
-            na::vector![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]
-        };
+        let pos = target_pos.unwrap_or_else(|| {
+            if let Some(vadjustment) = self.canvas().vadjustment() {
+                na::vector![
+                    VectorImage::OFFSET_X_DEFAULT,
+                    vadjustment.value() + VectorImage::OFFSET_Y_DEFAULT
+                ]
+            } else {
+                na::vector![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]
+            }
+        });
         self.canvas().sheet().import_bytes_as_svg(pos, bytes)?;
 
         self.canvas().set_unsaved_changes(true);
@@ -808,17 +849,23 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_bitmapimage_bytes(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+    pub fn load_in_bitmapimage_bytes(
+        &self,
+        bytes: &[u8],
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
-        let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
-            na::vector![
-                BitmapImage::OFFSET_X_DEFAULT,
-                vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
-            ]
-        } else {
-            na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
-        };
+        let pos = target_pos.unwrap_or_else(|| {
+            if let Some(vadjustment) = self.canvas().vadjustment() {
+                na::vector![
+                    BitmapImage::OFFSET_X_DEFAULT,
+                    vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
+                ]
+            } else {
+                na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
+            }
+        });
         self.canvas()
             .sheet()
             .import_bytes_as_bitmapimage(pos, bytes)?;
@@ -835,17 +882,23 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_pdf_bytes(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+    pub fn load_in_pdf_bytes(
+        &self,
+        bytes: &[u8],
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
-        let pos = if let Some(vadjustment) = self.canvas().vadjustment() {
-            na::vector![
-                BitmapImage::OFFSET_X_DEFAULT,
-                vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
-            ]
-        } else {
-            na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
-        };
+        let pos = target_pos.unwrap_or_else(|| {
+            if let Some(vadjustment) = self.canvas().vadjustment() {
+                na::vector![
+                    BitmapImage::OFFSET_X_DEFAULT,
+                    vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
+                ]
+            } else {
+                na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
+            }
+        });
         self.canvas()
             .sheet()
             .import_bytes_as_pdf_bitmap(pos, bytes)?;

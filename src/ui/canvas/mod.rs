@@ -571,7 +571,9 @@ use std::rc::Rc;
 use std::time;
 
 use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*};
-use gtk4::{Adjustment, EventSequenceState, Scrollable, Snapshot, Widget};
+use gtk4::{
+    gio, Adjustment, DropTarget, EventSequenceState, PropagationPhase, Scrollable, Snapshot, Widget,
+};
 use p2d::bounding_volume::BoundingVolume;
 
 glib::wrapper! {
@@ -900,6 +902,24 @@ impl Canvas {
                 }
             }),
         );
+
+        // Drop Target
+        let drop_target = DropTarget::builder()
+            .name("canvas_drop_target")
+            .propagation_phase(PropagationPhase::Capture)
+            .actions(gdk::DragAction::COPY)
+            .build();
+        drop_target.set_types(&[gio::File::static_type()]);
+        self.add_controller(&drop_target);
+
+        drop_target.connect_drop(clone!(@weak appwindow => @default-return false, move |_drop_target, value, x, y| {
+            let pos = appwindow.canvas().transform_canvas_coords_to_sheet_coords(na::vector![x, y]);
+
+            if let Ok(file) = value.get::<gio::File>() {
+                appwindow.open_file_w_dialogs(&file, Some(pos))
+            }
+            true
+        }));
     }
 
     pub fn total_zoom(&self) -> f64 {
@@ -943,15 +963,13 @@ impl Canvas {
     ) -> na::Vector2<f64> {
         let total_zoom = self.total_zoom();
 
-        canvas_coords
-            - na::vector![
-                self.sheet_margin() * total_zoom,
-                self.sheet_margin() * total_zoom
-            ]
+        (canvas_coords
             + na::vector![
                 self.hadjustment().unwrap().value(),
                 self.vadjustment().unwrap().value()
-            ]
+            ])
+            / total_zoom
+            - na::vector![self.sheet_margin(), self.sheet_margin()]
     }
 
     /// transforming coordinates of canvas coordinate space into sheet coordinate space

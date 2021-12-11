@@ -87,8 +87,8 @@ pub mod imp {
     impl WidgetImpl for SelectionModifier {}
 }
 
-use gtk4::{EventSequenceState, GestureDrag, PropagationPhase};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
+use gtk4::{EventSequenceState, GestureDrag, PropagationPhase};
 
 use crate::geometry;
 use crate::{ui::appwindow::RnoteAppWindow, ui::selectionmodifier::modifiernode::ModifierNode};

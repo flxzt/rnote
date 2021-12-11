@@ -636,7 +636,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                             appwindow.clipboard().read_text_async(gio::NONE_CANCELLABLE, clone!(@weak appwindow => move |text_res| {
                                 match text_res {
                                     Ok(Some(text)) => {
-                                        appwindow.load_in_vectorimage_bytes(text.as_bytes()).unwrap_or_else(|e| {
+                                        appwindow.load_in_vectorimage_bytes(text.as_bytes(), None).unwrap_or_else(|e| {
                                             log::error!("failed to paste clipboard as VectorImage, load_in_vectorimage_bytes() returned Err, {}", e);
                                         });
                                     }
@@ -648,6 +648,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                                     }
                                 }
                             }));
+                            break;
                         }
 /*                         "image/png" | "image/jpeg" => {
                             appwindow.clipboard().read_texture_async(gio::NONE_CANCELLABLE, clone!(@weak appwindow => move |texture_res| {
@@ -676,7 +677,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                                     }
                                 }
                             }));
-                        } */
+                            break;
+                        }
+                        */
                         // Pdfs are not supported in the clipboard
                         _ => {}
                     }

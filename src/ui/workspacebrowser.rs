@@ -80,8 +80,6 @@ mod imp {
 use std::path::{Path, PathBuf};
 
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::ui::dialogs;
-use crate::{app::RnoteApp, utils};
 use gtk4::{
     gio, glib, glib::clone, prelude::*, subclass::prelude::*, Align, ClosureExpression,
     ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, Label, ListItem,
@@ -323,31 +321,7 @@ impl WorkspaceBrowser {
             if let Some(file) = fileinfo.attribute_object("standard::file") {
                 let file = file.downcast::<gio::File>().unwrap();
 
-                match utils::FileType::lookup_file_type(&file) {
-                    utils::FileType::RnoteFile => {
-                        // Setting input file to hand it to the open overwrite dialog
-                        appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(Some(file.clone()));
-
-                        if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().unsaved_changes() {
-                            dialogs::dialog_open_overwrite(&appwindow);
-                        } else if let Err(e) = appwindow.load_in_file(&file) {
-                            log::error!("failed to load in file with FileType::RnoteFile, {}", e);
-                        }
-                    },
-                    utils::FileType::VectorImageFile | utils::FileType::BitmapImageFile | utils::FileType::Pdf => {
-                        if let Err(e) = appwindow.load_in_file(&file) {
-                            log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
-                        }
-                    },
-                    utils::FileType::Folder => {
-                        if let Some(path) = file.path() {
-                            appwindow.workspacebrowser().set_primary_path(&path);
-                        }
-                    },
-                    utils::FileType::UnknownFile => {
-                            log::warn!("tried to open unsupported file type.");
-                    }
-                }
+                appwindow.open_file_w_dialogs(&file, None);
             };
 
             alphanumeric_sorter.changed(SorterChange::Different);

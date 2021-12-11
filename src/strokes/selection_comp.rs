@@ -273,13 +273,20 @@ impl StrokesState {
         }
 
         if let Some(selection_bounds) = self.selection_bounds {
-            self.strokes.iter_mut().for_each(|(key, stroke)| {
-                if let Some(selection_comp) = self.selection_components.get(key) {
-                    if selection_comp.selected {
-                        stroke.resize(calc_new_stroke_bounds(stroke, selection_bounds, new_bounds));
+            self.strokes
+                .iter_mut()
+                .par_bridge()
+                .for_each(|(key, stroke)| {
+                    if let Some(selection_comp) = self.selection_components.get(key) {
+                        if selection_comp.selected {
+                            stroke.resize(calc_new_stroke_bounds(
+                                stroke,
+                                selection_bounds,
+                                new_bounds,
+                            ));
+                        }
                     }
-                }
-            });
+                });
 
             self.selection_bounds = Some(new_bounds);
             self.update_rendering_for_selection();
@@ -288,13 +295,16 @@ impl StrokesState {
 
     /// Translate the selection with its contents with an offset relative to the current position
     pub fn translate_selection(&mut self, offset: na::Vector2<f64>) {
-        self.strokes.iter_mut().for_each(|(key, stroke)| {
-            if let Some(selection_comp) = self.selection_components.get(key) {
-                if selection_comp.selected {
-                    stroke.translate(offset);
+        self.strokes
+            .iter_mut()
+            .par_bridge()
+            .for_each(|(key, stroke)| {
+                if let Some(selection_comp) = self.selection_components.get(key) {
+                    if selection_comp.selected {
+                        stroke.translate(offset);
+                    }
                 }
-            }
-        });
+            });
 
         self.selection_bounds = if let Some(bounds) = self.selection_bounds {
             Some(geometry::aabb_translate(bounds, offset))
@@ -305,9 +315,10 @@ impl StrokesState {
     }
 
     pub fn gen_svg_from_strokes(&self) -> Result<String, anyhow::Error> {
-        let mut data = String::new();
+        let strokes = &self.strokes;
 
-        self.render_components
+        let keys = self
+            .render_components
             .iter()
             .filter_map(|(key, render_comp)| {
                 if render_comp.render && !self.trashed(key).unwrap_or_else(|| true) {
@@ -316,18 +327,22 @@ impl StrokesState {
                     None
                 }
             })
-            .for_each(|key| {
-                if let Some(stroke) = self.strokes.get(key) {
+            .collect::<Vec<StrokeKey>>();
+
+        let data: String = keys.par_iter()
+            .map(|&key| {
+                if let Some(stroke) = strokes.get(key) {
                     match stroke.gen_svg_data(na::vector![0.0, 0.0]) {
                         Ok(data_entry) => {
-                            data.push_str(&data_entry.as_str());
+                            return data_entry
                         }
                         Err(e) => {
                             log::error!("gen_svg_data() failed for stroke with key {:?} in gen_svg_from_strokes(), {}", key, e);
                         }
                     }
                 }
-            });
+                String::new()
+            }).collect::<Vec<String>>().join("\n");
 
         Ok(data)
     }

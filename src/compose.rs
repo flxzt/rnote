@@ -141,7 +141,7 @@ pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
         let intrinsic_size = if let Some(size) = renderer.intrinsic_size_in_pixels() {
             Some(na::vector![size.0, size.1])
         } else {
-            log::warn!("intrinsic_size_in_pixels() failed in svg_intrinsic_size()");
+            log::debug!("intrinsic_size_in_pixels() returns None in svg_intrinsic_size()");
             None
         };
 

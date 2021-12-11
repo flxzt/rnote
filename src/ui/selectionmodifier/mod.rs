@@ -249,12 +249,12 @@ impl SelectionModifier {
         priv_.resize_bl.add_controller(&resize_bl_drag_gesture);
 
         resize_bl_drag_gesture.connect_drag_begin(
-            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, x, y| {
+            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, _x, _y| {
                 drag_gesture.set_state(EventSequenceState::Claimed);
             }),
         );
         resize_bl_drag_gesture.connect_drag_update(
-                clone!(@weak self as obj, @weak appwindow => move |drag_gesture, x, y| {
+                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
 
                     let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
                     if let Some(selection_bounds) = selection_bounds {

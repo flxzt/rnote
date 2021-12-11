@@ -625,6 +625,6 @@ pub fn setup_accels(appwindow: &RnoteAppWindow) {
     app.set_accels_for_action("win.zoomin", &["plus"]);
     app.set_accels_for_action("win.zoomout", &["minus"]);
     app.set_accels_for_action("win.delete-selection", &["Delete"]);
-    app.set_accels_for_action("win.duplicate-selection", &["<Ctrl>v"]);
+    app.set_accels_for_action("win.duplicate-selection", &["<Ctrl>d"]);
     app.set_accels_for_action("win.tmperaser(true)", &["d"]);
 }

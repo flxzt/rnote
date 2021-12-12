@@ -58,10 +58,11 @@
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>new feature: PDF import</li>
-          <li>refactoring code into an ECS pattern</li>
+          <li>an updated icon!</li>
+          <li>new features: PDF import, clipboard and drag&amp;drop support</li>
           <li>performance improvements in stroke rendering, selecting, erasing by parallelizing these operations</li>
-          <li>minor UI improvements</li>
+          <li>UI improvements</li>
+          <li>internal: code refactoring into ECS pattern</li>
           <li>bug fixes</li>
         </ul>
       </description>

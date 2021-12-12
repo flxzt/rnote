@@ -505,7 +505,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         }
 
         if let Some(output_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().to_owned() {
-            if let Err(e) = appwindow.canvas().sheet().save_sheet(&output_file) {
+            if let Err(e) = appwindow.canvas().sheet().save_sheet_to_file(&output_file) {
                 log::error!("failed to save sheet, {}", e);
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
             } else {

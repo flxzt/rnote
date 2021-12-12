@@ -9,12 +9,13 @@ mod imp {
     use once_cell::sync::Lazy;
 
     use crate::sheet::format;
-    use crate::strokes;
+    use crate::{strokes, config};
 
     use super::{Background, Format};
 
     #[derive(Debug)]
     pub struct Sheet {
+        pub version: Rc<RefCell<String>>,
         pub strokes_state: Rc<RefCell<strokes::StrokesState>>,
         pub format: Format,
         pub background: Rc<RefCell<Background>>,
@@ -28,6 +29,7 @@ mod imp {
     impl Default for Sheet {
         fn default() -> Self {
             Self {
+                version: Rc::new(RefCell::new(String::from(config::APP_VERSION))),
                 strokes_state: Rc::new(RefCell::new(strokes::StrokesState::default())),
                 format: Format::default(),
                 background: Rc::new(RefCell::new(Background::default())),
@@ -145,6 +147,7 @@ impl Serialize for Sheet {
         S: serde::Serializer,
     {
         let mut state = serializer.serialize_struct("Sheet", 12)?;
+        state.serialize_field("version", &*self.version())?;
         state.serialize_field("strokes_state", &*self.strokes_state().borrow())?;
         state.serialize_field("format", &self.format())?;
         state.serialize_field("background", &self.background())?;
@@ -166,6 +169,7 @@ impl<'de> Deserialize<'de> for Sheet {
         #[serde(field_identifier, rename_all = "lowercase")]
         #[allow(non_camel_case_types)]
         enum Field {
+            version,
             strokes_state,
             format,
             background,
@@ -189,32 +193,36 @@ impl<'de> Deserialize<'de> for Sheet {
             where
                 A: de::SeqAccess<'de>,
             {
-                let strokes_state = seq
+                let version = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                let format: Format = seq
+                let strokes_state = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(1, &self))?;
-                let background = seq
+                let format: Format = seq
                     .next_element()?
                     .ok_or_else(|| de::Error::invalid_length(2, &self))?;
+                let background = seq
+                    .next_element()?
+                    .ok_or_else(|| de::Error::invalid_length(3, &self))?;
                 let width = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(5, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(4, &self))?;
                 let height = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(6, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(5, &self))?;
                 let padding_bottom = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(7, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(6, &self))?;
                 let endless_sheet = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(8, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(7, &self))?;
                 let format_borders = seq
                     .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(9, &self))?;
+                    .ok_or_else(|| de::Error::invalid_length(8, &self))?;
 
                 let sheet = Sheet::new();
+                sheet.set_version(version);
                 *sheet.strokes_state().borrow_mut() = strokes_state;
                 sheet.format().import_format(format);
                 *sheet.background().borrow_mut() = background;
@@ -231,6 +239,7 @@ impl<'de> Deserialize<'de> for Sheet {
             where
                 A: de::MapAccess<'de>,
             {
+                let mut version = None;
                 let mut strokes_state = None;
                 let mut format = None;
                 let mut background = None;
@@ -248,6 +257,12 @@ impl<'de> Deserialize<'de> for Sheet {
                     }
                 } {
                     match key {
+                        Field::version => {
+                            if version.is_some() {
+                                return Err(de::Error::duplicate_field("version"));
+                            }
+                            version = Some(map.next_value()?);
+                        }
                         Field::strokes_state => {
                             if strokes_state.is_some() {
                                 return Err(de::Error::duplicate_field("strokes_state"));
@@ -305,6 +320,11 @@ impl<'de> Deserialize<'de> for Sheet {
 
                 let sheet_default = Sheet::default();
 
+                let version = version.unwrap_or_else(|| {
+                    let err: A::Error = de::Error::missing_field("version");
+                    log::error!("{}", err);
+                    sheet_default.version()
+                });
                 let strokes_state = strokes_state.unwrap_or_else(|| {
                     let err: A::Error = de::Error::missing_field("strokes_state");
                     log::error!("{}", err);
@@ -347,6 +367,7 @@ impl<'de> Deserialize<'de> for Sheet {
                 });
 
                 let sheet = Sheet::new();
+                sheet.set_version(version);
                 *sheet.strokes_state().borrow_mut() = strokes_state;
                 sheet.format().import_format(format);
                 *sheet.background().borrow_mut() = background;
@@ -382,6 +403,14 @@ impl Sheet {
     pub fn new() -> Self {
         let sheet: Sheet = glib::Object::new(&[]).expect("Failed to create Sheet");
         sheet
+    }
+
+    pub fn version(&self) -> String {
+        imp::Sheet::from_instance(self).version.borrow().clone()
+    }
+
+    pub fn set_version(&self, version: String) {
+        *imp::Sheet::from_instance(self).version.borrow_mut() = version;
     }
 
     pub fn strokes_state(&self) -> Rc<RefCell<StrokesState>> {
@@ -516,10 +545,10 @@ impl Sheet {
     pub fn open_sheet(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
         let sheet: Sheet = serde_json::from_str(&String::from_utf8_lossy(bytes))?;
 
+        self.set_version(sheet.version());
         self.strokes_state()
             .borrow_mut()
             .import_state(&*sheet.strokes_state().borrow());
-
         self.format().import_format(sheet.format());
         self.background()
             .borrow_mut()
@@ -532,7 +561,7 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn save_sheet(&self, file: &gio::File) -> Result<(), anyhow::Error> {
+    pub fn save_sheet_to_file(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         match FileType::lookup_file_type(file) {
             FileType::RnoteFile => {
                 let json_output = serde_json::to_string(self)?;

@@ -266,7 +266,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
             ResponseType::Accept => {
                 match dialog_save_sheet_as.file() {
                     Some(file) => {
-                        if let Err(e) = appwindow.canvas().sheet().save_sheet(&file) {
+                        if let Err(e) = appwindow.canvas().sheet().save_sheet_to_file(&file) {
                             log::error!("failed to save sheet as, {}", e);
                         } else {
                             appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);

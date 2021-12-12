@@ -11,10 +11,6 @@
     </property>
     <property name="hexpand">false</property>
     <property name="vexpand">false</property>
-    <property name="margin_top">6</property>
-    <property name="margin_bottom">6</property>
-    <property name="margin_start">6</property>
-    <property name="margin_end">6</property>
     <child>
       <object class="GtkImage">
         <property name="icon_name">pen-marker-symbolic</property>

@@ -501,21 +501,22 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .build();
     appwindow.app_settings().connect_changed(
         Some("touch-drawing"),
-        clone!(@weak appwindow => move |appsettings, _key_str| {
-                    let touch_drawing = appsettings.boolean("touch-drawing");
+        clone!(@weak appwindow => move |_appsettings, _key_str| {
+                    //let touch_drawing = appsettings.boolean("touch-drawing");
 
 
-                    // Changing PolicyType to Automatic is not behaving as expected, not sure why
+                    // scrollbar allocation is broken atm, so skipping this
         /*             if touch_drawing {
                         appwindow.canvas_scroller().set_policy(PolicyType::Always, PolicyType::Always);
                     } else {
                         appwindow.canvas_scroller().set_policy(PolicyType::Automatic, PolicyType::Automatic);
-                    } */
+                    }
 
                     appwindow.canvas_scroller().set_overlay_scrolling(!touch_drawing);
 
                     // Resizing needed, else the vertical scrollbar might end up being hidden
-                    appwindow.canvas_scroller().queue_resize();
+                    appwindow.canvas_scroller().queue_allocate();
+                    */
                 }),
     );
 

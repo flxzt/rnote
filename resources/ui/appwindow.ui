@@ -55,6 +55,7 @@
                 <property name="valign">fill</property>
                 <property name="vexpand">true</property>
                 <property name="hexpand">true</property>
+                <property name="window-placement">top-left</property>
                 <child>
                   <object class="Canvas" id="canvas">
                     <property name="halign">center</property>
@@ -85,7 +86,7 @@
                 <property name="orientation">vertical</property>
                 <property name="hexpand">false</property>
                 <child>
-                  <object class="GtkScrolledWindow">
+                  <object class="GtkScrolledWindow" id="sidebar_scroller">
                     <layout>
                       <property name="column">0</property>
                       <property name="row">0</property>
@@ -100,9 +101,9 @@
                     <property name="vexpand">true</property>
                     <property name="valign">fill</property>
                     <property name="min-content-height">240</property>
+                    <property name="window-placement">top-right</property>
                     <child>
                       <object class="PensSideBar" id="penssidebar">
-                        <property name="width_request">48</property>
                       </object>
                     </child>
                   </object>

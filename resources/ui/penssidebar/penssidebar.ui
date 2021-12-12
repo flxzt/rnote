@@ -16,7 +16,13 @@
             <property name="name">marker_page</property>
             <property name="title">Marker</property>
             <property name="child">
-              <object class="MarkerPage" id="marker_page"></object>
+              <object class="MarkerPage" id="marker_page">
+                <property name="width_request">48</property>
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">12</property>
+                <property name="margin_end">12</property>
+              </object>
             </property>
           </object>
         </child>
@@ -27,7 +33,13 @@
             <property name="name">brush_page</property>
             <property name="title">Brush</property>
             <property name="child">
-              <object class="BrushPage" id="brush_page"></object>
+              <object class="BrushPage" id="brush_page">
+                <property name="width_request">48</property>
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">12</property>
+                <property name="margin_end">12</property>
+              </object>
             </property>
           </object>
         </child>
@@ -38,7 +50,13 @@
             <property name="name">shaper_page</property>
             <property name="title">Shaper</property>
             <property name="child">
-              <object class="ShaperPage" id="shaper_page"></object>
+              <object class="ShaperPage" id="shaper_page">
+                <property name="width_request">48</property>
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">12</property>
+                <property name="margin_end">12</property>
+              </object>
             </property>
           </object>
         </child>
@@ -49,7 +67,13 @@
             <property name="name">eraser_page</property>
             <property name="title">Eraser</property>
             <property name="child">
-              <object class="EraserPage" id="eraser_page"></object>
+              <object class="EraserPage" id="eraser_page">
+                <property name="width_request">48</property>
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">12</property>
+                <property name="margin_end">12</property>
+              </object>
             </property>
           </object>
         </child>
@@ -60,7 +84,13 @@
             <property name="name">selector_page</property>
             <property name="title">Selector</property>
             <property name="child">
-              <object class="SelectorPage" id="selector_page"></object>
+              <object class="SelectorPage" id="selector_page">
+                <property name="width_request">48</property>
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">12</property>
+                <property name="margin_end">12</property>
+              </object>
             </property>
           </object>
         </child>

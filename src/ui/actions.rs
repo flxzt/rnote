@@ -9,7 +9,7 @@ use crate::{
 };
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, ArrowType, PackType, PositionType, PrintOperation,
-    PrintOperationAction, Snapshot, Unit,
+    PrintOperationAction, Snapshot, Unit, CornerType,
 };
 
 /* Actions follow this principle:
@@ -363,6 +363,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.mainheader().headerbar().pack_end::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
             appwindow.mainheader().headerbar().pack_start::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
 
+            appwindow.canvas_scroller().set_window_placement(CornerType::BottomRight);
+
+            appwindow.sidebar_scroller().set_window_placement(CornerType::TopRight);
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Right);
             appwindow.penssidebar().brush_page().templatechooser().chooser_button().set_direction(ArrowType::Right);
@@ -389,6 +392,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.mainheader().headerbar().pack_start::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
             appwindow.mainheader().headerbar().pack_end::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
 
+            appwindow.canvas_scroller().set_window_placement(CornerType::BottomLeft);
+
+            appwindow.sidebar_scroller().set_window_placement(CornerType::TopLeft);
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Left);
             appwindow.penssidebar().brush_page().templatechooser().chooser_button().set_direction(ArrowType::Left);

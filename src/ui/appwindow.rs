@@ -34,6 +34,8 @@ mod imp {
         #[template_child]
         pub settings_panel: TemplateChild<SettingsPanel>,
         #[template_child]
+        pub sidebar_scroller: TemplateChild<ScrolledWindow>,
+        #[template_child]
         pub sidebar_grid: TemplateChild<Grid>,
         #[template_child]
         pub sidebar_sep: TemplateChild<Separator>,
@@ -70,6 +72,7 @@ mod imp {
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
+                sidebar_scroller: TemplateChild::<ScrolledWindow>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
                 sidebar_sep: TemplateChild::<Separator>::default(),
                 flap: TemplateChild::<adw::Flap>::default(),
@@ -353,6 +356,12 @@ impl RnoteAppWindow {
     pub fn settings_panel(&self) -> SettingsPanel {
         imp::RnoteAppWindow::from_instance(self)
             .settings_panel
+            .get()
+    }
+
+    pub fn sidebar_scroller(&self) -> ScrolledWindow {
+        imp::RnoteAppWindow::from_instance(self)
+            .sidebar_scroller
             .get()
     }
 

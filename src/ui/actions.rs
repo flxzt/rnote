@@ -8,8 +8,8 @@ use crate::{
     ui::{canvas::Canvas, dialogs},
 };
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, ArrowType, PackType, PositionType, PrintOperation,
-    PrintOperationAction, Snapshot, Unit, CornerType,
+    gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
+    PrintOperation, PrintOperationAction, Snapshot, Unit,
 };
 
 /* Actions follow this principle:
@@ -431,28 +431,28 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     // Zoom reset
     action_zoom_reset.connect_activate(clone!(@weak appwindow => move |_,_| {
         appwindow.canvas().zoom_to(Canvas::SCALE_DEFAULT);
-        appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let new_zoom = (appwindow.canvas_scroller().width() as f64 - Canvas::SHADOW_WIDTH * 2.0) / appwindow.canvas().sheet().format().width() as f64;
+        let mut new_zoom = appwindow.canvas().total_zoom();
+
+        for _ in 0..2 {
+            new_zoom = (f64::from(appwindow.canvas_scroller().width()) - 2.0 * Canvas::SHADOW_WIDTH * new_zoom) / appwindow.canvas().sheet().format().width() as f64;
+        }
         appwindow.canvas().zoom_to(new_zoom);
-        appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Zoom in
     action_zoomin.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let new_zoom = appwindow.canvas().zoom() * appwindow.canvas().temporary_zoom() + Canvas::ZOOM_ACTION_DELTA;
+        let new_zoom = appwindow.canvas().total_zoom() + Canvas::ZOOM_ACTION_DELTA;
         appwindow.canvas().zoom_to(new_zoom);
-        appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Zoom out
     action_zoomout.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let new_zoom = appwindow.canvas().zoom() * appwindow.canvas().temporary_zoom() - Canvas::ZOOM_ACTION_DELTA;
+        let new_zoom = appwindow.canvas().total_zoom() - Canvas::ZOOM_ACTION_DELTA;
         appwindow.canvas().zoom_to(new_zoom);
-        appwindow.canvas().regenerate_background(true, true);
     }));
 
     // Temporary Eraser

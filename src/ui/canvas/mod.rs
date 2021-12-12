@@ -417,8 +417,16 @@ mod imp {
                 }
                 snapshot.restore();
 
-                let zoomed_texture_bounds =
-                    geometry::aabb_translate(widget.content_bounds(), pos * temporary_zoom);
+                let zoomed_texture_bounds = geometry::aabb_scale(
+                    p2d::bounding_volume::AABB::new(
+                        na::point![pos[0], pos[1]],
+                        na::point![
+                            pos[0] + f64::from(texture_buffer.width()),
+                            pos[1] + f64::from(texture_buffer.height())
+                        ],
+                    ),
+                    temporary_zoom,
+                );
 
                 snapshot.append_texture(
                     texture_buffer,
@@ -1106,7 +1114,9 @@ impl Canvas {
         }
 
         // Regenerate when zoom is over 200%
-        if self.temporary_zoom() > Self::ZOOM_REGENERATION_THRESHOLD || self.temporary_zoom() < 1.0 / Self::ZOOM_REGENERATION_THRESHOLD {
+        if self.temporary_zoom() > Self::ZOOM_REGENERATION_THRESHOLD
+            || self.temporary_zoom() < 1.0 / Self::ZOOM_REGENERATION_THRESHOLD
+        {
             self.zoom_to(zoom);
         } else {
             self.zoom_temporarily_to(zoom);
@@ -1159,7 +1169,6 @@ impl Canvas {
     pub fn current_content_as_texture(&self) -> Option<gdk::Texture> {
         let priv_ = imp::Canvas::from_instance(self);
         let snapshot = Snapshot::new();
-        let bounds = self.content_bounds();
 
         self.selection_modifier().set_visible(false);
 
@@ -1167,7 +1176,7 @@ impl Canvas {
 
         let texture = if let Some(node) = snapshot.to_node() {
             let texture =
-                render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, Some(bounds))
+                render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, None)
                     .unwrap_or_else(|e| {
                         log::error!("{}", e);
                         None

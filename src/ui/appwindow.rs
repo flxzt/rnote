@@ -669,7 +669,11 @@ impl RnoteAppWindow {
                     prev_zoom.get()
                 } else {
                     new_zoom.set(scale_begin.get() * zoom);
-                    appwindow.canvas().zoom_temporarily_to(new_zoom.get());
+                    if appwindow.canvas().temporary_zoom() > Canvas::ZOOM_REGENERATION_THRESHOLD || appwindow.canvas().temporary_zoom() < 1.0 / Canvas::ZOOM_REGENERATION_THRESHOLD {
+                        appwindow.canvas().zoom_to(new_zoom.get());
+                    } else {
+                        appwindow.canvas().zoom_temporarily_to(new_zoom.get());
+                    }
 
                     prev_zoom.set(zoom);
                     zoom

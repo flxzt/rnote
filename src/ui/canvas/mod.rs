@@ -594,6 +594,8 @@ impl Canvas {
     pub const SCALE_DEFAULT: f64 = 1.0;
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
+    /// The threshold where a regeneration of the strokes is triggered (e.g. 2.0 for a range between 50% and 200% where no regeneration happens)
+    pub const ZOOM_REGENERATION_THRESHOLD: f64 = 2.0;
     pub const INPUT_OVERSHOOT: f64 = 30.0;
     pub const SHADOW_WIDTH: f64 = 30.0;
 
@@ -1103,7 +1105,12 @@ impl Canvas {
             glib::source::source_remove(zoom_timeout);
         }
 
-        self.zoom_temporarily_to(zoom);
+        // Regenerate when zoom is over 200%
+        if self.temporary_zoom() > Self::ZOOM_REGENERATION_THRESHOLD || self.temporary_zoom() < 1.0 / Self::ZOOM_REGENERATION_THRESHOLD {
+            self.zoom_to(zoom);
+        } else {
+            self.zoom_temporarily_to(zoom);
+        }
 
         priv_
             .zoom_timeout

@@ -41,6 +41,14 @@
       <default>false</default>
       <summary>endless sheet</summary>
     </key>
+    <key name="sheet-margin" type="d">
+      <default>32</default>
+      <summary>Margin around the sheet</summary>
+    </key>
+    <key name="pdf-import-width" type="d">
+      <default>50</default>
+      <summary>Width of imported PDFs in percentage to the sheet width</summary>
+    </key>
     <key name="format-borders" type="b">
       <default>false</default>
       <summary>Show sheet format borders</summary>

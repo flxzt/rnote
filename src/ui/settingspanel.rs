@@ -11,7 +11,11 @@ mod imp {
     pub struct SettingsPanel {
         pub temporary_format: Format,
         #[template_child]
-        pub predefined_formats_row: TemplateChild<adw::ComboRow>,
+        pub general_sheet_margin_unitentry: TemplateChild<UnitEntry>,
+        #[template_child]
+        pub general_pdf_import_width_adj: TemplateChild<Adjustment>,
+        #[template_child]
+        pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub format_orientation_row: TemplateChild<adw::ActionRow>,
         #[template_child]
@@ -65,12 +69,26 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-            self.predefined_formats_row.connect_selected_item_notify(
-                clone!(@weak obj => move |_predefined_formats_row| {
-                    obj.update_temporary_format_from_rows();
-                    Self::apply_predefined_format(&obj);
-                }),
-            );
+/*             self.general_sheet_margin_unitentry
+                .get()
+                .value_adj()
+                .set_lower(0.0);
+            self.general_sheet_margin_unitentry
+                .get()
+                .value_spinner()
+                .set_increments(1.0, 10.0);
+            self.general_sheet_margin_unitentry
+                .get()
+                .value_spinner()
+                .set_digits(1); */
+
+            self.format_predefined_formats_row
+                .connect_selected_item_notify(
+                    clone!(@weak obj => move |_format_predefined_formats_row| {
+                        obj.update_temporary_format_from_rows();
+                        Self::apply_predefined_format(&obj);
+                    }),
+                );
 
             self.format_orientation_portrait_toggle.connect_toggled(
                 clone!(@weak obj => move |_format_orientation_portrait_toggle| {
@@ -209,7 +227,7 @@ mod imp {
         fn apply_predefined_format(obj: &super::SettingsPanel) {
             let priv_ = Self::from_instance(obj);
 
-            if let Some(selected_item) = priv_.predefined_formats_row.selected_item() {
+            if let Some(selected_item) = priv_.format_predefined_formats_row.selected_item() {
                 // Dimensions are in mm
                 let mut preconfigured_dimensions = match selected_item
                     .downcast::<adw::EnumListItem>()
@@ -272,7 +290,7 @@ mod imp {
                     }
                     _ => {
                         log::error!(
-                            "invalid nick string when selecting a format in predefined_formats_row"
+                            "invalid nick string when selecting a format in format_predefined_formats_row"
                         );
                         None
                     }
@@ -330,6 +348,7 @@ use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
 use gtk4::{Adjustment, ColorButton};
 
 use super::appwindow::RnoteAppWindow;
+use super::canvas::Canvas;
 use crate::sheet::background::PatternStyle;
 use crate::sheet::format::{self, Format};
 use crate::sheet::Sheet;
@@ -361,14 +380,14 @@ impl SettingsPanel {
     pub fn set_predefined_format_variant(&self, predefined_format: format::PredefinedFormat) {
         let priv_ = imp::SettingsPanel::from_instance(self);
         let predefined_format_listmodel = priv_
-            .predefined_formats_row
+            .format_predefined_formats_row
             .get()
             .model()
             .unwrap()
             .downcast::<adw::EnumListModel>()
             .unwrap();
         priv_
-            .predefined_formats_row
+            .format_predefined_formats_row
             .get()
             .set_selected(predefined_format_listmodel.find_position(predefined_format as i32));
     }
@@ -395,6 +414,18 @@ impl SettingsPanel {
         } else {
             priv_.format_orientation_landscape_toggle.set_active(true);
         }
+    }
+
+    pub fn general_sheet_margin_unitentry(&self) -> UnitEntry {
+        imp::SettingsPanel::from_instance(self)
+            .general_sheet_margin_unitentry
+            .clone()
+    }
+
+    pub fn general_pdf_import_width_adj(&self) -> Adjustment {
+        imp::SettingsPanel::from_instance(self)
+            .general_pdf_import_width_adj
+            .clone()
     }
 
     pub fn format_width_unitentry(&self) -> UnitEntry {
@@ -445,7 +476,25 @@ impl SettingsPanel {
             .clone()
     }
 
-    pub fn load_format(&self, sheet: Sheet) {
+    pub fn load_all(&self, appwindow: &RnoteAppWindow) {
+        self.load_general(&appwindow.canvas());
+        self.load_format(&appwindow.canvas().sheet());
+        self.load_background(&appwindow.canvas().sheet());
+    }
+
+    pub fn load_general(&self, canvas: &Canvas) {
+        self.general_sheet_margin_unitentry()
+            .set_dpi(canvas.sheet().format().dpi());
+        self.general_sheet_margin_unitentry()
+            .set_unit(format::MeasureUnit::Px);
+        self.general_sheet_margin_unitentry()
+            .set_value(canvas.sheet_margin());
+
+        self.general_pdf_import_width_adj()
+            .set_value(canvas.pdf_import_width());
+    }
+
+    pub fn load_format(&self, sheet: &Sheet) {
         self.set_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(sheet.format().orientation());
         self.format_dpi_adj().set_value(sheet.format().dpi());
@@ -461,7 +510,7 @@ impl SettingsPanel {
             .set_value(f64::from(sheet.format().height()));
     }
 
-    pub fn load_background(&self, sheet: Sheet) {
+    pub fn load_background(&self, sheet: &Sheet) {
         // Avoid already borrowed errors
         let background = sheet.background().borrow().clone();
 
@@ -492,6 +541,35 @@ impl SettingsPanel {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::SettingsPanel::from_instance(self);
         let temporary_format = priv_.temporary_format.clone();
+
+        // General
+        priv_
+            .general_pdf_import_width_adj
+            .get()
+            .connect_value_changed(
+                clone!(@weak appwindow => move |general_pdf_import_width_adj| {
+                    let percentage = general_pdf_import_width_adj.value();
+
+                    appwindow.canvas().set_pdf_import_width(percentage);
+                }),
+            );
+
+        priv_.general_sheet_margin_unitentry.get().connect_local(
+            "measurement-changed",
+            false,
+            clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
+                    let sheet_margin = f64::from(settings_panel.general_sheet_margin_unitentry().value_in_px());
+
+                    appwindow.canvas().set_sheet_margin(sheet_margin);
+
+                    appwindow.canvas().queue_allocate();
+                    appwindow.canvas().queue_resize();
+                    appwindow.canvas().queue_draw();
+
+                    None
+            }),
+        )
+        .unwrap();
 
         // Format
         priv_.format_revert_button.get().connect_clicked(
@@ -563,7 +641,7 @@ impl SettingsPanel {
                     },
                     _ => {
                         log::error!(
-                            "invalid nick string when selecting a format in predefined_formats_row"
+                            "invalid nick string when selecting a pattern in background_patterns_row"
                         );
                     }
                 };
@@ -583,6 +661,7 @@ impl SettingsPanel {
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
                     let mut pattern_size = appwindow.canvas().sheet().background().borrow().pattern_size();
                     pattern_size[0] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
+
                     appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
 
                     appwindow.canvas().regenerate_background(true, true);

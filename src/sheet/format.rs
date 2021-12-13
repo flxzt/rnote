@@ -437,6 +437,7 @@ impl Format {
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.connect_notify_local(Some("dpi"), clone!(@weak appwindow => move |format, _pspec| {
+            appwindow.settings_panel().general_sheet_margin_unitentry().set_dpi(format.dpi());
             appwindow.settings_panel().background_pattern_width_unitentry().set_dpi(format.dpi());
             appwindow.settings_panel().background_pattern_height_unitentry().set_dpi(format.dpi());
         }));

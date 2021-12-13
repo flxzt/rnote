@@ -438,7 +438,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         let mut new_zoom = appwindow.canvas().total_zoom();
 
         for _ in 0..2 {
-            new_zoom = (f64::from(appwindow.canvas_scroller().width()) - 2.0 * Canvas::SHADOW_WIDTH * new_zoom) / appwindow.canvas().sheet().format().width() as f64;
+            new_zoom = (f64::from(appwindow.canvas_scroller().width()) - 2.0 * appwindow.canvas().sheet_margin() * new_zoom) / appwindow.canvas().sheet().format().width() as f64;
         }
         appwindow.canvas().zoom_to(new_zoom);
     }));

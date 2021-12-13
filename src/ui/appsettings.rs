@@ -140,6 +140,16 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         appwindow.canvas().pens().borrow().eraser.width(),
     )?;
 
+    // Sheet margin
+    appwindow
+        .app_settings()
+        .set_double("sheet-margin", appwindow.canvas().sheet_margin())?;
+
+    // Pdf import width
+    appwindow
+        .app_settings()
+        .set_double("pdf-import-width", appwindow.canvas().pdf_import_width())?;
+
     // Format Size
     appwindow.app_settings().set_value(
         "format-size",
@@ -534,6 +544,14 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .pageedit_revealer()
         .set_reveal_child(!endless_sheet);
 
+    // Sheet margin
+    let sheet_margin = appwindow.app_settings().double("sheet-margin");
+    appwindow.canvas().set_sheet_margin(sheet_margin);
+
+    // PDF import width
+    let pdf_import_width = appwindow.app_settings().double("pdf-import-width");
+    appwindow.canvas().set_pdf_import_width(pdf_import_width);
+
     // Visual Debugging
     appwindow
         .app_settings()
@@ -567,10 +585,5 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .set_reveal_child(appwindow.app_settings().boolean("devel"));
 
     // Loading the sheet properties into the format settings panel
-    appwindow
-        .settings_panel()
-        .load_format(appwindow.canvas().sheet());
-    appwindow
-        .settings_panel()
-        .load_background(appwindow.canvas().sheet());
+    appwindow.settings_panel().load_all(appwindow);
 }

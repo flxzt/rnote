@@ -692,6 +692,7 @@ impl Sheet {
         &self,
         pos: na::Vector2<f64>,
         bytes: &[u8],
+        page_width: Option<i32>,
     ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
@@ -700,7 +701,7 @@ impl Sheet {
         let bitmapimages = BitmapImage::import_from_pdf_bytes(
             bytes,
             pos,
-            Some(self.width() - 2 * BitmapImage::OFFSET_X_DEFAULT.round() as i32),
+            page_width,
         )?;
 
         for bitmapimage in bitmapimages {

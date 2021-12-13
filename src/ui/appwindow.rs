@@ -814,8 +814,7 @@ impl RnoteAppWindow {
         self.canvas().sheet().open_sheet_from_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
-        self.settings_panel().load_format(self.canvas().sheet());
-        self.settings_panel().load_background(self.canvas().sheet());
+        self.settings_panel().load_all(self);
 
         self.canvas().set_unsaved_changes(false);
         app.set_input_file(None);
@@ -870,14 +869,12 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            if let Some(vadjustment) = self.canvas().vadjustment() {
-                na::vector![
-                    BitmapImage::OFFSET_X_DEFAULT,
-                    vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
-                ]
-            } else {
-                na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
-            }
+            let vadj = self.canvas().vadjustment().unwrap();
+
+            na::vector![
+                BitmapImage::OFFSET_X_DEFAULT,
+                vadj.value() + BitmapImage::OFFSET_Y_DEFAULT
+            ]
         });
         self.canvas()
             .sheet()
@@ -903,18 +900,21 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            if let Some(vadjustment) = self.canvas().vadjustment() {
-                na::vector![
-                    BitmapImage::OFFSET_X_DEFAULT,
-                    vadjustment.value() + BitmapImage::OFFSET_Y_DEFAULT
-                ]
-            } else {
-                na::vector![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]
-            }
+            let vadj = self.canvas().vadjustment().unwrap();
+
+            na::vector![
+                BitmapImage::OFFSET_X_DEFAULT,
+                vadj.value() + BitmapImage::OFFSET_Y_DEFAULT
+            ]
         });
+        let page_width = (f64::from(self.canvas().sheet().width())
+            * (self.canvas().pdf_import_width() / 100.0)
+            - 2.0 * BitmapImage::OFFSET_X_DEFAULT)
+            .round() as i32;
+
         self.canvas()
             .sheet()
-            .import_bytes_as_pdf_bitmap(pos, bytes)?;
+            .import_bytes_as_pdf_bitmap(pos, bytes, Some(page_width))?;
 
         self.canvas().set_unsaved_changes(true);
         self.mainheader().selector_toggle().set_active(true);

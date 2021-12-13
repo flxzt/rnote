@@ -28,6 +28,7 @@ mod imp {
         pub sheet_margin: Cell<f64>,
         pub zoom: Cell<f64>,
         pub temporary_zoom: Cell<f64>,
+        pub pdf_import_width: Cell<f64>,
         pub visual_debug: Cell<bool>,
         pub touch_drawing: Cell<bool>,
         pub unsaved_changes: Cell<bool>,
@@ -80,9 +81,10 @@ mod imp {
                 pens: Rc::new(RefCell::new(Pens::default())),
                 current_pen: Rc::new(Cell::new(PenStyle::default())),
                 sheet: Sheet::default(),
-                sheet_margin: Cell::new(super::Canvas::SHADOW_WIDTH),
+                sheet_margin: Cell::new(super::Canvas::SHEET_MARGIN_DEFAULT),
                 zoom: Cell::new(super::Canvas::SCALE_DEFAULT),
                 temporary_zoom: Cell::new(1.0),
+                pdf_import_width: Cell::new(super::Canvas::PDF_IMPORT_WIDTH_DEFAULT),
                 visual_debug: Cell::new(false),
                 touch_drawing: Cell::new(false),
                 unsaved_changes: Cell::new(false),
@@ -180,16 +182,7 @@ mod imp {
                         "sheet-margin",
                         f64::MIN,
                         f64::MAX,
-                        super::Canvas::SHADOW_WIDTH,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpec::new_double(
-                        "temporary-zoom",
-                        "temporary-zoom",
-                        "temporary-zoom",
-                        f64::MIN,
-                        f64::MAX,
-                        1.0,
+                        super::Canvas::SHEET_MARGIN_DEFAULT,
                         glib::ParamFlags::READWRITE,
                     ),
                     // The zoom of the canvas in relation to the sheet
@@ -200,6 +193,25 @@ mod imp {
                         f64::MIN,
                         f64::MAX,
                         super::Canvas::SCALE_DEFAULT,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // The temporary zoom (on top of the normal zoom)
+                    glib::ParamSpec::new_double(
+                        "temporary-zoom",
+                        "temporary-zoom",
+                        "temporary-zoom",
+                        f64::MIN,
+                        f64::MAX,
+                        1.0,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    glib::ParamSpec::new_double(
+                        "pdf-import-width",
+                        "pdf-import-width",
+                        "pdf-import-width",
+                        1.0,
+                        100.0,
+                        super::Canvas::PDF_IMPORT_WIDTH_DEFAULT,
                         glib::ParamFlags::READWRITE,
                     ),
                     // Visual debugging, which shows bounding boxes, hitboxes, ... (enable in developer action menu)
@@ -259,8 +271,9 @@ mod imp {
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "sheet-margin" => self.sheet_margin.get().to_value(),
-                "temporary-zoom" => self.temporary_zoom.get().to_value(),
                 "zoom" => self.zoom.get().to_value(),
+                "temporary-zoom" => self.temporary_zoom.get().to_value(),
+                "pdf-import-width" => self.pdf_import_width.get().to_value(),
                 "visual-debug" => self.visual_debug.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
@@ -288,6 +301,18 @@ mod imp {
 
                     self.sheet_margin.replace(sheet_margin);
                 }
+                "zoom" => {
+                    let zoom: f64 = value
+                        .get::<f64>()
+                        .expect("The value needs to be of type `f64`.")
+                        .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
+                    self.zoom.replace(zoom);
+
+                    self.sheet.strokes_state().borrow_mut().zoom = zoom;
+
+                    obj.queue_resize();
+                    obj.queue_draw();
+                }
                 "temporary-zoom" => {
                     let temporary_zoom = value
                         .get::<f64>()
@@ -302,17 +327,13 @@ mod imp {
                     obj.queue_resize();
                     obj.queue_draw();
                 }
-                "zoom" => {
-                    let zoom: f64 = value
+                "pdf-import-width" => {
+                    let pdf_import_width = value
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`.")
-                        .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
-                    self.zoom.replace(zoom);
+                        .clamp(1.0, 100.0);
 
-                    self.sheet.strokes_state().borrow_mut().zoom = zoom;
-
-                    obj.queue_resize();
-                    obj.queue_draw();
+                    self.pdf_import_width.replace(pdf_import_width);
                 }
                 "visual-debug" => {
                     let visual_debug: bool =
@@ -394,7 +415,7 @@ mod imp {
 
             self.draw_shadow(
                 &geometry::aabb_to_graphene_rect(sheet_bounds_in_canvas_coords),
-                Self::SHADOW_WIDTH * total_zoom,
+                sheet_margin * total_zoom,
                 snapshot,
             );
 
@@ -605,7 +626,9 @@ impl Canvas {
     /// The threshold where a regeneration of the strokes is triggered (e.g. 2.0 for a range between 50% and 200% where no regeneration happens)
     pub const ZOOM_REGENERATION_THRESHOLD: f64 = 2.0;
     pub const INPUT_OVERSHOOT: f64 = 30.0;
-    pub const SHADOW_WIDTH: f64 = 30.0;
+    pub const SHEET_MARGIN_DEFAULT: f64 = 30.0;
+    // The default width of imported PDF's in percentage to the sheet width
+    pub const PDF_IMPORT_WIDTH_DEFAULT: f64 = 50.0;
 
     pub fn new() -> Self {
         let canvas: Canvas = glib::Object::new(&[]).expect("Failed to create Canvas");
@@ -637,6 +660,24 @@ impl Canvas {
         imp::Canvas::from_instance(self).sheet.clone()
     }
 
+    pub fn sheet_margin(&self) -> f64 {
+        self.property("sheet-margin").unwrap().get::<f64>().unwrap()
+    }
+
+    pub fn set_sheet_margin(&self, sheet_margin: f64) {
+        self.set_property("sheet-margin", sheet_margin.to_value())
+            .unwrap();
+    }
+
+
+    pub fn zoom(&self) -> f64 {
+        self.property("zoom").unwrap().get::<f64>().unwrap()
+    }
+
+    fn set_zoom(&self, zoom: f64) {
+        self.set_property("zoom", zoom.to_value()).unwrap();
+    }
+
     pub fn temporary_zoom(&self) -> f64 {
         self.property("temporary-zoom")
             .unwrap()
@@ -649,22 +690,13 @@ impl Canvas {
             .unwrap();
     }
 
-    pub fn sheet_margin(&self) -> f64 {
-        self.property("sheet-margin").unwrap().get::<f64>().unwrap()
+    pub fn pdf_import_width(&self) -> f64 {
+        self.property("pdf-import-width").unwrap().get::<f64>().unwrap()
     }
 
-    #[allow(dead_code)]
-    fn set_sheet_margin(&self, sheet_margin: f64) {
-        self.set_property("sheet-margin", sheet_margin.to_value())
+    pub fn set_pdf_import_width(&self, pdf_import_width: f64) {
+        self.set_property("pdf-import-width", pdf_import_width.to_value())
             .unwrap();
-    }
-
-    pub fn zoom(&self) -> f64 {
-        self.property("zoom").unwrap().get::<f64>().unwrap()
-    }
-
-    fn set_zoom(&self, zoom: f64) {
-        self.set_property("zoom", zoom.to_value()).unwrap();
     }
 
     pub fn unsaved_changes(&self) -> bool {

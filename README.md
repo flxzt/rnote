@@ -42,6 +42,9 @@ $ flatpak mask --remove com.github.flxzt.rnote
 
 Then the sheets can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
+## Pitfalls
+* Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be changed in Flatseal (a Flatpak permissions manager)
+
 ## Feature Ideas:
 * Stroke history list widget
     * with the ability to move them up and down the history / layers

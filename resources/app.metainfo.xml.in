@@ -54,11 +54,12 @@
   </provides>
 
   <releases>
-    <release version="0.1.7" date="2021-12-03">
+    <release version="0.2.0" date="2021-12-13">
       <description>
         <p>this release changes:</p>
         <ul>
           <li>an updated icon!</li>
+          <li>an updated file format. !!! Breaks compatibility to older versions. Please export existing files before upgrading / downgrade temporarily (explained how to downgrade at https://github.com/flxzt/rnote)</li>
           <li>new features: PDF import, clipboard and drag&amp;drop support</li>
           <li>performance improvements in stroke rendering, selecting, erasing by parallelizing these operations</li>
           <li>UI improvements</li>

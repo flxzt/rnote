@@ -2072,7 +2072,7 @@ dependencies = [
 
 [[package]]
 name = "rnote"
-version = "0.1.6"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "base64",

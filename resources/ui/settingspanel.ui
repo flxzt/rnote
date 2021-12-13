@@ -5,6 +5,7 @@
     <property name="layout-manager">
       <object class="GtkBinLayout"></object>
     </property>
+    <property name="width-request">500</property>
     <style>
       <class name="settings_panel" />
       <class name="background" />
@@ -24,7 +25,7 @@
             <property name="vexpand">true</property>
             <property name="halign">fill</property>
             <property name="valign">fill</property>
-            <property name="propagate-natural-width">true</property>
+            <property name="propagate-natural-width">false</property>
             <property name="propagate-natural-height">false</property>
             <child>
               <object class="GtkBox">

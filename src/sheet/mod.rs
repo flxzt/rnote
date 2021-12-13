@@ -9,7 +9,7 @@ mod imp {
     use once_cell::sync::Lazy;
 
     use crate::sheet::format;
-    use crate::{strokes, config};
+    use crate::{config, strokes};
 
     use super::{Background, Format};
 
@@ -117,6 +117,7 @@ mod imp {
 use std::{cell::RefCell, rc::Rc};
 
 use crate::strokes::strokestyle::StrokeStyle;
+use crate::utils;
 use crate::{
     compose,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokesState},
@@ -542,8 +543,9 @@ impl Sheet {
         snapshot.pop();
     }
 
-    pub fn open_sheet(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
-        let sheet: Sheet = serde_json::from_str(&String::from_utf8_lossy(bytes))?;
+    pub fn open_sheet_from_bytes(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+        let decompressed_bytes = utils::decompress_from_gzip(bytes)?;
+        let sheet: Sheet = serde_json::from_str(&String::from_utf8_lossy(&decompressed_bytes))?;
 
         self.set_version(sheet.version());
         self.strokes_state()
@@ -565,15 +567,23 @@ impl Sheet {
         match FileType::lookup_file_type(file) {
             FileType::RnoteFile => {
                 let json_output = serde_json::to_string(self)?;
-                let output_stream = file.replace::<gio::Cancellable>(
-                    None,
-                    false,
-                    gio::FileCreateFlags::REPLACE_DESTINATION,
-                    None,
-                )?;
+                if let Some(file_name) = file.basename() {
+                    let compressed_bytes = utils::compress_to_gzip(
+                        json_output.as_bytes(),
+                        &file_name.to_string_lossy(),
+                    )?;
+                    let output_stream = file.replace::<gio::Cancellable>(
+                        None,
+                        false,
+                        gio::FileCreateFlags::REPLACE_DESTINATION,
+                        None,
+                    )?;
 
-                output_stream.write::<gio::Cancellable>(json_output.as_bytes(), None)?;
-                output_stream.close::<gio::Cancellable>(None)?;
+                    output_stream.write::<gio::Cancellable>(&compressed_bytes, None)?;
+                    output_stream.close::<gio::Cancellable>(None)?;
+                } else {
+                    log::error!("failed to get file name while saving sheet. Invalid file");
+                }
             }
             _ => {
                 log::error!("invalid file type for saving sheet in native format");

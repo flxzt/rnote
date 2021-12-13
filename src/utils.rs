@@ -1,5 +1,8 @@
+use flate2::read::MultiGzDecoder;
+use flate2::{Compression, GzBuilder};
 use gtk4::{gdk, gio, glib, prelude::*};
 use serde::{Deserialize, Serialize};
+use std::io::prelude::*;
 use std::ops::Deref;
 use std::path::PathBuf;
 use tera::Tera;
@@ -231,4 +234,25 @@ impl FileType {
 
         Self::UnknownFile
     }
+}
+
+pub fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
+    let compressed_bytes = Vec::<u8>::new();
+
+    let mut encoder = GzBuilder::new()
+        .filename(file_name)
+        .comment("test")
+        .write(compressed_bytes, Compression::default());
+
+    encoder.write_all(to_compress)?;
+
+    Ok(encoder.finish()?)
+}
+
+pub fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
+    let mut decoder = MultiGzDecoder::new(compressed);
+    let mut bytes: Vec<u8> = Vec::new();
+    decoder.read_to_end(&mut bytes)?;
+
+    Ok(bytes)
 }

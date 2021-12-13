@@ -1175,12 +1175,11 @@ impl Canvas {
         priv_.snapshot(self, &snapshot);
 
         let texture = if let Some(node) = snapshot.to_node() {
-            let texture =
-                render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, None)
-                    .unwrap_or_else(|e| {
-                        log::error!("{}", e);
-                        None
-                    });
+            let texture = render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, None)
+                .unwrap_or_else(|e| {
+                    log::error!("{}", e);
+                    None
+                });
             //log::debug!("saving texture");
             //texture.as_ref().unwrap().save_to_png("./tests/texture.png");
             texture

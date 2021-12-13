@@ -811,7 +811,7 @@ impl RnoteAppWindow {
         P: AsRef<Path>,
     {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
-        self.canvas().sheet().open_sheet(bytes)?;
+        self.canvas().sheet().open_sheet_from_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
         self.settings_panel().load_format(self.canvas().sheet());

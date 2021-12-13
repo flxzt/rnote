@@ -504,28 +504,6 @@ impl RnoteAppWindow {
         priv_.canvas.get().sheet().format().init(self);
         priv_.canvas.get().selection_modifier().init(self);
 
-        // Loading in input file
-        if let Some(input_file) = self
-            .application()
-            .unwrap()
-            .downcast::<RnoteApp>()
-            .unwrap()
-            .input_file()
-            .to_owned()
-        {
-            if self
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .unsaved_changes()
-            {
-                dialogs::dialog_open_overwrite(self);
-            } else if let Err(e) = self.load_in_file(&input_file, None) {
-                log::error!("failed to load in input file, {}", e);
-            }
-        }
-
         self.flap()
             .connect_reveal_flap_notify(clone!(@weak self as appwindow => move |flap| {
                 if appwindow.mainheader().appmenu().parent().is_some() {
@@ -736,6 +714,28 @@ impl RnoteAppWindow {
         actions::setup_actions(self);
         actions::setup_accels(self);
         appsettings::load_settings(self);
+
+        // Loading in input file, if Some
+        if let Some(input_file) = self
+            .application()
+            .unwrap()
+            .downcast::<RnoteApp>()
+            .unwrap()
+            .input_file()
+            .to_owned()
+        {
+            if self
+                .application()
+                .unwrap()
+                .downcast::<RnoteApp>()
+                .unwrap()
+                .unsaved_changes()
+            {
+                dialogs::dialog_open_overwrite(self);
+            } else if let Err(e) = self.load_in_file(&input_file, None) {
+                log::error!("failed to load in input file, {}", e);
+            }
+        }
     }
 
     pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {

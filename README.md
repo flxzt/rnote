@@ -27,6 +27,20 @@ Rnote is available as  a flatpak on Flathub:
 <a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="256" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 </div><br>
 
+### Downgrading
+Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
+| version | command |
+| --- | --- |
+| v0.1.6 | `sudo flatpak update --commit=ffb9781989704f3eb28910437bb26709357566a977178d5fb4ef1a2926edae8b com.github.flxzt.rnote` |
+| v0.1.5 | `sudo flatpak update --commit=721f94f5f9806fa1e80d928071e2094a75ba622c7da32bee4af9d8a6c1a82d15 com.github.flxzt.rnote` |
+
+After downgrading, the version can be pinned or unpinned with:
+```
+$ flatpak mask com.github.flxzt.rnote
+$ flatpak mask --remove com.github.flxzt.rnote
+```
+
+Then the sheets can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
 ## Feature Ideas:
 * Stroke history list widget
@@ -65,113 +79,11 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 ## File Format
 The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
 
+So far the first breaking change in the format happened between `v0.1.6` and `v0.2.0`.
 
-## Building
-### Building with Flatpak
-There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.json`.
+Perfect compatibility to future versions is not guaranteed, but from `v0.2.0` on forward there will be efforts to have an upgrade path available inside rnote when opening older files.
 
-Use Gnome Builder or vscode with the flatpak extension to build and run the application for you. **This is the easiest and recommended way.**
+To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
 
-**Bugs and workarounds**
-
-- If you encounter `bwrap: Can't find source path /run/user/1000/doc/by-app/com.github.flxzt.rnote: No such file or directory` when trying to run the flatpak, `xdg-document-portal` did not start yet. Starting it manually with `systemctl start --user xdg-document-portal` should fix it.
-
---- 
-
-If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
-
-First the Gnome 41 SDK is needed:
-
-```bash
-flatpak install org.gnome.Sdk//41 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//41
-```
-
-**Build**  
-Building the app with flatpak is done with:
-
-```bash
-flatpak-builder --user flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
-```
-
-Creating a repo:
-
-```bash
-flatpak-builder --user --repo=flatpak-repo flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
-```
-
-
-**Install**  
-Install to the system as user with:
-
-```bash
-flatpak-builder --user --install flatpak-app build-aux/com.github.flxzt.rnote.Devel.json
-```
-
-**Run**  
-Then it can be run.
-From the build directory:
-
-```bash
-flatpak-builder --run flatpak-app build-aux/com.github.flxzt.rnote.Devel.json rnote
-```
-
-Or if it is installed:
-
-```bash
-flatpak run com.github.flxzt.rnote
-```
-
-### Build with Meson
-The flatpak manifest calls the meson build system to build the application.
-If a native build is wanted, meson can be called directly.
-
-Make sure `rustc` and `cargo` are installed. Then run:
-
-```bash
-meson setup --prefix=/usr _mesonbuild
-```
-Meson will ask for the user password when needed.
-
-To enable the development profile, set `-Dprofile=devel` as a parameter. Else the `default` profile will be set. ( This can be reconfigured later )
-
-**Compile**  
-Once the project is configured, it can be compiled with:
-
-```bash
-meson compile -C _mesonbuild
-```
-
-The compiled binary should now be here: `./_mesonbuild/target/release/rnote`.
-
-**Install**  
-Installing the binary into the system can be done with:
-
-```bash
-meson install -C _mesonbuild
-```
-
-**Test**  
-Meson has some tests to validate the desktop, gresources, ... files.
-
-```bash
-meson test -v -C _mesonbuild
-```
-
-This places the files in the specified prefix and their subpaths. The binary should now be in `/usr/bin` (and therefore in PATH)
-
-**Reconfigure**  
-reconfiguring the meson build files can be done with:
-
-```bash
-meson configure -Dprofile=default _mesonbuild
-```
-
-For example if the profile needs to be changed.
-
-
-**Uninstall**  
-If you don't like rnote, or decided that is not worth your precious disk space, you can always uninstall it with:
-
-```bash
-sudo ninja uninstall -C _mesonbuild
-```
+# Building, contributing
+Build instructions and guidelines how to contribute are outlined in [CONTRIBUTING.md](./CONTRIBUTING.md)

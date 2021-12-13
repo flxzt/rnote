@@ -4,7 +4,7 @@
         "development"
     ],
     "runtime": "org.gnome.Platform",
-    "runtime-version": "master",
+    "runtime-version": "41",
     "sdk": "org.gnome.Sdk",
     "sdk-extensions": [
         "org.freedesktop.Sdk.Extension.rust-stable"
@@ -79,8 +79,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://download.gnome.org/sources/libadwaita/1.0/libadwaita-1.0.0.beta.1.tar.xz",
-                    "sha256": "bd49c7011187c8558bc693257c0537961b784b8eefd00ee4f1e69359af11b046"
+                    "url": "https://download.gnome.org/sources/libadwaita/1.0/libadwaita-1.0.0.alpha.3.tar.xz",
+                    "sha256": "89f05fa742cabc5ea6a2c0295c34996af5ac953e9d020ace27b8e8b15cf9e050"
                 }
             ]
         },

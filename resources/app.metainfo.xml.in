@@ -59,7 +59,7 @@
         <p>this release changes:</p>
         <ul>
           <li>an updated icon!</li>
-          <li>an updated file format. !!! Breaks compatibility to older versions. Please export existing files before upgrading / downgrade temporarily (explained how to downgrade at https://github.com/flxzt/rnote)</li>
+          <li>an updated file format. !!! Breaks compatibility to older versions. Please export existing files before upgrading / downgrade temporarily (explained how to downgrade at github.com/flxzt/rnote)</li>
           <li>new features: PDF import, clipboard and drag&amp;drop support</li>
           <li>performance improvements in stroke rendering, selecting, erasing by parallelizing these operations</li>
           <li>UI improvements</li>

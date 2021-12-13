@@ -12,3 +12,5 @@ if not environ.get('DESTDIR', ''):
     call(["glib-compile-schemas", path.join(DATA_DIR, 'glib-2.0/schemas')])
     print("Updating desktop database...")
     call(["update-desktop-database", path.join(DATA_DIR, 'applications')])
+    print("Updating MIME-type database...")
+    call(["update-mime-database", path.join(DATA_DIR, 'mime')])

@@ -110,6 +110,13 @@ else
   )
 endif
 
+# MIME-Type
+install_data(
+  'app.mimetype.xml.in',
+  install_dir: datadir / 'mime' / 'packages',
+  rename: app_id + '.xml',
+)
+
 # templates
 template_files = files(
   'templates/brushstroke-cubicbezier.svg.templ',

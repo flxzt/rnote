@@ -52,6 +52,7 @@ glib_compile_resources = find_program('glib-compile-resources', required: true)
 glib_compile_schemas = find_program('glib-compile-schemas', required: true)
 desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
+update-mime-database = find_program('update-mime-database', required: false)
 
 cargo_sources= files(
   meson.project_source_root() + '/' + 'Cargo.toml',

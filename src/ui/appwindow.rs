@@ -838,14 +838,11 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            if let Some(vadjustment) = self.canvas().vadjustment() {
-                na::vector![
-                    VectorImage::OFFSET_X_DEFAULT,
-                    vadjustment.value() + VectorImage::OFFSET_Y_DEFAULT
-                ]
-            } else {
-                na::vector![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]
-            }
+            self.canvas()
+                .transform_canvas_coords_to_sheet_coords(na::vector![
+                    self.canvas().sheet_margin() + VectorImage::OFFSET_X_DEFAULT,
+                    self.canvas().sheet_margin() + VectorImage::OFFSET_Y_DEFAULT
+                ])
         });
         self.canvas().sheet().import_bytes_as_svg(pos, bytes)?;
 
@@ -861,6 +858,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
+    /// Target position is in the coordinate space of the sheet
     pub fn load_in_bitmapimage_bytes(
         &self,
         bytes: &[u8],
@@ -869,12 +867,11 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            let vadj = self.canvas().vadjustment().unwrap();
-
-            na::vector![
-                BitmapImage::OFFSET_X_DEFAULT,
-                vadj.value() + BitmapImage::OFFSET_Y_DEFAULT
-            ]
+            self.canvas()
+                .transform_canvas_coords_to_sheet_coords(na::vector![
+                    self.canvas().sheet_margin() + BitmapImage::OFFSET_X_DEFAULT,
+                    self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT
+                ])
         });
         self.canvas()
             .sheet()
@@ -892,6 +889,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
+    /// Target position is in the coordinate space of the sheet
     pub fn load_in_pdf_bytes(
         &self,
         bytes: &[u8],
@@ -900,12 +898,11 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            let vadj = self.canvas().vadjustment().unwrap();
-
-            na::vector![
-                BitmapImage::OFFSET_X_DEFAULT,
-                vadj.value() + BitmapImage::OFFSET_Y_DEFAULT
-            ]
+            self.canvas()
+                .transform_canvas_coords_to_sheet_coords(na::vector![
+                    self.canvas().sheet_margin() + BitmapImage::OFFSET_X_DEFAULT,
+                    self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT
+                ])
         });
         let page_width = (f64::from(self.canvas().sheet().width())
             * (self.canvas().pdf_import_width() / 100.0)

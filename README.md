@@ -49,7 +49,7 @@ Rnote is available as  a flatpak on Flathub:
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
 - [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
 - [x] parallelizing rendering and actions which affect many strokes.
-- [ ] limit rendering to visible strokes based on the current viewport of the canvas ( culling )
+- [x] limit rendering to visible strokes based on the current viewport of the canvas ( culling )
 - [ ] implement text fields
 - [ ] implement optional stroke smoothing
 
@@ -62,6 +62,11 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 ![multiple_pages](./resources/screenshots/multiple_pages.png)
 ![selection](./resources/screenshots/selection.png)
 
+## File Format
+The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
+
+
+## Building
 ### Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.json`.
 

@@ -73,6 +73,7 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 
 ![main_window_dark](./resources/screenshots/main_window_dark.png)
 ![main_window_light](./resources/screenshots/main_window_light.png)
+![pdf_annotation](./resources/screenshots/pdf_annotation.png)
 ![multiple_pages](./resources/screenshots/multiple_pages.png)
 ![selection](./resources/screenshots/selection.png)
 

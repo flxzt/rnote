@@ -1,3 +1,5 @@
+pub mod filerow;
+
 mod imp {
     use gtk4::{
         gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DirectoryList,
@@ -81,12 +83,14 @@ use std::path::{Path, PathBuf};
 
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Align, ClosureExpression,
-    ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, Label, ListItem,
+    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, ClosureExpression,
+    ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, ListItem,
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
     Widget,
 };
-use gtk4::{pango, DirectoryList, DragSource, Entry, Image, ListView, MultiSorter, Orientation};
+use gtk4::{DirectoryList, Entry, ListView, MultiSorter};
+
+use self::filerow::FileRow;
 
 glib::wrapper! {
     pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
@@ -171,26 +175,9 @@ impl WorkspaceBrowser {
         let primary_list_factory = SignalListItemFactory::new();
 
         primary_list_factory.connect_setup(move |_, list_item| {
-            let label = Label::builder().halign(Align::Start).ellipsize(pango::EllipsizeMode::End).build();
-            let image = Image::new();
-            let item_box = gtk4::Box::builder().
-                orientation(Orientation::Horizontal)
-                .halign(Align::Fill)
-                .valign(Align::Fill)
-                .hexpand(true)
-                .vexpand(true)
-                .build();
+            let filerow = FileRow::new();
 
-            let drag_source = DragSource::builder()
-                .name("workspacebrowser-file-drag-source")
-                .actions(gdk::DragAction::COPY)
-                .build();
-            item_box.add_controller(&drag_source);
-
-            item_box.style_context().add_class("workspace_listitem");
-            item_box.prepend(&image);
-            item_box.append(&label);
-            list_item.set_child(Some(&item_box));
+            list_item.set_child(Some(&filerow));
 
             let list_item_expression = ConstantExpression::new(list_item);
             let fileinfo_expression = PropertyExpression::new(
@@ -199,9 +186,8 @@ impl WorkspaceBrowser {
                 "item",
             );
 
-            let fileinfo_expression_c = fileinfo_expression.clone();
             let content_provider_expr = ClosureExpression::new(
-                 move |expressions| {
+                move |expressions| {
                     if let Some(fileinfo) = expressions[1].get::<Option<glib::Object>>().expect(
                         "failed to get::<glib::Object>() from fileinfo_expression[1]. Wrong Type",
                     ) {
@@ -218,24 +204,29 @@ impl WorkspaceBrowser {
 
                     gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
                 },
-                &[fileinfo_expression_c.upcast()]
+                &[fileinfo_expression.clone().upcast()],
             );
 
             let icon_name_expression = ClosureExpression::new(
-                 move |expressions| {
+                move |expressions| {
                     if let Some(fileinfo) = expressions[1].get::<Option<glib::Object>>().expect(
                         "failed to get::<glib::Object>() from fileinfo_expression[1]. Wrong Type",
                     ) {
                         if let Ok(fileinfo) = fileinfo.downcast::<gio::FileInfo>() {
-                            if let Some(themed_icon) = fileinfo.attribute_object("standard::symbolic-icon") {
+                            if let Some(themed_icon) =
+                                fileinfo.attribute_object("standard::symbolic-icon")
+                            {
                                 return themed_icon.downcast::<gio::ThemedIcon>().unwrap();
                             }
                         }
                     }
 
-                    gio::ThemedIcon::from_names(&["workspace-folder-symbolic", "folder-documents-symbolic"])
+                    gio::ThemedIcon::from_names(&[
+                        "workspace-folder-symbolic",
+                        "folder-documents-symbolic",
+                    ])
                 },
-                &[fileinfo_expression.clone().upcast()]
+                &[fileinfo_expression.clone().upcast()],
             );
 
             let basename_expression = ClosureExpression::new(
@@ -258,14 +249,19 @@ impl WorkspaceBrowser {
                         }
                     }
 
-                    String::from(".")
+                    String::from("")
                 }),
-                &[fileinfo_expression.upcast()]
+                &[fileinfo_expression.clone().upcast()],
             );
 
-            basename_expression.bind(&label, "label", Some(&label));
-            icon_name_expression.bind(&image, "gicon", Some(&image));
-            content_provider_expr.bind(&drag_source, "content", Some(&drag_source));
+
+            basename_expression.bind(&filerow.file_label(), "label", Some(&filerow.file_label()));
+            icon_name_expression.bind(&filerow.file_image(), "gicon", Some(&filerow.file_image()));
+            content_provider_expr.bind(
+                &filerow.drag_source(),
+                "content",
+                Some(&filerow.drag_source()),
+            );
         });
         let filefilter = FileFilter::new();
         filefilter.add_pattern("*.rnote");

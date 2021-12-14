@@ -23,7 +23,7 @@ mod imp {
             penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
             selectionmodifier::SelectionModifier, settingspanel::SettingsPanel,
             templatechooser::TemplateChooser, unitentry::UnitEntry,
-            workspacebrowser::WorkspaceBrowser,
+            workspacebrowser::WorkspaceBrowser, workspacebrowser::filerow::FileRow,
         },
         utils,
     };
@@ -106,6 +106,7 @@ mod imp {
             EraserPage::static_type();
             SelectorPage::static_type();
             WorkspaceBrowser::static_type();
+            FileRow::static_type();
             PredefinedFormat::static_type();
             MeasureUnit::static_type();
             PatternStyle::static_type();

@@ -81,12 +81,12 @@ use std::path::{Path, PathBuf};
 
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Align, ClosureExpression,
+    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Align, ClosureExpression,
     ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, Label, ListItem,
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
     Widget,
 };
-use gtk4::{pango, DirectoryList, Entry, Image, ListView, MultiSorter, Orientation};
+use gtk4::{pango, DirectoryList, DragSource, Entry, Image, ListView, MultiSorter, Orientation};
 
 glib::wrapper! {
     pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
@@ -181,6 +181,12 @@ impl WorkspaceBrowser {
                 .vexpand(true)
                 .build();
 
+            let drag_source = DragSource::builder()
+                .name("workspacebrowser-file-drag-source")
+                .actions(gdk::DragAction::COPY)
+                .build();
+            item_box.add_controller(&drag_source);
+
             item_box.style_context().add_class("workspace_listitem");
             item_box.prepend(&image);
             item_box.append(&label);
@@ -193,8 +199,30 @@ impl WorkspaceBrowser {
                 "item",
             );
 
+            let fileinfo_expression_c = fileinfo_expression.clone();
+            let content_provider_expr = ClosureExpression::new(
+                 move |expressions| {
+                    if let Some(fileinfo) = expressions[1].get::<Option<glib::Object>>().expect(
+                        "failed to get::<glib::Object>() from fileinfo_expression[1]. Wrong Type",
+                    ) {
+                        if let Ok(fileinfo) = fileinfo.downcast::<gio::FileInfo>() {
+                            if let Some(file) = fileinfo.attribute_object("standard::file") {
+                                let file = file
+                                    .downcast::<gio::File>()
+                                    .expect("failed to downcast::<gio::File>() from file GObject");
+
+                                return gdk::ContentProvider::for_value(&file.to_value());
+                            }
+                        }
+                    }
+
+                    gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
+                },
+                &[fileinfo_expression_c.upcast()]
+            );
+
             let icon_name_expression = ClosureExpression::new(
-                clone!(@strong fileinfo_expression => move |expressions| {
+                 move |expressions| {
                     if let Some(fileinfo) = expressions[1].get::<Option<glib::Object>>().expect(
                         "failed to get::<glib::Object>() from fileinfo_expression[1]. Wrong Type",
                     ) {
@@ -206,7 +234,7 @@ impl WorkspaceBrowser {
                     }
 
                     gio::ThemedIcon::from_names(&["workspace-folder-symbolic", "folder-documents-symbolic"])
-                }),
+                },
                 &[fileinfo_expression.clone().upcast()]
             );
 
@@ -236,8 +264,8 @@ impl WorkspaceBrowser {
             );
 
             basename_expression.bind(&label, "label", Some(&label));
-            //icon_name_expression.bind(&image, "icon-name", Some(&image));
             icon_name_expression.bind(&image, "gicon", Some(&image));
+            content_provider_expr.bind(&drag_source, "content", Some(&drag_source));
         });
         let filefilter = FileFilter::new();
         filefilter.add_pattern("*.rnote");

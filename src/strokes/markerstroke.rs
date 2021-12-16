@@ -58,8 +58,8 @@ impl StrokeBehaviour for MarkerStroke {
         ];
 
         let scalevector = na::vector![
-            (new_bounds.maxs[0] - new_bounds.mins[0]) / (self.bounds.maxs[0] - self.bounds.mins[0]),
-            (new_bounds.maxs[1] - new_bounds.mins[1]) / (self.bounds.maxs[1] - self.bounds.mins[1])
+            (new_bounds.extents()[0]) / (self.bounds().extents()[0]),
+            (new_bounds.extents()[1]) / (self.bounds().extents()[1])
         ];
 
         let new_elements: Vec<Element> = self
@@ -174,18 +174,18 @@ impl StrokeBehaviour for MarkerStroke {
         zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        let svg = compose::wrap_svg(
-            self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
-            Some(self.bounds),
-            Some(self.bounds),
-            true,
-            false,
-        );
-        Ok(Some(renderer.gen_rendernode(
-            self.bounds,
-            zoom,
-            svg.as_str(),
-        )?))
+        let svg = render::Svg {
+            bounds: self.bounds,
+            svg_data: compose::wrap_svg(
+                self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
+                Some(self.bounds),
+                Some(self.bounds),
+                true,
+                false,
+            ),
+        };
+
+        Ok(Some(renderer.gen_rendernode(zoom, &svg)?))
     }
 }
 

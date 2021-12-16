@@ -80,10 +80,8 @@ impl StrokeBehaviour for ShapeStroke {
             } => match self.shaper.drawstyle {
                 DrawStyle::Smooth => {
                     let scalevector = na::vector![
-                        (new_bounds.maxs[0] - new_bounds.mins[0])
-                            / (self.bounds.maxs[0] - self.bounds.mins[0]),
-                        (new_bounds.maxs[1] - new_bounds.mins[1])
-                            / (self.bounds.maxs[1] - self.bounds.mins[1])
+                        (new_bounds.extents()[0]) / (self.bounds.extents()[0]),
+                        (new_bounds.extents()[1]) / (self.bounds.extents()[1])
                     ];
                     let offset = na::vector![
                         new_bounds.mins[0] - self.bounds.mins[0],
@@ -96,10 +94,8 @@ impl StrokeBehaviour for ShapeStroke {
                 }
                 DrawStyle::Rough => {
                     let scalevector = na::vector![
-                        (new_bounds.maxs[0] - new_bounds.mins[0])
-                            / (self.bounds.maxs[0] - self.bounds.mins[0]),
-                        (new_bounds.maxs[1] - new_bounds.mins[1])
-                            / (self.bounds.maxs[1] - self.bounds.mins[1])
+                        (new_bounds.extents()[0]) / (self.bounds.extents()[0]),
+                        (new_bounds.extents()[1]) / (self.bounds.extents()[1])
                     ];
                     let offset = na::vector![
                         new_bounds.mins[0] - self.bounds.mins[0],
@@ -136,26 +132,24 @@ impl StrokeBehaviour for ShapeStroke {
                 ref mut radius_y,
             } => {
                 let center = na::vector![
-                    new_bounds.mins[0] + (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0,
-                    new_bounds.mins[1] + (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
+                    new_bounds.mins[0] + (new_bounds.extents()[0]) / 2.0,
+                    new_bounds.mins[1] + (new_bounds.extents()[1]) / 2.0
                 ];
 
                 match self.shaper.drawstyle {
                     DrawStyle::Smooth => {
                         *pos = center;
 
-                        *radius_x =
-                            (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0 - self.shaper.width();
-                        *radius_y =
-                            (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0 - self.shaper.width();
+                        *radius_x = (new_bounds.extents()[0]) / 2.0 - self.shaper.width();
+                        *radius_y = (new_bounds.extents()[1]) / 2.0 - self.shaper.width();
                     }
                     DrawStyle::Rough => {
                         *pos = center;
 
-                        *radius_x = (new_bounds.maxs[0] - new_bounds.mins[0]) / 2.0
+                        *radius_x = (new_bounds.extents()[0]) / 2.0
                             - self.shaper.width()
                             - DrawStyle::ROUGH_MARGIN;
-                        *radius_y = (new_bounds.maxs[1] - new_bounds.mins[1]) / 2.0
+                        *radius_y = (new_bounds.extents()[1]) / 2.0
                             - self.shaper.width()
                             - DrawStyle::ROUGH_MARGIN;
                     }
@@ -336,18 +330,18 @@ impl StrokeBehaviour for ShapeStroke {
         zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        let svg = compose::wrap_svg(
-            self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
-            Some(self.bounds),
-            Some(self.bounds),
-            true,
-            false,
-        );
-        Ok(Some(renderer.gen_rendernode(
-            self.bounds,
-            zoom,
-            svg.as_str(),
-        )?))
+        let svg = render::Svg {
+            bounds: self.bounds,
+            svg_data: compose::wrap_svg(
+                self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
+                Some(self.bounds),
+                Some(self.bounds),
+                true,
+                false,
+            ),
+        };
+
+        Ok(Some(renderer.gen_rendernode(zoom, &svg)?))
     }
 }
 

@@ -29,8 +29,8 @@ pub fn aabb_to_graphene_rect(aabb: p2d::bounding_volume::AABB) -> graphene::Rect
     graphene::Rect::new(
         aabb.mins[0] as f32,
         aabb.mins[1] as f32,
-        (aabb.maxs[0] - aabb.mins[0]) as f32,
-        (aabb.maxs[1] - aabb.mins[1]) as f32,
+        (aabb.extents()[0]) as f32,
+        (aabb.extents()[1]) as f32,
     )
 }
 
@@ -45,8 +45,8 @@ pub fn split_aabb_extended(
 
     let mut offset_x = aabb.mins[0];
     let mut offset_y = aabb.mins[1];
-    let width = aabb.maxs[0] - aabb.mins[0];
-    let height = aabb.maxs[1] - aabb.mins[1];
+    let width = aabb.extents()[0];
+    let height = aabb.extents()[1];
 
     if width <= splitted_size[0] {
         splitted_size[0] = width;
@@ -81,8 +81,8 @@ pub fn split_aabb(
 
     let mut offset_x = aabb.mins[0];
     let mut offset_y = aabb.mins[1];
-    let width = aabb.maxs[0] - aabb.mins[0];
-    let height = aabb.maxs[1] - aabb.mins[1];
+    let width = aabb.extents()[0];
+    let height = aabb.extents()[1];
 
     if width <= splitted_size[0] {
         splitted_size[0] = width;

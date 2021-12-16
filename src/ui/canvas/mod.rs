@@ -669,7 +669,6 @@ impl Canvas {
             .unwrap();
     }
 
-
     pub fn zoom(&self) -> f64 {
         self.property("zoom").unwrap().get::<f64>().unwrap()
     }
@@ -691,7 +690,10 @@ impl Canvas {
     }
 
     pub fn pdf_import_width(&self) -> f64 {
-        self.property("pdf-import-width").unwrap().get::<f64>().unwrap()
+        self.property("pdf-import-width")
+            .unwrap()
+            .get::<f64>()
+            .unwrap()
     }
 
     pub fn set_pdf_import_width(&self, pdf_import_width: f64) {
@@ -1172,6 +1174,7 @@ impl Canvas {
     /// use force_regenerate to force regeneration of the texture_cache of the background (for example when changing the background pattern)
     pub fn regenerate_background(&self, force_regenerate: bool, redraw: bool) {
         match self.sheet().background().borrow_mut().update_rendernode(
+            &self.sheet().strokes_state().borrow().renderer,
             self.zoom(),
             self.sheet().bounds(),
             force_regenerate,
@@ -1484,8 +1487,8 @@ pub mod debug {
         let bounds = graphene::Rect::new(
             bounds.mins[0] as f32,
             bounds.mins[1] as f32,
-            (bounds.maxs[0] - bounds.mins[0]) as f32,
-            (bounds.maxs[1] - bounds.mins[1]) as f32,
+            (bounds.extents()[0]) as f32,
+            (bounds.extents()[1]) as f32,
         );
 
         let border_width = 1.5;

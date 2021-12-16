@@ -559,7 +559,12 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             match appwindow.canvas().sheet().gen_svg() {
                 Ok(svg) => {
-                    match appwindow.canvas().sheet().strokes_state().borrow().renderer.gen_rendernode(sheet_bounds, print_zoom, svg.as_str() ) {
+                    let svg = render::Svg {
+                        bounds: sheet_bounds,
+                        svg_data: svg,
+                    };
+
+                    match appwindow.canvas().sheet().strokes_state().borrow().renderer.gen_rendernode(print_zoom, &svg ) {
                         Ok(node) => {
                             snapshot.append_node(&node);
                         }

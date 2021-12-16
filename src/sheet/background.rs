@@ -2,6 +2,7 @@ use gtk4::{glib, gsk, Snapshot};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
+use crate::render::Renderer;
 use crate::{compose, geometry, render, utils};
 
 #[derive(
@@ -233,12 +234,13 @@ impl Background {
 
     pub fn update_rendernode(
         &mut self,
+        renderer: &Renderer,
         zoom: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
         force_regenerate: bool,
     ) -> Result<(), anyhow::Error> {
         if force_regenerate || sheet_bounds != self.current_bounds || zoom != self.current_zoom {
-            match self.gen_rendernode(zoom, sheet_bounds) {
+            match self.gen_rendernode(renderer, zoom, sheet_bounds) {
                 Ok(Some(new_rendernode)) => {
                     self.current_zoom = zoom;
                     self.current_bounds = sheet_bounds;
@@ -263,6 +265,7 @@ impl Background {
 
     pub fn gen_rendernode(
         &mut self,
+        renderer: &Renderer,
         zoom: f64,
         sheet_bounds: p2d::bounding_volume::AABB,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
@@ -300,7 +303,12 @@ impl Background {
             &geometry::aabb_to_graphene_rect(geometry::aabb_scale(sheet_bounds, zoom)),
         );
 
-        match render::gen_image_librsvg(tile_bounds, zoom, svg_string.as_str()) {
+        let svg = render::Svg {
+            bounds: tile_bounds,
+            svg_data: svg_string,
+        };
+
+        match renderer.gen_image(zoom, &svg) {
             Ok(background_image) => {
                 let new_texture = render::image_to_memtexture(&background_image);
                 for aabb in geometry::split_aabb_extended(sheet_bounds, tile_size) {
@@ -332,8 +340,8 @@ impl Background {
         let color_rect = element::Rectangle::new()
             .set("x", sheet_bounds.mins[0])
             .set("y", sheet_bounds.mins[1])
-            .set("width", sheet_bounds.maxs[0] - sheet_bounds.mins[0])
-            .set("height", sheet_bounds.maxs[1] - sheet_bounds.mins[1])
+            .set("width", sheet_bounds.extents()[0])
+            .set("height", sheet_bounds.extents()[1])
             .set("fill", self.color.to_css_color());
         group = group.add(color_rect);
 

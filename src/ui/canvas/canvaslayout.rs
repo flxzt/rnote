@@ -107,14 +107,12 @@ mod imp {
                     let selection_bounds_zoomed =
                         geometry::aabb_scale(selection_bounds, total_zoom);
 
-                    selection_modifier.translate_node().set_width_request(
-                        (selection_bounds_zoomed.maxs[0] - selection_bounds_zoomed.mins[0]).round()
-                            as i32,
-                    );
-                    selection_modifier.translate_node().set_height_request(
-                        (selection_bounds_zoomed.maxs[1] - selection_bounds_zoomed.mins[1]).round()
-                            as i32,
-                    );
+                    selection_modifier
+                        .translate_node()
+                        .set_width_request((selection_bounds_zoomed.extents()[0]).round() as i32);
+                    selection_modifier
+                        .translate_node()
+                        .set_height_request((selection_bounds_zoomed.extents()[1]).round() as i32);
 
                     let x = (sheet_margin_zoomed + selection_bounds_zoomed.mins[0] - hadj.value())
                         .round() as i32
@@ -123,11 +121,9 @@ mod imp {
                         .round() as i32
                         - SelectionModifier::RESIZE_NODE_SIZE;
 
-                    let width = (selection_bounds_zoomed.maxs[0] - selection_bounds_zoomed.mins[0])
-                        .round() as i32
+                    let width = (selection_bounds_zoomed.extents()[0]).round() as i32
                         + 2 * SelectionModifier::RESIZE_NODE_SIZE;
-                    let height = (selection_bounds_zoomed.maxs[1] - selection_bounds_zoomed.mins[1])
-                        .round() as i32
+                    let height = (selection_bounds_zoomed.extents()[1]).round() as i32
                         + 2 * SelectionModifier::RESIZE_NODE_SIZE;
 
                     selection_modifier.size_allocate(

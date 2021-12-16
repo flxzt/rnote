@@ -244,10 +244,8 @@ impl StrokesState {
             ];
 
             let scalevector = na::vector![
-                (new_bounds.maxs[0] - new_bounds.mins[0])
-                    / (selection_bounds.maxs[0] - selection_bounds.mins[0]),
-                (new_bounds.maxs[1] - new_bounds.mins[1])
-                    / (selection_bounds.maxs[1] - selection_bounds.mins[1])
+                (new_bounds.extents()[0]) / (selection_bounds.extents()[0]),
+                (new_bounds.extents()[1]) / (selection_bounds.extents()[1])
             ];
 
             p2d::bounding_volume::AABB::new(
@@ -263,11 +261,11 @@ impl StrokesState {
                     (stroke.bounds().mins[0] - selection_bounds.mins[0]) * scalevector[0]
                         + selection_bounds.mins[0]
                         + offset[0]
-                        + (stroke.bounds().maxs[0] - stroke.bounds().mins[0]) * scalevector[0],
+                        + (stroke.bounds().extents()[0]) * scalevector[0],
                     (stroke.bounds().mins[1] - selection_bounds.mins[1]) * scalevector[1]
                         + selection_bounds.mins[1]
                         + offset[1]
-                        + (stroke.bounds().maxs[1] - stroke.bounds().mins[1]) * scalevector[1]
+                        + (stroke.bounds().extents()[1]) * scalevector[1]
                 ],
             )
         }

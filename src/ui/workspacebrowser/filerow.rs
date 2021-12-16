@@ -59,8 +59,8 @@ mod imp {
     impl WidgetImpl for FileRow {}
 }
 
-use gtk4::{DragSource, Image, Label};
 use gtk4::{glib, subclass::prelude::*, Widget};
+use gtk4::{DragSource, Image, Label};
 
 glib::wrapper! {
     pub struct FileRow(ObjectSubclass<imp::FileRow>)

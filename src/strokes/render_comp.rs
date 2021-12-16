@@ -191,8 +191,8 @@ impl StrokesState {
             let bounds = graphene::Rect::new(
                 bounds.mins[0] as f32,
                 bounds.mins[1] as f32,
-                (bounds.maxs[0] - bounds.mins[0]) as f32,
-                (bounds.maxs[1] - bounds.mins[1]) as f32,
+                (bounds.extents()[0]) as f32,
+                (bounds.extents()[1]) as f32,
             )
             .scale(zoom as f32, zoom as f32);
             let border_color = gdk::RGBA {
@@ -246,8 +246,8 @@ impl StrokesState {
             let selection_bounds = graphene::Rect::new(
                 selection_bounds.mins[0] as f32,
                 selection_bounds.mins[1] as f32,
-                (selection_bounds.maxs[0] - selection_bounds.mins[0]) as f32,
-                (selection_bounds.maxs[1] - selection_bounds.mins[1]) as f32,
+                (selection_bounds.extents()[0]) as f32,
+                (selection_bounds.extents()[1]) as f32,
             )
             .scale(zoom as f32, zoom as f32);
 

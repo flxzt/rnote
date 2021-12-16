@@ -52,8 +52,8 @@ pub fn wrap_svg(
     let (x, y, width, height) = if let Some(bounds) = bounds {
         let x = format!("{:.3}", bounds.mins[0]);
         let y = format!("{:.3}", bounds.mins[1]);
-        let width = format!("{:.3}", bounds.maxs[0] - bounds.mins[0]);
-        let height = format!("{:.3}", bounds.maxs[1] - bounds.mins[1]);
+        let width = format!("{:.3}", bounds.extents()[0]);
+        let height = format!("{:.3}", bounds.extents()[1]);
 
         (x, y, width, height)
     } else {
@@ -67,11 +67,11 @@ pub fn wrap_svg(
 
     let viewbox = if let Some(viewbox) = viewbox {
         format!(
-            "viewBox=\"{} {} {} {}\"",
-            viewbox.mins[0].floor() as i32,
-            viewbox.mins[1].floor() as i32,
-            (viewbox.maxs[0] - viewbox.mins[0]).ceil() as i32,
-            (viewbox.maxs[1] - viewbox.mins[1]).ceil() as i32
+            "viewBox=\"{:.3} {:.3} {:.3} {:.3}\"",
+            viewbox.mins[0],
+            viewbox.mins[1],
+            viewbox.extents()[0],
+            viewbox.extents()[1]
         )
     } else {
         String::from("")
@@ -116,8 +116,8 @@ pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB
     let mut cx = tera::Context::new();
     let x = format!("{:3}", bounds.mins[0]);
     let y = format!("{:3}", bounds.mins[1]);
-    let width = format!("{:3}", bounds.maxs[0] - bounds.mins[0]);
-    let height = format!("{:3}", bounds.maxs[1] - bounds.mins[1]);
+    let width = format!("{:3}", bounds.extents()[0]);
+    let height = format!("{:3}", bounds.extents()[1]);
     cx.insert("id", &id);
     cx.insert("x", &x);
     cx.insert("y", &y);

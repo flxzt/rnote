@@ -111,11 +111,12 @@ impl StrokeBehaviour for BitmapImage {
         zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        Ok(Some(renderer.gen_rendernode(
-            self.bounds,
-            zoom,
-            compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
-        )?))
+        let svg = render::Svg {
+            bounds: self.bounds,
+            svg_data: compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()),
+        };
+
+        Ok(Some(renderer.gen_rendernode(zoom, &svg)?))
     }
 }
 

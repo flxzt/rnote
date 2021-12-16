@@ -69,7 +69,7 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-/*             self.general_sheet_margin_unitentry
+            /*             self.general_sheet_margin_unitentry
                 .get()
                 .value_adj()
                 .set_lower(0.0);

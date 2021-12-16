@@ -82,14 +82,18 @@ impl Selector {
         renderer: &render::Renderer,
     ) -> Result<gsk::RenderNode, anyhow::Error> {
         if let Some(bounds) = self.bounds {
-            let svg = compose::wrap_svg(
-                self.gen_svg_path(na::vector![0.0, 0.0])?.as_str(),
-                None,
-                Some(bounds),
-                true,
-                false,
-            );
-            renderer.gen_rendernode(bounds, zoom, svg.as_str())
+            let svg = render::Svg {
+                bounds,
+                svg_data: compose::wrap_svg(
+                    self.gen_svg_path(na::vector![0.0, 0.0])?.as_str(),
+                    None,
+                    Some(bounds),
+                    true,
+                    false,
+                ),
+            };
+
+            renderer.gen_rendernode(zoom, &svg)
         } else {
             Ok(render::default_rendernode())
         }

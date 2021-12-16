@@ -254,7 +254,6 @@ impl WorkspaceBrowser {
                 &[fileinfo_expression.clone().upcast()],
             );
 
-
             basename_expression.bind(&filerow.file_label(), "label", Some(&filerow.file_label()));
             icon_name_expression.bind(&filerow.file_image(), "gicon", Some(&filerow.file_image()));
             content_provider_expr.bind(

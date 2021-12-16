@@ -69,8 +69,8 @@ impl StrokeBehaviour for BrushStroke {
         ];
 
         let scalevector = na::vector![
-            (new_bounds.maxs[0] - new_bounds.mins[0]) / (self.bounds.maxs[0] - self.bounds.mins[0]),
-            (new_bounds.maxs[1] - new_bounds.mins[1]) / (self.bounds.maxs[1] - self.bounds.mins[1])
+            (new_bounds.extents()[0]) / (self.bounds.extents()[0]),
+            (new_bounds.extents()[1]) / (self.bounds.extents()[1])
         ];
 
         let new_elements: Vec<Element> = self

@@ -557,10 +557,10 @@ impl Selection {
         ];
 
         let scalevector = na::vector![
-            (new_bounds.maxs[0] - new_bounds.mins[0])
-                / (selection_bounds.maxs[0] - selection_bounds.mins[0]),
-            (new_bounds.maxs[1] - new_bounds.mins[1])
-                / (selection_bounds.maxs[1] - selection_bounds.mins[1])
+            (new_bounds.extents()[0])
+                / (selection_bounds.extents()[0]),
+            (new_bounds.extents()[1])
+                / (selection_bounds.extents()[1])
         ];
 
         p2d::bounding_volume::AABB::new(
@@ -576,11 +576,11 @@ impl Selection {
                 (stroke.bounds().mins[0] - selection_bounds.mins[0]) * scalevector[0]
                     + selection_bounds.mins[0]
                     + offset[0]
-                    + (stroke.bounds().maxs[0] - stroke.bounds().mins[0]) * scalevector[0],
+                    + (stroke.bounds().extents()[0]) * scalevector[0],
                 (stroke.bounds().mins[1] - selection_bounds.mins[1]) * scalevector[1]
                     + selection_bounds.mins[1]
                     + offset[1]
-                    + (stroke.bounds().maxs[1] - stroke.bounds().mins[1]) * scalevector[1]
+                    + (stroke.bounds().extents()[1]) * scalevector[1]
             ],
         )
     }
@@ -637,8 +637,8 @@ impl Selection {
             let selection_bounds = graphene::Rect::new(
                 bounds.mins[0] as f32,
                 bounds.mins[1] as f32,
-                (bounds.maxs[0] - bounds.mins[0]) as f32,
-                (bounds.maxs[1] - bounds.mins[1]) as f32,
+                (bounds.extents()[0]) as f32,
+                (bounds.extents()[1]) as f32,
             )
             .scale(zoom as f32, zoom as f32);
 
@@ -697,8 +697,8 @@ impl Selection {
         let bounds = graphene::Rect::new(
             bounds.mins[0] as f32,
             bounds.mins[1] as f32,
-            (bounds.maxs[0] - bounds.mins[0]) as f32,
-            (bounds.maxs[1] - bounds.mins[1]) as f32,
+            (bounds.extents()[0]) as f32,
+            (bounds.extents()[1]) as f32,
         )
         .scale(zoom as f32, zoom as f32);
         let border_color = gdk::RGBA {
@@ -737,8 +737,8 @@ impl Selection {
             let wrapper_bounds = p2d::bounding_volume::AABB::new(
                 na::point![0.0, 0.0],
                 na::point![
-                    bounds.maxs[0] - bounds.mins[0],
-                    bounds.maxs[1] - bounds.mins[1]
+                    bounds.extents()[0],
+                    bounds.extents()[1]
                 ],
             );
             data = compose::wrap_svg(

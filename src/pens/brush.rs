@@ -90,17 +90,21 @@ pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), anyhow::
     for _i in 0..=strokes_uniform.sample(&mut rng) {
         let validation_stroke =
             BrushStroke::validation_stroke(&Element::validation_data(bounds), &brush).unwrap();
-        let svg = compose::wrap_svg(
-            validation_stroke
-                .gen_svg_data(na::vector![0.0, 0.0])?
-                .as_str(),
-            Some(bounds),
-            Some(bounds),
-            true,
-            false,
-        );
+        let svg = render::Svg {
+            bounds,
+            svg_data: compose::wrap_svg(
+                validation_stroke
+                    .gen_svg_data(na::vector![0.0, 0.0])?
+                    .as_str(),
+                Some(bounds),
+                Some(bounds),
+                true,
+                false,
+            ),
+        };
+
         //log::warn!("\n### validating file `{:?}`###, contents:\n {}", file.path(), svg);
-        let _rendernode = renderer.gen_rendernode(bounds, 1.0, svg.as_str())?;
+        let _rendernode = renderer.gen_rendernode(1.0, &svg)?;
     }
 
     Ok(())

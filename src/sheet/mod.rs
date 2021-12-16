@@ -698,11 +698,7 @@ impl Sheet {
 
         priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
-        let bitmapimages = BitmapImage::import_from_pdf_bytes(
-            bytes,
-            pos,
-            page_width,
-        )?;
+        let bitmapimages = BitmapImage::import_from_pdf_bytes(bytes, pos, page_width)?;
 
         for bitmapimage in bitmapimages {
             let inserted = priv_

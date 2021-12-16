@@ -73,11 +73,12 @@ impl StrokeBehaviour for VectorImage {
         zoom: f64,
         renderer: &render::Renderer,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        Ok(Some(renderer.gen_rendernode(
-            self.bounds,
-            zoom,
-            compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()).as_str(),
-        )?))
+        let svg = render::Svg {
+            bounds: self.bounds,
+            svg_data: compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()),
+        };
+
+        Ok(Some(renderer.gen_rendernode(zoom, &svg)?))
     }
 }
 
@@ -94,10 +95,7 @@ impl VectorImage {
     ) -> Result<Self, anyhow::Error> {
         let (intrinsic_size, bounds) = if let Some(bounds) = bounds {
             (
-                na::vector![
-                    bounds.maxs[0] - bounds.mins[0],
-                    bounds.maxs[1] - bounds.mins[1]
-                ],
+                na::vector![bounds.extents()[0], bounds.extents()[1]],
                 bounds,
             )
         } else {

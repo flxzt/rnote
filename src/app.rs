@@ -23,7 +23,7 @@ mod imp {
             penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
             selectionmodifier::SelectionModifier, settingspanel::SettingsPanel,
             templatechooser::TemplateChooser, unitentry::UnitEntry,
-            workspacebrowser::WorkspaceBrowser, workspacebrowser::filerow::FileRow,
+            workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
         },
         utils,
     };

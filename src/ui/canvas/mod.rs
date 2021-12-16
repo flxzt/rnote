@@ -1147,14 +1147,15 @@ impl Canvas {
             glib::source::source_remove(zoom_timeout);
         }
 
-        // Regenerate when zoom is over 200%
-        if self.temporary_zoom() > Self::ZOOM_REGENERATION_THRESHOLD
+        // Regenerate when zoom is over Threshold
+/*         if self.temporary_zoom() > Self::ZOOM_REGENERATION_THRESHOLD
             || self.temporary_zoom() < 1.0 / Self::ZOOM_REGENERATION_THRESHOLD
         {
             self.zoom_to(zoom);
         } else {
             self.zoom_temporarily_to(zoom);
-        }
+        } */
+            self.zoom_temporarily_to(zoom);
 
         priv_
             .zoom_timeout

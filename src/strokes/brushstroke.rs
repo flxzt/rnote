@@ -6,7 +6,6 @@ use crate::{
     render,
 };
 
-use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -152,11 +151,11 @@ impl StrokeBehaviour for BrushStroke {
         }
     }
 
-    fn gen_rendernode(
+    fn gen_image(
         &self,
         zoom: f64,
         renderer: &render::Renderer,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+    ) -> Result<render::Image, anyhow::Error> {
         let offset = na::vector![0.0, 0.0];
         let svgs: Vec<render::Svg> = match self.brush.current_style {
             brush::BrushStyle::Linear => self.linear_svg_data(offset, true)?,
@@ -176,13 +175,17 @@ impl StrokeBehaviour for BrushStroke {
                 }
             }
         };
+        let joined_svg: String = svgs
+            .iter()
+            .map(|svg| svg.svg_data.as_str())
+            .collect::<Vec<&str>>()
+            .join("\n");
+        let joined_svg = render::Svg {
+            bounds: self.bounds,
+            svg_data: joined_svg,
+        };
 
-        Ok(renderer.gen_rendernode_par(zoom, &svgs).map_err(|e| {
-            anyhow::anyhow!(
-                "gen_rendernode_par() failed in gen_rendernode() for brushstroke, {}",
-                e
-            )
-        })?)
+        renderer.gen_image(zoom, &joined_svg)
     }
 }
 

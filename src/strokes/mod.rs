@@ -10,9 +10,12 @@ pub mod render_comp;
 pub mod selection_comp;
 pub mod trash_comp;
 
+use std::sync::{Arc, RwLock};
+
+use crate::render::RenderTask;
+use crate::ui::appwindow::RnoteAppWindow;
 use crate::{pens::PenStyle, pens::Pens, render};
 use chrono_comp::ChronoComponent;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
@@ -20,7 +23,9 @@ use trash_comp::TrashComponent;
 use self::strokestyle::{Element, StrokeBehaviour, StrokeStyle};
 use self::{brushstroke::BrushStroke, markerstroke::MarkerStroke, shapestroke::ShapeStroke};
 
+use gtk4::{glib, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
@@ -28,7 +33,7 @@ slotmap::new_key_type! {
     pub struct StrokeKey;
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct StrokesState {
     // Components
     strokes: HopSlotMap<StrokeKey, StrokeStyle>,
@@ -40,15 +45,28 @@ pub struct StrokesState {
     // Other state
     /// value is equal chrono_component of the newest inserted or modified stroke.
     chrono_counter: u32,
+    pub selection_bounds: Option<p2d::bounding_volume::AABB>,
     #[serde(skip)]
     pub zoom: f64, // changes with the canvas zoom
     #[serde(skip)]
-    pub renderer: render::Renderer,
-    pub selection_bounds: Option<p2d::bounding_volume::AABB>,
+    pub renderer: Arc<RwLock<render::Renderer>>,
+    #[serde(skip)]
+    pub render_tx: Option<glib::Sender<RenderTask>>,
+    #[serde(skip)]
+    pub render_rx: Option<glib::Receiver<RenderTask>>,
+    #[serde(skip)]
+    pub render_channel_source: Option<glib::Source>,
+    #[serde(skip, default = "render::default_render_threadpool")]
+    pub threadpool: rayon::ThreadPool,
 }
 
 impl Default for StrokesState {
     fn default() -> Self {
+        let threadpool = render::default_render_threadpool();
+
+        let (render_tx, render_rx) =
+            glib::MainContext::channel::<RenderTask>(glib::PRIORITY_DEFAULT);
+
         Self {
             strokes: HopSlotMap::with_key(),
             trash_components: SecondaryMap::new(),
@@ -58,8 +76,21 @@ impl Default for StrokesState {
 
             chrono_counter: 0,
             zoom: 1.0,
-            renderer: render::Renderer::default(),
+            renderer: Arc::new(RwLock::new(render::Renderer::default())),
+            render_tx: Some(render_tx),
+            render_rx: Some(render_rx),
+            render_channel_source: None,
             selection_bounds: None,
+            threadpool,
+        }
+    }
+}
+
+impl Drop for StrokesState {
+    fn drop(&mut self) {
+        //let _ = self.render_tx.send(Command::Quit);
+        if let Some(source) = self.render_channel_source.take() {
+            source.destroy();
         }
     }
 }
@@ -67,6 +98,44 @@ impl Default for StrokesState {
 impl StrokesState {
     pub fn new() -> Self {
         Self::default()
+    }
+
+    pub fn init(&mut self, appwindow: &RnoteAppWindow) {
+        let appwindow_weak = appwindow.downgrade();
+        let main_cx = glib::MainContext::default();
+
+        let source_id = self
+            .render_rx
+            .take()
+            .unwrap()
+            .attach(Some(&main_cx), move |render_task| {
+                match render_task {
+                    RenderTask::UpdateStrokeWithImage {
+                        key,
+                        image,
+                        zoom: _zoom,
+                    } => {
+                        if let Some(appwindow) = appwindow_weak.upgrade() {
+                            appwindow
+                                .canvas()
+                                .sheet()
+                                .strokes_state()
+                                .borrow_mut()
+                                .update_rendering_with_image(key, &image);
+
+                            appwindow.canvas().queue_draw();
+                        }
+                    }
+                    RenderTask::Quit => return glib::Continue(false),
+                }
+
+                glib::Continue(true)
+            });
+
+        let source = main_cx
+            .find_source_by_id(&source_id)
+            .expect("Source not found");
+        self.render_channel_source.replace(source);
     }
 
     pub fn new_stroke(

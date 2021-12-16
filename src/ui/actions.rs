@@ -191,10 +191,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         let state = action_renderer_backend.state().unwrap().get::<String>().expect("wrong type for state of 'action_renderer_backend' must be of type String");
         match state.as_str() {
             "librsvg" => {
-                appwindow.canvas().sheet().strokes_state().borrow_mut().renderer.backend = render::RendererBackend::Librsvg;
+                appwindow.canvas().sheet().strokes_state().borrow_mut().renderer.write().unwrap().backend = render::RendererBackend::Librsvg;
             },
             "resvg" => {
-                appwindow.canvas().sheet().strokes_state().borrow_mut().renderer.backend = render::RendererBackend::Resvg;
+                appwindow.canvas().sheet().strokes_state().borrow_mut().renderer.write().unwrap().backend = render::RendererBackend::Resvg;
             },
             _ => {
                 log::error!("invalid state of action_renderer_backend");
@@ -564,7 +564,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                         svg_data: svg,
                     };
 
-                    match appwindow.canvas().sheet().strokes_state().borrow().renderer.gen_rendernode(print_zoom, &svg ) {
+                    match appwindow.canvas().sheet().strokes_state().borrow().renderer.read().unwrap().gen_rendernode(print_zoom, &svg ) {
                         Ok(node) => {
                             snapshot.append_node(&node);
                         }

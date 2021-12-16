@@ -1,8 +1,10 @@
 use super::{StrokeKey, StrokeStyle, StrokesState};
-use crate::render;
+use crate::compose;
+use crate::render::{self, RenderTask};
 use crate::strokes::strokestyle::StrokeBehaviour;
 use crate::ui::canvas;
 
+use gtk4::gsk::IsRenderNode;
 use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
@@ -55,12 +57,110 @@ impl StrokesState {
         }
     }
 
+    pub fn regenerate_flag(&self, key: StrokeKey) -> Option<bool> {
+        if let Some(render_comp) = self.render_components.get(key) {
+            Some(render_comp.regenerate_flag)
+        } else {
+            None
+        }
+    }
+
+    pub fn set_regenerate_flag(&mut self, key: StrokeKey, regenerate_flag: bool) {
+        if let Some(render_comp) = self.render_components.get_mut(key) {
+            render_comp.regenerate_flag = regenerate_flag;
+        }
+    }
+
     pub fn reset_regeneration_flag_all_strokes(&mut self) {
         self.render_components
             .iter_mut()
             .for_each(|(_key, render_comp)| {
                 render_comp.regenerate_flag = true;
             });
+    }
+
+    pub fn update_rendering_for_stroke(&mut self, key: StrokeKey) {
+        if let (Some(stroke), Some(render_comp)) =
+            (self.strokes.get(key), self.render_components.get_mut(key))
+        {
+            match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
+                Ok(image) => {
+                    render_comp.rendernode =
+                        render::image_to_texturenode(&image, self.zoom).upcast();
+                    render_comp.regenerate_flag = false;
+                }
+                Err(e) => {
+                    log::error!(
+                        "Failed to generate rendernode for stroke with key: {:?}, {}",
+                        key,
+                        e
+                    )
+                }
+            }
+        } else {
+            log::warn!(
+                "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
+                key
+            );
+        }
+    }
+
+    pub fn update_rendering_for_stroke_threaded(&mut self, key: StrokeKey) {
+        let current_zoom = self.zoom;
+        if let (Some(render_comp), Some(render_tx), Some(stroke)) = (
+            self.render_components.get_mut(key),
+            self.render_tx.clone(),
+            self.strokes.get(key),
+        ) {
+            let stroke = stroke.clone();
+            let offset = na::vector![0.0, 0.0];
+
+            let renderer = self.renderer.clone();
+
+            // Spawn a new thread for image rendering
+            self.threadpool.spawn(move || {
+                match stroke.gen_svg_data(offset) {
+                    Ok(svg_data) => {
+                        let svg_data = compose::wrap_svg(svg_data.as_str(), Some(stroke.bounds()), Some(stroke.bounds()), true, false);
+
+                        let svg = render::Svg {
+                            bounds: stroke.bounds(),
+                            svg_data,
+                        };
+                        match renderer.read().unwrap().gen_image(current_zoom, &svg) {
+                            Ok(image) => {
+
+                                render_tx.send(RenderTask::UpdateStrokeWithImage {
+                                    key,
+                                    image,
+                                    zoom: current_zoom,
+                                }).unwrap_or_else(|e| {
+                                    log::error!("render_tx.send() failed in update_rendering_for_stroke_threaded() with Err, {}", e);
+                                });
+                            }
+                            Err(e) => {
+                                log::error!("renderer.gen_image() failed in update_rendering_for_stroke_threaded() with Err {}", e);
+                            }
+                        }
+                    }
+                    Err(e) => {
+                        log::error!("stroke.gen_svg_data() failed in update_rendering_for_stroke_threaded() with Err {}", e);
+                    }
+                }
+            });
+
+            render_comp.regenerate_flag = true;
+        } else {
+            log::error!("render_tx or stroke is None in update_rendering_for_stroke_threaded()");
+        }
+    }
+
+    pub fn update_rendering_for_selection(&mut self) {
+        let selection_keys = self.keys_selection();
+
+        selection_keys.iter().for_each(|&key| {
+            self.update_rendering_for_stroke(key);
+        });
     }
 
     pub fn update_rendering_newest_stroke(&mut self) {
@@ -85,9 +185,9 @@ impl StrokesState {
     ) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
-        keys.iter().for_each(|key| {
+        keys.iter().for_each(|&key| {
             if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(*key), self.render_components.get_mut(*key))
+                (self.strokes.get(key), self.render_components.get_mut(key))
             {
                 // skip if stroke is not in viewport or does not need regeneration
                 if !force_regenerate {
@@ -101,9 +201,9 @@ impl StrokesState {
                     }
                 }
 
-                match stroke.gen_rendernode(self.zoom, &self.renderer) {
-                    Ok(Some(node)) => {
-                        render_comp.rendernode = node;
+                match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
+                    Ok(image) => {
+                        render_comp.rendernode = render::image_to_texturenode(&image, self.zoom).upcast();
                         render_comp.regenerate_flag = false;
                     }
                     Err(e) => {
@@ -113,7 +213,6 @@ impl StrokesState {
                             e
                         )
                     }
-                    _ => {}
                 }
             } else {
                 log::warn!(
@@ -124,38 +223,44 @@ impl StrokesState {
         })
     }
 
-    pub fn update_rendering_for_stroke(&mut self, key: StrokeKey) {
-        if let (Some(stroke), Some(render_comp)) =
-            (self.strokes.get(key), self.render_components.get_mut(key))
-        {
-            match stroke.gen_rendernode(self.zoom, &self.renderer) {
-                Ok(Some(node)) => {
-                    render_comp.rendernode = node;
-                    render_comp.regenerate_flag = false;
+    pub fn update_rendering_current_view_threaded(
+        &mut self,
+        viewport: Option<p2d::bounding_volume::AABB>,
+        force_regenerate: bool,
+    ) {
+        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
+
+        keys.iter().for_each(|&key| {
+            if let (Some(stroke), Some(render_comp)) =
+                (self.strokes.get(key), self.render_components.get_mut(key))
+            {
+                // skip if stroke is not in viewport or does not need regeneration
+                if !force_regenerate {
+                    if let Some(viewport) = viewport {
+                        if !viewport.intersects(&stroke.bounds()) {
+                            return;
+                        }
+                    }
+                    if !render_comp.regenerate_flag {
+                        return;
+                    }
                 }
-                Err(e) => {
-                    log::error!(
-                        "Failed to generate rendernode for stroke with key: {:?}, {}",
-                        key,
-                        e
-                    )
-                }
-                _ => {}
+
+                self.update_rendering_for_stroke_threaded(key);
+            } else {
+                log::warn!(
+                    "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
+                    key
+                );
             }
-        } else {
-            log::warn!(
-                "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
-                key
-            );
-        }
+        })
     }
 
-    pub fn update_rendering_for_selection(&mut self) {
-        let selection_keys = self.keys_selection();
-
-        selection_keys.iter().for_each(|&key| {
-            self.update_rendering_for_stroke(key);
-        });
+    pub fn update_rendering_with_image(&mut self, key: StrokeKey, image: &render::Image) {
+        if let Some(render_comp) = self.render_components.get_mut(key) {
+            render_comp.rendernode = render::image_to_texturenode(image, self.zoom).upcast();
+            render_comp.regenerate_flag = false;
+        }
     }
 
     pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<p2d::bounding_volume::AABB>) {
@@ -166,6 +271,7 @@ impl StrokesState {
             .filter(|&&key| {
                 self.does_render(key).unwrap_or_else(|| false)
                     && !(self.trashed(key).unwrap_or_else(|| true))
+                    && !(self.regenerate_flag(key).unwrap_or_else(|| false))
             })
             .for_each(|&key| {
                 if let (Some(stroke), Some(render_comp)) =
@@ -220,10 +326,11 @@ impl StrokesState {
 
         chrono_sorted
             .iter()
-            .filter(|&key| {
-                self.does_render(*key).unwrap_or_else(|| false)
-                    && !(self.trashed(*key).unwrap_or_else(|| false))
-                    && (self.selected(*key).unwrap_or_else(|| false))
+            .filter(|&&key| {
+                self.does_render(key).unwrap_or_else(|| false)
+                    && !(self.trashed(key).unwrap_or_else(|| false))
+                    && (self.selected(key).unwrap_or_else(|| false))
+                    && !(self.regenerate_flag(key).unwrap_or_else(|| false))
             })
             .for_each(|&key| {
                 let render_comp = self.render_components.get(key).unwrap();

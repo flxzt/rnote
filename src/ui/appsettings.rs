@@ -265,6 +265,8 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
                 .strokes_state()
                 .borrow_mut()
                 .renderer
+                .write()
+                .unwrap()
                 .backend = render::RendererBackend::Librsvg;
         }
         "resvg" => {
@@ -274,6 +276,8 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
                 .strokes_state()
                 .borrow_mut()
                 .renderer
+                .write()
+                .unwrap()
                 .backend = render::RendererBackend::Resvg;
         }
         _ => {

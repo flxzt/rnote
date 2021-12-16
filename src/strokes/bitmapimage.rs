@@ -2,7 +2,6 @@ use std::io;
 
 use crate::{compose, render};
 use anyhow::Context;
-use gtk4::gsk;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};
 
@@ -106,17 +105,17 @@ impl StrokeBehaviour for BitmapImage {
         Ok(svg)
     }
 
-    fn gen_rendernode(
+    fn gen_image(
         &self,
         zoom: f64,
         renderer: &render::Renderer,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+    ) -> Result<render::Image, anyhow::Error> {
         let svg = render::Svg {
             bounds: self.bounds,
             svg_data: compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()),
         };
 
-        Ok(Some(renderer.gen_rendernode(zoom, &svg)?))
+        renderer.gen_image(zoom, &svg)
     }
 }
 

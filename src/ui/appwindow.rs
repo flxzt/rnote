@@ -502,6 +502,13 @@ impl RnoteAppWindow {
         priv_.settings_panel.get().init(self);
         priv_.devel_actions.get().init(self);
         priv_.canvas.get().sheet().format().init(self);
+        priv_
+            .canvas
+            .get()
+            .sheet()
+            .strokes_state()
+            .borrow_mut()
+            .init(self);
         priv_.canvas.get().selection_modifier().init(self);
 
         self.flap()

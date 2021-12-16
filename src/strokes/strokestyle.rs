@@ -1,6 +1,5 @@
 use crate::render;
 
-use gtk4::gsk;
 use rand::distributions::Uniform;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -21,11 +20,11 @@ pub trait StrokeBehaviour {
     // gen_svg_data() generates the svg elements as a String, without the xml header or the svg root.
     fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error>;
     // generates and returns the rendernode for this type
-    fn gen_rendernode(
+    fn gen_image(
         &self,
         zoom: f64,
         renderer: &render::Renderer,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error>;
+    ) -> Result<render::Image, anyhow::Error>;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -97,17 +96,17 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
-    fn gen_rendernode(
+    fn gen_image(
         &self,
         zoom: f64,
         renderer: &render::Renderer,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+    ) -> Result<render::Image, anyhow::Error> {
         match self {
-            Self::MarkerStroke(markerstroke) => markerstroke.gen_rendernode(zoom, renderer),
-            Self::BrushStroke(brushstroke) => brushstroke.gen_rendernode(zoom, renderer),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_rendernode(zoom, renderer),
-            Self::VectorImage(vectorimage) => vectorimage.gen_rendernode(zoom, renderer),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_rendernode(zoom, renderer),
+            Self::MarkerStroke(markerstroke) => markerstroke.gen_image(zoom, renderer),
+            Self::BrushStroke(brushstroke) => brushstroke.gen_image(zoom, renderer),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_image(zoom, renderer),
+            Self::VectorImage(vectorimage) => vectorimage.gen_image(zoom, renderer),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_image(zoom, renderer),
         }
     }
 }
@@ -118,7 +117,7 @@ impl Default for StrokeStyle {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct InputData {
     pos: na::Vector2<f64>,
@@ -163,7 +162,7 @@ impl InputData {
 }
 
 // Represents a single Stroke Element
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
+#[derive(Debug, Default, Copy, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Element {
     pub inputdata: InputData,

@@ -4,7 +4,6 @@ use crate::{
     render,
     strokes::{self, Element},
 };
-use gtk4::gsk;
 use p2d::bounding_volume::BoundingVolume;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -169,11 +168,11 @@ impl StrokeBehaviour for MarkerStroke {
         Ok(svg)
     }
 
-    fn gen_rendernode(
+    fn gen_image(
         &self,
         zoom: f64,
         renderer: &render::Renderer,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+    ) -> Result<render::Image, anyhow::Error> {
         let svg = render::Svg {
             bounds: self.bounds,
             svg_data: compose::wrap_svg(
@@ -185,7 +184,7 @@ impl StrokeBehaviour for MarkerStroke {
             ),
         };
 
-        Ok(Some(renderer.gen_rendernode(zoom, &svg)?))
+        renderer.gen_image(zoom, &svg)
     }
 }
 

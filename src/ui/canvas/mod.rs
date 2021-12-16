@@ -1174,7 +1174,13 @@ impl Canvas {
     /// use force_regenerate to force regeneration of the texture_cache of the background (for example when changing the background pattern)
     pub fn regenerate_background(&self, force_regenerate: bool, redraw: bool) {
         match self.sheet().background().borrow_mut().update_rendernode(
-            &self.sheet().strokes_state().borrow().renderer,
+            &self
+                .sheet()
+                .strokes_state()
+                .borrow()
+                .renderer
+                .read()
+                .unwrap(),
             self.zoom(),
             self.sheet().bounds(),
             force_regenerate,
@@ -1195,7 +1201,10 @@ impl Canvas {
         self.sheet()
             .strokes_state()
             .borrow_mut()
-            .update_rendering_current_view(Some(self.viewport_in_sheet_coords()), force_regenerate);
+            .update_rendering_current_view_threaded(
+                Some(self.viewport_in_sheet_coords()),
+                force_regenerate,
+            );
 
         self.regenerate_background(force_regenerate, redraw);
     }
@@ -1286,10 +1295,16 @@ impl Canvas {
                     self.pens().borrow_mut().selector.set_shown(true);
 
                     // update the rendernode of the current stroke
-                    self.pens()
-                        .borrow_mut()
-                        .selector
-                        .update_rendernode(zoom, &self.sheet().strokes_state().borrow().renderer);
+                    self.pens().borrow_mut().selector.update_rendernode(
+                        zoom,
+                        &self
+                            .sheet()
+                            .strokes_state()
+                            .borrow()
+                            .renderer
+                            .read()
+                            .unwrap(),
+                    );
                 }
             }
             PenStyle::Unkown => {}
@@ -1351,10 +1366,16 @@ impl Canvas {
                         .borrow_mut()
                         .selector
                         .push_elem(inputdata.clone());
-                    self.pens()
-                        .borrow_mut()
-                        .selector
-                        .update_rendernode(zoom, &self.sheet().strokes_state().borrow().renderer);
+                    self.pens().borrow_mut().selector.update_rendernode(
+                        zoom,
+                        &self
+                            .sheet()
+                            .strokes_state()
+                            .borrow()
+                            .renderer
+                            .read()
+                            .unwrap(),
+                    );
                     self.queue_draw();
                 }
             }

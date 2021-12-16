@@ -9,12 +9,22 @@ use gtk4::{
 };
 use rayon::prelude::*;
 
-use crate::geometry;
+use crate::{geometry, strokes::StrokeKey};
 
 #[derive(Debug, Clone)]
 pub enum RendererBackend {
     Librsvg,
     Resvg,
+}
+
+#[derive(Debug, Clone)]
+pub enum RenderTask {
+    UpdateStrokeWithImage {
+        key: StrokeKey,
+        image: Image,
+        zoom: f64,
+    },
+    Quit,
 }
 
 #[derive(Debug, Clone)]
@@ -163,9 +173,10 @@ impl Renderer {
 
         let rtree = usvg::Tree::from_data(svg.svg_data.as_bytes(), &self.usvg_options.to_ref())?;
 
-        let mut pixmap = tiny_skia::Pixmap::new(width_scaled as u32, height_scaled as u32).ok_or_else(|| {
-            anyhow::Error::msg("tiny_skia::Pixmap::new() failed in gen_image_resvg()")
-        })?;
+        let mut pixmap = tiny_skia::Pixmap::new(width_scaled as u32, height_scaled as u32)
+            .ok_or_else(|| {
+                anyhow::Error::msg("tiny_skia::Pixmap::new() failed in gen_image_resvg()")
+            })?;
 
         resvg::render(
             &rtree,
@@ -191,7 +202,15 @@ pub fn default_rendernode() -> gsk::RenderNode {
     gsk::CairoNode::new(&bounds).upcast()
 }
 
-/// Expects Image pixels in ARgb32 premultiplied Format !
+pub fn default_render_threadpool() -> rayon::ThreadPool {
+    rayon::ThreadPoolBuilder::default()
+        .build()
+        .unwrap_or_else(|e| {
+            log::error!("default_render_threadpool() failed with Err {}", e);
+            panic!()
+        })
+}
+
 pub fn image_to_memtexture(image: &Image) -> gdk::MemoryTexture {
     let bytes = image.data.deref();
 
@@ -204,14 +223,12 @@ pub fn image_to_memtexture(image: &Image) -> gdk::MemoryTexture {
     )
 }
 
-/// Expects Image pixels in ARgb32 premultiplied Format !
 pub fn image_to_texturenode(image: &Image, zoom: f64) -> gsk::TextureNode {
-    let image_bounds = image.bounds;
     let memtexture = image_to_memtexture(image);
 
     gsk::TextureNode::new(
         &memtexture,
-        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(image_bounds, zoom)),
+        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(image.bounds, zoom)),
     )
 }
 

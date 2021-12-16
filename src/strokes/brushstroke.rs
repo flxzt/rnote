@@ -180,6 +180,13 @@ impl StrokeBehaviour for BrushStroke {
             .map(|svg| svg.svg_data.as_str())
             .collect::<Vec<&str>>()
             .join("\n");
+        let joined_svg = compose::wrap_svg(
+            joined_svg.as_str(),
+            Some(self.bounds()),
+            Some(self.bounds()),
+            true,
+            false,
+        );
         let joined_svg = render::Svg {
             bounds: self.bounds,
             svg_data: joined_svg,

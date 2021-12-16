@@ -224,7 +224,7 @@ impl StrokesState {
 
         if self.selection_len() != selection_len_prev {
             self.update_selection_bounds();
-            self.update_rendering_for_selection();
+            self.regenerate_rendering_for_selection();
             true
         } else {
             false
@@ -287,7 +287,7 @@ impl StrokesState {
                 });
 
             self.selection_bounds = Some(new_bounds);
-            self.update_rendering_for_selection();
+            self.regenerate_rendering_for_selection();
         }
     }
 
@@ -309,7 +309,7 @@ impl StrokesState {
         } else {
             None
         };
-        self.update_rendering_for_selection();
+        self.regenerate_rendering_for_selection();
     }
 
     pub fn gen_svg_selection(&self) -> Result<Option<String>, anyhow::Error> {

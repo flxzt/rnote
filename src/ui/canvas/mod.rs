@@ -309,6 +309,10 @@ mod imp {
                     self.zoom.replace(zoom);
 
                     self.sheet.strokes_state().borrow_mut().zoom = zoom;
+                    self.sheet
+                        .strokes_state()
+                        .borrow_mut()
+                        .update_rendernodes_current_zoom();
 
                     obj.queue_resize();
                     obj.queue_draw();
@@ -1148,14 +1152,14 @@ impl Canvas {
         }
 
         // Regenerate when zoom is over Threshold
-/*         if self.temporary_zoom() > Self::ZOOM_REGENERATION_THRESHOLD
+        /*         if self.temporary_zoom() > Self::ZOOM_REGENERATION_THRESHOLD
             || self.temporary_zoom() < 1.0 / Self::ZOOM_REGENERATION_THRESHOLD
         {
             self.zoom_to(zoom);
         } else {
             self.zoom_temporarily_to(zoom);
         } */
-            self.zoom_temporarily_to(zoom);
+        self.zoom_temporarily_to(zoom);
 
         priv_
             .zoom_timeout
@@ -1202,7 +1206,7 @@ impl Canvas {
         self.sheet()
             .strokes_state()
             .borrow_mut()
-            .update_rendering_current_view_threaded(
+            .regenerate_rendering_current_view_threaded(
                 Some(self.viewport_in_sheet_coords()),
                 force_regenerate,
             );
@@ -1278,7 +1282,7 @@ impl Canvas {
                     self.sheet()
                         .strokes_state()
                         .borrow_mut()
-                        .update_rendering_newest_stroke();
+                        .regenerate_rendering_newest_stroke();
                 }
             }
             PenStyle::Eraser => {
@@ -1408,7 +1412,7 @@ impl Canvas {
             self.sheet()
                 .strokes_state()
                 .borrow_mut()
-                .update_rendering_for_stroke(last_key);
+                .regenerate_rendering_for_stroke(last_key);
         }
 
         match self.current_pen().get() {

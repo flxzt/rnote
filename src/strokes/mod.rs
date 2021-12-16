@@ -121,7 +121,7 @@ impl StrokesState {
                                 .sheet()
                                 .strokes_state()
                                 .borrow_mut()
-                                .update_rendering_with_image(key, &image);
+                                .regenerate_rendering_with_image(key, image);
 
                             appwindow.canvas().queue_draw();
                         }
@@ -182,7 +182,7 @@ impl StrokesState {
         self.chrono_components
             .insert(key, ChronoComponent::new(self.chrono_counter));
 
-        self.update_rendering_for_stroke(key);
+        self.regenerate_rendering_for_stroke(key);
         key
     }
 
@@ -212,7 +212,7 @@ impl StrokesState {
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
             }
 
-            self.update_rendering_for_stroke(key);
+            self.regenerate_rendering_for_stroke(key);
             Some(key)
         } else {
             log::warn!("tried add_to_last_stroke() while there is no last stroke");
@@ -239,7 +239,7 @@ impl StrokesState {
         self.chrono_components = strokes_state.chrono_components.clone();
         self.render_components = strokes_state.render_components.clone();
 
-        self.update_rendering_current_view(None, true);
+        self.regenerate_rendering_current_view(None, true);
     }
 
     /// Returns the key to the completed stroke

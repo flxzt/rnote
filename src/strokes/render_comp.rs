@@ -12,17 +12,20 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RenderComponent {
     pub render: bool,
+    pub regenerate_flag: bool,
+    #[serde(skip)]
+    pub image: render::Image,
     #[serde(skip, default = "render::default_rendernode")]
     pub rendernode: gsk::RenderNode,
-    regenerate_flag: bool,
 }
 
 impl Default for RenderComponent {
     fn default() -> Self {
         Self {
             render: true,
-            rendernode: render::default_rendernode(),
             regenerate_flag: true,
+            image: render::Image::default(),
+            rendernode: render::default_rendernode(),
         }
     }
 }
@@ -79,15 +82,16 @@ impl StrokesState {
             });
     }
 
-    pub fn update_rendering_for_stroke(&mut self, key: StrokeKey) {
+    pub fn regenerate_rendering_for_stroke(&mut self, key: StrokeKey) {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
             match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
                 Ok(image) => {
-                    render_comp.rendernode =
-                        render::image_to_texturenode(&image, self.zoom).upcast();
                     render_comp.regenerate_flag = false;
+                    render_comp.image = image;
+                    render_comp.rendernode =
+                        render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
                 }
                 Err(e) => {
                     log::error!(
@@ -105,7 +109,7 @@ impl StrokesState {
         }
     }
 
-    pub fn update_rendering_for_stroke_threaded(&mut self, key: StrokeKey) {
+    pub fn regenerate_rendering_for_stroke_threaded(&mut self, key: StrokeKey) {
         let current_zoom = self.zoom;
         if let (Some(render_comp), Some(render_tx), Some(stroke)) = (
             self.render_components.get_mut(key),
@@ -119,6 +123,8 @@ impl StrokesState {
 
             // Spawn a new thread for image rendering
             self.threadpool.spawn(move || {
+                //std::thread::sleep(std::time::Duration::from_millis(500));
+
                 match stroke.gen_svg_data(offset) {
                     Ok(svg_data) => {
                         let svg_data = compose::wrap_svg(svg_data.as_str(), Some(stroke.bounds()), Some(stroke.bounds()), true, false);
@@ -129,7 +135,6 @@ impl StrokesState {
                         };
                         match renderer.read().unwrap().gen_image(current_zoom, &svg) {
                             Ok(image) => {
-
                                 render_tx.send(RenderTask::UpdateStrokeWithImage {
                                     key,
                                     image,
@@ -155,30 +160,30 @@ impl StrokesState {
         }
     }
 
-    pub fn update_rendering_for_selection(&mut self) {
+    pub fn regenerate_rendering_for_selection(&mut self) {
         let selection_keys = self.keys_selection();
 
         selection_keys.iter().for_each(|&key| {
-            self.update_rendering_for_stroke(key);
+            self.regenerate_rendering_for_stroke(key);
         });
     }
 
-    pub fn update_rendering_newest_stroke(&mut self) {
+    pub fn regenerate_rendering_newest_stroke(&mut self) {
         let last_stroke_key = self.last_stroke_key();
         if let Some(key) = last_stroke_key {
-            self.update_rendering_for_stroke(key);
+            self.regenerate_rendering_for_stroke(key);
         }
     }
 
-    pub fn update_rendering_newest_selected(&mut self) {
+    pub fn regenerate_rendering_newest_selected(&mut self) {
         let last_selection_key = self.last_selection_key();
 
         if let Some(last_selection_key) = last_selection_key {
-            self.update_rendering_for_stroke(last_selection_key);
+            self.regenerate_rendering_for_stroke(last_selection_key);
         }
     }
 
-    pub fn update_rendering_current_view(
+    pub fn regenerate_rendering_current_view(
         &mut self,
         viewport: Option<p2d::bounding_volume::AABB>,
         force_regenerate: bool,
@@ -203,8 +208,9 @@ impl StrokesState {
 
                 match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
                     Ok(image) => {
-                        render_comp.rendernode = render::image_to_texturenode(&image, self.zoom).upcast();
                         render_comp.regenerate_flag = false;
+                        render_comp.image = image;
+                        render_comp.rendernode = render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
                     }
                     Err(e) => {
                         log::error!(
@@ -223,7 +229,7 @@ impl StrokesState {
         })
     }
 
-    pub fn update_rendering_current_view_threaded(
+    pub fn regenerate_rendering_current_view_threaded(
         &mut self,
         viewport: Option<p2d::bounding_volume::AABB>,
         force_regenerate: bool,
@@ -246,7 +252,7 @@ impl StrokesState {
                     }
                 }
 
-                self.update_rendering_for_stroke_threaded(key);
+                self.regenerate_rendering_for_stroke_threaded(key);
             } else {
                 log::warn!(
                     "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
@@ -256,11 +262,23 @@ impl StrokesState {
         })
     }
 
-    pub fn update_rendering_with_image(&mut self, key: StrokeKey, image: &render::Image) {
+    pub fn regenerate_rendering_with_image(&mut self, key: StrokeKey, image: render::Image) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            render_comp.rendernode = render::image_to_texturenode(image, self.zoom).upcast();
+            render_comp.image = image;
             render_comp.regenerate_flag = false;
+            render_comp.rendernode =
+                render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
         }
+    }
+
+    /// Updates the cached rendernodes to the current zoom. Used to display the scaled (pixelated) images until new ones are generated with one of the regenerate_*_threaded funcs
+    pub fn update_rendernodes_current_zoom(&mut self) {
+        self.render_components
+            .iter_mut()
+            .for_each(|(_key, render_comp)| {
+                render_comp.rendernode =
+                    render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
+            });
     }
 
     pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<p2d::bounding_volume::AABB>) {
@@ -271,7 +289,6 @@ impl StrokesState {
             .filter(|&&key| {
                 self.does_render(key).unwrap_or_else(|| false)
                     && !(self.trashed(key).unwrap_or_else(|| true))
-                    && !(self.regenerate_flag(key).unwrap_or_else(|| false))
             })
             .for_each(|&key| {
                 if let (Some(stroke), Some(render_comp)) =
@@ -283,6 +300,7 @@ impl StrokesState {
                             return;
                         }
                     }
+
                     snapshot.append_node(&render_comp.rendernode);
                 }
             });
@@ -330,7 +348,6 @@ impl StrokesState {
                 self.does_render(key).unwrap_or_else(|| false)
                     && !(self.trashed(key).unwrap_or_else(|| false))
                     && (self.selected(key).unwrap_or_else(|| false))
-                    && !(self.regenerate_flag(key).unwrap_or_else(|| false))
             })
             .for_each(|&key| {
                 let render_comp = self.render_components.get(key).unwrap();

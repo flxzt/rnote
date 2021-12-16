@@ -40,6 +40,18 @@ pub struct Image {
     memory_format: gdk::MemoryFormat,
 }
 
+impl Default for Image {
+    fn default() -> Self {
+        Self {
+            data: Vec::new(),
+            bounds: p2d::bounding_volume::AABB::new(na::point![0.0, 0.0], na::point![0.0, 0.0]),
+            data_width: 0,
+            data_height: 0,
+            memory_format: gdk::MemoryFormat::R8g8b8a8,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Svg {
     pub svg_data: String,

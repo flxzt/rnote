@@ -549,17 +549,11 @@ impl RnoteAppWindow {
                 let new_zoom = total_zoom - delta;
 
                 // the sheet position BEFORE scaling
-                let sheet_center_pos = na::vector![
-                    ((appwindow.canvas().hadjustment().unwrap().value()
-                        + f64::from(appwindow.canvas_scroller().width()) * 0.5
-                        + appwindow.canvas().sheet_margin())
-                        / total_zoom)
-                        ,
-                    ((appwindow.canvas().vadjustment().unwrap().value()
-                        + f64::from(appwindow.canvas_scroller().height()) * 0.5
-                        + appwindow.canvas().sheet_margin())
-                        / total_zoom)
-                ];
+                let sheet_center_pos = appwindow.canvas().transform_canvas_coords_to_sheet_coords(
+                    na::vector![
+                        f64::from(appwindow.canvas_scroller().width()) * 0.5,
+                        f64::from(appwindow.canvas_scroller().height()) * 0.5
+                    ]);
 
                 appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
 

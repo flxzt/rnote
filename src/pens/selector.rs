@@ -71,9 +71,13 @@ impl Selector {
     }
 
     pub fn update_rendernode(&mut self, zoom: f64, renderer: &render::Renderer) {
-        self.rendernode = self
-            .gen_rendernode(zoom, renderer)
-            .expect("failed to gen_rendernode() in update_rendernode() of selector");
+        match self.gen_rendernode(zoom, renderer) {
+            Ok(rendernode) => self.rendernode = rendernode,
+            Err(e) => log::error!(
+                "gen_rendernode() in update_rendernode() for selector failed with Err {}",
+                e
+            ),
+        };
     }
 
     pub fn gen_rendernode(

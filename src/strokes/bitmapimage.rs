@@ -184,6 +184,7 @@ impl BitmapImage {
                         1.0,
                     )
                 };
+
                 let x = pos[0];
                 let y = pos[1]
                     + f64::from(i) * (f64::from(height) + Self::OFFSET_Y_DEFAULT.round() / 2.0);

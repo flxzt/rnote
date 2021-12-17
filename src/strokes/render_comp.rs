@@ -1,6 +1,7 @@
+use super::StateTask;
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::compose;
-use crate::render::{self, RenderTask};
+use crate::render;
 use crate::strokes::strokestyle::StrokeBehaviour;
 use crate::ui::canvas;
 
@@ -111,9 +112,9 @@ impl StrokesState {
 
     pub fn regenerate_rendering_for_stroke_threaded(&mut self, key: StrokeKey) {
         let current_zoom = self.zoom;
-        if let (Some(render_comp), Some(render_tx), Some(stroke)) = (
+        if let (Some(render_comp), Some(tasks_tx), Some(stroke)) = (
             self.render_components.get_mut(key),
-            self.render_tx.clone(),
+            self.tasks_tx.clone(),
             self.strokes.get(key),
         ) {
             let stroke = stroke.clone();
@@ -135,7 +136,7 @@ impl StrokesState {
                         };
                         match renderer.read().unwrap().gen_image(current_zoom, &svg) {
                             Ok(image) => {
-                                render_tx.send(RenderTask::UpdateStrokeWithImage {
+                                tasks_tx.send(StateTask::UpdateStrokeWithImage {
                                     key,
                                     image,
                                     zoom: current_zoom,

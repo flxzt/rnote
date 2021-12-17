@@ -9,22 +9,12 @@ use gtk4::{
 };
 use rayon::prelude::*;
 
-use crate::{geometry, strokes::StrokeKey};
+use crate::{geometry};
 
 #[derive(Debug, Clone)]
 pub enum RendererBackend {
     Librsvg,
     Resvg,
-}
-
-#[derive(Debug, Clone)]
-pub enum RenderTask {
-    UpdateStrokeWithImage {
-        key: StrokeKey,
-        image: Image,
-        zoom: f64,
-    },
-    Quit,
 }
 
 #[derive(Debug, Clone)]
@@ -212,15 +202,6 @@ impl Renderer {
 pub fn default_rendernode() -> gsk::RenderNode {
     let bounds = graphene::Rect::new(0.0, 0.0, 0.0, 0.0);
     gsk::CairoNode::new(&bounds).upcast()
-}
-
-pub fn default_render_threadpool() -> rayon::ThreadPool {
-    rayon::ThreadPoolBuilder::default()
-        .build()
-        .unwrap_or_else(|e| {
-            log::error!("default_render_threadpool() failed with Err {}", e);
-            panic!()
-        })
 }
 
 pub fn image_to_memtexture(image: &Image) -> gdk::MemoryTexture {

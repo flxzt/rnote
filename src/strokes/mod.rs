@@ -12,7 +12,6 @@ pub mod trash_comp;
 
 use std::sync::{Arc, RwLock};
 
-use crate::render::RenderTask;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{pens::PenStyle, pens::Pens, render};
 use chrono_comp::ChronoComponent;
@@ -28,6 +27,16 @@ use p2d::bounding_volume::BoundingVolume;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
+
+#[derive(Debug, Clone)]
+pub enum StateTask {
+    UpdateStrokeWithImage {
+        key: StrokeKey,
+        image: render::Image,
+        zoom: f64,
+    },
+    Quit,
+}
 
 slotmap::new_key_type! {
     pub struct StrokeKey;
@@ -51,21 +60,21 @@ pub struct StrokesState {
     #[serde(skip)]
     pub renderer: Arc<RwLock<render::Renderer>>,
     #[serde(skip)]
-    pub render_tx: Option<glib::Sender<RenderTask>>,
+    pub tasks_tx: Option<glib::Sender<StateTask>>,
     #[serde(skip)]
-    pub render_rx: Option<glib::Receiver<RenderTask>>,
+    pub tasks_rx: Option<glib::Receiver<StateTask>>,
     #[serde(skip)]
-    pub render_channel_source: Option<glib::Source>,
-    #[serde(skip, default = "render::default_render_threadpool")]
+    pub channel_source: Option<glib::Source>,
+    #[serde(skip, default = "default_threadpool")]
     pub threadpool: rayon::ThreadPool,
 }
 
 impl Default for StrokesState {
     fn default() -> Self {
-        let threadpool = render::default_render_threadpool();
+        let threadpool = default_threadpool();
 
         let (render_tx, render_rx) =
-            glib::MainContext::channel::<RenderTask>(glib::PRIORITY_DEFAULT);
+            glib::MainContext::channel::<StateTask>(glib::PRIORITY_DEFAULT);
 
         Self {
             strokes: HopSlotMap::with_key(),
@@ -77,9 +86,9 @@ impl Default for StrokesState {
             chrono_counter: 0,
             zoom: 1.0,
             renderer: Arc::new(RwLock::new(render::Renderer::default())),
-            render_tx: Some(render_tx),
-            render_rx: Some(render_rx),
-            render_channel_source: None,
+            tasks_tx: Some(render_tx),
+            tasks_rx: Some(render_rx),
+            channel_source: None,
             selection_bounds: None,
             threadpool,
         }
@@ -89,7 +98,7 @@ impl Default for StrokesState {
 impl Drop for StrokesState {
     fn drop(&mut self) {
         //let _ = self.render_tx.send(Command::Quit);
-        if let Some(source) = self.render_channel_source.take() {
+        if let Some(source) = self.channel_source.take() {
             source.destroy();
         }
     }
@@ -105,12 +114,12 @@ impl StrokesState {
         let main_cx = glib::MainContext::default();
 
         let source_id = self
-            .render_rx
+            .tasks_rx
             .take()
             .unwrap()
             .attach(Some(&main_cx), move |render_task| {
                 match render_task {
-                    RenderTask::UpdateStrokeWithImage {
+                    StateTask::UpdateStrokeWithImage {
                         key,
                         image,
                         zoom: _zoom,
@@ -126,7 +135,7 @@ impl StrokesState {
                             appwindow.canvas().queue_draw();
                         }
                     }
-                    RenderTask::Quit => return glib::Continue(false),
+                    StateTask::Quit => return glib::Continue(false),
                 }
 
                 glib::Continue(true)
@@ -135,7 +144,7 @@ impl StrokesState {
         let source = main_cx
             .find_source_by_id(&source_id)
             .expect("Source not found");
-        self.render_channel_source.replace(source);
+        self.channel_source.replace(source);
     }
 
     pub fn new_stroke(
@@ -355,4 +364,14 @@ impl StrokesState {
 
         Ok(data)
     }
+}
+
+
+pub fn default_threadpool() -> rayon::ThreadPool {
+    rayon::ThreadPoolBuilder::default()
+        .build()
+        .unwrap_or_else(|e| {
+            log::error!("default_render_threadpool() failed with Err {}", e);
+            panic!()
+        })
 }

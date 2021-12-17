@@ -366,7 +366,6 @@ impl StrokesState {
     }
 }
 
-
 pub fn default_threadpool() -> rayon::ThreadPool {
     rayon::ThreadPoolBuilder::default()
         .build()

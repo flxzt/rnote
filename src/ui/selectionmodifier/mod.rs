@@ -158,38 +158,42 @@ impl SelectionModifier {
                 drag_gesture.set_state(EventSequenceState::Claimed);
             }),
         );
-        resize_tl_drag_gesture
-            .connect_drag_update(
-                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
-                    let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
-                    if let Some(selection_bounds) = selection_bounds {
-                        let zoom = appwindow.canvas().zoom();
-                        let offset = na::vector![x.round() / zoom, y.round() / zoom];
+        resize_tl_drag_gesture.connect_drag_update(
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
+                let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+                if let Some(selection_bounds) = selection_bounds {
+                    let zoom = appwindow.canvas().zoom();
+                    let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-                        let new_bounds = p2d::bounding_volume::AABB::new(
-                            na::point![
-                            selection_bounds.mins[0] + offset[0], selection_bounds.mins[1] + offset[1]],
-                            na::point![selection_bounds.maxs[0], selection_bounds.maxs[1]]
-                        );
-                        let min_bounds = p2d::bounding_volume::AABB::new(
-                            na::point![
-                                new_bounds.maxs[0] - Self::SELECTION_MIN,
-                                new_bounds.maxs[1] - Self::SELECTION_MIN
-                            ],
-                            na::point![
-                                new_bounds.maxs[0],
-                                new_bounds.maxs[1]
-                            ]
-                        );
-                        let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let new_bounds = p2d::bounding_volume::AABB::new(
+                        na::point![
+                        selection_bounds.mins[0] + offset[0], selection_bounds.mins[1] + offset[1]],
+                        na::point![selection_bounds.maxs[0], selection_bounds.maxs[1]]
+                    );
+                    let min_bounds = p2d::bounding_volume::AABB::new(
+                        na::point![
+                            new_bounds.maxs[0] - Self::SELECTION_MIN,
+                            new_bounds.maxs[1] - Self::SELECTION_MIN
+                        ],
+                        na::point![
+                            new_bounds.maxs[0],
+                            new_bounds.maxs[1]
+                        ]
+                    );
+                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
 
-                        appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
 
-                        obj.queue_resize();
-                        appwindow.canvas().queue_draw();
-                    }
-                })
-            );
+                    obj.queue_resize();
+                    appwindow.canvas().queue_draw();
+                }
+            })
+        );
+        resize_tl_drag_gesture.connect_drag_end(
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
+                appwindow.canvas().regenerate_content(false, true);
+            }),
+        );
     }
 
     pub fn init_resize_tr_node(&self, appwindow: &RnoteAppWindow) {
@@ -207,36 +211,41 @@ impl SelectionModifier {
             }),
         );
         resize_tr_drag_gesture.connect_drag_update(
-                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
-                    let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
-                    if let Some(selection_bounds) = selection_bounds {
-                        let zoom = appwindow.canvas().zoom();
-                        let offset = na::vector![x.round() / zoom, y.round() / zoom];
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
+                let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+                if let Some(selection_bounds) = selection_bounds {
+                    let zoom = appwindow.canvas().zoom();
+                    let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-                        let new_bounds = p2d::bounding_volume::AABB::new(
-                            na::point![
-                            selection_bounds.mins[0], selection_bounds.mins[1] + offset[1]],
-                            na::point![selection_bounds.maxs[0] + offset[0], selection_bounds.maxs[1]]
-                        );
-                        let min_bounds = p2d::bounding_volume::AABB::new(
-                            na::point![
-                                new_bounds.mins[0],
-                                new_bounds.maxs[1] - Self::SELECTION_MIN
-                            ],
-                            na::point![
-                                new_bounds.mins[0] + Self::SELECTION_MIN,
-                                new_bounds.maxs[1]
-                            ]
-                        );
-                        let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let new_bounds = p2d::bounding_volume::AABB::new(
+                        na::point![
+                        selection_bounds.mins[0], selection_bounds.mins[1] + offset[1]],
+                        na::point![selection_bounds.maxs[0] + offset[0], selection_bounds.maxs[1]]
+                    );
+                    let min_bounds = p2d::bounding_volume::AABB::new(
+                        na::point![
+                            new_bounds.mins[0],
+                            new_bounds.maxs[1] - Self::SELECTION_MIN
+                        ],
+                        na::point![
+                            new_bounds.mins[0] + Self::SELECTION_MIN,
+                            new_bounds.maxs[1]
+                        ]
+                    );
+                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
 
-                        appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
 
-                        obj.queue_resize();
-                        appwindow.canvas().queue_draw();
-                    }
-                }),
-            );
+                    obj.queue_resize();
+                    appwindow.canvas().queue_draw();
+                }
+            }),
+        );
+        resize_tr_drag_gesture.connect_drag_end(
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
+                appwindow.canvas().regenerate_content(false, true);
+            }),
+        );
     }
 
     pub fn init_resize_bl_node(&self, appwindow: &RnoteAppWindow) {
@@ -254,41 +263,46 @@ impl SelectionModifier {
             }),
         );
         resize_bl_drag_gesture.connect_drag_update(
-                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
 
-                    let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
-                    if let Some(selection_bounds) = selection_bounds {
-                        let zoom = appwindow.canvas().zoom();
-                        let offset = na::vector![x.round() / zoom, y.round() / zoom];
+                let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+                if let Some(selection_bounds) = selection_bounds {
+                    let zoom = appwindow.canvas().zoom();
+                    let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
 /*                         if drag_gesture.current_event_state().contains(gdk::ModifierType::SHIFT_MASK) {
-                            offset = geometry::restrict_offset_to_aabb_aspect_ratio(start_bounds, offset);
-                        } */
+                        offset = geometry::restrict_offset_to_aabb_aspect_ratio(start_bounds, offset);
+                    } */
 
-                        let new_bounds = p2d::bounding_volume::AABB::new(
-                            na::point![
-                            selection_bounds.mins[0] + offset[0], selection_bounds.mins[1]],
-                            na::point![selection_bounds.maxs[0], selection_bounds.maxs[1] + offset[1]]
-                        );
-                        let min_bounds = p2d::bounding_volume::AABB::new(
-                            na::point![
-                                new_bounds.maxs[0] - Self::SELECTION_MIN,
-                                new_bounds.mins[1]
-                            ],
-                            na::point![
-                                new_bounds.maxs[0],
-                                new_bounds.mins[1] + Self::SELECTION_MIN
-                            ]
-                        );
-                        let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let new_bounds = p2d::bounding_volume::AABB::new(
+                        na::point![
+                        selection_bounds.mins[0] + offset[0], selection_bounds.mins[1]],
+                        na::point![selection_bounds.maxs[0], selection_bounds.maxs[1] + offset[1]]
+                    );
+                    let min_bounds = p2d::bounding_volume::AABB::new(
+                        na::point![
+                            new_bounds.maxs[0] - Self::SELECTION_MIN,
+                            new_bounds.mins[1]
+                        ],
+                        na::point![
+                            new_bounds.maxs[0],
+                            new_bounds.mins[1] + Self::SELECTION_MIN
+                        ]
+                    );
+                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
 
-                        appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
 
-                        obj.queue_resize();
-                        appwindow.canvas().queue_draw();
-                    }
-                }),
-            );
+                    obj.queue_resize();
+                    appwindow.canvas().queue_draw();
+                }
+            }),
+        );
+        resize_bl_drag_gesture.connect_drag_end(
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
+                appwindow.canvas().regenerate_content(false, true);
+            }),
+        );
     }
 
     pub fn init_resize_br_node(&self, appwindow: &RnoteAppWindow) {
@@ -306,36 +320,41 @@ impl SelectionModifier {
             }),
         );
         resize_br_drag_gesture.connect_drag_update(
-                clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
-                    let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
-                    if let Some(selection_bounds) = selection_bounds {
-                        let zoom = appwindow.canvas().zoom();
-                        let offset = na::vector![x.round() / zoom, y.round() / zoom];
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
+                let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+                if let Some(selection_bounds) = selection_bounds {
+                    let zoom = appwindow.canvas().zoom();
+                    let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-                        let new_bounds = p2d::bounding_volume::AABB::new(
-                            na::point![
-                            selection_bounds.mins[0], selection_bounds.mins[1]],
-                            na::point![selection_bounds.maxs[0] + offset[0], selection_bounds.maxs[1] + offset[1]]
-                        );
-                        let min_bounds = p2d::bounding_volume::AABB::new(
-                            na::point![
-                                new_bounds.mins[0],
-                                new_bounds.mins[1]
-                            ],
-                            na::point![
-                                new_bounds.mins[0] + Self::SELECTION_MIN,
-                                new_bounds.mins[1] + Self::SELECTION_MIN
-                            ]
-                        );
-                        let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let new_bounds = p2d::bounding_volume::AABB::new(
+                        na::point![
+                        selection_bounds.mins[0], selection_bounds.mins[1]],
+                        na::point![selection_bounds.maxs[0] + offset[0], selection_bounds.maxs[1] + offset[1]]
+                    );
+                    let min_bounds = p2d::bounding_volume::AABB::new(
+                        na::point![
+                            new_bounds.mins[0],
+                            new_bounds.mins[1]
+                        ],
+                        na::point![
+                            new_bounds.mins[0] + Self::SELECTION_MIN,
+                            new_bounds.mins[1] + Self::SELECTION_MIN
+                        ]
+                    );
+                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
 
-                        appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
 
-                        obj.queue_resize();
-                        appwindow.canvas().queue_draw();
-                    }
-                }),
-            );
+                    obj.queue_resize();
+                    appwindow.canvas().queue_draw();
+                }
+            }),
+        );
+        resize_br_drag_gesture.connect_drag_end(
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
+                appwindow.canvas().regenerate_content(false, true);
+            }),
+        );
     }
 
     pub fn init_translate_node(&self, appwindow: &RnoteAppWindow) {

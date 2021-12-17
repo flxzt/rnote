@@ -1,9 +1,10 @@
 use crate::pens::selector::Selector;
-use crate::{compose, geometry};
+use crate::{compose, geometry, render};
 
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::strokes::strokestyle::StrokeBehaviour;
 
+use gtk4::gsk::IsRenderNode;
 use gtk4::{gio, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
 use rayon::prelude::*;
@@ -231,7 +232,7 @@ impl StrokesState {
         }
     }
 
-    /// Resizing the selection with its contents to the new bounds
+    /// Resizing the selection with its contents to the new bounds. Stroke rendering regeneration is needed when resizing is finished.
     pub fn resize_selection(&mut self, new_bounds: p2d::bounding_volume::AABB) {
         fn calc_new_stroke_bounds(
             stroke: &StrokeStyle,
@@ -271,45 +272,69 @@ impl StrokesState {
         }
 
         if let Some(selection_bounds) = self.selection_bounds {
-            self.strokes
+            let new_stroke_bounds = self
+                .strokes
                 .iter_mut()
                 .par_bridge()
-                .for_each(|(key, stroke)| {
+                .filter_map(|(key, stroke)| {
                     if let Some(selection_comp) = self.selection_components.get(key) {
                         if selection_comp.selected {
-                            stroke.resize(calc_new_stroke_bounds(
-                                stroke,
-                                selection_bounds,
-                                new_bounds,
-                            ));
+                            let new_stroke_bounds =
+                                calc_new_stroke_bounds(stroke, selection_bounds, new_bounds);
+                            stroke.resize(new_stroke_bounds);
+                            return Some((key, new_stroke_bounds));
                         }
+                    }
+                    None
+                })
+                .collect::<Vec<(StrokeKey, p2d::bounding_volume::AABB)>>();
+
+            new_stroke_bounds
+                .into_iter()
+                .for_each(|(key, new_stroke_bounds)| {
+                    if let Some(render_comp) = self.render_components.get_mut(key) {
+                        render_comp.image.bounds = new_stroke_bounds;
+                        render_comp.rendernode =
+                            render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
+                        render_comp.regenerate_flag = true;
                     }
                 });
 
             self.selection_bounds = Some(new_bounds);
-            self.regenerate_rendering_for_selection_threaded();
         }
     }
 
     /// Translate the selection with its contents with an offset relative to the current position
     pub fn translate_selection(&mut self, offset: na::Vector2<f64>) {
-        self.strokes
+        let translated_strokes = self
+            .strokes
             .iter_mut()
             .par_bridge()
-            .for_each(|(key, stroke)| {
+            .filter_map(|(key, stroke)| {
                 if let Some(selection_comp) = self.selection_components.get(key) {
                     if selection_comp.selected {
                         stroke.translate(offset);
+                        return Some(key);
                     }
                 }
-            });
+                None
+            })
+            .collect::<Vec<StrokeKey>>();
+
+        translated_strokes.iter().for_each(|&key| {
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                render_comp.image.bounds =
+                    geometry::aabb_translate(render_comp.image.bounds, offset);
+                render_comp.rendernode =
+                    render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
+            }
+        });
 
         self.selection_bounds = if let Some(bounds) = self.selection_bounds {
             Some(geometry::aabb_translate(bounds, offset))
         } else {
             None
         };
-        self.regenerate_rendering_for_selection_threaded();
     }
 
     pub fn gen_svg_selection(&self) -> Result<Option<String>, anyhow::Error> {

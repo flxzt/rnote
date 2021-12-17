@@ -9,7 +9,7 @@ use gtk4::{
 };
 use rayon::prelude::*;
 
-use crate::{geometry};
+use crate::geometry;
 
 #[derive(Debug, Clone)]
 pub enum RendererBackend {
@@ -19,15 +19,15 @@ pub enum RendererBackend {
 
 #[derive(Debug, Clone)]
 pub struct Image {
-    data: Vec<u8>,
+    pub data: Vec<u8>,
     /// bounds in the coordinate space of the sheet
-    bounds: p2d::bounding_volume::AABB,
+    pub bounds: p2d::bounding_volume::AABB,
     /// width of the data
-    data_width: i32,
+    pub data_width: i32,
     /// height of the data
-    data_height: i32,
+    pub data_height: i32,
     /// the memory format
-    memory_format: gdk::MemoryFormat,
+    pub memory_format: gdk::MemoryFormat,
 }
 
 impl Default for Image {

@@ -548,7 +548,7 @@ impl RnoteAppWindow {
                 let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * total_zoom;
                 let new_zoom = total_zoom - delta;
 
-                // the sheet position BEFORE scaling
+                // the sheet position BEFORE zooming
                 let sheet_center_pos = appwindow.canvas().transform_canvas_coords_to_sheet_coords(
                     na::vector![
                         f64::from(appwindow.canvas_scroller().width()) * 0.5,

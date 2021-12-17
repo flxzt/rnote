@@ -534,6 +534,11 @@ impl Sheet {
 
         snapshot.push_clip(&sheet_bounds_scaled);
         priv_.background.borrow().draw(snapshot);
+
+        if self.format_borders() {
+            self.format().draw(self.bounds(), snapshot, zoom);
+        }
+
         snapshot.pop();
     }
 

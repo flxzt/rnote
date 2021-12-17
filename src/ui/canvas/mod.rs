@@ -38,9 +38,7 @@ mod imp {
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
-        pub texture_buffer: RefCell<Option<gdk::Texture>>,
-        pub texture_buffer_pos: Cell<Option<na::Vector2<f64>>>,
-        pub zoom_timeout: RefCell<Option<glib::SourceId>>,
+        pub zoom_timeout_id: RefCell<Option<glib::SourceId>>,
 
         pub hadjustment: RefCell<Option<Adjustment>>,
         pub hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
@@ -112,9 +110,7 @@ mod imp {
                 stylus_drawing_gesture,
                 mouse_drawing_gesture,
                 touch_drawing_gesture,
-                texture_buffer: RefCell::new(None),
-                texture_buffer_pos: Cell::new(None),
-                zoom_timeout: RefCell::new(None),
+                zoom_timeout_id: RefCell::new(None),
 
                 hadjustment: RefCell::new(None),
                 hadjustment_signal: RefCell::new(None),
@@ -310,12 +306,6 @@ mod imp {
 
                     self.sheet.strokes_state().borrow_mut().zoom = zoom;
 
-                    obj.update_background_rendernode();
-                    self.sheet
-                        .strokes_state()
-                        .borrow_mut()
-                        .update_rendernodes_current_zoom();
-
                     obj.queue_resize();
                     obj.queue_draw();
                 }
@@ -329,13 +319,6 @@ mod imp {
                         );
 
                     self.temporary_zoom.replace(temporary_zoom);
-
-                    self.sheet
-                        .background()
-                        .borrow_mut()
-                        .update_rendernode(obj.total_zoom(), self.sheet.bounds()).unwrap_or_else(|e| {
-                            log::error!("failed to update rendernode for background while setting new temporary-zoom property, Err {}", e);
-                        });
 
                     obj.queue_resize();
                     obj.queue_draw();
@@ -405,11 +388,10 @@ mod imp {
 
         fn snapshot(&self, widget: &Self::Type, snapshot: &gtk4::Snapshot) {
             let temporary_zoom = widget.temporary_zoom();
-            let total_zoom = widget.total_zoom();
+            let zoom = widget.zoom();
             let hadj = widget.hadjustment().unwrap();
             let vadj = widget.vadjustment().unwrap();
             let sheet_margin = self.sheet_margin.get();
-            let sheet_bounds_in_canvas_coords = widget.sheet_bounds_in_canvas_coords();
 
             // Clip everything outside the current view
             snapshot.push_clip(&graphene::Rect::new(
@@ -426,89 +408,46 @@ mod imp {
                 (-vadj.value()) as f32,
             ));
 
+            snapshot.scale(temporary_zoom as f32, temporary_zoom as f32);
+
+            // From here in scaled sheet coordinate space
+            snapshot.translate(&graphene::Point::new(
+                (sheet_margin * zoom) as f32,
+                (sheet_margin * zoom) as f32,
+            ));
+
             self.draw_shadow(
-                &geometry::aabb_to_graphene_rect(sheet_bounds_in_canvas_coords),
-                sheet_margin * total_zoom,
+                geometry::aabb_scale(widget.sheet().bounds(), zoom),
+                sheet_margin * zoom,
                 snapshot,
             );
 
-            if let (Some(texture_buffer), Some(pos)) = (
-                &*self.texture_buffer.borrow(),
-                self.texture_buffer_pos.get(),
-            ) {
-                snapshot.save();
+            // Clip sheet and stroke drawing to sheet bounds
+            snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
+                widget.sheet().bounds(),
+                zoom,
+            )));
 
-                // From here in scaled sheet coordinate space
-                snapshot.translate(&graphene::Point::new(
-                    (sheet_margin * total_zoom) as f32,
-                    (sheet_margin * total_zoom) as f32,
-                ));
+            self.sheet.draw(zoom, snapshot);
 
-                self.sheet.draw(total_zoom, snapshot);
+            self.sheet
+                .strokes_state()
+                .borrow()
+                .draw_strokes(snapshot, Some(widget.viewport_in_sheet_coords()));
 
-                if self.sheet.format_borders() {
-                    self.sheet
-                        .format()
-                        .draw(self.sheet.bounds(), snapshot, total_zoom);
-                }
-                snapshot.restore();
+            snapshot.pop();
 
-                // Drawing the texture
-                let zoomed_texture_bounds = geometry::aabb_scale(
-                    p2d::bounding_volume::AABB::new(
-                        na::point![pos[0], pos[1]],
-                        na::point![
-                            pos[0] + f64::from(texture_buffer.width()),
-                            pos[1] + f64::from(texture_buffer.height())
-                        ],
-                    ),
-                    temporary_zoom,
-                );
+            self.sheet
+                .strokes_state()
+                .borrow()
+                .draw_selection(zoom, snapshot);
 
-                snapshot.append_texture(
-                    texture_buffer,
-                    &geometry::aabb_to_graphene_rect(zoomed_texture_bounds),
-                );
-            } else {
-                // From here in scaled sheet coordinate space
-                snapshot.translate(&graphene::Point::new(
-                    (sheet_margin * total_zoom) as f32,
-                    (sheet_margin * total_zoom) as f32,
-                ));
+            self.pens
+                .borrow()
+                .draw(self.current_pen.get(), snapshot, zoom);
 
-                // Clip sheet and stroke drawing to sheet bounds
-                snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-                    widget.sheet().bounds(),
-                    total_zoom,
-                )));
-
-                self.sheet.draw(total_zoom, snapshot);
-
-                self.sheet
-                    .strokes_state()
-                    .borrow()
-                    .draw_strokes(snapshot, Some(widget.viewport_in_sheet_coords()));
-
-                snapshot.pop();
-
-                self.sheet
-                    .strokes_state()
-                    .borrow()
-                    .draw_selection(total_zoom, snapshot);
-
-                self.pens
-                    .borrow()
-                    .draw(self.current_pen.get(), snapshot, total_zoom);
-
-                if self.sheet.format_borders() {
-                    self.sheet
-                        .format()
-                        .draw(self.sheet.bounds(), snapshot, total_zoom);
-                }
-
-                if self.visual_debug.get() {
-                    self.draw_debug(widget, snapshot);
-                }
+            if self.visual_debug.get() {
+                self.draw_debug(widget, snapshot, zoom);
             }
 
             // Draw the children
@@ -525,7 +464,12 @@ mod imp {
     impl Canvas {
         pub const SHADOW_WIDTH: f64 = 30.0;
 
-        pub fn draw_shadow(&self, bounds: &graphene::Rect, width: f64, snapshot: &Snapshot) {
+        pub fn draw_shadow(
+            &self,
+            bounds: p2d::bounding_volume::AABB,
+            width: f64,
+            snapshot: &Snapshot,
+        ) {
             let shadow_color = gdk::RGBA {
                 red: 0.1,
                 green: 0.1,
@@ -535,7 +479,7 @@ mod imp {
             let corner_radius = graphene::Size::new(width as f32 / 4.0, width as f32 / 4.0);
 
             let rounded_rect = gsk::RoundedRect::new(
-                bounds.clone(),
+                geometry::aabb_to_graphene_rect(bounds),
                 corner_radius.clone(),
                 corner_radius.clone(),
                 corner_radius.clone(),
@@ -553,9 +497,7 @@ mod imp {
         }
 
         // Draw bounds, positions, .. for visual debugging purposes
-        fn draw_debug(&self, widget: &super::Canvas, snapshot: &Snapshot) {
-            let zoom = self.zoom.get();
-
+        fn draw_debug(&self, widget: &super::Canvas, snapshot: &Snapshot, zoom: f64) {
             match self.current_pen.get() {
                 PenStyle::Eraser => {
                     if self.pens.borrow().eraser.shown() {
@@ -635,7 +577,7 @@ impl Default for Canvas {
 
 impl Canvas {
     pub const ZOOM_MIN: f64 = 0.1;
-    pub const ZOOM_MAX: f64 = 10.0;
+    pub const ZOOM_MAX: f64 = 8.0;
     pub const ZOOM_DEFAULT: f64 = 1.0;
     /// The zoom amount when activating the zoom-in / zoom-out action
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
@@ -760,7 +702,7 @@ impl Canvas {
         if let Some(ref adjustment) = adj {
             let signal_id =
                 adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
-                    //canvas.regenerate_content(false, false);
+                    canvas.regenerate_content(false, false);
 
                     canvas.queue_allocate();
                     canvas.queue_draw();
@@ -780,7 +722,7 @@ impl Canvas {
         if let Some(ref adjustment) = adj {
             let signal_id =
                 adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
-                    //canvas.regenerate_content(false, false);
+                    canvas.regenerate_content(false, false);
 
                     canvas.queue_allocate();
                     canvas.queue_draw();
@@ -997,22 +939,22 @@ impl Canvas {
 
     /// The bounds of the drawn content, meaning the bounds of the scaled sheet + margin
     pub fn content_bounds(&self) -> p2d::bounding_volume::AABB {
-        let total_zoom = self.total_zoom();
+        let zoom = self.zoom();
 
         self.sheet_bounds_in_canvas_coords()
-            .loosened(self.sheet_margin() * total_zoom)
+            .loosened(self.sheet_margin() * zoom)
     }
 
     /// The bounds of the sheet in the coordinate space of the canvas
     pub fn sheet_bounds_in_canvas_coords(&self) -> p2d::bounding_volume::AABB {
-        let total_zoom = self.total_zoom();
+        let zoom = self.zoom();
         let sheet_margin = self.sheet_margin();
 
         p2d::bounding_volume::AABB::new(
-            na::point![sheet_margin * total_zoom, sheet_margin * total_zoom],
+            na::point![sheet_margin * zoom, sheet_margin * zoom],
             na::point![
-                (sheet_margin + f64::from(self.sheet().width())) * total_zoom,
-                (sheet_margin + f64::from(self.sheet().height())) * total_zoom
+                (sheet_margin + f64::from(self.sheet().width())) * zoom,
+                (sheet_margin + f64::from(self.sheet().height())) * zoom
             ],
         )
     }
@@ -1040,11 +982,7 @@ impl Canvas {
     ) -> na::Vector2<f64> {
         let total_zoom = self.total_zoom();
 
-        sheet_coords
-            + na::vector![
-                self.sheet_margin() * total_zoom,
-                self.sheet_margin() * total_zoom
-            ]
+        sheet_coords + na::vector![self.sheet_margin() * total_zoom, self.sheet_margin() * total_zoom]
             - na::vector![
                 self.hadjustment().unwrap().value(),
                 self.vadjustment().unwrap().value()
@@ -1112,28 +1050,13 @@ impl Canvas {
     }
 
     /// Zoom temporarily to a new zoom, not regenerating the contents while doing it.
-    /// To zoom the content and reset the temporary zoom, use zoom_to().
+    /// To zoom and regenerate the content and reset the temporary zoom, use zoom_to().
     pub fn zoom_temporarily_to(&self, temp_zoom: f64) {
-        let priv_ = imp::Canvas::from_instance(self);
-        let hadj = self.hadjustment().unwrap();
-        let vadj = self.vadjustment().unwrap();
-
-        // Only capture when texture_buffer is resetted (= None)
-        if priv_.texture_buffer.borrow().is_none() {
-            *priv_.texture_buffer.borrow_mut() = self.current_content_as_texture();
-            priv_
-                .texture_buffer_pos
-                .set(Some(na::vector![hadj.value(), vadj.value()]));
-        }
         self.set_temporary_zoom(temp_zoom / self.zoom());
     }
 
-    /// zooms the canvas and its contents to a new zoom
+    /// zooms and regenerates the canvas and its contents to a new zoom
     pub fn zoom_to(&self, zoom: f64) {
-        let priv_ = imp::Canvas::from_instance(self);
-
-        *priv_.texture_buffer.borrow_mut() = None;
-        priv_.texture_buffer_pos.set(None);
         self.set_temporary_zoom(1.0);
         self.set_zoom(zoom);
 
@@ -1148,6 +1071,10 @@ impl Canvas {
             .borrow_mut()
             .reset_regeneration_flag_all_strokes();
 
+        // update rendernodes to new zoom until threaded regeneration is finished
+        self.update_background_rendernode();
+        self.update_content_rendernodes();
+
         self.regenerate_background(false);
         self.regenerate_content(false, true);
     }
@@ -1161,23 +1088,14 @@ impl Canvas {
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
-        if let Some(zoom_timeout) = priv_.zoom_timeout.take() {
+        if let Some(zoom_timeout) = priv_.zoom_timeout_id.take() {
             glib::source::source_remove(zoom_timeout);
         }
 
-        // Regenerate when zoom is over Threshold
-        if self.temporary_zoom() > Self::ZOOM_REGENERATION_THRESHOLD
-            || self.temporary_zoom() < 1.0 / Self::ZOOM_REGENERATION_THRESHOLD
-        {
-            self.zoom_to(zoom);
-        } else {
-            self.zoom_temporarily_to(zoom);
-        }
-
-        //self.zoom_temporarily_to(zoom);
+        self.zoom_temporarily_to(zoom);
 
         priv_
-            .zoom_timeout
+            .zoom_timeout_id
             .borrow_mut()
             .replace(glib::source::timeout_add_local_once(
                 timeout_time,
@@ -1185,7 +1103,7 @@ impl Canvas {
                     let priv_ = imp::Canvas::from_instance(&canvas);
 
                     canvas.zoom_to(zoom);
-                    priv_.zoom_timeout.borrow_mut().take();
+                    priv_.zoom_timeout_id.borrow_mut().take();
                 }),
             ));
     }
@@ -1195,9 +1113,17 @@ impl Canvas {
         self.sheet()
         .background()
         .borrow_mut()
-        .update_rendernode(self.total_zoom(), self.sheet().bounds()).unwrap_or_else(|e| {
+        .update_rendernode(self.zoom(), self.sheet().bounds()).unwrap_or_else(|e| {
             log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
         });
+    }
+
+    /// Update rendernodes of the background. Used when sheet size, but not zoom changed
+    pub fn update_content_rendernodes(&self) {
+        self.sheet()
+            .strokes_state()
+            .borrow_mut()
+            .update_rendernodes_current_zoom(self.zoom());
     }
 
     /// regenerating the background image and rendernode.
@@ -1246,8 +1172,8 @@ impl Canvas {
         }
     }
 
-    /// Captures the current content of the canvas as a gdk::Texture
-    pub fn current_content_as_texture(&self) -> Option<gdk::Texture> {
+    /// Captures the current view of the canvas as a gdk::Texture
+    pub fn current_view_as_texture(&self) -> Option<gdk::Texture> {
         let priv_ = imp::Canvas::from_instance(self);
         let snapshot = Snapshot::new();
 
@@ -1258,7 +1184,7 @@ impl Canvas {
         let texture = if let Some(node) = snapshot.to_node() {
             let texture = render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, None)
                 .unwrap_or_else(|e| {
-                    log::error!("{}", e);
+                    log::error!("rendernode_to_texture() in current_content_as_texture() failed with Err {}", e);
                     None
                 });
             //log::debug!("saving texture");

@@ -95,7 +95,14 @@ impl StrokesState {
     pub fn deselect_all_strokes(&mut self) {
         self.selection_components
             .iter_mut()
-            .for_each(|(_key, selection_comp)| selection_comp.selected = false);
+            .for_each(|(key, selection_comp)| {
+                selection_comp.selected = false;
+
+                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                    self.chrono_counter += 1;
+                    chrono_comp.t = self.chrono_counter;
+                }
+            });
 
         self.selection_bounds = None;
     }
@@ -118,6 +125,7 @@ impl StrokesState {
             new_stroke.translate(offset);
         });
 
+        self.translate_selection(offset);
         self.update_selection_bounds();
     }
 

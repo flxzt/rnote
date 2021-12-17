@@ -434,7 +434,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Zoom fit to width
     action_zoom_fit_width.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let mut new_zoom = appwindow.canvas().total_zoom();
+        let mut new_zoom = appwindow.canvas().zoom();
 
         for _ in 0..2 {
             new_zoom = (f64::from(appwindow.canvas_scroller().width()) - 2.0 * appwindow.canvas().sheet_margin() * new_zoom) / appwindow.canvas().sheet().format().width() as f64;
@@ -444,14 +444,14 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Zoom in
     action_zoomin.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let new_zoom = appwindow.canvas().total_zoom() + Canvas::ZOOM_ACTION_DELTA;
-        appwindow.canvas().zoom_to(new_zoom);
+        let new_zoom = ((appwindow.canvas().zoom() + Canvas::ZOOM_ACTION_DELTA) * 10.0).floor() / 10.0;
+        appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
     }));
 
     // Zoom out
     action_zoomout.connect_activate(clone!(@weak appwindow => move |_,_| {
-        let new_zoom = appwindow.canvas().total_zoom() - Canvas::ZOOM_ACTION_DELTA;
-        appwindow.canvas().zoom_to(new_zoom);
+        let new_zoom = ((appwindow.canvas().zoom() - Canvas::ZOOM_ACTION_DELTA) * 10.0).ceil() / 10.0;
+        appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
     }));
 
     // Temporary Eraser

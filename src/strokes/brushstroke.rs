@@ -7,7 +7,6 @@ use crate::{
 };
 
 use p2d::bounding_volume::BoundingVolume;
-use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
@@ -363,10 +362,10 @@ impl BrushStroke {
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
         let svgs: Vec<render::Svg> = self
             .elements
-            .par_iter()
-            .zip(self.elements.par_iter().skip(1))
-            .zip(self.elements.par_iter().skip(2))
-            .zip(self.elements.par_iter().skip(3))
+            .iter()
+            .zip(self.elements.iter().skip(1))
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
             .enumerate()
             .filter_map(|(i, (((first, second), third), forth))| {
                 let mut commands = Vec::new();
@@ -472,10 +471,10 @@ impl BrushStroke {
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
         let svgs: Vec<render::Svg> = self
             .elements
-            .par_iter()
-            .zip(self.elements.par_iter().skip(1))
-            .zip(self.elements.par_iter().skip(2))
-            .zip(self.elements.par_iter().skip(3))
+            .iter()
+            .zip(self.elements.iter().skip(1))
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
             .filter_map(|(((first, second), third), forth)| {
                 let mut commands = Vec::new();
                 let start_width = second.inputdata.pressure() * self.brush.width();
@@ -576,16 +575,15 @@ impl BrushStroke {
         let width = self.brush.width();
         let sensitivity = self.brush.sensitivity();
 
-        let mut bounds: Vec<p2d::bounding_volume::AABB> =
-            Vec::with_capacity(self.elements.len() / 4);
-        let mut teraelements: Vec<(TeraElement, TeraElement, TeraElement, TeraElement)> =
-            Vec::with_capacity(self.elements.len() / 4);
-
-        self.elements
-            .par_iter()
-            .zip(self.elements.par_iter().skip(1))
-            .zip(self.elements.par_iter().skip(2))
-            .zip(self.elements.par_iter().skip(3))
+        let (bounds, teraelements): (
+            Vec<p2d::bounding_volume::AABB>,
+            Vec<(TeraElement, TeraElement, TeraElement, TeraElement)>,
+        ) = self
+            .elements
+            .iter()
+            .zip(self.elements.iter().skip(1))
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
             .map(|(((first, second), third), fourth)| {
                 let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
@@ -624,7 +622,7 @@ impl BrushStroke {
                     ),
                 )
             })
-            .unzip_into_vecs(&mut bounds, &mut teraelements);
+            .unzip();
 
         let bounds = bounds.iter().fold(
             p2d::bounding_volume::AABB::new_invalid(),

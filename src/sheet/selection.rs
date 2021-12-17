@@ -276,25 +276,6 @@ impl Selection {
         self.set_property("shown", shown.to_value()).unwrap()
     }
 
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.connect_local(
-            "redraw",
-            false,
-            clone!(@weak self as selection, @weak appwindow => @default-return None, move |_args| {
-                    StrokeStyle::update_all_rendernodes(
-                        &mut *selection.strokes().borrow_mut(),
-                        appwindow.canvas().zoom(),
-                        &*appwindow.canvas().renderer().borrow(),
-                    );
-
-                    appwindow.canvas().queue_resize();
-                    appwindow.canvas().queue_draw();
-                    None
-            }),
-        )
-        .unwrap();
-    }
-
     pub fn update_selection(
         &self,
         selector: &Selector,

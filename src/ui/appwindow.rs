@@ -618,13 +618,13 @@ impl RnoteAppWindow {
         self.canvas_scroller().add_controller(&canvas_zoom_gesture);
 
         let prev_zoom = Rc::new(Cell::new(1_f64));
-        let scale_begin = Rc::new(Cell::new(1_f64));
+        let zoom_begin = Rc::new(Cell::new(1_f64));
         let new_zoom = Rc::new(Cell::new(self.canvas().zoom()));
         let zoomgesture_canvasscroller_start_pos = Rc::new(Cell::new((0.0, 0.0)));
         let zoomgesture_bbcenter_start: Rc<Cell<Option<(f64, f64)>>> = Rc::new(Cell::new(None));
 
         canvas_zoom_gesture.connect_begin(clone!(
-            @strong scale_begin,
+            @strong zoom_begin,
             @strong prev_zoom,
             @strong new_zoom,
             @strong zoomgesture_canvasscroller_start_pos,
@@ -632,11 +632,9 @@ impl RnoteAppWindow {
             @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
                 canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
-                scale_begin.set(appwindow.canvas().zoom());
+                zoom_begin.set(appwindow.canvas().zoom());
                 new_zoom.set(appwindow.canvas().zoom());
-
                 prev_zoom.set(1.0);
-                appwindow.canvas().zoom_temporarily_to(appwindow.canvas().zoom());
 
                 zoomgesture_canvasscroller_start_pos.set(
                     (
@@ -652,11 +650,11 @@ impl RnoteAppWindow {
         }));
 
         canvas_zoom_gesture.connect_scale_changed(
-            clone!(@strong scale_begin, @strong new_zoom, @strong prev_zoom, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, zoom| {
-                let new_zoom = if scale_begin.get() * zoom > Canvas::ZOOM_MAX || scale_begin.get() * zoom < Canvas::ZOOM_MIN {
+            clone!(@strong zoom_begin, @strong new_zoom, @strong prev_zoom, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, zoom| {
+                let new_zoom = if zoom_begin.get() * zoom > Canvas::ZOOM_MAX || zoom_begin.get() * zoom < Canvas::ZOOM_MIN {
                     prev_zoom.get()
                 } else {
-                    new_zoom.set(scale_begin.get() * zoom);
+                    new_zoom.set(zoom_begin.get() * zoom);
 
                     appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom.get(), Canvas::ZOOM_TIMEOUT_TIME);
 
@@ -688,7 +686,7 @@ impl RnoteAppWindow {
         );
 
         canvas_zoom_gesture.connect_cancel(
-            clone!(@strong scale_begin, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
+            clone!(@strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
                 canvas_zoom_gesture.set_state(EventSequenceState::Denied);
 
                 zoomgesture_bbcenter_start.set(None);
@@ -696,7 +694,7 @@ impl RnoteAppWindow {
         );
 
         canvas_zoom_gesture.connect_end(
-            clone!(@strong scale_begin, @strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
+            clone!(@strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
                 canvas_zoom_gesture.set_state(EventSequenceState::Denied);
 
                 zoomgesture_bbcenter_start.set(None);

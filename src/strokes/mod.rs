@@ -130,7 +130,7 @@ impl StrokesState {
                                 .sheet()
                                 .strokes_state()
                                 .borrow_mut()
-                                .regenerate_rendering_with_image(key, image);
+                                .update_rendering_image(key, image);
 
                             appwindow.canvas().queue_draw();
                         }

@@ -155,7 +155,7 @@ impl StrokesState {
                 }
             });
 
-            render_comp.regenerate_flag = true;
+            render_comp.regenerate_flag = false;
         } else {
             log::error!("render_tx or stroke is None in update_rendering_for_stroke_threaded()");
         }
@@ -282,7 +282,7 @@ impl StrokesState {
         })
     }
 
-    pub fn regenerate_rendering_with_image(&mut self, key: StrokeKey, image: render::Image) {
+    pub fn update_rendering_image(&mut self, key: StrokeKey, image: render::Image) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             render_comp.image = image;
             render_comp.regenerate_flag = false;
@@ -292,12 +292,12 @@ impl StrokesState {
     }
 
     /// Updates the cached rendernodes to the current zoom. Used to display the scaled (pixelated) images until new ones are generated with one of the regenerate_*_threaded funcs
-    pub fn update_rendernodes_current_zoom(&mut self) {
+    pub fn update_rendernodes_current_zoom(&mut self, zoom: f64) {
         self.render_components
             .iter_mut()
             .for_each(|(_key, render_comp)| {
                 render_comp.rendernode =
-                    render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
+                    render::image_to_texturenode(&render_comp.image, zoom).upcast();
             });
     }
 

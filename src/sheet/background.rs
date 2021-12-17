@@ -183,7 +183,7 @@ impl Default for Background {
 
 impl Background {
     pub const PATTERN_SIZE_DEFAULT: f64 = 20.0;
-    pub const TILE_MAX_SIZE: f64 = 512.0;
+    pub const TILE_MAX_SIZE: f64 = 256.0;
 
     pub fn import_background(&mut self, background: &Self) {
         self.color = background.color;

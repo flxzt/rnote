@@ -82,7 +82,7 @@ mod imp {
                 current_pen: Rc::new(Cell::new(PenStyle::default())),
                 sheet: Sheet::default(),
                 sheet_margin: Cell::new(super::Canvas::SHEET_MARGIN_DEFAULT),
-                zoom: Cell::new(super::Canvas::SCALE_DEFAULT),
+                zoom: Cell::new(super::Canvas::ZOOM_DEFAULT),
                 temporary_zoom: Cell::new(1.0),
                 pdf_import_width: Cell::new(super::Canvas::PDF_IMPORT_WIDTH_DEFAULT),
                 visual_debug: Cell::new(false),
@@ -192,7 +192,7 @@ mod imp {
                         "zoom",
                         f64::MIN,
                         f64::MAX,
-                        super::Canvas::SCALE_DEFAULT,
+                        super::Canvas::ZOOM_DEFAULT,
                         glib::ParamFlags::READWRITE,
                     ),
                     // The temporary zoom (on top of the normal zoom)
@@ -305,7 +305,7 @@ mod imp {
                     let zoom: f64 = value
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`.")
-                        .clamp(super::Canvas::SCALE_MIN, super::Canvas::SCALE_MAX);
+                        .clamp(super::Canvas::ZOOM_MIN, super::Canvas::ZOOM_MAX);
                     self.zoom.replace(zoom);
 
                     self.sheet.strokes_state().borrow_mut().zoom = zoom;
@@ -324,8 +324,8 @@ mod imp {
                         .get::<f64>()
                         .expect("The value needs to be of type `f64`.")
                         .clamp(
-                            super::Canvas::SCALE_MIN / self.zoom.get(),
-                            super::Canvas::SCALE_MAX / self.zoom.get(),
+                            super::Canvas::ZOOM_MIN / self.zoom.get(),
+                            super::Canvas::ZOOM_MAX / self.zoom.get(),
                         );
 
                     self.temporary_zoom.replace(temporary_zoom);
@@ -634,9 +634,10 @@ impl Default for Canvas {
 }
 
 impl Canvas {
-    pub const SCALE_MIN: f64 = 0.1;
-    pub const SCALE_MAX: f64 = 5.0;
-    pub const SCALE_DEFAULT: f64 = 1.0;
+    pub const ZOOM_MIN: f64 = 0.1;
+    pub const ZOOM_MAX: f64 = 10.0;
+    pub const ZOOM_DEFAULT: f64 = 1.0;
+    /// The zoom amount when activating the zoom-in / zoom-out action
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
     /// The threshold where a regeneration of the strokes is triggered (e.g. 2.0 for a range between 50% and 200% where no regeneration happens)
@@ -759,7 +760,7 @@ impl Canvas {
         if let Some(ref adjustment) = adj {
             let signal_id =
                 adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
-                    canvas.regenerate_content(false, false);
+                    //canvas.regenerate_content(false, false);
 
                     canvas.queue_allocate();
                     canvas.queue_draw();
@@ -779,7 +780,7 @@ impl Canvas {
         if let Some(ref adjustment) = adj {
             let signal_id =
                 adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
-                    canvas.regenerate_content(false, false);
+                    //canvas.regenerate_content(false, false);
 
                     canvas.queue_allocate();
                     canvas.queue_draw();

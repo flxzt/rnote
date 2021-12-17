@@ -429,7 +429,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Zoom reset
     action_zoom_reset.connect_activate(clone!(@weak appwindow => move |_,_| {
-        appwindow.canvas().zoom_to(Canvas::SCALE_DEFAULT);
+        appwindow.canvas().zoom_to(Canvas::ZOOM_DEFAULT);
     }));
 
     // Zoom fit to width

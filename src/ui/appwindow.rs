@@ -659,7 +659,7 @@ impl RnoteAppWindow {
 
         canvas_zoom_gesture.connect_scale_changed(
             clone!(@strong scale_begin, @strong new_zoom, @strong prev_zoom, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, zoom| {
-                let new_zoom = if scale_begin.get() * zoom > Canvas::SCALE_MAX || scale_begin.get() * zoom < Canvas::SCALE_MIN {
+                let new_zoom = if scale_begin.get() * zoom > Canvas::ZOOM_MAX || scale_begin.get() * zoom < Canvas::ZOOM_MIN {
                     prev_zoom.get()
                 } else {
                     new_zoom.set(scale_begin.get() * zoom);

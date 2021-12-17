@@ -1314,7 +1314,7 @@ impl Canvas {
                     self.sheet()
                         .strokes_state()
                         .borrow_mut()
-                        .regenerate_rendering_newest_stroke();
+                        .regenerate_rendering_newest_stroke_threaded();
                 }
             }
             PenStyle::Eraser => {
@@ -1445,7 +1445,7 @@ impl Canvas {
             self.sheet()
                 .strokes_state()
                 .borrow_mut()
-                .regenerate_rendering_for_stroke(last_key);
+                .regenerate_rendering_for_stroke_threaded(last_key);
         }
 
         match self.current_pen().get() {

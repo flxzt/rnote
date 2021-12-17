@@ -168,10 +168,25 @@ impl StrokesState {
         });
     }
 
+    pub fn regenerate_rendering_for_selection_threaded(&mut self) {
+        let selection_keys = self.keys_selection();
+
+        selection_keys.iter().for_each(|&key| {
+            self.regenerate_rendering_for_stroke_threaded(key);
+        });
+    }
+
     pub fn regenerate_rendering_newest_stroke(&mut self) {
         let last_stroke_key = self.last_stroke_key();
         if let Some(key) = last_stroke_key {
             self.regenerate_rendering_for_stroke(key);
+        }
+    }
+
+    pub fn regenerate_rendering_newest_stroke_threaded(&mut self) {
+        let last_stroke_key = self.last_stroke_key();
+        if let Some(key) = last_stroke_key {
+            self.regenerate_rendering_for_stroke_threaded(key);
         }
     }
 
@@ -180,6 +195,14 @@ impl StrokesState {
 
         if let Some(last_selection_key) = last_selection_key {
             self.regenerate_rendering_for_stroke(last_selection_key);
+        }
+    }
+
+    pub fn regenerate_rendering_newest_selected_threaded(&mut self) {
+        let last_selection_key = self.last_selection_key();
+
+        if let Some(last_selection_key) = last_selection_key {
+            self.regenerate_rendering_for_stroke_threaded(last_selection_key);
         }
     }
 

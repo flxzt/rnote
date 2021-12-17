@@ -829,6 +829,7 @@ impl RnoteAppWindow {
 
         self.canvas().set_unsaved_changes(false);
         self.canvas().set_empty(false);
+        self.canvas().update_background_rendernode();
         self.canvas().regenerate_content(true, true);
 
         Ok(())
@@ -856,6 +857,7 @@ impl RnoteAppWindow {
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
+        self.canvas().update_background_rendernode();
         self.canvas().regenerate_content(true, true);
         self.canvas().selection_modifier().set_visible(true);
 
@@ -887,6 +889,7 @@ impl RnoteAppWindow {
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
+        self.canvas().update_background_rendernode();
         self.canvas().regenerate_content(true, true);
         self.canvas().selection_modifier().set_visible(true);
 
@@ -923,6 +926,7 @@ impl RnoteAppWindow {
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
+        self.canvas().update_background_rendernode();
         self.canvas().regenerate_content(false, true);
         self.canvas().selection_modifier().set_visible(true);
 

@@ -482,7 +482,7 @@ impl Sheet {
         )
     }
 
-    // Returns true if resizing is needed
+    /// Called when any stroke could change the sheet size when "endless-sheet" is set. Returns true if resizing is needed
     pub fn resize_endless(&self) -> bool {
         let mut resizing_needed = false;
         if self.endless_sheet() {
@@ -490,24 +490,18 @@ impl Sheet {
 
             if new_height != self.height() {
                 resizing_needed = true;
+                self.set_height(new_height);
             }
-            self.set_height(new_height);
         }
 
         resizing_needed
     }
 
-    /// Resizing needed after calling this
+    /// Called when sheet should resize to fit all strokes. Resizing needed after calling this
     pub fn resize_to_format(&self) {
         let priv_ = imp::Sheet::from_instance(self);
         if self.endless_sheet() {
-            self.set_padding_bottom(priv_.format.height());
-
-            let new_height = self.strokes_state().borrow().calc_height() + self.padding_bottom();
-
-            if new_height != self.height() {
-                self.set_height(new_height);
-            }
+            self.resize_endless();
         } else {
             // set padding_bottom to 1 because then 'fraction'.ceil() is at least 1
             self.set_padding_bottom(1);

@@ -223,6 +223,7 @@ impl RnoteApp {
 
     // Anything that needs to be done right before showing the appwindow
     pub fn setup_app(&self, appwindow: &RnoteAppWindow) {
+        appwindow.canvas().regenerate_background(false);
         appwindow.canvas().regenerate_content(true, true);
     }
 }

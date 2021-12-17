@@ -309,17 +309,12 @@ mod imp {
                     self.zoom.replace(zoom);
 
                     self.sheet.strokes_state().borrow_mut().zoom = zoom;
+
+                    obj.update_background_rendernode();
                     self.sheet
                         .strokes_state()
                         .borrow_mut()
                         .update_rendernodes_current_zoom();
-
-                    self.sheet
-                        .background()
-                        .borrow_mut()
-                        .update_rendernode(obj.total_zoom(), self.sheet.bounds()).unwrap_or_else(|e| {
-                            log::error!("failed to update rendernode for background while setting new zoom property, Err {}", e);
-                        });
 
                     obj.queue_resize();
                     obj.queue_draw();
@@ -1115,8 +1110,8 @@ impl Canvas {
         }
     }
 
-    /// Zoom temporarily to a new zoom, not rescaling the contents while doing it.
-    /// To scale the content and reset the zoom, use scale_to().
+    /// Zoom temporarily to a new zoom, not regenerating the contents while doing it.
+    /// To zoom the content and reset the temporary zoom, use zoom_to().
     pub fn zoom_temporarily_to(&self, temp_zoom: f64) {
         let priv_ = imp::Canvas::from_instance(self);
         let hadj = self.hadjustment().unwrap();
@@ -1152,6 +1147,7 @@ impl Canvas {
             .borrow_mut()
             .reset_regeneration_flag_all_strokes();
 
+        self.regenerate_background(false);
         self.regenerate_content(false, true);
     }
 
@@ -1192,8 +1188,18 @@ impl Canvas {
             ));
     }
 
+    /// Update rendernodes of the background. Used when sheet size, but not zoom changed
+    pub fn update_background_rendernode(&self) {
+        self.sheet()
+        .background()
+        .borrow_mut()
+        .update_rendernode(self.total_zoom(), self.sheet().bounds()).unwrap_or_else(|e| {
+            log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
+        });
+    }
+
     /// regenerating the background image and rendernode.
-    /// use for example when changing the background pattern
+    /// use for example when changing the background pattern or zoom
     pub fn regenerate_background(&self, redraw: bool) {
         match self
             .sheet()
@@ -1232,7 +1238,10 @@ impl Canvas {
                 force_regenerate,
             );
 
-        self.regenerate_background(redraw);
+        if redraw {
+            self.queue_resize();
+            self.queue_draw();
+        }
     }
 
     /// Captures the current content of the canvas as a gdk::Texture
@@ -1381,9 +1390,8 @@ impl Canvas {
                             Some(self.viewport_in_sheet_coords()),
                         );
                     if self.sheet().resize_endless() {
-                        self.regenerate_background(false);
+                        self.update_background_rendernode();
                     }
-                    self.queue_draw();
                 }
             }
             PenStyle::Selector => {
@@ -1407,6 +1415,8 @@ impl Canvas {
             }
             PenStyle::Unkown => {}
         }
+        self.queue_resize();
+        self.queue_draw();
     }
 
     /// Process the end of a strokes drawing
@@ -1467,7 +1477,7 @@ impl Canvas {
         self.pens().borrow_mut().selector.clear_path();
 
         if self.sheet().resize_endless() {
-            self.regenerate_background(false);
+            self.update_background_rendernode();
         }
         self.queue_resize();
         self.queue_draw();

@@ -599,6 +599,7 @@ impl SettingsPanel {
                 appwindow.canvas().sheet().format().import_format(temporary_format);
 
                 appwindow.canvas().sheet().resize_to_format();
+                appwindow.canvas().regenerate_background(false);
                 appwindow.canvas().regenerate_content(true, true);
             }),
         );

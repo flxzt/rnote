@@ -326,7 +326,10 @@ impl Background {
         sheet_bounds: p2d::bounding_volume::AABB,
     ) -> Result<(), anyhow::Error> {
         let tile_size = self.tile_size();
-        let tile_bounds = p2d::bounding_volume::AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
+        let tile_bounds = p2d::bounding_volume::AABB::new(
+            na::point![0.0, 0.0],
+            na::point![tile_size[0], tile_size[1]],
+        );
 
         self.image = self.gen_background_image(renderer, zoom, tile_bounds)?;
         self.update_rendernode(zoom, sheet_bounds)?;

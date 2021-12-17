@@ -152,12 +152,10 @@ pub struct Background {
     pattern: PatternStyle,
     pattern_size: na::Vector2<f64>,
     pattern_color: utils::Color,
+    #[serde(skip)]
+    image: render::Image,
     #[serde(skip, default = "render::default_rendernode")]
     rendernode: gsk::RenderNode,
-    #[serde(skip)]
-    current_zoom: f64,
-    #[serde(skip)]
-    current_bounds: p2d::bounding_volume::AABB,
 }
 
 impl Default for Background {
@@ -177,9 +175,8 @@ impl Default for Background {
                 b: 1.0,
                 a: 1.0,
             },
+            image: render::Image::default(),
             rendernode: render::default_rendernode(),
-            current_zoom: 1.0,
-            current_bounds: p2d::bounding_volume::AABB::new_invalid(),
         }
     }
 }
@@ -228,49 +225,7 @@ impl Background {
         self.pattern_size = pattern_size;
     }
 
-    pub fn draw(&self, snapshot: &Snapshot) {
-        snapshot.append_node(&self.rendernode);
-    }
-
-    pub fn update_rendernode(
-        &mut self,
-        renderer: &Renderer,
-        zoom: f64,
-        sheet_bounds: p2d::bounding_volume::AABB,
-        force_regenerate: bool,
-    ) -> Result<(), anyhow::Error> {
-        if force_regenerate || sheet_bounds != self.current_bounds || zoom != self.current_zoom {
-            match self.gen_rendernode(renderer, zoom, sheet_bounds) {
-                Ok(Some(new_rendernode)) => {
-                    self.current_zoom = zoom;
-                    self.current_bounds = sheet_bounds;
-                    self.rendernode = new_rendernode;
-                }
-                Err(e) => {
-                    log::error!(
-                        "gen_rendernode() failed in update_rendernode() of background with Err: {}",
-                        e
-                    );
-                }
-                _ => {
-                    log::error!(
-                        "gen_rendernode() returned None in update_rendernode() of background"
-                    );
-                }
-            }
-        }
-
-        Ok(())
-    }
-
-    pub fn gen_rendernode(
-        &mut self,
-        renderer: &Renderer,
-        zoom: f64,
-        sheet_bounds: p2d::bounding_volume::AABB,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        let snapshot = Snapshot::new();
-
+    pub fn tile_size(&self) -> na::Vector2<f64> {
         // Calculate tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
         let tile_factor =
             na::Vector2::<f64>::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
@@ -287,50 +242,12 @@ impl Background {
         };
         let tile_size = na::vector![tile_width, tile_height];
 
-        let tile_bounds = p2d::bounding_volume::AABB::new(
-            na::point![0.0, 0.0],
-            na::point![tile_size[0], tile_size[1]],
-        );
-        let svg_string = compose::add_xml_header(self.gen_svg_data(tile_bounds)?.as_str());
-        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-            sheet_bounds,
-            zoom,
-        )));
-
-        // Fill with background color just in case there is any space left between the tiles
-        snapshot.append_color(
-            &self.color.to_gdk(),
-            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(sheet_bounds, zoom)),
-        );
-
-        let svg = render::Svg {
-            bounds: tile_bounds,
-            svg_data: svg_string,
-        };
-
-        match renderer.gen_image(zoom, &svg) {
-            Ok(background_image) => {
-                let new_texture = render::image_to_memtexture(&background_image);
-                for aabb in geometry::split_aabb_extended(sheet_bounds, tile_size) {
-                    snapshot.append_texture(
-                        &new_texture,
-                        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, zoom)),
-                    );
-                }
-            }
-            Err(e) => {
-                log::error!("gen_image_librsvg() for background failed, {}", e);
-            }
-        };
-
-        snapshot.pop();
-
-        Ok(snapshot.to_node())
+        tile_size
     }
 
     pub fn gen_svg_data(
         &self,
-        sheet_bounds: p2d::bounding_volume::AABB,
+        bounds: p2d::bounding_volume::AABB,
     ) -> Result<String, anyhow::Error> {
         let mut svg = String::from("");
 
@@ -338,10 +255,10 @@ impl Background {
 
         // background color
         let color_rect = element::Rectangle::new()
-            .set("x", sheet_bounds.mins[0])
-            .set("y", sheet_bounds.mins[1])
-            .set("width", sheet_bounds.extents()[0])
-            .set("height", sheet_bounds.extents()[1])
+            .set("x", bounds.mins[0])
+            .set("y", bounds.mins[1])
+            .set("width", bounds.extents()[0])
+            .set("height", bounds.extents()[1])
             .set("fill", self.color.to_css_color());
         group = group.add(color_rect);
 
@@ -349,7 +266,7 @@ impl Background {
             PatternStyle::None => {}
             PatternStyle::Lines => {
                 group = group.add(gen_horizontal_line_pattern(
-                    sheet_bounds,
+                    bounds,
                     self.pattern_size[1],
                     self.pattern_color,
                     1.0,
@@ -357,7 +274,7 @@ impl Background {
             }
             PatternStyle::Grid => {
                 group = group.add(gen_grid_pattern(
-                    sheet_bounds,
+                    bounds,
                     self.pattern_size[1],
                     self.pattern_size[0],
                     self.pattern_color,
@@ -366,7 +283,7 @@ impl Background {
             }
             PatternStyle::Dots => {
                 group = group.add(gen_dots_pattern(
-                    sheet_bounds,
+                    bounds,
                     self.pattern_size[1],
                     self.pattern_size[0],
                     self.pattern_color,
@@ -382,7 +299,95 @@ impl Background {
                 .as_str(),
         );
 
-        let svg = compose::wrap_svg(svg.as_str(), Some(sheet_bounds), None, false, false);
+        let svg = compose::wrap_svg(svg.as_str(), Some(bounds), None, false, false);
         Ok(svg)
+    }
+
+    pub fn gen_background_image(
+        &mut self,
+        renderer: &Renderer,
+        zoom: f64,
+        bounds: p2d::bounding_volume::AABB,
+    ) -> Result<render::Image, anyhow::Error> {
+        let svg_string = compose::add_xml_header(self.gen_svg_data(bounds)?.as_str());
+
+        let svg = render::Svg {
+            bounds: bounds,
+            svg_data: svg_string,
+        };
+
+        renderer.gen_image(zoom, &svg)
+    }
+
+    pub fn regenerate_background(
+        &mut self,
+        renderer: &Renderer,
+        zoom: f64,
+        sheet_bounds: p2d::bounding_volume::AABB,
+    ) -> Result<(), anyhow::Error> {
+        let tile_size = self.tile_size();
+        let tile_bounds = p2d::bounding_volume::AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
+
+        self.image = self.gen_background_image(renderer, zoom, tile_bounds)?;
+        self.update_rendernode(zoom, sheet_bounds)?;
+        Ok(())
+    }
+
+    pub fn gen_rendernode(
+        &mut self,
+        zoom: f64,
+        bounds: p2d::bounding_volume::AABB,
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+        let snapshot = Snapshot::new();
+        let tile_size = self.tile_size();
+
+        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
+            bounds, zoom,
+        )));
+
+        // Fill with background color just in case there is any space left between the tiles
+        snapshot.append_color(
+            &self.color.to_gdk(),
+            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(bounds, zoom)),
+        );
+
+        let new_texture = render::image_to_memtexture(&self.image);
+        for aabb in geometry::split_aabb_extended(bounds, tile_size) {
+            snapshot.append_texture(
+                &new_texture,
+                &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, zoom)),
+            );
+        }
+
+        snapshot.pop();
+
+        Ok(snapshot.to_node())
+    }
+
+    pub fn update_rendernode(
+        &mut self,
+        zoom: f64,
+        sheet_bounds: p2d::bounding_volume::AABB,
+    ) -> Result<(), anyhow::Error> {
+        match self.gen_rendernode(zoom, sheet_bounds) {
+            Ok(Some(new_rendernode)) => {
+                self.rendernode = new_rendernode;
+            }
+            Err(e) => {
+                log::error!(
+                    "gen_rendernode() failed in update_rendernode() of background with Err: {}",
+                    e
+                );
+            }
+            _ => {
+                log::error!("gen_rendernode() returned None in update_rendernode() of background");
+            }
+        }
+
+        Ok(())
+    }
+
+    pub fn draw(&self, snapshot: &Snapshot) {
+        snapshot.append_node(&self.rendernode);
     }
 }

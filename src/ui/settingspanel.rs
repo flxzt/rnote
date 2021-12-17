@@ -606,7 +606,7 @@ impl SettingsPanel {
         // Background
         priv_.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
             appwindow.canvas().sheet().background().borrow_mut().set_color(utils::Color::from(background_color_choosebutton.rgba()));
-            appwindow.canvas().regenerate_background(true, true);
+            appwindow.canvas().regenerate_background(true);
         }));
 
         priv_.background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |background_patterns_row| {
@@ -646,13 +646,13 @@ impl SettingsPanel {
                     }
                 };
 
-                appwindow.canvas().regenerate_background(true, true);
+                appwindow.canvas().regenerate_background(true);
             }
         }));
 
         priv_.background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
             appwindow.canvas().sheet().background().borrow_mut().set_pattern_color(utils::Color::from(background_pattern_color_choosebutton.rgba()));
-            appwindow.canvas().regenerate_background(true, true);
+            appwindow.canvas().regenerate_background(true);
         }));
 
         priv_.background_pattern_width_unitentry.get().connect_local(
@@ -664,7 +664,7 @@ impl SettingsPanel {
 
                     appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
 
-                    appwindow.canvas().regenerate_background(true, true);
+                    appwindow.canvas().regenerate_background(true);
 
                     None
             }),
@@ -679,7 +679,7 @@ impl SettingsPanel {
                     pattern_size[1] = f64::from(settings_panel.background_pattern_height_unitentry().value_in_px());
                     appwindow.canvas().sheet().background().borrow_mut().set_pattern_size(pattern_size);
 
-                    appwindow.canvas().regenerate_background(true, true);
+                    appwindow.canvas().regenerate_background(true);
 
                     None
             }),

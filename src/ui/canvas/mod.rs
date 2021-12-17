@@ -314,6 +314,13 @@ mod imp {
                         .borrow_mut()
                         .update_rendernodes_current_zoom();
 
+                    self.sheet
+                        .background()
+                        .borrow_mut()
+                        .update_rendernode(obj.total_zoom(), self.sheet.bounds()).unwrap_or_else(|e| {
+                            log::error!("failed to update rendernode for background while setting new zoom property, Err {}", e);
+                        });
+
                     obj.queue_resize();
                     obj.queue_draw();
                 }
@@ -327,6 +334,13 @@ mod imp {
                         );
 
                     self.temporary_zoom.replace(temporary_zoom);
+
+                    self.sheet
+                        .background()
+                        .borrow_mut()
+                        .update_rendernode(obj.total_zoom(), self.sheet.bounds()).unwrap_or_else(|e| {
+                            log::error!("failed to update rendernode for background while setting new temporary-zoom property, Err {}", e);
+                        });
 
                     obj.queue_resize();
                     obj.queue_draw();
@@ -435,6 +449,8 @@ mod imp {
                     (sheet_margin * total_zoom) as f32,
                 ));
 
+                self.sheet.draw(total_zoom, snapshot);
+
                 if self.sheet.format_borders() {
                     self.sheet
                         .format()
@@ -442,6 +458,7 @@ mod imp {
                 }
                 snapshot.restore();
 
+                // Drawing the texture
                 let zoomed_texture_bounds = geometry::aabb_scale(
                     p2d::bounding_volume::AABB::new(
                         na::point![pos[0], pos[1]],
@@ -1175,33 +1192,37 @@ impl Canvas {
             ));
     }
 
-    /// regenerating the background rendernodes.
-    /// use force_regenerate to force regeneration of the texture_cache of the background (for example when changing the background pattern)
-    pub fn regenerate_background(&self, force_regenerate: bool, redraw: bool) {
-        match self.sheet().background().borrow_mut().update_rendernode(
-            &self
-                .sheet()
-                .strokes_state()
-                .borrow()
-                .renderer
-                .read()
-                .unwrap(),
-            self.zoom(),
-            self.sheet().bounds(),
-            force_regenerate,
-        ) {
+    /// regenerating the background image and rendernode.
+    /// use for example when changing the background pattern
+    pub fn regenerate_background(&self, redraw: bool) {
+        match self
+            .sheet()
+            .background()
+            .borrow_mut()
+            .regenerate_background(
+                &self
+                    .sheet()
+                    .strokes_state()
+                    .borrow()
+                    .renderer
+                    .read()
+                    .unwrap(),
+                self.zoom(),
+                self.sheet().bounds(),
+            ) {
             Err(e) => {
                 log::error!("failed to regenerate background, {}", e)
             }
             Ok(_) => {}
         }
+
         if redraw {
             self.queue_resize();
             self.queue_draw();
         }
     }
 
-    /// regenerate the rendernodes of the canvas content. Some(viewport): only regenerate rendernodes inside the viewport. force_regenerate regenerate all rendernodes from scratch. redraw: queue canvas redrawing
+    /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch. redraw: queue canvas redrawing
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
         self.sheet()
             .strokes_state()
@@ -1211,7 +1232,7 @@ impl Canvas {
                 force_regenerate,
             );
 
-        self.regenerate_background(force_regenerate, redraw);
+        self.regenerate_background(redraw);
     }
 
     /// Captures the current content of the canvas as a gdk::Texture
@@ -1360,7 +1381,7 @@ impl Canvas {
                             Some(self.viewport_in_sheet_coords()),
                         );
                     if self.sheet().resize_endless() {
-                        self.regenerate_background(false, false);
+                        self.regenerate_background(false);
                     }
                     self.queue_draw();
                 }
@@ -1446,7 +1467,7 @@ impl Canvas {
         self.pens().borrow_mut().selector.clear_path();
 
         if self.sheet().resize_endless() {
-            self.regenerate_background(false, false);
+            self.regenerate_background(false);
         }
         self.queue_resize();
         self.queue_draw();

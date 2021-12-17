@@ -239,7 +239,7 @@ impl StrokesState {
         self.chrono_components = strokes_state.chrono_components.clone();
         self.render_components = strokes_state.render_components.clone();
 
-        self.regenerate_rendering_current_view(None, true);
+        self.regenerate_rendering_current_view_threaded(None, true);
     }
 
     /// Returns the key to the completed stroke

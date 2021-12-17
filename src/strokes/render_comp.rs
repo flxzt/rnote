@@ -195,15 +195,13 @@ impl StrokesState {
                 (self.strokes.get(key), self.render_components.get_mut(key))
             {
                 // skip if stroke is not in viewport or does not need regeneration
-                if !force_regenerate {
-                    if let Some(viewport) = viewport {
-                        if !viewport.intersects(&stroke.bounds()) {
-                            return;
-                        }
-                    }
-                    if !render_comp.regenerate_flag {
+                if let Some(viewport) = viewport {
+                    if !viewport.intersects(&stroke.bounds()) {
                         return;
                     }
+                }
+                if !force_regenerate && !render_comp.regenerate_flag {
+                    return;
                 }
 
                 match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
@@ -241,15 +239,13 @@ impl StrokesState {
                 (self.strokes.get(key), self.render_components.get_mut(key))
             {
                 // skip if stroke is not in viewport or does not need regeneration
-                if !force_regenerate {
-                    if let Some(viewport) = viewport {
-                        if !viewport.intersects(&stroke.bounds()) {
-                            return;
-                        }
-                    }
-                    if !render_comp.regenerate_flag {
+                if let Some(viewport) = viewport {
+                    if !viewport.intersects(&stroke.bounds()) {
                         return;
                     }
+                }
+                if !force_regenerate && !render_comp.regenerate_flag {
+                    return;
                 }
 
                 self.regenerate_rendering_for_stroke_threaded(key);

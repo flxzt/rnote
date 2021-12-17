@@ -339,7 +339,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.canvas().sheet().set_endless_sheet(state);
             appwindow.mainheader().pageedit_revealer().set_reveal_child(!state);
 
-            appwindow.canvas().regenerate_background(true, true);
+            appwindow.canvas().regenerate_background(true);
         }),
     );
 
@@ -417,7 +417,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         appwindow.canvas().sheet().strokes_state().borrow_mut().undo_last_stroke();
         appwindow.canvas().sheet().resize_to_format();
         appwindow.canvas().queue_resize();
-        appwindow.canvas().regenerate_background(false, true);
+        appwindow.canvas().regenerate_background(true);
     }));
 
     // Redo stroke
@@ -425,7 +425,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         appwindow.canvas().sheet().strokes_state().borrow_mut().redo_last_stroke();
         appwindow.canvas().sheet().resize_to_format();
         appwindow.canvas().queue_resize();
-        appwindow.canvas().regenerate_background(false, true);
+        appwindow.canvas().regenerate_background(true);
     }));
 
     // Zoom reset

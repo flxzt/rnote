@@ -208,7 +208,7 @@ impl MainHeader {
             clone!(@weak appwindow => move |_add_page_button| {
                 let format_height = appwindow.canvas().sheet().format().height();
                 appwindow.canvas().sheet().set_height(appwindow.canvas().sheet().height() + format_height);
-                appwindow.canvas().regenerate_background(false, true);
+                appwindow.canvas().regenerate_background(true);
                 appwindow.canvas().queue_resize();
             }),
         );
@@ -216,7 +216,7 @@ impl MainHeader {
         priv_.resize_to_format_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
                 appwindow.canvas().sheet().resize_to_format();
-                appwindow.canvas().regenerate_background(false, true);
+                appwindow.canvas().regenerate_background(true);
                 appwindow.canvas().queue_resize();
             }),
         );

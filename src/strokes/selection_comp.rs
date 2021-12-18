@@ -136,8 +136,16 @@ impl StrokesState {
         viewport: Option<p2d::bounding_volume::AABB>,
     ) -> bool {
         let selection_len_prev = self.selection_len();
-        let selector_bounds = if let Some(selector_bounds) = selector.bounds {
-            selector_bounds
+
+        let selector_path_points = selector
+            .path
+            .par_iter()
+            .map(|inputdata| na::Point2::<f64>::from(inputdata.pos()))
+            .collect::<Vec<na::Point2<f64>>>();
+        let selector_polygon = if let Some(selector_polygon) =
+            p2d::shape::ConvexPolygon::from_convex_hull(&selector_path_points)
+        {
+            selector_polygon
         } else {
             return false;
         };
@@ -164,11 +172,20 @@ impl StrokesState {
 
                 match stroke {
                     StrokeStyle::MarkerStroke(markerstroke) => {
-                        if selector_bounds.contains(&markerstroke.bounds) {
+                        if geometry::convexpolygon_contains_aabb(
+                            &selector_polygon,
+                            &markerstroke.bounds,
+                        ) {
                             selection_comp.selected = true;
-                        } else if selector_bounds.intersects(&markerstroke.bounds) {
+                        } else if geometry::convexpolygon_intersects_aabb(
+                            &selector_polygon,
+                            &markerstroke.bounds,
+                        ) {
                             for hitbox_elem in markerstroke.hitbox.iter() {
-                                if !selector_bounds.contains(hitbox_elem) {
+                                if !geometry::convexpolygon_contains_aabb(
+                                    &selector_polygon,
+                                    hitbox_elem,
+                                ) {
                                     return;
                                 }
                             }
@@ -181,11 +198,20 @@ impl StrokesState {
                         }
                     }
                     StrokeStyle::BrushStroke(brushstroke) => {
-                        if selector_bounds.contains(&brushstroke.bounds) {
+                        if geometry::convexpolygon_contains_aabb(
+                            &selector_polygon,
+                            &brushstroke.bounds,
+                        ) {
                             selection_comp.selected = true;
-                        } else if selector_bounds.intersects(&brushstroke.bounds) {
+                        } else if geometry::convexpolygon_intersects_aabb(
+                            &selector_polygon,
+                            &brushstroke.bounds,
+                        ) {
                             for hitbox_elem in brushstroke.hitbox.iter() {
-                                if !selector_bounds.contains(hitbox_elem) {
+                                if !geometry::convexpolygon_contains_aabb(
+                                    &selector_polygon,
+                                    hitbox_elem,
+                                ) {
                                     return;
                                 }
                             }
@@ -198,7 +224,10 @@ impl StrokesState {
                         }
                     }
                     StrokeStyle::ShapeStroke(shapestroke) => {
-                        if selector_bounds.contains(&shapestroke.bounds) {
+                        if geometry::convexpolygon_contains_aabb(
+                            &selector_polygon,
+                            &shapestroke.bounds,
+                        ) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
@@ -207,8 +236,11 @@ impl StrokesState {
                             }
                         }
                     }
-                    StrokeStyle::VectorImage(vector_image) => {
-                        if selector_bounds.contains(&vector_image.bounds) {
+                    StrokeStyle::VectorImage(vectorimage) => {
+                        if geometry::convexpolygon_contains_aabb(
+                            &selector_polygon,
+                            &vectorimage.bounds,
+                        ) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
@@ -217,8 +249,11 @@ impl StrokesState {
                             }
                         }
                     }
-                    StrokeStyle::BitmapImage(vector_image) => {
-                        if selector_bounds.contains(&vector_image.bounds) {
+                    StrokeStyle::BitmapImage(bitmapimage) => {
+                        if geometry::convexpolygon_contains_aabb(
+                            &selector_polygon,
+                            &bitmapimage.bounds,
+                        ) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {

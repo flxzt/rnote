@@ -1,4 +1,5 @@
 use gtk4::graphene;
+use p2d::query::PointQuery;
 
 /// Match offset to the aspect ratio of the AABB
 pub fn restrict_offset_to_aabb_aspect_ratio(
@@ -232,4 +233,35 @@ pub fn aabb_ceil(aabb: p2d::bounding_volume::AABB) -> p2d::bounding_volume::AABB
         na::point![aabb.mins[0].floor(), aabb.mins[1].floor()],
         na::point![aabb.maxs[0].ceil(), aabb.maxs[1].ceil()],
     )
+}
+
+pub fn convexpolygon_contains_aabb(
+    convexpolygon: &p2d::shape::ConvexPolygon,
+    aabb: &p2d::bounding_volume::AABB,
+) -> bool {
+    let tl = aabb.mins;
+    let tr = na::point![aabb.maxs[0], aabb.mins[1]];
+    let bl = na::point![aabb.mins[0], aabb.maxs[1]];
+    let br = aabb.maxs;
+
+    convexpolygon.contains_local_point(&tl)
+        && convexpolygon.contains_local_point(&tr)
+        && convexpolygon.contains_local_point(&bl)
+        && convexpolygon.contains_local_point(&br)
+}
+
+
+pub fn convexpolygon_intersects_aabb(
+    convexpolygon: &p2d::shape::ConvexPolygon,
+    aabb: &p2d::bounding_volume::AABB,
+) -> bool {
+    let tl = aabb.mins;
+    let tr = na::point![aabb.maxs[0], aabb.mins[1]];
+    let bl = na::point![aabb.mins[0], aabb.maxs[1]];
+    let br = aabb.maxs;
+
+    convexpolygon.contains_local_point(&tl)
+        || convexpolygon.contains_local_point(&tr)
+        || convexpolygon.contains_local_point(&bl)
+        || convexpolygon.contains_local_point(&br)
 }

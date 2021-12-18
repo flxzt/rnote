@@ -531,7 +531,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
         print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
             let cx = match print_cx.cairo_context() {
-                None => { return; }
+                None => {
+                    log::error!("failed to get cairo context in print_op.connect_draw_page().");
+                    return;
+                }
                 Some(cx) => { cx }
             };
 
@@ -580,8 +583,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             cx.rectangle(
                 format_bounds_scaled.mins[0],
                 format_bounds_scaled.mins[1],
-                format_bounds_scaled.maxs[0] - format_bounds_scaled.mins[0],
-                format_bounds_scaled.maxs[1] - format_bounds_scaled.mins[1]
+                format_bounds_scaled.extents()[0],
+                format_bounds_scaled.extents()[1]
             );
             cx.clip();
             cx.translate(0.0, y_offset);
@@ -594,7 +597,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         }));
 
         if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
-            log::error!("failed to print, {}", e);
+            log::error!("print_op.run() failed with Err, {}", e);
         };
 
     }));

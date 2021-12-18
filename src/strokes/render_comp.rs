@@ -308,7 +308,8 @@ impl StrokesState {
             .iter()
             .filter(|&&key| {
                 self.does_render(key).unwrap_or_else(|| false)
-                    && !(self.trashed(key).unwrap_or_else(|| true))
+                    && !(self.trashed(key).unwrap_or_else(|| false))
+                    && !(self.selected(key).unwrap_or_else(|| false))
             })
             .for_each(|&key| {
                 if let (Some(stroke), Some(render_comp)) =

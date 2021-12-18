@@ -821,7 +821,7 @@ impl RnoteAppWindow {
 
         self.canvas().set_unsaved_changes(false);
         self.canvas().set_empty(false);
-        self.canvas().update_background_rendernode();
+        self.canvas().regenerate_background(false);
         self.canvas().regenerate_content(true, true);
 
         Ok(())

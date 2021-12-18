@@ -582,8 +582,6 @@ impl Canvas {
     /// The zoom amount when activating the zoom-in / zoom-out action
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
-    /// The threshold where a regeneration of the strokes is triggered (e.g. 2.0 for a range between 50% and 200% where no regeneration happens)
-    pub const ZOOM_REGENERATION_THRESHOLD: f64 = 1.7;
     pub const INPUT_OVERSHOOT: f64 = 30.0;
     pub const SHEET_MARGIN_DEFAULT: f64 = 30.0;
     // The default width of imported PDF's in percentage to the sheet width

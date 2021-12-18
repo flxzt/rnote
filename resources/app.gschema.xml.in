@@ -58,7 +58,7 @@
       <summary>Workspace directory</summary>
     </key>
     <key name="marker-width" type="d">
-      <default>3</default>
+      <default>20</default>
       <summary>Marker width in px</summary>
     </key>
     <key name="marker-colors" type="(uuuuuuuu)">
@@ -67,12 +67,12 @@
         0xffffffff,
         0x99c1f1ff,
         0x1a5fb4ff,
-        0x26a269ff,
-        0xf6d32dff,
-        0xff7800ff,
-        0xe01b24ff
+        0xe01b24ff,
+        0x00FFFF44,
+        0xFF00EE44,
+        0x3FBF7044
       )</default>
-      <summary>Marker colors encoded as RGBA values (8-bit)</summary>
+      <summary>Marker colors in decima encoded as RGBA values (8-bit per color)</summary>
     </key>
     <key name="brush-width" type="d">
       <default>8</default>

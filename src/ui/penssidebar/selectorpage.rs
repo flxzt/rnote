@@ -1,9 +1,14 @@
 mod imp {
+    use gtk4::ToggleButton;
     use gtk4::{glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate};
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/selectorpage.ui")]
     pub struct SelectorPage {
+        #[template_child]
+        pub selectorstyle_polygon_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub selectorstyle_rect_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub delete_button: TemplateChild<Button>,
         #[template_child]
@@ -13,6 +18,8 @@ mod imp {
     impl Default for SelectorPage {
         fn default() -> Self {
             Self {
+                selectorstyle_polygon_toggle: TemplateChild::<ToggleButton>::default(),
+                selectorstyle_rect_toggle: TemplateChild::<ToggleButton>::default(),
                 delete_button: TemplateChild::<Button>::default(),
                 duplicate_button: TemplateChild::<Button>::default(),
             }
@@ -50,6 +57,7 @@ mod imp {
 }
 
 use crate::ui::appwindow::RnoteAppWindow;
+use gtk4::ToggleButton;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, Orientable, Widget};
 
 glib::wrapper! {
@@ -68,6 +76,14 @@ impl SelectorPage {
         glib::Object::new(&[]).expect("Failed to create SelectorPage")
     }
 
+    pub fn selectorstyle_polygon_toggle(&self) -> ToggleButton {
+        imp::SelectorPage::from_instance(self).selectorstyle_polygon_toggle.get()
+    }
+
+    pub fn selectorstyle_rect_toggle(&self) -> ToggleButton {
+        imp::SelectorPage::from_instance(self).selectorstyle_rect_toggle.get()
+    }
+
     pub fn delete_button(&self) -> Button {
         imp::SelectorPage::from_instance(self).delete_button.get()
     }
@@ -79,6 +95,18 @@ impl SelectorPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
+        // selecting with Polygon / Rect toggles
+        self.selectorstyle_polygon_toggle().connect_active_notify(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
+            if selectorstyle_polygon_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "selector-style", Some(&"polygon".to_variant()));
+            }
+        }));
+
+        self.selectorstyle_rect_toggle().connect_active_notify(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
+            if selectorstyle_rect_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "selector-style", Some(&"rectangle".to_variant()));
+            }
+        }));
         self.delete_button()
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "delete-selection", None);

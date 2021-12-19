@@ -1,3 +1,4 @@
+use geo::line_string;
 use gtk4::graphene;
 use p2d::query::PointQuery;
 
@@ -250,7 +251,6 @@ pub fn convexpolygon_contains_aabb(
         && convexpolygon.contains_local_point(&br)
 }
 
-
 pub fn convexpolygon_intersects_aabb(
     convexpolygon: &p2d::shape::ConvexPolygon,
     aabb: &p2d::bounding_volume::AABB,
@@ -264,4 +264,15 @@ pub fn convexpolygon_intersects_aabb(
         || convexpolygon.contains_local_point(&tr)
         || convexpolygon.contains_local_point(&bl)
         || convexpolygon.contains_local_point(&br)
+}
+
+pub fn p2d_aabb_to_geo_polygon(aabb: p2d::bounding_volume::AABB) -> geo::Polygon<f64> {
+    let line_string = line_string![
+        (x: aabb.mins[0], y: aabb.mins[1]),
+        (x: aabb.maxs[0], y: aabb.mins[1]),
+        (x: aabb.maxs[0], y: aabb.maxs[1]),
+        (x: aabb.mins[0], y: aabb.maxs[1]),
+        (x: aabb.mins[0], y: aabb.mins[1]),
+    ];
+    geo::Polygon::new(line_string, vec![])
 }

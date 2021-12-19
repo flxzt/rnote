@@ -2,7 +2,7 @@ use std::{cell::Cell, rc::Rc};
 
 use crate::{
     app::RnoteApp,
-    pens::{shaper, PenStyle},
+    pens::{selector, shaper, PenStyle},
     render,
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
@@ -109,7 +109,12 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         Some(&glib::VariantType::new("s").unwrap()),
         &"smooth".to_variant(),
     );
-    appwindow.add_action(&action_shaper_drawstyle);
+    let action_selector_style = gio::SimpleAction::new_stateful(
+        "selector-style",
+        Some(&glib::VariantType::new("s").unwrap()),
+        &"polygon".to_variant(),
+    );
+    appwindow.add_action(&action_selector_style);
 
     let action_devel = appwindow.app_settings().create_action("devel");
     app.add_action(&action_devel);
@@ -300,6 +305,32 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
                 },
                 _ => { log::error!("set invalid state of action `current-shape`")}
+            }
+        }),
+    );
+
+    // Selector Style
+    action_selector_style.connect_activate(move |action_selector_style, parameter| {
+        if action_selector_style.state().unwrap().str().unwrap()
+            != parameter.unwrap().str().unwrap()
+        {
+            action_selector_style.change_state(parameter.unwrap());
+        }
+    });
+    action_selector_style.connect_change_state(
+        clone!(@weak appwindow => move |action_selector_style, value| {
+            action_selector_style.set_state(value.unwrap());
+
+            match action_selector_style.state().unwrap().str().unwrap() {
+                "polygon" => {
+                    appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().selector.set_style(selector::SelectorStyle::Polygon);
+                },
+                "rectangle" => {
+                    appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().selector.set_style(selector::SelectorStyle::Rectangle);
+                },
+                _ => { log::error!("set invalid state of action `shaper-drawstye`")}
             }
         }),
     );
@@ -523,6 +554,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         let print_op = PrintOperation::builder()
             .unit(Unit::Points)
             .n_pages(appwindow.canvas().sheet().calc_n_pages())
+            .allow_async(true)
             .build();
 
 /*         print_op.connect_begin_print(clone!(@weak appwindow => move |print_op, print_cx| {

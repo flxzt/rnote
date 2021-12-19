@@ -26,6 +26,7 @@ rayon = "1.5.1"
 nalgebra = { version = "0.29", features = ["serde-serialize"] }
 nalgebra-glm = { version = "0.15"}
 parry2d-f64 = { version = "0.7", features = ["serde-serialize"] }
+geo = "0.18"
 svg = "0.10.0"
 gtk4 = {version = "0.3", features = ["v4_4"]}
 adw = {version = "0.1.0-alpha-6", package="libadwaita"}

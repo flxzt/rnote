@@ -34,10 +34,52 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="delete_button">
+      <object class="GtkBox" id="selectorstyle_togglebox">
+        <property name="orientation">vertical</property>
+        <property name="height_request">60</property>
+        <property name="homogeneous">true</property>
+        <property name="vexpand">false</property>
         <layout>
           <property name="column">0</property>
           <property name="row">2</property>
+        </layout>
+        <style>
+          <class name="linked" />
+        </style>
+        <child>
+          <object class="GtkToggleButton" id="selectorstyle_polygon_toggle">
+            <property name="icon_name">selector-polygon-symbolic</property>
+            <property name="tooltip_text">selecting with a polygon</property>
+            <property name="vexpand">true</property>
+            <property name="group">selectorstyle_rect_toggle</property>
+            <property name="active">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="selectorstyle_rect_toggle">
+            <property name="icon_name">selector-rectangle-symbolic</property>
+            <property name="tooltip_text">selecting with a rectangle</property>
+            <property name="vexpand">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+        <layout>
+          <property name="column">0</property>
+          <property name="row">3</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="delete_button">
+        <layout>
+          <property name="column">0</property>
+          <property name="row">4</property>
         </layout>
         <property name="icon_name">selection-delete-symbolic</property>
         <property name="tooltip_text">delete selection</property>
@@ -50,7 +92,7 @@
       <object class="GtkButton" id="duplicate_button">
         <layout>
           <property name="column">0</property>
-          <property name="row">3</property>
+          <property name="row">5</property>
         </layout>
         <property name="icon_name">selection-duplicate-symbolic</property>
         <property name="tooltip_text">duplicate selection</property>

@@ -1325,7 +1325,7 @@ impl Canvas {
                     self.pens()
                         .borrow_mut()
                         .selector
-                        .push_elem(inputdata.clone());
+                        .add_elem_to_path(inputdata.clone());
                     self.pens().borrow_mut().selector.update_rendernode(
                         zoom,
                         &self

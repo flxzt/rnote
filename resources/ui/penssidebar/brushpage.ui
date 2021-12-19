@@ -80,7 +80,7 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">6</property>
+        <property name="margin_top">0</property>
         <property name="margin_bottom">0</property>
         <layout>
           <property name="column">0</property>

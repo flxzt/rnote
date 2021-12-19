@@ -1,9 +1,11 @@
-use crate::pens::selector::Selector;
+use crate::pens::selector::{self, Selector};
 use crate::{compose, geometry, render};
 
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::strokes::strokestyle::StrokeBehaviour;
 
+use geo::line_string;
+use geo::prelude::*;
 use gtk4::gsk::IsRenderNode;
 use gtk4::{gio, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
@@ -130,6 +132,157 @@ impl StrokesState {
     }
 
     /// Returns true if selection has changed
+    pub fn update_selection_for_selector_geo(
+        &mut self,
+        selector: &Selector,
+        viewport: Option<p2d::bounding_volume::AABB>,
+    ) -> bool {
+        let selection_len_prev = self.selection_len();
+
+        let selector_polygon = match selector.style() {
+            selector::SelectorStyle::Polygon => {
+                let selector_path_points = selector
+                    .path
+                    .par_iter()
+                    .map(|inputdata| geo::Coordinate {
+                        x: inputdata.pos()[0],
+                        y: inputdata.pos()[0],
+                    })
+                    .collect::<Vec<geo::Coordinate<f64>>>();
+
+                geo::Polygon::new(selector_path_points.into(), vec![])
+            }
+            selector::SelectorStyle::Rectangle => {
+                if let (Some(first), Some(last)) = (selector.path.first(), selector.path.last()) {
+                    let selector_path_points = line_string![
+                        (x: first.pos()[0], y: first.pos()[1]),
+                        (x: first.pos()[0], y: last.pos()[1]),
+                        (x: last.pos()[0], y: last.pos()[1]),
+                        (x: last.pos()[0], y: first.pos()[1]),
+                        (x: first.pos()[0], y: first.pos()[1]),
+                    ];
+
+                    geo::Polygon::new(selector_path_points, vec![])
+                } else {
+                    return false;
+                }
+            }
+        };
+
+        self.strokes.iter_mut().for_each(|(key, stroke)| {
+            // Skip if stroke is hidden
+            if let Some(trash_comp) = self.trash_components.get(key) {
+                if trash_comp.trashed {
+                    return;
+                }
+            }
+            // skip if stroke is not in viewport
+            if let Some(viewport) = viewport {
+                if !viewport.intersects(&stroke.bounds()) {
+                    return;
+                }
+            }
+            if let Some(selection_comp) = self.selection_components.get_mut(key) {
+                // Default to not selected, check for if selected
+                selection_comp.selected = false;
+
+                match stroke {
+                    StrokeStyle::MarkerStroke(markerstroke) => {
+                        if selector_polygon
+                            .contains(&geometry::p2d_aabb_to_geo_polygon(markerstroke.bounds))
+                        {
+                            selection_comp.selected = true;
+                        } else if selector_polygon
+                            .contains(&geometry::p2d_aabb_to_geo_polygon(markerstroke.bounds))
+                        {
+                            for &hitbox_elem in markerstroke.hitbox.iter() {
+                                if !selector_polygon
+                                    .contains(&geometry::p2d_aabb_to_geo_polygon(hitbox_elem))
+                                {
+                                    return;
+                                }
+                            }
+                            selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
+                        }
+                    }
+                    StrokeStyle::BrushStroke(brushstroke) => {
+                        if selector_polygon
+                            .contains(&geometry::p2d_aabb_to_geo_polygon(brushstroke.bounds))
+                        {
+                            selection_comp.selected = true;
+                        } else if selector_polygon
+                            .contains(&geometry::p2d_aabb_to_geo_polygon(brushstroke.bounds))
+                        {
+                            for &hitbox_elem in brushstroke.hitbox.iter() {
+                                if !selector_polygon
+                                    .contains(&geometry::p2d_aabb_to_geo_polygon(hitbox_elem))
+                                {
+                                    return;
+                                }
+                            }
+                            selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
+                        }
+                    }
+                    StrokeStyle::ShapeStroke(shapestroke) => {
+                        if selector_polygon
+                            .contains(&geometry::p2d_aabb_to_geo_polygon(shapestroke.bounds))
+                        {
+                            selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
+                        }
+                    }
+                    StrokeStyle::VectorImage(vectorimage) => {
+                        if selector_polygon
+                            .contains(&geometry::p2d_aabb_to_geo_polygon(vectorimage.bounds))
+                        {
+                            selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
+                        }
+                    }
+                    StrokeStyle::BitmapImage(bitmapimage) => {
+                        if selector_polygon
+                            .contains(&geometry::p2d_aabb_to_geo_polygon(bitmapimage.bounds))
+                        {
+                            selection_comp.selected = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if self.selection_len() != selection_len_prev {
+            self.update_selection_bounds();
+            self.regenerate_rendering_for_selection_threaded();
+            true
+        } else {
+            false
+        }
+    }
+
+    /// Returns true if selection has changed
     pub fn update_selection_for_selector(
         &mut self,
         selector: &Selector,
@@ -137,26 +290,52 @@ impl StrokesState {
     ) -> bool {
         let selection_len_prev = self.selection_len();
 
-        let selector_path_points = selector
-            .path
-            .par_iter()
-            .map(|inputdata| na::Point2::<f64>::from(inputdata.pos()))
-            .collect::<Vec<na::Point2<f64>>>();
-        let selector_polygon = if let Some(selector_polygon) =
-            p2d::shape::ConvexPolygon::from_convex_hull(&selector_path_points)
-        {
-            selector_polygon
-        } else {
-            return false;
+        let selector_polygon = match selector.style() {
+            selector::SelectorStyle::Polygon => {
+                let selector_path_points = selector
+                    .path
+                    .par_iter()
+                    .map(|inputdata| na::Point2::<f64>::from(inputdata.pos()))
+                    .collect::<Vec<na::Point2<f64>>>();
+
+                let selector_path_points = p2d::transformation::convex_hull(&selector_path_points);
+
+                if let Some(selector_polygon) =
+                    p2d::shape::ConvexPolygon::from_convex_hull(&selector_path_points)
+                {
+                    selector_polygon
+                } else {
+                    return false;
+                }
+            }
+            selector::SelectorStyle::Rectangle => {
+                if let (Some(first), Some(last)) = (selector.path.first(), selector.path.last()) {
+                    let selector_path_points = [
+                        na::point![first.pos()[0], first.pos()[1]],
+                        na::point![first.pos()[0], last.pos()[1]],
+                        na::point![last.pos()[0], last.pos()[1]],
+                        na::point![last.pos()[0], first.pos()[1]],
+                    ];
+                    let selector_path_points =
+                        p2d::transformation::convex_hull(&selector_path_points);
+
+                    if let Some(selector_polygon) =
+                        p2d::shape::ConvexPolygon::from_convex_hull(&selector_path_points)
+                    {
+                        selector_polygon
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
         };
 
         self.strokes.iter_mut().for_each(|(key, stroke)| {
             // Skip if stroke is hidden
-            if let (Some(render_comp), Some(trash_comp)) = (
-                self.render_components.get(key),
-                self.trash_components.get(key),
-            ) {
-                if !render_comp.render || trash_comp.trashed {
+            if let Some(trash_comp) = self.trash_components.get(key) {
+                if trash_comp.trashed {
                     return;
                 }
             }

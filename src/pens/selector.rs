@@ -6,8 +6,15 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+pub enum SelectorStyle {
+    Polygon,
+    Rectangle,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Selector {
+    style: SelectorStyle,
     pub path: Vec<InputData>,
     pub bounds: Option<p2d::bounding_volume::AABB>,
     #[serde(skip, default = "render::default_rendernode")]
@@ -17,7 +24,13 @@ pub struct Selector {
 
 impl Default for Selector {
     fn default() -> Self {
-        Self::new()
+        Self {
+            style: SelectorStyle::Polygon,
+            path: vec![],
+            bounds: None,
+            rendernode: render::default_rendernode(),
+            shown: false,
+        }
     }
 }
 
@@ -38,12 +51,15 @@ impl Selector {
     };
 
     pub fn new() -> Self {
-        Self {
-            path: vec![],
-            bounds: None,
-            rendernode: render::default_rendernode(),
-            shown: false,
-        }
+        Self::default()
+    }
+
+    pub fn style(&self) -> SelectorStyle {
+        self.style
+    }
+
+    pub fn set_style(&mut self, style: SelectorStyle) {
+        self.style = style;
     }
 
     pub fn shown(&self) -> bool {
@@ -56,13 +72,24 @@ impl Selector {
 
     pub fn new_path(&mut self, inputdata: InputData) {
         self.clear_path();
-        self.push_elem(inputdata);
+
+        self.path.push(inputdata);
+        self.update_bounds();
     }
 
-    pub fn push_elem(&mut self, inputdata: InputData) {
-        self.path.push(inputdata);
-
-        self.update_bounds_to_last_elem();
+    pub fn add_elem_to_path(&mut self, inputdata: InputData) {
+        match self.style {
+            SelectorStyle::Polygon => {
+                self.path.push(inputdata);
+            }
+            SelectorStyle::Rectangle => {
+                if self.path.len() > 2 {
+                    self.path.resize(2, InputData::default());
+                }
+                self.path.insert(1, inputdata)
+            }
+        }
+        self.update_bounds();
     }
 
     pub fn clear_path(&mut self) {
@@ -103,19 +130,29 @@ impl Selector {
         }
     }
 
-    fn update_bounds_to_last_elem(&mut self) {
+    fn update_bounds(&mut self) {
         // Making sure bounds are always outside of coord + width
-        if let Some(last) = self.path.last() {
-            let pos_bounds = p2d::bounding_volume::AABB::new(
-                na::Point2::from(last.pos() - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
-                na::Point2::from(last.pos() + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
+        let mut path_iter = self.path.iter();
+        if let Some(first) = path_iter.next() {
+            let mut new_bounds = p2d::bounding_volume::AABB::new(
+                na::Point2::from(first.pos() - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
+                na::Point2::from(first.pos() + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
             );
 
-            if let Some(ref mut bounds) = self.bounds {
-                bounds.merge(&pos_bounds);
-            } else {
-                self.bounds = Some(pos_bounds);
-            }
+            path_iter.for_each(|inputdata| {
+                let pos_bounds = p2d::bounding_volume::AABB::new(
+                    na::Point2::from(
+                        inputdata.pos() - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH],
+                    ),
+                    na::Point2::from(
+                        inputdata.pos() + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH],
+                    ),
+                );
+                new_bounds.merge(&pos_bounds);
+            });
+            self.bounds = Some(new_bounds);
+        } else {
+            self.bounds = None;
         }
     }
 
@@ -123,11 +160,25 @@ impl Selector {
         let mut svg = String::new();
         let mut data = element::path::Data::new();
 
-        for (i, element) in self.path.iter().enumerate() {
-            if i == 0 {
-                data = data.move_to((element.pos()[0] + offset[0], element.pos()[1] + offset[1]));
-            } else {
-                data = data.line_to((element.pos()[0] + offset[0], element.pos()[1] + offset[1]));
+        match self.style {
+            SelectorStyle::Polygon => {
+                for (i, element) in self.path.iter().enumerate() {
+                    if i == 0 {
+                        data = data
+                            .move_to((element.pos()[0] + offset[0], element.pos()[1] + offset[1]));
+                    } else {
+                        data = data
+                            .line_to((element.pos()[0] + offset[0], element.pos()[1] + offset[1]));
+                    }
+                }
+            }
+            SelectorStyle::Rectangle => {
+                if let (Some(first), Some(last)) = (self.path.first(), self.path.last()) {
+                    data = data.move_to((first.pos()[0] + offset[0], first.pos()[1] + offset[1]));
+                    data = data.line_to((last.pos()[0] + offset[0], first.pos()[1] + offset[1]));
+                    data = data.line_to((last.pos()[0] + offset[0], last.pos()[1] + offset[1]));
+                    data = data.line_to((first.pos()[0] + offset[0], last.pos()[1] + offset[1]));
+                }
             }
         }
         data = data.close();

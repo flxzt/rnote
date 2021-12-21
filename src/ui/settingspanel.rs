@@ -597,6 +597,7 @@ impl SettingsPanel {
         priv_.format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
                 appwindow.canvas().sheet().format().import_format(temporary_format);
+                appwindow.canvas().sheet().set_padding_bottom(appwindow.canvas().sheet().format().height());
 
                 appwindow.canvas().sheet().resize_to_format();
                 appwindow.canvas().regenerate_background(false);

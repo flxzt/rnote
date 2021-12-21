@@ -503,10 +503,8 @@ impl Sheet {
         if self.endless_sheet() {
             self.resize_endless();
         } else {
-            // set padding_bottom to 1 because then 'fraction'.ceil() is at least 1
-            self.set_padding_bottom(1);
-
-            let new_height = self.strokes_state().borrow().calc_height() + self.padding_bottom();
+            // +1 because then 'fraction'.ceil() is at least 1
+            let new_height = self.strokes_state().borrow().calc_height() + 1;
             self.set_height(
                 (new_height as f64 / priv_.format.height() as f64).ceil() as i32
                     * priv_.format.height(),

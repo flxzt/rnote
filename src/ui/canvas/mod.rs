@@ -1118,6 +1118,9 @@ impl Canvas {
         .update_rendernode(self.zoom(), self.sheet().bounds()).unwrap_or_else(|e| {
             log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
         });
+
+        self.queue_resize();
+        self.queue_draw();
     }
 
     /// Update rendernodes of the background. Used when sheet size, but not zoom changed
@@ -1126,6 +1129,9 @@ impl Canvas {
             .strokes_state()
             .borrow_mut()
             .update_rendernodes_current_zoom(self.zoom());
+
+        self.queue_resize();
+        self.queue_draw();
     }
 
     /// regenerating the background image and rendernode.
@@ -1275,6 +1281,7 @@ impl Canvas {
             PenStyle::Unkown => {}
         }
 
+        self.queue_resize();
         self.queue_draw();
     }
 
@@ -1342,6 +1349,7 @@ impl Canvas {
             }
             PenStyle::Unkown => {}
         }
+
         self.queue_resize();
         self.queue_draw();
     }
@@ -1406,6 +1414,7 @@ impl Canvas {
         if self.sheet().resize_endless() {
             self.update_background_rendernode();
         }
+
         self.queue_resize();
         self.queue_draw();
     }

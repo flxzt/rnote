@@ -112,11 +112,9 @@ impl StrokesState {
     pub fn init(&mut self, appwindow: &RnoteAppWindow) {
         let main_cx = glib::MainContext::default();
 
-        let source_id = self
-            .tasks_rx
-            .take()
-            .unwrap()
-            .attach(Some(&main_cx), clone!(@weak appwindow => @default-return glib::Continue(false), move |render_task| {
+        let source_id = self.tasks_rx.take().unwrap().attach(
+            Some(&main_cx),
+            clone!(@weak appwindow => @default-return glib::Continue(false), move |render_task| {
                 match render_task {
                     StateTask::UpdateStrokeWithImages { key, images } => {
                             appwindow
@@ -132,7 +130,8 @@ impl StrokesState {
                 }
 
                 glib::Continue(true)
-            }));
+            }),
+        );
 
         let source = main_cx
             .find_source_by_id(&source_id)
@@ -274,7 +273,15 @@ impl StrokesState {
     pub fn calc_height(&self) -> i32 {
         let new_height = if let Some(stroke) = self
             .strokes
-            .values()
+            .iter()
+            .filter_map(|(key, stroke)| {
+                if let Some(trash_comp) = self.trash_components.get(key) {
+                    if !trash_comp.trashed {
+                        return Some(stroke);
+                    }
+                }
+                None
+            })
             .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
         {
             // max_by_key() returns the element, so we need to extract the height again

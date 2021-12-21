@@ -142,7 +142,7 @@ impl StrokesState {
                     .par_iter()
                     .map(|inputdata| geo::Coordinate {
                         x: inputdata.pos()[0],
-                        y: inputdata.pos()[0],
+                        y: inputdata.pos()[1],
                     })
                     .collect::<Vec<geo::Coordinate<f64>>>();
 

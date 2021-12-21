@@ -1378,7 +1378,7 @@ impl Canvas {
                 self.sheet()
                     .strokes_state()
                     .borrow_mut()
-                    .update_selection_for_selector_geo(
+                    .update_selection_for_selector(
                         &self.pens().borrow().selector,
                         Some(self.viewport_in_sheet_coords()),
                     );

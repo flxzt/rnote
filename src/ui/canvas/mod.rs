@@ -980,7 +980,11 @@ impl Canvas {
     ) -> na::Vector2<f64> {
         let total_zoom = self.total_zoom();
 
-        sheet_coords + na::vector![self.sheet_margin() * total_zoom, self.sheet_margin() * total_zoom]
+        sheet_coords
+            + na::vector![
+                self.sheet_margin() * total_zoom,
+                self.sheet_margin() * total_zoom
+            ]
             - na::vector![
                 self.hadjustment().unwrap().value(),
                 self.vadjustment().unwrap().value()
@@ -1300,8 +1304,6 @@ impl Canvas {
                         .strokes_state()
                         .borrow_mut()
                         .add_to_last_stroke(Element::new(inputdata.clone()));
-
-                    self.queue_draw();
                 }
             }
             PenStyle::Eraser => {
@@ -1336,7 +1338,6 @@ impl Canvas {
                             .read()
                             .unwrap(),
                     );
-                    self.queue_draw();
                 }
             }
             PenStyle::Unkown => {}
@@ -1377,7 +1378,7 @@ impl Canvas {
                 self.sheet()
                     .strokes_state()
                     .borrow_mut()
-                    .update_selection_for_selector(
+                    .update_selection_for_selector_geo(
                         &self.pens().borrow().selector,
                         Some(self.viewport_in_sheet_coords()),
                     );

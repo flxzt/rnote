@@ -61,7 +61,7 @@ impl StrokeBehaviour for BitmapImage {
         self.bounds = new_bounds;
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
         let mut cx = tera::Context::new();
 
         let x = 0.0;
@@ -94,28 +94,16 @@ impl StrokeBehaviour for BitmapImage {
             ],
         );
 
-        let svg = compose::wrap_svg(
+        let svg_data = compose::wrap_svg(
             svg.as_str(),
             Some(bounds),
             Some(intrinsic_bounds),
             false,
             false,
         );
+        let svg = render::Svg { bounds, svg_data };
 
-        Ok(svg)
-    }
-
-    fn gen_image(
-        &self,
-        zoom: f64,
-        renderer: &render::Renderer,
-    ) -> Result<render::Image, anyhow::Error> {
-        let svg = render::Svg {
-            bounds: self.bounds,
-            svg_data: compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()),
-        };
-
-        renderer.gen_image(zoom, &svg)
+        Ok(vec![svg])
     }
 }
 

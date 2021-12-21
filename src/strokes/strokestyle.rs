@@ -1,4 +1,4 @@
-use crate::render;
+use crate::{compose, render};
 
 use rand::distributions::Uniform;
 use rand::prelude::*;
@@ -11,20 +11,35 @@ use super::shapestroke::ShapeStroke;
 use super::vectorimage::VectorImage;
 
 pub trait StrokeBehaviour {
-    // returns the bounds of the type
+    // returns the bounds of this stroke
     fn bounds(&self) -> p2d::bounding_volume::AABB;
     // translates (as in moves) the type for offset
     fn translate(&mut self, offset: na::Vector2<f64>);
     // resizes the type to the desired new_bounds
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB);
-    // gen_svg_data() generates the svg elements as a String, without the xml header or the svg root.
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error>;
-    // generates and returns the rendernode for this type
+    // generates the svg elements, without the xml header or the svg root.
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error>;
+    // generates the image for this stroke
     fn gen_image(
         &self,
         zoom: f64,
         renderer: &render::Renderer,
-    ) -> Result<render::Image, anyhow::Error>;
+    ) -> Result<render::Image, anyhow::Error> {
+        let offset = na::vector![0.0, 0.0];
+        let mut svgs = self.gen_svgs(offset)?;
+
+        for svg in svgs.iter_mut() {
+            svg.svg_data = compose::wrap_svg(
+                svg.svg_data.as_str(),
+                Some(self.bounds()),
+                Some(self.bounds()),
+                true,
+                false,
+            );
+        }
+
+        Ok(renderer.gen_image(zoom, &svgs, self.bounds())?)
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -86,27 +101,13 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
         match self {
-            Self::MarkerStroke(markerstroke) => markerstroke.gen_svg_data(offset),
-            Self::BrushStroke(brushstroke) => brushstroke.gen_svg_data(offset),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_svg_data(offset),
-            Self::VectorImage(vectorimage) => vectorimage.gen_svg_data(offset),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svg_data(offset),
-        }
-    }
-
-    fn gen_image(
-        &self,
-        zoom: f64,
-        renderer: &render::Renderer,
-    ) -> Result<render::Image, anyhow::Error> {
-        match self {
-            Self::MarkerStroke(markerstroke) => markerstroke.gen_image(zoom, renderer),
-            Self::BrushStroke(brushstroke) => brushstroke.gen_image(zoom, renderer),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_image(zoom, renderer),
-            Self::VectorImage(vectorimage) => vectorimage.gen_image(zoom, renderer),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_image(zoom, renderer),
+            Self::MarkerStroke(markerstroke) => markerstroke.gen_svgs(offset),
+            Self::BrushStroke(brushstroke) => brushstroke.gen_svgs(offset),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_svgs(offset),
+            Self::VectorImage(vectorimage) => vectorimage.gen_svgs(offset),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svgs(offset),
         }
     }
 }

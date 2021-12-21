@@ -77,11 +77,15 @@ impl SelectorPage {
     }
 
     pub fn selectorstyle_polygon_toggle(&self) -> ToggleButton {
-        imp::SelectorPage::from_instance(self).selectorstyle_polygon_toggle.get()
+        imp::SelectorPage::from_instance(self)
+            .selectorstyle_polygon_toggle
+            .get()
     }
 
     pub fn selectorstyle_rect_toggle(&self) -> ToggleButton {
-        imp::SelectorPage::from_instance(self).selectorstyle_rect_toggle.get()
+        imp::SelectorPage::from_instance(self)
+            .selectorstyle_rect_toggle
+            .get()
     }
 
     pub fn delete_button(&self) -> Button {

@@ -309,14 +309,11 @@ impl Background {
         zoom: f64,
         bounds: p2d::bounding_volume::AABB,
     ) -> Result<render::Image, anyhow::Error> {
-        let svg_string = compose::add_xml_header(self.gen_svg_data(bounds)?.as_str());
+        let svg_data = self.gen_svg_data(bounds)?;
 
-        let svg = render::Svg {
-            bounds: bounds,
-            svg_data: svg_string,
-        };
+        let svg = render::Svg { bounds, svg_data };
 
-        renderer.gen_image(zoom, &svg)
+        renderer.gen_image(zoom, &vec![svg], bounds)
     }
 
     pub fn regenerate_background(

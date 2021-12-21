@@ -109,6 +109,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         Some(&glib::VariantType::new("s").unwrap()),
         &"smooth".to_variant(),
     );
+    appwindow.add_action(&action_shaper_drawstyle);
     let action_selector_style = gio::SimpleAction::new_stateful(
         "selector-style",
         Some(&glib::VariantType::new("s").unwrap()),
@@ -592,15 +593,15 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             );
 
             match appwindow.canvas().sheet().gen_svg() {
-                Ok(svg) => {
+                Ok(svg_data) => {
                     let svg = render::Svg {
                         bounds: sheet_bounds,
-                        svg_data: svg,
+                        svg_data,
                     };
 
-                    match appwindow.canvas().sheet().strokes_state().borrow().renderer.read().unwrap().gen_rendernode(print_zoom, &svg ) {
-                        Ok(node) => {
-                            snapshot.append_node(&node);
+                    match appwindow.canvas().sheet().strokes_state().borrow().renderer.read().unwrap().gen_image(print_zoom, &vec![svg], sheet_bounds) {
+                        Ok(image) => {
+                            snapshot.append_node(&render::image_to_rendernode(&image, print_zoom));
                         }
                         Err(e) => {
                             log::error!("renderer.gen_rendernode() failed in draw_page() callback while printing page: {}, {}", page_nr, e);

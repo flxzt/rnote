@@ -12,6 +12,7 @@ pub mod trash_comp;
 
 use std::sync::{Arc, RwLock};
 
+use crate::compose;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{pens::PenStyle, pens::Pens, render};
 use chrono_comp::ChronoComponent;
@@ -32,8 +33,7 @@ use slotmap::{HopSlotMap, SecondaryMap};
 pub enum StateTask {
     UpdateStrokeWithImage {
         key: StrokeKey,
-        image: render::Image,
-        zoom: f64,
+        images: Vec<render::Image>,
     },
     Quit,
 }
@@ -119,18 +119,14 @@ impl StrokesState {
             .unwrap()
             .attach(Some(&main_cx), move |render_task| {
                 match render_task {
-                    StateTask::UpdateStrokeWithImage {
-                        key,
-                        image,
-                        zoom: _zoom,
-                    } => {
+                    StateTask::UpdateStrokeWithImage { key, images } => {
                         if let Some(appwindow) = appwindow_weak.upgrade() {
                             appwindow
                                 .canvas()
                                 .sheet()
                                 .strokes_state()
                                 .borrow_mut()
-                                .update_rendering_image(key, image);
+                                .update_rendering_with_images(key, images);
 
                             appwindow.canvas().queue_draw();
                         }
@@ -221,7 +217,7 @@ impl StrokesState {
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
             }
 
-            self.regenerate_rendering_for_stroke(key);
+            self.regenerate_rendering_new_elem(key);
             Some(key)
         } else {
             log::warn!("tried add_to_last_stroke() while there is no last stroke");
@@ -347,20 +343,37 @@ impl StrokesState {
             })
             .collect::<Vec<StrokeKey>>();
 
-        let data: String = keys.par_iter()
-            .map(|&key| {
+        if keys.len() < 1 {
+            return Ok(String::from(""));
+        }
+        let bounds = if let Some(bounds) = self.gen_bounds(keys.iter()) {
+            bounds
+        } else {
+            return Ok(String::from(""));
+        };
+
+        let data: String = keys
+            .par_iter()
+            .filter_map(|&key| {
                 if let Some(stroke) = strokes.get(key) {
-                    match stroke.gen_svg_data(na::vector![0.0, 0.0]) {
-                        Ok(data_entry) => {
-                            return data_entry
-                        }
+                    match stroke.gen_svgs(na::vector![0.0, 0.0]) {
+                        Ok(svgs) => return Some(svgs),
                         Err(e) => {
-                            log::error!("gen_svg_data() failed for stroke with key {:?} in gen_svg_from_strokes(), {}", key, e);
+                            log::error!(
+                                "stroke.gen_svgs() failed in gen_svg_all_strokes() with Err {}",
+                                e
+                            );
                         }
                     }
                 }
-                String::new()
-            }).collect::<Vec<String>>().join("\n");
+                None
+            })
+            .flatten()
+            .map(|svg| compose::add_xml_header(svg.svg_data.as_str()))
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        let data = compose::wrap_svg(data.as_str(), Some(bounds), Some(bounds), true, false);
 
         Ok(data)
     }

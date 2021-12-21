@@ -98,8 +98,11 @@ impl Selector {
     }
 
     pub fn update_rendernode(&mut self, zoom: f64, renderer: &render::Renderer) {
-        match self.gen_rendernode(zoom, renderer) {
-            Ok(rendernode) => self.rendernode = rendernode,
+        match self.gen_image(zoom, renderer) {
+            Ok(Some(image)) => self.rendernode = render::image_to_rendernode(&image, zoom),
+            Ok(None) => {
+                log::error!("gen_image() in update_rendernode() of selector returned None.");
+            }
             Err(e) => log::error!(
                 "gen_rendernode() in update_rendernode() for selector failed with Err {}",
                 e
@@ -107,11 +110,11 @@ impl Selector {
         };
     }
 
-    pub fn gen_rendernode(
+    pub fn gen_image(
         &self,
         zoom: f64,
         renderer: &render::Renderer,
-    ) -> Result<gsk::RenderNode, anyhow::Error> {
+    ) -> Result<Option<render::Image>, anyhow::Error> {
         if let Some(bounds) = self.bounds {
             let svg = render::Svg {
                 bounds,
@@ -124,9 +127,9 @@ impl Selector {
                 ),
             };
 
-            renderer.gen_rendernode(zoom, &svg)
+            Ok(Some(renderer.gen_image(zoom, &vec![svg], bounds)?))
         } else {
-            Ok(render::default_rendernode())
+            Ok(None)
         }
     }
 

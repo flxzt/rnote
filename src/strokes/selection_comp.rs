@@ -6,7 +6,6 @@ use crate::strokes::strokestyle::StrokeBehaviour;
 
 use geo::line_string;
 use geo::prelude::*;
-use gtk4::gsk::IsRenderNode;
 use gtk4::{gio, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
 use rayon::prelude::*;
@@ -121,12 +120,9 @@ impl StrokesState {
         selected.iter().for_each(|&key| {
             let new_key = self.insert_stroke(self.strokes.get(key).unwrap().clone());
             self.set_selected(new_key, true);
-
-            // Offsetting the new selected stroke to make the duplication apparent to the user
-            let new_stroke = self.strokes.get_mut(new_key).unwrap();
-            new_stroke.translate(offset);
         });
 
+        // Offsetting the new selected stroke to make the duplication apparent to the user
         self.translate_selection(offset);
         self.update_selection_bounds();
     }
@@ -456,71 +452,37 @@ impl StrokesState {
 
     /// Resizing the selection with its contents to the new bounds. Stroke rendering regeneration is needed when resizing is finished.
     pub fn resize_selection(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        fn calc_new_stroke_bounds(
-            stroke: &StrokeStyle,
-            selection_bounds: p2d::bounding_volume::AABB,
-            new_bounds: p2d::bounding_volume::AABB,
-        ) -> p2d::bounding_volume::AABB {
-            let offset = na::vector![
-                new_bounds.mins[0] - selection_bounds.mins[0],
-                new_bounds.mins[1] - selection_bounds.mins[1]
-            ];
-
-            let scalevector = na::vector![
-                (new_bounds.extents()[0]) / (selection_bounds.extents()[0]),
-                (new_bounds.extents()[1]) / (selection_bounds.extents()[1])
-            ];
-
-            p2d::bounding_volume::AABB::new(
-                na::point![
-                    (stroke.bounds().mins[0] - selection_bounds.mins[0]) * scalevector[0]
-                        + selection_bounds.mins[0]
-                        + offset[0],
-                    (stroke.bounds().mins[1] - selection_bounds.mins[1]) * scalevector[1]
-                        + selection_bounds.mins[1]
-                        + offset[1]
-                ],
-                na::point![
-                    (stroke.bounds().mins[0] - selection_bounds.mins[0]) * scalevector[0]
-                        + selection_bounds.mins[0]
-                        + offset[0]
-                        + (stroke.bounds().extents()[0]) * scalevector[0],
-                    (stroke.bounds().mins[1] - selection_bounds.mins[1]) * scalevector[1]
-                        + selection_bounds.mins[1]
-                        + offset[1]
-                        + (stroke.bounds().extents()[1]) * scalevector[1]
-                ],
-            )
-        }
-
         if let Some(selection_bounds) = self.selection_bounds {
-            let new_stroke_bounds = self
-                .strokes
-                .iter_mut()
-                .par_bridge()
-                .filter_map(|(key, stroke)| {
-                    if let Some(selection_comp) = self.selection_components.get(key) {
-                        if selection_comp.selected {
-                            let new_stroke_bounds =
-                                calc_new_stroke_bounds(stroke, selection_bounds, new_bounds);
-                            stroke.resize(new_stroke_bounds);
-                            return Some((key, new_stroke_bounds));
+            self.strokes.iter_mut().for_each(|(key, stroke)| {
+                if let Some(selection_comp) = self.selection_components.get(key) {
+                    if selection_comp.selected {
+                        let old_stroke_bounds = stroke.bounds();
+                        let new_stroke_bounds = geometry::scale_inner_bounds_to_new_outer_bounds(
+                            stroke.bounds(),
+                            selection_bounds,
+                            new_bounds,
+                        );
+                        stroke.resize(new_stroke_bounds);
+
+                        if let Some(render_comp) = self.render_components.get_mut(key) {
+                            for image in render_comp.images.iter_mut() {
+                                image.bounds = geometry::scale_inner_bounds_to_new_outer_bounds(
+                                    image.bounds,
+                                    old_stroke_bounds,
+                                    new_stroke_bounds,
+                                )
+                            }
+
+                            if let Some(new_rendernode) =
+                                render::images_to_rendernode(&render_comp.images, self.zoom)
+                            {
+                                render_comp.rendernode = new_rendernode;
+                            }
+                            render_comp.regenerate_flag = true;
                         }
                     }
-                    None
-                })
-                .collect::<Vec<(StrokeKey, p2d::bounding_volume::AABB)>>();
-
-            new_stroke_bounds
-                .into_iter()
-                .for_each(|(key, new_stroke_bounds)| {
-                    if let Some(render_comp) = self.render_components.get_mut(key) {
-                        render_comp.image.bounds = new_stroke_bounds;
-                        render_comp.rendernode =
-                            render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
-                        render_comp.regenerate_flag = true;
-                    }
-                });
+                }
+            });
 
             self.selection_bounds = Some(new_bounds);
         }
@@ -528,27 +490,23 @@ impl StrokesState {
 
     /// Translate the selection with its contents with an offset relative to the current position
     pub fn translate_selection(&mut self, offset: na::Vector2<f64>) {
-        let translated_strokes = self
-            .strokes
-            .iter_mut()
-            .par_bridge()
-            .filter_map(|(key, stroke)| {
-                if let Some(selection_comp) = self.selection_components.get(key) {
-                    if selection_comp.selected {
-                        stroke.translate(offset);
-                        return Some(key);
+        self.strokes.iter_mut().for_each(|(key, stroke)| {
+            if let Some(selection_comp) = self.selection_components.get(key) {
+                if selection_comp.selected {
+                    stroke.translate(offset);
+
+                    if let Some(render_comp) = self.render_components.get_mut(key) {
+                        for image in render_comp.images.iter_mut() {
+                            image.bounds = geometry::aabb_translate(image.bounds, offset);
+                        }
+
+                        if let Some(new_rendernode) =
+                            render::images_to_rendernode(&render_comp.images, self.zoom)
+                        {
+                            render_comp.rendernode = new_rendernode;
+                        }
                     }
                 }
-                None
-            })
-            .collect::<Vec<StrokeKey>>();
-
-        translated_strokes.iter().for_each(|&key| {
-            if let Some(render_comp) = self.render_components.get_mut(key) {
-                render_comp.image.bounds =
-                    geometry::aabb_translate(render_comp.image.bounds, offset);
-                render_comp.rendernode =
-                    render::image_to_texturenode(&render_comp.image, self.zoom).upcast();
             }
         });
 
@@ -567,13 +525,16 @@ impl StrokesState {
                 .filter_map(|key| self.strokes.get(*key))
                 .filter_map(|stroke| {
                     stroke
-                        .gen_svg_data(na::vector![
+                        .gen_svgs(na::vector![
                             -selection_bounds.mins[0],
                             -selection_bounds.mins[1]
                         ])
                         .ok()
                 })
-                .fold(String::from(""), |acc, x| acc + x.as_str() + "\n");
+                .flatten()
+                .map(|svg| compose::add_xml_header(svg.svg_data.as_str()))
+                .collect::<Vec<String>>()
+                .join("\n");
 
             let wrapper_bounds = p2d::bounding_volume::AABB::new(
                 na::point![0.0, 0.0],

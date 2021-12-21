@@ -276,3 +276,40 @@ pub fn p2d_aabb_to_geo_polygon(aabb: p2d::bounding_volume::AABB) -> geo::Polygon
     ];
     geo::Polygon::new(line_string, vec![])
 }
+
+pub fn scale_inner_bounds_to_new_outer_bounds(
+    old_inner_bounds: p2d::bounding_volume::AABB,
+    old_outer_bounds: p2d::bounding_volume::AABB,
+    new_outer_bounds: p2d::bounding_volume::AABB,
+) -> p2d::bounding_volume::AABB {
+    let offset = na::vector![
+        new_outer_bounds.mins[0] - old_outer_bounds.mins[0],
+        new_outer_bounds.mins[1] - old_outer_bounds.mins[1]
+    ];
+
+    let scalevector = na::vector![
+        (new_outer_bounds.extents()[0]) / (old_outer_bounds.extents()[0]),
+        (new_outer_bounds.extents()[1]) / (old_outer_bounds.extents()[1])
+    ];
+
+    p2d::bounding_volume::AABB::new(
+        na::point![
+            (old_inner_bounds.mins[0] - old_outer_bounds.mins[0]) * scalevector[0]
+                + old_outer_bounds.mins[0]
+                + offset[0],
+            (old_inner_bounds.mins[1] - old_outer_bounds.mins[1]) * scalevector[1]
+                + old_outer_bounds.mins[1]
+                + offset[1]
+        ],
+        na::point![
+            (old_inner_bounds.mins[0] - old_outer_bounds.mins[0]) * scalevector[0]
+                + old_outer_bounds.mins[0]
+                + offset[0]
+                + (old_inner_bounds.extents()[0]) * scalevector[0],
+            (old_inner_bounds.mins[1] - old_outer_bounds.mins[1]) * scalevector[1]
+                + old_outer_bounds.mins[1]
+                + offset[1]
+                + (old_inner_bounds.extents()[1]) * scalevector[1]
+        ],
+    )
+}

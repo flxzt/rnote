@@ -40,7 +40,7 @@ impl StrokeBehaviour for VectorImage {
         self.bounds = new_bounds;
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
         let bounds = p2d::bounding_volume::AABB::new(
             na::point![
                 self.bounds.mins[0] + offset[0],
@@ -57,27 +57,16 @@ impl StrokeBehaviour for VectorImage {
             na::point![self.intrinsic_size[0], self.intrinsic_size[1]],
         );
 
-        let svg = compose::wrap_svg(
+        let svg_data = compose::wrap_svg(
             self.svg_data.as_str(),
             Some(bounds),
             Some(intrinsic_bounds),
             false,
             false,
         );
-        Ok(svg)
-    }
+        let svg = render::Svg { bounds, svg_data };
 
-    fn gen_image(
-        &self,
-        zoom: f64,
-        renderer: &render::Renderer,
-    ) -> Result<render::Image, anyhow::Error> {
-        let svg = render::Svg {
-            bounds: self.bounds,
-            svg_data: compose::add_xml_header(self.gen_svg_data(na::vector![0.0, 0.0])?.as_str()),
-        };
-
-        renderer.gen_image(zoom, &svg)
+        Ok(vec![svg])
     }
 }
 

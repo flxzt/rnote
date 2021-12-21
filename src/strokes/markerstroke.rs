@@ -82,10 +82,12 @@ impl StrokeBehaviour for MarkerStroke {
         self.hitbox = self.gen_hitbox();
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
-        if self.elements.len() <= 1 {
-            return Ok(String::from(""));
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
+        if self.elements.len() <= 4 {
+            return Ok(vec![]);
         }
+
+        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
         let commands: Vec<path::Command> = self
             .elements
@@ -96,26 +98,31 @@ impl StrokeBehaviour for MarkerStroke {
             .enumerate()
             .map(|(i, (((first, second), third), forth))| {
                 let mut commands = Vec::new();
-                if let Some(mut cubic_bezier) =
+                if let Some(mut cubbez) =
                     curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
                 {
-                    cubic_bezier.start += offset;
-                    cubic_bezier.cp1 += offset;
-                    cubic_bezier.cp2 += offset;
-                    cubic_bezier.end += offset;
+                    cubbez.start += offset;
+                    cubbez.cp1 += offset;
+                    cubbez.cp2 += offset;
+                    cubbez.end += offset;
+
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.start));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
+                    bounds.take_point(na::Point2::<f64>::from(cubbez.end));
 
                     if i == 0 {
                         commands.push(path::Command::Move(
                             path::Position::Absolute,
-                            path::Parameters::from((cubic_bezier.start[0], cubic_bezier.start[1])),
+                            path::Parameters::from((cubbez.start[0], cubbez.start[1])),
                         ));
                     } else {
                         commands.push(path::Command::CubicCurve(
                             path::Position::Absolute,
                             path::Parameters::from((
-                                (cubic_bezier.cp1[0], cubic_bezier.cp1[1]),
-                                (cubic_bezier.cp2[0], cubic_bezier.cp2[1]),
-                                (cubic_bezier.end[0], cubic_bezier.end[1]),
+                                (cubbez.cp1[0], cubbez.cp1[1]),
+                                (cubbez.cp2[0], cubbez.cp2[1]),
+                                (cubbez.end[0], cubbez.end[1]),
                             )),
                         ));
                     }
@@ -144,7 +151,7 @@ impl StrokeBehaviour for MarkerStroke {
             .flatten()
             .collect();
 
-        let svg = if !commands.is_empty() {
+        let svg_data = if !commands.is_empty() {
             let path = svg::node::element::Path::new()
                 .set("stroke", self.marker.color.to_css_color())
                 .set("stroke-width", self.marker.width())
@@ -163,27 +170,9 @@ impl StrokeBehaviour for MarkerStroke {
         } else {
             String::from("")
         };
+        let svg = render::Svg { bounds, svg_data };
 
-        Ok(svg)
-    }
-
-    fn gen_image(
-        &self,
-        zoom: f64,
-        renderer: &render::Renderer,
-    ) -> Result<render::Image, anyhow::Error> {
-        let svg = render::Svg {
-            bounds: self.bounds,
-            svg_data: compose::wrap_svg(
-                self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
-                Some(self.bounds),
-                Some(self.bounds),
-                true,
-                false,
-            ),
-        };
-
-        renderer.gen_image(zoom, &svg)
+        Ok(vec![svg])
     }
 }
 
@@ -340,8 +329,15 @@ impl MarkerStroke {
     }
 
     pub fn export_to_svg(&self, xml_header: bool) -> Result<String, anyhow::Error> {
+        let svgs = Self::gen_svgs(self, na::vector![0.0, 0.0])?;
+        let svg_data = svgs
+            .iter()
+            .map(|svg| svg.svg_data.clone())
+            .collect::<Vec<String>>()
+            .join("\n");
+
         let svg = compose::wrap_svg(
-            Self::gen_svg_data(self, na::vector![0.0, 0.0])?.as_str(),
+            svg_data.as_str(),
             Some(self.bounds),
             Some(self.bounds),
             xml_header,

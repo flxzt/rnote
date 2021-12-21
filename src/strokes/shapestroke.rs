@@ -1,6 +1,6 @@
+use crate::geometry;
 use crate::pens::shaper::{self, DrawStyle};
 use crate::strokes::strokestyle::{Element, StrokeBehaviour};
-use crate::{compose, geometry};
 use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render};
 
 use p2d::bounding_volume::BoundingVolume;
@@ -159,8 +159,8 @@ impl StrokeBehaviour for ShapeStroke {
         self.bounds = new_bounds;
     }
 
-    fn gen_svg_data(&self, offset: na::Vector2<f64>) -> Result<String, anyhow::Error> {
-        let mut svg = String::new();
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let mut svg_data = String::new();
 
         let element: svg::node::element::Element = match self.shape_style {
             ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
@@ -313,7 +313,7 @@ impl StrokeBehaviour for ShapeStroke {
             },
         };
 
-        svg += rough_rs::node_to_string(&element)
+        svg_data += rough_rs::node_to_string(&element)
             .map_err(|e| {
                 anyhow::anyhow!(
                     "rough_rs::node_to_string() failed in gen_svg_data() for a shapestroke, {}",
@@ -321,26 +321,12 @@ impl StrokeBehaviour for ShapeStroke {
                 )
             })?
             .as_str();
-        Ok(svg)
-    }
 
-    fn gen_image(
-        &self,
-        zoom: f64,
-        renderer: &render::Renderer,
-    ) -> Result<render::Image, anyhow::Error> {
         let svg = render::Svg {
             bounds: self.bounds,
-            svg_data: compose::wrap_svg(
-                self.gen_svg_data(na::vector![0.0, 0.0])?.as_str(),
-                Some(self.bounds),
-                Some(self.bounds),
-                true,
-                false,
-            ),
+            svg_data,
         };
-
-        renderer.gen_image(zoom, &svg)
+        Ok(vec![svg])
     }
 }
 

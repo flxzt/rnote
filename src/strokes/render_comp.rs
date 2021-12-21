@@ -123,7 +123,7 @@ impl StrokesState {
 
                 match stroke.gen_image(current_zoom, &renderer.read().unwrap()) {
                     Ok(image) => {
-                        tasks_tx.send(StateTask::UpdateStrokeWithImage {
+                        tasks_tx.send(StateTask::UpdateStrokeWithImages {
                             key,
                             images: vec![image],
                         }).unwrap_or_else(|e| {
@@ -149,26 +149,12 @@ impl StrokesState {
             match stroke {
                 StrokeStyle::BrushStroke(brushstroke) => {
                     let elems_len = brushstroke.elements.len();
-                    // Only generate elements in distance of 4 elements
-                    let elements = if elems_len > 4 {
+
+                    let elements = if elems_len >= 4 {
                         Some((
                             brushstroke.elements.get(elems_len - 4).unwrap(),
                             brushstroke.elements.get(elems_len - 3).unwrap(),
                             brushstroke.elements.get(elems_len - 2).unwrap(),
-                            brushstroke.elements.get(elems_len - 1).unwrap(),
-                        ))
-                    } else if elems_len > 3 {
-                        Some((
-                            brushstroke.elements.get(elems_len - 3).unwrap(),
-                            brushstroke.elements.get(elems_len - 3).unwrap(),
-                            brushstroke.elements.get(elems_len - 2).unwrap(),
-                            brushstroke.elements.get(elems_len - 1).unwrap(),
-                        ))
-                    } else if elems_len > 2 {
-                        Some((
-                            brushstroke.elements.get(elems_len - 2).unwrap(),
-                            brushstroke.elements.get(elems_len - 2).unwrap(),
-                            brushstroke.elements.get(elems_len - 1).unwrap(),
                             brushstroke.elements.get(elems_len - 1).unwrap(),
                         ))
                     } else {

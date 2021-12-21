@@ -23,7 +23,7 @@ use trash_comp::TrashComponent;
 use self::strokestyle::{Element, StrokeBehaviour, StrokeStyle};
 use self::{brushstroke::BrushStroke, markerstroke::MarkerStroke, shapestroke::ShapeStroke};
 
-use gtk4::{glib, prelude::*};
+use gtk4::{glib, glib::clone, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
@@ -31,7 +31,7 @@ use slotmap::{HopSlotMap, SecondaryMap};
 
 #[derive(Debug, Clone)]
 pub enum StateTask {
-    UpdateStrokeWithImage {
+    UpdateStrokeWithImages {
         key: StrokeKey,
         images: Vec<render::Image>,
     },
@@ -110,17 +110,15 @@ impl StrokesState {
     }
 
     pub fn init(&mut self, appwindow: &RnoteAppWindow) {
-        let appwindow_weak = appwindow.downgrade();
         let main_cx = glib::MainContext::default();
 
         let source_id = self
             .tasks_rx
             .take()
             .unwrap()
-            .attach(Some(&main_cx), move |render_task| {
+            .attach(Some(&main_cx), clone!(@weak appwindow => @default-return glib::Continue(false), move |render_task| {
                 match render_task {
-                    StateTask::UpdateStrokeWithImage { key, images } => {
-                        if let Some(appwindow) = appwindow_weak.upgrade() {
+                    StateTask::UpdateStrokeWithImages { key, images } => {
                             appwindow
                                 .canvas()
                                 .sheet()
@@ -129,13 +127,12 @@ impl StrokesState {
                                 .update_rendering_with_images(key, images);
 
                             appwindow.canvas().queue_draw();
-                        }
                     }
                     StateTask::Quit => return glib::Continue(false),
                 }
 
                 glib::Continue(true)
-            });
+            }));
 
         let source = main_cx
             .find_source_by_id(&source_id)

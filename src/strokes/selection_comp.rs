@@ -360,7 +360,7 @@ impl StrokesState {
                         .ok()
                 })
                 .flatten()
-                .map(|svg| compose::add_xml_header(svg.svg_data.as_str()))
+                .map(|svg| svg.svg_data)
                 .collect::<Vec<String>>()
                 .join("\n");
 

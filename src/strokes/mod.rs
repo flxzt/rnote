@@ -35,7 +35,20 @@ pub enum StateTask {
         key: StrokeKey,
         images: Vec<render::Image>,
     },
+    AppendImagesToStroke {
+        key: StrokeKey,
+        images: Vec<render::Image>,
+    },
     Quit,
+}
+
+pub fn default_threadpool() -> rayon::ThreadPool {
+    rayon::ThreadPoolBuilder::default()
+        .build()
+        .unwrap_or_else(|e| {
+            log::error!("default_render_threadpool() failed with Err {}", e);
+            panic!()
+        })
 }
 
 slotmap::new_key_type! {
@@ -126,6 +139,16 @@ impl StrokesState {
 
                             appwindow.canvas().queue_draw();
                     }
+                    StateTask::AppendImagesToStroke { key, images } => {
+                            appwindow
+                                .canvas()
+                                .sheet()
+                                .strokes_state()
+                                .borrow_mut()
+                                .append_images_to_rendering(key, images);
+
+                            appwindow.canvas().queue_draw();
+                    }
                     StateTask::Quit => return glib::Continue(false),
                 }
 
@@ -213,7 +236,7 @@ impl StrokesState {
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
             }
 
-            self.regenerate_rendering_new_elem(key);
+            self.regenerate_rendering_new_elem_threaded(key);
             Some(key)
         } else {
             log::warn!("tried add_to_last_stroke() while there is no last stroke");
@@ -381,13 +404,4 @@ impl StrokesState {
 
         Ok(data)
     }
-}
-
-pub fn default_threadpool() -> rayon::ThreadPool {
-    rayon::ThreadPoolBuilder::default()
-        .build()
-        .unwrap_or_else(|e| {
-            log::error!("default_render_threadpool() failed with Err {}", e);
-            panic!()
-        })
 }

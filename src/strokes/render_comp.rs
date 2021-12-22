@@ -117,6 +117,8 @@ impl StrokesState {
             let stroke = stroke.clone();
             let renderer = self.renderer.clone();
 
+            render_comp.regenerate_flag = false;
+
             // Spawn a new thread for image rendering
             self.threadpool.spawn(move || {
                 //std::thread::sleep(std::time::Duration::from_millis(500));
@@ -135,8 +137,6 @@ impl StrokesState {
                     }
                 }
             });
-
-            render_comp.regenerate_flag = false;
         } else {
             log::error!("render_tx or stroke is None in update_rendering_for_stroke_threaded()");
         }
@@ -167,21 +167,29 @@ impl StrokesState {
                             brushstroke.gen_svg_for_elems(elements, offset, true)
                         {
                             let svg_bounds = last_elems_svg.bounds;
-                            if let Ok(last_elems_image) = self.renderer.read().unwrap().gen_image(
+
+                            match self.renderer.read().unwrap().gen_image(
                                 self.zoom,
                                 &vec![last_elems_svg],
                                 svg_bounds,
                             ) {
-                                let mut images = vec![last_elems_image];
+                                Ok(last_elems_image) => {
+                                    let mut images = vec![last_elems_image];
 
-                                if let Some(new_rendernode) = render::append_images_to_rendernode(
-                                    &render_comp.rendernode,
-                                    &images,
-                                    self.zoom,
-                                ) {
-                                    render_comp.rendernode = new_rendernode;
-                                    render_comp.images.append(&mut images);
-                                    render_comp.regenerate_flag = false;
+                                    if let Some(new_rendernode) =
+                                        render::append_images_to_rendernode(
+                                            &render_comp.rendernode,
+                                            &images,
+                                            self.zoom,
+                                        )
+                                    {
+                                        render_comp.rendernode = new_rendernode;
+                                        render_comp.images.append(&mut images);
+                                        render_comp.regenerate_flag = false;
+                                    }
+                                }
+                                Err(e) => {
+                                    log::error!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
                                 }
                             }
                         }
@@ -207,42 +215,184 @@ impl StrokesState {
                             markerstroke.gen_svg_for_elems(elements, offset, true)
                         {
                             let svg_bounds = last_elems_svg.bounds;
-                            if let Ok(last_elems_image) = self.renderer.read().unwrap().gen_image(
+
+                            match self.renderer.read().unwrap().gen_image(
                                 self.zoom,
                                 &vec![last_elems_svg],
                                 svg_bounds,
                             ) {
-                                let mut images = vec![last_elems_image];
+                                Ok(last_elems_image) => {
+                                    let mut images = vec![last_elems_image];
 
-                                if let Some(new_rendernode) = render::append_images_to_rendernode(
-                                    &render_comp.rendernode,
-                                    &images,
-                                    self.zoom,
-                                ) {
-                                    render_comp.rendernode = new_rendernode;
-                                    render_comp.images.append(&mut images);
-                                    render_comp.regenerate_flag = false;
+                                    if let Some(new_rendernode) =
+                                        render::append_images_to_rendernode(
+                                            &render_comp.rendernode,
+                                            &images,
+                                            self.zoom,
+                                        )
+                                    {
+                                        render_comp.rendernode = new_rendernode;
+                                        render_comp.images.append(&mut images);
+                                        render_comp.regenerate_flag = false;
+                                    }
+                                }
+                                Err(e) => {
+                                    log::error!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
                                 }
                             }
                         }
                     }
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
-                StrokeStyle::ShapeStroke(_) | StrokeStyle::VectorImage(_) | StrokeStyle::BitmapImage(_) => match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
-                    Ok(image) => {
-                        render_comp.regenerate_flag = false;
-                        render_comp.rendernode = render::image_to_rendernode(&image, self.zoom);
-                        render_comp.images = vec![image];
+                StrokeStyle::ShapeStroke(_)
+                | StrokeStyle::VectorImage(_)
+                | StrokeStyle::BitmapImage(_) => {
+                    match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
+                        Ok(image) => {
+                            render_comp.regenerate_flag = false;
+                            render_comp.rendernode = render::image_to_rendernode(&image, self.zoom);
+                            render_comp.images = vec![image];
+                        }
+                        Err(e) => {
+                            log::error!(
+                                "Failed to generate rendernode for stroke with key: {:?}, {}",
+                                key,
+                                e
+                            )
+                        }
                     }
-                    Err(e) => {
-                        log::error!(
-                            "Failed to generate rendernode for stroke with key: {:?}, {}",
-                            key,
-                            e
-                        )
-                    }
-                },
+                }
             }
+        } else {
+            log::warn!(
+                "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
+                key
+            );
+        }
+    }
+
+    pub fn regenerate_rendering_new_elem_threaded(&mut self, key: StrokeKey) {
+        if let (Some(stroke), Some(render_comp), Some(tasks_tx)) = (
+            self.strokes.get(key),
+            self.render_components.get_mut(key),
+            self.tasks_tx.clone(),
+        ) {
+            let stroke = stroke.clone();
+            let zoom = self.zoom;
+            let renderer = self.renderer.clone();
+
+            render_comp.regenerate_flag = true;
+
+            self.threadpool.spawn(move || {
+                match stroke {
+                    StrokeStyle::MarkerStroke(markerstroke) => {
+                        let elems_len = markerstroke.elements.len();
+
+                        let elements = if elems_len >= 4 {
+                            Some((
+                                markerstroke.elements.get(elems_len - 4).unwrap(),
+                                markerstroke.elements.get(elems_len - 3).unwrap(),
+                                markerstroke.elements.get(elems_len - 2).unwrap(),
+                                markerstroke.elements.get(elems_len - 1).unwrap(),
+                            ))
+                        } else {
+                            None
+                        };
+
+                        if let Some(elements) = elements {
+                            let offset = na::vector![0.0, 0.0];
+                            if let Some(last_elems_svg) =
+                                markerstroke.gen_svg_for_elems(elements, offset, true)
+                            {
+                                let svg_bounds = last_elems_svg.bounds;
+                                match renderer.read().unwrap().gen_image(
+                                    zoom,
+                                    &vec![last_elems_svg],
+                                    svg_bounds,
+                                ) {
+                                    Ok(last_elems_image) => {
+                                        let images = vec![last_elems_image];
+
+                                        tasks_tx.send(StateTask::AppendImagesToStroke {
+                                            key,
+                                            images,
+                                        }).unwrap_or_else(|e| {
+                                            log::error!("sending AppendImagesToStroke as task for markerstroke failed in regenerate_rendering_new_elem() with Err, {}", e);
+                                        });
+                                    }
+                                    Err(e) => {
+                                        log::error!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    StrokeStyle::BrushStroke(brushstroke) => {
+                        let elems_len = brushstroke.elements.len();
+
+                        let elements = if elems_len >= 4 {
+                            Some((
+                                brushstroke.elements.get(elems_len - 4).unwrap(),
+                                brushstroke.elements.get(elems_len - 3).unwrap(),
+                                brushstroke.elements.get(elems_len - 2).unwrap(),
+                                brushstroke.elements.get(elems_len - 1).unwrap(),
+                            ))
+                        } else {
+                            None
+                        };
+
+                        if let Some(elements) = elements {
+                            let offset = na::vector![0.0, 0.0];
+                            if let Ok(Some(last_elems_svg)) =
+                                brushstroke.gen_svg_for_elems(elements, offset, true)
+                            {
+                                let svg_bounds = last_elems_svg.bounds;
+                                match renderer.read().unwrap().gen_image(
+                                    zoom,
+                                    &vec![last_elems_svg],
+                                    svg_bounds,
+                                ) {
+                                    Ok(last_elems_image) => {
+                                        let images = vec![last_elems_image];
+
+                                        tasks_tx.send(StateTask::AppendImagesToStroke {
+                                            key,
+                                            images,
+                                        }).unwrap_or_else(|e| {
+                                            log::error!("sending AppendImagesToStroke as task for markerstroke failed in regenerate_rendering_new_elem() with Err, {}", e);
+                                        });
+                                    }
+                                    Err(e) => {
+                                        log::error!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // regenerate everything for strokes that don't support generating svgs for the last added elements
+                    StrokeStyle::ShapeStroke(_)
+                    | StrokeStyle::VectorImage(_)
+                    | StrokeStyle::BitmapImage(_) => {
+                        match stroke.gen_image(zoom, &renderer.read().unwrap()) {
+                            Ok(image) => {
+                                tasks_tx.send(StateTask::UpdateStrokeWithImages {
+                                    key,
+                                    images: vec![image],
+                                }).unwrap_or_else(|e| {
+                                    log::error!("sending task UpdateStrokeWithImages in regenerate_rendering_newest_elem() failed with Err, {}", e);
+                                });
+                            }
+                            Err(e) => {
+                                log::error!(
+                                    "gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, {}",
+                                    key,
+                                    e
+                                )
+                            }
+                        }
+                    }
+                }
+            });
         } else {
             log::warn!(
                 "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",

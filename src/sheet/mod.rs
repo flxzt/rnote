@@ -544,7 +544,6 @@ impl Sheet {
         let decompressed_bytes = utils::decompress_from_gzip(bytes)?;
         let sheet: Sheet = serde_json::from_str(&String::from_utf8_lossy(&decompressed_bytes))?;
 
-        self.set_version(sheet.version());
         self.strokes_state()
             .borrow_mut()
             .import_state(&*sheet.strokes_state().borrow());

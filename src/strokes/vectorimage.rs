@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::{compose, render};
+use crate::{compose, render, geometry};
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
@@ -30,10 +30,12 @@ impl StrokeBehaviour for VectorImage {
         self.bounds
     }
 
+    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+        self.bounds = bounds;
+    }
+
     fn translate(&mut self, offset: na::Vector2<f64>) {
-        self.bounds = self
-            .bounds
-            .transform_by(&na::geometry::Isometry2::new(offset, 0.0));
+        self.bounds = geometry::aabb_translate(self.bounds, offset);
     }
 
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {

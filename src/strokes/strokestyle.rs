@@ -1,5 +1,6 @@
-use crate::{compose, render};
+use crate::{compose, render, geometry};
 
+use p2d::bounding_volume::BoundingVolume;
 use rand::distributions::Uniform;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -11,15 +12,35 @@ use super::shapestroke::ShapeStroke;
 use super::vectorimage::VectorImage;
 
 pub trait StrokeBehaviour {
-    // returns the bounds of this stroke
+    /// returns the current bounds of this stroke
     fn bounds(&self) -> p2d::bounding_volume::AABB;
-    // translates (as in moves) the type for offset
+    /// sets the bounds of this stroke
+    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB);
+    /// generates the bounds of this stroke
+    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+        if let Ok(svgs)=  self.gen_svgs(na::vector![0.0, 0.0]) {
+            let mut svgs_iter = svgs.iter();
+            if let Some(first) = svgs_iter.next() {
+                let mut new_bounds = first.bounds;
+
+                svgs_iter.for_each(|svg| {
+                    new_bounds.merge(&svg.bounds);
+                });
+            new_bounds = geometry::aabb_ceil(new_bounds);
+
+                return Some(new_bounds);
+            }
+        }
+
+        None
+    }
+    /// translates (as in moves) the type for offset
     fn translate(&mut self, offset: na::Vector2<f64>);
-    // resizes the type to the desired new_bounds
+    /// resizes the type to the desired new_bounds
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB);
-    // generates the svg elements, without the xml header or the svg root.
+    /// generates the svg elements, without the xml header or the svg root.
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error>;
-    // generates the image for this stroke
+    /// generates the image for this stroke
     fn gen_image(
         &self,
         zoom: f64,
@@ -54,13 +75,24 @@ pub enum StrokeStyle {
 impl StrokeBehaviour for StrokeStyle {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
         match self {
-            Self::MarkerStroke(markerstroke) => markerstroke.bounds,
-            Self::BrushStroke(brushstroke) => brushstroke.bounds,
-            Self::ShapeStroke(shapestroke) => shapestroke.bounds,
-            Self::VectorImage(vectorimage) => vectorimage.bounds,
-            Self::BitmapImage(bitmapimage) => bitmapimage.bounds,
+            Self::MarkerStroke(markerstroke) => markerstroke.bounds(),
+            Self::BrushStroke(brushstroke) => brushstroke.bounds(),
+            Self::ShapeStroke(shapestroke) => shapestroke.bounds(),
+            Self::VectorImage(vectorimage) => vectorimage.bounds(),
+            Self::BitmapImage(bitmapimage) => bitmapimage.bounds(),
         }
     }
+
+    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+        match self {
+            Self::MarkerStroke(markerstroke) => markerstroke.set_bounds(bounds),
+            Self::BrushStroke(brushstroke) => brushstroke.set_bounds(bounds),
+            Self::ShapeStroke(shapestroke) => shapestroke.set_bounds(bounds),
+            Self::VectorImage(vectorimage) => vectorimage.set_bounds(bounds),
+            Self::BitmapImage(bitmapimage) => bitmapimage.set_bounds(bounds),
+        }
+    }
+
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::MarkerStroke(markerstroke) => {

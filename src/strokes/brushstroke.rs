@@ -42,21 +42,16 @@ impl StrokeBehaviour for BrushStroke {
         self.bounds
     }
 
-    fn translate(&mut self, offset: na::Vector2<f64>) {
-        let new_elements: Vec<Element> = self
-            .elements
-            .iter()
-            .map(|element| {
-                let mut new_element = element.clone();
-                new_element
-                    .inputdata
-                    .set_pos(element.inputdata.pos() + offset);
-                new_element
-            })
-            .collect();
+    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+        self.bounds = bounds;
+    }
 
-        self.elements = new_elements;
-        self.update_bounds();
+    fn translate(&mut self, offset: na::Vector2<f64>) {
+        self.elements.iter_mut().for_each(|element| {
+            element.inputdata.set_pos(element.inputdata.pos() + offset);
+        });
+
+        self.bounds = geometry::aabb_translate(self.bounds, offset);
         self.hitbox = self.gen_hitbox();
     }
 
@@ -71,24 +66,16 @@ impl StrokeBehaviour for BrushStroke {
             (new_bounds.extents()[1]) / (self.bounds.extents()[1])
         ];
 
-        let new_elements: Vec<Element> = self
-            .elements
-            .iter()
-            .map(|element| {
-                let mut new_element = element.clone();
-                let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
+        self.elements.iter_mut().for_each(|element| {
+            let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
 
-                new_element.inputdata.set_pos(
-                    ((element.inputdata.pos() - top_left).component_mul(&scalevector))
-                        + top_left
-                        + offset,
-                );
+            element.inputdata.set_pos(
+                ((element.inputdata.pos() - top_left).component_mul(&scalevector))
+                    + top_left
+                    + offset,
+            );
+        });
 
-                new_element
-            })
-            .collect();
-
-        self.elements = new_elements;
         self.bounds = new_bounds;
         self.hitbox = self.gen_hitbox();
     }
@@ -172,7 +159,9 @@ impl BrushStroke {
     }
 
     pub fn complete_stroke(&mut self) {
-        self.update_bounds();
+        if let Some(new_bounds) = self.gen_bounds() {
+            self.set_bounds(new_bounds);
+        }
         self.hitbox = self.gen_hitbox();
     }
 
@@ -192,36 +181,6 @@ impl BrushStroke {
         }
     }
 
-    fn update_bounds(&mut self) {
-        let mut elements_iter = self.elements.iter();
-        if let Some(first) = elements_iter.next() {
-            self.bounds = p2d::bounding_volume::AABB::new_invalid();
-
-            self.bounds.merge(&p2d::bounding_volume::AABB::new(
-                na::Point2::from(
-                    first.inputdata.pos() - na::vector![self.brush.width(), self.brush.width()],
-                ),
-                na::Point2::from(
-                    first.inputdata.pos() + na::vector![self.brush.width(), self.brush.width()],
-                ),
-            ));
-            for element in elements_iter {
-                self.bounds.merge(&p2d::bounding_volume::AABB::new(
-                    na::Point2::from(
-                        element.inputdata.pos()
-                            - na::vector![self.brush.width(), self.brush.width()],
-                    ),
-                    na::Point2::from(
-                        element.inputdata.pos()
-                            + na::vector![self.brush.width(), self.brush.width()],
-                    ),
-                ));
-            }
-
-            self.bounds = geometry::aabb_ceil(self.bounds);
-        }
-    }
-
     fn gen_hitbox(&self) -> Vec<p2d::bounding_volume::AABB> {
         let mut hitbox: Vec<p2d::bounding_volume::AABB> =
             Vec::with_capacity(self.elements.len() as usize);
@@ -232,13 +191,13 @@ impl BrushStroke {
             } else {
                 None
             };
-            hitbox.push(self.gen_last_hitbox(first, second));
+            hitbox.push(self.gen_hitbox_for_elems(first, second));
         }
 
         hitbox
     }
 
-    fn gen_last_hitbox(
+    fn gen_hitbox_for_elems(
         &self,
         first: &Element,
         second: Option<&Element>,

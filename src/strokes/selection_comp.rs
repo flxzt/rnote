@@ -90,7 +90,7 @@ impl StrokesState {
     }
 
     pub fn update_selection_bounds(&mut self) {
-        self.selection_bounds = self.gen_bounds(self.keys_selection().iter());
+        self.selection_bounds = self.gen_bounds(&self.keys_selection());
     }
 
     pub fn deselect_all_strokes(&mut self) {

@@ -43,6 +43,54 @@ impl StrokeBehaviour for ShapeStroke {
         self.bounds
     }
 
+    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+        self.bounds = bounds;
+    }
+
+    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+        let new_bounds = match self.shape_style {
+            ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
+                shaper::DrawStyle::Smooth => {
+                    geometry::aabb_new_positive(*start, *end).loosened(self.shaper.width() * 0.5)
+                }
+                shaper::DrawStyle::Rough => {
+                    geometry::aabb_new_positive(*start, *end)
+                        // TODO what are the actual bounds for a rough line?
+                        .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN)
+                }
+            },
+            ShapeStyle::Rectangle { ref start, ref end } => {
+                match self.shaper.drawstyle {
+                    shaper::DrawStyle::Smooth => geometry::aabb_new_positive(*start, *end)
+                        .loosened(self.shaper.width() * 0.5),
+                    shaper::DrawStyle::Rough => {
+                        geometry::aabb_new_positive(*start, *end)
+                            // TODO what are the actual bounds for a rough rect?
+                            .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN)
+                    }
+                }
+            }
+            ShapeStyle::Ellipse {
+                ref pos,
+                ref radius_x,
+                ref radius_y,
+            } => match self.shaper.drawstyle {
+                shaper::DrawStyle::Smooth => geometry::aabb_new_positive(
+                    na::vector![pos[0] - radius_x, pos[1] - radius_y],
+                    na::vector![pos[0] + radius_x, pos[1] + radius_y],
+                )
+                .loosened(self.shaper.width()),
+                shaper::DrawStyle::Rough => geometry::aabb_new_positive(
+                    na::vector![pos[0] - radius_x, pos[1] - radius_y],
+                    na::vector![pos[0] + radius_x, pos[1] + radius_y],
+                )
+                .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN),
+            },
+        };
+
+        Some(new_bounds)
+    }
+
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self.shape_style {
             ShapeStyle::Line {
@@ -68,7 +116,7 @@ impl StrokeBehaviour for ShapeStroke {
             }
         }
 
-        self.update_bounds();
+        self.bounds = geometry::aabb_translate(self.bounds, offset);
     }
 
     fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
@@ -365,7 +413,9 @@ impl ShapeStroke {
             seed,
         };
 
-        shapestroke.update_bounds();
+        if let Some(new_bounds) = shapestroke.gen_bounds() {
+            shapestroke.bounds = new_bounds;
+        }
 
         shapestroke
     }
@@ -395,60 +445,14 @@ impl ShapeStroke {
             }
         }
 
-        self.update_bounds();
-    }
-
-    pub fn update_bounds(&mut self) {
-        match self.shape_style {
-            ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
-                shaper::DrawStyle::Smooth => {
-                    self.bounds = geometry::aabb_new_positive(*start, *end)
-                        .loosened(self.shaper.width() * 0.5);
-                }
-                shaper::DrawStyle::Rough => {
-                    self.bounds = geometry::aabb_new_positive(*start, *end)
-                        // TODO what are the actual bounds for a rough line?
-                        .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN);
-                }
-            },
-            ShapeStyle::Rectangle { ref start, ref end } => {
-                match self.shaper.drawstyle {
-                    shaper::DrawStyle::Smooth => {
-                        self.bounds = geometry::aabb_new_positive(*start, *end)
-                            .loosened(self.shaper.width() * 0.5);
-                    }
-                    shaper::DrawStyle::Rough => {
-                        self.bounds = geometry::aabb_new_positive(*start, *end)
-                            // TODO what are the actual bounds for a rough rect?
-                            .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN);
-                    }
-                };
-            }
-            ShapeStyle::Ellipse {
-                ref pos,
-                ref radius_x,
-                ref radius_y,
-            } => match self.shaper.drawstyle {
-                shaper::DrawStyle::Smooth => {
-                    self.bounds = geometry::aabb_new_positive(
-                        na::vector![pos[0] - radius_x, pos[1] - radius_y],
-                        na::vector![pos[0] + radius_x, pos[1] + radius_y],
-                    )
-                    .loosened(self.shaper.width());
-                }
-                shaper::DrawStyle::Rough => {
-                    self.bounds = geometry::aabb_new_positive(
-                        na::vector![pos[0] - radius_x, pos[1] - radius_y],
-                        na::vector![pos[0] + radius_x, pos[1] + radius_y],
-                    )
-                    // TODO what are the actual bounds for a rough ellipse?
-                    .loosened(self.shaper.width() + DrawStyle::ROUGH_MARGIN);
-                }
-            },
+        if let Some(new_bounds) = self.gen_bounds() {
+            self.bounds = new_bounds;
         }
     }
 
     pub fn complete_stroke(&mut self) {
-        self.update_bounds();
+        if let Some(new_bounds) = self.gen_bounds() {
+            self.bounds = new_bounds;
+        }
     }
 }

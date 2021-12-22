@@ -74,7 +74,7 @@ impl Selector {
         self.clear_path();
 
         self.path.push(inputdata);
-        self.update_bounds();
+        self.bounds = self.gen_bounds();
     }
 
     pub fn add_elem_to_path(&mut self, inputdata: InputData) {
@@ -89,7 +89,7 @@ impl Selector {
                 self.path.insert(1, inputdata)
             }
         }
-        self.update_bounds();
+        self.bounds = self.gen_bounds();
     }
 
     pub fn clear_path(&mut self) {
@@ -133,7 +133,7 @@ impl Selector {
         }
     }
 
-    fn update_bounds(&mut self) {
+    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
         // Making sure bounds are always outside of coord + width
         let mut path_iter = self.path.iter();
         if let Some(first) = path_iter.next() {
@@ -153,9 +153,9 @@ impl Selector {
                 );
                 new_bounds.merge(&pos_bounds);
             });
-            self.bounds = Some(new_bounds);
+            Some(new_bounds)
         } else {
-            self.bounds = None;
+            None
         }
     }
 

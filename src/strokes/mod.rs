@@ -284,7 +284,10 @@ impl StrokesState {
                 StrokeStyle::BitmapImage(ref mut _bitmapimage) => {}
             }
         } else {
-            log::debug!("get stroke in complete_stroke() returned None in complete_stroke() for key {:?}", key);
+            log::debug!(
+                "get stroke in complete_stroke() returned None in complete_stroke() for key {:?}",
+                key
+            );
         }
     }
 
@@ -320,41 +323,22 @@ impl StrokesState {
     }
 
     /// Generates the bounds needed to fit the strokes
-    pub fn gen_bounds<'a>(
-        &self,
-        mut keys: impl Iterator<Item = &'a StrokeKey>,
-    ) -> Option<p2d::bounding_volume::AABB> {
-        if let Some(first_key) = keys.next() {
-            if let Some(first) = self.strokes.get(*first_key) {
-                let mut bounds = match first {
-                    StrokeStyle::MarkerStroke(markerstroke) => markerstroke.bounds,
-                    StrokeStyle::BrushStroke(brushstroke) => brushstroke.bounds,
-                    StrokeStyle::ShapeStroke(shapestroke) => shapestroke.bounds,
-                    StrokeStyle::VectorImage(vectorimage) => vectorimage.bounds,
-                    StrokeStyle::BitmapImage(bitmapimage) => bitmapimage.bounds,
-                };
+    pub fn gen_bounds(&self, keys: &[StrokeKey]) -> Option<p2d::bounding_volume::AABB> {
+        let mut keys_iter = keys.iter();
+        if let Some(&key) = keys_iter.next() {
+            if let Some(first) = self.strokes.get(key) {
+                let mut bounds = first.bounds();
 
-                keys.for_each(|key| match self.strokes.get(*key) {
-                    Some(StrokeStyle::MarkerStroke(markerstroke)) => {
-                        bounds.merge(&markerstroke.bounds);
-                    }
-                    Some(StrokeStyle::BrushStroke(brushstroke)) => {
-                        bounds.merge(&brushstroke.bounds);
-                    }
-                    Some(StrokeStyle::ShapeStroke(shapestroke)) => {
-                        bounds.merge(&shapestroke.bounds);
-                    }
-                    Some(StrokeStyle::VectorImage(vectorimage)) => {
-                        bounds.merge(&vectorimage.bounds);
-                    }
-                    Some(StrokeStyle::BitmapImage(bitmapimage)) => {
-                        bounds.merge(&bitmapimage.bounds);
-                    }
-                    None => {}
-                });
+                keys_iter
+                    .filter_map(|&key| self.strokes.get(key))
+                    .for_each(|stroke| {
+                        bounds.merge(&stroke.bounds());
+                    });
+
                 return Some(bounds);
             }
         }
+
         None
     }
 
@@ -376,7 +360,7 @@ impl StrokesState {
         if keys.len() < 1 {
             return Ok(String::from(""));
         }
-        let bounds = if let Some(bounds) = self.gen_bounds(keys.iter()) {
+        let bounds = if let Some(bounds) = self.gen_bounds(&keys) {
             bounds
         } else {
             return Ok(String::from(""));

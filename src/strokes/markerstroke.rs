@@ -35,6 +35,45 @@ impl StrokeBehaviour for MarkerStroke {
         self.bounds = bounds;
     }
 
+    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+        let mut elements_iter = self.elements.iter().peekable();
+
+        if let Some(&first) = elements_iter.peek() {
+            let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+            bounds.take_point(na::Point2::<f64>::from(first.inputdata.pos()));
+
+            elements_iter
+                .zip(self.elements.iter().skip(1))
+                .zip(self.elements.iter().skip(2))
+                .zip(self.elements.iter().skip(3))
+                .for_each(|(((first, second), third), forth)| {
+                    let width = self.marker.width();
+
+                    if let Some(cubbez) =
+                        curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
+                    {
+                        // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
+                        bounds.take_point(na::Point2::<f64>::from(cubbez.start));
+                        bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
+                        bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
+                        bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+
+                        bounds.loosen(width);
+                        // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
+                        bounds = geometry::aabb_ceil(bounds);
+                    } else if let Some(line) = curves::gen_line(second, third) {
+                        bounds.take_point(na::Point2::<f64>::from(line.start));
+                        bounds.take_point(na::Point2::<f64>::from(line.end));
+                    } else {
+                        return;
+                    }
+                });
+            Some(bounds)
+        } else {
+            None
+        }
+    }
+
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.elements.iter_mut().for_each(|element| {
             element.inputdata.set_pos(element.inputdata.pos() + offset);

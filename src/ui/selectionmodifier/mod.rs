@@ -191,6 +191,8 @@ impl SelectionModifier {
         );
         resize_tl_drag_gesture.connect_drag_end(
             clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
+                appwindow.canvas().sheet().strokes_state().borrow_mut().complete_selection_strokes();
+                appwindow.canvas().sheet().strokes_state().borrow_mut().update_selection_bounds();
                 appwindow.canvas().regenerate_content(false, true);
             }),
         );
@@ -243,6 +245,8 @@ impl SelectionModifier {
         );
         resize_tr_drag_gesture.connect_drag_end(
             clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
+                appwindow.canvas().sheet().strokes_state().borrow_mut().complete_selection_strokes();
+                appwindow.canvas().sheet().strokes_state().borrow_mut().update_selection_bounds();
                 appwindow.canvas().regenerate_content(false, true);
             }),
         );
@@ -300,6 +304,8 @@ impl SelectionModifier {
         );
         resize_bl_drag_gesture.connect_drag_end(
             clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
+                appwindow.canvas().sheet().strokes_state().borrow_mut().complete_selection_strokes();
+                appwindow.canvas().sheet().strokes_state().borrow_mut().update_selection_bounds();
                 appwindow.canvas().regenerate_content(false, true);
             }),
         );
@@ -352,6 +358,8 @@ impl SelectionModifier {
         );
         resize_br_drag_gesture.connect_drag_end(
             clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
+                appwindow.canvas().sheet().strokes_state().borrow_mut().complete_selection_strokes();
+                appwindow.canvas().sheet().strokes_state().borrow_mut().update_selection_bounds();
                 appwindow.canvas().regenerate_content(false, true);
             }),
         );

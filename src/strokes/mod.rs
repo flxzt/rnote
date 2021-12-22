@@ -293,8 +293,15 @@ impl StrokesState {
 
     pub fn complete_all_strokes(&mut self) {
         let keys: Vec<StrokeKey> = self.strokes.keys().collect();
-        keys.iter().for_each(|key| {
-            self.complete_stroke(*key);
+        keys.iter().for_each(|&key| {
+            self.complete_stroke(key);
+        });
+    }
+
+    pub fn complete_selection_strokes(&mut self) {
+        let keys: Vec<StrokeKey> = self.keys_selection();
+        keys.iter().for_each(|&key| {
+            self.complete_stroke(key);
         });
     }
 

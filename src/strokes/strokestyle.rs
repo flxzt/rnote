@@ -1,4 +1,4 @@
-use crate::{compose, render, geometry};
+use crate::{compose, geometry, render};
 
 use p2d::bounding_volume::BoundingVolume;
 use rand::distributions::Uniform;
@@ -18,7 +18,7 @@ pub trait StrokeBehaviour {
     fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB);
     /// generates the bounds of this stroke
     fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
-        if let Ok(svgs)=  self.gen_svgs(na::vector![0.0, 0.0]) {
+        if let Ok(svgs) = self.gen_svgs(na::vector![0.0, 0.0]) {
             let mut svgs_iter = svgs.iter();
             if let Some(first) = svgs_iter.next() {
                 let mut new_bounds = first.bounds;
@@ -26,7 +26,7 @@ pub trait StrokeBehaviour {
                 svgs_iter.for_each(|svg| {
                     new_bounds.merge(&svg.bounds);
                 });
-            new_bounds = geometry::aabb_ceil(new_bounds);
+                new_bounds = geometry::aabb_ceil(new_bounds);
 
                 return Some(new_bounds);
             }

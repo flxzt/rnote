@@ -220,6 +220,7 @@ impl MarkerStroke {
         let marker_width = self.marker.width();
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+
         if let Some(mut cubbez) =
             curves::gen_cubbez_w_catmull_rom(elements.0, elements.1, elements.2, elements.3)
         {
@@ -250,21 +251,23 @@ impl MarkerStroke {
                     (cubbez.end[0], cubbez.end[1]),
                 )),
             ));
-        } else {
+        } else if let Some(mut line) = curves::gen_line(elements.1, elements.2) {
+            line.start += offset;
+            line.end += offset;
+
+            bounds.take_point(na::Point2::<f64>::from(line.start));
+            bounds.take_point(na::Point2::<f64>::from(line.end));
+
             commands.push(path::Command::Move(
                 path::Position::Absolute,
-                path::Parameters::from((
-                    elements.1.inputdata.pos()[0],
-                    elements.1.inputdata.pos()[1],
-                )),
+                path::Parameters::from((line.start[0], line.start[1])),
             ));
             commands.push(path::Command::Line(
                 path::Position::Absolute,
-                path::Parameters::from((
-                    elements.1.inputdata.pos()[0],
-                    elements.2.inputdata.pos()[1],
-                )),
+                path::Parameters::from((line.end[0], line.end[1])),
             ));
+        } else {
+            return None;
         }
 
         let path = svg::node::element::Path::new()

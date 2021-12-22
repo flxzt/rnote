@@ -41,8 +41,8 @@ impl StrokesState {
         if let Some(selection_comp) = self.selection_components.get(key) {
             Some(selection_comp.selected)
         } else {
-            log::warn!(
-                "failed to get selection_component for stroke with key {:?}, invalid key used or stroke does not support selecting",
+            log::debug!(
+                "get selection_comp in selected() returned None for stroke with key {:?}",
                 key
             );
             None
@@ -63,8 +63,8 @@ impl StrokesState {
 
             self.update_selection_bounds();
         } else {
-            log::warn!(
-                "failed to get selection_component for stroke with key {:?}, invalid key used or stroke does not support selecting",
+            log::debug!(
+                "get selection_comp in set_selected() returned None for stroke with key {:?}",
                 key
             );
         }
@@ -166,7 +166,7 @@ impl StrokesState {
         };
 
         self.strokes.iter_mut().for_each(|(key, stroke)| {
-            // Skip if stroke is hidden
+            // skip if stroke is trashed
             if let Some(trash_comp) = self.trash_components.get(key) {
                 if trash_comp.trashed {
                     return;
@@ -179,7 +179,7 @@ impl StrokesState {
                 }
             }
             if let Some(selection_comp) = self.selection_components.get_mut(key) {
-                // Default to not selected, check for if selected
+                // default to not selected, check for if selected
                 selection_comp.selected = false;
 
                 match stroke {

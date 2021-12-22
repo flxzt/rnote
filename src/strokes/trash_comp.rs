@@ -27,8 +27,8 @@ impl StrokesState {
         if let Some(trash_comp) = self.trash_components.get(key) {
             Some(trash_comp.trashed)
         } else {
-            log::warn!(
-                "failed to get trash_comp of stroke with key {:?}, invalid key used or stroke does not support trashing",
+            log::debug!(
+                "get trash_comp in trashed() returned None for stroke with key {:?}",
                 key
             );
             None
@@ -39,15 +39,13 @@ impl StrokesState {
         if let Some(trash_comp) = self.trash_components.get_mut(key) {
             trash_comp.trashed = trash;
 
-            if !trash {
-                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                    self.chrono_counter += 1;
-                    chrono_comp.t = self.chrono_counter;
-                }
+            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                self.chrono_counter += 1;
+                chrono_comp.t = self.chrono_counter;
             }
         } else {
-            log::warn!(
-                "failed to get trash_comp of stroke with key {:?}, invalid key used or stroke does not support trashing",
+            log::debug!(
+                "get trash_comp in set_trashed() returned None for stroke with key {:?}",
                 key
             );
         }
@@ -87,6 +85,11 @@ impl StrokesState {
                     selection_comp.selected = false;
                     if let Some(trash_comp) = self.trash_components.get_mut(key) {
                         trash_comp.trashed = true;
+
+                        if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                            self.chrono_counter += 1;
+                            chrono_comp.t = self.chrono_counter;
+                        }
                     }
                 }
             });
@@ -125,6 +128,13 @@ impl StrokesState {
                                 if eraser_bounds.intersects(hitbox_elem) {
                                     if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                         trash_comp.trashed = true;
+
+                                        if let Some(chrono_comp) =
+                                            self.chrono_components.get_mut(key)
+                                        {
+                                            self.chrono_counter += 1;
+                                            chrono_comp.t = self.chrono_counter;
+                                        }
                                     }
 
                                     return;
@@ -139,6 +149,13 @@ impl StrokesState {
                                 if eraser_bounds.intersects(hitbox_elem) {
                                     if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                         trash_comp.trashed = true;
+
+                                        if let Some(chrono_comp) =
+                                            self.chrono_components.get_mut(key)
+                                        {
+                                            self.chrono_counter += 1;
+                                            chrono_comp.t = self.chrono_counter;
+                                        }
                                     }
 
                                     return;
@@ -150,6 +167,11 @@ impl StrokesState {
                         if eraser_bounds.intersects(&shapestroke.bounds) {
                             if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                 trash_comp.trashed = true;
+
+                                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                    self.chrono_counter += 1;
+                                    chrono_comp.t = self.chrono_counter;
+                                }
                             }
 
                             return;

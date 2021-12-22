@@ -40,8 +40,8 @@ impl StrokesState {
         if let Some(render_comp) = self.render_components.get(key) {
             Some(render_comp.render)
         } else {
-            log::warn!(
-                "failed to get render_comp of stroke for key {:?}, invalid key used or stroke does not support rendering",
+            log::debug!(
+                "get render_comp failed in does_render() of stroke for key {:?}, invalid key used or stroke does not support rendering",
                 key
             );
             None
@@ -52,8 +52,8 @@ impl StrokesState {
         if let Some(render_component) = self.render_components.get_mut(key) {
             render_component.render = render;
         } else {
-            log::warn!(
-                "failed to get render_comp of stroke with key {:?}, invalid key used or stroke does not support rendering",
+            log::debug!(
+                "get render_comp failed in set_render() of stroke for key {:?}, invalid key used or stroke does not support rendering",
                 key
             );
         }
@@ -63,6 +63,10 @@ impl StrokesState {
         if let Some(render_comp) = self.render_components.get(key) {
             Some(render_comp.regenerate_flag)
         } else {
+            log::debug!(
+                "get render_comp failed in regenerate_flag() of stroke for key {:?}, invalid key used or stroke does not support rendering",
+                key
+            );
             None
         }
     }
@@ -70,6 +74,11 @@ impl StrokesState {
     pub fn set_regenerate_flag(&mut self, key: StrokeKey, regenerate_flag: bool) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             render_comp.regenerate_flag = regenerate_flag;
+        } else {
+            log::debug!(
+                "get render_comp failed in set_regenerate_flag() of stroke for key {:?}, invalid key used or stroke does not support rendering",
+                key
+            );
         }
     }
 
@@ -93,17 +102,12 @@ impl StrokesState {
                 }
                 Err(e) => {
                     log::error!(
-                        "Failed to generate rendernode for stroke with key: {:?}, {}",
+                        "gen_image() failed in regenerate_rendering_for_stroke() for stroke with key: {:?}, {}",
                         key,
                         e
                     )
                 }
             }
-        } else {
-            log::warn!(
-                "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
-                key
-            );
         }
     }
 
@@ -129,20 +133,21 @@ impl StrokesState {
                             key,
                             images: vec![image],
                         }).unwrap_or_else(|e| {
-                            log::error!("tasks_tx.send() failed in update_rendering_for_stroke_threaded() with Err, {}", e);
+                            log::error!("tasks_tx.send() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err, {}",key, e);
                         });
                     }
                     Err(e) => {
-                        log::error!("stroke.gen_svg_data() failed in update_rendering_for_stroke_threaded() with Err {}", e);
+                        log::error!("stroke.gen_svg_data() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
                     }
                 }
             });
         } else {
-            log::error!("render_tx or stroke is None in update_rendering_for_stroke_threaded()");
+            log::debug!("getting stroke comp, tasks_tx or render_comp returned None in regenerate_rendering_for_stroke_threaded() for stroke {:?}", key);
         }
     }
 
-    pub fn regenerate_rendering_new_elem(&mut self, key: StrokeKey) {
+    /// Append the last elements to the render_comp of the stroke. The rendering for strokes that don't support generating rendering for only the last elements are regenerated completely
+    pub fn append_rendering_new_elem(&mut self, key: StrokeKey) {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
@@ -189,7 +194,7 @@ impl StrokesState {
                                     }
                                 }
                                 Err(e) => {
-                                    log::error!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
+                                    log::error!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}", key, e);
                                 }
                             }
                         }
@@ -255,7 +260,7 @@ impl StrokesState {
                         }
                         Err(e) => {
                             log::error!(
-                                "Failed to generate rendernode for stroke with key: {:?}, {}",
+                                "stroke.gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, with Err {}",
                                 key,
                                 e
                             )
@@ -264,14 +269,15 @@ impl StrokesState {
                 }
             }
         } else {
-            log::warn!(
-                "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
+            log::debug!(
+                "get stroke, render_comp returned None for stroke with key {:?}",
                 key
             );
         }
     }
 
-    pub fn regenerate_rendering_new_elem_threaded(&mut self, key: StrokeKey) {
+    /// Append the last elements to the render_comp of the stroke threaded. The rendering for strokes that don't support generating rendering for only the last elements are regenerated completely
+    pub fn append_rendering_new_elem_threaded(&mut self, key: StrokeKey) {
         if let (Some(stroke), Some(render_comp), Some(tasks_tx)) = (
             self.strokes.get(key),
             self.render_components.get_mut(key),
@@ -317,11 +323,11 @@ impl StrokesState {
                                             key,
                                             images,
                                         }).unwrap_or_else(|e| {
-                                            log::error!("sending AppendImagesToStroke as task for markerstroke failed in regenerate_rendering_new_elem() with Err, {}", e);
+                                            log::error!("sending AppendImagesToStroke as task for markerstroke failed in regenerate_rendering_new_elem() for stroke with key {:?}, with Err {}", key, e);
                                         });
                                     }
                                     Err(e) => {
-                                        log::error!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
+                                        log::error!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}",key, e);
                                     }
                                 }
                             }
@@ -359,11 +365,11 @@ impl StrokesState {
                                             key,
                                             images,
                                         }).unwrap_or_else(|e| {
-                                            log::error!("sending AppendImagesToStroke as task for markerstroke failed in regenerate_rendering_new_elem() with Err, {}", e);
+                                            log::error!("sending AppendImagesToStroke as task for markerstroke failed in regenerate_rendering_new_elem() for stroke with key {:?}, with Err, {}",key, e);
                                         });
                                     }
                                     Err(e) => {
-                                        log::error!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
+                                        log::error!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?} with Err {}", key, e);
                                     }
                                 }
                             }
@@ -379,12 +385,12 @@ impl StrokesState {
                                     key,
                                     images: vec![image],
                                 }).unwrap_or_else(|e| {
-                                    log::error!("sending task UpdateStrokeWithImages in regenerate_rendering_newest_elem() failed with Err, {}", e);
+                                    log::error!("sending task UpdateStrokeWithImages failed in regenerate_rendering_newest_elem() for stroke with key {:?}, with Err {}", key, e);
                                 });
                             }
                             Err(e) => {
                                 log::error!(
-                                    "gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, {}",
+                                    "stroke.gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, with Err {}",
                                     key,
                                     e
                                 )
@@ -394,8 +400,8 @@ impl StrokesState {
                 }
             });
         } else {
-            log::warn!(
-                "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
+            log::debug!(
+                "get stroke, render_comp, tasks_tx returned None for stroke with key {:?}",
                 key
             );
         }
@@ -476,15 +482,15 @@ impl StrokesState {
                     }
                     Err(e) => {
                         log::error!(
-                            "Failed to generate rendernode for stroke with key: {:?}, {}",
+                            "gen_image() failed in regenerate_rendering_current_view() for stroke with key: {:?}, with Err {}",
                             key,
                             e
                         )
                     }
                 }
             } else {
-                log::warn!(
-                    "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
+                log::debug!(
+                    "get stroke, render_comp returned None in regenerate_rendering_current_view() for stroke with key {:?}",
                     key
                 );
             }
@@ -514,21 +520,26 @@ impl StrokesState {
 
                 self.regenerate_rendering_for_stroke_threaded(key);
             } else {
-                log::warn!(
-                    "failed to get stroke with key {:?}, invalid key used or stroke does not support rendering",
+                log::debug!(
+                    "get stroke, render_comp returned None in regenerate_rendering_current_view_threaded() for stroke with key {:?}",
                     key
                 );
             }
         })
     }
 
-    pub fn update_rendering_with_images(&mut self, key: StrokeKey, images: Vec<render::Image>) {
+    pub fn regenerate_rendering_with_images(&mut self, key: StrokeKey, images: Vec<render::Image>) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             if let Some(new_rendernode) = render::images_to_rendernode(&images, self.zoom) {
                 render_comp.regenerate_flag = false;
                 render_comp.rendernode = new_rendernode;
                 render_comp.images = images;
             }
+        } else {
+            log::debug!(
+                    "get render_comp returned None in update_rendering_with_images() for stroke with key {:?}",
+                    key
+                );
         }
     }
 
@@ -700,7 +711,7 @@ impl StrokesState {
 
     pub fn draw_debug(&self, zoom: f64, snapshot: &Snapshot) {
         self.strokes.iter().for_each(|(key, stroke)| {
-            // Blur debug rendering for strokes which are normally hidden
+            // Push blur and opacity for strokes which are normally hidden
             if let Some(render_comp) = self.render_components.get(key) {
                 if let Some(trash_comp) = self.trash_components.get(key) {
                     if render_comp.render && trash_comp.trashed {
@@ -791,6 +802,7 @@ impl StrokesState {
                     );
                 }
             }
+            // Pop Blur and opacity for hidden strokes
             if let (Some(render_comp), Some(trash_comp)) = (
                 self.render_components.get(key),
                 self.trash_components.get(key),

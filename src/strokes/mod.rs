@@ -135,7 +135,7 @@ impl StrokesState {
                                 .sheet()
                                 .strokes_state()
                                 .borrow_mut()
-                                .update_rendering_with_images(key, images);
+                                .regenerate_rendering_with_images(key, images);
 
                             appwindow.canvas().queue_draw();
                     }
@@ -156,9 +156,10 @@ impl StrokesState {
             }),
         );
 
-        let source = main_cx
-            .find_source_by_id(&source_id)
-            .expect("Source not found");
+        let source = main_cx.find_source_by_id(&source_id).unwrap_or_else(|| {
+            log::error!("find_source_by_id() in StrokeState init() failed.");
+            panic!();
+        });
         self.channel_source.replace(source);
     }
 
@@ -188,7 +189,7 @@ impl StrokesState {
                 Some(self.insert_stroke(shapestroke))
             }
             PenStyle::Eraser | PenStyle::Selector | PenStyle::Unkown => {
-                log::warn!("tried inserting a new stroke with an unsupported PenStyle");
+                log::warn!("new_stroke() failed, current_pen is a unsupported PenStyle");
                 None
             }
         }
@@ -236,10 +237,10 @@ impl StrokesState {
                 StrokeStyle::BitmapImage(_bitmapimage) => {}
             }
 
-            self.regenerate_rendering_new_elem_threaded(key);
+            self.append_rendering_new_elem_threaded(key);
             Some(key)
         } else {
-            log::warn!("tried add_to_last_stroke() while there is no last stroke");
+            log::warn!("last_stroke_key() returned None in add_to_last_stroke()");
             None
         }
     }
@@ -282,6 +283,8 @@ impl StrokesState {
                 StrokeStyle::VectorImage(ref mut _vectorimage) => {}
                 StrokeStyle::BitmapImage(ref mut _bitmapimage) => {}
             }
+        } else {
+            log::debug!("get stroke in complete_stroke() returned None in complete_stroke() for key {:?}", key);
         }
     }
 

@@ -187,8 +187,48 @@ impl StrokesState {
                         }
                     }
                 }
+                StrokeStyle::MarkerStroke(markerstroke) => {
+                    let elems_len = markerstroke.elements.len();
+
+                    let elements = if elems_len >= 4 {
+                        Some((
+                            markerstroke.elements.get(elems_len - 4).unwrap(),
+                            markerstroke.elements.get(elems_len - 3).unwrap(),
+                            markerstroke.elements.get(elems_len - 2).unwrap(),
+                            markerstroke.elements.get(elems_len - 1).unwrap(),
+                        ))
+                    } else {
+                        None
+                    };
+
+                    if let Some(elements) = elements {
+                        let offset = na::vector![0.0, 0.0];
+                        if let Some(last_elems_svg) =
+                            markerstroke.gen_svg_for_elems(elements, offset, true)
+                        {
+                            let svg_bounds = last_elems_svg.bounds;
+                            if let Ok(last_elems_image) = self.renderer.read().unwrap().gen_image(
+                                self.zoom,
+                                &vec![last_elems_svg],
+                                svg_bounds,
+                            ) {
+                                let mut images = vec![last_elems_image];
+
+                                if let Some(new_rendernode) = render::append_images_to_rendernode(
+                                    &render_comp.rendernode,
+                                    &images,
+                                    self.zoom,
+                                ) {
+                                    render_comp.rendernode = new_rendernode;
+                                    render_comp.images.append(&mut images);
+                                    render_comp.regenerate_flag = false;
+                                }
+                            }
+                        }
+                    }
+                }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
-                _ => match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
+                StrokeStyle::ShapeStroke(_) | StrokeStyle::VectorImage(_) | StrokeStyle::BitmapImage(_) => match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
                     Ok(image) => {
                         render_comp.regenerate_flag = false;
                         render_comp.rendernode = render::image_to_rendernode(&image, self.zoom);

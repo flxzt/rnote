@@ -94,18 +94,20 @@ impl StrokeBehaviour for BrushStroke {
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let svg_root = false;
+
         match self.brush.current_style {
-            brush::BrushStyle::Linear => self.gen_svgs_linear(offset, false),
-            brush::BrushStyle::CubicBezier => self.gen_svgs_cubbez(offset, false),
+            brush::BrushStyle::Linear => self.gen_svgs_linear(offset, svg_root),
+            brush::BrushStyle::CubicBezier => self.gen_svgs_cubbez(offset, svg_root),
             brush::BrushStyle::CustomTemplate(_) => {
-                if let Some(svg) = self.gen_svg_for_template(offset, false)? {
+                if let Some(svg) = self.gen_svg_for_template(offset, svg_root)? {
                     Ok(vec![svg])
                 } else {
                     Ok(vec![])
                 }
             }
             brush::BrushStyle::Experimental => {
-                if let Some(svg) = self.gen_svg_experimental(offset, false)? {
+                if let Some(svg) = self.gen_svg_experimental(offset, svg_root)? {
                     Ok(vec![svg])
                 } else {
                     Ok(vec![])
@@ -185,6 +187,8 @@ impl BrushStroke {
                     last.inputdata.pos() + na::vector![self.brush.width(), self.brush.width()],
                 ),
             ));
+
+            self.bounds = geometry::aabb_ceil(self.bounds);
         }
     }
 
@@ -213,6 +217,8 @@ impl BrushStroke {
                     ),
                 ));
             }
+
+            self.bounds = geometry::aabb_ceil(self.bounds);
         }
     }
 

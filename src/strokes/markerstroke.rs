@@ -83,96 +83,20 @@ impl StrokeBehaviour for MarkerStroke {
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        if self.elements.len() <= 4 {
-            return Ok(vec![]);
-        }
+        let svg_root = false;
 
-        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
-
-        let commands: Vec<path::Command> = self
+        let svgs: Vec<render::Svg> = self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
-            .enumerate()
-            .map(|(i, (((first, second), third), forth))| {
-                let mut commands = Vec::new();
-                if let Some(mut cubbez) =
-                    curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
-                {
-                    cubbez.start += offset;
-                    cubbez.cp1 += offset;
-                    cubbez.cp2 += offset;
-                    cubbez.end += offset;
-
-                    bounds.take_point(na::Point2::<f64>::from(cubbez.start));
-                    bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
-                    bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
-                    bounds.take_point(na::Point2::<f64>::from(cubbez.end));
-
-                    if i == 0 {
-                        commands.push(path::Command::Move(
-                            path::Position::Absolute,
-                            path::Parameters::from((cubbez.start[0], cubbez.start[1])),
-                        ));
-                    } else {
-                        commands.push(path::Command::CubicCurve(
-                            path::Position::Absolute,
-                            path::Parameters::from((
-                                (cubbez.cp1[0], cubbez.cp1[1]),
-                                (cubbez.cp2[0], cubbez.cp2[1]),
-                                (cubbez.end[0], cubbez.end[1]),
-                            )),
-                        ));
-                    }
-                } else {
-                    if i == 0 {
-                        commands.push(path::Command::Move(
-                            path::Position::Absolute,
-                            path::Parameters::from((
-                                second.inputdata.pos()[0],
-                                second.inputdata.pos()[1],
-                            )),
-                        ));
-                    } else {
-                        commands.push(path::Command::Line(
-                            path::Position::Absolute,
-                            path::Parameters::from((
-                                third.inputdata.pos()[0],
-                                third.inputdata.pos()[1],
-                            )),
-                        ));
-                    }
-                }
-
-                commands
+            .filter_map(|(((first, second), third), forth)| {
+                self.gen_svg_for_elems((first, second, third, forth), offset, svg_root)
             })
-            .flatten()
             .collect();
 
-        let svg_data = if !commands.is_empty() {
-            let path = svg::node::element::Path::new()
-                .set("stroke", self.marker.color.to_css_color())
-                .set("stroke-width", self.marker.width())
-                .set("stroke-linejoin", "round")
-                .set("stroke-linecap", "round")
-                .set("fill", "none")
-                .set("d", path::Data::from(commands));
-            rough_rs::node_to_string(&path)
-                .map_err(|e| {
-                    anyhow::anyhow!(
-                        "rough_rs::node_to_string failed in gen_svg_data() for a markerstroke, {}",
-                        e
-                    )
-                })?
-                .to_string()
-        } else {
-            String::from("")
-        };
-        let svg = render::Svg { bounds, svg_data };
-
-        Ok(vec![svg])
+        Ok(svgs)
     }
 }
 
@@ -232,6 +156,8 @@ impl MarkerStroke {
                     last.inputdata.pos() + na::vector![self.marker.width(), self.marker.width()],
                 ),
             ));
+
+            self.bounds = geometry::aabb_ceil(self.bounds);
         }
     }
 
@@ -260,6 +186,8 @@ impl MarkerStroke {
                     ),
                 ));
             }
+
+            self.bounds = geometry::aabb_ceil(self.bounds);
         }
     }
 
@@ -319,6 +247,89 @@ impl MarkerStroke {
                         Self::HITBOX_DEFAULT + marker_width
                     ],
             )
+        }
+    }
+
+    pub fn gen_svg_for_elems(
+        &self,
+        elements: (&Element, &Element, &Element, &Element),
+        offset: na::Vector2<f64>,
+        svg_root: bool,
+    ) -> Option<render::Svg> {
+        let mut commands = Vec::new();
+        let marker_width = self.marker.width();
+
+        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+        if let Some(mut cubbez) =
+            curves::gen_cubbez_w_catmull_rom(elements.0, elements.1, elements.2, elements.3)
+        {
+            cubbez.start += offset;
+            cubbez.cp1 += offset;
+            cubbez.cp2 += offset;
+            cubbez.end += offset;
+
+            bounds.take_point(na::Point2::<f64>::from(cubbez.start));
+            bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
+            bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
+            bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+            // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
+
+            bounds.loosen(marker_width);
+            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
+            bounds = geometry::aabb_ceil(bounds);
+
+            commands.push(path::Command::Move(
+                path::Position::Absolute,
+                path::Parameters::from((cubbez.start[0], cubbez.start[1])),
+            ));
+            commands.push(path::Command::CubicCurve(
+                path::Position::Absolute,
+                path::Parameters::from((
+                    (cubbez.cp1[0], cubbez.cp1[1]),
+                    (cubbez.cp2[0], cubbez.cp2[1]),
+                    (cubbez.end[0], cubbez.end[1]),
+                )),
+            ));
+        } else {
+            commands.push(path::Command::Move(
+                path::Position::Absolute,
+                path::Parameters::from((
+                    elements.1.inputdata.pos()[0],
+                    elements.1.inputdata.pos()[1],
+                )),
+            ));
+            commands.push(path::Command::Line(
+                path::Position::Absolute,
+                path::Parameters::from((
+                    elements.1.inputdata.pos()[0],
+                    elements.2.inputdata.pos()[1],
+                )),
+            ));
+        }
+
+        let path = svg::node::element::Path::new()
+            .set("stroke", self.marker.color.to_css_color())
+            .set("stroke-width", marker_width)
+            .set("stroke-linejoin", "round")
+            .set("stroke-linecap", "round")
+            .set("fill", "none")
+            .set("d", path::Data::from(commands));
+
+        match rough_rs::node_to_string(&path) {
+            Ok(mut svg_data) => {
+                if svg_root {
+                    svg_data =
+                        compose::wrap_svg(&svg_data, Some(bounds), Some(bounds), true, false);
+                }
+                Some(render::Svg { svg_data, bounds })
+            }
+            Err(e) => {
+                log::error!(
+                    "rough_rs::node_to_string() failed in gen_svg_elem() of brushstroke, {}",
+                    e
+                );
+                None
+            }
         }
     }
 

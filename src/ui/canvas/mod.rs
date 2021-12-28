@@ -1071,7 +1071,7 @@ impl Canvas {
         self.sheet()
             .strokes_state()
             .borrow_mut()
-            .reset_regeneration_flag_all_strokes();
+            .reset_regenerate_flag_all_strokes();
 
         // update rendernodes to new zoom until threaded regeneration is finished
         self.update_content_rendernodes();
@@ -1168,7 +1168,7 @@ impl Canvas {
         self.sheet()
             .strokes_state()
             .borrow_mut()
-            .regenerate_rendering_current_view_threaded(
+            .regenerate_strokes_current_view_threaded(
                 Some(self.viewport_in_sheet_coords()),
                 force_regenerate,
             );

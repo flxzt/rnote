@@ -82,7 +82,7 @@ impl StrokesState {
         }
     }
 
-    pub fn reset_regeneration_flag_all_strokes(&mut self) {
+    pub fn reset_regenerate_flag_all_strokes(&mut self) {
         self.render_components
             .iter_mut()
             .for_each(|(_key, render_comp)| {
@@ -137,7 +137,7 @@ impl StrokesState {
                         });
                     }
                     Err(e) => {
-                        log::error!("stroke.gen_svg_data() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
+                        log::error!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
                     }
                 }
             });
@@ -451,82 +451,6 @@ impl StrokesState {
         if let Some(last_selection_key) = last_selection_key {
             self.regenerate_rendering_for_stroke_threaded(last_selection_key);
         }
-    }
-
-    pub fn regenerate_rendering_current_view(
-        &mut self,
-        viewport: Option<p2d::bounding_volume::AABB>,
-        force_regenerate: bool,
-    ) {
-        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
-
-        keys.iter().for_each(|&key| {
-            if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(key), self.render_components.get_mut(key))
-            {
-                // skip if stroke is not in viewport or does not need regeneration
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return;
-                    }
-                }
-                if !force_regenerate && !render_comp.regenerate_flag {
-                    return;
-                }
-
-                match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
-                    Ok(image) => {
-                        render_comp.regenerate_flag = false;
-                        render_comp.rendernode = render::image_to_rendernode(&image, self.zoom);
-                        render_comp.images = vec![image];
-                    }
-                    Err(e) => {
-                        log::error!(
-                            "gen_image() failed in regenerate_rendering_current_view() for stroke with key: {:?}, with Err {}",
-                            key,
-                            e
-                        )
-                    }
-                }
-            } else {
-                log::debug!(
-                    "get stroke, render_comp returned None in regenerate_rendering_current_view() for stroke with key {:?}",
-                    key
-                );
-            }
-        })
-    }
-
-    pub fn regenerate_rendering_current_view_threaded(
-        &mut self,
-        viewport: Option<p2d::bounding_volume::AABB>,
-        force_regenerate: bool,
-    ) {
-        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
-
-        keys.iter().for_each(|&key| {
-            if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(key), self.render_components.get_mut(key))
-            {
-                // skip if stroke is not in viewport or does not need regeneration
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return;
-                    }
-                }
-                if !force_regenerate && !render_comp.regenerate_flag {
-                    return;
-                }
-
-                self.update_stroke_geometry(key);
-                self.regenerate_rendering_for_stroke_threaded(key);
-            } else {
-                log::debug!(
-                    "get stroke, render_comp returned None in regenerate_rendering_current_view_threaded() for stroke with key {:?}",
-                    key
-                );
-            }
-        })
     }
 
     pub fn regenerate_rendering_with_images(&mut self, key: StrokeKey, images: Vec<render::Image>) {

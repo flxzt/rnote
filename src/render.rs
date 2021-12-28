@@ -123,16 +123,31 @@ impl Renderer {
                             height: f64::from(height_scaled),
                         },
                     )
-                    .context("librsvg render document failed")?;
+                    .map_err(|e| {
+                        anyhow::Error::msg(format!(
+                            "librsvg render_document() failed in gen_image_librsvg() with Err {}",
+                            e
+                        ))
+                    })?;
 
                 cx.stroke()
-                    .context("cairo stroke() for rendered context failed")?;
+                .map_err(|e| {
+                    anyhow::Error::msg(format!(
+                        "cairo stroke() for rendered context failed in gen_image_librsvg() with Err {}",
+                        e
+                    ))
+                })?;
             }
         }
+        surface.flush();
 
-        let data = surface
-            .data()
-            .context("accessing imagesurface data failed")?;
+        let data = surface.data().map_err(|e| {
+            anyhow::Error::msg(format!(
+                "accessing imagesurface data failed in gen_image_librsvg() with Err {}",
+                e
+            ))
+        })?;
+
         return Ok(Image {
             data: data.to_vec(),
             bounds,

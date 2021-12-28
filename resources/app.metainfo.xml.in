@@ -58,6 +58,15 @@
   </provides>
 
   <releases>
+    <release version="0.2.2" date="2021-12-28">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>selecting with a rectangle</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.1" date="2021-12-17">
       <description>
         <p>this release changes:</p>

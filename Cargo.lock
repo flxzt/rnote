@@ -34,9 +34,9 @@ dependencies = [
 
 [[package]]
 name = "anyhow"
-version = "1.0.51"
+version = "1.0.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b26702f315f53b6071259e15dd9d64528213b44d61de1ec926eca7715d62203"
+checksum = "84450d0b4a8bd1ba4144ce8ce718fbc5d071358b1e5384bace6536b3d1f2d5b3"
 
 [[package]]
 name = "approx"
@@ -162,9 +162,9 @@ checksum = "e3b5ca7a04898ad4bcd41c90c5285445ff5b791899bb1b0abdd2a2aa791211d7"
 
 [[package]]
 name = "bytemuck"
-version = "1.7.2"
+version = "1.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "72957246c41db82b8ef88a5486143830adeb8227ef9837740bdec67724cf2c5b"
+checksum = "439989e6b8c38d1b6570a384ef1e49c8848128f5a97f3914baef02920842712f"
 
 [[package]]
 name = "byteorder"
@@ -349,7 +349,7 @@ checksum = "1db8599a9761b371751fbf13e076fa03c6e1a78f8c5288e6ab9467f10a2322c1"
 dependencies = [
  "cssparser-macros",
  "dtoa-short",
- "itoa",
+ "itoa 0.4.8",
  "matches",
  "phf 0.8.0",
  "proc-macro2",
@@ -604,24 +604,24 @@ dependencies = [
 
 [[package]]
 name = "futures-channel"
-version = "0.3.18"
+version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7fc8cd39e3dbf865f7340dce6a2d401d24fd37c6fe6c4f0ee0de8bfca2252d27"
+checksum = "ba3dda0b6588335f360afc675d0564c17a77a2bda81ca178a4b6081bd86c7f0b"
 dependencies = [
  "futures-core",
 ]
 
 [[package]]
 name = "futures-core"
-version = "0.3.18"
+version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "629316e42fe7c2a0b9a65b47d159ceaa5453ab14e8f0a3c5eedbb8cd55b4a445"
+checksum = "d0c8ff0461b82559810cdccfde3215c3f373807f5e5232b71479bff7bb2583d7"
 
 [[package]]
 name = "futures-executor"
-version = "0.3.18"
+version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b808bf53348a36cab739d7e04755909b9fcaaa69b7d7e588b37b6ec62704c97"
+checksum = "29d6d2ff5bb10fb95c85b8ce46538a2e5f5e7fdc755623a7d4529ab8a4ed9d2a"
 dependencies = [
  "futures-core",
  "futures-task",
@@ -630,21 +630,21 @@ dependencies = [
 
 [[package]]
 name = "futures-io"
-version = "0.3.18"
+version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e481354db6b5c353246ccf6a728b0c5511d752c08da7260546fc0933869daa11"
+checksum = "b1f9d34af5a1aac6fb380f735fe510746c38067c5bf16c7fd250280503c971b2"
 
 [[package]]
 name = "futures-task"
-version = "0.3.18"
+version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dabf1872aaab32c886832f2276d2f5399887e2bd613698a02359e4ea83f8de12"
+checksum = "6ee7c6485c30167ce4dfb83ac568a849fe53274c831081476ee13e0dce1aad72"
 
 [[package]]
 name = "futures-util"
-version = "0.3.18"
+version = "0.3.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "41d22213122356472061ac0f1ab2cee28d2bac8491410fd68c2af53d1cedb83e"
+checksum = "d9b5cf40b47a271f77a8b1bec03ca09044d99d2372c0de244e66430761127164"
 dependencies = [
  "futures-core",
  "futures-task",
@@ -1163,6 +1163,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
 
 [[package]]
+name = "itoa"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1aab8fc367588b89dcee83ab0fd66b72b50b72fa1904d7095045ace2b0c81c35"
+
+[[package]]
 name = "jpeg-decoder"
 version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1226,14 +1232,14 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.111"
+version = "0.2.112"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e167738f1866a7ec625567bae89ca0d44477232a4f7c52b1c7f2adc2c98804f"
+checksum = "1b03d17f364a3a042d5e5d46b053bbbf82c92c9430c592dd4c064dc6ee997125"
 
 [[package]]
 name = "librsvg"
-version = "2.52.4"
-source = "git+https://gitlab.gnome.org/GNOME/librsvg#dff1295fa6d8fa37a2fd01839333342c1bbe77f4"
+version = "2.52.5"
+source = "git+https://gitlab.gnome.org/GNOME/librsvg#756616b808ce63ef09036f37952409b88b471522"
 dependencies = [
  "cairo-rs",
  "cast",
@@ -1519,9 +1525,9 @@ dependencies = [
 
 [[package]]
 name = "num_cpus"
-version = "1.13.0"
+version = "1.13.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05499f3756671c15885fee9034446956fff3f243d6077b91e5767df161f766b3"
+checksum = "19e64526ebdee182341572e50e9ad03965aa510cd94427a4549448f285e957a1"
 dependencies = [
  "hermit-abi",
  "libc",
@@ -1558,9 +1564,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.8.0"
+version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "692fcb63b64b1758029e0a96ee63e049ce8c5948587f2f7208df04625e5f6b56"
+checksum = "da32515d9f6e6e489d7bc9d84c71b060db7247dc035bbe44eac88cf87486d8d5"
 
 [[package]]
 name = "opaque-debug"
@@ -1970,9 +1976,9 @@ checksum = "dbf0c48bc1d91375ae5c3cd81e3722dff1abcf81a30960240640d223f59fe0e5"
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.33"
+version = "1.0.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb37d2df5df740e582f28f8560cf425f52bb267d872fe58358eadb554909f07a"
+checksum = "c7342d5883fbccae1cc37a2353b09c87c9b0f3afd73f5fb9bba687a1f733b029"
 dependencies = [
  "unicode-xid",
 ]
@@ -1985,9 +1991,9 @@ checksum = "a1d01941d82fa2ab50be1e79e6714289dd7cde78eba4c074bc5a4374f650dfe0"
 
 [[package]]
 name = "quote"
-version = "1.0.10"
+version = "1.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38bc8cc6a5f2e3655e0899c1b848643b2562f853f114bfec7be120678e3ace05"
+checksum = "47aa80447ce4daf1717500037052af176af5d38cc3e571d9ec1c7353fc10c87d"
 dependencies = [
  "proc-macro2",
 ]
@@ -2164,16 +2170,16 @@ dependencies = [
 
 [[package]]
 name = "rgb"
-version = "0.8.30"
+version = "0.8.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "08a9852b34c4628f8ad76797a933577059163651ec5a7dace462adc365bee66c"
+checksum = "9a374af9a0e5fdcdd98c1c7b64f05004f9ea2555b6c75f211daa81268a3c50f1"
 dependencies = [
  "bytemuck",
 ]
 
 [[package]]
 name = "rnote"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "anyhow",
  "base64",
@@ -2375,18 +2381,18 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.131"
+version = "1.0.132"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b4ad69dfbd3e45369132cc64e6748c2d65cdfb001a2b1c232d128b4ad60561c1"
+checksum = "8b9875c23cf305cd1fd7eb77234cbb705f21ea6a72c637a5c6db5fe4b8e7f008"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.131"
+version = "1.0.132"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b710a83c4e0dff6a3d511946b95274ad9ca9e5d3ae497b63fda866ac955358d2"
+checksum = "ecc0db5cb2556c0e558887d9bbdcf6ac4471e83ff66cf696e5419024d1606276"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2395,11 +2401,11 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.72"
+version = "1.0.73"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d0ffa0837f2dfa6fb90868c2b5468cad482e175f7dad97e7421951e663f2b527"
+checksum = "bcbd0344bc6533bc7ec56df11d42fb70f1b912351c0825ccb7211b59d8af7cf5"
 dependencies = [
- "itoa",
+ "itoa 1.0.1",
  "ryu",
  "serde",
 ]
@@ -2568,9 +2574,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.82"
+version = "1.0.84"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8daf5dd0bb60cbd4137b1b587d2fc0ae729bc07cf01cd70b36a1ed5ade3b9d59"
+checksum = "ecb2e6da8ee5eb9a61068762a32fa9619cc591ceb055b3687f4cd4051ec2e06b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2774,9 +2780,9 @@ checksum = "1fd6314683350324c1bb3d71a65fbeacb4e870cb4faf30b28d8a7787fb8116dd"
 
 [[package]]
 name = "typenum"
-version = "1.14.0"
+version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b63708a265f51345575b27fe43f9500ad611579e764c79edbc2037b1121959ec"
+checksum = "dcf81ac59edc17cc8697ff311e8f5ef2d99fcbd9817b34cec66f90b6c3dfd987"
 
 [[package]]
 name = "ucd-trie"

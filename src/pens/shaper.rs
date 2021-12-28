@@ -28,7 +28,7 @@ impl Default for DrawStyle {
 }
 
 impl DrawStyle {
-    pub const ROUGH_MARGIN: f64 = 8.0;
+    pub const ROUGH_MARGIN: f64 = 20.0;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

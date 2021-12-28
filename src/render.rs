@@ -175,12 +175,8 @@ impl Renderer {
             let rtree =
                 usvg::Tree::from_data(svg.svg_data.as_bytes(), &self.usvg_options.to_ref())?;
 
-            resvg::render(
-                &rtree,
-                usvg::FitTo::Zoom(zoom as f32),
-                pixmap.as_mut(),
-            )
-            .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
+            resvg::render(&rtree, usvg::FitTo::Zoom(zoom as f32), pixmap.as_mut())
+                .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
         }
 
         let bytes = pixmap.data();
@@ -268,6 +264,34 @@ pub fn rendernode_to_texture(
     Ok(None)
 }
 
+pub fn draw_svgs_to_cairo_context(
+    zoom: f64,
+    svgs: &[Svg],
+    cx: &cairo::Context,
+) -> Result<(), anyhow::Error> {
+    for svg in svgs {
+        let stream =
+            gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.svg_data.as_bytes()));
+
+        let librsvg_handle = librsvg::Loader::new()
+            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
+                &stream, None, None,
+            )?;
+
+        let librsvg_renderer = librsvg::CairoRenderer::new(&librsvg_handle);
+        librsvg_renderer.render_document(
+            &cx,
+            &cairo::Rectangle {
+                x: (svg.bounds.mins[0].floor() * zoom),
+                y: (svg.bounds.mins[1].floor() * zoom),
+                width: ((svg.bounds.extents()[0]).ceil() * zoom),
+                height: ((svg.bounds.extents()[1]).ceil() * zoom),
+            },
+        )?;
+    }
+
+    Ok(())
+}
 #[allow(dead_code)]
 fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow::Error> {
     if svg.bounds.extents()[0] < 0.0 || svg.bounds.extents()[1] < 0.0 {
@@ -288,20 +312,7 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
         .draw_context()
         .context("failed to get cairo draw_context() from new_caironode")?;
 
-    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.svg_data.as_bytes()));
+    draw_svgs_to_cairo_context(zoom, &vec![svg.to_owned()], &cx)?;
 
-    let librsvg_handle = librsvg::Loader::new()
-        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)?;
-
-    let librsvg_renderer = librsvg::CairoRenderer::new(&librsvg_handle);
-    librsvg_renderer.render_document(
-        &cx,
-        &cairo::Rectangle {
-            x: (svg.bounds.mins[0].floor() * zoom),
-            y: (svg.bounds.mins[1].floor() * zoom),
-            width: ((svg.bounds.extents()[0]).ceil() * zoom),
-            height: ((svg.bounds.extents()[1]).ceil() * zoom),
-        },
-    )?;
     Ok(new_caironode)
 }

@@ -9,7 +9,7 @@ use crate::{
 };
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
-    PrintOperation, PrintOperationAction, Snapshot, Unit,
+    PrintOperation, PrintOperationAction, Unit,
 };
 
 /* Actions follow this principle:
@@ -558,76 +558,53 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             .allow_async(true)
             .build();
 
-/*         print_op.connect_begin_print(clone!(@weak appwindow => move |print_op, print_cx| {
-            print_op.set_n_pages(appwindow.canvas().sheet().calc_n_pages());
-        })); */
-
-        print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
-            let cx = match print_cx.cairo_context() {
-                None => {
-                    log::error!("failed to get cairo context in print_op.connect_draw_page().");
-                    return;
-                }
-                Some(cx) => { cx }
-            };
-
-            let (margin_top, margin_bottom, margin_left, margin_right) = print_cx.hard_margins().unwrap_or( (0.0, 0.0, 0.0, 0.0) );
-
-            let width_scale = (print_cx.width() + margin_left + margin_right) / f64::from(appwindow.canvas().sheet().format().width());
-            let height_scale = (print_cx.height() + margin_top + margin_bottom) / f64::from(appwindow.canvas().sheet().format().height());
-            let print_zoom = width_scale.min(height_scale);
-            let y_offset = - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * print_zoom);
-
-            let snapshot = Snapshot::new();
-
-            let format_bounds_scaled = p2d::bounding_volume::AABB::new(
-                na::point![0.0, 0.0],
-                na::point![f64::from(appwindow.canvas().sheet().format().width()) * print_zoom,f64::from(appwindow.canvas().sheet().format().height()) * print_zoom]
-            );
-            let sheet_bounds= p2d::bounding_volume::AABB::new(
-                na::point![0.0, 0.0],
-                na::point![
-                    f64::from(appwindow.canvas().sheet().width()),
-                    f64::from(appwindow.canvas().sheet().height())
-                ]
-            );
-
+            let sheet_bounds= appwindow.canvas().sheet().bounds();
             match appwindow.canvas().sheet().gen_svg() {
                 Ok(svg_data) => {
                     let svg = render::Svg {
                         bounds: sheet_bounds,
                         svg_data,
                     };
+                    print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
+                        let cx = match print_cx.cairo_context() {
+                            None => {
+                                log::error!("failed to get cairo context in print_op.connect_draw_page().");
+                                return;
+                            }
+                            Some(cx) => { cx }
+                        };
 
-                    match appwindow.canvas().sheet().strokes_state().borrow().renderer.read().unwrap().gen_image(print_zoom, &vec![svg], sheet_bounds) {
-                        Ok(image) => {
-                            snapshot.append_node(&render::image_to_rendernode(&image, print_zoom));
+                        let (margin_top, margin_bottom, margin_left, margin_right) = print_cx.hard_margins().unwrap_or( (0.0, 0.0, 0.0, 0.0) );
+
+                        let width_scale = (print_cx.width() + margin_left + margin_right) / f64::from(appwindow.canvas().sheet().format().width());
+                        let height_scale = (print_cx.height() + margin_top + margin_bottom) / f64::from(appwindow.canvas().sheet().format().height());
+                        let print_zoom = width_scale.min(height_scale);
+                        let y_offset = - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * print_zoom);
+
+                        let format_bounds_scaled = p2d::bounding_volume::AABB::new(
+                            na::point![0.0, 0.0],
+                            na::point![f64::from(appwindow.canvas().sheet().format().width()) * print_zoom,f64::from(appwindow.canvas().sheet().format().height()) * print_zoom]
+                        );
+
+                        cx.rectangle(
+                            format_bounds_scaled.mins[0],
+                            format_bounds_scaled.mins[1],
+                            format_bounds_scaled.extents()[0],
+                            format_bounds_scaled.extents()[1]
+                        );
+                        cx.clip();
+                        cx.translate(0.0, y_offset);
+
+                        if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &vec![svg.clone()], &cx) {
+                            log::error!("render::draw_svgs_to_cairo_context() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
+
                         }
-                        Err(e) => {
-                            log::error!("renderer.gen_rendernode() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
-                        }
-                    }
-                },
+                }));
+            },
                 Err(e) => {
-                    log::error!("gen_svg() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
+                    log::error!("gen_svg() failed in print-sheet action with Err {}", e);
                 }
             }
-
-            cx.rectangle(
-                format_bounds_scaled.mins[0],
-                format_bounds_scaled.mins[1],
-                format_bounds_scaled.extents()[0],
-                format_bounds_scaled.extents()[1]
-            );
-            cx.clip();
-            cx.translate(0.0, y_offset);
-
-            if let Some(node) = snapshot.to_node() {
-                node.draw(&cx);
-            } else {
-                log::error!("snapshot.to_node() for created snapshot while printing page: {}", page_nr);
-            };
-        }));
 
         if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
             log::error!("print_op.run() failed with Err, {}", e);

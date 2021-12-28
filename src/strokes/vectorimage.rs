@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use crate::{compose, render, geometry};
+use crate::{compose, geometry, render};
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};

@@ -1,6 +1,6 @@
 use std::io;
 
-use crate::{compose, render, geometry};
+use crate::{compose, geometry, render};
 use anyhow::Context;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};

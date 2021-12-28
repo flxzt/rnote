@@ -84,6 +84,7 @@ impl StrokeBehaviour for ShapeStroke {
                     na::vector![pos[0] - radius_x, pos[1] - radius_y],
                     na::vector![pos[0] + radius_x, pos[1] + radius_y],
                 )
+                // TODO what are the actual bounds for a rough ellipse?
                 .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN),
             },
         };
@@ -446,9 +447,7 @@ impl ShapeStroke {
             }
         }
 
-        if let Some(new_bounds) = self.gen_bounds() {
-            self.bounds = new_bounds;
-        }
+        self.update_geometry();
     }
 
     pub fn update_geometry(&mut self) {

@@ -177,7 +177,7 @@ impl Renderer {
 
             resvg::render(
                 &rtree,
-                usvg::FitTo::Size(width_scaled as u32, height_scaled as u32),
+                usvg::FitTo::Zoom(zoom as f32),
                 pixmap.as_mut(),
             )
             .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;

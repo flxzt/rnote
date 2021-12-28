@@ -450,7 +450,7 @@ impl ShapeStroke {
         }
     }
 
-    pub fn complete_stroke(&mut self) {
+    pub fn update_geometry(&mut self) {
         if let Some(new_bounds) = self.gen_bounds() {
             self.bounds = new_bounds;
         }

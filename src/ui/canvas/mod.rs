@@ -1063,10 +1063,10 @@ impl Canvas {
         self.set_zoom(zoom);
 
         // regenerating bounds, hitboxes,..
-        self.sheet()
+/*         self.sheet()
             .strokes_state()
             .borrow_mut()
-            .complete_all_strokes();
+            .update_geometry_all_strokes(); */
 
         self.sheet()
             .strokes_state()
@@ -1074,7 +1074,6 @@ impl Canvas {
             .reset_regeneration_flag_all_strokes();
 
         // update rendernodes to new zoom until threaded regeneration is finished
-        self.update_background_rendernode();
         self.update_content_rendernodes();
 
         self.regenerate_background(false);
@@ -1373,7 +1372,7 @@ impl Canvas {
             self.sheet()
                 .strokes_state()
                 .borrow_mut()
-                .complete_stroke(last_key);
+                .update_stroke_geometry(last_key);
 
             self.sheet()
                 .strokes_state()

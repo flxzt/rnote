@@ -518,6 +518,7 @@ impl StrokesState {
                     return;
                 }
 
+                self.update_stroke_geometry(key);
                 self.regenerate_rendering_for_stroke_threaded(key);
             } else {
                 log::debug!(

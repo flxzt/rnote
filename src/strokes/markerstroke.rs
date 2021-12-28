@@ -5,6 +5,7 @@ use crate::{
     strokes::{self, Element},
 };
 use p2d::bounding_volume::BoundingVolume;
+use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
@@ -36,38 +37,53 @@ impl StrokeBehaviour for MarkerStroke {
     }
 
     fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
-        let mut elements_iter = self.elements.iter().peekable();
-
-        if let Some(&first) = elements_iter.peek() {
+        if let Some(&first) = self.elements.iter().peekable().peek() {
             let mut bounds = p2d::bounding_volume::AABB::new_invalid();
             bounds.take_point(na::Point2::<f64>::from(first.inputdata.pos()));
 
-            elements_iter
-                .zip(self.elements.iter().skip(1))
-                .zip(self.elements.iter().skip(2))
-                .zip(self.elements.iter().skip(3))
-                .for_each(|(((first, second), third), forth)| {
-                    let width = self.marker.width();
+            bounds.merge(
+                &self
+                    .elements
+                    .par_iter()
+                    .zip(self.elements.par_iter().skip(1))
+                    .zip(self.elements.par_iter().skip(2))
+                    .zip(self.elements.par_iter().skip(3))
+                    .filter_map(|(((first, second), third), forth)| {
+                        let marker_width = self.marker.width();
 
-                    if let Some(cubbez) =
-                        curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
-                    {
-                        // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-                        bounds.take_point(na::Point2::<f64>::from(cubbez.start));
-                        bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
-                        bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
-                        bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+                        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
-                        bounds.loosen(width);
-                        // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-                        bounds = geometry::aabb_ceil(bounds);
-                    } else if let Some(line) = curves::gen_line(second, third) {
-                        bounds.take_point(na::Point2::<f64>::from(line.start));
-                        bounds.take_point(na::Point2::<f64>::from(line.end));
-                    } else {
-                        return;
-                    }
-                });
+                        if let Some(cubbez) =
+                            curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
+                        {
+                            // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
+                            bounds.take_point(na::Point2::<f64>::from(cubbez.start));
+                            bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
+                            bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
+                            bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+
+                            bounds.loosen(marker_width);
+                            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
+                            bounds = geometry::aabb_ceil(bounds);
+                            Some(bounds)
+                        } else if let Some(line) = curves::gen_line(second, third) {
+                            bounds.take_point(na::Point2::<f64>::from(line.start));
+                            bounds.take_point(na::Point2::<f64>::from(line.end));
+
+                            bounds.loosen(marker_width);
+                            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
+                            bounds = geometry::aabb_ceil(bounds);
+
+                            Some(bounds)
+                        } else {
+                            return None;
+                        }
+                    })
+                    .reduce(
+                        || p2d::bounding_volume::AABB::new_invalid(),
+                        |i, next| i.merged(&next),
+                    ),
+            );
             Some(bounds)
         } else {
             None
@@ -162,11 +178,11 @@ impl MarkerStroke {
     pub fn pop_elem(&mut self) -> Option<Element> {
         let element = self.elements.pop();
 
-        self.complete_stroke();
+        self.update_geometry();
         element
     }
 
-    pub fn complete_stroke(&mut self) {
+    pub fn update_geometry(&mut self) {
         if let Some(new_bounds) = self.gen_bounds() {
             self.set_bounds(new_bounds);
         }

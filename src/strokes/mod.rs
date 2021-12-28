@@ -267,41 +267,40 @@ impl StrokesState {
         self.regenerate_rendering_current_view_threaded(None, true);
     }
 
-    /// Returns the key to the completed stroke
-    pub fn complete_stroke(&mut self, key: StrokeKey) {
+    pub fn update_stroke_geometry(&mut self, key: StrokeKey) {
         if let Some(stroke) = self.strokes.get_mut(key) {
             match stroke {
                 StrokeStyle::MarkerStroke(ref mut markerstroke) => {
-                    markerstroke.complete_stroke();
+                    markerstroke.update_geometry();
                 }
                 StrokeStyle::BrushStroke(ref mut brushstroke) => {
-                    brushstroke.complete_stroke();
+                    brushstroke.update_geometry();
                 }
                 StrokeStyle::ShapeStroke(shapestroke) => {
-                    shapestroke.complete_stroke();
+                    shapestroke.update_geometry();
                 }
                 StrokeStyle::VectorImage(ref mut _vectorimage) => {}
                 StrokeStyle::BitmapImage(ref mut _bitmapimage) => {}
             }
         } else {
             log::debug!(
-                "get stroke in complete_stroke() returned None in complete_stroke() for key {:?}",
+                "get stroke in update_stroke_geometry() returned None in complete_stroke() for key {:?}",
                 key
             );
         }
     }
 
-    pub fn complete_all_strokes(&mut self) {
+    pub fn update_geometry_all_strokes(&mut self) {
         let keys: Vec<StrokeKey> = self.strokes.keys().collect();
         keys.iter().for_each(|&key| {
-            self.complete_stroke(key);
+            self.update_stroke_geometry(key);
         });
     }
 
     pub fn complete_selection_strokes(&mut self) {
         let keys: Vec<StrokeKey> = self.keys_selection();
         keys.iter().for_each(|&key| {
-            self.complete_stroke(key);
+            self.update_stroke_geometry(key);
         });
     }
 

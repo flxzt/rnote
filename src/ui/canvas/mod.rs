@@ -1062,12 +1062,6 @@ impl Canvas {
         self.set_temporary_zoom(1.0);
         self.set_zoom(zoom);
 
-        // regenerating bounds, hitboxes,..
-/*         self.sheet()
-            .strokes_state()
-            .borrow_mut()
-            .update_geometry_all_strokes(); */
-
         self.sheet()
             .strokes_state()
             .borrow_mut()

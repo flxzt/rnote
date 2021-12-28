@@ -48,7 +48,7 @@ impl StrokeBehaviour for ShapeStroke {
     }
 
     fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
-        let new_bounds = match self.shape_style {
+        let mut new_bounds = match self.shape_style {
             ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
                     geometry::aabb_new_positive(*start, *end).loosened(self.shaper.width() * 0.5)
@@ -88,6 +88,7 @@ impl StrokeBehaviour for ShapeStroke {
             },
         };
 
+        new_bounds = geometry::aabb_ceil(new_bounds);
         Some(new_bounds)
     }
 

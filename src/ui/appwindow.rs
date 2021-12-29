@@ -908,9 +908,15 @@ impl RnoteAppWindow {
             - 2.0 * BitmapImage::OFFSET_X_DEFAULT)
             .round() as i32;
 
-        self.canvas()
-            .sheet()
-            .import_bytes_as_pdf_bitmap(pos, bytes, Some(page_width))?;
+        if self.canvas().pdf_import_as_vector() {
+            self.canvas()
+                .sheet()
+                .import_bytes_as_pdf_vector(pos, bytes, Some(page_width))?;
+        } else {
+            self.canvas()
+                .sheet()
+                .import_bytes_as_pdf_bitmap(pos, bytes, Some(page_width))?;
+        }
 
         self.canvas().set_unsaved_changes(true);
         self.mainheader().selector_toggle().set_active(true);

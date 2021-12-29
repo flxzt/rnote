@@ -211,12 +211,12 @@ impl FileType {
                     return Self::Folder;
                 }
                 _ => {
-                    log::debug!("unkown file type");
+                    log::warn!("unkown file type");
                     return Self::UnknownFile;
                 }
             }
         } else {
-            log::debug!("failed to query FileInfo from file");
+            log::warn!("failed to query FileInfo from file");
         }
 
         if let Some(path) = file.path() {

@@ -150,6 +150,11 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         .app_settings()
         .set_double("pdf-import-width", appwindow.canvas().pdf_import_width())?;
 
+    // Pdf import as vector image
+    appwindow
+        .app_settings()
+        .set_boolean("pdf-import-as-type", appwindow.canvas().pdf_import_as_vector())?;
+
     // Format Size
     appwindow.app_settings().set_value(
         "format-size",
@@ -556,6 +561,10 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     let pdf_import_width = appwindow.app_settings().double("pdf-import-width");
     appwindow.canvas().set_pdf_import_width(pdf_import_width);
 
+    // PDF import as vector iamge
+    let pdf_import_as_vector = appwindow.app_settings().boolean("pdf-import-as-type");
+    appwindow.canvas().set_pdf_import_as_vector(pdf_import_as_vector);
+
     // Visual Debugging
     appwindow
         .app_settings()
@@ -588,6 +597,6 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .devel_actions_revealer()
         .set_reveal_child(appwindow.app_settings().boolean("devel"));
 
-    // Loading the sheet properties into the format settings panel
+    // Loading all settings into the format settings panel
     appwindow.settings_panel().load_all(appwindow);
 }

@@ -49,6 +49,10 @@
       <default>50</default>
       <summary>Width of imported PDFs in percentage to the sheet width</summary>
     </key>
+    <key name="pdf-import-as-type" type="b">
+      <default>true</default>
+      <summary>If PDFs should be imported as vector images, else as bitmap images</summary>
+    </key>
     <key name="format-borders" type="b">
       <default>false</default>
       <summary>Show sheet format borders</summary>

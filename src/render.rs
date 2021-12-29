@@ -139,7 +139,6 @@ impl Renderer {
                 })?;
             }
         }
-        surface.flush();
 
         let data = surface.data().map_err(|e| {
             anyhow::Error::msg(format!(

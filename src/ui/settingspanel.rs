@@ -15,6 +15,10 @@ mod imp {
         #[template_child]
         pub general_pdf_import_width_adj: TemplateChild<Adjustment>,
         #[template_child]
+        pub general_pdf_import_as_vector_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub general_pdf_import_as_bitmap_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub format_orientation_row: TemplateChild<adw::ActionRow>,
@@ -345,7 +349,7 @@ mod imp {
 
 use adw::prelude::*;
 use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
-use gtk4::{Adjustment, ColorButton};
+use gtk4::{Adjustment, ColorButton, ToggleButton};
 
 use super::appwindow::RnoteAppWindow;
 use super::canvas::Canvas;
@@ -428,6 +432,18 @@ impl SettingsPanel {
             .clone()
     }
 
+    pub fn general_pdf_import_as_vector_toggle(&self) -> ToggleButton {
+        imp::SettingsPanel::from_instance(self)
+            .general_pdf_import_as_vector_toggle
+            .clone()
+    }
+
+    pub fn general_pdf_import_as_bitmap_toggle(&self) -> ToggleButton {
+        imp::SettingsPanel::from_instance(self)
+            .general_pdf_import_as_vector_toggle
+            .clone()
+    }
+
     pub fn format_width_unitentry(&self) -> UnitEntry {
         imp::SettingsPanel::from_instance(self)
             .format_width_unitentry
@@ -492,6 +508,10 @@ impl SettingsPanel {
 
         self.general_pdf_import_width_adj()
             .set_value(canvas.pdf_import_width());
+        self.general_pdf_import_as_vector_toggle()
+            .set_active(canvas.pdf_import_as_vector());
+        self.general_pdf_import_as_bitmap_toggle()
+            .set_active(!canvas.pdf_import_as_vector());
     }
 
     pub fn load_format(&self, sheet: &Sheet) {
@@ -570,6 +590,10 @@ impl SettingsPanel {
             }),
         )
         .unwrap();
+
+        priv_.general_pdf_import_as_vector_toggle.connect_toggled(clone!(@weak appwindow => move |general_pdf_import_as_vector_toggle| {
+                appwindow.canvas().set_pdf_import_as_vector(general_pdf_import_as_vector_toggle.is_active());
+        }));
 
         // Format
         priv_.format_revert_button.get().connect_clicked(

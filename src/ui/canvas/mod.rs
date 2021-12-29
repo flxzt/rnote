@@ -29,6 +29,7 @@ mod imp {
         pub zoom: Cell<f64>,
         pub temporary_zoom: Cell<f64>,
         pub pdf_import_width: Cell<f64>,
+        pub pdf_import_as_vector: Cell<bool>,
         pub visual_debug: Cell<bool>,
         pub touch_drawing: Cell<bool>,
         pub unsaved_changes: Cell<bool>,
@@ -83,6 +84,7 @@ mod imp {
                 zoom: Cell::new(super::Canvas::ZOOM_DEFAULT),
                 temporary_zoom: Cell::new(1.0),
                 pdf_import_width: Cell::new(super::Canvas::PDF_IMPORT_WIDTH_DEFAULT),
+                pdf_import_as_vector: Cell::new(true),
                 visual_debug: Cell::new(false),
                 touch_drawing: Cell::new(false),
                 unsaved_changes: Cell::new(false),
@@ -201,6 +203,7 @@ mod imp {
                         1.0,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // import PDFs with with in percentage to sheet width
                     glib::ParamSpec::new_double(
                         "pdf-import-width",
                         "pdf-import-width",
@@ -208,6 +211,14 @@ mod imp {
                         1.0,
                         100.0,
                         super::Canvas::PDF_IMPORT_WIDTH_DEFAULT,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // import PDFs as vector images ( if false = as bitmap images )
+                    glib::ParamSpec::new_boolean(
+                        "pdf-import-as-type",
+                        "pdf-import-as-type",
+                        "pdf-import-as-type",
+                        true,
                         glib::ParamFlags::READWRITE,
                     ),
                     // Visual debugging, which shows bounding boxes, hitboxes, ... (enable in developer action menu)
@@ -270,6 +281,7 @@ mod imp {
                 "zoom" => self.zoom.get().to_value(),
                 "temporary-zoom" => self.temporary_zoom.get().to_value(),
                 "pdf-import-width" => self.pdf_import_width.get().to_value(),
+                "pdf-import-as-type" => self.pdf_import_as_vector.get().to_value(),
                 "visual-debug" => self.visual_debug.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
@@ -330,6 +342,13 @@ mod imp {
                         .clamp(1.0, 100.0);
 
                     self.pdf_import_width.replace(pdf_import_width);
+                }
+                "pdf-import-as-type" => {
+                    let pdf_import_as_vector = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.pdf_import_as_vector.replace(pdf_import_as_vector);
                 }
                 "visual-debug" => {
                     let visual_debug: bool =
@@ -655,6 +674,18 @@ impl Canvas {
 
     pub fn set_pdf_import_width(&self, pdf_import_width: f64) {
         self.set_property("pdf-import-width", pdf_import_width.to_value())
+            .unwrap();
+    }
+
+    pub fn pdf_import_as_vector(&self) -> bool {
+        self.property("pdf-import-as-type")
+            .unwrap()
+            .get::<bool>()
+            .unwrap()
+    }
+
+    pub fn set_pdf_import_as_vector(&self, as_vector: bool) {
+        self.set_property("pdf-import-as-type", as_vector.to_value())
             .unwrap();
     }
 
@@ -1188,8 +1219,6 @@ impl Canvas {
                     log::error!("rendernode_to_texture() in current_content_as_texture() failed with Err {}", e);
                     None
                 });
-            //log::debug!("saving texture");
-            //texture.as_ref().unwrap().save_to_png("./tests/texture.png");
             texture
         } else {
             None

@@ -646,7 +646,7 @@ impl Sheet {
 
         priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
-        let vector_image = VectorImage::import_from_svg(&svg, pos, None).unwrap();
+        let vector_image = VectorImage::import_from_svg_data(&svg, pos, None).unwrap();
         let inserted = priv_
             .strokes_state
             .borrow_mut()
@@ -694,13 +694,13 @@ impl Sheet {
 
         priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
-        let bitmapimages = BitmapImage::import_from_pdf_bytes(bytes, pos, page_width)?;
+        let images = BitmapImage::import_from_pdf_bytes(bytes, pos, page_width)?;
 
-        for bitmapimage in bitmapimages {
+        for image in images {
             let inserted = priv_
                 .strokes_state
                 .borrow_mut()
-                .insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
+                .insert_stroke(StrokeStyle::BitmapImage(image));
 
             priv_
                 .strokes_state
@@ -716,22 +716,19 @@ impl Sheet {
         &self,
         pos: na::Vector2<f64>,
         bytes: &[u8],
+        page_width: Option<i32>,
     ) -> Result<(), anyhow::Error> {
         let priv_ = imp::Sheet::from_instance(self);
 
         priv_.strokes_state.borrow_mut().deselect_all_strokes();
 
-        let pages = VectorImage::import_from_pdf_bytes(
-            bytes,
-            pos,
-            Some(self.width() - 2 * VectorImage::OFFSET_X_DEFAULT.round() as i32),
-        )?;
+        let images = VectorImage::import_from_pdf_bytes(bytes, pos, page_width)?;
 
-        for page in pages {
+        for image in images {
             let inserted = priv_
                 .strokes_state
                 .borrow_mut()
-                .insert_stroke(StrokeStyle::VectorImage(page));
+                .insert_stroke(StrokeStyle::VectorImage(image));
 
             priv_
                 .strokes_state

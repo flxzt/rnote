@@ -74,6 +74,34 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwActionRow" id="general_pdf_import_image_type_row">
+                        <property name="title">PDF import image type</property>
+                        <property name="subtitle">Set if PDFs should be imported as vector or bitmap images</property>
+                        <child type="suffix">
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <property name="homogeneous">true</property>
+                            <property name="vexpand">false</property>
+                            <property name="valign">center</property>
+                            <style>
+                              <class name="linked"/>
+                            </style>
+                            <child>
+                              <object class="GtkToggleButton" id="general_pdf_import_as_vector_toggle">
+                                <property name="label">Vector</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkToggleButton" id="general_pdf_import_as_bitmap_toggle">
+                                <property name="group">general_pdf_import_as_vector_toggle</property>
+                                <property name="label">Bitmap</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <!-- Format Group -->

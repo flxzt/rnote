@@ -37,7 +37,7 @@
               <attribute name="action">app.format-borders</attribute>
             </item>
             <item>
-              <attribute name="label">Stroke sounds</attribute>
+              <attribute name="label">Pen sounds</attribute>
               <attribute name="toggle" />
               <attribute name="action">app.pen-sounds</attribute>
             </item>

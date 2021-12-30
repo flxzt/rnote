@@ -16,7 +16,7 @@ pub struct RnoteAudioPlayer {
 }
 
 impl RnoteAudioPlayer {
-    pub const PLAY_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(700);
+    pub const PLAY_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(500);
 
     pub fn new() -> Self {
         Self {

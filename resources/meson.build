@@ -130,7 +130,8 @@ install_data(
 
 # sounds
 template_files = files(
-  'sounds/writing_high_pitch.wav',
+  'sounds/marker.wav',
+  'sounds/brush.wav',
 )
 
 install_data(

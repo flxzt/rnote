@@ -131,8 +131,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     app.add_action(&action_endless_sheet);
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
     app.add_action(&action_righthanded);
-    let action_stroke_sounds = appwindow.app_settings().create_action("stroke-sounds");
-    app.add_action(&action_stroke_sounds);
+    let action_pen_sounds = appwindow.app_settings().create_action("pen-sounds");
+    app.add_action(&action_pen_sounds);
 
     // Quit App
     action_quit.connect_activate(clone!(@weak appwindow => move |_, _| {
@@ -378,10 +378,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         }),
     );
 
-    // Stroke sounds
-    action_stroke_sounds.connect_state_notify(
-        clone!(@weak appwindow => move |action_stroke_sounds| {
-            let state = action_stroke_sounds.state().unwrap().get::<bool>().unwrap();
+    // Pen sounds
+    action_pen_sounds.connect_state_notify(
+        clone!(@weak appwindow => move |action_pen_sounds| {
+            let state = action_pen_sounds.state().unwrap().get::<bool>().unwrap();
 
             appwindow.audioplayer().borrow_mut().enabled = state;
         }),

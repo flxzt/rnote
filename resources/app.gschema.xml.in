@@ -41,7 +41,7 @@
       <default>false</default>
       <summary>endless sheet</summary>
     </key>
-    <key name="stroke-sounds" type="b">
+    <key name="pen-sounds" type="b">
       <default>false</default>
       <summary>stroke sounds</summary>
     </key>

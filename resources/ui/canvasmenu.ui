@@ -39,7 +39,7 @@
             <item>
               <attribute name="label">Stroke sounds</attribute>
               <attribute name="toggle" />
-              <attribute name="action">app.stroke-sounds</attribute>
+              <attribute name="action">app.pen-sounds</attribute>
             </item>
             <item>
               <attribute name="label">Clear sheet</attribute>

@@ -865,7 +865,6 @@ impl Canvas {
             }),
         );
 
-
         // Stylus Drawing
         priv_.stylus_drawing_gesture.connect_down(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
@@ -1334,10 +1333,10 @@ impl Canvas {
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
-        appwindow
-            .audioplayer()
-            .borrow()
-            .play_w_timeout(RnoteAudioPlayer::PLAY_TIMEOUT_TIME);
+        appwindow.audioplayer().borrow().play_w_timeout(
+            RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
+            self.current_pen().get(),
+        );
 
         let zoom = self.zoom();
 

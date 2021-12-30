@@ -554,9 +554,9 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .pageedit_revealer()
         .set_reveal_child(!endless_sheet);
 
-    // Stroke sounds
-    let stroke_sounds = appwindow.app_settings().boolean("stroke-sounds");
-    appwindow.audioplayer().borrow_mut().enabled = stroke_sounds;
+    // Pen sounds
+    let enabled = appwindow.app_settings().boolean("pen-sounds");
+    appwindow.audioplayer().borrow_mut().enabled = enabled;
 
     // Sheet margin
     let sheet_margin = appwindow.app_settings().double("sheet-margin");

@@ -33,6 +33,7 @@ rust_sources = files(
     'curves.rs',
     'compose.rs',
     'render.rs',
+    'audioplayer.rs',
     'sheet/mod.rs',
     'sheet/format.rs',
     'sheet/background.rs',

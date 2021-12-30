@@ -151,9 +151,10 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         .set_double("pdf-import-width", appwindow.canvas().pdf_import_width())?;
 
     // Pdf import as vector image
-    appwindow
-        .app_settings()
-        .set_boolean("pdf-import-as-type", appwindow.canvas().pdf_import_as_vector())?;
+    appwindow.app_settings().set_boolean(
+        "pdf-import-as-vector",
+        appwindow.canvas().pdf_import_as_vector(),
+    )?;
 
     // Format Size
     appwindow.app_settings().set_value(
@@ -553,6 +554,10 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .pageedit_revealer()
         .set_reveal_child(!endless_sheet);
 
+    // Stroke sounds
+    let stroke_sounds = appwindow.app_settings().boolean("stroke-sounds");
+    appwindow.audioplayer().borrow_mut().enabled = stroke_sounds;
+
     // Sheet margin
     let sheet_margin = appwindow.app_settings().double("sheet-margin");
     appwindow.canvas().set_sheet_margin(sheet_margin);
@@ -561,9 +566,11 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     let pdf_import_width = appwindow.app_settings().double("pdf-import-width");
     appwindow.canvas().set_pdf_import_width(pdf_import_width);
 
-    // PDF import as vector iamge
-    let pdf_import_as_vector = appwindow.app_settings().boolean("pdf-import-as-type");
-    appwindow.canvas().set_pdf_import_as_vector(pdf_import_as_vector);
+    // PDF import as vector image
+    let pdf_import_as_vector = appwindow.app_settings().boolean("pdf-import-as-vector");
+    appwindow
+        .canvas()
+        .set_pdf_import_as_vector(pdf_import_as_vector);
 
     // Visual Debugging
     appwindow

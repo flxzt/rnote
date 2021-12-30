@@ -221,28 +221,23 @@ impl StrokesState {
     }
 
     /// returns key to last stroke
-    pub fn add_to_last_stroke(&mut self, element: Element) -> Option<StrokeKey> {
-        if let Some(key) = self.last_stroke_key() {
-            match self.strokes.get_mut(key).unwrap() {
-                StrokeStyle::MarkerStroke(ref mut markerstroke) => {
-                    markerstroke.push_elem(element);
-                }
-                StrokeStyle::BrushStroke(ref mut brushstroke) => {
-                    brushstroke.push_elem(element);
-                }
-                StrokeStyle::ShapeStroke(ref mut shapestroke) => {
-                    shapestroke.update_shape(element);
-                }
-                StrokeStyle::VectorImage(_vectorimage) => {}
-                StrokeStyle::BitmapImage(_bitmapimage) => {}
+    pub fn add_to_stroke(&mut self, key: StrokeKey, element: Element) -> Option<StrokeKey> {
+        match self.strokes.get_mut(key).unwrap() {
+            StrokeStyle::MarkerStroke(ref mut markerstroke) => {
+                markerstroke.push_elem(element);
             }
-
-            self.append_rendering_new_elem_threaded(key);
-            Some(key)
-        } else {
-            log::warn!("last_stroke_key() returned None in add_to_last_stroke()");
-            None
+            StrokeStyle::BrushStroke(ref mut brushstroke) => {
+                brushstroke.push_elem(element);
+            }
+            StrokeStyle::ShapeStroke(ref mut shapestroke) => {
+                shapestroke.update_shape(element);
+            }
+            StrokeStyle::VectorImage(_vectorimage) => {}
+            StrokeStyle::BitmapImage(_bitmapimage) => {}
         }
+
+        self.append_rendering_new_elem_threaded(key);
+        Some(key)
     }
 
     /// Clears every stroke and every component

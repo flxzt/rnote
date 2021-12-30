@@ -118,6 +118,11 @@ mod imp {
                 .expect("Could not load gresource file");
             gio::resources_register(&res);
 
+            if let Err(e) = gst::init() {
+                log::error!("failed to initialize gstreamer. Err `{}`. Aborting.", e);
+                return;
+            }
+
             let appwindow = RnoteAppWindow::new(application.upcast_ref::<gtk4::Application>());
             appwindow.init();
 

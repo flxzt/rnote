@@ -37,6 +37,11 @@
               <attribute name="action">app.format-borders</attribute>
             </item>
             <item>
+              <attribute name="label">Stroke sounds</attribute>
+              <attribute name="toggle" />
+              <attribute name="action">app.stroke-sounds</attribute>
+            </item>
+            <item>
               <attribute name="label">Clear sheet</attribute>
               <attribute name="action">win.clear-sheet</attribute>
             </item>

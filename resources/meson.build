@@ -127,3 +127,13 @@ install_data(
   template_files,
   install_dir: pkgdatadir / 'templates'
 )
+
+# sounds
+template_files = files(
+  'sounds/writing_high_pitch.wav',
+)
+
+install_data(
+  template_files,
+  install_dir: pkgdatadir / 'sounds'
+)

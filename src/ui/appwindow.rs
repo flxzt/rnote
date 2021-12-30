@@ -9,6 +9,7 @@ mod imp {
     };
     use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
 
+    use crate::audioplayer::RnoteAudioPlayer;
     use crate::ui::appsettings;
     use crate::{
         app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
@@ -20,6 +21,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
     pub struct RnoteAppWindow {
         pub settings: gio::Settings,
+        pub audio_player: Rc<RefCell<RnoteAudioPlayer>>,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
         #[template_child]
         pub main_grid: TemplateChild<Grid>,
@@ -65,6 +67,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 settings: gio::Settings::new(config::APP_ID),
+                audio_player: Rc::new(RefCell::new(RnoteAudioPlayer::new())),
                 filechoosernative: Rc::new(RefCell::new(None)),
                 main_grid: TemplateChild::<Grid>::default(),
                 devel_actions_revealer: TemplateChild::<Revealer>::default(),
@@ -302,7 +305,7 @@ use crate::{
     ui::{actions, workspacebrowser::WorkspaceBrowser},
     ui::{appsettings, penssidebar::PensSideBar},
     ui::{dialogs, mainheader::MainHeader},
-    utils,
+    utils, audioplayer::RnoteAudioPlayer,
 };
 
 glib::wrapper! {
@@ -407,6 +410,10 @@ impl RnoteAppWindow {
         imp::RnoteAppWindow::from_instance(self).penssidebar.get()
     }
 
+    pub fn audioplayer(&self) -> Rc<RefCell<RnoteAudioPlayer>> {
+        imp::RnoteAppWindow::from_instance(self).audio_player.clone()
+    }
+
     pub fn set_color_scheme(&self, color_scheme: adw::ColorScheme) {
         self.application()
             .unwrap()
@@ -482,6 +489,9 @@ impl RnoteAppWindow {
     pub fn init(&self) {
         let priv_ = imp::RnoteAppWindow::from_instance(self);
 
+        if let Err(e) = priv_.audio_player.borrow_mut().init(self) {
+            log::error!("failed to init audio_player with Err {}", e);
+        }
         priv_.workspacebrowser.get().init(self);
         priv_.canvas.get().init(self);
         priv_.mainheader.get().init(self);

@@ -215,9 +215,9 @@ mod imp {
                     ),
                     // import PDFs as vector images ( if false = as bitmap images )
                     glib::ParamSpec::new_boolean(
-                        "pdf-import-as-type",
-                        "pdf-import-as-type",
-                        "pdf-import-as-type",
+                        "pdf-import-as-vector",
+                        "pdf-import-as-vector",
+                        "pdf-import-as-vector",
                         true,
                         glib::ParamFlags::READWRITE,
                     ),
@@ -281,7 +281,7 @@ mod imp {
                 "zoom" => self.zoom.get().to_value(),
                 "temporary-zoom" => self.temporary_zoom.get().to_value(),
                 "pdf-import-width" => self.pdf_import_width.get().to_value(),
-                "pdf-import-as-type" => self.pdf_import_as_vector.get().to_value(),
+                "pdf-import-as-vector" => self.pdf_import_as_vector.get().to_value(),
                 "visual-debug" => self.visual_debug.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
@@ -343,7 +343,7 @@ mod imp {
 
                     self.pdf_import_width.replace(pdf_import_width);
                 }
-                "pdf-import-as-type" => {
+                "pdf-import-as-vector" => {
                     let pdf_import_as_vector = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`.");
@@ -563,7 +563,9 @@ mod imp {
     }
 }
 
+use crate::audioplayer::RnoteAudioPlayer;
 use crate::strokes::strokestyle::{Element, InputData};
+use crate::strokes::StrokeKey;
 use crate::ui::selectionmodifier::SelectionModifier;
 use crate::{
     app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow,
@@ -678,14 +680,14 @@ impl Canvas {
     }
 
     pub fn pdf_import_as_vector(&self) -> bool {
-        self.property("pdf-import-as-type")
+        self.property("pdf-import-as-vector")
             .unwrap()
             .get::<bool>()
             .unwrap()
     }
 
     pub fn set_pdf_import_as_vector(&self, as_vector: bool) {
-        self.set_property("pdf-import-as-type", as_vector.to_value())
+        self.set_property("pdf-import-as-vector", as_vector.to_value())
             .unwrap();
     }
 
@@ -801,9 +803,11 @@ impl Canvas {
         .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE)
         .build();
 
+        let current_stroke_key = Rc::new(Cell::new(None));
+
         // Mouse drawing
         priv_.mouse_drawing_gesture.connect_drag_begin(
-            clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
                 if let Some(event) = mouse_drawing_gesture.current_event() {
                     // Guard not to handle touch events that emulate a pointer
                     if event.is_pointer_emulated() {
@@ -816,12 +820,12 @@ impl Canvas {
 
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
-                    canvas.processing_draw_begin(&appwindow, &mut data_entries);
+                    current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
                 }
             }),
         );
 
-        priv_.mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+        priv_.mouse_drawing_gesture.connect_drag_update(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
             if let Some(event) = mouse_drawing_gesture.current_event() {
                 // Guard not to handle touch events that emulate a pointer
                 if event.is_pointer_emulated() {
@@ -833,13 +837,17 @@ impl Canvas {
 
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
 
-                    canvas.processing_draw_motion(&appwindow, &mut data_entries);
+                if let Some(current_stroke_key) = current_stroke_key.get() {
+                    canvas.processing_draw_motion(&appwindow, current_stroke_key, &mut data_entries);
+                }
                 }
             }
         }));
 
         priv_.mouse_drawing_gesture.connect_drag_end(
-            clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            clone!(@strong current_stroke_key, @weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
+                current_stroke_key.set(None);
+
                 if let Some(event) = mouse_drawing_gesture.current_event() {
                     // Guard not to handle touch events that emulate a pointer
                     if event.is_pointer_emulated() {
@@ -857,8 +865,9 @@ impl Canvas {
             }),
         );
 
+
         // Stylus Drawing
-        priv_.stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+        priv_.stylus_drawing_gesture.connect_down(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
 
@@ -876,23 +885,26 @@ impl Canvas {
                     _ => { canvas.current_pen().set(PenStyle::Unkown) },
                 }
 
-                canvas.processing_draw_begin(&appwindow, &mut data_entries);
+                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
             }
         }));
 
-        priv_.stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
+        priv_.stylus_drawing_gesture.connect_motion(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
             if stylus_drawing_gesture.device_tool().is_some() {
                 // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
                 let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
-                canvas.processing_draw_motion(&appwindow, &mut data_entries);
+                if let Some(current_stroke_key) = current_stroke_key.get() {
+                    canvas.processing_draw_motion(&appwindow, current_stroke_key, &mut data_entries);
+                }
             }
         }));
 
         priv_.stylus_drawing_gesture.connect_up(
-            clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
+            clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
+                current_stroke_key.set(None);
                 let mut data_entries = input::retreive_stylus_inputdata(gesture_stylus, false, x, y);
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, na::vector![0.0, 0.0]);
@@ -902,29 +914,32 @@ impl Canvas {
 
         // Touch drawing
         priv_.touch_drawing_gesture.connect_drag_begin(
-            clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+            clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
                 touch_drawing_gesture.set_state(EventSequenceState::Claimed);
 
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
-                canvas.processing_draw_begin(&appwindow, &mut data_entries);
+                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
             }),
         );
 
-        priv_.touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+        priv_.touch_drawing_gesture.connect_drag_update(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
 
-                canvas.processing_draw_motion(&appwindow, &mut data_entries);
+                if let Some(current_stroke_key) = current_stroke_key.get() {
+                    canvas.processing_draw_motion(&appwindow, current_stroke_key, &mut data_entries);
+                }
             }
         }));
 
         priv_.touch_drawing_gesture.connect_drag_end(
-            clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
+            clone!(@strong current_stroke_key, @weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
+                current_stroke_key.set(None);
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
 
@@ -1234,8 +1249,9 @@ impl Canvas {
         &self,
         _appwindow: &RnoteAppWindow,
         data_entries: &mut VecDeque<InputData>,
-    ) {
+    ) -> Option<StrokeKey> {
         let priv_ = imp::Canvas::from_instance(self);
+        let mut stroke_key = None;
 
         let zoom = self.zoom();
 
@@ -1261,7 +1277,7 @@ impl Canvas {
                 input::filter_mapped_inputdata(filter_bounds, data_entries);
 
                 if let Some(inputdata) = data_entries.pop_back() {
-                    self.sheet().strokes_state().borrow_mut().new_stroke(
+                    stroke_key = self.sheet().strokes_state().borrow_mut().new_stroke(
                         Element::new(inputdata),
                         self.current_pen().get(),
                         &self.pens().borrow(),
@@ -1305,15 +1321,23 @@ impl Canvas {
 
         self.queue_resize();
         self.queue_draw();
+
+        stroke_key
     }
 
     /// Process the motion of a strokes drawing
     fn processing_draw_motion(
         &self,
-        _appwindow: &RnoteAppWindow,
+        appwindow: &RnoteAppWindow,
+        current_stroke_key: StrokeKey,
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
+
+        appwindow
+            .audioplayer()
+            .borrow()
+            .play_w_timeout(RnoteAudioPlayer::PLAY_TIMEOUT_TIME);
 
         let zoom = self.zoom();
 
@@ -1332,7 +1356,7 @@ impl Canvas {
                     self.sheet()
                         .strokes_state()
                         .borrow_mut()
-                        .add_to_last_stroke(Element::new(inputdata.clone()));
+                        .add_to_stroke(current_stroke_key, Element::new(inputdata.clone()));
                 }
             }
             PenStyle::Eraser => {

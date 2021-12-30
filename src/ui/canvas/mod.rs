@@ -837,9 +837,7 @@ impl Canvas {
 
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
 
-                if let Some(current_stroke_key) = current_stroke_key.get() {
-                    canvas.processing_draw_motion(&appwindow, current_stroke_key, &mut data_entries);
-                }
+                    canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
                 }
             }
         }));
@@ -895,9 +893,7 @@ impl Canvas {
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
-                if let Some(current_stroke_key) = current_stroke_key.get() {
-                    canvas.processing_draw_motion(&appwindow, current_stroke_key, &mut data_entries);
-                }
+                    canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
             }
         }));
 
@@ -930,9 +926,7 @@ impl Canvas {
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
 
-                if let Some(current_stroke_key) = current_stroke_key.get() {
-                    canvas.processing_draw_motion(&appwindow, current_stroke_key, &mut data_entries);
-                }
+                canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
             }
         }));
 
@@ -1328,7 +1322,7 @@ impl Canvas {
     fn processing_draw_motion(
         &self,
         appwindow: &RnoteAppWindow,
-        current_stroke_key: StrokeKey,
+        current_stroke_key: Option<StrokeKey>,
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
@@ -1351,11 +1345,13 @@ impl Canvas {
                 );
                 input::filter_mapped_inputdata(filter_bounds, data_entries);
 
-                for inputdata in data_entries {
-                    self.sheet()
-                        .strokes_state()
-                        .borrow_mut()
-                        .add_to_stroke(current_stroke_key, Element::new(inputdata.clone()));
+                if let Some(current_stroke_key) = current_stroke_key {
+                    for inputdata in data_entries {
+                        self.sheet()
+                            .strokes_state()
+                            .borrow_mut()
+                            .add_to_stroke(current_stroke_key, Element::new(inputdata.clone()));
+                    }
                 }
             }
             PenStyle::Eraser => {

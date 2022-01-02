@@ -36,7 +36,6 @@ impl RnoteAudioPlayer {
             if path.exists() {
                 if let Some(path_str) = path.to_str() {
                     let marker_audio_uri = format!("file://{}", path_str);
-                    dbg!(&marker_audio_uri);
 
                     let marker_pipeline =
                         gst::parse_launch(&format!("playbin uri={}", marker_audio_uri))?;
@@ -52,7 +51,6 @@ impl RnoteAudioPlayer {
             if path.exists() {
                 if let Some(path_str) = path.to_str() {
                     let brush_audio_uri = format!("file://{}", path_str);
-                    dbg!(&brush_audio_uri);
 
                     let brush_pipeline =
                         gst::parse_launch(&format!("playbin uri={}", brush_audio_uri))?;

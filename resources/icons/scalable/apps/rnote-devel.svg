@@ -18,7 +18,7 @@
        x2="70.198143"
        y2="-17.608906"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.9655173,0,0,0.9655173,2.2068953,2.2068968)" />
+       gradientTransform="matrix(0.96803161,0,0,0.96803161,2.0459785,2.04598)" />
     <linearGradient
        id="linearGradient3637"
        gradientUnits="userSpaceOnUse"
@@ -138,6 +138,85 @@
          id="stop4-9"
          style="stop-color:#454e54;stop-opacity:1" />
     </linearGradient>
+    <linearGradient
+       xlink:href="#a"
+       id="linearGradient3593-7"
+       x1="121.84935"
+       y1="90.858627"
+       x2="70.198143"
+       y2="-17.608906"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.9655173,0,0,0.9655173,121.21472,-56.466851)" />
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       id="filter3642-2"
+       x="-0.080000002"
+       y="-0.080000002"
+       width="1.16"
+       height="1.16">
+      <feFlood
+         flood-opacity="1"
+         flood-color="rgb(18,18,18)"
+         result="flood"
+         id="feFlood3632-9" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3634-1" />
+      <feGaussianBlur
+         in="composite1"
+         stdDeviation="3.4"
+         result="blur"
+         id="feGaussianBlur3636-27" />
+      <feOffset
+         dx="-1.94289e-16"
+         dy="1.38778e-16"
+         result="offset"
+         id="feOffset3638-0" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3640-9" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB"
+       id="filter3642-3-3"
+       x="-0.080000002"
+       y="-0.080000002"
+       width="1.16"
+       height="1.16">
+      <feFlood
+         flood-opacity="1"
+         flood-color="rgb(18,18,18)"
+         result="flood"
+         id="feFlood3632-5-6" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3634-6-0" />
+      <feGaussianBlur
+         in="composite1"
+         stdDeviation="3.4"
+         result="blur"
+         id="feGaussianBlur3636-2-6" />
+      <feOffset
+         dx="-1.94289e-16"
+         dy="1.38778e-16"
+         result="offset"
+         id="feOffset3638-9-2" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3640-1-6" />
+    </filter>
     <filter
        id="alpha"
        filterUnits="objectBoundingBox"
@@ -979,8 +1058,8 @@
   </linearGradient>
   <path
      id="rect3468"
-     style="fill:url(#linearGradient3593);fill-opacity:1;stroke:none;stroke-width:1.01819"
-     d="m 15.127271,8.0000009 h 97.745459 c 3.9485,0 7.12727,3.1787641 7.12727,7.1272721 0,34.957578 0,69.915159 0,104.872727 H 7.9999994 c 0,-34.957568 0,-69.915149 0,-104.872727 0,-3.948508 3.1787636,-7.1272721 7.1272716,-7.1272721 z" />
+     style="fill:url(#linearGradient3593);fill-opacity:1;stroke:none;stroke-width:1.02084"
+     d="M 15.000001,7.85417 H 113 c 3.95879,0 7.14583,3.187042 7.14583,7.145833 0,35.048611 0,70.097227 0,105.145827 H 7.8541685 c 0,-35.0486 0,-70.097216 0,-105.145827 0,-3.958791 3.1870415,-7.145833 7.1458325,-7.145833 z" />
   <path
      id="rect3468-3"
      style="fill:#ffffff;stroke-width:0.927277;filter:url(#filter3642)"
@@ -1125,16 +1204,19 @@
      y="0"
      width="100%"
      height="100%"
-     transform="matrix(0.875,0,0,0.83107886,8,13.621907)" />
+     transform="matrix(0.875,0,0,0.83107886,8.14583,13.767736)" />
   <g
-     id="g18227">
+     id="g1769"
+     transform="matrix(0.95703599,-0.28596362,0.26385324,0.99192689,-19.802357,8.510725)">
     <path
-       d="m 59.992188 2 h 8.183593 c 5.824219 33 -3.175781 90 -3.175781 90 h -5.007812 c -0.085938 -30.910156 0 -90 0 -90 z m 0 0"
+       d="m 65.056588,16.236601 7.741278,0.67915 C 75.568652,48.615483 62.324713,101.78779 62.324713,101.78779 l -4.737145,-0.41559 c 2.483911,-29.246629 7.46902,-85.135599 7.46902,-85.135599 z m 0,0"
        fill="#242424"
-       id="path18" />
+       id="path18"
+       style="fill:#2b2b2b;fill-opacity:1;stroke-width:0.949584" />
     <path
-       d="m 60 95 c 1.277344 -1.085938 3.410156 0 5.117188 0 l 1.277343 7.609375 h -7.675781 z m 0 0"
+       d="m 57.34599,104.2107 c 1.298426,-0.92124 3.225841,0.28301 4.84061,0.42467 l 0.576808,7.30411 -7.260913,-0.63701 z m 0,0"
        fill="#515151"
-       id="path20" />
+       id="path20"
+       style="stroke-width:0.949584" />
   </g>
 </svg>

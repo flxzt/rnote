@@ -1327,7 +1327,7 @@ impl Canvas {
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
-        appwindow.audioplayer().borrow().play_w_timeout(
+        appwindow.audioplayer().borrow().play_pen_sound_w_timeout(
             RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
             self.current_pen().get(),
         );

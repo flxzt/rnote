@@ -65,14 +65,14 @@ impl RnoteAudioPlayer {
         Ok(())
     }
 
-    pub fn play_w_timeout(&self, timeout_time: time::Duration, current_pen: PenStyle) {
+    pub fn play_pen_sound_w_timeout(&self, timeout_time: time::Duration, current_pen: PenStyle) {
         if self.enabled {
             match current_pen {
                 PenStyle::Marker => {
-                    self.play_w_timeout_marker(timeout_time);
+                    self.play_marker_sound_w_timeout(timeout_time);
                 }
                 PenStyle::Brush => {
-                    self.play_w_timeout_brush(timeout_time);
+                    self.play_brush_sound_w_timeout(timeout_time);
                 }
                 _ => {}
             }
@@ -92,7 +92,7 @@ impl RnoteAudioPlayer {
         }
     }
 
-    fn play_w_timeout_marker(&self, timeout_time: time::Duration) {
+    fn play_marker_sound_w_timeout(&self, timeout_time: time::Duration) {
         if let Some(play_timeout_id) = self.play_timeout_id.borrow_mut().take() {
             glib::source::source_remove(play_timeout_id);
         } else {
@@ -123,7 +123,7 @@ impl RnoteAudioPlayer {
             ));
     }
 
-    fn play_w_timeout_brush(&self, timeout_time: time::Duration) {
+    fn play_brush_sound_w_timeout(&self, timeout_time: time::Duration) {
         if let Some(play_timeout_id) = self.play_timeout_id.borrow_mut().take() {
             glib::source::source_remove(play_timeout_id);
         } else {

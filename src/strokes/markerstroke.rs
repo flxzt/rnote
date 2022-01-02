@@ -11,6 +11,8 @@ use svg::node::element::path;
 
 use crate::strokes::strokestyle::StrokeBehaviour;
 
+use super::strokestyle::InputData;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct MarkerStroke {
@@ -23,7 +25,7 @@ pub struct MarkerStroke {
 
 impl Default for MarkerStroke {
     fn default() -> Self {
-        Self::new(Element::default(), Marker::default())
+        Self::new(Element::new(InputData::default()), Marker::default())
     }
 }
 

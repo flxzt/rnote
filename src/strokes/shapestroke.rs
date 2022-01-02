@@ -6,6 +6,8 @@ use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render};
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
+use super::strokestyle::InputData;
+
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum ShapeStyle {
     Line {
@@ -34,7 +36,7 @@ pub struct ShapeStroke {
 
 impl Default for ShapeStroke {
     fn default() -> Self {
-        Self::new(Element::default(), Shaper::default())
+        Self::new(Element::new(InputData::default()), Shaper::default())
     }
 }
 

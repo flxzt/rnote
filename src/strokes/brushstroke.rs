@@ -11,6 +11,8 @@ use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIter
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
+use super::strokestyle::InputData;
+
 // Struct field names are also used in brushstroke template, reminder to be careful when renaming
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 #[serde(default)]
@@ -34,7 +36,7 @@ pub struct BrushStroke {
 
 impl Default for BrushStroke {
     fn default() -> Self {
-        Self::new(Element::default(), Brush::default())
+        Self::new(Element::new(InputData::default()), Brush::default())
     }
 }
 

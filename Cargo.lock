@@ -235,6 +235,7 @@ dependencies = [
  "libc",
  "num-integer",
  "num-traits",
+ "serde",
  "time",
  "winapi",
 ]
@@ -2231,6 +2232,7 @@ dependencies = [
  "anyhow",
  "base64",
  "cairo-rs",
+ "chrono",
  "flate2",
  "geo",
  "gstreamer",

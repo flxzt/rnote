@@ -1,5 +1,6 @@
 use crate::{compose, geometry, render};
 
+use chrono::{Utc, TimeZone};
 use p2d::bounding_volume::BoundingVolume;
 use rand::distributions::Uniform;
 use rand::prelude::*;
@@ -195,15 +196,25 @@ impl InputData {
 }
 
 // Represents a single Stroke Element
-#[derive(Debug, Default, Copy, Clone, Serialize, Deserialize)]
-#[serde(default)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Element {
     pub inputdata: InputData,
+    #[serde(default = "default_datetime")]
+    pub timestamp: chrono::DateTime<Utc>,
+}
+
+pub fn default_datetime() -> chrono::DateTime<Utc> {
+    Utc.ymd(2000, 01, 01).and_hms(12, 0, 0)
 }
 
 impl Element {
     pub fn new(inputdata: InputData) -> Self {
-        Self { inputdata }
+        let timestamp = Utc::now();
+
+        Self {
+            inputdata,
+            timestamp,
+        }
     }
 
     pub fn validation_data(bounds: p2d::bounding_volume::AABB) -> Vec<Self> {

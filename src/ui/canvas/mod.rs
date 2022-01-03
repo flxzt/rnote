@@ -1240,13 +1240,18 @@ impl Canvas {
     /// Process the beginning of a stroke drawing
     fn processing_draw_begin(
         &self,
-        _appwindow: &RnoteAppWindow,
+        appwindow: &RnoteAppWindow,
         data_entries: &mut VecDeque<InputData>,
     ) -> Option<StrokeKey> {
         let priv_ = imp::Canvas::from_instance(self);
         let mut stroke_key = None;
 
         let zoom = self.zoom();
+
+        appwindow.audioplayer().borrow().play_pen_sound_w_timeout(
+            RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
+            self.current_pen().get(),
+        );
 
         self.set_unsaved_changes(true);
         self.set_empty(false);
@@ -1321,16 +1326,11 @@ impl Canvas {
     /// Process the motion of a strokes drawing
     fn processing_draw_motion(
         &self,
-        appwindow: &RnoteAppWindow,
+        _appwindow: &RnoteAppWindow,
         current_stroke_key: Option<StrokeKey>,
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
-
-        appwindow.audioplayer().borrow().play_pen_sound_w_timeout(
-            RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-            self.current_pen().get(),
-        );
 
         let zoom = self.zoom();
 

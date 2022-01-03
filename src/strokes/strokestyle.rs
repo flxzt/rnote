@@ -1,6 +1,6 @@
 use crate::{compose, geometry, render};
 
-use chrono::{Utc, TimeZone};
+use chrono::{TimeZone, Utc};
 use p2d::bounding_volume::BoundingVolume;
 use rand::distributions::Uniform;
 use rand::prelude::*;

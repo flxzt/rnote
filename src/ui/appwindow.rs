@@ -298,6 +298,7 @@ use gtk4::{
 
 use crate::{
     app::RnoteApp,
+    audioplayer::RnoteAudioPlayer,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     ui::canvas::Canvas,
     ui::develactions::DevelActions,
@@ -305,7 +306,7 @@ use crate::{
     ui::{actions, workspacebrowser::WorkspaceBrowser},
     ui::{appsettings, penssidebar::PensSideBar},
     ui::{dialogs, mainheader::MainHeader},
-    utils, audioplayer::RnoteAudioPlayer,
+    utils,
 };
 
 glib::wrapper! {
@@ -411,7 +412,9 @@ impl RnoteAppWindow {
     }
 
     pub fn audioplayer(&self) -> Rc<RefCell<RnoteAudioPlayer>> {
-        imp::RnoteAppWindow::from_instance(self).audio_player.clone()
+        imp::RnoteAppWindow::from_instance(self)
+            .audio_player
+            .clone()
     }
 
     pub fn set_color_scheme(&self, color_scheme: adw::ColorScheme) {

@@ -13,7 +13,7 @@ pub struct RnoteAudioPlayer {
     pub enabled: bool,
     marker_file_srcs: Vec<gst::Element>,
     marker_pipeline: Option<gst::Pipeline>,
-    brush_pipeline: Option<gst::Element>,
+    brush_pipeline: Option<gst::Pipeline>,
     play_timeout_id: Rc<RefCell<Option<glib::SourceId>>>,
 }
 
@@ -172,12 +172,101 @@ impl RnoteAudioPlayer {
             for mut path in system_data_dirs.clone() {
                 path.push("rnote/sounds/brush.wav");
                 if path.exists() {
-                    if let Some(path_str) = path.to_str() {
-                        let brush_audio_uri = format!("file://{}", path_str);
+                    if let Some(brush_sound_location) = path.to_str() {
+                        let brush_file_src = gst::ElementFactory::make(
+                            "filesrc",
+                            Some(format!("{}", brush_sound_location).as_str()),
+                        )?;
+                        brush_file_src.set_property(
+                            "location",
+                            format!("{}", brush_sound_location).as_str(),
+                        )?;
 
-                        let brush_pipeline =
-                            gst::parse_launch(&format!("playbin uri={}", brush_audio_uri))?;
-                        self.brush_pipeline = Some(brush_pipeline);
+                        // Creating the pipeline
+                        let pipeline = gst::Pipeline::new(Some("brush_pipeline"));
+                        let decodebin =
+                            gst::ElementFactory::make("decodebin", Some("brush_decodebin"))?;
+                        let audioconvert =
+                            gst::ElementFactory::make("audioconvert", Some("brush_audioconvert"))?;
+                        let sink = gst::ElementFactory::make("autoaudiosink", Some("brush_sink"))?;
+
+                        pipeline.add_many(&[&brush_file_src, &decodebin, &audioconvert, &sink])?;
+
+                        gst::Element::link_many(&[&brush_file_src, &decodebin])?;
+                        gst::Element::link_many(&[&audioconvert, &sink])?;
+
+                        // the decodebin needs dynamic pad linking
+                        decodebin.connect_pad_added(
+                            clone!(@weak audioconvert => move |decodebin, src_pad| {
+                            // Try to detect whether the raw stream decodebin provided us with audio capabilities
+                            let (is_audio, _is_video) = {
+                                let media_type = src_pad.current_caps().and_then(|caps| {
+                                    caps.structure(0).map(|s| {
+                                        let name = s.name();
+                                        (name.starts_with("audio/"), name.starts_with("video/"))
+                                    })
+                                });
+
+                                match media_type {
+                                    None => {
+                                        gst::element_warning!(
+                                            decodebin,
+                                            gst::CoreError::Negotiation,
+                                            ("Failed to get media type from pad {}", src_pad.name())
+                                        );
+
+                                        return;
+                                    }
+                                    Some(media_type) => media_type,
+                                }
+                            };
+
+
+                            if is_audio {
+                                match audioconvert.static_pad("sink") {
+                                    Some(sink_pad) => {
+                                        if let Err(e) = src_pad.link(&sink_pad) {
+                                            log::error!(
+                                                "failed to link src_pad of decodebin to sink_pad of audioconvert inside pad_added callback of brush pipeline, Err {}",
+                                                e
+                                            );
+                                        }
+                                    }
+                                    None => {
+                                        log::error!("failed to get sink pad of marker_audioconvert in pad_added callback of brush pipeline. Is None");
+                                    }
+                                }
+                            }
+                        }));
+
+                        // Message handling
+                        if let Some(bus) = pipeline.bus() {
+                            if let Err(e) = bus.add_watch(clone!(@weak pipeline => @default-return glib::source::Continue(true), move |_bus, message| {
+                                match message.view() {
+                                    gst::MessageView::Eos(_) => {
+                                        if let Err(e) = pipeline.set_state(gst::State::Ready) {
+                                            log::error!("set_state(Null) failed in bus watch for brush_pipeline, Err {}", e);
+                                        };
+                                        if let Err(e) = pipeline.set_state(gst::State::Playing) {
+                                            log::error!("set_state(Null) failed in bus watch for brush_pipeline, Err {}", e);
+                                        };
+                                    }
+                                    gst::MessageView::Error(err) => {
+                                        log::error!("bus for marker_pipeline has message with Err \n{:?}", err);
+                                    }
+                                    _ => {
+                                    }
+                                }
+                                glib::source::Continue(true)
+                            })) {
+                                log::error!(
+                                    "adding bus watch for marker_pipeline failed with Err {}",
+                                    e
+                                );
+                            }
+                        }
+
+                        self.brush_pipeline = Some(pipeline);
                         break;
                     }
                 }

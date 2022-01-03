@@ -161,9 +161,8 @@ impl RnoteAudioPlayer {
 
                     self.marker_file_srcs = marker_file_srcs;
                     self.marker_pipeline = Some(pipeline);
+                    break;
                 }
-
-                break;
             }
         }
 
@@ -172,31 +171,30 @@ impl RnoteAudioPlayer {
             for mut path in system_data_dirs.clone() {
                 path.push("rnote/sounds/brush.wav");
                 if path.exists() {
-                    if let Some(brush_sound_location) = path.to_str() {
-                        let brush_file_src = gst::ElementFactory::make(
-                            "filesrc",
-                            Some(format!("{}", brush_sound_location).as_str()),
-                        )?;
-                        brush_file_src.set_property(
-                            "location",
-                            format!("{}", brush_sound_location).as_str(),
-                        )?;
+                    let brush_file_location = path.to_string_lossy();
 
-                        // Creating the pipeline
-                        let pipeline = gst::Pipeline::new(Some("brush_pipeline"));
-                        let decodebin =
-                            gst::ElementFactory::make("decodebin", Some("brush_decodebin"))?;
-                        let audioconvert =
-                            gst::ElementFactory::make("audioconvert", Some("brush_audioconvert"))?;
-                        let sink = gst::ElementFactory::make("autoaudiosink", Some("brush_sink"))?;
+                    let brush_file_src = gst::ElementFactory::make(
+                        "filesrc",
+                        Some(format!("{}", brush_file_location).as_str()),
+                    )?;
+                    brush_file_src
+                        .set_property("location", format!("{}", brush_file_location).as_str())?;
 
-                        pipeline.add_many(&[&brush_file_src, &decodebin, &audioconvert, &sink])?;
+                    // Creating the pipeline
+                    let pipeline = gst::Pipeline::new(Some("brush_pipeline"));
+                    let decodebin =
+                        gst::ElementFactory::make("decodebin", Some("brush_decodebin"))?;
+                    let audioconvert =
+                        gst::ElementFactory::make("audioconvert", Some("brush_audioconvert"))?;
+                    let sink = gst::ElementFactory::make("autoaudiosink", Some("brush_sink"))?;
 
-                        gst::Element::link_many(&[&brush_file_src, &decodebin])?;
-                        gst::Element::link_many(&[&audioconvert, &sink])?;
+                    pipeline.add_many(&[&brush_file_src, &decodebin, &audioconvert, &sink])?;
 
-                        // the decodebin needs dynamic pad linking
-                        decodebin.connect_pad_added(
+                    gst::Element::link_many(&[&brush_file_src, &decodebin])?;
+                    gst::Element::link_many(&[&audioconvert, &sink])?;
+
+                    // the decodebin needs dynamic pad linking
+                    decodebin.connect_pad_added(
                             clone!(@weak audioconvert => move |decodebin, src_pad| {
                             // Try to detect whether the raw stream decodebin provided us with audio capabilities
                             let (is_audio, _is_video) = {
@@ -239,9 +237,9 @@ impl RnoteAudioPlayer {
                             }
                         }));
 
-                        // Message handling
-                        if let Some(bus) = pipeline.bus() {
-                            if let Err(e) = bus.add_watch(clone!(@weak pipeline => @default-return glib::source::Continue(true), move |_bus, message| {
+                    // Message handling
+                    if let Some(bus) = pipeline.bus() {
+                        if let Err(e) = bus.add_watch(clone!(@weak pipeline => @default-return glib::source::Continue(true), move |_bus, message| {
                                 match message.view() {
                                     gst::MessageView::Eos(_) => {
                                         if let Err(e) = pipeline.set_state(gst::State::Ready) {
@@ -264,11 +262,10 @@ impl RnoteAudioPlayer {
                                     e
                                 );
                             }
-                        }
-
-                        self.brush_pipeline = Some(pipeline);
-                        break;
                     }
+
+                    self.brush_pipeline = Some(pipeline);
+                    break;
                 }
             }
         }

@@ -21,6 +21,7 @@ impl RnoteAudioPlayer {
     pub const PLAY_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(500);
     /// Number of marker sound files installed in system-data-dir/sounds
     pub const MARKER_N_FILES: usize = 15;
+    pub const BRUSH_SEEK_TIMES_SEC: [f64; 5] = [0.0, 0.91, 4.129, 6.0, 8.56];
 
     pub fn new() -> Self {
         Self {
@@ -159,6 +160,12 @@ impl RnoteAudioPlayer {
                         }
                     }
 
+                    if let Err(e) = pipeline.set_state(gst::State::Paused) {
+                        log::error!(
+                            "audioplayer marker_pipeline set_state(Paused) failed in init() with Err {}",
+                            e
+                        );
+                    };
                     self.marker_file_srcs = marker_file_srcs;
                     self.marker_pipeline = Some(pipeline);
                     break;
@@ -242,28 +249,32 @@ impl RnoteAudioPlayer {
                         if let Err(e) = bus.add_watch(clone!(@weak pipeline => @default-return glib::source::Continue(true), move |_bus, message| {
                                 match message.view() {
                                     gst::MessageView::Eos(_) => {
-                                        if let Err(e) = pipeline.set_state(gst::State::Ready) {
-                                            log::error!("set_state(Null) failed in bus watch for brush_pipeline, Err {}", e);
-                                        };
-                                        if let Err(e) = pipeline.set_state(gst::State::Playing) {
-                                            log::error!("set_state(Null) failed in bus watch for brush_pipeline, Err {}", e);
+                                        // Set time to zero
+                                        if let Err(e) = pipeline.seek_simple(gst::SeekFlags::FLUSH, gst::ClockTime::ZERO)
+                                        {
+                                            log::error!("audioplayer markerpipeline seek_simple() failed in bus watch with Eos message, with Err {}", e);
                                         };
                                     }
                                     gst::MessageView::Error(err) => {
-                                        log::error!("bus for marker_pipeline has message with Err \n{:?}", err);
+                                        log::error!("bus for marker pipeline has message with Err \n{:?}", err);
                                     }
-                                    _ => {
-                                    }
+                                    _ => {}
                                 }
                                 glib::source::Continue(true)
                             })) {
                                 log::error!(
-                                    "adding bus watch for marker_pipeline failed with Err {}",
+                                    "adding bus watch for marker pipeline failed with Err {}",
                                     e
                                 );
                             }
                     }
 
+                    if let Err(e) = pipeline.set_state(gst::State::Paused) {
+                        log::error!(
+                            "audioplayer brush_pipeline set_state(Paused) failed in init() with Err {}",
+                            e
+                        );
+                    };
                     self.brush_pipeline = Some(pipeline);
                     break;
                 }
@@ -298,10 +309,11 @@ impl RnoteAudioPlayer {
         }
     }
 
+    /// Stop all pipelines by setting their state to Null. Must be called when closing the application
     pub fn stop(&self) {
         if self.enabled {
             if let Some(marker_pipeline) = &self.marker_pipeline {
-                if let Err(e) = marker_pipeline.set_state(gst::State::Ready) {
+                if let Err(e) = marker_pipeline.set_state(gst::State::Null) {
                     log::error!(
                         "audioplayer pipeline set_state(Playing) failed in stop() with Err {}",
                         e
@@ -309,7 +321,7 @@ impl RnoteAudioPlayer {
                 };
             };
             if let Some(brush_pipeline) = &self.brush_pipeline {
-                if let Err(e) = brush_pipeline.set_state(gst::State::Ready) {
+                if let Err(e) = brush_pipeline.set_state(gst::State::Null) {
                     log::error!(
                         "audioplayer pipeline set_state(Playing) failed in stop() with Err {}",
                         e
@@ -331,9 +343,8 @@ impl RnoteAudioPlayer {
                     );
             };
 
-            let mut rng = rand::thread_rng();
-
             // Play a random file out of the range
+            let mut rng = rand::thread_rng();
             let i = rng.gen_range(0..Self::MARKER_N_FILES);
 
             if self.marker_file_srcs.get(i).is_some() {
@@ -368,33 +379,51 @@ impl RnoteAudioPlayer {
     }
 
     fn play_brush_sound_w_timeout(&self, timeout_time: time::Duration) {
-        if let Some(play_timeout_id) = self.play_timeout_id.borrow_mut().take() {
-            glib::source::source_remove(play_timeout_id);
-        } else {
-            if let Some(brush_pipeline) = &self.brush_pipeline {
-                if let Err(e) = brush_pipeline.set_state(gst::State::Playing) {
-                    log::error!(
-                                    "audioplayer brush_pipeline set_state(Playing) failed in play_w_timeout() with Err {}",
-                                    e
-                                );
-                };
+        if let Some(brush_pipeline) = &self.brush_pipeline {
+            if let Err(e) = brush_pipeline.set_state(gst::State::Playing) {
+                log::error!(
+                    "audioplayer brush_pipeline set_state(Paused) failed in play_brush_sound_w_timeout() with Err {}",
+                    e
+                );
             };
-        }
 
-        self.play_timeout_id.borrow_mut()
+            // remove the old timeout
+            if let Some(play_timeout_id) = self.play_timeout_id.borrow_mut().take() {
+                glib::source::source_remove(play_timeout_id);
+            }
+
+            // new timeout
+            self.play_timeout_id.borrow_mut()
             .replace(glib::source::timeout_add_local_once(
                 timeout_time,
-                clone!(@strong self.play_timeout_id as play_timeout_id, @strong self.brush_pipeline as brush_pipeline => move || {
-                    if let Some(brush_pipeline) = &brush_pipeline {
-                        if let Err(e) = brush_pipeline.set_state(gst::State::Null) {
-                            log::error!(
-                                "audioplayer brush_pipeline set_state(Null) failed in play_w_timeout() with Err {}",
-                                e
-                            );
-                        };
+                clone!(@weak self.play_timeout_id as play_timeout_id, @weak brush_pipeline => move || {
+                    if let Err(e) = brush_pipeline.set_state(gst::State::Paused) {
+                        log::error!(
+                            "audioplayer brush_pipeline set_state(Null) failed in play_brush_sound_w_timeout() with Err {}",
+                            e
+                        );
                     };
-                    play_timeout_id.borrow_mut().take();
+
+                    // Set a random time out of the BRUSH_SEEK_TIMES
+                    /*
+                    let mut rng = rand::thread_rng();
+                    let i = rng.gen_range(0..Self::BRUSH_SEEK_TIMES_SEC.len());
+                    let f = Self::BRUSH_SEEK_TIMES_SEC[i];
+
+                    if let Err(e) = brush_pipeline.seek_simple(
+                        gst::SeekFlags::FLUSH | gst::SeekFlags::TRICKMODE,
+                        gst::ClockTime::from_mseconds((f * 1000.0).round() as u64),
+                    ) {
+                        log::error!("audioplayer brush_pipeline.seek_simple() failed in play_brush_sound_w_timeout() with Err {}", e);
+                    }; */
+
+                    // Removing the timeout id
+                    let mut play_timeout_id = play_timeout_id.borrow_mut();
+                    if let Some(play_timeout_id) = play_timeout_id.take() {
+                        glib::source::source_remove(play_timeout_id);
+                    }
                 }),
             ));
+        };
     }
 }

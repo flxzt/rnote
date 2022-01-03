@@ -136,6 +136,9 @@ mod imp {
     impl WindowImpl for RnoteAppWindow {
         // Save window state right before the window will be closed
         fn close_request(&self, obj: &Self::Type) -> Inhibit {
+            // Setting all gstreamer pipelines state to Null
+            obj.audioplayer().borrow_mut().stop();
+
             if let Err(err) = obj.save_window_size() {
                 log::error!("Failed to save window state, {}", &err);
             }

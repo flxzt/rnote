@@ -1137,7 +1137,12 @@ impl Canvas {
                     let priv_ = imp::Canvas::from_instance(&canvas);
 
                     canvas.zoom_to(zoom);
-                    priv_.zoom_timeout_id.borrow_mut().take();
+
+                    // Removing the timeout id
+                    let mut zoom_timeout_id = priv_.zoom_timeout_id.borrow_mut();
+                    if let Some(zoom_timeout_id) = zoom_timeout_id.take() {
+                        glib::source::source_remove(zoom_timeout_id);
+                    }
                 }),
             ));
     }

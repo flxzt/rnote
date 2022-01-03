@@ -51,6 +51,11 @@ impl RnoteAudioPlayer {
                             if let Some(file_path_str) = file_path.to_str() {
                                 marker_locations.push((i, String::from(file_path_str)));
                             }
+                        } else {
+                            return Err(anyhow::Error::msg(format!(
+                                "failed to init audioplayer. File `{}` is missing.",
+                                file_path.to_string_lossy()
+                            )));
                         }
                     }
 
@@ -124,7 +129,7 @@ impl RnoteAudioPlayer {
                                     }
                                 }
                                 None => {
-
+                                    log::error!("failed to get sink pad of marker_audioconvert in pad_added callback of marker pipeline. Is None");
                                 }
                             }
                         }
@@ -182,12 +187,23 @@ impl RnoteAudioPlayer {
         Ok(())
     }
 
-    pub fn play_pen_sound_w_timeout(&self, timeout_time: time::Duration, current_pen: PenStyle) {
+    pub fn play_pen_sound_begin(&self, timeout_time: time::Duration, current_pen: PenStyle) {
         if self.enabled {
             match current_pen {
                 PenStyle::Marker => {
                     self.play_marker_sound();
                 }
+                PenStyle::Brush => {
+                    self.play_brush_sound_w_timeout(timeout_time);
+                }
+                _ => {}
+            }
+        }
+    }
+
+    pub fn play_pen_sound_motion(&self, timeout_time: time::Duration, current_pen: PenStyle) {
+        if self.enabled {
+            match current_pen {
                 PenStyle::Brush => {
                     self.play_brush_sound_w_timeout(timeout_time);
                 }

@@ -1248,7 +1248,7 @@ impl Canvas {
 
         let zoom = self.zoom();
 
-        appwindow.audioplayer().borrow().play_pen_sound_w_timeout(
+        appwindow.audioplayer().borrow().play_pen_sound_begin(
             RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
             self.current_pen().get(),
         );
@@ -1326,13 +1326,18 @@ impl Canvas {
     /// Process the motion of a strokes drawing
     fn processing_draw_motion(
         &self,
-        _appwindow: &RnoteAppWindow,
+        appwindow: &RnoteAppWindow,
         current_stroke_key: Option<StrokeKey>,
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
         let zoom = self.zoom();
+
+        appwindow.audioplayer().borrow().play_pen_sound_motion(
+            RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
+            self.current_pen().get(),
+        );
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {

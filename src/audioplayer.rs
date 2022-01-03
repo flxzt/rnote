@@ -389,7 +389,7 @@ impl RnoteAudioPlayer {
                 timeout_time,
                 clone!(@strong self.play_timeout_id as play_timeout_id, @strong self.brush_pipeline as brush_pipeline => move || {
                     if let Some(brush_pipeline) = &brush_pipeline {
-                        if let Err(e) = brush_pipeline.set_state(gst::State::Ready) {
+                        if let Err(e) = brush_pipeline.set_state(gst::State::Null) {
                             log::error!(
                                 "audioplayer brush_pipeline set_state(Null) failed in play_w_timeout() with Err {}",
                                 e

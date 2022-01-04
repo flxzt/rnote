@@ -131,6 +131,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     app.add_action(&action_endless_sheet);
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
     app.add_action(&action_righthanded);
+    let action_pdf_import_as_vector = appwindow.app_settings().create_action("pdf-import-as-vector");
+    app.add_action(&action_pdf_import_as_vector);
     let action_pen_sounds = appwindow.app_settings().create_action("pen-sounds");
     app.add_action(&action_pen_sounds);
 
@@ -383,6 +385,17 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         let state = action_pen_sounds.state().unwrap().get::<bool>().unwrap();
 
         appwindow.audioplayer().borrow_mut().enabled = state;
+    }));
+
+    // Righthanded
+    action_pdf_import_as_vector.connect_state_notify(clone!(@weak appwindow => move |action_pdf_import_as_vector| {
+        if action_pdf_import_as_vector.state().unwrap().get::<bool>().unwrap() {
+            appwindow.settings_panel().general_pdf_import_as_vector_toggle().set_active(true);
+            appwindow.canvas().set_pdf_import_as_vector(true);
+        } else {
+            appwindow.settings_panel().general_pdf_import_as_bitmap_toggle().set_active(true);
+            appwindow.canvas().set_pdf_import_as_vector(false);
+        }
     }));
 
     // Righthanded

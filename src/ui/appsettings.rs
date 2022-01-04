@@ -567,10 +567,10 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     appwindow.canvas().set_pdf_import_width(pdf_import_width);
 
     // PDF import as vector image
-    let pdf_import_as_vector = appwindow.app_settings().boolean("pdf-import-as-vector");
-    appwindow
-        .canvas()
-        .set_pdf_import_as_vector(pdf_import_as_vector);
+    appwindow.application().unwrap().change_action_state(
+        "pdf-import-as-vector",
+        &appwindow.app_settings().boolean("pdf-import-as-vector").to_variant(),
+    );
 
     // Visual Debugging
     appwindow

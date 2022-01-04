@@ -440,7 +440,7 @@ impl SettingsPanel {
 
     pub fn general_pdf_import_as_bitmap_toggle(&self) -> ToggleButton {
         imp::SettingsPanel::from_instance(self)
-            .general_pdf_import_as_vector_toggle
+            .general_pdf_import_as_bitmap_toggle
             .clone()
     }
 
@@ -508,10 +508,6 @@ impl SettingsPanel {
 
         self.general_pdf_import_width_adj()
             .set_value(canvas.pdf_import_width());
-        self.general_pdf_import_as_vector_toggle()
-            .set_active(canvas.pdf_import_as_vector());
-        self.general_pdf_import_as_bitmap_toggle()
-            .set_active(!canvas.pdf_import_as_vector());
     }
 
     pub fn load_format(&self, sheet: &Sheet) {
@@ -563,17 +559,6 @@ impl SettingsPanel {
         let temporary_format = priv_.temporary_format.clone();
 
         // General
-        priv_
-            .general_pdf_import_width_adj
-            .get()
-            .connect_value_changed(
-                clone!(@weak appwindow => move |general_pdf_import_width_adj| {
-                    let percentage = general_pdf_import_width_adj.value();
-
-                    appwindow.canvas().set_pdf_import_width(percentage);
-                }),
-            );
-
         priv_.general_sheet_margin_unitentry.get().connect_local(
             "measurement-changed",
             false,
@@ -591,8 +576,29 @@ impl SettingsPanel {
         )
         .unwrap();
 
+        priv_
+            .general_pdf_import_width_adj
+            .get()
+            .connect_value_changed(
+                clone!(@weak appwindow => move |general_pdf_import_width_adj| {
+                    let percentage = general_pdf_import_width_adj.value();
+
+                    appwindow.canvas().set_pdf_import_width(percentage);
+                }),
+            );
+
+        priv_
+            .general_pdf_import_as_vector_toggle
+            .connect_active_notify(
+                clone!(@weak appwindow => move |general_pdf_import_as_vector_toggle| {
+                    if general_pdf_import_as_vector_toggle.is_active() {
+                        appwindow.canvas().set_pdf_import_as_vector(true);
+                    }
+                }),
+            );
+
         priv_.general_pdf_import_as_vector_toggle.connect_toggled(clone!(@weak appwindow => move |general_pdf_import_as_vector_toggle| {
-                appwindow.canvas().set_pdf_import_as_vector(general_pdf_import_as_vector_toggle.is_active());
+            appwindow.application().unwrap().change_action_state("pdf-import-as-vector", &general_pdf_import_as_vector_toggle.is_active().to_variant());
         }));
 
         // Format

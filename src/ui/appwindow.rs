@@ -198,35 +198,67 @@ mod imp {
             );
 
             self.flap
-                .connect_folded_notify(clone!(@strong expanded_revealed, @weak flapreveal_toggle, @weak workspace_headerbar => move |flap| {
+                .connect_folded_notify(clone!(@weak obj as appwindow, @strong expanded_revealed, @weak flapreveal_toggle, @weak workspace_headerbar => move |flap| {
+                    if appwindow.mainheader().appmenu().parent().is_some() {
+                        appwindow.mainheader().appmenu().unparent();
+                    }
+                    if flap.reveals_flap() && !flap.is_folded() {
+                        appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
+                    } else {
+                        appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
+                    }
+
                     if flap.is_folded() {
                         flapreveal_toggle.set_active(false);
                     } else {
-                        if flap.flap_position() == PackType::End {
-                            workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
-                        }
                         if expanded_revealed.get() || flap.reveals_flap() {
                             expanded_revealed.set(true);
                             flapreveal_toggle.set_active(true);
                         }
                     }
-                }));
 
-            self.flap
-                .connect_reveal_flap_notify(clone!(@weak workspace_headerbar => move |flap| {
-                    if !flap.is_folded() && flap.flap_position() == PackType::End {
-                        workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
-                    } else {
+                    if flap.flap_position() == PackType::Start {
+                        workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
                         workspace_headerbar.set_show_end_title_buttons(false);
+                    } else if flap.flap_position() == PackType::End {
+                        workspace_headerbar.set_show_start_title_buttons(false);
+                        workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
                     }
                 }));
 
-            self.flap.connect_flap_position_notify(
-                clone!(@weak workspace_headerbar, @strong expanded_revealed => move |flap| {
-                    if !flap.is_folded() && flap.flap_position() == PackType::End {
-                        workspace_headerbar.set_show_end_title_buttons(expanded_revealed.get());
+            self.flap
+                .connect_reveal_flap_notify(clone!(@weak obj as appwindow, @weak workspace_headerbar => move |flap| {
+                    if appwindow.mainheader().appmenu().parent().is_some() {
+                        appwindow.mainheader().appmenu().unparent();
+                    }
+                    if flap.reveals_flap() && !flap.is_folded() {
+                        appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
                     } else {
+                        appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
+                    }
+
+                    //if !flap.is_folded() {
+                        if flap.flap_position() == PackType::Start {
+                            workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
+                            workspace_headerbar.set_show_end_title_buttons(false);
+                        } else if flap.flap_position() == PackType::End {
+                            workspace_headerbar.set_show_start_title_buttons(false);
+                            workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
+                        }
+                }));
+
+            self.flap.connect_flap_position_notify(
+                clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box, @weak workspace_headerbar, @strong expanded_revealed => move |flap| {
+                    if flap.flap_position() == PackType::Start {
+                        workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
                         workspace_headerbar.set_show_end_title_buttons(false);
+
+                        flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
+                    } else if flap.flap_position() == PackType::End {
+                        workspace_headerbar.set_show_start_title_buttons(false);
+                        workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
+
+                        flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
                     }
                 }),
             );
@@ -271,16 +303,6 @@ mod imp {
                     gdk::Cursor::from_name("default", None).as_ref(),
                 )
                 .as_ref(),
-            );
-
-            self.flap.get().connect_flap_position_notify(
-                clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box => move |flap| {
-                    if flap.flap_position() == PackType::Start {
-                            flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
-                    } else {
-                            flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
-                    }
-                }),
             );
         }
     }
@@ -526,30 +548,6 @@ impl RnoteAppWindow {
             .borrow_mut()
             .init(self);
         priv_.canvas.get().selection_modifier().init(self);
-
-        self.flap()
-            .connect_reveal_flap_notify(clone!(@weak self as appwindow => move |flap| {
-                if appwindow.mainheader().appmenu().parent().is_some() {
-                    appwindow.mainheader().appmenu().unparent();
-                }
-                if flap.reveals_flap() && !flap.is_folded() {
-                    appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-                } else {
-                    appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-                }
-            }));
-
-        self.flap()
-            .connect_folded_notify(clone!(@weak self as appwindow => move |flap| {
-                if appwindow.mainheader().appmenu().parent().is_some() {
-                    appwindow.mainheader().appmenu().unparent();
-                }
-                if flap.reveals_flap() && !flap.is_folded() {
-                    appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-                } else {
-                    appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-                }
-            }));
 
         // zoom scrolling with <ctrl> + scroll
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()

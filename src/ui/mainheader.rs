@@ -204,6 +204,21 @@ impl MainHeader {
             )
             .build();
 
+        priv_
+            .headerbar
+            .get()
+            .bind_property(
+                "show-start-title-buttons",
+                &appwindow.flap_header(),
+                "show-start-title-buttons",
+            )
+            .flags(
+                glib::BindingFlags::SYNC_CREATE
+                    | glib::BindingFlags::BIDIRECTIONAL
+                    | glib::BindingFlags::INVERT_BOOLEAN,
+            )
+            .build();
+
         priv_.add_page_button.get().connect_clicked(
             clone!(@weak appwindow => move |_add_page_button| {
                 let format_height = appwindow.canvas().sheet().format().height();

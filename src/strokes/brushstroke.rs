@@ -90,13 +90,12 @@ impl StrokeBehaviour for BrushStroke {
 
                             Some(bounds)
                         } else {
-                            return None;
+                            None
                         }
                     })
-                    .reduce(
-                        || p2d::bounding_volume::AABB::new_invalid(),
-                        |i, next| i.merged(&next),
-                    ),
+                    .reduce(p2d::bounding_volume::AABB::new_invalid, |i, next| {
+                        i.merged(&next)
+                    }),
             );
             Some(bounds)
         } else {
@@ -189,13 +188,13 @@ impl BrushStroke {
     pub fn validation_stroke(elements: &[Element], brush: &Brush) -> Option<Self> {
         let mut data_entries_iter = elements.iter();
         let mut stroke = if let Some(first_entry) = data_entries_iter.next() {
-            Self::new(first_entry.clone(), brush.clone())
+            Self::new(*first_entry, brush.clone())
         } else {
             return None;
         };
 
         for data_entry in data_entries_iter {
-            stroke.push_elem(data_entry.clone());
+            stroke.push_elem(*data_entry);
         }
         stroke.update_geometry();
 
@@ -305,16 +304,12 @@ impl BrushStroke {
         svg_root: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
         match self.brush.current_style {
-            brush::BrushStyle::Linear => {
-                return Ok(self.gen_svg_elem_linear(elements, offset, svg_root));
-            }
+            brush::BrushStyle::Linear => Ok(self.gen_svg_elem_linear(elements, offset, svg_root)),
             brush::BrushStyle::CubicBezier => {
-                return Ok(self.gen_svg_elem_cubbez(elements, offset, svg_root));
+                Ok(self.gen_svg_elem_cubbez(elements, offset, svg_root))
             }
-            brush::BrushStyle::CustomTemplate(_) => {
-                return self.gen_svg_for_template(offset, false)
-            }
-            brush::BrushStyle::Experimental => return self.gen_svg_experimental(offset, false),
+            brush::BrushStyle::CustomTemplate(_) => self.gen_svg_for_template(offset, false),
+            brush::BrushStyle::Experimental => self.gen_svg_experimental(offset, false),
         }
     }
 
@@ -615,11 +610,11 @@ impl BrushStroke {
             if svg_root {
                 svg_data = compose::wrap_svg(&svg_data, Some(bounds), Some(bounds), true, false);
             }
-            return Ok(Some(render::Svg { svg_data, bounds }));
+            Ok(Some(render::Svg { svg_data, bounds }))
         } else {
-            return Err(anyhow::anyhow!(
+            Err(anyhow::anyhow!(
                 "template_svg_data() called, but brush is not BrushStyle::CustomTemplate"
-            ));
-        };
+            ))
+        }
     }
 }

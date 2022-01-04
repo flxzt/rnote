@@ -428,7 +428,7 @@ impl StrokesState {
             .render_components
             .iter()
             .filter_map(|(key, render_comp)| {
-                if render_comp.render && !self.trashed(key).unwrap_or_else(|| true) {
+                if render_comp.render && !self.trashed(key).unwrap_or(true) {
                     Some(key)
                 } else {
                     None

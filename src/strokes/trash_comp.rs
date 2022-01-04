@@ -173,8 +173,6 @@ impl StrokesState {
                                     chrono_comp.t = self.chrono_counter;
                                 }
                             }
-
-                            return;
                         }
                     }
                     StrokeStyle::VectorImage(_vectorimage) => {

@@ -313,7 +313,7 @@ impl Background {
 
         let svg = render::Svg { bounds, svg_data };
 
-        renderer.gen_image(zoom, &vec![svg], bounds)
+        renderer.gen_image(zoom, &[svg], bounds)
     }
 
     pub fn regenerate_background(

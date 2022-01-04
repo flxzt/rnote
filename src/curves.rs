@@ -239,9 +239,7 @@ pub fn split_quadbez_critical_points(
     let (mut t1, mut t2) = quad_solve_critical_points(coeff_a, coeff_b, max_offset_dist);
 
     if t2 < t1 {
-        let tmp = t1;
-        t1 = t2;
-        t2 = tmp;
+        std::mem::swap(&mut t1, &mut t2);
     }
     let mut option_t1 = None;
     let mut option_t2 = None;

@@ -77,12 +77,10 @@ impl Color {
     }
 
     pub fn to_u32(&self) -> u32 {
-        let value = ((((self.r * 255.0).round() as u32) & 0xff) << 24)
+        ((((self.r * 255.0).round() as u32) & 0xff) << 24)
             | ((((self.g * 255.0).round() as u32) & 0xff) << 16)
             | ((((self.b * 255.0).round() as u32) & 0xff) << 8)
-            | ((((self.a * 255.0).round() as u32) & 0xff) << 0);
-
-        value
+            | (((self.a * 255.0).round() as u32) & 0xff)
     }
 
     pub fn transparent() -> Self {
@@ -112,7 +110,7 @@ impl From<u32> for Color {
             r: ((value >> 24) & 0xff) as f32 / 255.0,
             g: ((value >> 16) & 0xff) as f32 / 255.0,
             b: ((value >> 8) & 0xff) as f32 / 255.0,
-            a: ((value >> 0) & 0xff) as f32 / 255.0,
+            a: ((value) & 0xff) as f32 / 255.0,
         }
     }
 }

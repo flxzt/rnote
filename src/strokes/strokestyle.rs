@@ -60,7 +60,7 @@ pub trait StrokeBehaviour {
             );
         }
 
-        Ok(renderer.gen_image(zoom, &svgs, self.bounds())?)
+        renderer.gen_image(zoom, &svgs, self.bounds())
     }
 }
 
@@ -204,7 +204,7 @@ pub struct Element {
 }
 
 pub fn default_datetime() -> chrono::DateTime<Utc> {
-    Utc.ymd(2000, 01, 01).and_hms(12, 0, 0)
+    Utc.ymd(2000, 1, 1).and_hms(12, 0, 0)
 }
 
 impl Element {

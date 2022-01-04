@@ -251,7 +251,7 @@ impl WorkspaceBrowser {
 
                     String::from("")
                 }),
-                &[fileinfo_expression.clone().upcast()],
+                &[fileinfo_expression.upcast()],
             );
 
             basename_expression.bind(&filerow.file_label(), "label", Some(&filerow.file_label()));

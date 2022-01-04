@@ -7,8 +7,7 @@ use super::curves;
 pub fn add_xml_header(svg: &str) -> String {
     let re = regex::Regex::new(r#"<\?xml[^\?>]*\?>"#).unwrap();
     if !re.is_match(svg) {
-        let string = String::from(r#"<?xml version="1.0" standalone="no"?>"#) + "\n" + svg;
-        string
+        String::from(r#"<?xml version="1.0" standalone="no"?>"#) + "\n" + svg
     } else {
         String::from(svg)
     }
@@ -91,10 +90,7 @@ pub fn wrap_svg(
     cx.insert("viewbox", &viewbox);
     cx.insert("preserve_aspectratio", &preserve_aspectratio);
 
-    let output = tera::Tera::one_off(SVG_WRAP_TEMPL_STR, &cx, false)
-        .expect("failed to create svg from template");
-
-    output
+    tera::Tera::one_off(SVG_WRAP_TEMPL_STR, &cx, false).expect("failed to create svg from template")
 }
 
 /// patterns are rendered rather slow, so this should be used carefully!
@@ -125,10 +121,8 @@ pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB
     cx.insert("height", &height);
     cx.insert("data", &data);
 
-    let output = tera::Tera::one_off(SVG_PATTERN_TEMPL_STR, &cx, false)
-        .expect("failed to create svg from template");
-
-    output
+    tera::Tera::one_off(SVG_PATTERN_TEMPL_STR, &cx, false)
+        .expect("failed to create svg from template")
 }
 
 pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
@@ -507,11 +501,7 @@ pub fn compose_cubbez_variable_width(
 
     // if the angle of the two offsets is > 90deg, calculating the norms went wrong, so reverse them.
     let angle = start_offset.angle(&end_offset).to_degrees();
-    let angle_greater_90 = if angle < -90.0 && angle > 90.0 {
-        true
-    } else {
-        false
-    };
+    let angle_greater_90 = angle < -90.0 && angle > 90.0;
 
     let mut commands =
         compose_cubbez_offsetted(cubic_bezier, start_offset_dist, end_offset_dist, move_start);

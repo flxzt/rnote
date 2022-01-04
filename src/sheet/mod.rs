@@ -603,8 +603,7 @@ impl Sheet {
         );
 
         data.push_str(
-            &self
-                .strokes_state()
+            self.strokes_state()
                 .borrow()
                 .gen_svg_all_strokes()?
                 .as_str(),

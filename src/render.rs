@@ -147,13 +147,13 @@ impl Renderer {
             ))
         })?;
 
-        return Ok(Image {
+        Ok(Image {
             data: data.to_vec(),
             bounds,
             data_width: width_scaled,
             data_height: height_scaled,
             memory_format: gdk::MemoryFormat::B8g8r8a8Premultiplied,
-        });
+        })
     }
 
     fn gen_image_resvg(
@@ -180,13 +180,13 @@ impl Renderer {
 
         let bytes = pixmap.data();
 
-        return Ok(Image {
+        Ok(Image {
             data: bytes.to_vec(),
             bounds,
             data_width: width_scaled,
             data_height: height_scaled,
             memory_format: gdk::MemoryFormat::R8g8b8a8Premultiplied,
-        });
+        })
     }
 }
 
@@ -247,11 +247,7 @@ pub fn rendernode_to_texture(
     node: &gsk::RenderNode,
     viewport: Option<p2d::bounding_volume::AABB>,
 ) -> Result<Option<gdk::Texture>, anyhow::Error> {
-    let viewport = if let Some(viewport) = viewport {
-        Some(geometry::aabb_to_graphene_rect(viewport))
-    } else {
-        None
-    };
+    let viewport = viewport.map(geometry::aabb_to_graphene_rect);
 
     if let Some(root) = active_widget.root() {
         if let Some(root_renderer) = root.upcast::<Native>().renderer() {
@@ -279,7 +275,7 @@ pub fn draw_svgs_to_cairo_context(
 
         let librsvg_renderer = librsvg::CairoRenderer::new(&librsvg_handle);
         librsvg_renderer.render_document(
-            &cx,
+            cx,
             &cairo::Rectangle {
                 x: (svg.bounds.mins[0].floor() * zoom),
                 y: (svg.bounds.mins[1].floor() * zoom),
@@ -311,7 +307,7 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
         .draw_context()
         .context("failed to get cairo draw_context() from new_caironode")?;
 
-    draw_svgs_to_cairo_context(zoom, &vec![svg.to_owned()], &cx)?;
+    draw_svgs_to_cairo_context(zoom, &[svg.to_owned()], &cx)?;
 
     Ok(new_caironode)
 }

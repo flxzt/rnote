@@ -54,11 +54,8 @@ impl StrokesState {
         sorted.sort_unstable_by(|first, second| first.1.cmp(&second.1));
 
         let last_stroke_key = sorted.last().copied();
-        if let Some(last_stroke_key) = last_stroke_key {
-            Some(last_stroke_key.0)
-        } else {
-            None
-        }
+
+        last_stroke_key.map(|(last_stroke_key, _i)| last_stroke_key)
     }
 
     pub fn last_selection_key(&self) -> Option<StrokeKey> {
@@ -83,11 +80,8 @@ impl StrokesState {
         sorted.sort_unstable_by(|first, second| first.1.cmp(&second.1));
 
         let last_selection_key = sorted.last().copied();
-        if let Some(last_stroke_key) = last_selection_key {
-            Some(last_stroke_key.0)
-        } else {
-            None
-        }
+
+        last_selection_key.map(|(last_selection_key, _i)| last_selection_key)
     }
 
     pub fn last_trashed_key(&self) -> Option<StrokeKey> {
@@ -109,11 +103,8 @@ impl StrokesState {
         sorted.par_sort_unstable_by(|first, second| first.1.cmp(&second.1));
 
         let last_trashed_key = sorted.last().copied();
-        if let Some(last_trashed_key) = last_trashed_key {
-            Some(last_trashed_key.0)
-        } else {
-            None
-        }
+
+        last_trashed_key.map(|(last_trashed_key, _i)| last_trashed_key)
     }
 
     pub fn keys_sorted_chrono(&self) -> Vec<StrokeKey> {

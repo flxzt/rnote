@@ -414,8 +414,8 @@ mod imp {
 
             // Clip everything outside the current view
             snapshot.push_clip(&graphene::Rect::new(
-                0.0 as f32,
-                0.0 as f32,
+                0.0,
+                0.0,
                 widget.width() as f32,
                 widget.height() as f32,
             ));
@@ -472,7 +472,7 @@ mod imp {
             // Draw the children
             snapshot.restore();
 
-            widget.snapshot_child(&self.selection_modifier, &snapshot);
+            widget.snapshot_child(&self.selection_modifier, snapshot);
 
             snapshot.pop();
         }
@@ -1036,18 +1036,17 @@ impl Canvas {
         let (parent_width, parent_height) = (f64::from(parent.width()), f64::from(parent.height()));
         let (parent_offset_x, parent_offset_y) = self
             .translate_coordinates(&parent, 0.0, 0.0)
-            .unwrap_or_else(|| (0.0, 0.0));
+            .unwrap_or((0.0, 0.0));
 
         let (x, y) = (
             self.hadjustment().unwrap().value() - parent_offset_x,
             self.vadjustment().unwrap().value() - parent_offset_y,
         );
-        let viewport = p2d::bounding_volume::AABB::new(
+
+        p2d::bounding_volume::AABB::new(
             na::point![x, y],
             na::point![x + parent_width, y + parent_height],
-        );
-
-        viewport
+        )
     }
 
     /// The viewport transformed to match the coordinate space of the sheet
@@ -1174,7 +1173,7 @@ impl Canvas {
     /// regenerating the background image and rendernode.
     /// use for example when changing the background pattern or zoom
     pub fn regenerate_background(&self, redraw: bool) {
-        match self
+        if let Err(e) = self
             .sheet()
             .background()
             .borrow_mut()
@@ -1188,12 +1187,10 @@ impl Canvas {
                     .unwrap(),
                 self.zoom(),
                 self.sheet().bounds(),
-            ) {
-            Err(e) => {
-                log::error!("failed to regenerate background, {}", e)
-            }
-            Ok(_) => {}
-        }
+            )
+        {
+            log::error!("failed to regenerate background, {}", e)
+        };
 
         if redraw {
             self.queue_resize();
@@ -1360,7 +1357,7 @@ impl Canvas {
                         self.sheet()
                             .strokes_state()
                             .borrow_mut()
-                            .add_to_stroke(current_stroke_key, Element::new(inputdata.clone()));
+                            .add_to_stroke(current_stroke_key, Element::new(*inputdata));
                     }
                 }
             }
@@ -1385,7 +1382,7 @@ impl Canvas {
                     self.pens()
                         .borrow_mut()
                         .selector
-                        .add_elem_to_path(inputdata.clone());
+                        .add_elem_to_path(*inputdata);
                     self.pens().borrow_mut().selector.update_rendernode(
                         zoom,
                         &self

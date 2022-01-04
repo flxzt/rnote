@@ -19,10 +19,7 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         .colorpicker()
         .fetch_all_colors()
         .iter()
-        .map(|color| {
-            let value = color.to_u32();
-            value
-        })
+        .map(|color| color.to_u32())
         .collect();
     if marker_colors.len() != 8 {
         log::error!(
@@ -57,10 +54,7 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         .colorpicker()
         .fetch_all_colors()
         .iter()
-        .map(|color| {
-            let value = color.to_u32();
-            value
-        })
+        .map(|color| color.to_u32())
         .collect();
     if brush_colors.len() != 8 {
         log::error!(
@@ -95,10 +89,7 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         .stroke_colorpicker()
         .fetch_all_colors()
         .iter()
-        .map(|color| {
-            let value = color.to_u32();
-            value
-        })
+        .map(|color| color.to_u32())
         .collect();
     if shaper_stroke_colors.len() != 2 {
         log::error!(
@@ -118,10 +109,7 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         .fill_colorpicker()
         .fetch_all_colors()
         .iter()
-        .map(|color| {
-            let value = color.to_u32();
-            value
-        })
+        .map(|color| color.to_u32())
         .collect();
     if shaper_fill_colors.len() != 2 {
         log::error!(
@@ -569,7 +557,10 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     // PDF import as vector image
     appwindow.application().unwrap().change_action_state(
         "pdf-import-as-vector",
-        &appwindow.app_settings().boolean("pdf-import-as-vector").to_variant(),
+        &appwindow
+            .app_settings()
+            .boolean("pdf-import-as-vector")
+            .to_variant(),
     );
 
     // Visual Debugging

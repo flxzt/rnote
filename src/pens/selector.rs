@@ -127,7 +127,7 @@ impl Selector {
                 ),
             };
 
-            Ok(Some(renderer.gen_image(zoom, &vec![svg], bounds)?))
+            Ok(Some(renderer.gen_image(zoom, &[svg], bounds)?))
         } else {
             Ok(None)
         }

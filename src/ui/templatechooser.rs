@@ -255,7 +255,7 @@ impl TemplateChooser {
         priv_.help_text.get().set_label(text);
     }
 
-    pub fn set_templates_path(&self, path: &path::Path) -> Result<(), ()> {
+    pub fn set_templates_path(&self, path: &path::Path) -> Result<(), anyhow::Error> {
         let priv_ = imp::TemplateChooser::from_instance(self);
 
         log::info!("setting path for brush templates_dirlist: `{:?}`", path);
@@ -263,7 +263,7 @@ impl TemplateChooser {
             priv_.templates_dirlist.set_file(Some(&templates_dir));
             Ok(())
         } else {
-            Err(())
+            Err(anyhow::Error::msg(format!("failed to create_populate_templates_dir() for path {:?} in set_templates_path(), returned None", path)))
         }
     }
 

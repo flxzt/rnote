@@ -67,7 +67,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 settings: gio::Settings::new(config::APP_ID),
-                audio_player: Rc::new(RefCell::new(RnoteAudioPlayer::new())),
+                audio_player: Rc::new(RefCell::new(RnoteAudioPlayer::default())),
                 filechoosernative: Rc::new(RefCell::new(None)),
                 main_grid: TemplateChild::<Grid>::default(),
                 devel_actions_revealer: TemplateChild::<Revealer>::default(),
@@ -143,7 +143,7 @@ mod imp {
                 log::error!("Failed to save window state, {}", &err);
             }
 
-            if let Err(err) = appsettings::save_state_to_settings(&obj) {
+            if let Err(err) = appsettings::save_state_to_settings(obj) {
                 log::error!("Failed to save app state, {}", &err);
             }
 
@@ -210,11 +210,9 @@ mod imp {
 
                     if flap.is_folded() {
                         flapreveal_toggle.set_active(false);
-                    } else {
-                        if expanded_revealed.get() || flap.reveals_flap() {
-                            expanded_revealed.set(true);
-                            flapreveal_toggle.set_active(true);
-                        }
+                    } else if expanded_revealed.get() || flap.reveals_flap() {
+                        expanded_revealed.set(true);
+                        flapreveal_toggle.set_active(true);
                     }
 
                     if flap.flap_position() == PackType::Start {
@@ -290,10 +288,8 @@ mod imp {
                     if new_width > 0 && new_width < obj.mainheader().width() - 64 {
                         flap_box.set_width_request(new_width);
                     }
-                } else {
-                    if flap.is_folded() {
-                        flapreveal_toggle.set_active(true);
-                    }
+                } else if flap.is_folded() {
+                    flapreveal_toggle.set_active(true);
                 }
             }));
 
@@ -732,7 +728,6 @@ impl RnoteAppWindow {
             .downcast::<RnoteApp>()
             .unwrap()
             .input_file()
-            .to_owned()
         {
             if self
                 .application()
@@ -750,21 +745,21 @@ impl RnoteAppWindow {
 
     pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
-        match utils::FileType::lookup_file_type(&file) {
+        match utils::FileType::lookup_file_type(file) {
             utils::FileType::RnoteFile => {
                 // Setting input file to hand it to the open overwrite dialog
                 app.set_input_file(Some(file.clone()));
 
                 if app.unsaved_changes() {
                     dialogs::dialog_open_overwrite(self);
-                } else if let Err(e) = self.load_in_file(&file, target_pos) {
+                } else if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!("failed to load in file with FileType::RnoteFile, {}", e);
                 }
             }
             utils::FileType::VectorImageFile
             | utils::FileType::BitmapImageFile
             | utils::FileType::Pdf => {
-                if let Err(e) = self.load_in_file(&file, target_pos) {
+                if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
                 }
             }

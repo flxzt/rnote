@@ -175,7 +175,7 @@ impl StrokesState {
 
                             match self.renderer.read().unwrap().gen_image(
                                 self.zoom,
-                                &vec![last_elems_svg],
+                                &[last_elems_svg],
                                 svg_bounds,
                             ) {
                                 Ok(last_elems_image) => {
@@ -223,7 +223,7 @@ impl StrokesState {
 
                             match self.renderer.read().unwrap().gen_image(
                                 self.zoom,
-                                &vec![last_elems_svg],
+                                &[last_elems_svg],
                                 svg_bounds,
                             ) {
                                 Ok(last_elems_image) => {
@@ -313,7 +313,7 @@ impl StrokesState {
                                 let svg_bounds = last_elems_svg.bounds;
                                 match renderer.read().unwrap().gen_image(
                                     zoom,
-                                    &vec![last_elems_svg],
+                                    &[last_elems_svg],
                                     svg_bounds,
                                 ) {
                                     Ok(last_elems_image) => {
@@ -355,7 +355,7 @@ impl StrokesState {
                                 let svg_bounds = last_elems_svg.bounds;
                                 match renderer.read().unwrap().gen_image(
                                     zoom,
-                                    &vec![last_elems_svg],
+                                    &[last_elems_svg],
                                     svg_bounds,
                                 ) {
                                     Ok(last_elems_image) => {
@@ -499,9 +499,9 @@ impl StrokesState {
         chrono_sorted
             .iter()
             .filter(|&&key| {
-                self.does_render(key).unwrap_or_else(|| false)
-                    && !(self.trashed(key).unwrap_or_else(|| false))
-                    && !(self.selected(key).unwrap_or_else(|| false))
+                self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && !(self.selected(key).unwrap_or(false))
             })
             .for_each(|&key| {
                 if let (Some(stroke), Some(render_comp)) =
@@ -558,9 +558,9 @@ impl StrokesState {
         chrono_sorted
             .iter()
             .filter(|&&key| {
-                self.does_render(key).unwrap_or_else(|| false)
-                    && !(self.trashed(key).unwrap_or_else(|| false))
-                    && (self.selected(key).unwrap_or_else(|| false))
+                self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && (self.selected(key).unwrap_or(false))
             })
             .for_each(|&key| {
                 let render_comp = self.render_components.get(key).unwrap();

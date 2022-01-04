@@ -302,9 +302,10 @@ mod imp {
 
                 if let Some(ref mut preconfigured_dimensions) = preconfigured_dimensions {
                     if priv_.temporary_format.orientation() == format::Orientation::Landscape {
-                        let tmp = preconfigured_dimensions.0;
-                        preconfigured_dimensions.0 = preconfigured_dimensions.1;
-                        preconfigured_dimensions.1 = tmp;
+                        std::mem::swap(
+                            &mut preconfigured_dimensions.0,
+                            &mut preconfigured_dimensions.1,
+                        );
                     }
 
                     let converted_width_mm = format::MeasureUnit::convert_measurement(

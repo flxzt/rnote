@@ -131,7 +131,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     app.add_action(&action_endless_sheet);
     let action_righthanded = appwindow.app_settings().create_action("righthanded");
     app.add_action(&action_righthanded);
-    let action_pdf_import_as_vector = appwindow.app_settings().create_action("pdf-import-as-vector");
+    let action_pdf_import_as_vector = appwindow
+        .app_settings()
+        .create_action("pdf-import-as-vector");
     app.add_action(&action_pdf_import_as_vector);
     let action_pen_sounds = appwindow.app_settings().create_action("pen-sounds");
     app.add_action(&action_pen_sounds);
@@ -388,15 +390,17 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     }));
 
     // Righthanded
-    action_pdf_import_as_vector.connect_state_notify(clone!(@weak appwindow => move |action_pdf_import_as_vector| {
-        if action_pdf_import_as_vector.state().unwrap().get::<bool>().unwrap() {
-            appwindow.settings_panel().general_pdf_import_as_vector_toggle().set_active(true);
-            appwindow.canvas().set_pdf_import_as_vector(true);
-        } else {
-            appwindow.settings_panel().general_pdf_import_as_bitmap_toggle().set_active(true);
-            appwindow.canvas().set_pdf_import_as_vector(false);
-        }
-    }));
+    action_pdf_import_as_vector.connect_state_notify(
+        clone!(@weak appwindow => move |action_pdf_import_as_vector| {
+            if action_pdf_import_as_vector.state().unwrap().get::<bool>().unwrap() {
+                appwindow.settings_panel().general_pdf_import_as_vector_toggle().set_active(true);
+                appwindow.canvas().set_pdf_import_as_vector(true);
+            } else {
+                appwindow.settings_panel().general_pdf_import_as_bitmap_toggle().set_active(true);
+                appwindow.canvas().set_pdf_import_as_vector(false);
+            }
+        }),
+    );
 
     // Righthanded
     action_righthanded.connect_state_notify(clone!(@weak appwindow => move |action_righthanded| {
@@ -557,7 +561,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             dialogs::dialog_save_sheet_as(&appwindow);
         }
 
-        if let Some(output_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().to_owned() {
+        if let Some(output_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file() {
             if let Err(e) = appwindow.canvas().sheet().save_sheet_to_file(&output_file) {
                 log::error!("failed to save sheet, {}", e);
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
@@ -617,7 +621,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                         cx.clip();
                         cx.translate(0.0, y_offset);
 
-                        if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &vec![svg.clone()], &cx) {
+                        if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &[svg.clone()], &cx) {
                             log::error!("render::draw_svgs_to_cairo_context() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
 
                         }

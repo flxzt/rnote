@@ -338,11 +338,9 @@ impl StrokesState {
             }
         });
 
-        self.selection_bounds = if let Some(bounds) = self.selection_bounds {
-            Some(geometry::aabb_translate(bounds, offset))
-        } else {
-            None
-        };
+        self.selection_bounds = self
+            .selection_bounds
+            .map(|selection_bounds| geometry::aabb_translate(selection_bounds, offset));
     }
 
     pub fn gen_svg_selection(&self) -> Result<Option<String>, anyhow::Error> {

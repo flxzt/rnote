@@ -17,13 +17,8 @@ pub struct RnoteAudioPlayer {
     play_timeout_id: Rc<RefCell<Option<glib::SourceId>>>,
 }
 
-impl RnoteAudioPlayer {
-    pub const PLAY_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(500);
-    /// Number of marker sound files installed in system-data-dir/sounds
-    pub const MARKER_N_FILES: usize = 15;
-    pub const BRUSH_SEEK_TIMES_SEC: [f64; 5] = [0.0, 0.91, 4.129, 6.0, 8.56];
-
-    pub fn new() -> Self {
+impl Default for RnoteAudioPlayer {
+    fn default() -> Self {
         Self {
             enabled: false,
             marker_file_srcs: vec![],
@@ -32,6 +27,13 @@ impl RnoteAudioPlayer {
             play_timeout_id: Rc::new(RefCell::new(None)),
         }
     }
+}
+
+impl RnoteAudioPlayer {
+    pub const PLAY_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(500);
+    /// Number of marker sound files installed in system-data-dir/sounds
+    pub const MARKER_N_FILES: usize = 15;
+    pub const BRUSH_SEEK_TIMES_SEC: [f64; 5] = [0.0, 0.91, 4.129, 6.0, 8.56];
 
     pub fn init(&mut self, _appwindow: &RnoteAppWindow) -> Result<(), anyhow::Error> {
         let system_data_dirs = glib::system_data_dirs();
@@ -83,8 +85,7 @@ impl RnoteAudioPlayer {
                             Some(format!("marker_file_{}", marker_location.0).as_str()),
                         )?;
 
-                        file_src
-                            .set_property("location", format!("{}", marker_location.1).as_str())?;
+                        file_src.set_property("location", marker_location.1.as_str())?;
 
                         pipeline.add(&file_src)?;
                         file_src.link(&selector)?;
@@ -185,7 +186,7 @@ impl RnoteAudioPlayer {
                         Some(format!("{}", brush_file_location).as_str()),
                     )?;
                     brush_file_src
-                        .set_property("location", format!("{}", brush_file_location).as_str())?;
+                        .set_property("location", brush_file_location.to_string().as_str())?;
 
                     // Creating the pipeline
                     let pipeline = gst::Pipeline::new(Some("brush_pipeline"));
@@ -384,7 +385,7 @@ impl RnoteAudioPlayer {
             if let Some(play_timeout_id) = self.play_timeout_id.borrow_mut().take() {
                 glib::source::source_remove(play_timeout_id);
             } else {
-/*                 // Set a random time out of the BRUSH_SEEK_TIMES
+                /*                 // Set a random time out of the BRUSH_SEEK_TIMES
                 let mut rng = rand::thread_rng();
                 let i = rng.gen_range(0..Self::BRUSH_SEEK_TIMES_SEC.len());
                 let f = Self::BRUSH_SEEK_TIMES_SEC[i];

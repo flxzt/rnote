@@ -167,10 +167,10 @@ impl VectorImage {
                     let line_width = 1.0;
                     cx.set_line_width(line_width);
                     cx.rectangle(
-                        f64::from(0) + line_width / 2.0,
-                        f64::from(0) + line_width / 2.0,
-                        f64::from(width) - line_width,
-                        f64::from(height) - line_width,
+                        line_width / 2.0,
+                        line_width / 2.0,
+                        width - line_width,
+                        height - line_width,
                     );
                     cx.stroke()?;
                 }

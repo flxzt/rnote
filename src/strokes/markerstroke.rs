@@ -78,13 +78,12 @@ impl StrokeBehaviour for MarkerStroke {
 
                             Some(bounds)
                         } else {
-                            return None;
+                            None
                         }
                     })
-                    .reduce(
-                        || p2d::bounding_volume::AABB::new_invalid(),
-                        |i, next| i.merged(&next),
-                    ),
+                    .reduce(p2d::bounding_volume::AABB::new_invalid, |i, next| {
+                        i.merged(&next)
+                    }),
             );
             Some(bounds)
         } else {

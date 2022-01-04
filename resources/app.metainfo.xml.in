@@ -58,6 +58,15 @@
   </provides>
 
   <releases>
+    <release version="0.2.3" date="2022-01-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>PDF import as vector images</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.2" date="2021-12-28">
       <description>
         <p>this release changes:</p>

@@ -163,6 +163,7 @@ impl BitmapImage {
         for i in 0..doc.n_pages() {
             if let Some(page) = doc.page(i) {
                 let intrinsic_size = page.size();
+
                 let (width, height, zoom) = if let Some(page_width) = page_width {
                     let zoom = f64::from(page_width) / intrinsic_size.0;
 
@@ -177,7 +178,7 @@ impl BitmapImage {
 
                 let x = pos[0];
                 let y = pos[1]
-                    + f64::from(i) * (f64::from(height) + Self::OFFSET_Y_DEFAULT.round() / 2.0);
+                    + f64::from(i) * (f64::from(height) + Self::OFFSET_Y_DEFAULT / 2.0);
 
                 let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                     .map_err(|e| {
@@ -206,8 +207,8 @@ impl BitmapImage {
                     let line_width = 1.0;
                     cx.set_line_width(line_width);
                     cx.rectangle(
-                        f64::from(0) + line_width / 2.0,
-                        f64::from(0) + line_width / 2.0,
+                        line_width / 2.0,
+                        line_width / 2.0,
                         f64::from(width) - line_width,
                         f64::from(height) - line_width,
                     );

@@ -913,8 +913,7 @@ impl RnoteAppWindow {
                 ])
         });
         let page_width = (f64::from(self.canvas().sheet().width())
-            * (self.canvas().pdf_import_width() / 100.0)
-            - 2.0 * BitmapImage::OFFSET_X_DEFAULT)
+            * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
 
         if self.canvas().pdf_import_as_vector() {

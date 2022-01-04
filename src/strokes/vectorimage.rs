@@ -79,25 +79,23 @@ impl VectorImage {
     pub fn import_from_svg_data(
         svg: &str,
         pos: na::Vector2<f64>,
-        bounds: Option<p2d::bounding_volume::AABB>,
+        size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
-        let (intrinsic_size, bounds) = if let Some(bounds) = bounds {
-            (
-                na::vector![bounds.extents()[0], bounds.extents()[1]],
-                bounds,
-            )
-        } else {
-            let intrinsic_size = compose::svg_intrinsic_size(svg).unwrap_or_else(|| {
-                na::vector![VectorImage::SIZE_X_DEFAULT, VectorImage::SIZE_Y_DEFAULT]
-            });
+        let intrinsic_size = compose::svg_intrinsic_size(svg).unwrap_or_else(|| {
+            na::vector![VectorImage::SIZE_X_DEFAULT, VectorImage::SIZE_Y_DEFAULT]
+        });
 
-            let intrinsic_bounds = p2d::bounding_volume::AABB::new(
-                na::Point2::from(pos),
-                na::Point2::from(intrinsic_size + pos),
-            );
-
-            (intrinsic_size, intrinsic_bounds)
-        };
+        let bounds = size.map_or_else(
+            || {
+                p2d::bounding_volume::AABB::new(
+                    na::Point2::from(pos),
+                    na::Point2::from(intrinsic_size + pos),
+                )
+            },
+            |size| {
+                p2d::bounding_volume::AABB::new(na::Point2::from(pos), na::Point2::from(size + pos))
+            },
+        );
 
         let svg_data = compose::remove_xml_header(svg);
 
@@ -123,30 +121,25 @@ impl VectorImage {
             if let Some(page) = doc.page(i) {
                 let intrinsic_size = page.size();
 
-                let (width, height) = if let Some(page_width) = page_width {
-                    let scale = f64::from(page_width) / intrinsic_size.0;
+                let (width, height, _zoom) = if let Some(page_width) = page_width {
+                    let zoom = f64::from(page_width) / intrinsic_size.0;
 
-                    (f64::from(page_width), (intrinsic_size.1 * scale))
+                    (f64::from(page_width), (intrinsic_size.1 * zoom), zoom)
                 } else {
-                    (intrinsic_size.0, intrinsic_size.1)
+                    (intrinsic_size.0, intrinsic_size.1, 1.0)
                 };
 
                 let x = pos[0];
                 let y = pos[1] + f64::from(i) * (height + Self::OFFSET_Y_DEFAULT / 2.0);
 
-                let bounds = p2d::bounding_volume::AABB::new(
-                    na::point![x, y],
-                    na::point![x + width, y + height],
-                );
-
                 let svg_stream: Vec<u8> = vec![];
 
                 let surface =
-                    cairo::SvgSurface::for_stream(width, height, svg_stream).map_err(|e| {
+                    cairo::SvgSurface::for_stream(intrinsic_size.0, intrinsic_size.1, svg_stream).map_err(|e| {
                         anyhow::anyhow!(
                             "create SvgSurface with dimensions ({}, {}) failed, {}",
-                            width,
-                            height,
+                            intrinsic_size.0,
+                            intrinsic_size.1,
                             e
                         )
                     })?;
@@ -169,8 +162,8 @@ impl VectorImage {
                     cx.rectangle(
                         line_width / 2.0,
                         line_width / 2.0,
-                        width - line_width,
-                        height - line_width,
+                        intrinsic_size.0 - line_width,
+                        intrinsic_size.1 - line_width,
                     );
                     cx.stroke()?;
                 }
@@ -192,7 +185,7 @@ impl VectorImage {
                 images.push(Self::import_from_svg_data(
                     &svg_data.to_string(),
                     na::vector![x, y],
-                    Some(bounds),
+                    Some(na::vector![width, height]),
                 )?);
             }
         }

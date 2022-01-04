@@ -544,7 +544,7 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
 
     // Pen sounds
     let enabled = appwindow.app_settings().boolean("pen-sounds");
-    appwindow.audioplayer().borrow_mut().enabled = enabled;
+    appwindow.audioplayer().borrow_mut().set_enabled(enabled);
 
     // Sheet margin
     let sheet_margin = appwindow.app_settings().double("sheet-margin");

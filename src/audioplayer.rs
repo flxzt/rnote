@@ -10,7 +10,7 @@ use rand::Rng;
 
 #[derive(Debug)]
 pub struct RnoteAudioPlayer {
-    pub enabled: bool,
+    enabled: bool,
     marker_file_srcs: Vec<gst::Element>,
     marker_pipeline: Option<gst::Pipeline>,
     brush_pipeline: Option<gst::Pipeline>,
@@ -34,6 +34,17 @@ impl RnoteAudioPlayer {
     /// Number of marker sound files installed in system-data-dir/sounds
     pub const MARKER_N_FILES: usize = 15;
     pub const BRUSH_SEEK_TIMES_SEC: [f64; 5] = [0.0, 0.91, 4.129, 6.0, 8.56];
+
+    pub fn enabled(&self) -> bool {
+        self.enabled
+    }
+
+    pub fn set_enabled(&mut self, enabled: bool) {
+        if !enabled {
+            self.set_states_null();
+        }
+        self.enabled = enabled;
+    }
 
     pub fn init(&mut self, _appwindow: &RnoteAppWindow) -> Result<(), anyhow::Error> {
         let system_data_dirs = glib::system_data_dirs();
@@ -311,25 +322,23 @@ impl RnoteAudioPlayer {
     }
 
     /// Stop all pipelines by setting their state to Null. Must be called when closing the application
-    pub fn stop(&self) {
-        if self.enabled {
-            if let Some(marker_pipeline) = &self.marker_pipeline {
-                if let Err(e) = marker_pipeline.set_state(gst::State::Null) {
-                    log::error!(
-                        "audioplayer pipeline set_state(Playing) failed in stop() with Err {}",
-                        e
-                    );
-                };
+    pub fn set_states_null(&self) {
+        if let Some(marker_pipeline) = &self.marker_pipeline {
+            if let Err(e) = marker_pipeline.set_state(gst::State::Null) {
+                log::error!(
+                    "audioplayer pipeline set_state(Playing) failed in stop() with Err {}",
+                    e
+                );
             };
-            if let Some(brush_pipeline) = &self.brush_pipeline {
-                if let Err(e) = brush_pipeline.set_state(gst::State::Null) {
-                    log::error!(
-                        "audioplayer pipeline set_state(Playing) failed in stop() with Err {}",
-                        e
-                    );
-                };
+        };
+        if let Some(brush_pipeline) = &self.brush_pipeline {
+            if let Err(e) = brush_pipeline.set_state(gst::State::Null) {
+                log::error!(
+                    "audioplayer pipeline set_state(Playing) failed in stop() with Err {}",
+                    e
+                );
             };
-        }
+        };
     }
 
     fn play_marker_sound(&self) {

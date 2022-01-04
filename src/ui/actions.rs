@@ -386,7 +386,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     action_pen_sounds.connect_state_notify(clone!(@weak appwindow => move |action_pen_sounds| {
         let state = action_pen_sounds.state().unwrap().get::<bool>().unwrap();
 
-        appwindow.audioplayer().borrow_mut().enabled = state;
+        appwindow.audioplayer().borrow_mut().set_enabled(state);
     }));
 
     // Righthanded

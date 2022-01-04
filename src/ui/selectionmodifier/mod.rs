@@ -87,9 +87,6 @@ pub mod imp {
     impl WidgetImpl for SelectionModifier {}
 }
 
-use std::cell::Cell;
-use std::rc::Rc;
-
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use gtk4::{EventSequenceState, GestureDrag, PropagationPhase};
 
@@ -155,23 +152,18 @@ impl SelectionModifier {
             .propagation_phase(PropagationPhase::Capture)
             .build();
         priv_.resize_tl.add_controller(&resize_tl_drag_gesture);
-        let pos = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
         resize_tl_drag_gesture.connect_drag_begin(
-            clone!(@strong pos, @weak self as obj, @weak appwindow => move |drag_gesture, x, y| {
+            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, _x, _y| {
                 drag_gesture.set_state(EventSequenceState::Claimed);
-                let coords = obj.translate_coordinates(&appwindow.canvas(), x, y).unwrap();
-                pos.set(na::vector![coords.0, coords.1]);
             }),
         );
         resize_tl_drag_gesture.connect_drag_update(
             clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, x, y| {
                 let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
-
                 if let Some(selection_bounds) = selection_bounds {
-                    let coords = obj.translate_coordinates(&appwindow.canvas(), x, y).unwrap();
-
-                    let offset = appwindow.canvas().transform_canvas_coords_to_sheet_coords(na::vector![coords.0, coords.1] + pos.get());
+                    let zoom = appwindow.canvas().zoom();
+                    let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
                     let new_bounds = p2d::bounding_volume::AABB::new(
                         na::point![

@@ -31,7 +31,7 @@ Rnote is available as  a flatpak on Flathub:
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
 | version | command |
 | --- | --- |
-| v0.2.3 | `sudo flatpak update --commit=9b462f453c574aa8b91ab6114469a39652f7bb961352d4e6c439a929956283f7 com.github.flxzt.rnote` |
+| v0.2.3 | `sudo flatpak update --commit=38b8d93e8c552b4408d55364e9320d6cc2005199ee222ea0b321c3928a2f8c21 com.github.flxzt.rnote` |
 | v0.1.6 | `sudo flatpak update --commit=ffb9781989704f3eb28910437bb26709357566a977178d5fb4ef1a2926edae8b com.github.flxzt.rnote` |
 | v0.1.5 | `sudo flatpak update --commit=721f94f5f9806fa1e80d928071e2094a75ba622c7da32bee4af9d8a6c1a82d15 com.github.flxzt.rnote` |
 

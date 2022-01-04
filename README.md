@@ -31,6 +31,7 @@ Rnote is available as  a flatpak on Flathub:
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
 | version | command |
 | --- | --- |
+| v0.2.3 | `sudo flatpak update --commit=9b462f453c574aa8b91ab6114469a39652f7bb961352d4e6c439a929956283f7 com.github.flxzt.rnote` |
 | v0.1.6 | `sudo flatpak update --commit=ffb9781989704f3eb28910437bb26709357566a977178d5fb4ef1a2926edae8b com.github.flxzt.rnote` |
 | v0.1.5 | `sudo flatpak update --commit=721f94f5f9806fa1e80d928071e2094a75ba622c7da32bee4af9d8a6c1a82d15 com.github.flxzt.rnote` |
 
@@ -57,18 +58,19 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 
 ## To-Do
 - [x] switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
-- [ ] template deduplication when loading in .rnote save files.
 - [x] printing & PDF export
-- [x] PDF import
+- [x] PDF import ( as vector & bitmap )
 - [x] vector & bitmap picture import
-- [ ] export as bitmap picture
 - [x] implement bezier curve stroke with variable stroke width
     (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
-- [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
 - [x] parallelizing rendering and actions which affect many strokes.
 - [x] asychronous rendering
-- [ ] implement text fields
+- [ ] Selection rotation
+- [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
+- [ ] export as bitmap picture
+- [ ] template deduplication when loading in .rnote save files.
+- [ ] implement text fields (Plain, Markdown)
 - [ ] implement optional stroke smoothing
 
 ## Feature Ideas:
@@ -79,6 +81,7 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 * Stylus buttons configuration to map them to different actions and / or pen types 
 * Sticky selection: drag along parts of the selected strokes based on the proximity of a round pen tool
 * Locked strokes: Selection mode to toggle the mutability of strokes
+* Share and synchronize sheets with others ( via e.g. the peer-2-peer protocol libp2p ).
 
 ## File Format
 The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.

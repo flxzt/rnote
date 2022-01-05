@@ -11,7 +11,6 @@
         <child>
           <object class="GtkMenuButton" id="chooser_button">
             <property name="direction">left</property>
-            <property name="margin_top">6</property>
             <property name="margin_bottom">3</property>
             <property name="icon_name">pen-brush-templates-symbolic</property>
             <property name="tooltip_text">Template chooser</property>
@@ -139,7 +138,6 @@
           <object class="GtkMenuButton" id="help_button">
             <property name="direction">left</property>
             <property name="margin_top">3</property>
-            <property name="margin_bottom">6</property>
             <property name="icon_name">question-round-symbolic</property>
             <property name="hexpand">true</property>
             <property name="popover">help_popover</property>

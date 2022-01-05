@@ -13,13 +13,12 @@
       <object class="GtkImage">
         <property name="icon_name">pen-shaper-symbolic</property>
         <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
       </object>
     </child>
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">0</property>
+        <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
       </object>
     </child>
@@ -257,7 +256,7 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">0</property>
+        <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
       </object>
     </child>

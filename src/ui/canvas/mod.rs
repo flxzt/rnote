@@ -813,15 +813,13 @@ impl Canvas {
                     if event.is_pointer_emulated() {
                         return;
                     }
-
-                    mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
-
-                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
-
-                    input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
-
-                    current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
                 }
+
+                mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
+
+                let mut data_entries = input::retreive_pointer_inputdata(x, y);
+                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
+                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
             }),
         );
 
@@ -831,35 +829,32 @@ impl Canvas {
                 if event.is_pointer_emulated() {
                     return;
                 }
+            }
 
-                if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
+            if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                let mut data_entries = input::retreive_pointer_inputdata(x, y);
 
-                    input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-
-                    canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
-                }
+                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
+                canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
             }
         }));
 
         priv_.mouse_drawing_gesture.connect_drag_end(
             clone!(@strong current_stroke_key, @weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
-                current_stroke_key.set(None);
-
                 if let Some(event) = mouse_drawing_gesture.current_event() {
                     // Guard not to handle touch events that emulate a pointer
                     if event.is_pointer_emulated() {
                         return;
                     }
-
-                    if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                        let mut data_entries = input::retreive_pointer_inputdata(x, y);
-
-                        input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-
-                        canvas.processing_draw_end(&appwindow, &mut data_entries);
-                    }
                 }
+
+                if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
+                    input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
+                    canvas.processing_draw_end(&appwindow, &mut data_entries);
+                }
+
+                current_stroke_key.set(None);
             }),
         );
 
@@ -887,23 +882,19 @@ impl Canvas {
         }));
 
         priv_.stylus_drawing_gesture.connect_motion(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
-            if stylus_drawing_gesture.device_tool().is_some() {
-                // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
-                let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
-
-                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
-
-                    canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
-            }
+            // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
+            let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
+            input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
+            canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
         }));
 
         priv_.stylus_drawing_gesture.connect_up(
             clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
-                current_stroke_key.set(None);
                 let mut data_entries = input::retreive_stylus_inputdata(gesture_stylus, false, x, y);
-
                 input::map_inputdata(canvas.zoom(), &mut data_entries, na::vector![0.0, 0.0]);
                 canvas.processing_draw_end(&appwindow, &mut data_entries);
+
+                current_stroke_key.set(None);
             }),
         );
 
@@ -913,7 +904,6 @@ impl Canvas {
                 touch_drawing_gesture.set_state(EventSequenceState::Claimed);
 
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
-
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
                 current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
@@ -923,23 +913,20 @@ impl Canvas {
         priv_.touch_drawing_gesture.connect_drag_update(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
-
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-
                 canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
             }
         }));
 
         priv_.touch_drawing_gesture.connect_drag_end(
             clone!(@strong current_stroke_key, @weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
-                current_stroke_key.set(None);
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
-                let mut data_entries = input::retreive_pointer_inputdata(x, y);
-
-                input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-
-                canvas.processing_draw_end(&appwindow, &mut data_entries);
+                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
+                    input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
+                    canvas.processing_draw_end(&appwindow, &mut data_entries);
                 }
+
+                current_stroke_key.set(None);
             }),
         );
 

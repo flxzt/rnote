@@ -139,6 +139,8 @@ impl Renderer {
                 })?;
             }
         }
+        // Surface needs to be flushed before accessing its data
+        surface.flush();
 
         let data = surface.data().map_err(|e| {
             anyhow::Error::msg(format!(

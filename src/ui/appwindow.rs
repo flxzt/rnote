@@ -696,13 +696,17 @@ impl RnoteAppWindow {
         );
 
         canvas_zoom_gesture.connect_cancel(
-            clone!(@strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_canvas_zoom_gesture, _eventsequence| {
+            clone!(@strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
+                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
+
                 zoomgesture_bbcenter_start.set(None);
             }),
         );
 
         canvas_zoom_gesture.connect_end(
-            clone!(@strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |_canvas_zoom_gesture, _eventsequence| {
+            clone!(@strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
+                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
+
                 zoomgesture_bbcenter_start.set(None);
                 appwindow.canvas().zoom_to(new_zoom.get());
             }),

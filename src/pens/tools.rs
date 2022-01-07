@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
 use crate::strokes::StrokeKey;
@@ -217,55 +219,25 @@ pub struct Tools {
 }
 
 impl PenBehaviour for Tools {
-    fn begin(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow) {
-        match &mut self.current_style {
-            ToolStyle::ExpandSheet => {
-                self.expand_sheet_tool.y_start_pos = inputdata.pos()[1];
-                self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
+    fn begin(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        appwindow
+            .canvas()
+            .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-                self.expand_sheet_tool.strokes_below = appwindow
-                    .canvas()
-                    .sheet()
-                    .strokes_state()
-                    .borrow_mut()
-                    .strokes_below_y_pos(self.expand_sheet_tool.y_current_pos);
-            }
-            ToolStyle::DragProximity => {
-                self.drag_proximity_tool.pos = inputdata.pos();
-                self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
-            }
-        }
-    }
-
-    fn motion(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow) {
-        match &mut self.current_style {
-            ToolStyle::ExpandSheet => {
-                let y_offset = inputdata.pos()[1] - self.expand_sheet_tool.y_current_pos;
-
-                if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
-                    appwindow
-                        .canvas()
-                        .sheet()
-                        .strokes_state()
-                        .borrow_mut()
-                        .translate_strokes(&self.expand_sheet_tool.strokes_below, na::vector![0.0, y_offset]);
-
+        if let Some(inputdata) = data_entries.pop_back() {
+            match &mut self.current_style {
+                ToolStyle::ExpandSheet => {
+                    self.expand_sheet_tool.y_start_pos = inputdata.pos()[1];
                     self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
-                }
-            }
-            ToolStyle::DragProximity => {
-                self.drag_proximity_tool.offset = inputdata.pos() - self.drag_proximity_tool.pos;
 
-                if self.drag_proximity_tool.offset.magnitude()
-                    > DragProximityTool::OFFSET_MAGN_THRESHOLD
-                {
-                    appwindow
+                    self.expand_sheet_tool.strokes_below = appwindow
                         .canvas()
                         .sheet()
                         .strokes_state()
                         .borrow_mut()
-                        .drag_strokes_proximity(&self.drag_proximity_tool);
-
+                        .strokes_below_y_pos(self.expand_sheet_tool.y_current_pos);
+                }
+                ToolStyle::DragProximity => {
                     self.drag_proximity_tool.pos = inputdata.pos();
                     self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
                 }
@@ -273,14 +245,60 @@ impl PenBehaviour for Tools {
         }
     }
 
-    fn end(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow) {
+    fn motion(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        if let Some(inputdata) = data_entries.pop_back() {
+            match &mut self.current_style {
+                ToolStyle::ExpandSheet => {
+                    let y_offset = inputdata.pos()[1] - self.expand_sheet_tool.y_current_pos;
+
+                    if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
+                        appwindow
+                            .canvas()
+                            .sheet()
+                            .strokes_state()
+                            .borrow_mut()
+                            .translate_strokes(
+                                &self.expand_sheet_tool.strokes_below,
+                                na::vector![0.0, y_offset],
+                            );
+
+                        self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
+                    }
+                }
+                ToolStyle::DragProximity => {
+                    self.drag_proximity_tool.offset =
+                        inputdata.pos() - self.drag_proximity_tool.pos;
+
+                    if self.drag_proximity_tool.offset.magnitude()
+                        > DragProximityTool::OFFSET_MAGN_THRESHOLD
+                    {
+                        appwindow
+                            .canvas()
+                            .sheet()
+                            .strokes_state()
+                            .borrow_mut()
+                            .drag_strokes_proximity(&self.drag_proximity_tool);
+
+                        self.drag_proximity_tool.pos = inputdata.pos();
+                        self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
+                    }
+                }
+            }
+        }
+    }
+
+    fn end(&mut self, _data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        appwindow
+            .canvas()
+            .set_cursor(Some(&appwindow.canvas().cursor()));
+
         match &mut self.current_style {
             ToolStyle::ExpandSheet => {
-                self.expand_sheet_tool.y_start_pos = inputdata.pos()[1];
+                self.expand_sheet_tool.y_start_pos = 0.0;
                 self.expand_sheet_tool.y_current_pos = 0.0;
             }
             ToolStyle::DragProximity => {
-                self.drag_proximity_tool.pos = inputdata.pos();
+                self.drag_proximity_tool.pos = na::Vector2::<f64>::zeros();
                 self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
             }
         }

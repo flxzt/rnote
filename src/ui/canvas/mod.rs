@@ -833,7 +833,7 @@ impl Canvas {
                     _ => { canvas.current_pen().set(PenStyle::Unknown) },
                 }
 
-                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
+                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, data_entries));
             }
         }));
 
@@ -841,7 +841,7 @@ impl Canvas {
             // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
             let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
             input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
-            canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
+            canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), data_entries);
         }));
 
         priv_.stylus_drawing_gesture.connect_up(
@@ -849,7 +849,7 @@ impl Canvas {
                 let mut data_entries = input::retreive_stylus_inputdata(gesture_stylus, false, x, y);
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, na::vector![0.0, 0.0]);
-                canvas.processing_draw_end(&appwindow, &mut data_entries);
+                canvas.processing_draw_end(&appwindow, data_entries);
 
                 current_stroke_key.set(None);
             }),
@@ -868,7 +868,7 @@ impl Canvas {
 
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
-                    current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
+                    current_stroke_key.set(canvas.processing_draw_begin(&appwindow, data_entries));
                 }
             }),
         );
@@ -883,7 +883,7 @@ impl Canvas {
                 if let Some(start_point) = mouse_drawing_gesture.start_point() {
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                    canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
+                    canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), data_entries);
                 }
             }
         }));
@@ -900,7 +900,7 @@ impl Canvas {
                     if let Some(start_point) = mouse_drawing_gesture.start_point() {
                         let mut data_entries = input::retreive_pointer_inputdata(x, y);
                         input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                        canvas.processing_draw_end(&appwindow, &mut data_entries);
+                        canvas.processing_draw_end(&appwindow, data_entries);
                     }
 
                     current_stroke_key.set(None);
@@ -916,7 +916,7 @@ impl Canvas {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
-                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
+                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, data_entries));
             }),
         );
 
@@ -924,7 +924,7 @@ impl Canvas {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), &mut data_entries);
+                canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), data_entries);
             }
         }));
 
@@ -933,7 +933,7 @@ impl Canvas {
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                    canvas.processing_draw_end(&appwindow, &mut data_entries);
+                    canvas.processing_draw_end(&appwindow, data_entries);
                 }
 
                 current_stroke_key.set(None);
@@ -1240,7 +1240,7 @@ impl Canvas {
     fn processing_draw_begin(
         &self,
         appwindow: &RnoteAppWindow,
-        data_entries: &mut VecDeque<InputData>,
+        mut data_entries: VecDeque<InputData>,
     ) -> Option<StrokeKey> {
         let priv_ = imp::Canvas::from_instance(self);
         let mut stroke_key = None;
@@ -1270,7 +1270,7 @@ impl Canvas {
                         (priv_.sheet.height()) as f64 + Self::INPUT_OVERSHOOT
                     ],
                 );
-                input::filter_mapped_inputdata(filter_bounds, data_entries);
+                input::filter_mapped_inputdata(filter_bounds, &mut data_entries);
 
                 if let Some(inputdata) = data_entries.pop_back() {
                     stroke_key = self.sheet().strokes_state().borrow_mut().new_stroke(
@@ -1286,25 +1286,22 @@ impl Canvas {
                 }
             }
             PenStyle::Eraser => {
-                if let Some(last) = data_entries.pop_back() {
-                    self.set_cursor(gdk::Cursor::from_name("none", None).as_ref());
-
-                    self.pens().borrow_mut().eraser.begin(last, appwindow);
-                }
+                self.pens()
+                    .borrow_mut()
+                    .eraser
+                    .begin(data_entries, appwindow);
             }
             PenStyle::Selector => {
-                if let Some(last) = data_entries.pop_back() {
-                    self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
-
-                    self.pens().borrow_mut().selector.begin(last, appwindow);
-                }
+                self.pens()
+                    .borrow_mut()
+                    .selector
+                    .begin(data_entries, appwindow);
             }
             PenStyle::Tools => {
-                if let Some(last) = data_entries.pop_back() {
-                    self.set_cursor(Some(&self.motion_cursor()));
-
-                    self.pens().borrow_mut().tools.begin(last, appwindow);
-                }
+                self.pens()
+                    .borrow_mut()
+                    .tools
+                    .begin(data_entries, appwindow);
             }
             PenStyle::Unknown => {}
         }
@@ -1320,7 +1317,7 @@ impl Canvas {
         &self,
         appwindow: &RnoteAppWindow,
         current_stroke_key: Option<StrokeKey>,
-        data_entries: &mut VecDeque<InputData>,
+        mut data_entries: VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
@@ -1338,37 +1335,34 @@ impl Canvas {
                         (priv_.sheet.height()) as f64 + Self::INPUT_OVERSHOOT
                     ],
                 );
-                input::filter_mapped_inputdata(filter_bounds, data_entries);
+                input::filter_mapped_inputdata(filter_bounds, &mut data_entries);
 
                 if let Some(current_stroke_key) = current_stroke_key {
                     for inputdata in data_entries {
                         self.sheet()
                             .strokes_state()
                             .borrow_mut()
-                            .add_to_stroke(current_stroke_key, Element::new(*inputdata));
+                            .add_to_stroke(current_stroke_key, Element::new(inputdata));
                     }
                 }
             }
             PenStyle::Eraser => {
-                for inputdata in data_entries {
-                    self.pens()
-                        .borrow_mut()
-                        .eraser
-                        .motion(*inputdata, appwindow);
-                }
+                self.pens()
+                    .borrow_mut()
+                    .eraser
+                    .motion(data_entries, appwindow);
             }
             PenStyle::Selector => {
-                for inputdata in data_entries {
-                    self.pens()
-                        .borrow_mut()
-                        .selector
-                        .motion(*inputdata, appwindow);
-                }
+                self.pens()
+                    .borrow_mut()
+                    .selector
+                    .motion(data_entries, appwindow);
             }
             PenStyle::Tools => {
-                for inputdata in data_entries {
-                    self.pens().borrow_mut().tools.motion(*inputdata, appwindow);
-                }
+                self.pens()
+                    .borrow_mut()
+                    .tools
+                    .motion(data_entries, appwindow);
             }
             PenStyle::Unknown => {}
         }
@@ -1381,7 +1375,7 @@ impl Canvas {
     fn processing_draw_end(
         &self,
         appwindow: &RnoteAppWindow,
-        data_entries: &mut VecDeque<InputData>,
+        data_entries: VecDeque<InputData>,
     ) {
         self.set_cursor(Some(&self.cursor()));
 
@@ -1406,19 +1400,16 @@ impl Canvas {
 
         match self.current_pen().get() {
             PenStyle::Selector => {
-                if let Some(last) = data_entries.pop_back() {
-                    self.pens().borrow_mut().selector.end(last, appwindow);
-                }
-            }
-            PenStyle::Tools => {
-                if let Some(last) = data_entries.pop_back() {
-                    self.pens().borrow_mut().tools.end(last, appwindow);
-                }
+                self.pens()
+                    .borrow_mut()
+                    .selector
+                    .end(data_entries, appwindow);
             }
             PenStyle::Eraser => {
-                if let Some(last) = data_entries.pop_back() {
-                    self.pens().borrow_mut().eraser.end(last, appwindow);
-                }
+                self.pens().borrow_mut().eraser.end(data_entries, appwindow);
+            }
+            PenStyle::Tools => {
+                self.pens().borrow_mut().tools.end(data_entries, appwindow);
             }
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unknown => {}
         }

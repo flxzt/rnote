@@ -1,8 +1,10 @@
+use std::collections::VecDeque;
+
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{geometry, utils};
 
-use gtk4::{graphene, gsk, Snapshot};
+use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 
 use super::penbehaviour::PenBehaviour;
 
@@ -22,12 +24,16 @@ impl Default for Eraser {
 }
 
 impl PenBehaviour for Eraser {
-    fn begin(&mut self, inputdata: InputData, _appwindow: &RnoteAppWindow) {
-        self.current_input = Some(inputdata);
+    fn begin(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        appwindow
+            .canvas()
+            .set_cursor(gdk::Cursor::from_name("none", None).as_ref());
+
+        self.current_input = data_entries.pop_back();
     }
 
-    fn motion(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow) {
-        self.current_input = Some(inputdata);
+    fn motion(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        self.current_input = data_entries.pop_back();
 
         appwindow
             .canvas()
@@ -41,7 +47,11 @@ impl PenBehaviour for Eraser {
         }
     }
 
-    fn end(&mut self, _inputdata: InputData, _appwindow: &RnoteAppWindow) {
+    fn end(&mut self, _data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        appwindow
+            .canvas()
+            .set_cursor(Some(&appwindow.canvas().cursor()));
+
         self.current_input = None;
     }
 

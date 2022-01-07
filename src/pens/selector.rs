@@ -1,8 +1,10 @@
+use std::collections::VecDeque;
+
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, render, utils};
 
-use gtk4::Snapshot;
+use gtk4::{gdk, prelude::*, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
@@ -31,26 +33,39 @@ impl Default for Selector {
 }
 
 impl PenBehaviour for Selector {
-    fn begin(&mut self, inputdata: InputData, _appwindow: &RnoteAppWindow) {
+    fn begin(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        appwindow
+            .canvas()
+            .set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
+
         self.path.clear();
-        self.path.push(inputdata);
+
+        if let Some(inputdata) = data_entries.pop_back() {
+            self.path.push(inputdata);
+        }
     }
 
-    fn motion(&mut self, inputdata: InputData, _appwindow: &RnoteAppWindow) {
-        match self.style {
-            SelectorStyle::Polygon => {
-                self.path.push(inputdata);
-            }
-            SelectorStyle::Rectangle => {
-                if self.path.len() > 2 {
-                    self.path.resize(2, InputData::default());
+    fn motion(&mut self, mut data_entries: VecDeque<InputData>, _appwindow: &RnoteAppWindow) {
+        if let Some(inputdata) = data_entries.pop_back() {
+            match self.style {
+                SelectorStyle::Polygon => {
+                    self.path.push(inputdata);
                 }
-                self.path.insert(1, inputdata)
+                SelectorStyle::Rectangle => {
+                    if self.path.len() > 2 {
+                        self.path.resize(2, InputData::default());
+                    }
+                    self.path.insert(1, inputdata)
+                }
             }
         }
     }
 
-    fn end(&mut self, _inputdata: InputData, appwindow: &RnoteAppWindow) {
+    fn end(&mut self, _data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        appwindow
+            .canvas()
+            .set_cursor(Some(&appwindow.canvas().cursor()));
+
         appwindow
             .canvas()
             .sheet()

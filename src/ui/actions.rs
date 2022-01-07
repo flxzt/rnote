@@ -2,7 +2,7 @@ use std::{cell::Cell, rc::Rc};
 
 use crate::{
     app::RnoteApp,
-    pens::{selector, shaper, PenStyle},
+    pens::{selector, shaper, tools, PenStyle},
     render,
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
@@ -116,6 +116,12 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         &"polygon".to_variant(),
     );
     appwindow.add_action(&action_selector_style);
+    let action_tool_style = gio::SimpleAction::new_stateful(
+        "tool-style",
+        Some(&glib::VariantType::new("s").unwrap()),
+        &"expandsheet".to_variant(),
+    );
+    appwindow.add_action(&action_tool_style);
 
     let action_devel = appwindow.app_settings().create_action("devel");
     app.add_action(&action_devel);
@@ -284,7 +290,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     appwindow.penssidebar().shaper_page().drawstyle_rough_toggle().set_active(true);
                     appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::DrawStyle::Rough;
                 },
-                _ => { log::error!("set invalid state of action `shaper-drawstye`")}
+                _ => { log::error!("set invalid state of action `shaper-drawstyle`")}
             }
         }),
     );
@@ -342,7 +348,31 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true);
                     appwindow.canvas().pens().borrow_mut().selector.set_style(selector::SelectorStyle::Rectangle);
                 },
-                _ => { log::error!("set invalid state of action `shaper-drawstye`")}
+                _ => { log::error!("set invalid state of action `selector-style`")}
+            }
+        }),
+    );
+
+    // Tool Style
+    action_tool_style.connect_activate(move |action_tool_style, parameter| {
+        if action_tool_style.state().unwrap().str().unwrap() != parameter.unwrap().str().unwrap() {
+            action_tool_style.change_state(parameter.unwrap());
+        }
+    });
+    action_tool_style.connect_change_state(
+        clone!(@weak appwindow => move |action_tool_style, value| {
+            action_tool_style.set_state(value.unwrap());
+
+            match action_tool_style.state().unwrap().str().unwrap() {
+                "expandsheet" => {
+                    appwindow.penssidebar().tools_page().toolstyle_expandsheet_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().tools.set_style(tools::ToolStyle::ExpandSheet);
+                },
+                "dragproximity" => {
+                    appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true);
+                    appwindow.canvas().pens().borrow_mut().tools.set_style(tools::ToolStyle::DragProximity);
+                },
+                _ => { log::error!("set invalid state of action `tool-style`")}
             }
         }),
     );

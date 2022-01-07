@@ -1,4 +1,5 @@
 use crate::strokes::strokestyle::InputData;
+use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, render, utils};
 
 use gtk4::Snapshot;
@@ -30,12 +31,12 @@ impl Default for Selector {
 }
 
 impl PenBehaviour for Selector {
-    fn begin(&mut self, inputdata: InputData) {
-        self.reset();
+    fn begin(&mut self, inputdata: InputData, _appwindow: &RnoteAppWindow) {
+        self.path.clear();
         self.path.push(inputdata);
     }
 
-    fn update(&mut self, inputdata: InputData) {
+    fn motion(&mut self, inputdata: InputData, _appwindow: &RnoteAppWindow) {
         match self.style {
             SelectorStyle::Polygon => {
                 self.path.push(inputdata);
@@ -49,7 +50,7 @@ impl PenBehaviour for Selector {
         }
     }
 
-    fn apply(&mut self, appwindow: &crate::ui::appwindow::RnoteAppWindow) {
+    fn end(&mut self, _inputdata: InputData, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .sheet()
@@ -59,9 +60,7 @@ impl PenBehaviour for Selector {
                 self,
                 Some(appwindow.canvas().viewport_in_sheet_coords()),
             );
-    }
 
-    fn reset(&mut self) {
         self.path.clear();
     }
 

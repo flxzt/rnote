@@ -1289,21 +1289,21 @@ impl Canvas {
                 if let Some(last) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("none", None).as_ref());
 
-                    self.pens().borrow_mut().eraser.begin(last);
+                    self.pens().borrow_mut().eraser.begin(last, appwindow);
                 }
             }
             PenStyle::Selector => {
                 if let Some(last) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
 
-                    self.pens().borrow_mut().selector.begin(last);
+                    self.pens().borrow_mut().selector.begin(last, appwindow);
                 }
             }
             PenStyle::Tools => {
                 if let Some(last) = data_entries.pop_back() {
                     self.set_cursor(Some(&self.motion_cursor()));
 
-                    self.pens().borrow_mut().tools.begin(last);
+                    self.pens().borrow_mut().tools.begin(last, appwindow);
                 }
             }
             PenStyle::Unknown => {}
@@ -1350,19 +1350,24 @@ impl Canvas {
                 }
             }
             PenStyle::Eraser => {
-                if let Some(last) = data_entries.pop_back() {
-                    self.pens().borrow_mut().eraser.update(last);
-                    self.pens().borrow_mut().eraser.apply(appwindow);
+                for inputdata in data_entries {
+                    self.pens()
+                        .borrow_mut()
+                        .eraser
+                        .motion(*inputdata, appwindow);
                 }
             }
             PenStyle::Selector => {
                 for inputdata in data_entries {
-                    self.pens().borrow_mut().selector.update(*inputdata);
+                    self.pens()
+                        .borrow_mut()
+                        .selector
+                        .motion(*inputdata, appwindow);
                 }
             }
             PenStyle::Tools => {
-                if let Some(last) = data_entries.pop_back() {
-                    self.pens().borrow_mut().tools.update(last);
+                for inputdata in data_entries {
+                    self.pens().borrow_mut().tools.motion(*inputdata, appwindow);
                 }
             }
             PenStyle::Unknown => {}
@@ -1376,7 +1381,7 @@ impl Canvas {
     fn processing_draw_end(
         &self,
         appwindow: &RnoteAppWindow,
-        _data_entries: &mut VecDeque<InputData>,
+        data_entries: &mut VecDeque<InputData>,
     ) {
         self.set_cursor(Some(&self.cursor()));
 
@@ -1401,18 +1406,21 @@ impl Canvas {
 
         match self.current_pen().get() {
             PenStyle::Selector => {
-                self.pens().borrow_mut().selector.apply(appwindow);
-                self.pens().borrow_mut().selector.reset();
+                if let Some(last) = data_entries.pop_back() {
+                    self.pens().borrow_mut().selector.end(last, appwindow);
+                }
             }
             PenStyle::Tools => {
-                self.pens().borrow_mut().tools.apply(appwindow);
-                self.pens().borrow_mut().tools.reset();
+                if let Some(last) = data_entries.pop_back() {
+                    self.pens().borrow_mut().tools.end(last, appwindow);
+                }
             }
-            PenStyle::Marker
-            | PenStyle::Brush
-            | PenStyle::Shaper
-            | PenStyle::Eraser
-            | PenStyle::Unknown => {}
+            PenStyle::Eraser => {
+                if let Some(last) = data_entries.pop_back() {
+                    self.pens().borrow_mut().eraser.end(last, appwindow);
+                }
+            }
+            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unknown => {}
         }
 
         self.pens().borrow_mut().set_shown(false);

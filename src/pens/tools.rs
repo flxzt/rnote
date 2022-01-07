@@ -1,17 +1,17 @@
 use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
+use crate::strokes::StrokeKey;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, geometry, render, utils};
 
-use gtk4::Snapshot;
-use serde::{Deserialize, Serialize};
+use gtk4::{prelude::*, Snapshot};
 
 use super::penbehaviour::PenBehaviour;
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub enum ToolStyle {
     ExpandSheet,
-    ModifyStroke,
+    DragProximity,
 }
 
 impl Default for ToolStyle {
@@ -20,22 +20,25 @@ impl Default for ToolStyle {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct ExpandSheetTool {
-    y_threshold: f64,
-    offset: f64,
+    y_start_pos: f64,
+    y_current_pos: f64,
+    strokes_below: Vec<StrokeKey>,
 }
 
 impl Default for ExpandSheetTool {
     fn default() -> Self {
         Self {
-            y_threshold: 0.0,
-            offset: 0.0,
+            y_start_pos: 0.0,
+            y_current_pos: 0.0,
+            strokes_below: vec![],
         }
     }
 }
 
 impl ExpandSheetTool {
+    pub const Y_OFFSET_THRESHOLD: f64 = 2.0;
     pub const FILL_COLOR: utils::Color = utils::Color {
         r: 0.8,
         g: 0.9,
@@ -57,14 +60,6 @@ impl ExpandSheetTool {
     };
     pub const OFFSET_LINE_STROKE_WIDTH: f64 = 2.0;
 
-    pub fn new_y_threshold(&mut self, y_threshold: f64) {
-        self.y_threshold = y_threshold;
-    }
-
-    pub fn new_offset(&mut self, offset: f64) {
-        self.offset = offset;
-    }
-
     pub fn draw(
         &self,
         sheet_bounds: p2d::bounding_volume::AABB,
@@ -73,9 +68,9 @@ impl ExpandSheetTool {
         snapshot: &Snapshot,
     ) -> Result<(), anyhow::Error> {
         let x = sheet_bounds.mins[0];
-        let y = self.y_threshold;
+        let y = self.y_start_pos;
         let width = sheet_bounds.extents()[0];
-        let height = self.offset;
+        let height = self.y_current_pos - self.y_start_pos;
         let bounds =
             geometry::aabb_new_positive(na::vector![x, y], na::vector![x + width, y + height]);
 
@@ -126,70 +121,176 @@ impl ExpandSheetTool {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ModifyStrokeTool {
-    input: Vec<InputData>,
+#[derive(Clone, Debug)]
+pub struct DragProximityTool {
+    pub pos: na::Vector2<f64>,
+    pub offset: na::Vector2<f64>,
+    pub radius: f64,
 }
 
-impl Default for ModifyStrokeTool {
+impl Default for DragProximityTool {
     fn default() -> Self {
-        Self { input: vec![] }
+        Self {
+            pos: na::Vector2::<f64>::zeros(),
+            offset: na::Vector2::<f64>::zeros(),
+            radius: Self::RADIUS_DEFAULT,
+        }
     }
 }
 
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+impl DragProximityTool {
+    pub const OFFSET_MAGN_THRESHOLD: f64 = 2.0;
+    pub const OUTLINE_COLOR: utils::Color = utils::Color {
+        r: 0.5,
+        g: 0.7,
+        b: 0.7,
+        a: 1.0,
+    };
+    pub const OUTLINE_WIDTH: f64 = 1.0;
+    pub const FILL_COLOR: utils::Color = utils::Color {
+        r: 0.8,
+        g: 0.8,
+        b: 0.8,
+        a: 0.2,
+    };
+    pub const RADIUS_DEFAULT: f64 = 60.0;
+
+    pub fn draw(
+        &self,
+        _sheet_bounds: p2d::bounding_volume::AABB,
+        renderer: &Renderer,
+        zoom: f64,
+        snapshot: &Snapshot,
+    ) -> Result<(), anyhow::Error> {
+        let cx = self.pos[0] + self.offset[0];
+        let cy = self.pos[1] + self.offset[1];
+        let r = self.radius;
+        let mut draw_bounds = geometry::aabb_new_positive(
+            na::vector![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
+            na::vector![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
+        );
+        draw_bounds.take_point(na::Point2::<f64>::from(
+            self.pos.add_scalar(-Self::OUTLINE_WIDTH),
+        ));
+        draw_bounds.take_point(na::Point2::<f64>::from(
+            self.pos.add_scalar(Self::OUTLINE_WIDTH),
+        ));
+
+        let mut group = svg::node::element::Group::new();
+
+        let n_circles = 7;
+        for i in (0..n_circles).rev() {
+            let r = r * (f64::from(i) / f64::from(n_circles));
+
+            let outline_circle = svg::node::element::Circle::new()
+                .set("cx", cx)
+                .set("cy", cy)
+                .set("r", r)
+                .set("stroke", Self::OUTLINE_COLOR.to_css_color())
+                .set("stroke-width", Self::OUTLINE_WIDTH)
+                .set("fill", Self::FILL_COLOR.to_css_color());
+
+            group = group.add(outline_circle);
+        }
+
+        let mut svg_data = rough_rs::node_to_string(&group)?;
+
+        svg_data = compose::wrap_svg(&svg_data, Some(draw_bounds), Some(draw_bounds), true, false);
+        let svg = render::Svg {
+            svg_data,
+            bounds: draw_bounds,
+        };
+
+        let image = renderer.gen_image(zoom, &[svg], draw_bounds)?;
+        let rendernode = render::image_to_rendernode(&image, zoom);
+        snapshot.append_node(&rendernode);
+
+        Ok(())
+    }
+}
+
+#[derive(Clone, Debug, Default)]
 pub struct Tools {
     current_style: ToolStyle,
     pub expand_sheet_tool: ExpandSheetTool,
-    pub modify_stroke_tool: ModifyStrokeTool,
+    pub drag_proximity_tool: DragProximityTool,
 }
 
 impl PenBehaviour for Tools {
-    fn begin(&mut self, inputdata: InputData) {
+    fn begin(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow) {
         match &mut self.current_style {
             ToolStyle::ExpandSheet => {
-                self.expand_sheet_tool.y_threshold = inputdata.pos()[1];
-                self.expand_sheet_tool.offset = 0.0;
-            }
-            ToolStyle::ModifyStroke => {}
-        }
-    }
+                self.expand_sheet_tool.y_start_pos = inputdata.pos()[1];
+                self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
 
-    fn update(&mut self, inputdata: InputData) {
-        match &mut self.current_style {
-            ToolStyle::ExpandSheet => {
-                self.expand_sheet_tool.offset =
-                    inputdata.pos()[1] - self.expand_sheet_tool.y_threshold;
-            }
-            ToolStyle::ModifyStroke => {}
-        }
-    }
-
-    fn apply(&mut self, appwindow: &RnoteAppWindow) {
-        match &mut self.current_style {
-            ToolStyle::ExpandSheet => {
-                appwindow
+                self.expand_sheet_tool.strokes_below = appwindow
                     .canvas()
                     .sheet()
                     .strokes_state()
                     .borrow_mut()
-                    .translate_strokes_threshold_vertical(
-                        self.expand_sheet_tool.y_threshold,
-                        self.expand_sheet_tool.offset,
-                    );
+                    .strokes_below_y_pos(self.expand_sheet_tool.y_current_pos);
             }
-            ToolStyle::ModifyStroke => {}
+            ToolStyle::DragProximity => {
+                self.drag_proximity_tool.pos = inputdata.pos();
+                self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
+            }
         }
     }
 
-    fn reset(&mut self) {
+    fn motion(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow) {
         match &mut self.current_style {
             ToolStyle::ExpandSheet => {
-                self.expand_sheet_tool.y_threshold = 0.0;
-                self.expand_sheet_tool.offset = 0.0;
+                let y_offset = inputdata.pos()[1] - self.expand_sheet_tool.y_current_pos;
+
+                if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
+                    appwindow
+                        .canvas()
+                        .sheet()
+                        .strokes_state()
+                        .borrow_mut()
+                        .translate_strokes(&self.expand_sheet_tool.strokes_below, na::vector![0.0, y_offset]);
+
+                    self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
+                }
             }
-            ToolStyle::ModifyStroke => {}
+            ToolStyle::DragProximity => {
+                self.drag_proximity_tool.offset = inputdata.pos() - self.drag_proximity_tool.pos;
+
+                if self.drag_proximity_tool.offset.magnitude()
+                    > DragProximityTool::OFFSET_MAGN_THRESHOLD
+                {
+                    appwindow
+                        .canvas()
+                        .sheet()
+                        .strokes_state()
+                        .borrow_mut()
+                        .drag_strokes_proximity(&self.drag_proximity_tool);
+
+                    self.drag_proximity_tool.pos = inputdata.pos();
+                    self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
+                }
+            }
         }
+    }
+
+    fn end(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow) {
+        match &mut self.current_style {
+            ToolStyle::ExpandSheet => {
+                self.expand_sheet_tool.y_start_pos = inputdata.pos()[1];
+                self.expand_sheet_tool.y_current_pos = 0.0;
+            }
+            ToolStyle::DragProximity => {
+                self.drag_proximity_tool.pos = inputdata.pos();
+                self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
+            }
+        }
+
+        if appwindow.canvas().sheet().resize_endless() {
+            appwindow.canvas().update_background_rendernode();
+        }
+
+        appwindow.canvas().queue_resize();
+        appwindow.canvas().queue_draw();
     }
 
     fn draw(
@@ -204,7 +305,10 @@ impl PenBehaviour for Tools {
                 self.expand_sheet_tool
                     .draw(sheet_bounds, renderer, zoom, snapshot)?;
             }
-            ToolStyle::ModifyStroke => {}
+            ToolStyle::DragProximity => {
+                self.drag_proximity_tool
+                    .draw(sheet_bounds, renderer, zoom, snapshot)?;
+            }
         }
 
         Ok(())

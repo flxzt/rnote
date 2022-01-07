@@ -408,7 +408,7 @@ impl StrokesState {
     }
 
     pub fn regenerate_rendering_for_selection(&mut self) {
-        let selection_keys = self.keys_selection();
+        let selection_keys = self.selection_keys();
 
         selection_keys.iter().for_each(|&key| {
             self.regenerate_rendering_for_stroke(key);
@@ -416,7 +416,7 @@ impl StrokesState {
     }
 
     pub fn regenerate_rendering_for_selection_threaded(&mut self) {
-        let selection_keys = self.keys_selection();
+        let selection_keys = self.selection_keys();
 
         selection_keys.iter().for_each(|&key| {
             self.regenerate_rendering_for_stroke_threaded(key);

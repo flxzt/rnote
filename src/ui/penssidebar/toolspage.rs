@@ -7,7 +7,7 @@ mod imp {
         #[template_child]
         pub toolstyle_expandsheet_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub toolstyle_modifystroke_toggle: TemplateChild<ToggleButton>,
+        pub toolstyle_dragproximity_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -41,7 +41,7 @@ mod imp {
 }
 
 use crate::ui::appwindow::RnoteAppWindow;
-use gtk4::{glib, subclass::prelude::*, Orientable, ToggleButton, Widget};
+use gtk4::{prelude::*, glib, glib::clone, subclass::prelude::*, Orientable, ToggleButton, Widget};
 
 glib::wrapper! {
     pub struct ToolsPage(ObjectSubclass<imp::ToolsPage>)
@@ -65,11 +65,23 @@ impl ToolsPage {
             .get()
     }
 
-    pub fn toolstyle_modifystroke_toggle(&self) -> ToggleButton {
+    pub fn toolstyle_dragproximity_toggle(&self) -> ToggleButton {
         imp::ToolsPage::from_instance(self)
-            .toolstyle_modifystroke_toggle
+            .toolstyle_dragproximity_toggle
             .get()
     }
 
-    pub fn init(&self, _appwindow: &RnoteAppWindow) {}
+    pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.toolstyle_expandsheet_toggle().connect_active_notify(clone!(@weak appwindow => move |toolstyle_expandsheet_toggle| {
+            if toolstyle_expandsheet_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"expandsheet".to_variant()));
+            }
+        }));
+
+        self.toolstyle_dragproximity_toggle().connect_active_notify(clone!(@weak appwindow => move |toolstyle_dragproximity_toggle| {
+            if toolstyle_dragproximity_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"dragproximity".to_variant()));
+            }
+        }));
+    }
 }

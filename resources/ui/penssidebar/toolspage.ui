@@ -39,9 +39,9 @@
           </object>
         </child>
         <child>
-          <object class="GtkToggleButton" id="toolstyle_modifystroke_toggle">
-            <property name="label">m</property>
-            <property name="tooltip_text">modify a stroke</property>
+          <object class="GtkToggleButton" id="toolstyle_dragproximity_toggle">
+            <property name="label">d</property>
+            <property name="tooltip_text">drag along based on proximity</property>
             <property name="group">toolstyle_expandsheet_toggle</property>
             <property name="vexpand">true</property>
           </object>

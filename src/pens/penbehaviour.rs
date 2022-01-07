@@ -5,10 +5,9 @@ use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
 
 pub trait PenBehaviour {
-    fn begin(&mut self, inputdata: InputData);
-    fn update(&mut self, inputdata: InputData);
-    fn apply(&mut self, appwindow: &RnoteAppWindow);
-    fn reset(&mut self);
+    fn begin(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow);
+    fn motion(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow);
+    fn end(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow);
     fn draw(
         &self,
         sheet_bounds: p2d::bounding_volume::AABB,

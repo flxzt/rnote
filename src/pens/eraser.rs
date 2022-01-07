@@ -1,4 +1,5 @@
 use crate::strokes::strokestyle::InputData;
+use crate::ui::appwindow::RnoteAppWindow;
 use crate::{geometry, utils};
 
 use gtk4::{graphene, gsk, Snapshot};
@@ -21,15 +22,15 @@ impl Default for Eraser {
 }
 
 impl PenBehaviour for Eraser {
-    fn begin(&mut self, inputdata: InputData) {
+    fn begin(&mut self, inputdata: InputData, _appwindow: &RnoteAppWindow) {
         self.current_input = Some(inputdata);
     }
 
-    fn update(&mut self, inputdata: InputData) {
+    fn motion(&mut self, inputdata: InputData, _appwindow: &RnoteAppWindow) {
         self.current_input = Some(inputdata);
     }
 
-    fn apply(&mut self, appwindow: &crate::ui::appwindow::RnoteAppWindow) {
+    fn end(&mut self, _inputdata: InputData, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .sheet()
@@ -40,10 +41,6 @@ impl PenBehaviour for Eraser {
         if appwindow.canvas().sheet().resize_endless() {
             appwindow.canvas().update_background_rendernode();
         }
-    }
-
-    fn reset(&mut self) {
-        self.current_input = None;
     }
 
     fn draw(

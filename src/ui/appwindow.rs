@@ -517,7 +517,8 @@ impl RnoteAppWindow {
             log::error!("failed to init audio_player with Err {}", e);
         }
         priv_.workspacebrowser.get().init(self);
-        priv_.canvas.get().init(self);
+        priv_.settings_panel.get().init(self);
+        priv_.devel_actions.get().init(self);
         priv_.mainheader.get().init(self);
         priv_.mainheader.get().canvasmenu().init(self);
         priv_.mainheader.get().appmenu().init(self);
@@ -527,8 +528,8 @@ impl RnoteAppWindow {
         priv_.penssidebar.get().shaper_page().init(self);
         priv_.penssidebar.get().eraser_page().init(self);
         priv_.penssidebar.get().selector_page().init(self);
-        priv_.settings_panel.get().init(self);
-        priv_.devel_actions.get().init(self);
+        priv_.penssidebar.get().tools_page().init(self);
+        priv_.canvas.get().init(self);
         priv_.canvas.get().sheet().format().init(self);
         priv_
             .canvas

@@ -1,8 +1,7 @@
-use super::strokebehaviour::StrokeBehaviour;
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::selector::{self, Selector};
-use crate::{compose, geometry, render};
+use crate::{compose, geometry};
 
 use geo::line_string;
 use geo::prelude::*;
@@ -71,7 +70,7 @@ impl StrokesState {
     }
 
     /// Returns all keys for the selection
-    pub fn keys_selection(&self) -> Vec<StrokeKey> {
+    pub fn selection_keys(&self) -> Vec<StrokeKey> {
         self.selection_components
             .iter()
             .par_bridge()
@@ -86,11 +85,11 @@ impl StrokesState {
     }
 
     pub fn selection_len(&self) -> usize {
-        self.keys_selection().len()
+        self.selection_keys().len()
     }
 
     pub fn update_selection_bounds(&mut self) {
-        self.selection_bounds = self.gen_bounds(&self.keys_selection());
+        self.selection_bounds = self.gen_bounds(&self.selection_keys());
     }
 
     pub fn deselect_all_strokes(&mut self) {
@@ -114,7 +113,7 @@ impl StrokesState {
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
         ];
 
-        let selected = self.keys_selection();
+        let selected = self.selection_keys();
         self.deselect_all_strokes();
 
         selected.iter().for_each(|&key| {
@@ -278,75 +277,32 @@ impl StrokesState {
         }
     }
 
-    /// Resizing the selection with its contents to the new bounds. Stroke rendering regeneration is needed when resizing is finished.
-    pub fn resize_selection(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        if let Some(selection_bounds) = self.selection_bounds {
-            self.strokes.iter_mut().for_each(|(key, stroke)| {
-                if let Some(selection_comp) = self.selection_components.get(key) {
-                    if selection_comp.selected {
-                        let old_stroke_bounds = stroke.bounds();
-                        let new_stroke_bounds = geometry::scale_inner_bounds_to_new_outer_bounds(
-                            stroke.bounds(),
-                            selection_bounds,
-                            new_bounds,
-                        );
-                        stroke.resize(new_stroke_bounds);
-
-                        if let Some(render_comp) = self.render_components.get_mut(key) {
-                            for image in render_comp.images.iter_mut() {
-                                image.bounds = geometry::scale_inner_bounds_to_new_outer_bounds(
-                                    image.bounds,
-                                    old_stroke_bounds,
-                                    new_stroke_bounds,
-                                )
-                            }
-
-                            if let Some(new_rendernode) =
-                                render::images_to_rendernode(&render_comp.images, self.zoom)
-                            {
-                                render_comp.rendernode = new_rendernode;
-                            }
-                            render_comp.regenerate_flag = true;
-                        }
-                    }
-                }
-            });
-
-            self.selection_bounds = Some(new_bounds);
-        }
-    }
-
     /// Translate the selection with its contents with an offset relative to the current position
     pub fn translate_selection(&mut self, offset: na::Vector2<f64>) {
-        self.strokes.iter_mut().for_each(|(key, stroke)| {
-            if let Some(selection_comp) = self.selection_components.get(key) {
-                if selection_comp.selected {
-                    stroke.translate(offset);
+        let selection_keys = self.selection_keys();
 
-                    if let Some(render_comp) = self.render_components.get_mut(key) {
-                        for image in render_comp.images.iter_mut() {
-                            image.bounds = geometry::aabb_translate(image.bounds, offset);
-                        }
-
-                        if let Some(new_rendernode) =
-                            render::images_to_rendernode(&render_comp.images, self.zoom)
-                        {
-                            render_comp.rendernode = new_rendernode;
-                        }
-                    }
-                }
-            }
-        });
+        self.translate_strokes(&selection_keys, offset);
 
         self.selection_bounds = self
             .selection_bounds
             .map(|selection_bounds| geometry::aabb_translate(selection_bounds, offset));
     }
 
+    /// Resizing the selection with its contents to the new bounds. Stroke rendering regeneration is needed when resizing is finished.
+    pub fn resize_selection(&mut self, new_bounds: p2d::bounding_volume::AABB) {
+        let selection_keys = self.selection_keys();
+
+        if let Some(selection_bounds) = self.selection_bounds {
+            self.resize_strokes(&selection_keys, selection_bounds, new_bounds);
+
+            self.selection_bounds = Some(new_bounds);
+        }
+    }
+
     pub fn gen_svg_selection(&self) -> Result<Option<String>, anyhow::Error> {
         if let Some(selection_bounds) = self.selection_bounds {
             let mut data = self
-                .keys_selection()
+                .selection_keys()
                 .iter()
                 .filter_map(|key| self.strokes.get(*key))
                 .filter_map(|stroke| {

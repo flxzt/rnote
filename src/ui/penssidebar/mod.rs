@@ -6,6 +6,7 @@ pub mod shaperpage;
 pub mod toolspage;
 
 mod imp {
+    use super::toolspage::ToolsPage;
     use super::{
         brushpage::BrushPage, eraserpage::EraserPage, markerpage::MarkerPage,
         selectorpage::SelectorPage, shaperpage::ShaperPage,
@@ -43,7 +44,7 @@ mod imp {
         #[template_child]
         pub tools_stackpage: TemplateChild<StackPage>,
         #[template_child]
-        pub tools_page: TemplateChild<SelectorPage>,
+        pub tools_page: TemplateChild<ToolsPage>,
     }
 
     #[glib::object_subclass]
@@ -84,6 +85,8 @@ use selectorpage::SelectorPage;
 use shaperpage::ShaperPage;
 
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Stack, StackPage, Widget};
+
+use self::toolspage::ToolsPage;
 
 glib::wrapper! {
     pub struct PensSideBar(ObjectSubclass<imp::PensSideBar>)
@@ -149,7 +152,7 @@ impl PensSideBar {
         imp::PensSideBar::from_instance(self).tools_stackpage.get()
     }
 
-    pub fn tools_page(&self) -> SelectorPage {
+    pub fn tools_page(&self) -> ToolsPage {
         imp::PensSideBar::from_instance(self).tools_page.get()
     }
 

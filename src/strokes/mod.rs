@@ -13,11 +13,13 @@ pub mod trash_comp;
 
 use std::sync::{Arc, RwLock};
 
-use crate::compose;
 use crate::drawbehaviour::DrawBehaviour;
+use crate::pens::tools::DragProximityTool;
 use crate::ui::appwindow::RnoteAppWindow;
+use crate::{compose, geometry};
 use crate::{pens::PenStyle, pens::Pens, render};
 use chrono_comp::ChronoComponent;
+use p2d::query::PointQuery;
 use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
@@ -296,7 +298,7 @@ impl StrokesState {
     }
 
     pub fn update_geometry_selection_strokes(&mut self) {
-        let keys: Vec<StrokeKey> = self.keys_selection();
+        let keys: Vec<StrokeKey> = self.selection_keys();
         keys.iter().for_each(|&key| {
             self.update_geometry_for_stroke(key);
         });
@@ -474,18 +476,145 @@ impl StrokesState {
         Ok(data)
     }
 
-    /// Translate all strokes below the y_threshold with the offset in the y-axis
-    pub fn translate_strokes_threshold_vertical(&mut self, y_threshold: f64, offset: f64) {
+    pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {
+        strokes.iter().for_each(|&key| {
+            if let Some(stroke) = self.strokes.get_mut(key) {
+                stroke.translate(offset);
+
+                if let Some(render_comp) = self.render_components.get_mut(key) {
+                    for image in render_comp.images.iter_mut() {
+                        image.bounds = geometry::aabb_translate(image.bounds, offset);
+                    }
+
+                    if let Some(new_rendernode) =
+                        render::images_to_rendernode(&render_comp.images, self.zoom)
+                    {
+                        render_comp.rendernode = new_rendernode;
+                    }
+                }
+            }
+        });
+    }
+
+    pub fn resize_strokes(
+        &mut self,
+        strokes: &[StrokeKey],
+        old_bounds: p2d::bounding_volume::AABB,
+        new_bounds: p2d::bounding_volume::AABB,
+    ) {
+        strokes.iter().for_each(|&key| {
+            if let Some(stroke) = self.strokes.get_mut(key) {
+                let old_stroke_bounds = stroke.bounds();
+                let new_stroke_bounds = geometry::scale_inner_bounds_to_new_outer_bounds(
+                    stroke.bounds(),
+                    old_bounds,
+                    new_bounds,
+                );
+                stroke.resize(new_stroke_bounds);
+
+                if let Some(render_comp) = self.render_components.get_mut(key) {
+                    for image in render_comp.images.iter_mut() {
+                        image.bounds = geometry::scale_inner_bounds_to_new_outer_bounds(
+                            image.bounds,
+                            old_stroke_bounds,
+                            new_stroke_bounds,
+                        )
+                    }
+
+                    if let Some(new_rendernode) =
+                        render::images_to_rendernode(&render_comp.images, self.zoom)
+                    {
+                        render_comp.rendernode = new_rendernode;
+                    }
+                    render_comp.regenerate_flag = true;
+                }
+            }
+        });
+    }
+
+    /// Returns all strokes below the y_pos
+    pub fn strokes_below_y_pos(&self, y_pos: f64) -> Vec<StrokeKey> {
         self.strokes
-            .iter_mut()
-            .par_bridge()
+            .iter()
             .filter_map(|(key, stroke)| {
-                if stroke.bounds().mins[1] > y_threshold {
-                    stroke.translate(na::vector![0.0, offset]);
+                if stroke.bounds().mins[1] > y_pos {
                     Some(key)
                 } else {
                     None
                 }
+            })
+            .collect::<Vec<StrokeKey>>()
+    }
+
+    pub fn drag_strokes_proximity(&mut self, drag_proximity_tool: &DragProximityTool) {
+        let sphere = p2d::bounding_volume::BoundingSphere {
+            center: na::Point2::<f64>::from(drag_proximity_tool.pos),
+            radius: drag_proximity_tool.radius,
+        };
+        let tool_bounds = geometry::aabb_new_positive(
+            na::vector![
+                drag_proximity_tool.pos[0] - drag_proximity_tool.radius,
+                drag_proximity_tool.pos[1] - drag_proximity_tool.radius
+            ],
+            na::vector![
+                drag_proximity_tool.pos[0] + drag_proximity_tool.radius,
+                drag_proximity_tool.pos[1] + drag_proximity_tool.radius
+            ],
+        );
+
+        self.strokes
+            .iter_mut()
+            .par_bridge()
+            .filter_map(|(key, stroke)| match stroke {
+                StrokeStyle::MarkerStroke(markerstroke) => {
+                    if markerstroke.bounds().intersects(&tool_bounds) {
+                        markerstroke.elements.iter_mut().for_each(|element| {
+                            if sphere.contains_local_point(&na::Point2::<f64>::from(
+                                element.inputdata.pos(),
+                            )) {
+                                // Zero when right at drag_proximity_tool position, One when right at the radius
+                                let distance_ratio = (1.0
+                                    - (element.inputdata.pos() - drag_proximity_tool.pos)
+                                        .magnitude()
+                                        / drag_proximity_tool.radius)
+                                    .clamp(0.0, 1.0);
+
+                                element.inputdata.set_pos(
+                                    element.inputdata.pos()
+                                        + drag_proximity_tool.offset * distance_ratio,
+                                );
+                            }
+                        });
+                        Some(key)
+                    } else {
+                        None
+                    }
+                }
+                StrokeStyle::BrushStroke(brushstroke) => {
+                    if brushstroke.bounds().intersects(&tool_bounds) {
+                        brushstroke.elements.iter_mut().for_each(|element| {
+                            if sphere.contains_local_point(&na::Point2::<f64>::from(
+                                element.inputdata.pos(),
+                            )) {
+                                // Zero when right at drag_proximity_tool position, One when right at the radius
+                                let distance_ratio = (1.0
+                                    - (element.inputdata.pos() - drag_proximity_tool.pos)
+                                        .magnitude()
+                                        / drag_proximity_tool.radius)
+                                    .clamp(0.0, 1.0);
+
+                                element.inputdata.set_pos(
+                                    element.inputdata.pos()
+                                        + drag_proximity_tool.offset * distance_ratio,
+                                );
+                            }
+                        });
+                        Some(key)
+                    } else {
+                        None
+                    }
+                }
+                _ => None,
             })
             .collect::<Vec<StrokeKey>>()
             .iter()

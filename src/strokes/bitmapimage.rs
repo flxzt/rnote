@@ -1,11 +1,12 @@
 use std::io;
 
+use crate::drawbehaviour::DrawBehaviour;
 use crate::{compose, geometry, render};
 use anyhow::Context;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};
 
-use crate::strokes::strokestyle::StrokeBehaviour;
+use crate::strokes::strokebehaviour::StrokeBehaviour;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum Format {
@@ -46,21 +47,13 @@ pub const BITMAPIMAGE_TEMPL_STR: &str = r#"
 <image x="{{x}}" y="{{y}}" width="{{width}}" height="{{height}}" href="data:{{mime_type}};base64,{{data_base64}}"/>
 "#;
 
-impl StrokeBehaviour for BitmapImage {
+impl DrawBehaviour for BitmapImage {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
         self.bounds
     }
 
     fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
         self.bounds = bounds;
-    }
-
-    fn translate(&mut self, offset: na::Vector2<f64>) {
-        self.bounds = geometry::aabb_translate(self.bounds, offset);
-    }
-
-    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        self.bounds = new_bounds;
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
@@ -106,6 +99,16 @@ impl StrokeBehaviour for BitmapImage {
         let svg = render::Svg { bounds, svg_data };
 
         Ok(vec![svg])
+    }
+}
+
+impl StrokeBehaviour for BitmapImage {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
+        self.bounds = geometry::aabb_translate(self.bounds, offset);
+    }
+
+    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
+        self.bounds = new_bounds;
     }
 }
 
@@ -177,8 +180,7 @@ impl BitmapImage {
                 };
 
                 let x = pos[0];
-                let y = pos[1]
-                    + f64::from(i) * (f64::from(height) + Self::OFFSET_Y_DEFAULT / 2.0);
+                let y = pos[1] + f64::from(i) * (f64::from(height) + Self::OFFSET_Y_DEFAULT / 2.0);
 
                 let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                     .map_err(|e| {

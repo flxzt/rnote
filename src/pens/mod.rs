@@ -3,7 +3,9 @@ pub mod eraser;
 pub mod marker;
 pub mod selector;
 pub mod shaper;
+pub mod tools;
 
+use self::tools::Tools;
 use self::{brush::Brush, eraser::Eraser, marker::Marker, selector::Selector, shaper::Shaper};
 
 use gtk4::Snapshot;
@@ -15,7 +17,8 @@ pub enum PenStyle {
     Shaper,
     Eraser,
     Selector,
-    Unkown,
+    Tools,
+    Unknown,
 }
 
 impl Default for PenStyle {
@@ -31,6 +34,7 @@ pub struct Pens {
     pub shaper: Shaper,
     pub eraser: Eraser,
     pub selector: Selector,
+    pub tools: Tools,
 }
 
 impl Pens {
@@ -42,7 +46,7 @@ impl Pens {
             PenStyle::Selector => {
                 self.selector.draw(snapshot);
             }
-            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unkown => {}
+            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools | PenStyle::Unknown => {}
         }
     }
 }

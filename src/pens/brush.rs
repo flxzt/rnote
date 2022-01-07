@@ -2,11 +2,9 @@ use gtk4::{gdk, gio};
 use rand::{distributions::Uniform, prelude::Distribution};
 use serde::{Deserialize, Serialize};
 
+use crate::drawbehaviour::DrawBehaviour;
 use crate::{
-    compose, render,
-    strokes::brushstroke::BrushStroke,
-    strokes::strokestyle::{Element, StrokeBehaviour},
-    utils,
+    compose, render, strokes::brushstroke::BrushStroke, strokes::strokestyle::Element, utils,
 };
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]

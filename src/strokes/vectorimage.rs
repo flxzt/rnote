@@ -1,9 +1,10 @@
+use crate::drawbehaviour::DrawBehaviour;
 use crate::{compose, geometry, render};
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
 
-use super::strokestyle::StrokeBehaviour;
+use super::strokebehaviour::StrokeBehaviour;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
@@ -23,21 +24,13 @@ impl Default for VectorImage {
     }
 }
 
-impl StrokeBehaviour for VectorImage {
+impl DrawBehaviour for VectorImage {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
         self.bounds
     }
 
     fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
         self.bounds = bounds;
-    }
-
-    fn translate(&mut self, offset: na::Vector2<f64>) {
-        self.bounds = geometry::aabb_translate(self.bounds, offset);
-    }
-
-    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        self.bounds = new_bounds;
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
@@ -67,6 +60,16 @@ impl StrokeBehaviour for VectorImage {
         let svg = render::Svg { bounds, svg_data };
 
         Ok(vec![svg])
+    }
+}
+
+impl StrokeBehaviour for VectorImage {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
+        self.bounds = geometry::aabb_translate(self.bounds, offset);
+    }
+
+    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
+        self.bounds = new_bounds;
     }
 }
 

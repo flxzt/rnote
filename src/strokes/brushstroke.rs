@@ -1,5 +1,7 @@
+use crate::drawbehaviour::DrawBehaviour;
 use crate::geometry;
-use crate::strokes::strokestyle::{Element, StrokeBehaviour};
+use crate::strokes::strokebehaviour::StrokeBehaviour;
+use crate::strokes::strokestyle::Element;
 use crate::{
     compose, curves,
     pens::brush::{self, Brush},
@@ -40,7 +42,7 @@ impl Default for BrushStroke {
     }
 }
 
-impl StrokeBehaviour for BrushStroke {
+impl DrawBehaviour for BrushStroke {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
         self.bounds
     }
@@ -103,6 +105,31 @@ impl StrokeBehaviour for BrushStroke {
         }
     }
 
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let svg_root = false;
+
+        match self.brush.current_style {
+            brush::BrushStyle::Linear => self.gen_svgs_linear(offset, svg_root),
+            brush::BrushStyle::CubicBezier => self.gen_svgs_cubbez(offset, svg_root),
+            brush::BrushStyle::CustomTemplate(_) => {
+                if let Some(svg) = self.gen_svg_for_template(offset, svg_root)? {
+                    Ok(vec![svg])
+                } else {
+                    Ok(vec![])
+                }
+            }
+            brush::BrushStyle::Experimental => {
+                if let Some(svg) = self.gen_svg_experimental(offset, svg_root)? {
+                    Ok(vec![svg])
+                } else {
+                    Ok(vec![])
+                }
+            }
+        }
+    }
+}
+
+impl StrokeBehaviour for BrushStroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.elements.iter_mut().for_each(|element| {
             element.inputdata.set_pos(element.inputdata.pos() + offset);
@@ -135,29 +162,6 @@ impl StrokeBehaviour for BrushStroke {
 
         self.bounds = new_bounds;
         self.hitbox = self.gen_hitbox();
-    }
-
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let svg_root = false;
-
-        match self.brush.current_style {
-            brush::BrushStyle::Linear => self.gen_svgs_linear(offset, svg_root),
-            brush::BrushStyle::CubicBezier => self.gen_svgs_cubbez(offset, svg_root),
-            brush::BrushStyle::CustomTemplate(_) => {
-                if let Some(svg) = self.gen_svg_for_template(offset, svg_root)? {
-                    Ok(vec![svg])
-                } else {
-                    Ok(vec![])
-                }
-            }
-            brush::BrushStyle::Experimental => {
-                if let Some(svg) = self.gen_svg_experimental(offset, svg_root)? {
-                    Ok(vec![svg])
-                } else {
-                    Ok(vec![])
-                }
-            }
-        }
     }
 }
 

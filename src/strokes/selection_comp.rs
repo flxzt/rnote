@@ -1,8 +1,8 @@
+use super::strokebehaviour::StrokeBehaviour;
+use super::{StrokeKey, StrokeStyle, StrokesState};
+use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::selector::{self, Selector};
 use crate::{compose, geometry, render};
-
-use super::{StrokeKey, StrokeStyle, StrokesState};
-use crate::strokes::strokestyle::StrokeBehaviour;
 
 use geo::line_string;
 use geo::prelude::*;

@@ -253,6 +253,11 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().current_pen().set(PenStyle::Selector);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                 },
+                "tools" => {
+                    appwindow.mainheader().tools_toggle().set_active(true);
+                    appwindow.canvas().current_pen().set(PenStyle::Tools);
+                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
+                },
                 _ => { log::error!("set invalid state of action `current-pen`")}
             }
         }),

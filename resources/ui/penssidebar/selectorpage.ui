@@ -25,7 +25,6 @@
     <child>
       <object class="GtkBox" id="selectorstyle_togglebox">
         <property name="orientation">vertical</property>
-        <property name="height_request">60</property>
         <property name="homogeneous">true</property>
         <property name="vexpand">false</property>
         <style>

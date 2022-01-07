@@ -118,7 +118,7 @@
         <child type="end">
           <object class="GtkBox" id="pens_togglebox">
             <property name="homogeneous">true</property>
-            <property name="width_request">360</property>
+            <property name="width_request">420</property>
             <property name="margin-start">6</property>
             <property name="margin-end">6</property>
             <style>
@@ -160,6 +160,14 @@
               <object class="GtkToggleButton" id="selector_toggle">
                 <property name="icon_name">pen-selector-symbolic</property>
                 <property name="tooltip_text">Selector</property>
+                <property name="hexpand">true</property>
+                <property name="group">marker_toggle</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="tools_toggle">
+                <property name="icon_name">pen-tools-symbolic</property>
+                <property name="tooltip_text">Tools</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
               </object>

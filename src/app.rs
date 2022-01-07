@@ -20,9 +20,9 @@ mod imp {
             develactions::DevelActions, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
             penssidebar::eraserpage::EraserPage, penssidebar::markerpage::MarkerPage,
             penssidebar::selectorpage::SelectorPage, penssidebar::shaperpage::ShaperPage,
-            penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
-            selectionmodifier::SelectionModifier, settingspanel::SettingsPanel,
-            templatechooser::TemplateChooser, unitentry::UnitEntry,
+            penssidebar::toolspage::ToolsPage, penssidebar::PensSideBar,
+            selectionmodifier::modifiernode::ModifierNode, selectionmodifier::SelectionModifier,
+            settingspanel::SettingsPanel, templatechooser::TemplateChooser, unitentry::UnitEntry,
             workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
         },
         utils,
@@ -105,6 +105,7 @@ mod imp {
             ShaperPage::static_type();
             EraserPage::static_type();
             SelectorPage::static_type();
+            ToolsPage::static_type();
             WorkspaceBrowser::static_type();
             FileRow::static_type();
             PredefinedFormat::static_type();

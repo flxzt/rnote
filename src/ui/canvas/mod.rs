@@ -542,7 +542,7 @@ mod imp {
                         }
                     }
                 }
-                PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unkown => {}
+                PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools | PenStyle::Unknown => {}
             }
 
             debug::draw_bounds(
@@ -821,7 +821,7 @@ impl Canvas {
                     appwindow.downcast_ref::<RnoteAppWindow>().unwrap()
                         .change_action_state("tmperaser", &true.to_variant());
                     }
-                    _ => { canvas.current_pen().set(PenStyle::Unkown) },
+                    _ => { canvas.current_pen().set(PenStyle::Unknown) },
                 }
 
                 current_stroke_key.set(canvas.processing_draw_begin(&appwindow, &mut data_entries));
@@ -1304,7 +1304,8 @@ impl Canvas {
                     );
                 }
             }
-            PenStyle::Unkown => {}
+            PenStyle::Tools => {}
+            PenStyle::Unknown => {}
         }
 
         self.queue_resize();
@@ -1383,7 +1384,8 @@ impl Canvas {
                     );
                 }
             }
-            PenStyle::Unkown => {}
+            PenStyle::Tools => {}
+            PenStyle::Unknown => {}
         }
 
         self.queue_resize();
@@ -1440,7 +1442,8 @@ impl Canvas {
             | PenStyle::Brush
             | PenStyle::Shaper
             | PenStyle::Eraser
-            | PenStyle::Unkown => {}
+            | PenStyle::Tools
+            | PenStyle::Unknown => {}
         }
 
         self.pens().borrow_mut().eraser.set_shown(false);

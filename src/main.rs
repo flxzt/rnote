@@ -13,6 +13,7 @@ pub mod sheet;
 pub mod strokes;
 pub mod ui;
 pub mod utils;
+pub mod drawbehaviour;
 
 use gtk4::prelude::*;
 extern crate gstreamer as gst;

@@ -1,5 +1,6 @@
+use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::eraser::Eraser;
-use crate::strokes::strokestyle::{StrokeBehaviour, StrokeStyle};
+use crate::strokes::strokestyle::StrokeStyle;
 
 use super::{StrokeKey, StrokesState};
 

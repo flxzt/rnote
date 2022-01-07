@@ -44,6 +44,8 @@ mod imp {
         #[template_child]
         pub selector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub tools_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub canvasmenu: TemplateChild<CanvasMenu>,
         #[template_child]
         pub appmenu: TemplateChild<AppMenu>,
@@ -178,6 +180,10 @@ impl MainHeader {
         imp::MainHeader::from_instance(self).selector_toggle.get()
     }
 
+    pub fn tools_toggle(&self) -> ToggleButton {
+        imp::MainHeader::from_instance(self).tools_toggle.get()
+    }
+
     pub fn canvasmenu(&self) -> CanvasMenu {
         imp::MainHeader::from_instance(self).canvasmenu.get()
     }
@@ -261,6 +267,12 @@ impl MainHeader {
         priv_.selector_toggle.get().connect_active_notify(clone!(@weak appwindow => move |selector_toggle| {
             if selector_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector".to_variant()));
+            }
+        }));
+
+        priv_.tools_toggle.get().connect_active_notify(clone!(@weak appwindow => move |tools_toggle| {
+            if tools_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools".to_variant()));
             }
         }));
 

@@ -2,14 +2,14 @@ use crate::{
     compose, curves, geometry,
     pens::marker::Marker,
     render,
-    strokes::{self, Element},
+    strokes::{self, Element}, drawbehaviour::DrawBehaviour,
 };
 use p2d::bounding_volume::BoundingVolume;
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
-use crate::strokes::strokestyle::StrokeBehaviour;
+use crate::strokes::strokebehaviour::StrokeBehaviour;
 
 use super::strokestyle::InputData;
 
@@ -29,7 +29,7 @@ impl Default for MarkerStroke {
     }
 }
 
-impl StrokeBehaviour for MarkerStroke {
+impl DrawBehaviour for MarkerStroke {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
         self.bounds
     }
@@ -91,6 +91,25 @@ impl StrokeBehaviour for MarkerStroke {
         }
     }
 
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let svg_root = false;
+
+        let svgs: Vec<render::Svg> = self
+            .elements
+            .iter()
+            .zip(self.elements.iter().skip(1))
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
+            .filter_map(|(((first, second), third), forth)| {
+                self.gen_svg_for_elems((first, second, third, forth), offset, svg_root)
+            })
+            .collect();
+
+        Ok(svgs)
+    }
+}
+
+impl StrokeBehaviour for MarkerStroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         self.elements.iter_mut().for_each(|element| {
             element.inputdata.set_pos(element.inputdata.pos() + offset);
@@ -123,23 +142,6 @@ impl StrokeBehaviour for MarkerStroke {
 
         self.bounds = new_bounds;
         self.hitbox = self.gen_hitbox();
-    }
-
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let svg_root = false;
-
-        let svgs: Vec<render::Svg> = self
-            .elements
-            .iter()
-            .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
-            .filter_map(|(((first, second), third), forth)| {
-                self.gen_svg_for_elems((first, second, third, forth), offset, svg_root)
-            })
-            .collect();
-
-        Ok(svgs)
     }
 }
 

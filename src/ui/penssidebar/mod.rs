@@ -3,6 +3,7 @@ pub mod eraserpage;
 pub mod markerpage;
 pub mod selectorpage;
 pub mod shaperpage;
+pub mod toolspage;
 
 mod imp {
     use super::{
@@ -14,7 +15,7 @@ mod imp {
         glib, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage, Widget,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/penssidebar.ui")]
     pub struct PensSideBar {
         #[template_child]
@@ -39,24 +40,10 @@ mod imp {
         pub selector_stackpage: TemplateChild<StackPage>,
         #[template_child]
         pub selector_page: TemplateChild<SelectorPage>,
-    }
-
-    impl Default for PensSideBar {
-        fn default() -> Self {
-            Self {
-                sidebar_stack: TemplateChild::<Stack>::default(),
-                marker_stackpage: TemplateChild::<StackPage>::default(),
-                marker_page: TemplateChild::<MarkerPage>::default(),
-                brush_stackpage: TemplateChild::<StackPage>::default(),
-                brush_page: TemplateChild::<BrushPage>::default(),
-                shaper_stackpage: TemplateChild::<StackPage>::default(),
-                shaper_page: TemplateChild::<ShaperPage>::default(),
-                eraser_stackpage: TemplateChild::<StackPage>::default(),
-                eraser_page: TemplateChild::<EraserPage>::default(),
-                selector_stackpage: TemplateChild::<StackPage>::default(),
-                selector_page: TemplateChild::<SelectorPage>::default(),
-            }
-        }
+        #[template_child]
+        pub tools_stackpage: TemplateChild<StackPage>,
+        #[template_child]
+        pub tools_page: TemplateChild<SelectorPage>,
     }
 
     #[glib::object_subclass]
@@ -161,6 +148,14 @@ impl PensSideBar {
         imp::PensSideBar::from_instance(self).selector_page.get()
     }
 
+    pub fn tools_stackpage(&self) -> StackPage {
+        imp::PensSideBar::from_instance(self).tools_stackpage.get()
+    }
+
+    pub fn tools_page(&self) -> SelectorPage {
+        imp::PensSideBar::from_instance(self).tools_page.get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::PensSideBar::from_instance(self);
 
@@ -182,6 +177,9 @@ impl PensSideBar {
                         }
                         "selector_page" => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector".to_variant()));
+                        }
+                        "tools_page" => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools".to_variant()));
                         }
                         _ => {}
                     };

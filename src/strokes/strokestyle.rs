@@ -1,7 +1,7 @@
-use crate::{compose, geometry, render};
+use crate::drawbehaviour::DrawBehaviour;
+use crate::render;
 
 use chrono::{TimeZone, Utc};
-use p2d::bounding_volume::BoundingVolume;
 use rand::distributions::Uniform;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -10,59 +10,8 @@ use super::bitmapimage::BitmapImage;
 use super::brushstroke::BrushStroke;
 use super::markerstroke::MarkerStroke;
 use super::shapestroke::ShapeStroke;
+use super::strokebehaviour::StrokeBehaviour;
 use super::vectorimage::VectorImage;
-
-pub trait StrokeBehaviour {
-    /// returns the current bounds of this stroke
-    fn bounds(&self) -> p2d::bounding_volume::AABB;
-    /// sets the bounds of this stroke
-    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB);
-    /// generates the bounds of this stroke
-    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
-        if let Ok(svgs) = self.gen_svgs(na::vector![0.0, 0.0]) {
-            let mut svgs_iter = svgs.iter();
-            if let Some(first) = svgs_iter.next() {
-                let mut new_bounds = first.bounds;
-
-                svgs_iter.for_each(|svg| {
-                    new_bounds.merge(&svg.bounds);
-                });
-                new_bounds = geometry::aabb_ceil(new_bounds);
-
-                return Some(new_bounds);
-            }
-        }
-
-        None
-    }
-    /// translates (as in moves) the type for offset
-    fn translate(&mut self, offset: na::Vector2<f64>);
-    /// resizes the type to the desired new_bounds
-    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB);
-    /// generates the svg elements, without the xml header or the svg root.
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error>;
-    /// generates the image for this stroke
-    fn gen_image(
-        &self,
-        zoom: f64,
-        renderer: &render::Renderer,
-    ) -> Result<render::Image, anyhow::Error> {
-        let offset = na::vector![0.0, 0.0];
-        let mut svgs = self.gen_svgs(offset)?;
-
-        for svg in svgs.iter_mut() {
-            svg.svg_data = compose::wrap_svg(
-                svg.svg_data.as_str(),
-                Some(self.bounds()),
-                Some(self.bounds()),
-                true,
-                false,
-            );
-        }
-
-        renderer.gen_image(zoom, &svgs, self.bounds())
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum StrokeStyle {
@@ -73,7 +22,7 @@ pub enum StrokeStyle {
     BitmapImage(BitmapImage),
 }
 
-impl StrokeBehaviour for StrokeStyle {
+impl DrawBehaviour for StrokeStyle {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.bounds(),
@@ -94,6 +43,18 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
+        match self {
+            Self::MarkerStroke(markerstroke) => markerstroke.gen_svgs(offset),
+            Self::BrushStroke(brushstroke) => brushstroke.gen_svgs(offset),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_svgs(offset),
+            Self::VectorImage(vectorimage) => vectorimage.gen_svgs(offset),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svgs(offset),
+        }
+    }
+}
+
+impl StrokeBehaviour for StrokeStyle {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::MarkerStroke(markerstroke) => {
@@ -131,16 +92,6 @@ impl StrokeBehaviour for StrokeStyle {
             Self::BitmapImage(bitmapimage) => {
                 bitmapimage.resize(new_bounds);
             }
-        }
-    }
-
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        match self {
-            Self::MarkerStroke(markerstroke) => markerstroke.gen_svgs(offset),
-            Self::BrushStroke(brushstroke) => brushstroke.gen_svgs(offset),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_svgs(offset),
-            Self::VectorImage(vectorimage) => vectorimage.gen_svgs(offset),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svgs(offset),
         }
     }
 }

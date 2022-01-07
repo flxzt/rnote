@@ -1,7 +1,7 @@
 use super::StateTask;
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::render;
-use crate::strokes::strokestyle::StrokeBehaviour;
+use crate::drawbehaviour::DrawBehaviour;
 use crate::ui::canvas;
 
 use gtk4::{gdk, graphene, gsk, Snapshot};

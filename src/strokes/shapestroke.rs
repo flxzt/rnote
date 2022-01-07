@@ -1,6 +1,8 @@
+use crate::drawbehaviour::DrawBehaviour;
 use crate::geometry;
 use crate::pens::shaper::{self, DrawStyle};
-use crate::strokes::strokestyle::{Element, StrokeBehaviour};
+use crate::strokes::strokebehaviour::StrokeBehaviour;
+use crate::strokes::strokestyle::Element;
 use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render};
 
 use p2d::bounding_volume::BoundingVolume;
@@ -40,7 +42,7 @@ impl Default for ShapeStroke {
     }
 }
 
-impl StrokeBehaviour for ShapeStroke {
+impl DrawBehaviour for ShapeStroke {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
         self.bounds
     }
@@ -93,122 +95,6 @@ impl StrokeBehaviour for ShapeStroke {
 
         new_bounds = geometry::aabb_ceil(new_bounds);
         Some(new_bounds)
-    }
-
-    fn translate(&mut self, offset: na::Vector2<f64>) {
-        match self.shape_style {
-            ShapeStyle::Line {
-                ref mut start,
-                ref mut end,
-            } => {
-                *start += offset;
-                *end += offset;
-            }
-            ShapeStyle::Rectangle {
-                ref mut start,
-                ref mut end,
-            } => {
-                *start += offset;
-                *end += offset;
-            }
-            ShapeStyle::Ellipse {
-                ref mut pos,
-                radius_x: _,
-                radius_y: _,
-            } => {
-                *pos += offset;
-            }
-        }
-
-        self.bounds = geometry::aabb_translate(self.bounds, offset);
-    }
-
-    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        match self.shape_style {
-            ShapeStyle::Line {
-                ref mut start,
-                ref mut end,
-            } => match self.shaper.drawstyle {
-                DrawStyle::Smooth => {
-                    let scalevector = na::vector![
-                        (new_bounds.extents()[0]) / (self.bounds.extents()[0]),
-                        (new_bounds.extents()[1]) / (self.bounds.extents()[1])
-                    ];
-                    let offset = na::vector![
-                        new_bounds.mins[0] - self.bounds.mins[0],
-                        new_bounds.mins[1] - self.bounds.mins[1]
-                    ];
-                    let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
-
-                    *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
-                    *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
-                }
-                DrawStyle::Rough => {
-                    let scalevector = na::vector![
-                        (new_bounds.extents()[0]) / (self.bounds.extents()[0]),
-                        (new_bounds.extents()[1]) / (self.bounds.extents()[1])
-                    ];
-                    let offset = na::vector![
-                        new_bounds.mins[0] - self.bounds.mins[0],
-                        new_bounds.mins[1] - self.bounds.mins[1]
-                    ];
-                    let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
-
-                    *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
-                    *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
-                }
-            },
-            ShapeStyle::Rectangle {
-                ref mut start,
-                ref mut end,
-            } => match self.shaper.drawstyle {
-                DrawStyle::Smooth => {
-                    *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                        + na::Vector2::<f64>::from_element(self.shaper.width());
-                    *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                        - na::Vector2::<f64>::from_element(self.shaper.width());
-                }
-                DrawStyle::Rough => {
-                    *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                        + na::Vector2::<f64>::from_element(self.shaper.width())
-                        + na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
-                    *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                        - na::Vector2::<f64>::from_element(self.shaper.width())
-                        - na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
-                }
-            },
-            ShapeStyle::Ellipse {
-                ref mut pos,
-                ref mut radius_x,
-                ref mut radius_y,
-            } => {
-                let center = na::vector![
-                    new_bounds.mins[0] + (new_bounds.extents()[0]) / 2.0,
-                    new_bounds.mins[1] + (new_bounds.extents()[1]) / 2.0
-                ];
-
-                match self.shaper.drawstyle {
-                    DrawStyle::Smooth => {
-                        *pos = center;
-
-                        *radius_x = (new_bounds.extents()[0]) / 2.0 - self.shaper.width();
-                        *radius_y = (new_bounds.extents()[1]) / 2.0 - self.shaper.width();
-                    }
-                    DrawStyle::Rough => {
-                        *pos = center;
-
-                        *radius_x = (new_bounds.extents()[0]) / 2.0
-                            - self.shaper.width()
-                            - DrawStyle::ROUGH_MARGIN;
-                        *radius_y = (new_bounds.extents()[1]) / 2.0
-                            - self.shaper.width()
-                            - DrawStyle::ROUGH_MARGIN;
-                    }
-                }
-            }
-        }
-
-        self.bounds = new_bounds;
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
@@ -379,6 +265,124 @@ impl StrokeBehaviour for ShapeStroke {
             svg_data,
         };
         Ok(vec![svg])
+    }
+}
+
+impl StrokeBehaviour for ShapeStroke {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
+        match self.shape_style {
+            ShapeStyle::Line {
+                ref mut start,
+                ref mut end,
+            } => {
+                *start += offset;
+                *end += offset;
+            }
+            ShapeStyle::Rectangle {
+                ref mut start,
+                ref mut end,
+            } => {
+                *start += offset;
+                *end += offset;
+            }
+            ShapeStyle::Ellipse {
+                ref mut pos,
+                radius_x: _,
+                radius_y: _,
+            } => {
+                *pos += offset;
+            }
+        }
+
+        self.bounds = geometry::aabb_translate(self.bounds, offset);
+    }
+
+    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
+        match self.shape_style {
+            ShapeStyle::Line {
+                ref mut start,
+                ref mut end,
+            } => match self.shaper.drawstyle {
+                DrawStyle::Smooth => {
+                    let scalevector = na::vector![
+                        (new_bounds.extents()[0]) / (self.bounds.extents()[0]),
+                        (new_bounds.extents()[1]) / (self.bounds.extents()[1])
+                    ];
+                    let offset = na::vector![
+                        new_bounds.mins[0] - self.bounds.mins[0],
+                        new_bounds.mins[1] - self.bounds.mins[1]
+                    ];
+                    let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
+
+                    *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
+                    *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
+                }
+                DrawStyle::Rough => {
+                    let scalevector = na::vector![
+                        (new_bounds.extents()[0]) / (self.bounds.extents()[0]),
+                        (new_bounds.extents()[1]) / (self.bounds.extents()[1])
+                    ];
+                    let offset = na::vector![
+                        new_bounds.mins[0] - self.bounds.mins[0],
+                        new_bounds.mins[1] - self.bounds.mins[1]
+                    ];
+                    let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
+
+                    *start = (*start - top_left).component_mul(&scalevector) + top_left + offset;
+                    *end = (*end - top_left).component_mul(&scalevector) + top_left + offset;
+                }
+            },
+            ShapeStyle::Rectangle {
+                ref mut start,
+                ref mut end,
+            } => match self.shaper.drawstyle {
+                DrawStyle::Smooth => {
+                    *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
+                        + na::Vector2::<f64>::from_element(self.shaper.width());
+                    *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
+                        - na::Vector2::<f64>::from_element(self.shaper.width());
+                }
+                DrawStyle::Rough => {
+                    *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
+                        + na::Vector2::<f64>::from_element(self.shaper.width())
+                        + na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
+                    *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
+                        - na::Vector2::<f64>::from_element(self.shaper.width())
+                        - na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
+                }
+            },
+            ShapeStyle::Ellipse {
+                ref mut pos,
+                ref mut radius_x,
+                ref mut radius_y,
+            } => {
+                let center = na::vector![
+                    new_bounds.mins[0] + (new_bounds.extents()[0]) / 2.0,
+                    new_bounds.mins[1] + (new_bounds.extents()[1]) / 2.0
+                ];
+
+                match self.shaper.drawstyle {
+                    DrawStyle::Smooth => {
+                        *pos = center;
+
+                        *radius_x = (new_bounds.extents()[0]) / 2.0 - self.shaper.width();
+                        *radius_y = (new_bounds.extents()[1]) / 2.0 - self.shaper.width();
+                    }
+                    DrawStyle::Rough => {
+                        *pos = center;
+
+                        *radius_x = (new_bounds.extents()[0]) / 2.0
+                            - self.shaper.width()
+                            - DrawStyle::ROUGH_MARGIN;
+                        *radius_y = (new_bounds.extents()[1]) / 2.0
+                            - self.shaper.width()
+                            - DrawStyle::ROUGH_MARGIN;
+                    }
+                }
+            }
+        }
+
+        self.bounds = new_bounds;
     }
 }
 

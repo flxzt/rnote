@@ -2,6 +2,7 @@ pub mod bitmapimage;
 pub mod brushstroke;
 pub mod markerstroke;
 pub mod shapestroke;
+pub mod strokebehaviour;
 pub mod strokestyle;
 pub mod vectorimage;
 
@@ -13,6 +14,7 @@ pub mod trash_comp;
 use std::sync::{Arc, RwLock};
 
 use crate::compose;
+use crate::drawbehaviour::DrawBehaviour;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{pens::PenStyle, pens::Pens, render};
 use chrono_comp::ChronoComponent;
@@ -20,7 +22,7 @@ use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
 
-use self::strokestyle::{Element, StrokeBehaviour, StrokeStyle};
+use self::strokestyle::{Element, StrokeStyle};
 use self::{brushstroke::BrushStroke, markerstroke::MarkerStroke, shapestroke::ShapeStroke};
 
 use gtk4::{glib, glib::clone, prelude::*};
@@ -188,7 +190,7 @@ impl StrokesState {
 
                 Some(self.insert_stroke(shapestroke))
             }
-            PenStyle::Eraser | PenStyle::Selector | PenStyle::Unkown => {
+            PenStyle::Eraser | PenStyle::Selector | PenStyle::Tools | PenStyle::Unknown => {
                 log::warn!("new_stroke() failed, current_pen is a unsupported PenStyle");
                 None
             }

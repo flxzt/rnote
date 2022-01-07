@@ -6,7 +6,7 @@
 //!
 //! Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
 //! The library defines primitives to draw lines, curves, arcs, polygons, circles, and ellipses. It also supports drawing SVG paths.
-use std::{error::Error, io};
+use std::io;
 
 /// The generator module
 pub mod generator;
@@ -19,7 +19,7 @@ pub mod utils;
 extern crate nalgebra as na;
 
 /// Converting a svg::Node to a String
-pub fn node_to_string<N>(node: &N) -> Result<String, Box<dyn Error>>
+pub fn node_to_string<N>(node: &N) -> Result<String, anyhow::Error>
 where
     N: svg::Node,
 {

@@ -41,7 +41,7 @@
         <child>
           <object class="GtkToggleButton" id="toolstyle_modifystroke_toggle">
             <property name="label">m</property>
-            <property name="tooltip_text">selecting with a rectangle</property>
+            <property name="tooltip_text">modify a stroke</property>
             <property name="group">toolstyle_expandsheet_toggle</property>
             <property name="vexpand">true</property>
           </object>

@@ -39,6 +39,7 @@ rust_sources = files(
     'sheet/format.rs',
     'sheet/background.rs',
     'pens/mod.rs',
+    'pens/penbehaviour.rs',
     'pens/marker.rs',
     'pens/brush.rs',
     'pens/shaper.rs',

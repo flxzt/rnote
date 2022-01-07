@@ -17,7 +17,7 @@ pub struct VectorImage {
 impl Default for VectorImage {
     fn default() -> Self {
         Self {
-            bounds: p2d::bounding_volume::AABB::new_invalid(),
+            bounds: geometry::aabb_new_zero(),
             intrinsic_size: na::vector![0.0, 0.0],
             svg_data: String::default(),
         }

@@ -22,12 +22,13 @@ use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
 
+use self::strokebehaviour::StrokeBehaviour;
 use self::strokestyle::{Element, StrokeStyle};
 use self::{brushstroke::BrushStroke, markerstroke::MarkerStroke, shapestroke::ShapeStroke};
 
 use gtk4::{glib, glib::clone, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
-use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use rayon::iter::{IntoParallelRefIterator, ParallelBridge, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
@@ -264,7 +265,7 @@ impl StrokesState {
         self.regenerate_strokes_current_view_threaded(None, true);
     }
 
-    pub fn update_stroke_geometry(&mut self, key: StrokeKey) {
+    pub fn update_geometry_for_stroke(&mut self, key: StrokeKey) {
         if let Some(stroke) = self.strokes.get_mut(key) {
             match stroke {
                 StrokeStyle::MarkerStroke(ref mut markerstroke) => {
@@ -290,14 +291,14 @@ impl StrokesState {
     pub fn update_geometry_all_strokes(&mut self) {
         let keys: Vec<StrokeKey> = self.strokes.keys().collect();
         keys.iter().for_each(|&key| {
-            self.update_stroke_geometry(key);
+            self.update_geometry_for_stroke(key);
         });
     }
 
     pub fn update_geometry_selection_strokes(&mut self) {
         let keys: Vec<StrokeKey> = self.keys_selection();
         keys.iter().for_each(|&key| {
-            self.update_stroke_geometry(key);
+            self.update_geometry_for_stroke(key);
         });
     }
 
@@ -309,7 +310,7 @@ impl StrokesState {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
         keys.iter().for_each(|&key| {
-            self.update_stroke_geometry(key);
+            self.update_geometry_for_stroke(key);
 
             if let (Some(stroke), Some(render_comp)) =
                 (self.strokes.get(key), self.render_components.get_mut(key))
@@ -368,7 +369,7 @@ impl StrokesState {
                     return;
                 }
 
-                self.update_stroke_geometry(key);
+                self.update_geometry_for_stroke(key);
                 self.regenerate_rendering_for_stroke_threaded(key);
             } else {
                 log::debug!(
@@ -471,5 +472,26 @@ impl StrokesState {
         let data = compose::wrap_svg(data.as_str(), Some(bounds), Some(bounds), true, false);
 
         Ok(data)
+    }
+
+    /// Translate all strokes below the y_threshold with the offset in the y-axis
+    pub fn translate_strokes_threshold_vertical(&mut self, y_threshold: f64, offset: f64) {
+        self.strokes
+            .iter_mut()
+            .par_bridge()
+            .filter_map(|(key, stroke)| {
+                if stroke.bounds().mins[1] > y_threshold {
+                    stroke.translate(na::vector![0.0, offset]);
+                    Some(key)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<StrokeKey>>()
+            .iter()
+            .for_each(|&key| {
+                self.update_geometry_for_stroke(key);
+                self.regenerate_rendering_for_stroke_threaded(key);
+            })
     }
 }

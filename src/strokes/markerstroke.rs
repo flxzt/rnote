@@ -1,8 +1,10 @@
 use crate::{
-    compose, curves, geometry,
+    compose, curves,
+    drawbehaviour::DrawBehaviour,
+    geometry,
     pens::marker::Marker,
     render,
-    strokes::{self, Element}, drawbehaviour::DrawBehaviour,
+    strokes::{self, Element},
 };
 use p2d::bounding_volume::BoundingVolume;
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
@@ -10,8 +12,6 @@ use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
 use crate::strokes::strokebehaviour::StrokeBehaviour;
-
-use super::strokestyle::InputData;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
@@ -25,7 +25,12 @@ pub struct MarkerStroke {
 
 impl Default for MarkerStroke {
     fn default() -> Self {
-        Self::new(Element::new(InputData::default()), Marker::default())
+        Self {
+            elements: vec![],
+            marker: Marker::default(),
+            bounds: geometry::aabb_new_zero(),
+            hitbox: vec![],
+        }
     }
 }
 
@@ -152,10 +157,7 @@ impl MarkerStroke {
         let elements = Vec::with_capacity(20);
         let bounds = p2d::bounding_volume::AABB::new(
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
-            na::point![
-                element.inputdata.pos()[0] + 1.0,
-                element.inputdata.pos()[1] + 1.0
-            ],
+            na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
         );
         let hitbox: Vec<p2d::bounding_volume::AABB> = Vec::new();
 

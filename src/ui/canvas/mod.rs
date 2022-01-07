@@ -461,9 +461,15 @@ mod imp {
                 .borrow()
                 .draw_selection(zoom, snapshot);
 
-            self.pens
-                .borrow()
-                .draw(self.current_pen.get(), snapshot, zoom);
+            if let Err(e) = self.pens.borrow().draw(
+                self.current_pen.get(),
+                self.sheet.bounds(),
+                zoom,
+                &self.sheet.strokes_state().borrow().renderer.read().unwrap(),
+                snapshot,
+            ) {
+                log::error!("pens draw() failed in canvas snapshot() with Err {}", e);
+            };
 
             if self.visual_debug.get() {
                 self.draw_debug(widget, snapshot, zoom);
@@ -517,10 +523,10 @@ mod imp {
 
         // Draw bounds, positions, .. for visual debugging purposes
         fn draw_debug(&self, widget: &super::Canvas, snapshot: &Snapshot, zoom: f64) {
-            match self.current_pen.get() {
-                PenStyle::Eraser => {
-                    if self.pens.borrow().eraser.shown() {
-                        if let Some(ref current_input) = self.pens.borrow().eraser.current_input {
+            if self.pens.borrow().shown() {
+                match self.current_pen.get() {
+                    PenStyle::Eraser => {
+                        if let Some(current_input) = self.pens.borrow().eraser.current_input() {
                             debug::draw_pos(
                                 current_input.pos(),
                                 debug::COLOR_POS_ALT,
@@ -529,10 +535,8 @@ mod imp {
                             );
                         }
                     }
-                }
-                PenStyle::Selector => {
-                    if self.pens.borrow().selector.shown() {
-                        if let Some(bounds) = self.pens.borrow().selector.bounds {
+                    PenStyle::Selector => {
+                        if let Some(bounds) = self.pens.borrow().selector.gen_bounds() {
                             debug::draw_bounds(
                                 bounds,
                                 debug::COLOR_SELECTOR_BOUNDS,
@@ -541,8 +545,12 @@ mod imp {
                             );
                         }
                     }
+                    PenStyle::Marker
+                    | PenStyle::Brush
+                    | PenStyle::Shaper
+                    | PenStyle::Tools
+                    | PenStyle::Unknown => {}
                 }
-                PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools | PenStyle::Unknown => {}
             }
 
             debug::draw_bounds(
@@ -564,6 +572,7 @@ mod imp {
 }
 
 use crate::audioplayer::RnoteAudioPlayer;
+use crate::pens::penbehaviour::PenBehaviour;
 use crate::strokes::strokestyle::{Element, InputData};
 use crate::strokes::StrokeKey;
 use crate::ui::selectionmodifier::SelectionModifier;
@@ -1236,8 +1245,6 @@ impl Canvas {
         let priv_ = imp::Canvas::from_instance(self);
         let mut stroke_key = None;
 
-        let zoom = self.zoom();
-
         appwindow.audioplayer().borrow().play_pen_sound_begin(
             RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
             self.current_pen().get(),
@@ -1250,6 +1257,7 @@ impl Canvas {
             .borrow_mut()
             .deselect_all_strokes();
         self.selection_modifier().set_visible(false);
+        self.pens().borrow_mut().set_shown(true);
 
         match self.current_pen().get() {
             PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
@@ -1278,33 +1286,26 @@ impl Canvas {
                 }
             }
             PenStyle::Eraser => {
-                if let Some(inputdata) = data_entries.pop_back() {
+                if let Some(last) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("none", None).as_ref());
-                    self.pens().borrow_mut().eraser.current_input = Some(inputdata);
-                    self.pens().borrow_mut().eraser.set_shown(true);
+
+                    self.pens().borrow_mut().eraser.begin(last);
                 }
             }
             PenStyle::Selector => {
-                if let Some(inputdata) = data_entries.pop_back() {
+                if let Some(last) = data_entries.pop_back() {
                     self.set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
 
-                    self.pens().borrow_mut().selector.new_path(inputdata);
-                    self.pens().borrow_mut().selector.set_shown(true);
-
-                    // update the rendernode of the current stroke
-                    self.pens().borrow_mut().selector.update_rendernode(
-                        zoom,
-                        &self
-                            .sheet()
-                            .strokes_state()
-                            .borrow()
-                            .renderer
-                            .read()
-                            .unwrap(),
-                    );
+                    self.pens().borrow_mut().selector.begin(last);
                 }
             }
-            PenStyle::Tools => {}
+            PenStyle::Tools => {
+                if let Some(last) = data_entries.pop_back() {
+                    self.set_cursor(Some(&self.motion_cursor()));
+
+                    self.pens().borrow_mut().tools.begin(last);
+                }
+            }
             PenStyle::Unknown => {}
         }
 
@@ -1322,8 +1323,6 @@ impl Canvas {
         data_entries: &mut VecDeque<InputData>,
     ) {
         let priv_ = imp::Canvas::from_instance(self);
-
-        let zoom = self.zoom();
 
         appwindow.audioplayer().borrow().play_pen_sound_motion(
             RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
@@ -1351,40 +1350,21 @@ impl Canvas {
                 }
             }
             PenStyle::Eraser => {
-                if let Some(inputdata) = data_entries.pop_back() {
-                    self.pens().borrow_mut().eraser.current_input = Some(inputdata);
-
-                    self.sheet()
-                        .strokes_state()
-                        .borrow_mut()
-                        .trash_colliding_strokes(
-                            &self.pens().borrow().eraser,
-                            Some(self.viewport_in_sheet_coords()),
-                        );
-                    if self.sheet().resize_endless() {
-                        self.update_background_rendernode();
-                    }
+                if let Some(last) = data_entries.pop_back() {
+                    self.pens().borrow_mut().eraser.update(last);
+                    self.pens().borrow_mut().eraser.apply(appwindow);
                 }
             }
             PenStyle::Selector => {
                 for inputdata in data_entries {
-                    self.pens()
-                        .borrow_mut()
-                        .selector
-                        .add_elem_to_path(*inputdata);
-                    self.pens().borrow_mut().selector.update_rendernode(
-                        zoom,
-                        &self
-                            .sheet()
-                            .strokes_state()
-                            .borrow()
-                            .renderer
-                            .read()
-                            .unwrap(),
-                    );
+                    self.pens().borrow_mut().selector.update(*inputdata);
                 }
             }
-            PenStyle::Tools => {}
+            PenStyle::Tools => {
+                if let Some(last) = data_entries.pop_back() {
+                    self.pens().borrow_mut().tools.update(last);
+                }
+            }
             PenStyle::Unknown => {}
         }
 
@@ -1411,7 +1391,7 @@ impl Canvas {
             self.sheet()
                 .strokes_state()
                 .borrow_mut()
-                .update_stroke_geometry(last_key);
+                .update_geometry_for_stroke(last_key);
 
             self.sheet()
                 .strokes_state()
@@ -1421,34 +1401,30 @@ impl Canvas {
 
         match self.current_pen().get() {
             PenStyle::Selector => {
-                self.sheet()
-                    .strokes_state()
-                    .borrow_mut()
-                    .update_selection_for_selector(
-                        &self.pens().borrow().selector,
-                        Some(self.viewport_in_sheet_coords()),
-                    );
-
-                // Show the selection modifier if selection bounds are some
-                self.selection_modifier().set_visible(
-                    self.sheet()
-                        .strokes_state()
-                        .borrow()
-                        .selection_bounds
-                        .is_some(),
-                );
+                self.pens().borrow_mut().selector.apply(appwindow);
+                self.pens().borrow_mut().selector.reset();
+            }
+            PenStyle::Tools => {
+                self.pens().borrow_mut().tools.apply(appwindow);
+                self.pens().borrow_mut().tools.reset();
             }
             PenStyle::Marker
             | PenStyle::Brush
             | PenStyle::Shaper
             | PenStyle::Eraser
-            | PenStyle::Tools
             | PenStyle::Unknown => {}
         }
 
-        self.pens().borrow_mut().eraser.set_shown(false);
-        self.pens().borrow_mut().selector.set_shown(false);
-        self.pens().borrow_mut().selector.clear_path();
+        self.pens().borrow_mut().set_shown(false);
+
+        // Show the selection modifier if selection bounds are some
+        self.selection_modifier().set_visible(
+            self.sheet()
+                .strokes_state()
+                .borrow()
+                .selection_bounds
+                .is_some(),
+        );
 
         if self.sheet().resize_endless() {
             self.update_background_rendernode();

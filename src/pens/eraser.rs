@@ -1,12 +1,14 @@
 use crate::strokes::strokestyle::InputData;
+use crate::{geometry, utils};
 
-use gtk4::{gdk, graphene, gsk, Snapshot};
+use gtk4::{graphene, gsk, Snapshot};
+
+use super::penbehaviour::PenBehaviour;
 
 #[derive(Clone, Debug)]
 pub struct Eraser {
     width: f64,
-    pub current_input: Option<InputData>,
-    shown: bool,
+    current_input: Option<InputData>,
 }
 
 impl Default for Eraser {
@@ -14,12 +16,81 @@ impl Default for Eraser {
         Self {
             width: Self::WIDTH_DEFAULT,
             current_input: None,
-            shown: false,
         }
     }
 }
 
+impl PenBehaviour for Eraser {
+    fn begin(&mut self, inputdata: InputData) {
+        self.current_input = Some(inputdata);
+    }
+
+    fn update(&mut self, inputdata: InputData) {
+        self.current_input = Some(inputdata);
+    }
+
+    fn apply(&mut self, appwindow: &crate::ui::appwindow::RnoteAppWindow) {
+        appwindow
+            .canvas()
+            .sheet()
+            .strokes_state()
+            .borrow_mut()
+            .trash_colliding_strokes(self, Some(appwindow.canvas().viewport_in_sheet_coords()));
+
+        if appwindow.canvas().sheet().resize_endless() {
+            appwindow.canvas().update_background_rendernode();
+        }
+    }
+
+    fn reset(&mut self) {
+        self.current_input = None;
+    }
+
+    fn draw(
+        &self,
+        _sheet_bounds: p2d::bounding_volume::AABB,
+        _renderer: &crate::render::Renderer,
+        zoom: f64,
+        snapshot: &Snapshot,
+    ) -> Result<(), anyhow::Error> {
+        if let Some(bounds) = self.gen_bounds(zoom) {
+            let border_color = Self::OUTLINE_COLOR.to_gdk();
+            let border_width = 2.0;
+
+            snapshot.append_color(
+                &Self::FILL_COLOR.to_gdk(),
+                &geometry::aabb_to_graphene_rect(bounds),
+            );
+
+            snapshot.append_border(
+                &gsk::RoundedRect::new(
+                    geometry::aabb_to_graphene_rect(bounds),
+                    graphene::Size::zero(),
+                    graphene::Size::zero(),
+                    graphene::Size::zero(),
+                    graphene::Size::zero(),
+                ),
+                &[border_width, border_width, border_width, border_width],
+                &[border_color, border_color, border_color, border_color],
+            );
+        }
+        Ok(())
+    }
+}
+
 impl Eraser {
+    pub const OUTLINE_COLOR: utils::Color = utils::Color {
+        r: 0.8,
+        g: 0.1,
+        b: 0.0,
+        a: 0.5,
+    };
+    pub const FILL_COLOR: utils::Color = utils::Color {
+        r: 0.7,
+        g: 0.2,
+        b: 0.1,
+        a: 0.5,
+    };
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 30.0;
@@ -28,8 +99,11 @@ impl Eraser {
         Self {
             width,
             current_input: None,
-            shown: false,
         }
+    }
+
+    pub fn current_input(&self) -> Option<InputData> {
+        self.current_input
     }
 
     pub fn width(&self) -> f64 {
@@ -40,55 +114,21 @@ impl Eraser {
         self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
     }
 
-    pub fn shown(&self) -> bool {
-        self.shown
-    }
-
-    pub fn set_shown(&mut self, shown: bool) {
-        self.shown = shown;
-    }
-
-    pub fn draw(&self, zoom: f64, snapshot: &Snapshot) {
-        if !self.shown {
-            return;
-        };
-
-        if let Some(ref current_input) = self.current_input {
-            let bounds = graphene::Rect::new(
-                (((current_input.pos()[0]) - self.width / 2.0) * zoom) as f32,
-                (((current_input.pos()[1]) - self.width / 2.0) * zoom) as f32,
-                (self.width * zoom) as f32,
-                (self.width * zoom) as f32,
-            );
-            let border_color = gdk::RGBA {
-                red: 0.8,
-                green: 0.1,
-                blue: 0.0,
-                alpha: 0.5,
-            };
-            let border_width = 2.0;
-
-            snapshot.append_color(
-                &gdk::RGBA {
-                    red: 0.7,
-                    green: 0.2,
-                    blue: 0.1,
-                    alpha: 0.5,
-                },
-                &bounds,
-            );
-
-            snapshot.append_border(
-                &gsk::RoundedRect::new(
-                    graphene::Rect::new(bounds.x(), bounds.y(), bounds.width(), bounds.height()),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                ),
-                &[border_width, border_width, border_width, border_width],
-                &[border_color, border_color, border_color, border_color],
-            );
-        }
+    pub fn gen_bounds(&self, zoom: f64) -> Option<p2d::bounding_volume::AABB> {
+        self.current_input.map_or_else(
+            || None,
+            |current_input| {
+                Some(p2d::bounding_volume::AABB::new(
+                    na::point![
+                        ((current_input.pos()[0]) - self.width / 2.0) * zoom,
+                        ((current_input.pos()[1]) - self.width / 2.0) * zoom
+                    ],
+                    na::point![
+                        ((current_input.pos()[0]) + self.width / 2.0) * zoom,
+                        ((current_input.pos()[1]) + self.width / 2.0) * zoom
+                    ],
+                ))
+            },
+        )
     }
 }

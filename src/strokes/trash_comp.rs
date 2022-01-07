@@ -103,7 +103,7 @@ impl StrokesState {
         eraser: &Eraser,
         viewport: Option<p2d::bounding_volume::AABB>,
     ) {
-        if let Some(ref eraser_current_input) = eraser.current_input {
+        if let Some(eraser_current_input) = eraser.current_input() {
             let eraser_bounds = p2d::bounding_volume::AABB::new(
                 na::Point2::from(
                     eraser_current_input.pos()

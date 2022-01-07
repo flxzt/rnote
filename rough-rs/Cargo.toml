@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 rand = "0.8.0"
 svg = "0.10.0"
+anyhow = "1.0"
 serde = {version = "1.0", features = ["derive"]}
 nalgebra = { version = "0.29", features = ["serde-serialize"] }
 kurbo ="0.8.0"

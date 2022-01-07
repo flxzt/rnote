@@ -2274,6 +2274,7 @@ checksum = "e5864e7ef1a6b7bcf1d6ca3f655e65e724ed3b52546a0d0a663c991522f552ea"
 name = "rough-rs"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "kurbo",
  "nalgebra",
  "rand 0.8.4",

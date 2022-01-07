@@ -37,7 +37,7 @@ impl Default for BitmapImage {
         Self {
             data_base64: String::default(),
             format: Format::Png,
-            bounds: p2d::bounding_volume::AABB::new_invalid(),
+            bounds: geometry::aabb_new_zero(),
             intrinsic_size: na::vector![0.0, 0.0],
         }
     }

@@ -11,9 +11,9 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/selectionmodifier.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/templatechooser.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/filerow.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/penssidebar.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/markerpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/brushpage.ui</file>
@@ -21,7 +21,6 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/eraserpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/selectorpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/toolspage.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs.ui</file>
         <file compressed="true">icons/scalable/apps/rnote.svg</file>
         <file compressed="true">icons/scalable/apps/rnote-devel.svg</file>
@@ -39,9 +38,8 @@
         <file compressed="true">icons/scalable/actions/canvas-motion-cursor.svg</file>
         <file compressed="true">icons/scalable/actions/reset-width-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-marker-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/templatechooser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/pen-brush-templates-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-brush-style-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-shaper-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-symbolic.svg</file>

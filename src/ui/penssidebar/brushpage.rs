@@ -1,5 +1,5 @@
 mod imp {
-    use crate::ui::{colorpicker::ColorPicker, templatechooser::TemplateChooser};
+    use crate::ui::colorpicker::ColorPicker;
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
     };
@@ -15,8 +15,6 @@ mod imp {
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub colorpicker: TemplateChild<ColorPicker>,
-        #[template_child]
-        pub templatechooser: TemplateChild<TemplateChooser>,
     }
 
     impl Default for BrushPage {
@@ -26,7 +24,6 @@ mod imp {
                 width_adj: TemplateChild::<Adjustment>::default(),
                 width_spinbutton: TemplateChild::<SpinButton>::default(),
                 colorpicker: TemplateChild::<ColorPicker>::default(),
-                templatechooser: TemplateChild::<TemplateChooser>::default(),
             }
         }
     }
@@ -62,10 +59,8 @@ mod imp {
 }
 
 use crate::pens::brush::Brush;
-use crate::ui::{
-    appwindow::RnoteAppWindow, colorpicker::ColorPicker, templatechooser::TemplateChooser,
-};
-use crate::{config, utils};
+use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use crate::utils;
 use gtk4::gdk;
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
@@ -104,10 +99,6 @@ impl BrushPage {
         imp::BrushPage::from_instance(self).colorpicker.get()
     }
 
-    pub fn templatechooser(&self) -> TemplateChooser {
-        imp::BrushPage::from_instance(self).templatechooser.get()
-    }
-
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let width_adj = self.width_adj();
 
@@ -132,26 +123,5 @@ impl BrushPage {
                 appwindow.canvas().pens().borrow_mut().brush.set_width(brush_widthscale_adj.value());
             }),
         );
-
-        let brush_help_text = utils::load_string_from_resource(
-            (String::from(config::APP_IDPATH) + "text/brush_filechooser-help.txt").as_str(),
-        )
-        .unwrap();
-        self.templatechooser()
-            .set_help_text(brush_help_text.as_str());
-
-        if let Some(mut templates_dirpath) = utils::app_config_base_dirpath() {
-            templates_dirpath.push("brush_templates");
-            if self
-                .templatechooser()
-                .set_templates_path(&templates_dirpath)
-                .is_err()
-            {
-                log::error!(
-                    "failed to set templates dir `{}` for templatechooser",
-                    templates_dirpath.to_str().unwrap()
-                )
-            };
-        }
     }
 }

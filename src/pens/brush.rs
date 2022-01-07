@@ -1,18 +1,13 @@
-use gtk4::{gdk, gio};
-use rand::{distributions::Uniform, prelude::Distribution};
-use serde::{Deserialize, Serialize};
+use crate::utils;
 
-use crate::drawbehaviour::DrawBehaviour;
-use crate::{
-    compose, render, strokes::brushstroke::BrushStroke, strokes::strokestyle::Element, utils,
-};
+use gtk4::gdk;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum BrushStyle {
     Linear,
     CubicBezier,
     Experimental,
-    CustomTemplate(String),
 }
 
 impl Default for BrushStyle {
@@ -73,36 +68,4 @@ impl Brush {
     pub fn set_sensitivity(&mut self, sensitivity: f64) {
         self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
     }
-}
-
-pub fn validate_brush_template_for_file(file: &gio::File) -> Result<(), anyhow::Error> {
-    let mut rng = rand::thread_rng();
-    let strokes_uniform = Uniform::from(0..=3);
-
-    let bounds = p2d::bounding_volume::AABB::new(na::point![0.0, 0.0], na::point![2000.0, 2000.0]);
-    let mut brush = Brush::default();
-    let renderer = render::Renderer::default();
-
-    brush.current_style = BrushStyle::CustomTemplate(utils::load_file_contents(file)?);
-
-    for _i in 0..=strokes_uniform.sample(&mut rng) {
-        let validation_stroke =
-            BrushStroke::validation_stroke(&Element::validation_data(bounds), &brush).unwrap();
-
-        let mut svgs = validation_stroke.gen_svgs(na::vector![0.0, 0.0])?;
-        for svg in svgs.iter_mut() {
-            svg.svg_data = compose::wrap_svg(
-                svg.svg_data.as_str(),
-                Some(bounds),
-                Some(bounds),
-                true,
-                false,
-            );
-        }
-
-        //log::debug!("\n### validating file `{:?}`###, contents:\n {}", file.path(), svg);
-        let _image = validation_stroke.gen_image(1.0, &renderer)?;
-    }
-
-    Ok(())
 }

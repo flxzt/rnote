@@ -10,7 +10,7 @@ mod imp {
         brushpage::BrushPage, eraserpage::EraserPage, markerpage::MarkerPage,
         selectorpage::SelectorPage, shaperpage::ShaperPage,
     };
-    use crate::ui::{colorpicker::ColorPicker, templatechooser::TemplateChooser};
+
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage, Widget,
     };
@@ -54,9 +54,6 @@ mod imp {
 
         fn class_init(klass: &mut Self::Class) {
             Self::bind_template(klass);
-
-            ColorPicker::static_type();
-            TemplateChooser::static_type();
         }
 
         fn instance_init(obj: &glib::subclass::InitializingObject<Self>) {

@@ -571,20 +571,9 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .build();
 
     // Developer mode
-    appwindow
-        .app_settings()
-        .bind(
-            "devel",
-            &appwindow
-                .penssidebar()
-                .brush_page()
-                .templatechooser()
-                .predefined_template_experimental_listboxrow(),
-            "visible",
-        )
-        .flags(gio::SettingsBindFlags::DEFAULT)
-        .build();
+    //let devel = appwindow.app_settings().boolean("devel");
 
+    // Devel settings
     let action_devel_settings = app.lookup_action("devel-settings").unwrap();
     action_devel_settings
         .downcast::<gio::SimpleAction>()

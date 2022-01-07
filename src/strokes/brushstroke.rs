@@ -111,20 +111,7 @@ impl DrawBehaviour for BrushStroke {
         match self.brush.current_style {
             brush::BrushStyle::Linear => self.gen_svgs_linear(offset, svg_root),
             brush::BrushStyle::CubicBezier => self.gen_svgs_cubbez(offset, svg_root),
-            brush::BrushStyle::CustomTemplate(_) => {
-                if let Some(svg) = self.gen_svg_for_template(offset, svg_root)? {
-                    Ok(vec![svg])
-                } else {
-                    Ok(vec![])
-                }
-            }
-            brush::BrushStyle::Experimental => {
-                if let Some(svg) = self.gen_svg_experimental(offset, svg_root)? {
-                    Ok(vec![svg])
-                } else {
-                    Ok(vec![])
-                }
-            }
+            brush::BrushStyle::Experimental => self.gen_svgs_experimental(offset, svg_root),
         }
     }
 }
@@ -312,8 +299,9 @@ impl BrushStroke {
             brush::BrushStyle::CubicBezier => {
                 Ok(self.gen_svg_elem_cubbez(elements, offset, svg_root))
             }
-            brush::BrushStyle::CustomTemplate(_) => self.gen_svg_for_template(offset, false),
-            brush::BrushStyle::Experimental => self.gen_svg_experimental(offset, false),
+            brush::BrushStyle::Experimental => {
+                Ok(self.gen_svg_elem_experimental((elements.1, elements.2), offset, svg_root))
+            }
         }
     }
 
@@ -525,100 +513,29 @@ impl BrushStroke {
         Ok(svgs)
     }
 
-    pub fn gen_svg_experimental(
+    pub fn gen_svg_elem_experimental(
         &self,
+        _elements: (&Element, &Element),
         _offset: na::Vector2<f64>,
         _svg_root: bool,
-    ) -> Result<Option<render::Svg>, anyhow::Error> {
-        Ok(None)
+    ) -> Option<render::Svg> {
+        None
     }
 
-    pub fn gen_svg_for_template(
+    pub fn gen_svgs_experimental(
         &self,
         offset: na::Vector2<f64>,
         svg_root: bool,
-    ) -> Result<Option<render::Svg>, anyhow::Error> {
-        // return None if not enough elements to form at least one segment
-        if self.elements.len() < 4 {
-            return Ok(None);
-        }
-
-        let mut cx = tera::Context::new();
-
-        let color = self.brush.color.to_css_color();
-        let width = self.brush.width();
-        let sensitivity = self.brush.sensitivity();
-
-        let (bounds, teraelements): (
-            Vec<p2d::bounding_volume::AABB>,
-            Vec<(TeraElement, TeraElement, TeraElement, TeraElement)>,
-        ) = self
+    ) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let svgs: Vec<render::Svg> = self
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
-            .map(|(((first, second), third), fourth)| {
-                let mut bounds = p2d::bounding_volume::AABB::new_invalid();
-
-                bounds.take_point(na::Point2::<f64>::from(first.inputdata.pos()));
-                bounds.take_point(na::Point2::<f64>::from(second.inputdata.pos()));
-                bounds.take_point(na::Point2::<f64>::from(third.inputdata.pos()));
-                bounds.take_point(na::Point2::<f64>::from(fourth.inputdata.pos()));
-
-                bounds.loosen(Brush::TEMPLATE_BOUNDS_PADDING);
-                // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-                bounds = geometry::aabb_ceil(bounds);
-
-                (
-                    bounds,
-                    (
-                        TeraElement {
-                            pressure: first.inputdata.pressure(),
-                            x: first.inputdata.pos()[0] + offset[0],
-                            y: first.inputdata.pos()[1] + offset[1],
-                        },
-                        TeraElement {
-                            pressure: second.inputdata.pressure(),
-                            x: second.inputdata.pos()[0] + offset[0],
-                            y: second.inputdata.pos()[1] + offset[1],
-                        },
-                        TeraElement {
-                            pressure: third.inputdata.pressure(),
-                            x: third.inputdata.pos()[0] + offset[0],
-                            y: third.inputdata.pos()[1] + offset[1],
-                        },
-                        TeraElement {
-                            pressure: fourth.inputdata.pressure(),
-                            x: fourth.inputdata.pos()[0] + offset[0],
-                            y: fourth.inputdata.pos()[1] + offset[1],
-                        },
-                    ),
-                )
+            .filter_map(|(first, second)| {
+                self.gen_svg_elem_experimental((first, second), offset, svg_root)
             })
-            .unzip();
+            .collect();
 
-        let bounds = bounds.iter().fold(
-            p2d::bounding_volume::AABB::new_invalid(),
-            |first, second| first.merged(second),
-        );
-
-        cx.insert("color", &color);
-        cx.insert("width", &width);
-        cx.insert("sensitivity", &sensitivity);
-        cx.insert("attributes", "");
-        cx.insert("elements", &teraelements);
-
-        if let brush::BrushStyle::CustomTemplate(templ) = &self.brush.current_style {
-            let mut svg_data = tera::Tera::one_off(templ.as_str(), &cx, false)?;
-            if svg_root {
-                svg_data = compose::wrap_svg(&svg_data, Some(bounds), Some(bounds), true, false);
-            }
-            Ok(Some(render::Svg { svg_data, bounds }))
-        } else {
-            Err(anyhow::anyhow!(
-                "template_svg_data() called, but brush is not BrushStyle::CustomTemplate"
-            ))
-        }
+        Ok(svgs)
     }
 }

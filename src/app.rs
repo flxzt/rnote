@@ -22,7 +22,7 @@ mod imp {
             penssidebar::selectorpage::SelectorPage, penssidebar::shaperpage::ShaperPage,
             penssidebar::toolspage::ToolsPage, penssidebar::PensSideBar,
             selectionmodifier::modifiernode::ModifierNode, selectionmodifier::SelectionModifier,
-            settingspanel::SettingsPanel, templatechooser::TemplateChooser, unitentry::UnitEntry,
+            settingspanel::SettingsPanel, unitentry::UnitEntry,
             workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
         },
         utils,
@@ -98,7 +98,6 @@ mod imp {
             SettingsPanel::static_type();
             AppMenu::static_type();
             MainHeader::static_type();
-            TemplateChooser::static_type();
             PensSideBar::static_type();
             MarkerPage::static_type();
             BrushPage::static_type();

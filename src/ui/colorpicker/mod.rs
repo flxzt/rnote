@@ -41,8 +41,6 @@ mod imp {
 
     impl Default for ColorPicker {
         fn default() -> Self {
-            ColorSetter::static_type();
-
             Self {
                 setterbox: TemplateChild::<Box>::default(),
                 currentcolor_setter1: TemplateChild::<ColorSetter>::default(),

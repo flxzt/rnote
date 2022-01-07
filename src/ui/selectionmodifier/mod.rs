@@ -23,8 +23,6 @@ pub mod imp {
 
     impl Default for SelectionModifier {
         fn default() -> Self {
-            ModifierNode::static_type();
-
             Self {
                 resize_tl: TemplateChild::<ModifierNode>::default(),
                 resize_tr: TemplateChild::<ModifierNode>::default(),

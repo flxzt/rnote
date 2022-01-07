@@ -524,12 +524,6 @@ impl RnoteAppWindow {
         priv_.penssidebar.get().init(self);
         priv_.penssidebar.get().marker_page().init(self);
         priv_.penssidebar.get().brush_page().init(self);
-        priv_
-            .penssidebar
-            .get()
-            .brush_page()
-            .templatechooser()
-            .init(self);
         priv_.penssidebar.get().shaper_page().init(self);
         priv_.penssidebar.get().eraser_page().init(self);
         priv_.penssidebar.get().selector_page().init(self);

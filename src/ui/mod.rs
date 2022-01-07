@@ -11,6 +11,5 @@ pub mod mainheader;
 pub mod penssidebar;
 pub mod selectionmodifier;
 pub mod settingspanel;
-pub mod templatechooser;
 pub mod unitentry;
 pub mod workspacebrowser;

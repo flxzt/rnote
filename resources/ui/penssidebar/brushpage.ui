@@ -57,8 +57,5 @@
         <property name="margin_bottom">6</property>
       </object>
     </child>
-    <child>
-      <object class="TemplateChooser" id="templatechooser"></object>
-    </child>
   </template>
 </interface>

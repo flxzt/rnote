@@ -431,8 +431,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             appwindow.sidebar_scroller().set_window_placement(CornerType::TopRight);
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
-            appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Right);
-            appwindow.penssidebar().brush_page().templatechooser().chooser_button().set_direction(ArrowType::Right);
             appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().fill_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
@@ -460,8 +458,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             appwindow.sidebar_scroller().set_window_placement(CornerType::TopLeft);
             appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
-            appwindow.penssidebar().brush_page().templatechooser().help_button().set_direction(ArrowType::Left);
-            appwindow.penssidebar().brush_page().templatechooser().chooser_button().set_direction(ArrowType::Left);
             appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();

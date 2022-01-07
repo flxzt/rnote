@@ -68,6 +68,8 @@ rust_sources = files(
     'ui/canvasmenu.rs',
     'ui/settingspanel.rs',
     'ui/mainheader.rs',
+    'ui/dialogs.rs',
+    'ui/unitentry.rs',
     'ui/penssidebar/mod.rs',
     'ui/penssidebar/markerpage.rs',
     'ui/penssidebar/brushpage.rs',
@@ -75,15 +77,12 @@ rust_sources = files(
     'ui/penssidebar/eraserpage.rs',
     'ui/penssidebar/selectorpage.rs',
     'ui/penssidebar/toolspage.rs',
-    'ui/dialogs.rs',
-    'ui/templatechooser.rs',
     'ui/workspacebrowser/mod.rs',
     'ui/workspacebrowser/filerow.rs',
     'ui/selectionmodifier/mod.rs',
     'ui/selectionmodifier/modifiernode.rs',
     'ui/colorpicker/mod.rs',
     'ui/colorpicker/colorsetter.rs',
-    'ui/unitentry.rs',
 )
 
 sources = [rust_sources, rough_rs_rust_sources, cargo_sources]

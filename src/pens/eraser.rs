@@ -26,11 +26,9 @@ impl PenBehaviour for Eraser {
         self.current_input = Some(inputdata);
     }
 
-    fn motion(&mut self, inputdata: InputData, _appwindow: &RnoteAppWindow) {
+    fn motion(&mut self, inputdata: InputData, appwindow: &RnoteAppWindow) {
         self.current_input = Some(inputdata);
-    }
 
-    fn end(&mut self, _inputdata: InputData, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .sheet()
@@ -41,6 +39,10 @@ impl PenBehaviour for Eraser {
         if appwindow.canvas().sheet().resize_endless() {
             appwindow.canvas().update_background_rendernode();
         }
+    }
+
+    fn end(&mut self, _inputdata: InputData, _appwindow: &RnoteAppWindow) {
+        self.current_input = None;
     }
 
     fn draw(

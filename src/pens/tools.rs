@@ -139,7 +139,7 @@ impl Default for DragProximityTool {
 }
 
 impl DragProximityTool {
-    pub const OFFSET_MAGN_THRESHOLD: f64 = 2.0;
+    pub const OFFSET_MAGN_THRESHOLD: f64 = 4.0;
     pub const OUTLINE_COLOR: utils::Color = utils::Color {
         r: 0.5,
         g: 0.7,

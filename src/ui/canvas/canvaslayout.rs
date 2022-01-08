@@ -126,6 +126,9 @@ mod imp {
                     let height = (selection_bounds_zoomed.extents()[1]).round() as i32
                         + 2 * SelectionModifier::RESIZE_NODE_SIZE;
 
+                    // unnecessary, but makes GTK not spit out warnings
+                    let _ = selection_modifier.measure(Orientation::Horizontal, -1);
+
                     selection_modifier.size_allocate(
                         &gdk::Rectangle {
                             x,

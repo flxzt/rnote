@@ -75,12 +75,14 @@
             <child>
               <object class="GtkBox">
                 <property name="orientation">vertical</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+                <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel">
                     <property name="label">Brush Styles</property>
                     <property name="halign">center</property>
-                    <property name="margin-top">12</property>
-                    <property name="margin-bottom">24</property>
+                    <property name="margin-bottom">12</property>
                     <style>
                       <class name="title-4" />
                     </style>

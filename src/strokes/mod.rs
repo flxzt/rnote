@@ -163,25 +163,25 @@ impl StrokesState {
                                 appwindow.canvas().sheet()
                                     .strokes_state()
                                     .borrow_mut()
-                                    .insert_stroke(StrokeStyle::MarkerStroke(markerstroke));
+                                    .insert_stroke_threaded(StrokeStyle::MarkerStroke(markerstroke));
                             }
                             StrokeStyle::BrushStroke(brushstroke) => {
                                 appwindow.canvas().sheet()
                                     .strokes_state()
                                     .borrow_mut()
-                                    .insert_stroke(StrokeStyle::BrushStroke(brushstroke));
+                                    .insert_stroke_threaded(StrokeStyle::BrushStroke(brushstroke));
                             }
                             StrokeStyle::ShapeStroke(shapestroke) => {
                                 appwindow.canvas().sheet()
                                     .strokes_state()
                                     .borrow_mut()
-                                    .insert_stroke(StrokeStyle::ShapeStroke(shapestroke));
+                                    .insert_stroke_threaded(StrokeStyle::ShapeStroke(shapestroke));
                             }
                             StrokeStyle::VectorImage(vectorimage) => {
                                 let inserted = appwindow.canvas().sheet()
                                     .strokes_state()
                                     .borrow_mut()
-                                    .insert_stroke(StrokeStyle::VectorImage(vectorimage));
+                                    .insert_stroke_threaded(StrokeStyle::VectorImage(vectorimage));
                                 appwindow.canvas().sheet()
                                     .strokes_state()
                                     .borrow_mut()
@@ -199,7 +199,7 @@ impl StrokesState {
                                     .sheet()
                                     .strokes_state()
                                     .borrow_mut()
-                                    .insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
+                                    .insert_stroke_threaded(StrokeStyle::BitmapImage(bitmapimage));
 
                                 appwindow.canvas().sheet()
                                     .strokes_state()
@@ -242,6 +242,22 @@ impl StrokesState {
             .insert(key, ChronoComponent::new(self.chrono_counter));
 
         self.regenerate_rendering_for_stroke(key);
+        key
+    }
+
+    pub fn insert_stroke_threaded(&mut self, stroke: StrokeStyle) -> StrokeKey {
+        let key = self.strokes.insert(stroke);
+        self.chrono_counter += 1;
+
+        self.trash_components.insert(key, TrashComponent::default());
+        self.selection_components
+            .insert(key, SelectionComponent::default());
+        self.render_components
+            .insert(key, RenderComponent::default());
+        self.chrono_components
+            .insert(key, ChronoComponent::new(self.chrono_counter));
+
+        self.regenerate_rendering_for_stroke_threaded(key);
         key
     }
 

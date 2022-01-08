@@ -1,6 +1,13 @@
+use gtk4::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::collections::VecDeque;
 
-use crate::utils;
+use crate::strokes::shapestroke::ShapeStroke;
+use crate::strokes::strokestyle::{Element, StrokeStyle};
+use crate::strokes::StrokeKey;
+use crate::{input, utils};
+
+use super::penbehaviour::PenBehaviour;
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum CurrentShape {
@@ -40,6 +47,8 @@ pub struct Shaper {
     color: Option<utils::Color>,
     fill: Option<utils::Color>,
     pub roughconfig: rough_rs::options::Options,
+    #[serde(skip)]
+    pub current_stroke: Option<StrokeKey>,
 }
 
 impl Default for Shaper {
@@ -51,6 +60,102 @@ impl Default for Shaper {
             color: Shaper::COLOR_DEFAULT,
             fill: Shaper::FILL_DEFAULT,
             roughconfig: rough_rs::options::Options::default(),
+            current_stroke: None,
+        }
+    }
+}
+
+impl PenBehaviour for Shaper {
+    fn begin(
+        &mut self,
+        mut data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
+        appwindow: &crate::ui::appwindow::RnoteAppWindow,
+    ) {
+        self.current_stroke = None;
+        appwindow
+            .canvas()
+            .set_cursor(Some(&appwindow.canvas().motion_cursor()));
+
+        let filter_bounds = p2d::bounding_volume::AABB::new(
+            na::point![-input::INPUT_OVERSHOOT, -input::INPUT_OVERSHOOT],
+            na::point![
+                (appwindow.canvas().sheet().width()) as f64 + input::INPUT_OVERSHOOT,
+                (appwindow.canvas().sheet().height()) as f64 + input::INPUT_OVERSHOOT
+            ],
+        );
+        input::filter_mapped_inputdata(filter_bounds, &mut data_entries);
+
+        if let Some(inputdata) = data_entries.pop_back() {
+            let element = Element::new(inputdata);
+            let shapestroke = StrokeStyle::ShapeStroke(ShapeStroke::new(element, self.clone()));
+
+            self.current_stroke = Some(
+                appwindow
+                    .canvas()
+                    .sheet()
+                    .strokes_state()
+                    .borrow_mut()
+                    .insert_stroke(shapestroke),
+            );
+
+            appwindow
+                .canvas()
+                .sheet()
+                .strokes_state()
+                .borrow_mut()
+                .regenerate_rendering_newest_stroke_threaded();
+        }
+    }
+
+    fn motion(
+        &mut self,
+        mut data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
+        appwindow: &crate::ui::appwindow::RnoteAppWindow,
+    ) {
+        if let Some(current_stroke_key) = self.current_stroke {
+            let filter_bounds = p2d::bounding_volume::AABB::new(
+                na::point![-input::INPUT_OVERSHOOT, -input::INPUT_OVERSHOOT],
+                na::point![
+                    (appwindow.canvas().sheet().width()) as f64 + input::INPUT_OVERSHOOT,
+                    (appwindow.canvas().sheet().height()) as f64 + input::INPUT_OVERSHOOT
+                ],
+            );
+            input::filter_mapped_inputdata(filter_bounds, &mut data_entries);
+
+            for inputdata in data_entries {
+                appwindow
+                    .canvas()
+                    .sheet()
+                    .strokes_state()
+                    .borrow_mut()
+                    .add_to_stroke(current_stroke_key, Element::new(inputdata));
+            }
+        }
+    }
+
+    fn end(
+        &mut self,
+        _data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
+        appwindow: &crate::ui::appwindow::RnoteAppWindow,
+    ) {
+        appwindow
+            .canvas()
+            .set_cursor(Some(&appwindow.canvas().cursor()));
+
+        if let Some(current_stroke) = self.current_stroke.take() {
+            appwindow
+                .canvas()
+                .sheet()
+                .strokes_state()
+                .borrow_mut()
+                .update_geometry_for_stroke(current_stroke);
+
+            appwindow
+                .canvas()
+                .sheet()
+                .strokes_state()
+                .borrow_mut()
+                .regenerate_rendering_for_stroke_threaded(current_stroke);
         }
     }
 }

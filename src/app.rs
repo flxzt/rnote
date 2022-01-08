@@ -22,8 +22,8 @@ mod imp {
             penssidebar::selectorpage::SelectorPage, penssidebar::shaperpage::ShaperPage,
             penssidebar::toolspage::ToolsPage, penssidebar::PensSideBar,
             selectionmodifier::modifiernode::ModifierNode, selectionmodifier::SelectionModifier,
-            settingspanel::SettingsPanel, unitentry::UnitEntry,
-            workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
+            settingspanel::SettingsPanel, unitentry::UnitEntry, workspacebrowser::filerow::FileRow,
+            workspacebrowser::WorkspaceBrowser,
         },
         utils,
     };

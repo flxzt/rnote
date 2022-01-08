@@ -1,7 +1,7 @@
-pub mod penbehaviour;
 pub mod brush;
 pub mod eraser;
 pub mod marker;
+pub mod penbehaviour;
 pub mod selector;
 pub mod shaper;
 pub mod tools;
@@ -34,12 +34,138 @@ impl Default for PenStyle {
 #[derive(Default, Clone, Debug)]
 pub struct Pens {
     pub shown: bool,
+    pub current_pen: PenStyle,
+
     pub marker: Marker,
     pub brush: Brush,
     pub shaper: Shaper,
     pub eraser: Eraser,
     pub selector: Selector,
     pub tools: Tools,
+}
+
+impl PenBehaviour for Pens {
+    fn begin(
+        &mut self,
+        data_entries: std::collections::VecDeque<crate::strokes::strokestyle::InputData>,
+        appwindow: &crate::ui::appwindow::RnoteAppWindow,
+    ) {
+        self.set_shown(true);
+
+        match self.current_pen() {
+            PenStyle::Marker => {
+                self.marker.begin(data_entries, appwindow);
+            }
+            PenStyle::Brush => {
+                self.brush.begin(data_entries, appwindow);
+            }
+            PenStyle::Shaper => {
+                self.shaper.begin(data_entries, appwindow);
+            }
+            PenStyle::Eraser => {
+                self.eraser.begin(data_entries, appwindow);
+            }
+            PenStyle::Selector => {
+                self.selector.begin(data_entries, appwindow);
+            }
+            PenStyle::Tools => {
+                self.tools.begin(data_entries, appwindow);
+            }
+            PenStyle::Unknown => {}
+        }
+    }
+
+    fn motion(
+        &mut self,
+        data_entries: std::collections::VecDeque<crate::strokes::strokestyle::InputData>,
+        appwindow: &crate::ui::appwindow::RnoteAppWindow,
+    ) {
+        match self.current_pen() {
+            PenStyle::Marker => {
+                self.marker.motion(data_entries, appwindow);
+            }
+            PenStyle::Brush => {
+                self.brush.motion(data_entries, appwindow);
+            }
+            PenStyle::Shaper => {
+                self.shaper.motion(data_entries, appwindow);
+            }
+            PenStyle::Eraser => {
+                self.eraser.motion(data_entries, appwindow);
+            }
+            PenStyle::Selector => {
+                self.selector.motion(data_entries, appwindow);
+            }
+            PenStyle::Tools => {
+                self.tools.motion(data_entries, appwindow);
+            }
+            PenStyle::Unknown => {}
+        }
+    }
+
+    fn end(
+        &mut self,
+        data_entries: std::collections::VecDeque<crate::strokes::strokestyle::InputData>,
+        appwindow: &crate::ui::appwindow::RnoteAppWindow,
+    ) {
+        match self.current_pen() {
+            PenStyle::Marker => {
+                self.marker.end(data_entries, appwindow);
+            }
+            PenStyle::Brush => {
+                self.brush.end(data_entries, appwindow);
+            }
+            PenStyle::Shaper => {
+                self.shaper.end(data_entries, appwindow);
+            }
+            PenStyle::Eraser => {
+                self.eraser.end(data_entries, appwindow);
+            }
+            PenStyle::Selector => {
+                self.selector.end(data_entries, appwindow);
+            }
+            PenStyle::Tools => {
+                self.tools.end(data_entries, appwindow);
+            }
+            PenStyle::Unknown => {}
+        }
+
+        self.set_shown(false);
+    }
+
+    fn draw(
+        &self,
+        sheet_bounds: p2d::bounding_volume::AABB,
+        renderer: &Renderer,
+        zoom: f64,
+        snapshot: &Snapshot,
+    ) -> Result<(), anyhow::Error> {
+        if self.shown {
+            match self.current_pen {
+                PenStyle::Marker => {
+                    self.marker.draw(sheet_bounds, renderer, zoom, snapshot)?;
+                }
+                PenStyle::Brush => {
+                    self.brush.draw(sheet_bounds, renderer, zoom, snapshot)?;
+                }
+                PenStyle::Shaper => {
+                    self.shaper.draw(sheet_bounds, renderer, zoom, snapshot)?;
+                }
+                PenStyle::Eraser => {
+                    self.eraser.draw(sheet_bounds, renderer, zoom, snapshot)?;
+                }
+                PenStyle::Selector => {
+                    self.selector.draw(sheet_bounds, renderer, zoom, snapshot)?;
+                }
+                PenStyle::Tools => {
+                    self.tools.draw(sheet_bounds, renderer, zoom, snapshot)?;
+                }
+                PenStyle::Unknown => {}
+            }
+        }
+
+        Ok(())
+    }
 }
 
 impl Pens {
@@ -51,29 +177,11 @@ impl Pens {
         self.shown = shown;
     }
 
-    pub fn draw(
-        &self,
-        current_pen: PenStyle,
-        sheet_bounds: p2d::bounding_volume::AABB,
-        zoom: f64,
-        renderer: &Renderer,
-        snapshot: &Snapshot,
-    ) -> Result<(), anyhow::Error> {
-        if self.shown {
-            match current_pen {
-                PenStyle::Eraser => {
-                    self.eraser.draw(sheet_bounds, renderer, zoom, snapshot)?;
-                }
-                PenStyle::Selector => {
-                    self.selector.draw(sheet_bounds, renderer, zoom, snapshot)?;
-                }
-                PenStyle::Tools => {
-                    self.tools.draw(sheet_bounds, renderer, zoom, snapshot)?;
-                }
-                PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unknown => {}
-            }
-        }
+    pub fn current_pen(&self) -> PenStyle {
+        self.current_pen
+    }
 
-        Ok(())
+    pub fn set_current_pen(&mut self, current_pen: PenStyle) {
+        self.current_pen = current_pen;
     }
 }

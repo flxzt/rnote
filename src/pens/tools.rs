@@ -304,7 +304,7 @@ impl PenBehaviour for Tools {
         }
 
         if appwindow.canvas().sheet().resize_endless() {
-            appwindow.canvas().update_background_rendernode();
+            appwindow.canvas().update_background_rendernode(false);
         }
 
         appwindow.canvas().queue_resize();

@@ -6,6 +6,7 @@ mod imp {
 
     use super::canvaslayout::CanvasLayout;
     use super::debug;
+    use crate::pens::penbehaviour::PenBehaviour;
     use crate::pens::{PenStyle, Pens};
     use crate::sheet::Sheet;
     use crate::ui::selectionmodifier::SelectionModifier;
@@ -23,7 +24,6 @@ mod imp {
     #[derive(Debug)]
     pub struct Canvas {
         pub pens: Rc<RefCell<Pens>>,
-        pub current_pen: Rc<Cell<PenStyle>>,
         pub sheet: Sheet,
         pub sheet_margin: Cell<f64>,
         pub zoom: Cell<f64>,
@@ -78,7 +78,6 @@ mod imp {
 
             Self {
                 pens: Rc::new(RefCell::new(Pens::default())),
-                current_pen: Rc::new(Cell::new(PenStyle::default())),
                 sheet: Sheet::default(),
                 sheet_margin: Cell::new(super::Canvas::SHEET_MARGIN_DEFAULT),
                 zoom: Cell::new(super::Canvas::ZOOM_DEFAULT),
@@ -462,10 +461,9 @@ mod imp {
                 .draw_selection(zoom, snapshot);
 
             if let Err(e) = self.pens.borrow().draw(
-                self.current_pen.get(),
                 self.sheet.bounds(),
-                zoom,
                 &self.sheet.strokes_state().borrow().renderer.read().unwrap(),
+                zoom,
                 snapshot,
             ) {
                 log::error!("pens draw() failed in canvas snapshot() with Err {}", e);
@@ -524,7 +522,7 @@ mod imp {
         // Draw bounds, positions, .. for visual debugging purposes
         fn draw_debug(&self, widget: &super::Canvas, snapshot: &Snapshot, zoom: f64) {
             if self.pens.borrow().shown() {
-                match self.current_pen.get() {
+                match self.pens.borrow().current_pen() {
                     PenStyle::Eraser => {
                         if let Some(current_input) = self.pens.borrow().eraser.current_input() {
                             debug::draw_pos(
@@ -573,15 +571,13 @@ mod imp {
 
 use crate::audioplayer::RnoteAudioPlayer;
 use crate::pens::penbehaviour::PenBehaviour;
-use crate::strokes::strokestyle::{Element, InputData};
-use crate::strokes::StrokeKey;
+use crate::strokes::strokestyle::InputData;
 use crate::ui::selectionmodifier::SelectionModifier;
 use crate::{
     app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow,
 };
 use crate::{geometry, input};
 
-use std::cell::Cell;
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
@@ -612,7 +608,6 @@ impl Canvas {
     /// The zoom amount when activating the zoom-in / zoom-out action
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
-    pub const INPUT_OVERSHOOT: f64 = 30.0;
     pub const SHEET_MARGIN_DEFAULT: f64 = 30.0;
     // The default width of imported PDF's in percentage to the sheet width
     pub const PDF_IMPORT_WIDTH_DEFAULT: f64 = 50.0;
@@ -621,11 +616,6 @@ impl Canvas {
         let canvas: Canvas = glib::Object::new(&[]).expect("Failed to create Canvas");
 
         canvas
-    }
-
-    pub fn current_pen(&self) -> Rc<Cell<PenStyle>> {
-        let priv_ = imp::Canvas::from_instance(self);
-        priv_.current_pen.clone()
     }
 
     pub fn pens(&self) -> Rc<RefCell<Pens>> {
@@ -812,10 +802,8 @@ impl Canvas {
         .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE)
         .build();
 
-        let current_stroke_key = Rc::new(Cell::new(None));
-
         // Stylus Drawing
-        priv_.stylus_drawing_gesture.connect_down(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+        priv_.stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
                 stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
 
@@ -830,34 +818,32 @@ impl Canvas {
                     appwindow.downcast_ref::<RnoteAppWindow>().unwrap()
                         .change_action_state("tmperaser", &true.to_variant());
                     }
-                    _ => { canvas.current_pen().set(PenStyle::Unknown) },
+                    _ => { canvas.pens().borrow_mut().set_current_pen(PenStyle::Unknown) },
                 }
 
-                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, data_entries));
+                canvas.process_peninput_start(&appwindow, data_entries);
             }
         }));
 
-        priv_.stylus_drawing_gesture.connect_motion(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
+        priv_.stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
             // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
             let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
             input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
-            canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), data_entries);
+            canvas.process_peninput_motion(&appwindow, data_entries);
         }));
 
         priv_.stylus_drawing_gesture.connect_up(
-            clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
+            clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
                 let mut data_entries = input::retreive_stylus_inputdata(gesture_stylus, false, x, y);
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, na::vector![0.0, 0.0]);
-                canvas.processing_draw_end(&appwindow, data_entries);
-
-                current_stroke_key.set(None);
+                canvas.process_peninput_end(&appwindow, data_entries);
             }),
         );
 
         // Mouse drawing
         priv_.mouse_drawing_gesture.connect_drag_begin(
-            clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
                 if let Some(event) = mouse_drawing_gesture.current_event() {
                     // Guard not to handle touch events that emulate a pointer
                     if event.is_pointer_emulated() {
@@ -868,12 +854,12 @@ impl Canvas {
 
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
-                    current_stroke_key.set(canvas.processing_draw_begin(&appwindow, data_entries));
+                    canvas.process_peninput_start(&appwindow, data_entries);
                 }
             }),
         );
 
-        priv_.mouse_drawing_gesture.connect_drag_update(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+        priv_.mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
             if let Some(event) = mouse_drawing_gesture.current_event() {
                 // Guard not to handle touch events that emulate a pointer
                 if event.is_pointer_emulated() {
@@ -883,13 +869,13 @@ impl Canvas {
                 if let Some(start_point) = mouse_drawing_gesture.start_point() {
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                    canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), data_entries);
+                    canvas.process_peninput_motion(&appwindow, data_entries);
                 }
             }
         }));
 
         priv_.mouse_drawing_gesture.connect_drag_end(
-            clone!(@strong current_stroke_key, @weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
 
                 if let Some(event) = mouse_drawing_gesture.current_event() {
                     // Guard not to handle touch events that emulate a pointer
@@ -900,43 +886,39 @@ impl Canvas {
                     if let Some(start_point) = mouse_drawing_gesture.start_point() {
                         let mut data_entries = input::retreive_pointer_inputdata(x, y);
                         input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                        canvas.processing_draw_end(&appwindow, data_entries);
+                        canvas.process_peninput_end(&appwindow, data_entries);
                     }
-
-                    current_stroke_key.set(None);
                 }
             }),
         );
 
         // Touch drawing
         priv_.touch_drawing_gesture.connect_drag_begin(
-            clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+            clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
                 touch_drawing_gesture.set_state(EventSequenceState::Claimed);
 
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
-                current_stroke_key.set(canvas.processing_draw_begin(&appwindow, data_entries));
+                canvas.process_peninput_start(&appwindow, data_entries);
             }),
         );
 
-        priv_.touch_drawing_gesture.connect_drag_update(clone!(@strong current_stroke_key, @weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+        priv_.touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                canvas.processing_draw_motion(&appwindow, current_stroke_key.get(), data_entries);
+                canvas.process_peninput_motion(&appwindow, data_entries);
             }
         }));
 
         priv_.touch_drawing_gesture.connect_drag_end(
-            clone!(@strong current_stroke_key, @weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
+            clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                    canvas.processing_draw_end(&appwindow, data_entries);
+                    canvas.process_peninput_end(&appwindow, data_entries);
                 }
-
-                current_stroke_key.set(None);
             }),
         );
 
@@ -1103,7 +1085,7 @@ impl Canvas {
             .reset_regenerate_flag_all_strokes();
 
         // update rendernodes to new zoom until threaded regeneration is finished
-        self.update_content_rendernodes();
+        self.update_content_rendernodes(false);
 
         self.regenerate_background(false);
         self.regenerate_content(false, true);
@@ -1144,7 +1126,7 @@ impl Canvas {
     }
 
     /// Update rendernodes of the background. Used when sheet size, but not zoom changed
-    pub fn update_background_rendernode(&self) {
+    pub fn update_background_rendernode(&self, redraw: bool) {
         self.sheet()
         .background()
         .borrow_mut()
@@ -1152,19 +1134,23 @@ impl Canvas {
             log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
         });
 
-        self.queue_resize();
-        self.queue_draw();
+        if redraw {
+            self.queue_resize();
+            self.queue_draw();
+        }
     }
 
     /// Update rendernodes of the background. Used when sheet size, but not zoom changed
-    pub fn update_content_rendernodes(&self) {
+    pub fn update_content_rendernodes(&self, redraw: bool) {
         self.sheet()
             .strokes_state()
             .borrow_mut()
             .update_rendernodes_current_zoom(self.zoom());
 
-        self.queue_resize();
-        self.queue_draw();
+        if redraw {
+            self.queue_resize();
+            self.queue_draw();
+        }
     }
 
     /// regenerating the background image and rendernode.
@@ -1236,18 +1222,15 @@ impl Canvas {
         texture
     }
 
-    /// Process the beginning of a stroke drawing
-    fn processing_draw_begin(
+    /// Process pen input start
+    fn process_peninput_start(
         &self,
         appwindow: &RnoteAppWindow,
-        mut data_entries: VecDeque<InputData>,
-    ) -> Option<StrokeKey> {
-        let priv_ = imp::Canvas::from_instance(self);
-        let mut stroke_key = None;
-
+        data_entries: VecDeque<InputData>,
+    ) {
         appwindow.audioplayer().borrow().play_pen_sound_begin(
             RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-            self.current_pen().get(),
+            self.pens().borrow().current_pen(),
         );
 
         self.set_unsaved_changes(true);
@@ -1257,164 +1240,38 @@ impl Canvas {
             .borrow_mut()
             .deselect_all_strokes();
         self.selection_modifier().set_visible(false);
-        self.pens().borrow_mut().set_shown(true);
 
-        match self.current_pen().get() {
-            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
-                self.set_cursor(Some(&self.motion_cursor()));
-
-                let filter_bounds = p2d::bounding_volume::AABB::new(
-                    na::point![-Self::INPUT_OVERSHOOT, -Self::INPUT_OVERSHOOT],
-                    na::point![
-                        (priv_.sheet.width()) as f64 + Self::INPUT_OVERSHOOT,
-                        (priv_.sheet.height()) as f64 + Self::INPUT_OVERSHOOT
-                    ],
-                );
-                input::filter_mapped_inputdata(filter_bounds, &mut data_entries);
-
-                if let Some(inputdata) = data_entries.pop_back() {
-                    stroke_key = self.sheet().strokes_state().borrow_mut().new_stroke(
-                        Element::new(inputdata),
-                        self.current_pen().get(),
-                        &self.pens().borrow(),
-                    );
-
-                    self.sheet()
-                        .strokes_state()
-                        .borrow_mut()
-                        .regenerate_rendering_newest_stroke_threaded();
-                }
-            }
-            PenStyle::Eraser => {
-                self.pens()
-                    .borrow_mut()
-                    .eraser
-                    .begin(data_entries, appwindow);
-            }
-            PenStyle::Selector => {
-                self.pens()
-                    .borrow_mut()
-                    .selector
-                    .begin(data_entries, appwindow);
-            }
-            PenStyle::Tools => {
-                self.pens()
-                    .borrow_mut()
-                    .tools
-                    .begin(data_entries, appwindow);
-            }
-            PenStyle::Unknown => {}
-        }
-
-        self.queue_resize();
-        self.queue_draw();
-
-        stroke_key
-    }
-
-    /// Process the motion of a strokes drawing
-    fn processing_draw_motion(
-        &self,
-        appwindow: &RnoteAppWindow,
-        current_stroke_key: Option<StrokeKey>,
-        mut data_entries: VecDeque<InputData>,
-    ) {
-        let priv_ = imp::Canvas::from_instance(self);
-
-        appwindow.audioplayer().borrow().play_pen_sound_motion(
-            RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-            self.current_pen().get(),
-        );
-
-        match self.current_pen().get() {
-            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper => {
-                let filter_bounds = p2d::bounding_volume::AABB::new(
-                    na::point![-Self::INPUT_OVERSHOOT, -Self::INPUT_OVERSHOOT],
-                    na::point![
-                        (priv_.sheet.width()) as f64 + Self::INPUT_OVERSHOOT,
-                        (priv_.sheet.height()) as f64 + Self::INPUT_OVERSHOOT
-                    ],
-                );
-                input::filter_mapped_inputdata(filter_bounds, &mut data_entries);
-
-                if let Some(current_stroke_key) = current_stroke_key {
-                    for inputdata in data_entries {
-                        self.sheet()
-                            .strokes_state()
-                            .borrow_mut()
-                            .add_to_stroke(current_stroke_key, Element::new(inputdata));
-                    }
-                }
-            }
-            PenStyle::Eraser => {
-                self.pens()
-                    .borrow_mut()
-                    .eraser
-                    .motion(data_entries, appwindow);
-            }
-            PenStyle::Selector => {
-                self.pens()
-                    .borrow_mut()
-                    .selector
-                    .motion(data_entries, appwindow);
-            }
-            PenStyle::Tools => {
-                self.pens()
-                    .borrow_mut()
-                    .tools
-                    .motion(data_entries, appwindow);
-            }
-            PenStyle::Unknown => {}
-        }
+        self.pens().borrow_mut().begin(data_entries, appwindow);
 
         self.queue_resize();
         self.queue_draw();
     }
 
-    /// Process the end of a strokes drawing
-    fn processing_draw_end(
+    /// Process pen input motion
+    fn process_peninput_motion(
         &self,
         appwindow: &RnoteAppWindow,
         data_entries: VecDeque<InputData>,
     ) {
-        self.set_cursor(Some(&self.cursor()));
+        appwindow.audioplayer().borrow().play_pen_sound_motion(
+            RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
+            self.pens().borrow().current_pen(),
+        );
+
+        self.pens().borrow_mut().motion(data_entries, appwindow);
+
+        self.queue_resize();
+        self.queue_draw();
+    }
+
+    /// Process pen input end
+    fn process_peninput_end(&self, appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
+        self.pens().borrow_mut().end(data_entries, appwindow);
 
         appwindow
             .downcast_ref::<RnoteAppWindow>()
             .unwrap()
             .change_action_state("tmperaser", &false.to_variant());
-
-        // complete the last stroke
-        let last_key = self.sheet().strokes_state().borrow().last_stroke_key();
-        if let Some(last_key) = last_key {
-            self.sheet()
-                .strokes_state()
-                .borrow_mut()
-                .update_geometry_for_stroke(last_key);
-
-            self.sheet()
-                .strokes_state()
-                .borrow_mut()
-                .regenerate_rendering_for_stroke_threaded(last_key);
-        }
-
-        match self.current_pen().get() {
-            PenStyle::Selector => {
-                self.pens()
-                    .borrow_mut()
-                    .selector
-                    .end(data_entries, appwindow);
-            }
-            PenStyle::Eraser => {
-                self.pens().borrow_mut().eraser.end(data_entries, appwindow);
-            }
-            PenStyle::Tools => {
-                self.pens().borrow_mut().tools.end(data_entries, appwindow);
-            }
-            PenStyle::Marker | PenStyle::Brush | PenStyle::Shaper | PenStyle::Unknown => {}
-        }
-
-        self.pens().borrow_mut().set_shown(false);
 
         // Show the selection modifier if selection bounds are some
         self.selection_modifier().set_visible(
@@ -1426,7 +1283,7 @@ impl Canvas {
         );
 
         if self.sheet().resize_endless() {
-            self.update_background_rendernode();
+            self.update_background_rendernode(false);
         }
 
         self.queue_resize();

@@ -43,7 +43,7 @@ impl PenBehaviour for Eraser {
             .trash_colliding_strokes(self, Some(appwindow.canvas().viewport_in_sheet_coords()));
 
         if appwindow.canvas().sheet().resize_endless() {
-            appwindow.canvas().update_background_rendernode();
+            appwindow.canvas().update_background_rendernode(false);
         }
     }
 

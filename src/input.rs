@@ -3,6 +3,8 @@ use std::collections::VecDeque;
 
 use crate::strokes::strokestyle::InputData;
 
+pub const INPUT_OVERSHOOT: f64 = 30.0;
+
 /// Map Stylus input to the position on a sheet
 pub fn map_inputdata(
     zoom: f64,

@@ -12,9 +12,11 @@ pub trait PenBehaviour {
     fn end(&mut self, data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow);
     fn draw(
         &self,
-        sheet_bounds: p2d::bounding_volume::AABB,
-        renderer: &Renderer,
-        zoom: f64,
-        snapshot: &Snapshot,
-    ) -> Result<(), anyhow::Error>;
+        _sheet_bounds: p2d::bounding_volume::AABB,
+        _renderer: &Renderer,
+        _zoom: f64,
+        _snapshot: &Snapshot,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
 }

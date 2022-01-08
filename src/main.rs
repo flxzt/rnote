@@ -4,6 +4,7 @@ pub mod audioplayer;
 pub mod compose;
 pub mod config;
 pub mod curves;
+pub mod drawbehaviour;
 pub mod geometry;
 pub mod globals;
 pub mod input;
@@ -13,7 +14,6 @@ pub mod sheet;
 pub mod strokes;
 pub mod ui;
 pub mod utils;
-pub mod drawbehaviour;
 
 use gtk4::prelude::*;
 extern crate gstreamer as gst;

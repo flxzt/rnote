@@ -229,14 +229,14 @@ impl MainHeader {
             clone!(@weak appwindow => move |_add_page_button| {
                 let format_height = appwindow.canvas().sheet().format().height();
                 appwindow.canvas().sheet().set_height(appwindow.canvas().sheet().height() + format_height);
-                appwindow.canvas().update_background_rendernode();
+                appwindow.canvas().update_background_rendernode(true);
             }),
         );
 
         priv_.resize_to_format_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
                 appwindow.canvas().sheet().resize_to_format();
-                appwindow.canvas().update_background_rendernode();
+                appwindow.canvas().update_background_rendernode(true);
             }),
         );
 

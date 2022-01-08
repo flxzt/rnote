@@ -158,10 +158,7 @@ pub fn vec2_mins_maxs(
 }
 
 pub fn aabb_new_zero() -> p2d::bounding_volume::AABB {
-    p2d::bounding_volume::AABB::new(
-        na::point![0.0, 0.0],
-        na::point![0.0, 0.0]
-    )
+    p2d::bounding_volume::AABB::new(na::point![0.0, 0.0], na::point![0.0, 0.0])
 }
 
 pub fn aabb_new_positive(

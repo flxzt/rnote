@@ -138,7 +138,8 @@ impl VectorImage {
                 let svg_stream: Vec<u8> = vec![];
 
                 let surface =
-                    cairo::SvgSurface::for_stream(intrinsic_size.0, intrinsic_size.1, svg_stream).map_err(|e| {
+                    cairo::SvgSurface::for_stream(intrinsic_size.0, intrinsic_size.1, svg_stream)
+                        .map_err(|e| {
                         anyhow::anyhow!(
                             "create SvgSurface with dimensions ({}, {}) failed, {}",
                             intrinsic_size.0,

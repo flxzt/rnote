@@ -13,11 +13,6 @@ pub mod trash_comp;
 
 use std::sync::{Arc, RwLock};
 
-use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::tools::DragProximityTool;
-use crate::ui::appwindow::RnoteAppWindow;
-use crate::{compose, geometry};
-use crate::{pens::PenStyle, pens::Pens, render};
 use chrono_comp::ChronoComponent;
 use p2d::query::PointQuery;
 use render_comp::RenderComponent;
@@ -26,7 +21,10 @@ use trash_comp::TrashComponent;
 
 use self::strokebehaviour::StrokeBehaviour;
 use self::strokestyle::{Element, StrokeStyle};
-use self::{brushstroke::BrushStroke, markerstroke::MarkerStroke, shapestroke::ShapeStroke};
+use crate::drawbehaviour::DrawBehaviour;
+use crate::pens::tools::DragProximityTool;
+use crate::ui::appwindow::RnoteAppWindow;
+use crate::{compose, geometry, render};
 
 use gtk4::{glib, glib::clone, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
@@ -166,38 +164,6 @@ impl StrokesState {
             panic!();
         });
         self.channel_source.replace(source);
-    }
-
-    pub fn new_stroke(
-        &mut self,
-        element: Element,
-        current_pen: PenStyle,
-        pens: &Pens,
-    ) -> Option<StrokeKey> {
-        match current_pen {
-            PenStyle::Marker => {
-                let markerstroke =
-                    StrokeStyle::MarkerStroke(MarkerStroke::new(element, pens.marker.clone()));
-
-                Some(self.insert_stroke(markerstroke))
-            }
-            PenStyle::Brush => {
-                let brushstroke =
-                    StrokeStyle::BrushStroke(BrushStroke::new(element, pens.brush.clone()));
-
-                Some(self.insert_stroke(brushstroke))
-            }
-            PenStyle::Shaper => {
-                let shapestroke =
-                    StrokeStyle::ShapeStroke(ShapeStroke::new(element, pens.shaper.clone()));
-
-                Some(self.insert_stroke(shapestroke))
-            }
-            PenStyle::Eraser | PenStyle::Selector | PenStyle::Tools | PenStyle::Unknown => {
-                log::warn!("new_stroke() failed, current_pen is a unsupported PenStyle");
-                None
-            }
-        }
     }
 
     pub fn insert_stroke(&mut self, stroke: StrokeStyle) -> StrokeKey {

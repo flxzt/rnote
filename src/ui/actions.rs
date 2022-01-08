@@ -236,32 +236,32 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             match action_current_pen.state().unwrap().str().unwrap() {
                 "marker" => {
                     appwindow.mainheader().marker_toggle().set_active(true);
-                    appwindow.canvas().current_pen().set(PenStyle::Marker);
+                    appwindow.canvas().pens().borrow_mut().set_current_pen(PenStyle::Marker);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("marker_page");
                 },
                 "brush" => {
                     appwindow.mainheader().brush_toggle().set_active(true);
-                    appwindow.canvas().current_pen().set(PenStyle::Brush);
+                    appwindow.canvas().pens().borrow_mut().set_current_pen(PenStyle::Brush);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
                 },
                 "shaper" => {
                     appwindow.mainheader().shaper_toggle().set_active(true);
-                    appwindow.canvas().current_pen().set(PenStyle::Shaper);
+                    appwindow.canvas().pens().borrow_mut().set_current_pen(PenStyle::Shaper);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
                 },
                 "eraser" => {
                     appwindow.mainheader().eraser_toggle().set_active(true);
-                    appwindow.canvas().current_pen().set(PenStyle::Eraser);
+                    appwindow.canvas().pens().borrow_mut().set_current_pen(PenStyle::Eraser);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                 },
                 "selector" => {
                     appwindow.mainheader().selector_toggle().set_active(true);
-                    appwindow.canvas().current_pen().set(PenStyle::Selector);
+                    appwindow.canvas().pens().borrow_mut().set_current_pen(PenStyle::Selector);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                 },
                 "tools" => {
                     appwindow.mainheader().tools_toggle().set_active(true);
-                    appwindow.canvas().current_pen().set(PenStyle::Tools);
+                    appwindow.canvas().pens().borrow_mut().set_current_pen(PenStyle::Tools);
                     appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
                 },
                 _ => { log::error!("set invalid state of action `current-pen`")}
@@ -413,7 +413,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.canvas().sheet().set_endless_sheet(state);
             appwindow.mainheader().pageedit_revealer().set_reveal_child(!state);
 
-            appwindow.canvas().update_background_rendernode();
+            appwindow.canvas().update_background_rendernode(true);
         }),
     );
 
@@ -506,14 +506,14 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     action_undo_stroke.connect_activate(clone!(@weak appwindow => move |_,_| {
         appwindow.canvas().sheet().strokes_state().borrow_mut().undo_last_stroke();
         appwindow.canvas().sheet().resize_to_format();
-        appwindow.canvas().update_background_rendernode();
+        appwindow.canvas().update_background_rendernode(true);
     }));
 
     // Redo stroke
     action_redo_stroke.connect_activate(clone!(@weak appwindow => move |_,_| {
         appwindow.canvas().sheet().strokes_state().borrow_mut().redo_last_stroke();
         appwindow.canvas().sheet().resize_to_format();
-        appwindow.canvas().update_background_rendernode();
+        appwindow.canvas().update_background_rendernode(true);
     }));
 
     // Zoom reset
@@ -562,10 +562,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                 action_tmperaser.set_state(value.unwrap());
 
                 if action_tmperaser.state().unwrap().get::<bool>().unwrap() {
-                    pen_tmp.set(appwindow.canvas().current_pen().get());
-                    appwindow.canvas().current_pen().set(PenStyle::Eraser);
+                    pen_tmp.set(appwindow.canvas().pens().borrow().current_pen());
+                    appwindow.canvas().pens().borrow_mut().set_current_pen(PenStyle::Eraser);
                 } else {
-                    appwindow.canvas().current_pen().set(pen_tmp.get());
+                    appwindow.canvas().pens().borrow_mut().set_current_pen(pen_tmp.get());
                 };
             }
         }),

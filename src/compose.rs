@@ -145,7 +145,25 @@ pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
     }
 }
 
-pub fn compose_linear_offsetted(
+#[allow(dead_code)]
+pub fn compose_line(line: curves::Line, move_start: bool) -> Vec<path::Command> {
+    let mut commands = Vec::new();
+
+    if move_start {
+        commands.push(path::Command::Move(
+            path::Position::Absolute,
+            path::Parameters::from((line.start[0], line.start[1])),
+        ));
+    }
+    commands.push(path::Command::Line(
+        path::Position::Absolute,
+        path::Parameters::from((line.end[0], line.end[1])),
+    ));
+
+    commands
+}
+
+pub fn compose_line_offsetted(
     line: curves::Line,
     start_offset_dist: f64,
     end_offset_dist: f64,
@@ -174,7 +192,7 @@ pub fn compose_linear_offsetted(
     commands
 }
 
-pub fn compose_linear_variable_width(
+pub fn compose_line_variable_width(
     line: curves::Line,
     width_start: f64,
     width_end: f64,
@@ -190,7 +208,7 @@ pub fn compose_linear_variable_width(
     let direction_unit_norm = curves::vector2_unit_norm(line.end - line.start);
 
     let mut commands = Vec::new();
-    commands.append(&mut compose_linear_offsetted(
+    commands.append(&mut compose_line_offsetted(
         line,
         start_offset_dist,
         end_offset_dist,
@@ -215,7 +233,7 @@ pub fn compose_linear_variable_width(
             (line.end + direction_unit_norm * (-end_offset_dist))[1],
         )),
     ));
-    commands.append(&mut compose_linear_offsetted(
+    commands.append(&mut compose_line_offsetted(
         line_reverse,
         end_offset_dist,
         start_offset_dist,
@@ -244,16 +262,37 @@ pub fn compose_linear_variable_width(
     commands
 }
 
+#[allow(dead_code)]
+pub fn compose_quadbez(quadbez: curves::QuadBezier, move_start: bool) -> Vec<path::Command> {
+    let mut commands = Vec::new();
+
+    if move_start {
+        commands.push(path::Command::Move(
+            path::Position::Absolute,
+            path::Parameters::from((quadbez.start[0], quadbez.start[1])),
+        ));
+    }
+    commands.push(path::Command::QuadraticCurve(
+        path::Position::Absolute,
+        path::Parameters::from((
+            (quadbez.cp[0], quadbez.cp[1]),
+            (quadbez.end[0], quadbez.end[1]),
+        )),
+    ));
+
+    commands
+}
+
 pub fn compose_quadbez_offsetted(
-    quad_bezier: curves::QuadBezier,
+    quadbez: curves::QuadBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
 ) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
-    let start_unit_norm = curves::vector2_unit_norm(quad_bezier.cp - quad_bezier.start);
-    let end_unit_norm = curves::vector2_unit_norm(quad_bezier.end - quad_bezier.cp);
+    let start_unit_norm = curves::vector2_unit_norm(quadbez.cp - quadbez.start);
+    let end_unit_norm = curves::vector2_unit_norm(quadbez.end - quadbez.cp);
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
@@ -270,8 +309,8 @@ pub fn compose_quadbez_offsetted(
         commands.push(path::Command::Move(
             path::Position::Absolute,
             path::Parameters::from((
-                quad_bezier.start[0] + start_offset[0],
-                quad_bezier.start[1] + start_offset[1],
+                quadbez.start[0] + start_offset[0],
+                quadbez.start[1] + start_offset[1],
             )),
         ));
     }
@@ -279,12 +318,12 @@ pub fn compose_quadbez_offsetted(
         path::Position::Absolute,
         path::Parameters::from((
             (
-                quad_bezier.cp[0] + cp_offset[0],
-                quad_bezier.cp[1] + cp_offset[1],
+                quadbez.cp[0] + cp_offset[0],
+                quadbez.cp[1] + cp_offset[1],
             ),
             (
-                quad_bezier.end[0] + end_offset[0],
-                quad_bezier.end[1] + end_offset[1],
+                quadbez.end[0] + end_offset[0],
+                quadbez.end[1] + end_offset[1],
             ),
         )),
     ));
@@ -294,26 +333,29 @@ pub fn compose_quadbez_offsetted(
 
 /// Offsetted quad bezier approximation, see "precise offsetting of quadratic bezier curves"
 pub fn compose_quadbez_offsetted_w_subdivision(
-    quad_bezier: curves::QuadBezier,
+    quadbez: curves::QuadBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
 ) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
-    let (splitted_quads, split_t1, split_t2) =
-        curves::split_quadbez_critical_points(quad_bezier, start_offset_dist, end_offset_dist);
+    let (splitted_quads, split_t1, split_t2) = curves::split_offsetted_quadbez_critical_points(
+        quadbez,
+        start_offset_dist,
+        end_offset_dist,
+    );
 
     match (split_t1, split_t2) {
         (Some(split_t1), Some(split_t2)) => {
             let offset_dist_t1 = curves::quadbez_calc_offset_dist_at_t(
-                quad_bezier,
+                quadbez,
                 start_offset_dist,
                 end_offset_dist,
                 split_t1,
             );
             let offset_dist_t2 = curves::quadbez_calc_offset_dist_at_t(
-                quad_bezier,
+                quadbez,
                 start_offset_dist,
                 end_offset_dist,
                 split_t2,
@@ -340,7 +382,7 @@ pub fn compose_quadbez_offsetted_w_subdivision(
         }
         (Some(split_t1), None) => {
             let offset_dist_t1 = curves::quadbez_calc_offset_dist_at_t(
-                quad_bezier,
+                quadbez,
                 start_offset_dist,
                 end_offset_dist,
                 split_t1,
@@ -360,7 +402,7 @@ pub fn compose_quadbez_offsetted_w_subdivision(
         }
         (None, Some(split_t2)) => {
             let offset_dist_t2 = curves::quadbez_calc_offset_dist_at_t(
-                quad_bezier,
+                quadbez,
                 start_offset_dist,
                 end_offset_dist,
                 split_t2,
@@ -392,30 +434,30 @@ pub fn compose_quadbez_offsetted_w_subdivision(
 }
 
 pub fn compose_quadbez_variable_width(
-    quad_bezier: curves::QuadBezier,
+    quadbez: curves::QuadBezier,
     width_start: f64,
     width_end: f64,
     move_start: bool,
 ) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
-    let quad_bezier_reverse = curves::QuadBezier {
-        start: quad_bezier.end,
-        cp: quad_bezier.cp,
-        end: quad_bezier.start,
+    let quadbez_reverse = curves::QuadBezier {
+        start: quadbez.end,
+        cp: quadbez.cp,
+        end: quadbez.start,
     };
 
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
 
-    let start_unit_norm = curves::vector2_unit_norm(quad_bezier.cp - quad_bezier.start);
-    let end_unit_norm = curves::vector2_unit_norm(quad_bezier.end - quad_bezier.cp);
+    let start_unit_norm = curves::vector2_unit_norm(quadbez.cp - quadbez.start);
+    let end_unit_norm = curves::vector2_unit_norm(quadbez.end - quadbez.cp);
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
 
     commands.append(&mut compose_quadbez_offsetted_w_subdivision(
-        quad_bezier,
+        quadbez,
         start_offset_dist,
         end_offset_dist,
         move_start,
@@ -423,13 +465,13 @@ pub fn compose_quadbez_variable_width(
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((
-            (quad_bezier.end - end_offset)[0],
-            (quad_bezier.end - end_offset)[1],
+            (quadbez.end - end_offset)[0],
+            (quadbez.end - end_offset)[1],
         )),
     ));
 
     commands.append(&mut compose_quadbez_offsetted_w_subdivision(
-        quad_bezier_reverse,
+        quadbez_reverse,
         end_offset_dist,
         start_offset_dist,
         false,
@@ -437,8 +479,29 @@ pub fn compose_quadbez_variable_width(
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((
-            (quad_bezier.start + start_offset)[0],
-            (quad_bezier.start + start_offset)[1],
+            (quadbez.start + start_offset)[0],
+            (quadbez.start + start_offset)[1],
+        )),
+    ));
+
+    commands
+}
+
+pub fn compose_cubbez(cubbez: curves::CubicBezier, move_start: bool) -> Vec<path::Command> {
+    let mut commands = Vec::new();
+
+    if move_start {
+        commands.push(path::Command::Move(
+            path::Position::Absolute,
+            path::Parameters::from((cubbez.start[0], cubbez.start[1])),
+        ));
+    }
+    commands.push(path::Command::CubicCurve(
+        path::Position::Absolute,
+        path::Parameters::from((
+            (cubbez.cp1[0], cubbez.cp1[1]),
+            (cubbez.cp2[0], cubbez.cp2[1]),
+            (cubbez.end[0], cubbez.end[1]),
         )),
     ));
 
@@ -446,7 +509,7 @@ pub fn compose_quadbez_variable_width(
 }
 
 pub fn compose_cubbez_offsetted(
-    cubic_bezier: curves::CubicBezier,
+    cubbez: curves::CubicBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
@@ -454,7 +517,7 @@ pub fn compose_cubbez_offsetted(
     let t = 0.5;
     let mid_offset_dist = start_offset_dist + (end_offset_dist - start_offset_dist) * t;
 
-    let (first_cubic, second_cubic) = curves::split_cubbez(cubic_bezier, t);
+    let (first_cubic, second_cubic) = curves::split_cubbez(cubbez, t);
     let first_quad = curves::approx_cubbez_with_quadbez(first_cubic);
     let second_quad = curves::approx_cubbez_with_quadbez(second_cubic);
 
@@ -478,7 +541,7 @@ pub fn compose_cubbez_offsetted(
 }
 
 pub fn compose_cubbez_variable_width(
-    cubic_bezier: curves::CubicBezier,
+    cubbez: curves::CubicBezier,
     width_start: f64,
     width_end: f64,
     move_start: bool,
@@ -486,17 +549,17 @@ pub fn compose_cubbez_variable_width(
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
 
-    let start_unit_norm = curves::vector2_unit_norm(cubic_bezier.cp1 - cubic_bezier.start);
-    let end_unit_norm = curves::vector2_unit_norm(cubic_bezier.end - cubic_bezier.cp2);
+    let start_unit_norm = curves::vector2_unit_norm(cubbez.cp1 - cubbez.start);
+    let end_unit_norm = curves::vector2_unit_norm(cubbez.end - cubbez.cp2);
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
 
-    let cubic_bezier_reverse = curves::CubicBezier {
-        start: cubic_bezier.end,
-        cp1: cubic_bezier.cp2,
-        cp2: cubic_bezier.cp1,
-        end: cubic_bezier.start,
+    let cubbez_reverse = curves::CubicBezier {
+        start: cubbez.end,
+        cp1: cubbez.cp2,
+        cp2: cubbez.cp1,
+        end: cubbez.start,
     };
 
     // if the angle of the two offsets is > 90deg, calculating the norms went wrong, so reverse them.
@@ -504,27 +567,27 @@ pub fn compose_cubbez_variable_width(
     let angle_greater_90 = angle < -90.0 && angle > 90.0;
 
     let mut commands =
-        compose_cubbez_offsetted(cubic_bezier, start_offset_dist, end_offset_dist, move_start);
+        compose_cubbez_offsetted(cubbez, start_offset_dist, end_offset_dist, move_start);
 
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((
-            (cubic_bezier.end - end_offset)[0],
-            (cubic_bezier.end - end_offset)[1],
+            (cubbez.end - end_offset)[0],
+            (cubbez.end - end_offset)[1],
         )),
     ));
 
     // If angle > 90.0 degrees, reverse the cubic_bezier vector (using the original cubic_bezier, but with offsets of the reversed)
     if angle_greater_90 {
         commands.append(&mut compose_cubbez_offsetted(
-            cubic_bezier,
+            cubbez,
             -end_offset_dist,
             -start_offset_dist,
             false,
         ));
     } else {
         commands.append(&mut compose_cubbez_offsetted(
-            cubic_bezier_reverse,
+            cubbez_reverse,
             end_offset_dist,
             start_offset_dist,
             false,
@@ -533,8 +596,8 @@ pub fn compose_cubbez_variable_width(
     commands.push(path::Command::Line(
         path::Position::Absolute,
         path::Parameters::from((
-            (cubic_bezier.start + start_offset)[0],
-            (cubic_bezier.start + start_offset)[1],
+            (cubbez.start + start_offset)[0],
+            (cubbez.start + start_offset)[1],
         )),
     ));
 

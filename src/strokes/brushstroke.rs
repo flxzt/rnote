@@ -287,7 +287,7 @@ impl BrushStroke {
                 Ok(self.gen_svg_elem_textured(elements, offset, svg_root))
             }
             brush::BrushStyle::Experimental => {
-                Ok(self.gen_svg_elem_experimental((elements.1, elements.2), offset, svg_root))
+                Ok(self.gen_svg_elem_experimental(elements, offset, svg_root))
             }
         }
     }
@@ -324,18 +324,22 @@ impl BrushStroke {
             bounds = geometry::aabb_ceil(bounds);
 
             // Number of splits for the bezier curve approximation
-            let n_splits = 4;
-            for (i, line) in curves::approx_cubbez_with_lines(cubbez, n_splits)
-                .iter()
-                .enumerate()
-            {
-                // splitted line start / end widths are a linear interpolation between the start and end width / n splits
+            let lines = curves::approx_offsetted_cubbez_with_lines_w_subdivision(
+                cubbez,
+                start_width / 2.0,
+                end_width / 2.0,
+            );
+            let n_splits = lines.len() as i32;
+
+            for (i, line) in lines.iter().enumerate() {
+                // splitted line start / end widths are a linear interpolation between the start and end width / n splits.
+                // Not mathematically correct, TODO to carry the t of the splits through approx_offsetted_cubbez_with_lines_w_subdivion()
                 let line_start_width = start_width
                     + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_splits));
                 let line_end_width = start_width
                     + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_splits));
 
-                commands.append(&mut compose::compose_linear_variable_width(
+                commands.append(&mut compose::compose_line_variable_width(
                     *line,
                     line_start_width,
                     line_end_width,
@@ -350,7 +354,7 @@ impl BrushStroke {
             bounds.take_point(na::Point2::<f64>::from(line.end));
             bounds.loosen(start_width.max(end_width));
 
-            commands.append(&mut compose::compose_linear_variable_width(
+            commands.append(&mut compose::compose_line_variable_width(
                 line,
                 start_width,
                 end_width,
@@ -415,7 +419,7 @@ impl BrushStroke {
         let end_width = elements.1.inputdata.pressure() * self.brush.width();
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
-        if let Some(mut line) = curves::gen_line(elements.0, elements.1) {
+        if let Some(mut line) = curves::gen_line(elements.1, elements.2) {
             line.start += offset;
             line.end += offset;
 
@@ -423,7 +427,7 @@ impl BrushStroke {
             bounds.take_point(na::Point2::<f64>::from(line.end));
             bounds.loosen(start_width.max(end_width));
 
-            commands.append(&mut compose::compose_linear_variable_width(
+            commands.append(&mut compose::compose_line_variable_width(
                 line,
                 start_width,
                 end_width,
@@ -475,16 +479,58 @@ impl BrushStroke {
 
     pub fn gen_svg_elem_experimental(
         &self,
-        elements: (&Element, &Element),
+        elements: (&Element, &Element, &Element, &Element),
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Option<render::Svg> {
         let mut commands = Vec::new();
-        let start_width = elements.0.inputdata.pressure() * self.brush.width();
-        let end_width = elements.1.inputdata.pressure() * self.brush.width();
+
+        let start_width = elements.1.inputdata.pressure() * self.brush.width();
+        let end_width = elements.2.inputdata.pressure() * self.brush.width();
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
-        if let Some(mut line) = curves::gen_line(elements.0, elements.1) {
+
+        if let Some(mut cubbez) =
+            curves::gen_cubbez_w_catmull_rom(elements.0, elements.1, elements.2, elements.3)
+        {
+            cubbez.start += offset;
+            cubbez.cp1 += offset;
+            cubbez.cp2 += offset;
+            cubbez.end += offset;
+
+            // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
+            bounds.take_point(na::Point2::<f64>::from(cubbez.start));
+            bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
+            bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
+            bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+            bounds.loosen(start_width.max(end_width));
+
+            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
+            bounds = geometry::aabb_ceil(bounds);
+
+            // Number of splits for the bezier curve approximation
+            let lines = curves::approx_offsetted_cubbez_with_lines_w_subdivision(
+                cubbez,
+                start_width / 2.0,
+                end_width / 2.0,
+            );
+            let n_splits = lines.len() as i32;
+
+            for (i, line) in lines.iter().enumerate() {
+                // splitted line start / end widths are a linear interpolation between the start and end width / n splits. Not mathematically correct, TODO to carry the t of the splits through approx_offsetted_cubbez_with_lines_w_subdivion()
+                let line_start_width = start_width
+                    + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_splits));
+                let line_end_width = start_width
+                    + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_splits));
+
+                commands.append(&mut compose::compose_line_variable_width(
+                    *line,
+                    line_start_width,
+                    line_end_width,
+                    true,
+                ));
+            }
+        } else if let Some(mut line) = curves::gen_line(elements.1, elements.2) {
             line.start += offset;
             line.end += offset;
 
@@ -492,7 +538,7 @@ impl BrushStroke {
             bounds.take_point(na::Point2::<f64>::from(line.end));
             bounds.loosen(start_width.max(end_width));
 
-            commands.append(&mut compose::compose_linear_variable_width(
+            commands.append(&mut compose::compose_line_variable_width(
                 line,
                 start_width,
                 end_width,
@@ -501,6 +547,7 @@ impl BrushStroke {
         } else {
             return None;
         }
+
         let path = svg::node::element::Path::new()
             .set("stroke", "none")
             //.set("stroke", self.brush.color.to_css_color())
@@ -535,8 +582,10 @@ impl BrushStroke {
             .elements
             .iter()
             .zip(self.elements.iter().skip(1))
-            .filter_map(|(first, second)| {
-                self.gen_svg_elem_experimental((first, second), offset, svg_root)
+            .zip(self.elements.iter().skip(2))
+            .zip(self.elements.iter().skip(3))
+            .filter_map(|(((first, second), third), forth)| {
+                self.gen_svg_elem_experimental((first, second, third, forth), offset, svg_root)
             })
             .collect();
 

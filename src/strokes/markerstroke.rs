@@ -299,18 +299,7 @@ impl MarkerStroke {
             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
             bounds = geometry::aabb_ceil(bounds);
 
-            commands.push(path::Command::Move(
-                path::Position::Absolute,
-                path::Parameters::from((cubbez.start[0], cubbez.start[1])),
-            ));
-            commands.push(path::Command::CubicCurve(
-                path::Position::Absolute,
-                path::Parameters::from((
-                    (cubbez.cp1[0], cubbez.cp1[1]),
-                    (cubbez.cp2[0], cubbez.cp2[1]),
-                    (cubbez.end[0], cubbez.end[1]),
-                )),
-            ));
+            commands.append(&mut compose::compose_cubbez(cubbez, true));
         } else if let Some(mut line) = curves::gen_line(elements.1, elements.2) {
             line.start += offset;
             line.end += offset;
@@ -319,14 +308,7 @@ impl MarkerStroke {
             bounds.take_point(na::Point2::<f64>::from(line.end));
             bounds.loosen(marker_width);
 
-            commands.push(path::Command::Move(
-                path::Position::Absolute,
-                path::Parameters::from((line.start[0], line.start[1])),
-            ));
-            commands.push(path::Command::Line(
-                path::Position::Absolute,
-                path::Parameters::from((line.end[0], line.end[1])),
-            ));
+            commands.append(&mut compose::compose_line(line, true));
         } else {
             return None;
         }

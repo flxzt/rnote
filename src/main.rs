@@ -18,7 +18,6 @@ pub mod utils;
 use gtk4::prelude::*;
 extern crate gstreamer as gst;
 extern crate nalgebra as na;
-extern crate nalgebra_glm as glm;
 extern crate parry2d_f64 as p2d;
 
 fn main() {

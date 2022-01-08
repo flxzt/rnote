@@ -85,7 +85,7 @@ checksum = "45403b49e3954a4b8428a0ac21a4b7afadccf92bfd96273f1a58cd4812496ae0"
 dependencies = [
  "generic-array 0.12.4",
  "generic-array 0.13.3",
- "generic-array 0.14.4",
+ "generic-array 0.14.5",
  "stable_deref_trait",
 ]
 
@@ -741,9 +741,9 @@ dependencies = [
 
 [[package]]
 name = "generic-array"
-version = "0.14.4"
+version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "501466ecc8a30d1d3b7fc9229b122b2ce8ed6e9d9223f1138d4babb253e51817"
+checksum = "fd48d33ec7f05fbfa152300fdad764757cbded343c1aa1cff2fbaf4134851803"
 dependencies = [
  "typenum",
  "version_check",
@@ -1088,7 +1088,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "634bd4d29cbf24424d0a4bfcbf80c6960129dc24424752a7d1d1390607023422"
 dependencies = [
  "as-slice",
- "generic-array 0.14.4",
+ "generic-array 0.14.5",
  "hash32",
  "stable_deref_trait",
 ]
@@ -1275,7 +1275,7 @@ checksum = "1b03d17f364a3a042d5e5d46b053bbbf82c92c9430c592dd4c064dc6ee997125"
 [[package]]
 name = "librsvg"
 version = "2.53.0"
-source = "git+https://gitlab.gnome.org/GNOME/librsvg#51bc6b9265e55d608136e3f2566d0ce93b4b9112"
+source = "git+https://gitlab.gnome.org/GNOME/librsvg#25a7d15bc60c72884bdfe6095f621640e8cb1138"
 dependencies = [
  "cairo-rs",
  "cast",
@@ -1455,18 +1455,6 @@ dependencies = [
  "serde",
  "simba",
  "typenum",
-]
-
-[[package]]
-name = "nalgebra-glm"
-version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9cec137f377549720ff9fbbcd1413a12bbb03b4feea3192cee987e8493158748"
-dependencies = [
- "approx 0.5.0",
- "nalgebra",
- "num-traits",
- "simba",
 ]
 
 [[package]]
@@ -2242,7 +2230,6 @@ dependencies = [
  "librsvg",
  "log",
  "nalgebra",
- "nalgebra-glm",
  "num-derive",
  "num-traits",
  "once_cell",
@@ -2275,7 +2262,6 @@ name = "rough-rs"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "kurbo",
  "nalgebra",
  "rand 0.8.4",
  "serde",
@@ -2625,9 +2611,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.84"
+version = "1.0.85"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ecb2e6da8ee5eb9a61068762a32fa9619cc591ceb055b3687f4cd4051ec2e06b"
+checksum = "a684ac3dcd8913827e18cd09a68384ee66c1de24157e3c556c9ab16d85695fb7"
 dependencies = [
  "proc-macro2",
  "quote",

@@ -12,9 +12,9 @@ members = [
 
 [dependencies]
 rough-rs = { path = "./rough-rs" } 
-num-derive = "0.3.3"
-num-traits = "0.2.14"
-flate2 = "1.0.22"
+num-derive = "0.3"
+num-traits = "0.2"
+flate2 = "1.0"
 rand = "0.8"
 log = "0.4"
 pretty_env_logger = "0.3"
@@ -22,16 +22,15 @@ anyhow = "1.0"
 serde = {version = "1.0", features = ["derive", "rc"]}
 serde_json = { version="1.0" }
 chrono = {version ="0.4", features = ["serde"] }
-regex = "1.5.4"
-rayon = "1.5.1"
+regex = "1.5"
+rayon = "1.5"
 nalgebra = { version = "0.29", features = ["serde-serialize"] }
-nalgebra-glm = { version = "0.15"}
 parry2d-f64 = { version = "0.7", features = ["serde-serialize"] }
 geo = "0.18"
-svg = "0.10.0"
+svg = "0.10"
 gtk4 = {version = "0.3", features = ["v4_4"]}
 gstreamer = "0.17"
-adw = {version = "0.1.0-alpha-6", package="libadwaita"}
+adw = {version = "0.1.0-beta-1", package="libadwaita"}
 poppler-rs = "0.18"
 once_cell = "1.8"
 base64 = "0.13"
@@ -42,5 +41,5 @@ cairo-rs = {version = "0.14", features = ["png"]}
 librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
 resvg = "0.18"
 usvg = "0.18"
-tiny-skia = "0.6.1"
+tiny-skia = "0.6"
 slotmap = { version = "1.0", features = ["serde"] }

@@ -39,55 +39,6 @@
     },
     "modules": [
         {
-            "name": "libsass",
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://github.com/sass/libsass/archive/3.6.4.tar.gz",
-                    "sha256": "f9484d9a6df60576e791566eab2f757a97fd414fce01dd41fc0a693ea5db2889"
-                },
-                {
-                    "type": "script",
-                    "dest-filename": "autogen.sh",
-                    "commands": [
-                        "autoreconf -si"
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "sassc",
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://github.com/sass/sassc/archive/3.6.1.tar.gz",
-                    "sha256": "8cee391c49a102b4464f86fc40c4ceac3a2ada52a89c4c933d8348e3e4542a60"
-                },
-                {
-                    "type": "script",
-                    "dest-filename": "autogen.sh",
-                    "commands": [
-                        "autoreconf -si"
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "libadwaita",
-            "buildsystem": "meson",
-            "builddir": true,
-            "config-opts": [
-                "-Dexamples=false"
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://download.gnome.org/sources/libadwaita/1.0/libadwaita-1.0.0.alpha.3.tar.xz",
-                    "sha256": "89f05fa742cabc5ea6a2c0295c34996af5ac953e9d020ace27b8e8b15cf9e050"
-                }
-            ]
-        },
-        {
             "name": "poppler",
             "buildsystem": "cmake-ninja",
             "config-opts": [
@@ -101,6 +52,73 @@
                     "type": "archive",
                     "url": "https://poppler.freedesktop.org/poppler-21.12.0.tar.xz",
                     "sha256": "acb840c2c1ec07d07e53c57c4b3a1ff3e3ee2d888d44e1e9f2f01aaf16814de7"
+                }
+            ]
+        },
+        {
+            "name" : "libsass",
+            "buildsystem" : "meson",
+            "cleanup": ["*"],
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://github.com/lazka/libsass.git",
+                    "commit": "302397c0c8ae2d7ab02f45ea461c2c3d768f248e"
+                }
+            ]
+        },
+        {
+            "name" : "sassc",
+            "buildsystem" : "meson",
+            "cleanup": ["*"],
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://github.com/lazka/sassc.git",
+                    "commit": "82803377c33247265d779af034eceb5949e78354"
+                }
+            ]
+        },
+        {
+            "name": "pango",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/pango/1.50/pango-1.50.3.tar.xz",
+                    "sha256": "4add05edf51c1fb375a1ccde7498914120e23cb280dd7395b1aeb441f1838a4c"
+                }
+            ]
+        },
+        {
+            "name": "gtk",
+            "buildsystem": "meson",
+            "config-opts" : [
+                    "-Dbuild-examples=false",
+                    "-Dbuild-tests=false"
+            ],
+            "sources": [
+                {
+                  "type": "archive",
+                  "url": "https://download.gnome.org/sources/gtk/4.6/gtk-4.6.0.tar.xz",
+                  "sha256" : "782d5951fbfd585fc9ec76c09d07e28e6014c72db001fb567fff217fb96e4d8c"
+                }
+            ]
+        },
+        {
+            "name": "libadwaita",
+            "buildsystem": "meson",
+            "config-opts": [
+                "-Dgtk_doc=false",
+                "-Dtests=false",
+                "-Dexamples=false",
+                "-Dvapi=false"
+            ],
+            "sources": [
+                {
+                  "type": "archive",
+                  "url": "https://download.gnome.org/sources/libadwaita/1.0/libadwaita-1.0.1.tar.xz",
+                  "sha256" : "bb49cf5a09d2e8bc144946c2c3272aecd611667fd027f3808b95d7101ed473d6"
                 }
             ]
         },

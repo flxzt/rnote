@@ -4,7 +4,7 @@ mod imp {
         PopoverMenu, ToggleButton,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appmenu.ui")]
     pub struct AppMenu {
         #[template_child]
@@ -19,19 +19,6 @@ mod imp {
         pub light_theme_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub dark_theme_toggle: TemplateChild<ToggleButton>,
-    }
-
-    impl Default for AppMenu {
-        fn default() -> Self {
-            Self {
-                menubutton: TemplateChild::<MenuButton>::default(),
-                popovermenu: TemplateChild::<PopoverMenu>::default(),
-                menu_model: TemplateChild::<MenuModel>::default(),
-                default_theme_toggle: TemplateChild::<ToggleButton>::default(),
-                light_theme_toggle: TemplateChild::<ToggleButton>::default(),
-                dark_theme_toggle: TemplateChild::<ToggleButton>::default(),
-            }
-        }
     }
 
     #[glib::object_subclass]

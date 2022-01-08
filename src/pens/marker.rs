@@ -60,13 +60,6 @@ impl PenBehaviour for Marker {
                     .borrow_mut()
                     .insert_stroke(markerstroke),
             );
-
-            appwindow
-                .canvas()
-                .sheet()
-                .strokes_state()
-                .borrow_mut()
-                .regenerate_rendering_newest_stroke_threaded();
         }
     }
 

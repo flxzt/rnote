@@ -6,7 +6,7 @@ pub mod imp {
     use gtk4::gdk;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/selectionmodifier.ui")]
     pub struct SelectionModifier {
         #[template_child]
@@ -19,18 +19,6 @@ pub mod imp {
         pub resize_br: TemplateChild<ModifierNode>,
         #[template_child]
         pub translate_node: TemplateChild<gtk4::Box>,
-    }
-
-    impl Default for SelectionModifier {
-        fn default() -> Self {
-            Self {
-                resize_tl: TemplateChild::<ModifierNode>::default(),
-                resize_tr: TemplateChild::<ModifierNode>::default(),
-                resize_bl: TemplateChild::<ModifierNode>::default(),
-                resize_br: TemplateChild::<ModifierNode>::default(),
-                translate_node: TemplateChild::<gtk4::Box>::default(),
-            }
-        }
     }
 
     #[glib::object_subclass]

@@ -116,13 +116,8 @@ mod imp {
 
 use std::{cell::RefCell, rc::Rc};
 
-use crate::strokes::strokestyle::StrokeStyle;
 use crate::utils;
-use crate::{
-    compose,
-    strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage, StrokesState},
-    utils::FileType,
-};
+use crate::{compose, strokes::StrokesState, utils::FileType};
 
 use self::{background::Background, format::Format};
 
@@ -631,110 +626,6 @@ impl Sheet {
         )?;
         output_stream.write::<gio::Cancellable>(data.as_bytes(), None)?;
         output_stream.close::<gio::Cancellable>(None)?;
-
-        Ok(())
-    }
-
-    pub fn import_bytes_as_svg(
-        &self,
-        pos: na::Vector2<f64>,
-        bytes: &[u8],
-    ) -> Result<(), anyhow::Error> {
-        let priv_ = imp::Sheet::from_instance(self);
-        let svg = String::from_utf8_lossy(bytes);
-
-        priv_.strokes_state.borrow_mut().deselect_all_strokes();
-
-        let vector_image = VectorImage::import_from_svg_data(&svg, pos, None).unwrap();
-        let inserted = priv_
-            .strokes_state
-            .borrow_mut()
-            .insert_stroke(StrokeStyle::VectorImage(vector_image));
-        priv_
-            .strokes_state
-            .borrow_mut()
-            .set_selected(inserted, true);
-
-        Ok(())
-    }
-
-    pub fn import_bytes_as_bitmapimage(
-        &self,
-        pos: na::Vector2<f64>,
-        bytes: &[u8],
-    ) -> Result<(), anyhow::Error> {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        priv_.strokes_state.borrow_mut().deselect_all_strokes();
-
-        let bitmapimage = BitmapImage::import_from_image_bytes(bytes, pos)?;
-
-        let inserted = priv_
-            .strokes_state
-            .borrow_mut()
-            .insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
-        priv_
-            .strokes_state
-            .borrow_mut()
-            .set_selected(inserted, true);
-
-        self.resize_to_format();
-
-        Ok(())
-    }
-
-    pub fn import_bytes_as_pdf_bitmap(
-        &self,
-        pos: na::Vector2<f64>,
-        bytes: &[u8],
-        page_width: Option<i32>,
-    ) -> Result<(), anyhow::Error> {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        priv_.strokes_state.borrow_mut().deselect_all_strokes();
-
-        let images = BitmapImage::import_from_pdf_bytes(bytes, pos, page_width)?;
-
-        for image in images {
-            let inserted = priv_
-                .strokes_state
-                .borrow_mut()
-                .insert_stroke(StrokeStyle::BitmapImage(image));
-
-            priv_
-                .strokes_state
-                .borrow_mut()
-                .set_selected(inserted, true);
-        }
-        self.resize_to_format();
-
-        Ok(())
-    }
-
-    pub fn import_bytes_as_pdf_vector(
-        &self,
-        pos: na::Vector2<f64>,
-        bytes: &[u8],
-        page_width: Option<i32>,
-    ) -> Result<(), anyhow::Error> {
-        let priv_ = imp::Sheet::from_instance(self);
-
-        priv_.strokes_state.borrow_mut().deselect_all_strokes();
-
-        let images = VectorImage::import_from_pdf_bytes(bytes, pos, page_width)?;
-
-        for image in images {
-            let inserted = priv_
-                .strokes_state
-                .borrow_mut()
-                .insert_stroke(StrokeStyle::VectorImage(image));
-
-            priv_
-                .strokes_state
-                .borrow_mut()
-                .set_selected(inserted, true);
-        }
-        self.resize_to_format();
 
         Ok(())
     }

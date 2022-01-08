@@ -3,7 +3,7 @@ mod imp {
         glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
     pub struct EraserPage {
         #[template_child]
@@ -12,16 +12,6 @@ mod imp {
         pub width_adj: TemplateChild<Adjustment>,
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
-    }
-
-    impl Default for EraserPage {
-        fn default() -> Self {
-            Self {
-                width_resetbutton: TemplateChild::<Button>::default(),
-                width_adj: TemplateChild::<Adjustment>::default(),
-                width_spinbutton: TemplateChild::<SpinButton>::default(),
-            }
-        }
     }
 
     #[glib::object_subclass]

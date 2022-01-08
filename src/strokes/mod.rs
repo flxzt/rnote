@@ -19,8 +19,10 @@ use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
 
+use self::bitmapimage::BitmapImage;
 use self::strokebehaviour::StrokeBehaviour;
 use self::strokestyle::{Element, StrokeStyle};
+use self::vectorimage::VectorImage;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::tools::DragProximityTool;
 use crate::ui::appwindow::RnoteAppWindow;
@@ -41,6 +43,9 @@ pub enum StateTask {
     AppendImagesToStroke {
         key: StrokeKey,
         images: Vec<render::Image>,
+    },
+    InsertStroke {
+        stroke: StrokeStyle,
     },
     Quit,
 }
@@ -90,7 +95,7 @@ impl Default for StrokesState {
         let threadpool = default_threadpool();
 
         let (render_tx, render_rx) =
-            glib::MainContext::channel::<StateTask>(glib::PRIORITY_DEFAULT);
+            glib::MainContext::channel::<StateTask>(glib::PRIORITY_HIGH_IDLE);
 
         Self {
             strokes: HopSlotMap::with_key(),
@@ -133,24 +138,82 @@ impl StrokesState {
             clone!(@weak appwindow => @default-return glib::Continue(false), move |render_task| {
                 match render_task {
                     StateTask::UpdateStrokeWithImages { key, images } => {
-                            appwindow
-                                .canvas()
-                                .sheet()
-                                .strokes_state()
-                                .borrow_mut()
-                                .regenerate_rendering_with_images(key, images);
+                        appwindow
+                            .canvas()
+                            .sheet()
+                            .strokes_state()
+                            .borrow_mut()
+                            .regenerate_rendering_with_images(key, images);
 
-                            appwindow.canvas().queue_draw();
+                        appwindow.canvas().queue_draw();
                     }
                     StateTask::AppendImagesToStroke { key, images } => {
-                            appwindow
-                                .canvas()
-                                .sheet()
-                                .strokes_state()
-                                .borrow_mut()
-                                .append_images_to_rendering(key, images);
+                        appwindow
+                            .canvas()
+                            .sheet()
+                            .strokes_state()
+                            .borrow_mut()
+                            .append_images_to_rendering(key, images);
 
-                            appwindow.canvas().queue_draw();
+                        appwindow.canvas().queue_draw();
+                    }
+                    StateTask::InsertStroke { stroke } => {
+                        match stroke {
+                            StrokeStyle::MarkerStroke(markerstroke) => {
+                                appwindow.canvas().sheet()
+                                    .strokes_state()
+                                    .borrow_mut()
+                                    .insert_stroke(StrokeStyle::MarkerStroke(markerstroke));
+                            }
+                            StrokeStyle::BrushStroke(brushstroke) => {
+                                appwindow.canvas().sheet()
+                                    .strokes_state()
+                                    .borrow_mut()
+                                    .insert_stroke(StrokeStyle::BrushStroke(brushstroke));
+                            }
+                            StrokeStyle::ShapeStroke(shapestroke) => {
+                                appwindow.canvas().sheet()
+                                    .strokes_state()
+                                    .borrow_mut()
+                                    .insert_stroke(StrokeStyle::ShapeStroke(shapestroke));
+                            }
+                            StrokeStyle::VectorImage(vectorimage) => {
+                                let inserted = appwindow.canvas().sheet()
+                                    .strokes_state()
+                                    .borrow_mut()
+                                    .insert_stroke(StrokeStyle::VectorImage(vectorimage));
+                                appwindow.canvas().sheet()
+                                    .strokes_state()
+                                    .borrow_mut()
+                                    .set_selected(inserted, true);
+
+                                appwindow.canvas().selection_modifier().set_visible(true);
+                                appwindow.mainheader().selector_toggle().set_active(true);
+
+                                appwindow.canvas().sheet().resize_to_format();
+                                appwindow.canvas().update_background_rendernode(true);
+                            }
+                            StrokeStyle::BitmapImage(bitmapimage) => {
+                                let inserted = appwindow
+                                    .canvas()
+                                    .sheet()
+                                    .strokes_state()
+                                    .borrow_mut()
+                                    .insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
+
+                                appwindow.canvas().sheet()
+                                    .strokes_state()
+                                    .borrow_mut()
+                                    .set_selected(inserted, true);
+
+                                appwindow.canvas().selection_modifier().set_visible(true);
+                                appwindow.mainheader().selector_toggle().set_active(true);
+
+                                appwindow.canvas().sheet().resize_to_format();
+                                appwindow.canvas().update_background_rendernode(false);
+                            }
+                        }
+
                     }
                     StateTask::Quit => return glib::Continue(false),
                 }
@@ -220,6 +283,106 @@ impl StrokesState {
         self.selection_components.clear();
         self.chrono_components.clear();
         self.render_components.clear();
+    }
+
+    pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
+        if let Some(tasks_tx) = self.tasks_tx.clone() {
+            self.threadpool.spawn(move || {
+                let svg = String::from_utf8_lossy(&bytes);
+
+                match VectorImage::import_from_svg_data(&svg, pos, None) {
+                    Ok(vectorimage) => {
+                        let vectorimage = StrokeStyle::VectorImage(vectorimage);
+
+                        tasks_tx.send(StateTask::InsertStroke {
+                            stroke: vectorimage
+                        }).unwrap_or_else(|e| {
+                            log::error!("tasks_tx.send() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
+                        });
+                    }
+                    Err(e) => {
+                        log::error!("VectorImage::import_from_svg_data() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
+                    }
+                }
+            });
+        }
+    }
+
+    pub fn insert_bitmapimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
+        if let Some(tasks_tx) = self.tasks_tx.clone() {
+            self.threadpool.spawn(move || {
+                match BitmapImage::import_from_image_bytes(bytes, pos) {
+                    Ok(bitmapimage) => {
+                        let bitmapimage = StrokeStyle::BitmapImage(bitmapimage);
+
+                        tasks_tx.send(StateTask::InsertStroke {
+                            stroke: bitmapimage
+                        }).unwrap_or_else(|e| {
+                            log::error!("tasks_tx.send() failed in insert_bitmapimage_bytes_threaded() with Err, {}", e);
+                        });
+                    }
+                    Err(e) => {
+                        log::error!("BitmapImage::import_from_svg_data() failed in insert_bitmapimage_bytes_threaded() with Err, {}", e);
+                    }
+                }
+            });
+        }
+    }
+
+    pub fn insert_pdf_bytes_as_vector_threaded(
+        &mut self,
+        pos: na::Vector2<f64>,
+        page_width: Option<i32>,
+        bytes: Vec<u8>,
+    ) {
+        if let Some(tasks_tx) = self.tasks_tx.clone() {
+            self.threadpool.spawn(move || {
+                match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width) {
+                    Ok(images) => {
+                        for image in images {
+                            let image = StrokeStyle::VectorImage(image);
+
+                            tasks_tx.send(StateTask::InsertStroke {
+                                stroke: image
+                            }).unwrap_or_else(|e| {
+                                log::error!("tasks_tx.send() failed in insert_pdf_bytes_as_vector_threaded() with Err, {}", e);
+                            });
+                        }
+                    }
+                    Err(e) => {
+                        log::error!("VectorImage::import_from_pdf_bytes() failed in insert_pdf_bytes_as_vector_threaded() with Err, {}", e);
+                    }
+                }
+            });
+        }
+    }
+
+    pub fn insert_pdf_bytes_as_bitmap_threaded(
+        &mut self,
+        pos: na::Vector2<f64>,
+        page_width: Option<i32>,
+        bytes: Vec<u8>,
+    ) {
+        if let Some(tasks_tx) = self.tasks_tx.clone() {
+            self.threadpool.spawn(move || {
+                match BitmapImage::import_from_pdf_bytes(&bytes, pos, page_width) {
+                    Ok(images) => {
+                        for image in images {
+                            let image = StrokeStyle::BitmapImage(image);
+
+                            tasks_tx.send(StateTask::InsertStroke {
+                                stroke: image
+                            }).unwrap_or_else(|e| {
+                                log::error!("tasks_tx.send() failed in insert_pdf_bytes_as_bitmap_threaded() with Err, {}", e);
+                            });
+                        }
+                    }
+                    Err(e) => {
+                        log::error!("BitmapImage::import_from_pdf_bytes() failed in insert_pdf_bytes_as_bitmap_threaded() with Err, {}", e);
+                    }
+                }
+            });
+        }
     }
 
     pub fn import_state(&mut self, strokes_state: &Self) {
@@ -407,7 +570,7 @@ impl StrokesState {
             })
             .collect::<Vec<StrokeKey>>();
 
-        if keys.len() < 1 {
+        if keys.is_empty() {
             return Ok(String::from(""));
         }
         let bounds = if let Some(bounds) = self.gen_bounds(&keys) {

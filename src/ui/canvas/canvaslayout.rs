@@ -13,13 +13,8 @@ mod imp {
     use crate::ui::selectionmodifier;
     use crate::ui::selectionmodifier::SelectionModifier;
 
-    #[derive(Debug)]
+    #[derive(Debug, Default)]
     pub struct CanvasLayout {}
-    impl Default for CanvasLayout {
-        fn default() -> Self {
-            Self {}
-        }
-    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for CanvasLayout {

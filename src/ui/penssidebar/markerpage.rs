@@ -4,7 +4,7 @@ mod imp {
         glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/markerpage.ui")]
     pub struct MarkerPage {
         #[template_child]
@@ -15,17 +15,6 @@ mod imp {
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub colorpicker: TemplateChild<ColorPicker>,
-    }
-
-    impl Default for MarkerPage {
-        fn default() -> Self {
-            Self {
-                width_resetbutton: TemplateChild::<Button>::default(),
-                width_adj: TemplateChild::<Adjustment>::default(),
-                width_spinbutton: TemplateChild::<SpinButton>::default(),
-                colorpicker: TemplateChild::<ColorPicker>::default(),
-            }
-        }
     }
 
     #[glib::object_subclass]

@@ -4,7 +4,7 @@ mod imp {
         MenuButton, PopoverMenu, ToggleButton,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
     pub struct CanvasMenu {
         #[template_child]
@@ -25,22 +25,6 @@ mod imp {
         pub lefthanded_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub righthanded_toggle: TemplateChild<ToggleButton>,
-    }
-
-    impl Default for CanvasMenu {
-        fn default() -> Self {
-            Self {
-                menubutton: TemplateChild::<MenuButton>::default(),
-                popovermenu: TemplateChild::<PopoverMenu>::default(),
-                menu_model: TemplateChild::<MenuModel>::default(),
-                zoom_in_button: TemplateChild::<Button>::default(),
-                zoom_out_button: TemplateChild::<Button>::default(),
-                zoom_reset_button: TemplateChild::<Button>::default(),
-                zoom_fit_width_button: TemplateChild::<Button>::default(),
-                lefthanded_toggle: TemplateChild::<ToggleButton>::default(),
-                righthanded_toggle: TemplateChild::<ToggleButton>::default(),
-            }
-        }
     }
 
     #[glib::object_subclass]

@@ -317,10 +317,7 @@ pub fn compose_quadbez_offsetted(
     commands.push(path::Command::QuadraticCurve(
         path::Position::Absolute,
         path::Parameters::from((
-            (
-                quadbez.cp[0] + cp_offset[0],
-                quadbez.cp[1] + cp_offset[1],
-            ),
+            (quadbez.cp[0] + cp_offset[0], quadbez.cp[1] + cp_offset[1]),
             (
                 quadbez.end[0] + end_offset[0],
                 quadbez.end[1] + end_offset[1],
@@ -464,10 +461,7 @@ pub fn compose_quadbez_variable_width(
     ));
     commands.push(path::Command::Line(
         path::Position::Absolute,
-        path::Parameters::from((
-            (quadbez.end - end_offset)[0],
-            (quadbez.end - end_offset)[1],
-        )),
+        path::Parameters::from(((quadbez.end - end_offset)[0], (quadbez.end - end_offset)[1])),
     ));
 
     commands.append(&mut compose_quadbez_offsetted_w_subdivision(
@@ -571,10 +565,7 @@ pub fn compose_cubbez_variable_width(
 
     commands.push(path::Command::Line(
         path::Position::Absolute,
-        path::Parameters::from((
-            (cubbez.end - end_offset)[0],
-            (cubbez.end - end_offset)[1],
-        )),
+        path::Parameters::from(((cubbez.end - end_offset)[0], (cubbez.end - end_offset)[1])),
     ));
 
     // If angle > 90.0 degrees, reverse the cubic_bezier vector (using the original cubic_bezier, but with offsets of the reversed)

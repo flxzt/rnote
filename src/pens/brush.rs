@@ -78,13 +78,6 @@ impl PenBehaviour for Brush {
                     .borrow_mut()
                     .insert_stroke(brushstroke),
             );
-
-            appwindow
-                .canvas()
-                .sheet()
-                .strokes_state()
-                .borrow_mut()
-                .regenerate_rendering_newest_stroke_threaded();
         }
     }
 

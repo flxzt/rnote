@@ -2,7 +2,7 @@ mod imp {
     use gtk4::ToggleButton;
     use gtk4::{glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate};
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/selectorpage.ui")]
     pub struct SelectorPage {
         #[template_child]
@@ -13,17 +13,6 @@ mod imp {
         pub delete_button: TemplateChild<Button>,
         #[template_child]
         pub duplicate_button: TemplateChild<Button>,
-    }
-
-    impl Default for SelectorPage {
-        fn default() -> Self {
-            Self {
-                selectorstyle_polygon_toggle: TemplateChild::<ToggleButton>::default(),
-                selectorstyle_rect_toggle: TemplateChild::<ToggleButton>::default(),
-                delete_button: TemplateChild::<Button>::default(),
-                duplicate_button: TemplateChild::<Button>::default(),
-            }
-        }
     }
 
     #[glib::object_subclass]

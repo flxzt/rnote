@@ -3,7 +3,6 @@ use flate2::{Compression, GzBuilder};
 use gtk4::{gdk, gio, glib, prelude::*};
 use serde::{Deserialize, Serialize};
 use std::io::prelude::*;
-use std::ops::Deref;
 use std::path::PathBuf;
 
 use crate::config;
@@ -122,28 +121,6 @@ pub fn now() -> String {
         },
         Err(_) => String::from("1970-01-01_12:00:00"),
     }
-}
-
-pub fn load_string_from_resource(resource_path: &str) -> Result<String, anyhow::Error> {
-    let imported_string = String::from_utf8(
-        gio::resources_lookup_data(resource_path, gio::ResourceLookupFlags::NONE)?
-            .deref()
-            .to_vec(),
-    )?;
-
-    Ok(imported_string)
-}
-
-pub fn load_file_contents(file: &gio::File) -> Result<String, anyhow::Error> {
-    let (result, _) = file.load_contents::<gio::Cancellable>(None)?;
-    let contents = String::from_utf8(result)?;
-    Ok(contents)
-}
-
-#[allow(dead_code)]
-pub fn query_standard_file_info(file: &gio::File) -> Option<gio::FileInfo> {
-    file.query_info::<gio::Cancellable>("standard::*", gio::FileQueryInfoFlags::NONE, None)
-        .ok()
 }
 
 pub fn app_config_base_dirpath() -> Option<PathBuf> {

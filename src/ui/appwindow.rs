@@ -775,24 +775,62 @@ impl RnoteAppWindow {
         file: &gio::File,
         target_pos: Option<na::Vector2<f64>>,
     ) -> Result<(), anyhow::Error> {
+        let main_cx = glib::MainContext::default();
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let file = file.clone();
 
-        match utils::FileType::lookup_file_type(file) {
+        match utils::FileType::lookup_file_type(&file) {
             utils::FileType::RnoteFile => {
-                let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
-                self.load_in_rnote_bytes(&file_bytes, file.path())?;
+                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    let result = file.load_bytes_async_future().await;
+                    if let Ok((file_bytes, _)) = result {
+                        if let Err(e) = appwindow.load_in_rnote_bytes(&file_bytes, file.path()) {
+                            log::error!(
+                                "load_in_rnote_bytes() failed in load_in_file() with Err {}",
+                                e
+                            );
+                        }
+                    }
+                }));
             }
             utils::FileType::VectorImageFile => {
-                let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
-                self.load_in_vectorimage_bytes(&file_bytes, target_pos)?;
+                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    let result = file.load_bytes_async_future().await;
+                    if let Ok((file_bytes, _)) = result {
+                        if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos) {
+                            log::error!(
+                                "load_in_rnote_bytes() failed in load_in_file() with Err {}",
+                                e
+                            );
+                        }
+                    }
+                }));
             }
             utils::FileType::BitmapImageFile => {
-                let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
-                self.load_in_bitmapimage_bytes(&file_bytes, target_pos)?;
+                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    let result = file.load_bytes_async_future().await;
+                    if let Ok((file_bytes, _)) = result {
+                        if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos) {
+                            log::error!(
+                                "load_in_rnote_bytes() failed in load_in_file() with Err {}",
+                                e
+                            );
+                        }
+                    }
+                }));
             }
             utils::FileType::Pdf => {
-                let (file_bytes, _) = file.load_bytes::<gio::Cancellable>(None)?;
-                self.load_in_pdf_bytes(&file_bytes, target_pos)?;
+                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    let result = file.load_bytes_async_future().await;
+                    if let Ok((file_bytes, _)) = result {
+                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos) {
+                            log::error!(
+                                "load_in_rnote_bytes() failed in load_in_file() with Err {}",
+                                e
+                            );
+                        }
+                    }
+                }));
             }
             utils::FileType::Folder => {
                 log::warn!("tried to open folder as sheet.");
@@ -833,7 +871,7 @@ impl RnoteAppWindow {
 
     pub fn load_in_vectorimage_bytes(
         &self,
-        bytes: &[u8],
+        bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
     ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
@@ -845,17 +883,22 @@ impl RnoteAppWindow {
                     self.canvas().sheet_margin() + VectorImage::OFFSET_Y_DEFAULT
                 ])
         });
-        self.canvas().sheet().import_bytes_as_svg(pos, bytes)?;
+        self.canvas()
+            .sheet()
+            .strokes_state()
+            .borrow_mut()
+            .deselect_all_strokes();
 
-        self.canvas().set_unsaved_changes(true);
-        self.mainheader().selector_toggle().set_active(true);
+        self.canvas()
+            .sheet()
+            .strokes_state()
+            .borrow_mut()
+            .insert_vectorimage_bytes_threaded(pos, bytes);
+
         app.set_input_file(None);
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
-        self.canvas().update_background_rendernode(false);
-        self.canvas().regenerate_content(true, true);
-        self.canvas().selection_modifier().set_visible(true);
 
         Ok(())
     }
@@ -863,7 +906,7 @@ impl RnoteAppWindow {
     /// Target position is in the coordinate space of the sheet
     pub fn load_in_bitmapimage_bytes(
         &self,
-        bytes: &[u8],
+        bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
     ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
@@ -877,17 +920,20 @@ impl RnoteAppWindow {
         });
         self.canvas()
             .sheet()
-            .import_bytes_as_bitmapimage(pos, bytes)?;
+            .strokes_state()
+            .borrow_mut()
+            .deselect_all_strokes();
 
-        self.canvas().set_unsaved_changes(true);
-        self.mainheader().selector_toggle().set_active(true);
+        self.canvas()
+            .sheet()
+            .strokes_state()
+            .borrow_mut()
+            .insert_bitmapimage_bytes_threaded(pos, bytes);
+
         app.set_input_file(None);
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
-        self.canvas().update_background_rendernode(false);
-        self.canvas().regenerate_content(true, true);
-        self.canvas().selection_modifier().set_visible(true);
 
         Ok(())
     }
@@ -895,7 +941,7 @@ impl RnoteAppWindow {
     /// Target position is in the coordinate space of the sheet
     pub fn load_in_pdf_bytes(
         &self,
-        bytes: &[u8],
+        bytes: Vec<u8>,
         target_pos: Option<na::Vector2<f64>>,
     ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
@@ -911,26 +957,30 @@ impl RnoteAppWindow {
             * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
 
+        self.canvas()
+            .sheet()
+            .strokes_state()
+            .borrow_mut()
+            .deselect_all_strokes();
+
         if self.canvas().pdf_import_as_vector() {
             self.canvas()
                 .sheet()
-                .import_bytes_as_pdf_vector(pos, bytes, Some(page_width))?;
+                .strokes_state()
+                .borrow_mut()
+                .insert_pdf_bytes_as_vector_threaded(pos, Some(page_width), bytes);
         } else {
             self.canvas()
                 .sheet()
-                .import_bytes_as_pdf_bitmap(pos, bytes, Some(page_width))?;
+                .strokes_state()
+                .borrow_mut()
+                .insert_pdf_bytes_as_bitmap_threaded(pos, Some(page_width), bytes);
         }
 
-        self.canvas().set_unsaved_changes(true);
-        self.mainheader().selector_toggle().set_active(true);
         app.set_input_file(None);
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
-        self.canvas().update_background_rendernode(false);
-        self.canvas().regenerate_content(false, true);
-        self.canvas().selection_modifier().set_visible(true);
-
         Ok(())
     }
 }

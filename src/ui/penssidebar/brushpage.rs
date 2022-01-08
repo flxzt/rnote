@@ -1,9 +1,9 @@
 mod imp {
     use crate::ui::colorpicker::ColorPicker;
-    use gtk4::{ListBox, MenuButton};
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
     };
+    use gtk4::{ListBox, MenuButton};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
@@ -101,7 +101,9 @@ impl BrushPage {
     }
 
     pub fn brushstyle_menubutton(&self) -> MenuButton {
-        imp::BrushPage::from_instance(self).brushstyle_menubutton.get()
+        imp::BrushPage::from_instance(self)
+            .brushstyle_menubutton
+            .get()
     }
 
     pub fn brushstyle_listbox(&self) -> ListBox {

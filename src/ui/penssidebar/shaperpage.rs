@@ -5,7 +5,7 @@ mod imp {
         Adjustment, Button, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
     pub struct ShaperPage {
         #[template_child]
@@ -50,34 +50,6 @@ mod imp {
         pub rectangle_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub ellipse_toggle: TemplateChild<ToggleButton>,
-    }
-
-    impl Default for ShaperPage {
-        fn default() -> Self {
-            Self {
-                drawstyle_smooth_toggle: TemplateChild::<ToggleButton>::default(),
-                drawstyle_rough_toggle: TemplateChild::<ToggleButton>::default(),
-                roughconfig_menubutton: TemplateChild::<MenuButton>::default(),
-                roughconfig_popover: TemplateChild::<Popover>::default(),
-                roughconfig_revealer: TemplateChild::<Revealer>::default(),
-                roughconfig_roughness_spinbutton: TemplateChild::<SpinButton>::default(),
-                roughconfig_roughness_adj: TemplateChild::<Adjustment>::default(),
-                roughconfig_bowing_spinbutton: TemplateChild::<SpinButton>::default(),
-                roughconfig_bowing_adj: TemplateChild::<Adjustment>::default(),
-                roughconfig_curvestepcount_spinbutton: TemplateChild::<SpinButton>::default(),
-                roughconfig_curvestepcount_adj: TemplateChild::<Adjustment>::default(),
-                roughconfig_multistroke_switch: TemplateChild::<Switch>::default(),
-                width_resetbutton: TemplateChild::<Button>::default(),
-                width_adj: TemplateChild::<Adjustment>::default(),
-                stroke_colorpicker: TemplateChild::<ColorPicker>::default(),
-                fill_revealer: TemplateChild::<Revealer>::default(),
-                fill_colorpicker: TemplateChild::<ColorPicker>::default(),
-                shapes_togglebox: TemplateChild::<gtk4::Box>::default(),
-                line_toggle: TemplateChild::<ToggleButton>::default(),
-                rectangle_toggle: TemplateChild::<ToggleButton>::default(),
-                ellipse_toggle: TemplateChild::<ToggleButton>::default(),
-            }
-        }
     }
 
     #[glib::object_subclass]

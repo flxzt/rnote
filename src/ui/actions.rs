@@ -2,7 +2,7 @@ use std::{cell::Cell, rc::Rc};
 
 use crate::{
     app::RnoteApp,
-    pens::{selector, shaper, tools, PenStyle},
+    pens::{brush, selector, shaper, tools, PenStyle},
     render,
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
@@ -104,6 +104,12 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         &"rectangle".to_variant(),
     );
     appwindow.add_action(&action_current_shape);
+    let action_brush_style = gio::SimpleAction::new_stateful(
+        "brush-style",
+        Some(&glib::VariantType::new("s").unwrap()),
+        &"solid".to_variant(),
+    );
+    appwindow.add_action(&action_brush_style);
     let action_shaper_drawstyle = gio::SimpleAction::new_stateful(
         "shaper-drawstyle",
         Some(&glib::VariantType::new("s").unwrap()),
@@ -294,6 +300,34 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             }
         }),
     );
+
+    // Brush Style
+    action_brush_style.connect_activate(move |action_brush_style, parameter| {
+        if action_brush_style.state().unwrap().str().unwrap() != parameter.unwrap().str().unwrap() {
+            action_brush_style.change_state(parameter.unwrap());
+        }
+    });
+    action_brush_style.connect_change_state(
+           clone!(@weak appwindow => move |action_brush_style, value| {
+               action_brush_style.set_state(value.unwrap());
+
+               match action_brush_style.state().unwrap().str().unwrap() {
+                   "solid" => {
+                       appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
+                       appwindow.canvas().pens().borrow_mut().brush.set_style(brush::BrushStyle::Solid);
+                   },
+                   "textured" => {
+                       appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
+                       appwindow.canvas().pens().borrow_mut().brush.set_style(brush::BrushStyle::Textured);
+                   },
+                   "experimental" => {
+                       appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_experimental_row()));
+                       appwindow.canvas().pens().borrow_mut().brush.set_style(brush::BrushStyle::Experimental);
+                   },
+                   _ => { log::error!("set invalid state of action `brush-style`")}
+               }
+           }),
+       );
 
     // Current Shape
     action_current_shape.connect_activate(move |action_current_shape, parameter| {

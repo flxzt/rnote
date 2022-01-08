@@ -57,5 +57,80 @@
         <property name="margin_bottom">6</property>
       </object>
     </child>
+    <child>
+      <object class="GtkBox">
+
+        <child>
+          <object class="GtkMenuButton">
+            <property name="icon-name">pen-brush-style-symbolic</property>
+            <property name="hexpand">true</property>
+            <property name="halign">fill</property>
+            <property name="direction">left</property>
+            <property name="tooltip_text">Brush Style</property>
+            <property name="popover">brushstyle_popover</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkPopover" id="brushstyle_popover">
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Brush Styles</property>
+                    <property name="halign">center</property>
+                    <property name="margin-top">12</property>
+                    <property name="margin-bottom">24</property>
+                    <style>
+                      <class name="title-4" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkListBox" id="brushstyle_listbox">
+                    <property name="width-request">300</property>
+                    <property name="selection-mode">single</property>
+                    <style>
+                      <class name="content" />
+                      <class name="large" />
+                    </style>
+                    <child>
+                      <object class="AdwActionRow" id="brushstyle_solid_row">
+                        <property name="title">Solid</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon-name">pen-brush-style-solid-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="brushstyle_textured_row">
+                        <property name="title">Textured</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon-name">pen-brush-style-textured-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow" id="brushstyle_experimental_row">
+                        <property name="title">Experimental</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon-name">pen-brush-style-experimental-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
   </template>
 </interface>

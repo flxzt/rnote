@@ -28,9 +28,6 @@
         <file compressed="true">icons/scalable/actions/edit-undo-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-redo-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvasmenu-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/function-linear-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/function-third-order-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/function-experimental-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-delete-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/modifiernode-default-symbolic.svg</file>
@@ -40,6 +37,9 @@
         <file compressed="true">icons/scalable/actions/pen-marker-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-style-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-brush-style-solid-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-brush-style-textured-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-brush-style-experimental-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-shaper-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-symbolic.svg</file>

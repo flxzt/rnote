@@ -1,10 +1,11 @@
 mod imp {
     use crate::ui::colorpicker::ColorPicker;
+    use gtk4::ListBox;
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
     pub struct BrushPage {
         #[template_child]
@@ -15,17 +16,14 @@ mod imp {
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub colorpicker: TemplateChild<ColorPicker>,
-    }
-
-    impl Default for BrushPage {
-        fn default() -> Self {
-            Self {
-                width_resetbutton: TemplateChild::<Button>::default(),
-                width_adj: TemplateChild::<Adjustment>::default(),
-                width_spinbutton: TemplateChild::<SpinButton>::default(),
-                colorpicker: TemplateChild::<ColorPicker>::default(),
-            }
-        }
+        #[template_child]
+        pub brushstyle_listbox: TemplateChild<ListBox>,
+        #[template_child]
+        pub brushstyle_solid_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub brushstyle_textured_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub brushstyle_experimental_row: TemplateChild<adw::ActionRow>,
     }
 
     #[glib::object_subclass]
@@ -61,7 +59,7 @@ mod imp {
 use crate::pens::brush::Brush;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use crate::utils;
-use gtk4::gdk;
+use gtk4::{gdk, Accessible, Actionable, Buildable, ConstraintTarget, ListBox};
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
     SpinButton, Widget,
@@ -69,7 +67,8 @@ use gtk4::{
 
 glib::wrapper! {
     pub struct BrushPage(ObjectSubclass<imp::BrushPage>)
-        @extends Widget, @implements Orientable;
+        @extends Widget,
+        @implements Orientable, Accessible, Actionable, Buildable, ConstraintTarget;
 }
 
 impl Default for BrushPage {
@@ -99,6 +98,28 @@ impl BrushPage {
         imp::BrushPage::from_instance(self).colorpicker.get()
     }
 
+    pub fn brushstyle_listbox(&self) -> ListBox {
+        imp::BrushPage::from_instance(self).brushstyle_listbox.get()
+    }
+
+    pub fn brushstyle_solid_row(&self) -> adw::ActionRow {
+        imp::BrushPage::from_instance(self)
+            .brushstyle_solid_row
+            .get()
+    }
+
+    pub fn brushstyle_textured_row(&self) -> adw::ActionRow {
+        imp::BrushPage::from_instance(self)
+            .brushstyle_textured_row
+            .get()
+    }
+
+    pub fn brushstyle_experimental_row(&self) -> adw::ActionRow {
+        imp::BrushPage::from_instance(self)
+            .brushstyle_experimental_row
+            .get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let width_adj = self.width_adj();
 
@@ -121,6 +142,28 @@ impl BrushPage {
         self.width_adj().connect_value_changed(
             clone!(@weak appwindow => move |brush_widthscale_adj| {
                 appwindow.canvas().pens().borrow_mut().brush.set_width(brush_widthscale_adj.value());
+            }),
+        );
+
+        self.brushstyle_listbox().connect_row_selected(
+            clone!(@weak appwindow => move |_brushstyle_listbox, selected_row| {
+                if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
+                    match selected_row.index() {
+                        // Solid
+                        0 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"solid".to_variant()));
+                        }
+                        // Textured
+                        1 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"textured".to_variant()));
+                        }
+                        // Experimental
+                        2 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"experimental".to_variant()));
+                        }
+                        _ => {}
+                    }
+                }
             }),
         );
     }

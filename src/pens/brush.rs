@@ -10,16 +10,16 @@ use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
 
-#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum BrushStyle {
-    Linear,
-    CubicBezier,
+    Solid,
+    Textured,
     Experimental,
 }
 
 impl Default for BrushStyle {
     fn default() -> Self {
-        Self::Linear
+        Self::Solid
     }
 }
 
@@ -29,7 +29,7 @@ pub struct Brush {
     width: f64,
     sensitivity: f64,
     pub color: utils::Color,
-    pub current_style: BrushStyle,
+    style: BrushStyle,
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,
 }
@@ -40,7 +40,7 @@ impl Default for Brush {
             width: Self::WIDTH_DEFAULT,
             sensitivity: Self::SENSITIVITY_DEFAULT,
             color: utils::Color::from(Self::COLOR_DEFAULT),
-            current_style: BrushStyle::default(),
+            style: BrushStyle::default(),
             current_stroke: None,
         }
     }
@@ -172,5 +172,13 @@ impl Brush {
 
     pub fn set_sensitivity(&mut self, sensitivity: f64) {
         self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
+    }
+
+    pub fn style(&self) -> BrushStyle {
+        self.style
+    }
+
+    pub fn set_style(&mut self, style: BrushStyle) {
+        self.style = style;
     }
 }

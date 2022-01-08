@@ -15,17 +15,6 @@ use svg::node::element::path;
 
 use super::strokestyle::InputData;
 
-// Struct field names are also used in brushstroke template, reminder to be careful when renaming
-#[derive(Debug, Default, Clone, Serialize, Deserialize)]
-#[serde(default)]
-pub struct TeraElement {
-    // Pressure from 0.0 to 1.0
-    pressure: f64,
-    // Position in format `x y` as integer values
-    x: f64,
-    y: f64,
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct BrushStroke {
@@ -108,9 +97,9 @@ impl DrawBehaviour for BrushStroke {
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
         let svg_root = false;
 
-        match self.brush.current_style {
-            brush::BrushStyle::Linear => self.gen_svgs_linear(offset, svg_root),
-            brush::BrushStyle::CubicBezier => self.gen_svgs_cubbez(offset, svg_root),
+        match self.brush.style() {
+            brush::BrushStyle::Solid => self.gen_svgs_solid(offset, svg_root),
+            brush::BrushStyle::Textured => self.gen_svgs_textured(offset, svg_root),
             brush::BrushStyle::Experimental => self.gen_svgs_experimental(offset, svg_root),
         }
     }
@@ -294,10 +283,10 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
-        match self.brush.current_style {
-            brush::BrushStyle::Linear => Ok(self.gen_svg_elem_linear(elements, offset, svg_root)),
-            brush::BrushStyle::CubicBezier => {
-                Ok(self.gen_svg_elem_cubbez(elements, offset, svg_root))
+        match self.brush.style() {
+            brush::BrushStyle::Solid => Ok(self.gen_svg_elem_solid(elements, offset, svg_root)),
+            brush::BrushStyle::Textured => {
+                Ok(self.gen_svg_elem_textured(elements, offset, svg_root))
             }
             brush::BrushStyle::Experimental => {
                 Ok(self.gen_svg_elem_experimental((elements.1, elements.2), offset, svg_root))
@@ -305,7 +294,7 @@ impl BrushStroke {
         }
     }
 
-    pub fn gen_svg_elem_linear(
+    pub fn gen_svg_elem_solid(
         &self,
         elements: (&Element, &Element, &Element, &Element),
         offset: na::Vector2<f64>,
@@ -337,7 +326,7 @@ impl BrushStroke {
             bounds = geometry::aabb_ceil(bounds);
 
             // Number of splits for the bezier curve approximation
-            let n_splits = 7;
+            let n_splits = 4;
             for (i, line) in curves::approx_cubbez_with_lines(cubbez, n_splits)
                 .iter()
                 .enumerate()
@@ -397,7 +386,7 @@ impl BrushStroke {
         }
     }
 
-    pub fn gen_svgs_linear(
+    pub fn gen_svgs_solid(
         &self,
         offset: na::Vector2<f64>,
         svg_root: bool,
@@ -409,14 +398,14 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
             .filter_map(|(((first, second), third), forth)| {
-                self.gen_svg_elem_linear((first, second, third, forth), offset, svg_root)
+                self.gen_svg_elem_solid((first, second, third, forth), offset, svg_root)
             })
             .collect();
 
         Ok(svgs)
     }
 
-    pub fn gen_svg_elem_cubbez(
+    pub fn gen_svg_elem_textured(
         &self,
         elements: (&Element, &Element, &Element, &Element),
         offset: na::Vector2<f64>,
@@ -446,12 +435,25 @@ impl BrushStroke {
             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
             bounds = geometry::aabb_ceil(bounds);
 
-            commands.append(&mut compose::compose_cubbez_variable_width(
-                cubbez,
-                start_width,
-                end_width,
-                true,
-            ));
+            // Number of splits for the bezier curve approximation
+            let n_splits = 4;
+            for (i, line) in curves::approx_cubbez_with_lines(cubbez, n_splits)
+                .iter()
+                .enumerate()
+            {
+                // splitted line start / end widths are a linear interpolation between the start and end width / n splits
+                let line_start_width = start_width
+                    + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_splits));
+                let line_end_width = start_width
+                    + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_splits));
+
+                commands.append(&mut compose::compose_linear_variable_width(
+                    *line,
+                    line_start_width,
+                    line_end_width,
+                    true,
+                ));
+            }
         } else if let Some(mut line) = curves::gen_line(elements.1, elements.1) {
             line.start += offset;
             line.end += offset;
@@ -494,7 +496,7 @@ impl BrushStroke {
             }
         }
     }
-    pub fn gen_svgs_cubbez(
+    pub fn gen_svgs_textured(
         &self,
         offset: na::Vector2<f64>,
         svg_root: bool,
@@ -506,7 +508,7 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
             .filter_map(|(((first, second), third), forth)| {
-                self.gen_svg_elem_cubbez((first, second, third, forth), offset, svg_root)
+                self.gen_svg_elem_textured((first, second, third, forth), offset, svg_root)
             })
             .collect();
 

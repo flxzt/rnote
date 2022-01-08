@@ -66,10 +66,10 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
 - [x] parallelizing rendering and actions which affect many strokes.
 - [x] asychronous rendering
-- [ ] Selection rotation
+- [ ] sheet tabs
+- [ ] strokes rotation
 - [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
 - [ ] export as bitmap picture
-- [ ] template deduplication when loading in .rnote save files.
 - [ ] implement text fields (Plain, Markdown)
 - [ ] implement optional stroke smoothing
 

@@ -27,9 +27,7 @@
         <property name="orientation">vertical</property>
         <property name="homogeneous">true</property>
         <property name="vexpand">false</property>
-        <style>
-          <class name="linked" />
-        </style>
+        <property name="spacing">12</property>
         <child>
           <object class="GtkToggleButton" id="toolstyle_expandsheet_toggle">
             <property name="label">e</property>

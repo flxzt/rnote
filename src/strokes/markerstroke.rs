@@ -106,7 +106,7 @@ impl DrawBehaviour for MarkerStroke {
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
             .filter_map(|(((first, second), third), forth)| {
-                self.gen_svg_for_elems((first, second, third, forth), offset, svg_root)
+                self.gen_svg_elem((first, second, third, forth), offset, svg_root)
             })
             .collect();
 
@@ -270,7 +270,7 @@ impl MarkerStroke {
         }
     }
 
-    pub fn gen_svg_for_elems(
+    pub fn gen_svg_elem(
         &self,
         elements: (&Element, &Element, &Element, &Element),
         offset: na::Vector2<f64>,
@@ -289,13 +289,13 @@ impl MarkerStroke {
             cubbez.cp2 += offset;
             cubbez.end += offset;
 
+            // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
             bounds.take_point(na::Point2::<f64>::from(cubbez.start));
             bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
             bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
             bounds.take_point(na::Point2::<f64>::from(cubbez.end));
-            // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-
             bounds.loosen(marker_width);
+
             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
             bounds = geometry::aabb_ceil(bounds);
 
@@ -317,6 +317,7 @@ impl MarkerStroke {
 
             bounds.take_point(na::Point2::<f64>::from(line.start));
             bounds.take_point(na::Point2::<f64>::from(line.end));
+            bounds.loosen(marker_width);
 
             commands.push(path::Command::Move(
                 path::Position::Absolute,

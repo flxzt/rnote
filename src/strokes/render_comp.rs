@@ -217,7 +217,7 @@ impl StrokesState {
                     if let Some(elements) = elements {
                         let offset = na::vector![0.0, 0.0];
                         if let Some(last_elems_svg) =
-                            markerstroke.gen_svg_for_elems(elements, offset, true)
+                            markerstroke.gen_svg_elem(elements, offset, true)
                         {
                             let svg_bounds = last_elems_svg.bounds;
 
@@ -308,7 +308,7 @@ impl StrokesState {
                         if let Some(elements) = elements {
                             let offset = na::vector![0.0, 0.0];
                             if let Some(last_elems_svg) =
-                                markerstroke.gen_svg_for_elems(elements, offset, true)
+                                markerstroke.gen_svg_elem(elements, offset, true)
                             {
                                 let svg_bounds = last_elems_svg.bounds;
                                 match renderer.read().unwrap().gen_image(

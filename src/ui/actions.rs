@@ -499,6 +499,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.penssidebar().shaper_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().fill_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Right);
+            appwindow.penssidebar().brush_page().brushstyle_menubutton().set_direction(ArrowType::Right);
 
             appwindow.flap().set_flap_position(PackType::Start);
         } else {
@@ -526,6 +527,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.penssidebar().shaper_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
             appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Left);
+            appwindow.penssidebar().brush_page().brushstyle_menubutton().set_direction(ArrowType::Left);
 
             appwindow.flap().set_flap_position(PackType::End);
         }

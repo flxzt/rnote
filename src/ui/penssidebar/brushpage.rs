@@ -1,6 +1,6 @@
 mod imp {
     use crate::ui::colorpicker::ColorPicker;
-    use gtk4::ListBox;
+    use gtk4::{ListBox, MenuButton};
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
     };
@@ -16,6 +16,8 @@ mod imp {
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub colorpicker: TemplateChild<ColorPicker>,
+        #[template_child]
+        pub brushstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub brushstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
@@ -59,7 +61,7 @@ mod imp {
 use crate::pens::brush::Brush;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use crate::utils;
-use gtk4::{gdk, Accessible, Actionable, Buildable, ConstraintTarget, ListBox};
+use gtk4::{gdk, Accessible, Actionable, Buildable, ConstraintTarget, ListBox, MenuButton};
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
     SpinButton, Widget,
@@ -96,6 +98,10 @@ impl BrushPage {
 
     pub fn colorpicker(&self) -> ColorPicker {
         imp::BrushPage::from_instance(self).colorpicker.get()
+    }
+
+    pub fn brushstyle_menubutton(&self) -> MenuButton {
+        imp::BrushPage::from_instance(self).brushstyle_menubutton.get()
     }
 
     pub fn brushstyle_listbox(&self) -> ListBox {

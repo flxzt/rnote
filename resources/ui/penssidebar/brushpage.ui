@@ -61,7 +61,7 @@
       <object class="GtkBox">
 
         <child>
-          <object class="GtkMenuButton">
+          <object class="GtkMenuButton" id="brushstyle_menubutton">
             <property name="icon-name">pen-brush-style-symbolic</property>
             <property name="hexpand">true</property>
             <property name="halign">fill</property>

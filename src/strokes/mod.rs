@@ -285,7 +285,7 @@ impl StrokesState {
         self.render_components.clear();
     }
 
-    pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
+    pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: glib::Bytes) {
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {
                 let svg = String::from_utf8_lossy(&bytes);
@@ -308,7 +308,7 @@ impl StrokesState {
         }
     }
 
-    pub fn insert_bitmapimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
+    pub fn insert_bitmapimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: glib::Bytes) {
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {
                 match BitmapImage::import_from_image_bytes(bytes, pos) {
@@ -333,7 +333,7 @@ impl StrokesState {
         &mut self,
         pos: na::Vector2<f64>,
         page_width: Option<i32>,
-        bytes: Vec<u8>,
+        bytes: glib::Bytes,
     ) {
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {
@@ -361,7 +361,7 @@ impl StrokesState {
         &mut self,
         pos: na::Vector2<f64>,
         page_width: Option<i32>,
-        bytes: Vec<u8>,
+        bytes: glib::Bytes,
     ) {
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {

@@ -535,8 +535,8 @@ impl Sheet {
         snapshot.pop();
     }
 
-    pub fn open_sheet_from_bytes(&self, bytes: &[u8]) -> Result<(), anyhow::Error> {
-        let decompressed_bytes = utils::decompress_from_gzip(bytes)?;
+    pub fn open_sheet_from_bytes(&self, bytes: glib::Bytes) -> Result<(), anyhow::Error> {
+        let decompressed_bytes = utils::decompress_from_gzip(&bytes)?;
         let sheet: Sheet = serde_json::from_str(&String::from_utf8_lossy(&decompressed_bytes))?;
 
         self.strokes_state()

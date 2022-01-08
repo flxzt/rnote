@@ -784,7 +784,7 @@ impl RnoteAppWindow {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
                     let result = file.load_bytes_async_future().await;
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_rnote_bytes(&file_bytes, file.path()) {
+                        if let Err(e) = appwindow.load_in_rnote_bytes(file_bytes, file.path()) {
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -797,7 +797,7 @@ impl RnoteAppWindow {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
                     let result = file.load_bytes_async_future().await;
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos) {
+                        if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes, target_pos) {
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -810,7 +810,7 @@ impl RnoteAppWindow {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
                     let result = file.load_bytes_async_future().await;
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos) {
+                        if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes, target_pos) {
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -823,7 +823,7 @@ impl RnoteAppWindow {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
                     let result = file.load_bytes_async_future().await;
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos) {
+                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes, target_pos) {
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -844,7 +844,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_rnote_bytes<P>(&self, bytes: &[u8], path: Option<P>) -> Result<(), anyhow::Error>
+    pub fn load_in_rnote_bytes<P>(&self, bytes: glib::Bytes, path: Option<P>) -> Result<(), anyhow::Error>
     where
         P: AsRef<Path>,
     {
@@ -871,7 +871,7 @@ impl RnoteAppWindow {
 
     pub fn load_in_vectorimage_bytes(
         &self,
-        bytes: Vec<u8>,
+        bytes: glib::Bytes,
         target_pos: Option<na::Vector2<f64>>,
     ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
@@ -906,7 +906,7 @@ impl RnoteAppWindow {
     /// Target position is in the coordinate space of the sheet
     pub fn load_in_bitmapimage_bytes(
         &self,
-        bytes: Vec<u8>,
+        bytes: glib::Bytes,
         target_pos: Option<na::Vector2<f64>>,
     ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
@@ -941,7 +941,7 @@ impl RnoteAppWindow {
     /// Target position is in the coordinate space of the sheet
     pub fn load_in_pdf_bytes(
         &self,
-        bytes: Vec<u8>,
+        bytes: glib::Bytes,
         target_pos: Option<na::Vector2<f64>>,
     ) -> Result<(), anyhow::Error> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();

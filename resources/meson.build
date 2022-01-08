@@ -117,17 +117,6 @@ install_data(
   rename: app_id + '.xml',
 )
 
-# templates
-template_files = files(
-  'templates/brushstroke-cubicbezier.svg.templ',
-  'templates/brushstroke-linear.svg.templ',
-)
-
-install_data(
-  template_files,
-  install_dir: pkgdatadir / 'templates'
-)
-
 # sounds
 sounds_files = files(
   'sounds/marker_00.wav',

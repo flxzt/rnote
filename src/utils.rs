@@ -5,7 +5,6 @@ use serde::{Deserialize, Serialize};
 use std::io::prelude::*;
 use std::ops::Deref;
 use std::path::PathBuf;
-use tera::Tera;
 
 use crate::config;
 
@@ -145,16 +144,6 @@ pub fn load_file_contents(file: &gio::File) -> Result<String, anyhow::Error> {
 pub fn query_standard_file_info(file: &gio::File) -> Option<gio::FileInfo> {
     file.query_info::<gio::Cancellable>("standard::*", gio::FileQueryInfoFlags::NONE, None)
         .ok()
-}
-
-#[allow(dead_code)]
-pub fn try_add_template(
-    templates: &mut Tera,
-    template_name: &str,
-    template_str: &str,
-) -> Result<(), anyhow::Error> {
-    templates.add_raw_template(template_name, template_str)?;
-    Ok(())
 }
 
 pub fn app_config_base_dirpath() -> Option<PathBuf> {

@@ -12,6 +12,7 @@ pub mod pens;
 pub mod render;
 pub mod sheet;
 pub mod strokes;
+pub mod strokesstate;
 pub mod ui;
 pub mod utils;
 

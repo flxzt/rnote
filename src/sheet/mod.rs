@@ -8,15 +8,16 @@ mod imp {
     use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
     use once_cell::sync::Lazy;
 
+    use crate::config;
     use crate::sheet::format;
-    use crate::{config, strokes};
+    use crate::strokesstate::StrokesState;
 
     use super::{Background, Format};
 
     #[derive(Debug)]
     pub struct Sheet {
         pub version: Rc<RefCell<String>>,
-        pub strokes_state: Rc<RefCell<strokes::StrokesState>>,
+        pub strokes_state: Rc<RefCell<StrokesState>>,
         pub format: Format,
         pub background: Rc<RefCell<Background>>,
         pub width: Cell<i32>,
@@ -30,7 +31,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 version: Rc::new(RefCell::new(String::from(config::APP_VERSION))),
-                strokes_state: Rc::new(RefCell::new(strokes::StrokesState::default())),
+                strokes_state: Rc::new(RefCell::new(StrokesState::default())),
                 format: Format::default(),
                 background: Rc::new(RefCell::new(Background::default())),
                 width: Cell::new(Format::default().width()),
@@ -117,7 +118,7 @@ mod imp {
 use std::{cell::RefCell, rc::Rc};
 
 use crate::utils;
-use crate::{compose, strokes::StrokesState, utils::FileType};
+use crate::{compose, strokesstate::StrokesState, utils::FileType};
 
 use self::{background::Background, format::Format};
 

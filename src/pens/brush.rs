@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::strokes::brushstroke::BrushStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
-use crate::strokes::StrokeKey;
+use crate::strokesstate::StrokeKey;
 use crate::{input, utils};
 
 use gtk4::{gdk, prelude::*};

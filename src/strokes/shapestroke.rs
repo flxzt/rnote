@@ -1,9 +1,9 @@
 use crate::drawbehaviour::DrawBehaviour;
-use crate::geometry;
+use crate::{geometry, render};
 use crate::pens::shaper::{self, DrawStyle};
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
-use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper, strokes::render};
+use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper};
 
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};

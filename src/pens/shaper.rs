@@ -4,7 +4,7 @@ use std::collections::VecDeque;
 
 use crate::strokes::shapestroke::ShapeStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
-use crate::strokes::StrokeKey;
+use crate::strokesstate::StrokeKey;
 use crate::{input, utils};
 
 use super::penbehaviour::PenBehaviour;

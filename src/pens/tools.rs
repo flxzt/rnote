@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
-use crate::strokes::StrokeKey;
+use crate::strokesstate::StrokeKey;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, geometry, render, utils};
 

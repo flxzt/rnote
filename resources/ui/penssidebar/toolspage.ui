@@ -30,7 +30,12 @@
         <property name="spacing">12</property>
         <child>
           <object class="GtkToggleButton" id="toolstyle_expandsheet_toggle">
-            <property name="label">e</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pen-tools-expandsheettool</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
             <property name="tooltip_text">expand the sheet vertically</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
@@ -38,7 +43,12 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="toolstyle_dragproximity_toggle">
-            <property name="label">d</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pen-tools-dragproximitytool</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
             <property name="tooltip_text">drag along based on proximity</property>
             <property name="group">toolstyle_expandsheet_toggle</property>
             <property name="vexpand">true</property>

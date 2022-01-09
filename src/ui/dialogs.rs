@@ -93,6 +93,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 dialog_new_sheet.close();
             },
             ResponseType::Apply => {
+                dialog_new_sheet.close();
                 dialog_save_sheet_as(&appwindow);
             }
             _ => {
@@ -119,6 +120,7 @@ pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
                     appwindow.destroy();
                 },
                 ResponseType::Apply => {
+                    dialog_quit_save.close();
                     dialog_save_sheet_as(&appwindow);
                 }
                 _ => {
@@ -150,6 +152,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                     }
                 },
                 ResponseType::Apply => {
+                    dialog_open_input_file.close();
                     dialog_save_sheet_as(&appwindow);
                 }
                 _ => {

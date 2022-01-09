@@ -564,7 +564,11 @@ impl StrokesState {
     }
 
     /// Generates a Svg for all strokes as drawn onto the canvas. Does not include the selection.
-    pub fn gen_svg_for_strokes(&self, xml_header: bool) -> Result<Option<render::Svg>, anyhow::Error> {
+    pub fn gen_svg_for_strokes(
+        &self,
+        svg_root: bool,
+        xml_header: bool,
+    ) -> Result<Option<render::Svg>, anyhow::Error> {
         let chrono_sorted = self.keys_sorted_chrono();
 
         let keys = chrono_sorted
@@ -584,34 +588,34 @@ impl StrokesState {
             return Ok(None);
         };
 
-        let svg_data = keys
+        let mut svg_data = keys
             .iter()
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 
                 match stroke.gen_svgs(na::vector![0.0, 0.0]) {
-                    Ok(svgs) => return Some(svgs),
+                    Ok(svgs) => Some(svgs),
                     Err(e) => {
                         log::error!(
                             "stroke.gen_svgs() failed in gen_svg_all_strokes() with Err {}",
                             e
                         );
+                        None
                     }
                 }
-                None
             })
             .flatten()
             .map(|svg| svg.svg_data)
             .collect::<Vec<String>>()
             .join("\n");
 
-        let svg_data = compose::wrap_svg(
-            svg_data.as_str(),
-            Some(bounds),
-            Some(bounds),
-            xml_header,
-            false,
-        );
+        if svg_root {
+            svg_data =
+                compose::wrap_svg(svg_data.as_str(), Some(bounds), Some(bounds), false, false);
+        }
+        if xml_header {
+            svg_data = compose::add_xml_header(svg_data.as_str());
+        }
 
         Ok(Some(render::Svg { svg_data, bounds }))
     }

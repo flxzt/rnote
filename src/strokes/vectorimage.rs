@@ -147,7 +147,6 @@ impl VectorImage {
                             e
                         )
                     })?;
-                surface.restrict(cairo::SvgVersion::_1_2);
 
                 {
                     let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;

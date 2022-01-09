@@ -591,15 +591,21 @@ impl Sheet {
         );
         let mut svg_data = String::new();
 
-        svg_data.push_str(
-            self.background()
-                .borrow()
-                .gen_svg_data(sheet_bounds.loosened(1.0))?
-                .as_str(),
-        );
+        svg_data += self
+            .background()
+            .borrow()
+            .gen_svg(sheet_bounds.loosened(1.0), false, false)?
+            .svg_data
+            .as_str();
+        svg_data += "\n";
 
-        if let Some(strokes_svg) = self.strokes_state().borrow().gen_svg_for_strokes(false)? {
-            svg_data.push_str(strokes_svg.svg_data.as_str());
+        if let Some(strokes_svg) = self
+            .strokes_state()
+            .borrow()
+            .gen_svg_for_strokes(false, false)?
+        {
+            svg_data += strokes_svg.svg_data.as_str();
+            svg_data += "\n";
         }
 
         svg_data = compose::wrap_svg(

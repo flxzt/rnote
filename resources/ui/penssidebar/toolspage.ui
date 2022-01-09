@@ -32,7 +32,7 @@
           <object class="GtkToggleButton" id="toolstyle_expandsheet_toggle">
             <child>
               <object class="GtkImage">
-                <property name="icon-name">pen-tools-expandsheettool</property>
+                <property name="icon-name">pen-tools-expandsheettool-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
@@ -45,11 +45,11 @@
           <object class="GtkToggleButton" id="toolstyle_dragproximity_toggle">
             <child>
               <object class="GtkImage">
-                <property name="icon-name">pen-tools-dragproximitytool</property>
+                <property name="icon-name">pen-tools-dragproximitytool-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
-            <property name="tooltip_text">drag along based on proximity</property>
+            <property name="tooltip_text">drag stroke elements based on proximity</property>
             <property name="group">toolstyle_expandsheet_toggle</property>
             <property name="vexpand">true</property>
           </object>

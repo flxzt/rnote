@@ -301,6 +301,7 @@ impl StrokesState {
 
     pub fn gen_svg_selection(
         &self,
+        svg_root: bool,
         xml_header: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
         let selection_bounds = if let Some(selection_bounds) = self.selection_bounds {
@@ -339,13 +340,13 @@ impl StrokesState {
             na::Point2::<f64>::from(selection_bounds.extents()),
         );
 
-        svg_data = compose::wrap_svg(
-            svg_data.as_str(),
-            Some(wrapper_bounds),
-            Some(wrapper_bounds),
-            xml_header,
-            false,
-        );
+        if svg_root {
+            svg_data =
+                compose::wrap_svg(svg_data.as_str(), Some(wrapper_bounds), Some(wrapper_bounds), false, false);
+        }
+        if xml_header {
+            svg_data = compose::add_xml_header(svg_data.as_str());
+        }
 
         Ok(Some(render::Svg {
             svg_data,
@@ -354,7 +355,7 @@ impl StrokesState {
     }
 
     pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
-        if let Some(data) = self.gen_svg_selection(true)? {
+        if let Some(data) = self.gen_svg_selection(true, true)? {
             let output_stream = file.replace::<gio::Cancellable>(
                 None,
                 false,

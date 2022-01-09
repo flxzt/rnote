@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{compose, render, utils};
+use crate::{render, utils};
 
 use gtk4::{gdk, prelude::*, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
@@ -87,7 +87,6 @@ impl PenBehaviour for Selector {
         snapshot: &Snapshot,
     ) -> Result<(), anyhow::Error> {
         if let Some(bounds) = self.gen_bounds() {
-            let mut svg_data = String::new();
             let mut data = element::path::Data::new();
             let offset = na::vector![0.0, 0.0];
 
@@ -128,18 +127,17 @@ impl PenBehaviour for Selector {
                 .set("stroke-dasharray", "4 6")
                 .set("fill", Self::FILL_COLOR.to_css_color());
 
-            svg_data += rough_rs::node_to_string(&svg_path)
+            let svg_data = rough_rs::node_to_string(&svg_path)
                 .map_err(|e| {
                     anyhow::anyhow!(
                         "rough_rs::node_to_string failed in gen_svg_path() for selector, {}",
                         e
                     )
-                })?
-                .as_str();
+                })?;
 
             let svg = render::Svg {
                 bounds,
-                svg_data: compose::wrap_svg(svg_data.as_str(), None, Some(bounds), true, false),
+                svg_data,
             };
             let image = renderer.gen_image(zoom, &[svg], bounds)?;
             let rendernode = render::image_to_rendernode(&image, zoom);

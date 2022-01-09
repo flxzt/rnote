@@ -44,8 +44,8 @@
         <file compressed="true">icons/scalable/actions/pen-shaper-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/pen-tools-expandsheettool.svg</file>
-        <file compressed="true">icons/scalable/actions/pen-tools-dragproximitytool.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-tools-expandsheettool-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-tools-dragproximitytool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selector-polygon-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selector-rectangle-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>

@@ -1,4 +1,4 @@
-use crate::{compose, geometry, render};
+use crate::{geometry, render};
 
 use p2d::bounding_volume::BoundingVolume;
 
@@ -35,17 +35,7 @@ pub trait DrawBehaviour {
         renderer: &render::Renderer,
     ) -> Result<render::Image, anyhow::Error> {
         let offset = na::vector![0.0, 0.0];
-        let mut svgs = self.gen_svgs(offset)?;
-
-        for svg in svgs.iter_mut() {
-            svg.svg_data = compose::wrap_svg(
-                svg.svg_data.as_str(),
-                Some(self.bounds()),
-                Some(self.bounds()),
-                true,
-                false,
-            );
-        }
+        let svgs = self.gen_svgs(offset)?;
 
         renderer.gen_image(zoom, &svgs, self.bounds())
     }

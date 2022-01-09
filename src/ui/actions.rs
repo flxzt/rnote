@@ -653,48 +653,48 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             print_op.set_n_pages(appwindow.canvas().sheet().calc_n_pages());
         }));
 
-        match appwindow.canvas().sheet().gen_svg(true) {
-            Ok(sheet_svg) => {
-                print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
-                    let cx = match print_cx.cairo_context() {
-                        None => {
-                            log::error!("failed to get cairo context in print_op.connect_draw_page().");
-                            return;
-                        }
-                        Some(cx) => { cx }
-                    };
-
-                    let (margin_top, margin_bottom, margin_left, margin_right) = print_cx.hard_margins().unwrap_or( (0.0, 0.0, 0.0, 0.0) );
-
-                    let width_scale = (print_cx.width() + margin_left + margin_right) / f64::from(appwindow.canvas().sheet().format().width());
-                    let height_scale = (print_cx.height() + margin_top + margin_bottom) / f64::from(appwindow.canvas().sheet().format().height());
-                    let print_zoom = width_scale.min(height_scale);
-                    let y_offset = - (f64::from(page_nr * appwindow.canvas().sheet().format().height()) * print_zoom);
-
-                    let format_bounds_scaled = p2d::bounding_volume::AABB::new(
-                        na::point![0.0, 0.0],
-                        na::point![f64::from(appwindow.canvas().sheet().format().width()) * print_zoom,f64::from(appwindow.canvas().sheet().format().height()) * print_zoom]
-                    );
-
-                    cx.rectangle(
-                        format_bounds_scaled.mins[0],
-                        format_bounds_scaled.mins[1],
-                        format_bounds_scaled.extents()[0],
-                        format_bounds_scaled.extents()[1]
-                    );
-                    cx.clip();
-                    cx.translate(0.0, y_offset);
-
-                    if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &[sheet_svg.clone()], &cx) {
-                        log::error!("render::draw_svgs_to_cairo_context() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
-
-                    }
-            }));
-        },
+        let sheet_svg = match appwindow.canvas().sheet().gen_svg(true) {
+            Ok(sheet_svg) => sheet_svg,
             Err(e) => {
                 log::error!("gen_svg() failed in print-sheet action with Err {}", e);
+                return;
             }
-        }
+        };
+
+        print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
+            let cx = match print_cx.cairo_context() {
+                None => {
+                    log::error!("failed to get cairo context in print_op.connect_draw_page().");
+                    return;
+                }
+                Some(cx) => { cx }
+            };
+
+            let width_scale = print_cx.width() / f64::from(appwindow.canvas().sheet().format().width());
+            let height_scale = print_cx.height() / f64::from(appwindow.canvas().sheet().format().height());
+            let print_zoom = width_scale.min(height_scale);
+            let y_offset = f64::from(page_nr * appwindow.canvas().sheet().format().height()) * print_zoom;
+
+            let format_bounds_scaled = p2d::bounding_volume::AABB::new(
+                na::point![0.0, y_offset],
+                na::point![f64::from(appwindow.canvas().sheet().format().width()) * print_zoom, y_offset + f64::from(appwindow.canvas().sheet().format().height()) * print_zoom]
+            );
+
+            // Start drawing
+            cx.translate(0.0, -y_offset);
+            cx.rectangle(
+                format_bounds_scaled.mins[0],
+                format_bounds_scaled.mins[1],
+                format_bounds_scaled.extents()[0],
+                format_bounds_scaled.extents()[1]
+            );
+            cx.clip();
+
+            if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &[sheet_svg.clone()], &cx) {
+                log::error!("render::draw_svgs_to_cairo_context() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
+
+            }
+        }));
 
         if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
             log::error!("print_op.run() failed with Err, {}", e);
@@ -719,7 +719,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Clipboard copy selection
     action_clipboard_copy_selection.connect_activate(clone!(@weak appwindow => move |_, _| {
-        match appwindow.canvas().sheet().strokes_state().borrow().gen_svg_selection(true) {
+        match appwindow.canvas().sheet().strokes_state().borrow().gen_svg_selection(true, true) {
             Ok(Some(selection_svg)) => {
                 let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(selection_svg.svg_data.as_bytes()));
                 match appwindow.clipboard().set_content(Some(&svg_content_provider)) {

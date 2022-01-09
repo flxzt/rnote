@@ -8,7 +8,7 @@ use gtk4::{
     Native, Snapshot, Widget,
 };
 
-use crate::geometry;
+use crate::{geometry, compose};
 
 #[derive(Debug, Clone)]
 pub enum RendererBackend {
@@ -27,18 +27,6 @@ pub struct Image {
     pub data_height: i32,
     /// the memory format
     pub memory_format: gdk::MemoryFormat,
-}
-
-impl Default for Image {
-    fn default() -> Self {
-        Self {
-            data: Vec::new(),
-            bounds: p2d::bounding_volume::AABB::new(na::point![0.0, 0.0], na::point![0.0, 0.0]),
-            data_width: 0,
-            data_height: 0,
-            memory_format: gdk::MemoryFormat::R8g8b8a8,
-        }
-    }
 }
 
 #[derive(Debug, Clone)]
@@ -67,12 +55,19 @@ impl Default for Renderer {
 
 impl Renderer {
     /// generates images from SVGs. bounds are in coordinate space of the sheet, (not zoomed)
+    /// expects the svgs to be raw svg tags, no svg root or xml header needed
     pub fn gen_image(
         &self,
         zoom: f64,
         svgs: &[Svg],
         bounds: p2d::bounding_volume::AABB,
     ) -> Result<Image, anyhow::Error> {
+        if svgs.is_empty() {
+            return Err(anyhow::Error::msg("gen_image() failed, no svg's in slice."))
+        }
+        if bounds.extents()[0] <= 0.0 || bounds.extents()[1] <= 0.0 {
+            return Err(anyhow::Error::msg("gen_image() failed, bounds extents are <= 0.0"))
+        }
         match self.backend {
             RendererBackend::Librsvg => self.gen_image_librsvg(zoom, svgs, bounds),
             RendererBackend::Resvg => self.gen_image_resvg(zoom, svgs, bounds),
@@ -99,37 +94,42 @@ impl Renderer {
                     )
                 })?;
 
+        let mut svg_data = svgs
+            .iter()
+            .map(|svg| svg.svg_data.as_str())
+            .collect::<Vec<&str>>()
+            .join("\n");
+        svg_data = compose::wrap_svg(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
+
         // Context in new scope, else accessing the surface data fails with a borrow error
         {
             let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
 
-            for svg in svgs {
-                let stream =
-                    gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.svg_data.as_bytes()));
+            let stream =
+                gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
-                let handle = librsvg::Loader::new()
-                    .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
-                        &stream, None, None,
-                    )
-                    .context("read stream to librsvg Loader failed")?;
-                let renderer = librsvg::CairoRenderer::new(&handle);
-                renderer
-                    .render_document(
-                        &cx,
-                        &cairo::Rectangle {
-                            x: 0.0,
-                            y: 0.0,
-                            width: f64::from(width_scaled),
-                            height: f64::from(height_scaled),
-                        },
-                    )
-                    .map_err(|e| {
-                        anyhow::Error::msg(format!(
-                            "librsvg render_document() failed in gen_image_librsvg() with Err {}",
-                            e
-                        ))
-                    })?;
-            }
+            let handle = librsvg::Loader::new()
+                .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
+                    &stream, None, None,
+                )
+                .context("read stream to librsvg Loader failed")?;
+            let renderer = librsvg::CairoRenderer::new(&handle);
+            renderer
+                .render_document(
+                    &cx,
+                    &cairo::Rectangle {
+                        x: 0.0,
+                        y: 0.0,
+                        width: f64::from(width_scaled),
+                        height: f64::from(height_scaled),
+                    },
+                )
+                .map_err(|e| {
+                    anyhow::Error::msg(format!(
+                        "librsvg render_document() failed in gen_image_librsvg() with Err {}",
+                        e
+                    ))
+                })?;
         }
         // Surface needs to be flushed before accessing its data
         surface.flush();
@@ -162,18 +162,22 @@ impl Renderer {
         let width_scaled = ((bounds.extents()[0]) * zoom).round() as i32;
         let height_scaled = ((bounds.extents()[1]) * zoom).round() as i32;
 
+        let mut svg_data = svgs
+            .iter()
+            .map(|svg| svg.svg_data.as_str())
+            .collect::<Vec<&str>>()
+            .join("\n");
+        svg_data = compose::wrap_svg(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
+
         let mut pixmap = tiny_skia::Pixmap::new(width_scaled as u32, height_scaled as u32)
             .ok_or_else(|| {
                 anyhow::Error::msg("tiny_skia::Pixmap::new() failed in gen_image_resvg()")
             })?;
 
-        for svg in svgs {
-            let rtree =
-                usvg::Tree::from_data(svg.svg_data.as_bytes(), &self.usvg_options.to_ref())?;
+        let rtree = usvg::Tree::from_data(svg_data.as_bytes(), &self.usvg_options.to_ref())?;
 
-            resvg::render(&rtree, usvg::FitTo::Zoom(zoom as f32), pixmap.as_mut())
-                .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
-        }
+        resvg::render(&rtree, usvg::FitTo::Zoom(zoom as f32), pixmap.as_mut())
+            .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
 
         let data = pixmap.data().to_vec();
 
@@ -284,6 +288,7 @@ pub fn draw_svgs_to_cairo_context(
 
     Ok(())
 }
+
 #[allow(dead_code)]
 fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow::Error> {
     if svg.bounds.extents()[0] < 0.0 || svg.bounds.extents()[1] < 0.0 {

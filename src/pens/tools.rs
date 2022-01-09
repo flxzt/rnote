@@ -4,7 +4,7 @@ use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
 use crate::strokesstate::StrokeKey;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{compose, geometry, render, utils};
+use crate::{geometry, render, utils};
 
 use gtk4::{prelude::*, Snapshot};
 
@@ -110,9 +110,7 @@ impl ExpandSheetTool {
             .add(threshold_line)
             .add(offset_line);
 
-        let mut svg_data = rough_rs::node_to_string(&group)?;
-
-        svg_data = compose::wrap_svg(&svg_data, Some(bounds), Some(bounds), true, false);
+        let svg_data = rough_rs::node_to_string(&group)?;
         let svg = render::Svg { svg_data, bounds };
 
         let image = renderer.gen_image(zoom, &[svg], bounds)?;
@@ -195,9 +193,7 @@ impl DragProximityTool {
             group = group.add(outline_circle);
         }
 
-        let mut svg_data = rough_rs::node_to_string(&group)?;
-
-        svg_data = compose::wrap_svg(&svg_data, Some(draw_bounds), Some(draw_bounds), true, false);
+        let svg_data = rough_rs::node_to_string(&group)?;
         let svg = render::Svg {
             svg_data,
             bounds: draw_bounds,

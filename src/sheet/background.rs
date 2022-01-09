@@ -153,7 +153,7 @@ pub struct Background {
     pattern_size: na::Vector2<f64>,
     pattern_color: utils::Color,
     #[serde(skip)]
-    image: render::Image,
+    image: Option<render::Image>,
     #[serde(skip, default = "render::default_rendernode")]
     rendernode: gsk::RenderNode,
 }
@@ -175,7 +175,7 @@ impl Default for Background {
                 b: 1.0,
                 a: 1.0,
             },
-            image: render::Image::default(),
+            image: None,
             rendernode: render::default_rendernode(),
         }
     }
@@ -245,12 +245,12 @@ impl Background {
         tile_size
     }
 
-    pub fn gen_svg_data(
+    pub fn gen_svg(
         &self,
         bounds: p2d::bounding_volume::AABB,
-    ) -> Result<String, anyhow::Error> {
-        let mut svg = String::from("");
-
+        svg_root: bool,
+        xml_header: bool,
+    ) -> Result<render::Svg, anyhow::Error> {
         let mut group = element::Group::new();
 
         // background color
@@ -291,27 +291,27 @@ impl Background {
                 ));
             }
         }
-        svg.push_str(
-            rough_rs::node_to_string(&group)
-                .map_err(|e| {
-                    anyhow::anyhow!("rough_rs::node_to_string() failed for background, {}", e)
-                })?
-                .as_str(),
-        );
+        let mut svg_data = rough_rs::node_to_string(&group).map_err(|e| {
+            anyhow::anyhow!("rough_rs::node_to_string() failed for background, {}", e)
+        })?;
 
-        let svg = compose::wrap_svg(svg.as_str(), Some(bounds), None, false, false);
-        Ok(svg)
+        if svg_root {
+            svg_data = compose::wrap_svg(svg_data.as_str(), Some(bounds), None, false, false);
+        }
+        if xml_header {
+            svg_data = compose::add_xml_header(svg_data.as_str());
+        }
+
+        Ok(render::Svg { svg_data, bounds })
     }
 
-    pub fn gen_background_image(
-        &mut self,
+    pub fn gen_image(
+        &self,
         renderer: &Renderer,
         zoom: f64,
         bounds: p2d::bounding_volume::AABB,
     ) -> Result<render::Image, anyhow::Error> {
-        let svg_data = self.gen_svg_data(bounds)?;
-
-        let svg = render::Svg { bounds, svg_data };
+        let svg = self.gen_svg(bounds, true, false)?;
 
         renderer.gen_image(zoom, &[svg], bounds)
     }
@@ -328,7 +328,7 @@ impl Background {
             na::point![tile_size[0], tile_size[1]],
         );
 
-        self.image = self.gen_background_image(renderer, zoom, tile_bounds)?;
+        self.image = Some(self.gen_image(renderer, zoom, tile_bounds)?);
         self.update_rendernode(zoom, sheet_bounds)?;
         Ok(())
     }
@@ -351,12 +351,14 @@ impl Background {
             &geometry::aabb_to_graphene_rect(geometry::aabb_scale(bounds, zoom)),
         );
 
-        let new_texture = render::image_to_memtexture(&self.image);
-        for aabb in geometry::split_aabb_extended(bounds, tile_size) {
-            snapshot.append_texture(
-                &new_texture,
-                &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, zoom)),
-            );
+        if let Some(image) = &self.image {
+            let new_texture = render::image_to_memtexture(image);
+            for aabb in geometry::split_aabb_extended(bounds, tile_size) {
+                snapshot.append_texture(
+                    &new_texture,
+                    &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, zoom)),
+                );
+            }
         }
 
         snapshot.pop();

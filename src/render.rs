@@ -147,10 +147,10 @@ impl Renderer {
                 "accessing imagesurface data failed in gen_image_librsvg() with Err {}",
                 e
             ))
-        })?;
+        })?.to_vec();
 
         Ok(Image {
-            data: data.to_vec(),
+            data,
             bounds,
             data_width: width_scaled,
             data_height: height_scaled,
@@ -180,10 +180,10 @@ impl Renderer {
                 .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
         }
 
-        let bytes = pixmap.data();
+        let data = pixmap.data().to_vec();
 
         Ok(Image {
-            data: bytes.to_vec(),
+            data,
             bounds,
             data_width: width_scaled,
             data_height: height_scaled,

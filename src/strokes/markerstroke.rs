@@ -1,6 +1,6 @@
 use crate::{
     compose, curves, drawbehaviour::DrawBehaviour, geometry, pens::marker::Marker, render,
-    strokes::strokestyle::{StrokeStyle, Element},
+    strokes::strokestyle::Element,
 };
 use p2d::bounding_volume::BoundingVolume;
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
@@ -333,30 +333,5 @@ impl MarkerStroke {
                 None
             }
         }
-    }
-
-    pub fn import_from_svg(_svg: &str) -> Vec<StrokeStyle> {
-        let strokes: Vec<StrokeStyle> = Vec::new();
-
-        strokes
-    }
-
-    pub fn export_to_svg(&self, xml_header: bool) -> Result<String, anyhow::Error> {
-        let svgs = Self::gen_svgs(self, na::vector![0.0, 0.0])?;
-        let svg_data = svgs
-            .iter()
-            .map(|svg| svg.svg_data.clone())
-            .collect::<Vec<String>>()
-            .join("\n");
-
-        let svg = compose::wrap_svg(
-            svg_data.as_str(),
-            Some(self.bounds),
-            Some(self.bounds),
-            xml_header,
-            false,
-        );
-
-        Ok(svg)
     }
 }

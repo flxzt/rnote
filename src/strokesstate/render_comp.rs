@@ -125,8 +125,6 @@ impl StrokesState {
 
             // Spawn a new thread for image rendering
             self.threadpool.spawn(move || {
-                //std::thread::sleep(std::time::Duration::from_millis(500));
-
                 match stroke.gen_image(current_zoom, &renderer.read().unwrap()) {
                     Ok(image) => {
                         tasks_tx.send(StateTask::UpdateStrokeWithImages {
@@ -171,12 +169,11 @@ impl StrokesState {
                         if let Ok(Some(last_elems_svg)) =
                             brushstroke.gen_svg_for_elems(elements, offset, true)
                         {
-                            let svg_bounds = last_elems_svg.bounds;
-
+                            let bounds = last_elems_svg.bounds;
                             match self.renderer.read().unwrap().gen_image(
                                 self.zoom,
                                 &[last_elems_svg],
-                                svg_bounds,
+                                bounds,
                             ) {
                                 Ok(last_elems_image) => {
                                     let mut images = vec![last_elems_image];
@@ -219,12 +216,11 @@ impl StrokesState {
                         if let Some(last_elems_svg) =
                             markerstroke.gen_svg_elem(elements, offset, true)
                         {
-                            let svg_bounds = last_elems_svg.bounds;
-
+                            let bounds = last_elems_svg.bounds;
                             match self.renderer.read().unwrap().gen_image(
                                 self.zoom,
                                 &[last_elems_svg],
-                                svg_bounds,
+                                bounds,
                             ) {
                                 Ok(last_elems_image) => {
                                     let mut images = vec![last_elems_image];
@@ -310,11 +306,11 @@ impl StrokesState {
                             if let Some(last_elems_svg) =
                                 markerstroke.gen_svg_elem(elements, offset, true)
                             {
-                                let svg_bounds = last_elems_svg.bounds;
+                            let bounds = last_elems_svg.bounds;
                                 match renderer.read().unwrap().gen_image(
                                     zoom,
                                     &[last_elems_svg],
-                                    svg_bounds,
+                                    bounds,
                                 ) {
                                     Ok(last_elems_image) => {
                                         let images = vec![last_elems_image];
@@ -352,11 +348,11 @@ impl StrokesState {
                             if let Ok(Some(last_elems_svg)) =
                                 brushstroke.gen_svg_for_elems(elements, offset, true)
                             {
-                                let svg_bounds = last_elems_svg.bounds;
+                                let bounds = last_elems_svg.bounds;
                                 match renderer.read().unwrap().gen_image(
                                     zoom,
                                     &[last_elems_svg],
-                                    svg_bounds,
+                                    bounds,
                                 ) {
                                     Ok(last_elems_image) => {
                                         let images = vec![last_elems_image];

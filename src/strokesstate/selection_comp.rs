@@ -1,7 +1,7 @@
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::selector::{self, Selector};
-use crate::{compose, geometry};
+use crate::{compose, geometry, render};
 
 use geo::line_string;
 use geo::prelude::*;
@@ -299,55 +299,69 @@ impl StrokesState {
         }
     }
 
-    pub fn gen_svg_selection(&self) -> Result<Option<String>, anyhow::Error> {
-        if let Some(selection_bounds) = self.selection_bounds {
-            let mut data = self
-                .selection_keys()
-                .iter()
-                .filter_map(|key| self.strokes.get(*key))
-                .filter_map(|stroke| {
-                    stroke
-                        .gen_svgs(na::vector![
-                            -selection_bounds.mins[0],
-                            -selection_bounds.mins[1]
-                        ])
-                        .ok()
-                })
-                .flatten()
-                .map(|svg| svg.svg_data)
-                .collect::<Vec<String>>()
-                .join("\n");
-
-            let wrapper_bounds = p2d::bounding_volume::AABB::new(
-                na::point![0.0, 0.0],
-                na::point![
-                    selection_bounds.maxs[0] - selection_bounds.mins[0],
-                    selection_bounds.maxs[1] - selection_bounds.mins[1]
-                ],
-            );
-            data = compose::wrap_svg(
-                data.as_str(),
-                Some(wrapper_bounds),
-                Some(wrapper_bounds),
-                true,
-                false,
-            );
-
-            Ok(Some(data))
+    pub fn gen_svg_selection(
+        &self,
+        xml_header: bool,
+    ) -> Result<Option<render::Svg>, anyhow::Error> {
+        let selection_bounds = if let Some(selection_bounds) = self.selection_bounds {
+            selection_bounds
         } else {
-            Ok(None)
-        }
+            return Ok(None);
+        };
+
+        let chrono_sorted = self.keys_sorted_chrono();
+
+        let mut svg_data = chrono_sorted
+            .iter()
+            .filter(|&&key| {
+                self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && (self.selected(key).unwrap_or(false))
+                    && (self.does_render(key).unwrap_or(false))
+            })
+            .filter_map(|&key| {
+                let stroke = self.strokes.get(key)?;
+
+                stroke
+                    .gen_svgs(-na::vector![
+                        selection_bounds.mins[0],
+                        selection_bounds.mins[1]
+                    ])
+                    .ok()
+            })
+            .flatten()
+            .map(|svg| svg.svg_data)
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        let wrapper_bounds = p2d::bounding_volume::AABB::new(
+            na::point![0.0, 0.0],
+            na::Point2::<f64>::from(selection_bounds.extents()),
+        );
+
+        svg_data = compose::wrap_svg(
+            svg_data.as_str(),
+            Some(wrapper_bounds),
+            Some(wrapper_bounds),
+            xml_header,
+            false,
+        );
+
+        Ok(Some(render::Svg {
+            svg_data,
+            bounds: wrapper_bounds,
+        }))
     }
 
     pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
-        if let Some(data) = self.gen_svg_selection()? {
+        if let Some(data) = self.gen_svg_selection(true)? {
             let output_stream = file.replace::<gio::Cancellable>(
                 None,
                 false,
                 gio::FileCreateFlags::REPLACE_DESTINATION,
                 None,
             )?;
-            output_stream.write::<gio::Cancellable>(data.as_bytes(), None)?;
+            output_stream.write::<gio::Cancellable>(data.svg_data.as_bytes(), None)?;
             output_stream.close::<gio::Cancellable>(None)?;
         }
 

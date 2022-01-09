@@ -11,18 +11,18 @@ use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
 
+use crate::drawbehaviour::DrawBehaviour;
+use crate::pens::tools::DragProximityTool;
 use crate::strokes::bitmapimage::BitmapImage;
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokes::vectorimage::VectorImage;
-use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::tools::DragProximityTool;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, geometry, render};
 
 use gtk4::{glib, glib::clone, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
-use rayon::iter::{IntoParallelRefIterator, ParallelBridge, ParallelIterator};
+use rayon::iter::{ParallelBridge, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
@@ -563,42 +563,39 @@ impl StrokesState {
         None
     }
 
-    pub fn gen_svg_all_strokes(&self) -> Result<String, anyhow::Error> {
-        let strokes = &self.strokes;
+    /// Generates a Svg for all strokes as drawn onto the canvas. Does not include the selection.
+    pub fn gen_svg_for_strokes(&self, xml_header: bool) -> Result<Option<render::Svg>, anyhow::Error> {
+        let chrono_sorted = self.keys_sorted_chrono();
 
-        let keys = self
-            .render_components
+        let keys = chrono_sorted
             .iter()
-            .filter_map(|(key, render_comp)| {
-                if render_comp.render && !self.trashed(key).unwrap_or(true) {
-                    Some(key)
-                } else {
-                    None
-                }
+            .filter(|&&key| {
+                self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && !(self.selected(key).unwrap_or(false))
+                    && (self.does_render(key).unwrap_or(false))
             })
+            .map(|&key| key)
             .collect::<Vec<StrokeKey>>();
 
-        if keys.is_empty() {
-            return Ok(String::from(""));
-        }
         let bounds = if let Some(bounds) = self.gen_bounds(&keys) {
             bounds
         } else {
-            return Ok(String::from(""));
+            return Ok(None);
         };
 
-        let data: String = keys
-            .par_iter()
+        let svg_data = keys
+            .iter()
             .filter_map(|&key| {
-                if let Some(stroke) = strokes.get(key) {
-                    match stroke.gen_svgs(na::vector![0.0, 0.0]) {
-                        Ok(svgs) => return Some(svgs),
-                        Err(e) => {
-                            log::error!(
-                                "stroke.gen_svgs() failed in gen_svg_all_strokes() with Err {}",
-                                e
-                            );
-                        }
+                let stroke = self.strokes.get(key)?;
+
+                match stroke.gen_svgs(na::vector![0.0, 0.0]) {
+                    Ok(svgs) => return Some(svgs),
+                    Err(e) => {
+                        log::error!(
+                            "stroke.gen_svgs() failed in gen_svg_all_strokes() with Err {}",
+                            e
+                        );
                     }
                 }
                 None
@@ -608,9 +605,15 @@ impl StrokesState {
             .collect::<Vec<String>>()
             .join("\n");
 
-        let data = compose::wrap_svg(data.as_str(), Some(bounds), Some(bounds), true, false);
+        let svg_data = compose::wrap_svg(
+            svg_data.as_str(),
+            Some(bounds),
+            Some(bounds),
+            xml_header,
+            false,
+        );
 
-        Ok(data)
+        Ok(Some(render::Svg { svg_data, bounds }))
     }
 
     pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {

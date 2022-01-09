@@ -129,25 +129,20 @@ impl Renderer {
                             e
                         ))
                     })?;
-
-                cx.stroke()
-                .map_err(|e| {
-                    anyhow::Error::msg(format!(
-                        "cairo stroke() for rendered context failed in gen_image_librsvg() with Err {}",
-                        e
-                    ))
-                })?;
             }
         }
         // Surface needs to be flushed before accessing its data
         surface.flush();
 
-        let data = surface.data().map_err(|e| {
-            anyhow::Error::msg(format!(
-                "accessing imagesurface data failed in gen_image_librsvg() with Err {}",
-                e
-            ))
-        })?.to_vec();
+        let data = surface
+            .data()
+            .map_err(|e| {
+                anyhow::Error::msg(format!(
+                    "accessing imagesurface data failed in gen_image_librsvg() with Err {}",
+                    e
+                ))
+            })?
+            .to_vec();
 
         Ok(Image {
             data,

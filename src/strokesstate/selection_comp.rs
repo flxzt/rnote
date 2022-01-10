@@ -5,7 +5,7 @@ use crate::{compose, geometry, render};
 
 use geo::line_string;
 use geo::prelude::*;
-use gtk4::{gio, prelude::*};
+use gtk4::{gio, glib, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -345,14 +345,38 @@ impl StrokesState {
             true,
         );
 
-        let output_stream = file.replace::<gio::Cancellable>(
+        file.replace_async::<gio::Cancellable, _>(
             None,
             false,
             gio::FileCreateFlags::REPLACE_DESTINATION,
+            glib::PRIORITY_HIGH_IDLE,
             None,
-        )?;
-        output_stream.write::<gio::Cancellable>(svg_data.as_bytes(), None)?;
-        output_stream.close::<gio::Cancellable>(None)?;
+            move |result| {
+                let output_stream = match result {
+                    Ok(output_stream) => output_stream,
+                    Err(e) => {
+                        log::error!(
+                            "replace_async() failed in export_selection_as_svg() with Err {}",
+                            e
+                        );
+                        return;
+                    }
+                };
+
+                if let Err(e) = output_stream.write::<gio::Cancellable>(svg_data.as_bytes(), None) {
+                    log::error!(
+                        "output_stream().write() failed in export_selection_as_svg() with Err {}",
+                        e
+                    );
+                };
+                if let Err(e) = output_stream.close::<gio::Cancellable>(None) {
+                    log::error!(
+                        "output_stream().close() failed in export_selection_as_svg() with Err {}",
+                        e
+                    );
+                };
+            },
+        );
 
         Ok(())
     }

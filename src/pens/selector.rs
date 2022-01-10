@@ -127,18 +127,14 @@ impl PenBehaviour for Selector {
                 .set("stroke-dasharray", "4 6")
                 .set("fill", Self::FILL_COLOR.to_css_color());
 
-            let svg_data = rough_rs::node_to_string(&svg_path)
-                .map_err(|e| {
-                    anyhow::anyhow!(
-                        "rough_rs::node_to_string failed in gen_svg_path() for selector, {}",
-                        e
-                    )
-                })?;
+            let svg_data = rough_rs::node_to_string(&svg_path).map_err(|e| {
+                anyhow::anyhow!(
+                    "rough_rs::node_to_string failed in gen_svg_path() for selector, {}",
+                    e
+                )
+            })?;
 
-            let svg = render::Svg {
-                bounds,
-                svg_data,
-            };
+            let svg = render::Svg { bounds, svg_data };
             let image = renderer.gen_image(zoom, &[svg], bounds)?;
             let rendernode = render::image_to_rendernode(&image, zoom);
             snapshot.append_node(&rendernode);

@@ -844,7 +844,11 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_rnote_bytes<P>(&self, bytes: glib::Bytes, path: Option<P>) -> Result<(), anyhow::Error>
+    pub fn load_in_rnote_bytes<P>(
+        &self,
+        bytes: glib::Bytes,
+        path: Option<P>,
+    ) -> Result<(), anyhow::Error>
     where
         P: AsRef<Path>,
     {

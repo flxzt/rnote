@@ -101,7 +101,8 @@ impl Renderer {
             .map(|svg| svg.svg_data.as_str())
             .collect::<Vec<&str>>()
             .join("\n");
-        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
+        svg_data =
+            compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
 
         // Context in new scope, else accessing the surface data fails with a borrow error
         {
@@ -169,7 +170,8 @@ impl Renderer {
             .map(|svg| svg.svg_data.as_str())
             .collect::<Vec<&str>>()
             .join("\n");
-        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
+        svg_data =
+            compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
 
         let mut pixmap = tiny_skia::Pixmap::new(width_scaled as u32, height_scaled as u32)
             .ok_or_else(|| {

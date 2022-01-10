@@ -564,15 +564,41 @@ impl Sheet {
                         json_output.as_bytes(),
                         &file_name.to_string_lossy(),
                     )?;
-                    let output_stream = file.replace::<gio::Cancellable>(
+
+                    file.replace_async::<gio::Cancellable, _>(
                         None,
                         false,
                         gio::FileCreateFlags::REPLACE_DESTINATION,
+                        glib::PRIORITY_HIGH_IDLE,
                         None,
-                    )?;
+                        move |result| {
+                            let output_stream = match result {
+                                Ok(output_stream) => output_stream,
+                                Err(e) => {
+                                    log::error!(
+                            "replace_async() failed in save_sheet_to_file() with Err {}",
+                            e
+                        );
+                                    return;
+                                }
+                            };
 
-                    output_stream.write::<gio::Cancellable>(&compressed_bytes, None)?;
-                    output_stream.close::<gio::Cancellable>(None)?;
+                            if let Err(e) =
+                                output_stream.write::<gio::Cancellable>(&compressed_bytes, None)
+                            {
+                                log::error!(
+                        "output_stream().write() failed in save_sheet_to_file() with Err {}",
+                        e
+                    );
+                            };
+                            if let Err(e) = output_stream.close::<gio::Cancellable>(None) {
+                                log::error!(
+                        "output_stream().close() failed in save_sheet_to_file() with Err {}",
+                        e
+                    );
+                            };
+                        },
+                    );
                 } else {
                     log::error!("failed to get file name while saving sheet. Invalid file");
                 }
@@ -617,14 +643,38 @@ impl Sheet {
             true,
         );
 
-        let output_stream = file.replace::<gio::Cancellable>(
+        file.replace_async::<gio::Cancellable, _>(
             None,
             false,
             gio::FileCreateFlags::REPLACE_DESTINATION,
+            glib::PRIORITY_HIGH_IDLE,
             None,
-        )?;
-        output_stream.write::<gio::Cancellable>(svg_data.as_bytes(), None)?;
-        output_stream.close::<gio::Cancellable>(None)?;
+            move |result| {
+                let output_stream = match result {
+                    Ok(output_stream) => output_stream,
+                    Err(e) => {
+                        log::error!(
+                            "replace_async() failed in export_sheet_as_svg() with Err {}",
+                            e
+                        );
+                        return;
+                    }
+                };
+
+                if let Err(e) = output_stream.write::<gio::Cancellable>(svg_data.as_bytes(), None) {
+                    log::error!(
+                        "output_stream().write() failed in export_sheet_as_svg() with Err {}",
+                        e
+                    );
+                };
+                if let Err(e) = output_stream.close::<gio::Cancellable>(None) {
+                    log::error!(
+                        "output_stream().close() failed in export_sheet_as_svg() with Err {}",
+                        e
+                    );
+                };
+            },
+        );
 
         Ok(())
     }

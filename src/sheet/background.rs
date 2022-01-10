@@ -304,7 +304,8 @@ impl Background {
         bounds: p2d::bounding_volume::AABB,
     ) -> Result<render::Image, anyhow::Error> {
         let mut svg = self.gen_svg(bounds)?;
-        svg.svg_data = compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), None, true, false);
+        svg.svg_data =
+            compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), None, true, false);
 
         renderer.gen_image(zoom, &[svg], bounds)
     }

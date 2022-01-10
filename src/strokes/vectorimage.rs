@@ -48,7 +48,7 @@ impl DrawBehaviour for VectorImage {
         let scalevector = bounds.extents().component_div(&self.intrinsic_size);
         let group_offset = na::vector![bounds.mins[0], bounds.mins[1]];
 
-        let svg_data = compose::svg_group_wrap(self.svg_data.as_str(), group_offset, scalevector);
+        let svg_data = compose::wrap_svg_group(self.svg_data.as_str(), group_offset, scalevector);
         let svg = render::Svg { bounds, svg_data };
 
         Ok(vec![svg])

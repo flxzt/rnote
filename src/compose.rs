@@ -110,7 +110,7 @@ pub fn strip_svg_root(svg: &str) -> String {
 }
 
 /// patterns are rendered rather slow, so this should be used carefully!
-pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB) -> String {
+pub fn wrap_svg_pattern(data: &str, id: &str, bounds: p2d::bounding_volume::AABB) -> String {
     const SVG_PATTERN_TEMPL_STR: &str = r#"
 <defs>
     <pattern
@@ -142,7 +142,7 @@ pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB
 }
 
 /// wraps the data in a group, and translates and scales them with the transform attribute
-pub fn svg_group_wrap(
+pub fn wrap_svg_group(
     data: &str,
     offset: na::Vector2<f64>,
     scalevector: na::Vector2<f64>,

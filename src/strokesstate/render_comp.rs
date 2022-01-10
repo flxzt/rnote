@@ -490,9 +490,7 @@ impl StrokesState {
     }
 
     pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<p2d::bounding_volume::AABB>) {
-        let chrono_sorted = self.keys_sorted_chrono();
-
-        chrono_sorted
+        self.keys_sorted_chrono()
             .iter()
             .filter(|&&key| {
                 self.does_render(key).unwrap_or(false)
@@ -549,9 +547,7 @@ impl StrokesState {
             );
         }
 
-        let chrono_sorted = self.keys_sorted_chrono();
-
-        chrono_sorted
+        self.keys_sorted_chrono()
             .iter()
             .filter(|&&key| {
                 self.does_render(key).unwrap_or(false)
@@ -631,7 +627,13 @@ impl StrokesState {
     }
 
     pub fn draw_debug(&self, zoom: f64, snapshot: &Snapshot) {
-        self.strokes.iter().for_each(|(key, stroke)| {
+        self.keys_sorted_chrono().iter().for_each(|&key| {
+            let stroke = if let Some(stroke) = self.strokes.get(key) {
+                stroke
+            } else {
+                return;
+            };
+
             // Push blur and opacity for strokes which are normally hidden
             if let Some(render_comp) = self.render_components.get(key) {
                 if let Some(trash_comp) = self.trash_components.get(key) {

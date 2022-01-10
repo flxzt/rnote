@@ -53,11 +53,9 @@ impl StrokesState {
         if let Some(selection_comp) = self.selection_components.get_mut(key) {
             selection_comp.selected = selected;
 
-            if selected {
-                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                    self.chrono_counter += 1;
-                    chrono_comp.t = self.chrono_counter;
-                }
+            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                self.chrono_counter += 1;
+                chrono_comp.t = self.chrono_counter;
             }
 
             self.update_selection_bounds();
@@ -71,10 +69,11 @@ impl StrokesState {
 
     /// Returns all keys for the selection
     pub fn selection_keys(&self) -> Vec<StrokeKey> {
-        self.selection_components
+        self.keys_sorted_chrono()
             .iter()
-            .par_bridge()
-            .filter_map(|(key, selection_comp)| {
+            .filter_map(|&key| {
+                let selection_comp = self.selection_components.get(key)?;
+
                 if selection_comp.selected {
                     Some(key)
                 } else {
@@ -93,16 +92,17 @@ impl StrokesState {
     }
 
     pub fn deselect_all_strokes(&mut self) {
-        self.selection_components
-            .iter_mut()
-            .for_each(|(key, selection_comp)| {
-                selection_comp.selected = false;
-
-                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                    self.chrono_counter += 1;
-                    chrono_comp.t = self.chrono_counter;
+        self.keys_sorted_chrono().iter().for_each(|&key| {
+            if let Some(selection_comp) = self.selection_components.get_mut(key) {
+                if selection_comp.selected {
+                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                        self.chrono_counter += 1;
+                        chrono_comp.t = self.chrono_counter;
+                    }
+                    selection_comp.selected = false;
                 }
-            });
+            }
+        });
 
         self.selection_bounds = None;
     }
@@ -164,7 +164,12 @@ impl StrokesState {
             }
         };
 
-        self.strokes.iter_mut().for_each(|(key, stroke)| {
+        self.keys_sorted_chrono().iter().for_each(|&key| {
+            let stroke = if let Some(stroke) = self.strokes.get(key) {
+                stroke
+            } else {
+                return;
+            };
             // skip if stroke is trashed
             if let Some(trash_comp) = self.trash_components.get(key) {
                 if trash_comp.trashed {
@@ -301,12 +306,11 @@ impl StrokesState {
 
     /// the svgs of the current selection, without xml header or svg root
     pub fn gen_svgs_selection(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let chrono_sorted = self.keys_sorted_chrono();
         if self.selection_bounds.is_none() {
             return Ok(vec![]);
         }
 
-        Ok(chrono_sorted
+        Ok(self.keys_sorted_chrono()
             .iter()
             .filter(|&&key| {
                 self.does_render(key).unwrap_or(false)

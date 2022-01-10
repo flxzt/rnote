@@ -34,21 +34,19 @@ impl DrawBehaviour for VectorImage {
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let bounds = p2d::bounding_volume::AABB::new(
-            na::point![
-                self.bounds.mins[0] + offset[0],
-                self.bounds.mins[1] + offset[1]
-            ],
-            na::point![
-                self.bounds.maxs[0] + offset[0],
-                self.bounds.maxs[1] + offset[1]
-            ],
+        let bounds = geometry::aabb_translate(self.bounds, offset);
+        let intrinsic_bounds = p2d::bounding_volume::AABB::new(
+            na::point![0.0, 0.0],
+            na::point![self.intrinsic_size[0], self.intrinsic_size[1]],
         );
 
-        let scalevector = bounds.extents().component_div(&self.intrinsic_size);
-        let group_offset = na::vector![bounds.mins[0], bounds.mins[1]];
-
-        let svg_data = compose::wrap_svg_group(self.svg_data.as_str(), group_offset, scalevector);
+        let svg_data = compose::wrap_svg_root(
+            self.svg_data.as_str(),
+            Some(bounds),
+            Some(intrinsic_bounds),
+            false,
+            false,
+        );
         let svg = render::Svg { bounds, svg_data };
 
         Ok(vec![svg])

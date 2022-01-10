@@ -285,6 +285,7 @@ impl StrokesState {
     /// Clears every stroke and every component
     pub fn clear(&mut self) {
         self.chrono_counter = 0;
+        self.selection_bounds = None;
 
         self.strokes.clear();
         self.trash_components.clear();
@@ -395,6 +396,9 @@ impl StrokesState {
 
     pub fn import_state(&mut self, strokes_state: &Self) {
         self.clear();
+        self.chrono_counter = strokes_state.chrono_counter;
+        self.selection_bounds = strokes_state.selection_bounds;
+
         self.strokes = strokes_state.strokes.clone();
         self.trash_components = strokes_state.trash_components.clone();
         self.selection_components = strokes_state.selection_components.clone();
@@ -429,6 +433,7 @@ impl StrokesState {
 
     pub fn update_geometry_all_strokes(&mut self) {
         let keys: Vec<StrokeKey> = self.strokes.keys().collect();
+
         keys.iter().for_each(|&key| {
             self.update_geometry_for_stroke(key);
         });
@@ -436,6 +441,7 @@ impl StrokesState {
 
     pub fn update_geometry_selection_strokes(&mut self) {
         let keys: Vec<StrokeKey> = self.selection_keys();
+
         keys.iter().for_each(|&key| {
             self.update_geometry_for_stroke(key);
         });

@@ -79,11 +79,11 @@ impl StrokesState {
     }
 
     pub fn trash_selection(&mut self) {
-        self.selection_components
-            .iter_mut()
-            .for_each(|(key, selection_comp)| {
+        self.selection_keys().iter().for_each(|&key| {
+            if let Some(selection_comp) = self.selection_components.get_mut(key) {
                 if selection_comp.selected {
                     selection_comp.selected = false;
+
                     if let Some(trash_comp) = self.trash_components.get_mut(key) {
                         trash_comp.trashed = true;
 
@@ -93,7 +93,8 @@ impl StrokesState {
                         }
                     }
                 }
-            });
+            }
+        });
         self.selection_bounds = None;
     }
 

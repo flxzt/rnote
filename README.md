@@ -66,6 +66,7 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
 - [x] parallelizing rendering and actions which affect many strokes.
 - [x] asychronous rendering
+- [x] Stroke elements drag tool: drag along parts of the selected strokes based on the proximity of a round pen tool
 - [ ] sheet tabs
 - [ ] strokes rotation
 - [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
@@ -79,7 +80,6 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 * Stroke trash restorer
     *  with a preview of the deleted strokes
 * Stylus buttons configuration to map them to different actions and / or pen types 
-* Sticky selection: drag along parts of the selected strokes based on the proximity of a round pen tool
 * Locked strokes: Selection mode to toggle the mutability of strokes
 * Share and synchronize sheets with others ( via e.g. the peer-2-peer protocol libp2p ).
 

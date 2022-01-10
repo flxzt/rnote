@@ -58,6 +58,16 @@
   </provides>
 
   <releases>
+    <release version="0.2.4" date="2022-01-10">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>Tools as new pen type. Expand the sheet vertically, modify stroke elements by dragging</li>
+          <li>asynchronous import, export</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.3" date="2022-01-04">
       <description>
         <p>this release changes:</p>

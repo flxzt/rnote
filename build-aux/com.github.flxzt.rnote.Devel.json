@@ -80,6 +80,17 @@
             ]
         },
         {
+            "name": "pango",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/pango/1.50/pango-1.50.3.tar.xz",
+                    "sha256": "4add05edf51c1fb375a1ccde7498914120e23cb280dd7395b1aeb441f1838a4c"
+                }
+            ]
+        },
+        {
             "name": "gtk",
             "buildsystem": "meson",
             "config-opts" : [

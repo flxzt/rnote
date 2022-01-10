@@ -3,23 +3,23 @@ use svg::node::element::path;
 
 use super::curves;
 
-#[allow(dead_code)]
-pub fn add_xml_header(svg: &str) -> String {
-    let re = regex::Regex::new(r#"<\?xml[^\?>]*\?>"#).unwrap();
-    if !re.is_match(svg) {
-        String::from(r#"<?xml version="1.0" standalone="no"?>"#) + "\n" + svg
-    } else {
-        String::from(svg)
-    }
-}
-
-pub const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
-pub const SVG_ROOT_REGEX: &str = r#"<svg[^>]*>|<[^/svg]*/svg>"#;
+const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
+const SVG_ROOT_REGEX: &str = r#"<svg[^>]*>|<[^/svg]*/svg>"#;
 
 #[allow(dead_code)]
 pub fn check_xml_header(svg: &str) -> bool {
     let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
     re.is_match(svg)
+}
+
+#[allow(dead_code)]
+pub fn add_xml_header(svg: &str) -> String {
+    let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
+    if !re.is_match(svg) {
+        String::from(r#"<?xml version="1.0" standalone="no"?>"#) + "\n" + svg
+    } else {
+        String::from(svg)
+    }
 }
 
 #[allow(dead_code)]
@@ -34,13 +34,7 @@ pub fn check_svg_root(svg: &str) -> bool {
     re.is_match(svg)
 }
 
-#[allow(dead_code)]
-pub fn strip_svg_root(svg: &str) -> String {
-    let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
-    String::from(re.replace_all(svg, ""))
-}
-
-pub fn wrap_svg(
+pub fn wrap_svg_root(
     data: &str,
     bounds: Option<p2d::bounding_volume::AABB>,
     viewbox: Option<p2d::bounding_volume::AABB>,
@@ -109,6 +103,12 @@ pub fn wrap_svg(
     tera::Tera::one_off(SVG_WRAP_TEMPL_STR, &cx, false).expect("failed to create svg from template")
 }
 
+#[allow(dead_code)]
+pub fn strip_svg_root(svg: &str) -> String {
+    let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
+    String::from(re.replace_all(svg, ""))
+}
+
 /// patterns are rendered rather slow, so this should be used carefully!
 pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB) -> String {
     const SVG_PATTERN_TEMPL_STR: &str = r#"
@@ -138,6 +138,36 @@ pub fn svg_pattern_wrap(data: &str, id: &str, bounds: p2d::bounding_volume::AABB
     cx.insert("data", &data);
 
     tera::Tera::one_off(SVG_PATTERN_TEMPL_STR, &cx, false)
+        .expect("failed to create svg from template")
+}
+
+/// wraps the data in a group, and translates and scales them with the transform attribute
+pub fn svg_group_wrap(
+    data: &str,
+    offset: na::Vector2<f64>,
+    scalevector: na::Vector2<f64>,
+) -> String {
+    const SVG_GROUP_TEMPL_STR: &str = r#"
+<g transform="
+  translate({{translate_x}} {{translate_y}})
+  scale({{scale_x}} {{scale_y}})
+  "
+>
+  {{data}}
+</g>
+"#;
+    let mut cx = tera::Context::new();
+    let translate_x = format!("{:3}", offset[0]);
+    let translate_y = format!("{:3}", offset[1]);
+    let scale_x = format!("{:3}", scalevector[0]);
+    let scale_y = format!("{:3}", scalevector[1]);
+    cx.insert("translate_x", &translate_x);
+    cx.insert("translate_y", &translate_y);
+    cx.insert("scale_x", &scale_x);
+    cx.insert("scale_y", &scale_y);
+    cx.insert("data", data);
+
+    tera::Tera::one_off(SVG_GROUP_TEMPL_STR, &cx, false)
         .expect("failed to create svg from template")
 }
 

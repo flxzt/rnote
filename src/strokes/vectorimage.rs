@@ -45,18 +45,10 @@ impl DrawBehaviour for VectorImage {
             ],
         );
 
-        let intrinsic_bounds = p2d::bounding_volume::AABB::new(
-            na::point![0.0, 0.0],
-            na::point![self.intrinsic_size[0], self.intrinsic_size[1]],
-        );
+        let scalevector = bounds.extents().component_div(&self.intrinsic_size);
+        let group_offset = na::vector![bounds.mins[0], bounds.mins[1]];
 
-        let svg_data = compose::wrap_svg(
-            self.svg_data.as_str(),
-            Some(bounds),
-            Some(intrinsic_bounds),
-            false,
-            false,
-        );
+        let svg_data = compose::svg_group_wrap(self.svg_data.as_str(), group_offset, scalevector);
         let svg = render::Svg { bounds, svg_data };
 
         Ok(vec![svg])

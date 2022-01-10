@@ -302,11 +302,9 @@ impl StrokesState {
     /// the svgs of the current selection, without xml header or svg root
     pub fn gen_svgs_selection(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
         let chrono_sorted = self.keys_sorted_chrono();
-        let selection_bounds = if let Some(selection_bounds) = self.selection_bounds {
-            selection_bounds
-        } else {
+        if self.selection_bounds.is_none() {
             return Ok(vec![]);
-        };
+        }
 
         Ok(chrono_sorted
             .iter()
@@ -319,12 +317,7 @@ impl StrokesState {
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 
-                stroke
-                    .gen_svgs(-na::vector![
-                        selection_bounds.mins[0],
-                        selection_bounds.mins[1]
-                    ])
-                    .ok()
+                stroke.gen_svgs(na::vector![0.0, 0.0]).ok()
             })
             .flatten()
             .collect::<Vec<render::Svg>>())
@@ -344,7 +337,7 @@ impl StrokesState {
         } else {
             return Ok(());
         };
-        svg_data = compose::wrap_svg(
+        svg_data = compose::wrap_svg_root(
             svg_data.as_str(),
             Some(selection_bounds),
             Some(selection_bounds),

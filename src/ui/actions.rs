@@ -730,7 +730,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     .join("\n");
 
                 if let Some(selection_bounds) = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds {
-                    svg_data = compose::wrap_svg(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true, true);
+                    svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true, true);
 
                     let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(svg_data.as_bytes()));
                     match appwindow.clipboard().set_content(Some(&svg_content_provider)) {

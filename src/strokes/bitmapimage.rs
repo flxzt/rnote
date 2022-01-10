@@ -89,7 +89,7 @@ impl DrawBehaviour for BitmapImage {
             ],
         );
 
-        let svg_data = compose::wrap_svg(
+        let svg_data = compose::wrap_svg_root(
             svg.as_str(),
             Some(bounds),
             Some(intrinsic_bounds),

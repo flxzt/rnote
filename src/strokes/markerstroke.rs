@@ -321,7 +321,7 @@ impl MarkerStroke {
             Ok(mut svg_data) => {
                 if svg_root {
                     svg_data =
-                        compose::wrap_svg(&svg_data, Some(bounds), Some(bounds), true, false);
+                        compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
                 }
                 Some(render::Svg { svg_data, bounds })
             }

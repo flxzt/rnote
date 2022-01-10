@@ -609,7 +609,7 @@ impl Sheet {
             .collect::<Vec<&str>>()
             .join("\n");
 
-        svg_data = compose::wrap_svg(
+        svg_data = compose::wrap_svg_root(
             svg_data.as_str(),
             Some(sheet_bounds),
             Some(sheet_bounds),

@@ -13,14 +13,30 @@ pub fn add_xml_header(svg: &str) -> String {
     }
 }
 
+pub const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
+pub const SVG_ROOT_REGEX: &str = r#"<svg[^>]*>|<[^/svg]*/svg>"#;
+
+#[allow(dead_code)]
+pub fn check_xml_header(svg: &str) -> bool {
+    let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
+    re.is_match(svg)
+}
+
+#[allow(dead_code)]
 pub fn remove_xml_header(svg: &str) -> String {
-    let re = regex::Regex::new(r#"<\?xml[^\?>]*\?>"#).unwrap();
+    let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
     String::from(re.replace_all(svg, ""))
 }
 
 #[allow(dead_code)]
+pub fn check_svg_root(svg: &str) -> bool {
+    let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
+    re.is_match(svg)
+}
+
+#[allow(dead_code)]
 pub fn strip_svg_root(svg: &str) -> String {
-    let re = regex::Regex::new(r#"<svg[^>]*>|<[^/svg]*/svg>"#).unwrap();
+    let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
     String::from(re.replace_all(svg, ""))
 }
 

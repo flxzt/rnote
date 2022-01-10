@@ -584,46 +584,38 @@ impl Sheet {
         Ok(())
     }
 
-    pub fn gen_svg(&self, xml_header: bool) -> Result<render::Svg, anyhow::Error> {
-        let sheet_bounds = p2d::bounding_volume::AABB::new(
-            na::point![0.0, 0.0],
-            na::point![f64::from(self.width()), f64::from(self.height())],
+    pub fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let sheet_bounds = self.bounds();
+        let mut svgs = vec![];
+
+        svgs.push(
+            self.background()
+                .borrow()
+                .gen_svg(sheet_bounds.loosened(1.0))?,
         );
-        let mut svg_data = String::new();
 
-        svg_data += self
-            .background()
-            .borrow()
-            .gen_svg(sheet_bounds.loosened(1.0), false, false)?
-            .svg_data
-            .as_str();
-        svg_data += "\n";
+        svgs.append(&mut self.strokes_state().borrow().gen_svgs_for_strokes()?);
 
-        if let Some(strokes_svg) = self
-            .strokes_state()
-            .borrow()
-            .gen_svg_for_strokes(false, false)?
-        {
-            svg_data += strokes_svg.svg_data.as_str();
-            svg_data += "\n";
-        }
+        Ok(svgs)
+    }
+
+    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
+        let sheet_bounds = self.bounds();
+        let svgs = self.gen_svgs()?;
+
+        let mut svg_data = svgs
+            .iter()
+            .map(|svg| svg.svg_data.as_str())
+            .collect::<Vec<&str>>()
+            .join("\n");
 
         svg_data = compose::wrap_svg(
             svg_data.as_str(),
             Some(sheet_bounds),
             Some(sheet_bounds),
-            xml_header,
+            true,
             true,
         );
-
-        Ok(render::Svg {
-            svg_data,
-            bounds: sheet_bounds,
-        })
-    }
-
-    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
-        let data = self.gen_svg(true)?;
 
         let output_stream = file.replace::<gio::Cancellable>(
             None,
@@ -631,7 +623,7 @@ impl Sheet {
             gio::FileCreateFlags::REPLACE_DESTINATION,
             None,
         )?;
-        output_stream.write::<gio::Cancellable>(data.svg_data.as_bytes(), None)?;
+        output_stream.write::<gio::Cancellable>(svg_data.as_bytes(), None)?;
         output_stream.close::<gio::Cancellable>(None)?;
 
         Ok(())

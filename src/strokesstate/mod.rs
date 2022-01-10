@@ -18,7 +18,7 @@ use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokes::vectorimage::VectorImage;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{compose, geometry, render};
+use crate::{geometry, render};
 
 use gtk4::{glib, glib::clone, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
@@ -563,15 +563,11 @@ impl StrokesState {
         None
     }
 
-    /// Generates a Svg for all strokes as drawn onto the canvas. Does not include the selection.
-    pub fn gen_svg_for_strokes(
-        &self,
-        svg_root: bool,
-        xml_header: bool,
-    ) -> Result<Option<render::Svg>, anyhow::Error> {
+    /// Generates a Svg for all strokes as drawn onto the canvas without xml headers or svg roots. Does not include the selection.
+    pub fn gen_svgs_for_strokes(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
         let chrono_sorted = self.keys_sorted_chrono();
 
-        let keys = chrono_sorted
+        let svgs = chrono_sorted
             .iter()
             .filter(|&&key| {
                 self.does_render(key).unwrap_or(false)
@@ -579,17 +575,6 @@ impl StrokesState {
                     && !(self.selected(key).unwrap_or(false))
                     && (self.does_render(key).unwrap_or(false))
             })
-            .map(|&key| key)
-            .collect::<Vec<StrokeKey>>();
-
-        let bounds = if let Some(bounds) = self.gen_bounds(&keys) {
-            bounds
-        } else {
-            return Ok(None);
-        };
-
-        let mut svg_data = keys
-            .iter()
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 
@@ -605,19 +590,9 @@ impl StrokesState {
                 }
             })
             .flatten()
-            .map(|svg| svg.svg_data)
-            .collect::<Vec<String>>()
-            .join("\n");
+            .collect::<Vec<render::Svg>>();
 
-        if svg_root {
-            svg_data =
-                compose::wrap_svg(svg_data.as_str(), Some(bounds), Some(bounds), false, false);
-        }
-        if xml_header {
-            svg_data = compose::add_xml_header(svg_data.as_str());
-        }
-
-        Ok(Some(render::Svg { svg_data, bounds }))
+        Ok(svgs)
     }
 
     pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {

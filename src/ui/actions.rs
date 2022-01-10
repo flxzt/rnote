@@ -2,6 +2,7 @@ use std::{cell::Cell, rc::Rc};
 
 use crate::{
     app::RnoteApp,
+    compose,
     pens::{brush, selector, shaper, tools, PenStyle},
     render,
     ui::appwindow::RnoteAppWindow,
@@ -653,13 +654,14 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             print_op.set_n_pages(appwindow.canvas().sheet().calc_n_pages());
         }));
 
-        let sheet_svg = match appwindow.canvas().sheet().gen_svg(true) {
-            Ok(sheet_svg) => sheet_svg,
+        let sheet_svgs = match appwindow.canvas().sheet().gen_svgs() {
+            Ok(sheet_svgs) => sheet_svgs,
             Err(e) => {
                 log::error!("gen_svg() failed in print-sheet action with Err {}", e);
                 return;
             }
         };
+        let sheet_bounds = appwindow.canvas().sheet().bounds();
 
         print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
             let cx = match print_cx.cairo_context() {
@@ -690,7 +692,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             );
             cx.clip();
 
-            if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &[sheet_svg.clone()], &cx) {
+            if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &sheet_svgs, sheet_bounds, &cx) {
                 log::error!("render::draw_svgs_to_cairo_context() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
 
             }
@@ -719,19 +721,26 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Clipboard copy selection
     action_clipboard_copy_selection.connect_activate(clone!(@weak appwindow => move |_, _| {
-        match appwindow.canvas().sheet().strokes_state().borrow().gen_svg_selection(true, true) {
-            Ok(Some(selection_svg)) => {
-                let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(selection_svg.svg_data.as_bytes()));
-                match appwindow.clipboard().set_content(Some(&svg_content_provider)) {
-                    Ok(_) => {
-                    }
-                    Err(e) => {
-                        log::error!("copy selection into clipboard failed in clipboard().set_content(), {}", e);
+        match appwindow.canvas().sheet().strokes_state().borrow().gen_svgs_selection() {
+            Ok(selection_svgs) => {
+                let mut svg_data = selection_svgs
+                    .iter()
+                    .map(|svg| svg.svg_data.as_str())
+                    .collect::<Vec<&str>>()
+                    .join("\n");
+
+                if let Some(selection_bounds) = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds {
+                    svg_data = compose::wrap_svg(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true, true);
+
+                    let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(svg_data.as_bytes()));
+                    match appwindow.clipboard().set_content(Some(&svg_content_provider)) {
+                        Ok(_) => {
+                        }
+                        Err(e) => {
+                            log::error!("copy selection into clipboard failed in clipboard().set_content(), {}", e);
+                        }
                     }
                 }
-            }
-            Ok(None) => {
-
             }
             Err(e) => {
                 log::error!("copy selection into clipboard failed in gen_svg_selection(), {}", e);

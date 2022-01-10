@@ -8,7 +8,7 @@ use gtk4::{
     Native, Snapshot, Widget,
 };
 
-use crate::{geometry, compose};
+use crate::{compose, geometry};
 
 #[derive(Debug, Clone)]
 pub enum RendererBackend {
@@ -63,10 +63,12 @@ impl Renderer {
         bounds: p2d::bounding_volume::AABB,
     ) -> Result<Image, anyhow::Error> {
         if svgs.is_empty() {
-            return Err(anyhow::Error::msg("gen_image() failed, no svg's in slice."))
+            return Err(anyhow::Error::msg("gen_image() failed, no svg's in slice."));
         }
         if bounds.extents()[0] <= 0.0 || bounds.extents()[1] <= 0.0 {
-            return Err(anyhow::Error::msg("gen_image() failed, bounds extents are <= 0.0"))
+            return Err(anyhow::Error::msg(
+                "gen_image() failed, bounds extents are <= 0.0",
+            ));
         }
         match self.backend {
             RendererBackend::Librsvg => self.gen_image_librsvg(zoom, svgs, bounds),
@@ -263,28 +265,31 @@ pub fn rendernode_to_texture(
 pub fn draw_svgs_to_cairo_context(
     zoom: f64,
     svgs: &[Svg],
+    bounds: p2d::bounding_volume::AABB,
     cx: &cairo::Context,
 ) -> Result<(), anyhow::Error> {
-    for svg in svgs {
-        let stream =
-            gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.svg_data.as_bytes()));
+    let mut svg_data = svgs
+        .iter()
+        .map(|svg| svg.svg_data.as_str())
+        .collect::<Vec<&str>>()
+        .join("\n");
+    svg_data = compose::wrap_svg(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
 
-        let librsvg_handle = librsvg::Loader::new()
-            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
-                &stream, None, None,
-            )?;
+    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
-        let librsvg_renderer = librsvg::CairoRenderer::new(&librsvg_handle);
-        librsvg_renderer.render_document(
-            cx,
-            &cairo::Rectangle {
-                x: (svg.bounds.mins[0].floor() * zoom),
-                y: (svg.bounds.mins[1].floor() * zoom),
-                width: ((svg.bounds.extents()[0]).ceil() * zoom),
-                height: ((svg.bounds.extents()[1]).ceil() * zoom),
-            },
-        )?;
-    }
+    let librsvg_handle = librsvg::Loader::new()
+        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)?;
+
+    let librsvg_renderer = librsvg::CairoRenderer::new(&librsvg_handle);
+    librsvg_renderer.render_document(
+        cx,
+        &cairo::Rectangle {
+            x: (bounds.mins[0].floor() * zoom),
+            y: (bounds.mins[1].floor() * zoom),
+            width: ((bounds.extents()[0]).ceil() * zoom),
+            height: ((bounds.extents()[1]).ceil() * zoom),
+        },
+    )?;
 
     Ok(())
 }
@@ -297,19 +302,20 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
         ));
     }
 
-    let caironode_bounds = graphene::Rect::new(
+    /*     let caironode_bounds = graphene::Rect::new(
         (svg.bounds.mins[0] * zoom).floor() as f32,
         (svg.bounds.mins[1] * zoom).floor() as f32,
         ((svg.bounds.extents()[0]) * zoom).ceil() as f32,
         ((svg.bounds.extents()[1]) * zoom).ceil() as f32,
-    );
+    ); */
+    let caironode_bounds = geometry::aabb_scale(geometry::aabb_ceil(svg.bounds), zoom);
 
-    let new_caironode = gsk::CairoNode::new(&caironode_bounds);
+    let new_caironode = gsk::CairoNode::new(&geometry::aabb_to_graphene_rect(caironode_bounds));
     let cx = new_caironode
         .draw_context()
         .context("failed to get cairo draw_context() from new_caironode")?;
 
-    draw_svgs_to_cairo_context(zoom, &[svg.to_owned()], &cx)?;
+    draw_svgs_to_cairo_context(zoom, &[svg.to_owned()], caironode_bounds, &cx)?;
 
     Ok(new_caironode)
 }

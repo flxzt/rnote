@@ -245,11 +245,10 @@ impl Background {
         tile_size
     }
 
+    /// Generates the background svg, without xml header or svg root
     pub fn gen_svg(
         &self,
         bounds: p2d::bounding_volume::AABB,
-        svg_root: bool,
-        xml_header: bool,
     ) -> Result<render::Svg, anyhow::Error> {
         let mut group = element::Group::new();
 
@@ -291,16 +290,9 @@ impl Background {
                 ));
             }
         }
-        let mut svg_data = rough_rs::node_to_string(&group).map_err(|e| {
+        let svg_data = rough_rs::node_to_string(&group).map_err(|e| {
             anyhow::anyhow!("rough_rs::node_to_string() failed for background, {}", e)
         })?;
-
-        if svg_root {
-            svg_data = compose::wrap_svg(svg_data.as_str(), Some(bounds), None, false, false);
-        }
-        if xml_header {
-            svg_data = compose::add_xml_header(svg_data.as_str());
-        }
 
         Ok(render::Svg { svg_data, bounds })
     }
@@ -311,7 +303,8 @@ impl Background {
         zoom: f64,
         bounds: p2d::bounding_volume::AABB,
     ) -> Result<render::Image, anyhow::Error> {
-        let svg = self.gen_svg(bounds, true, false)?;
+        let mut svg = self.gen_svg(bounds)?;
+        svg.svg_data = compose::wrap_svg(svg.svg_data.as_str(), Some(bounds), None, true, false);
 
         renderer.gen_image(zoom, &[svg], bounds)
     }

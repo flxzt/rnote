@@ -299,20 +299,16 @@ impl StrokesState {
         }
     }
 
-    pub fn gen_svg_selection(
-        &self,
-        svg_root: bool,
-        xml_header: bool,
-    ) -> Result<Option<render::Svg>, anyhow::Error> {
+    /// the svgs of the current selection, without xml header or svg root
+    pub fn gen_svgs_selection(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let chrono_sorted = self.keys_sorted_chrono();
         let selection_bounds = if let Some(selection_bounds) = self.selection_bounds {
             selection_bounds
         } else {
-            return Ok(None);
+            return Ok(vec![]);
         };
 
-        let chrono_sorted = self.keys_sorted_chrono();
-
-        let mut svg_data = chrono_sorted
+        Ok(chrono_sorted
             .iter()
             .filter(|&&key| {
                 self.does_render(key).unwrap_or(false)
@@ -331,40 +327,39 @@ impl StrokesState {
                     .ok()
             })
             .flatten()
-            .map(|svg| svg.svg_data)
-            .collect::<Vec<String>>()
-            .join("\n");
-
-        let wrapper_bounds = p2d::bounding_volume::AABB::new(
-            na::point![0.0, 0.0],
-            na::Point2::<f64>::from(selection_bounds.extents()),
-        );
-
-        if svg_root {
-            svg_data =
-                compose::wrap_svg(svg_data.as_str(), Some(wrapper_bounds), Some(wrapper_bounds), false, false);
-        }
-        if xml_header {
-            svg_data = compose::add_xml_header(svg_data.as_str());
-        }
-
-        Ok(Some(render::Svg {
-            svg_data,
-            bounds: wrapper_bounds,
-        }))
+            .collect::<Vec<render::Svg>>())
     }
 
     pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
-        if let Some(data) = self.gen_svg_selection(true, true)? {
-            let output_stream = file.replace::<gio::Cancellable>(
-                None,
-                false,
-                gio::FileCreateFlags::REPLACE_DESTINATION,
-                None,
-            )?;
-            output_stream.write::<gio::Cancellable>(data.svg_data.as_bytes(), None)?;
-            output_stream.close::<gio::Cancellable>(None)?;
-        }
+        let selection_svgs = self.gen_svgs_selection()?;
+
+        let mut svg_data = selection_svgs
+            .iter()
+            .map(|svg| svg.svg_data.as_str())
+            .collect::<Vec<&str>>()
+            .join("\n");
+
+        let selection_bounds = if let Some(selection_bounds) = self.selection_bounds {
+            selection_bounds
+        } else {
+            return Ok(());
+        };
+        svg_data = compose::wrap_svg(
+            svg_data.as_str(),
+            Some(selection_bounds),
+            Some(selection_bounds),
+            true,
+            true,
+        );
+
+        let output_stream = file.replace::<gio::Cancellable>(
+            None,
+            false,
+            gio::FileCreateFlags::REPLACE_DESTINATION,
+            None,
+        )?;
+        output_stream.write::<gio::Cancellable>(svg_data.as_bytes(), None)?;
+        output_stream.close::<gio::Cancellable>(None)?;
 
         Ok(())
     }

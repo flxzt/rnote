@@ -80,11 +80,11 @@ impl VectorImage {
     pub const OFFSET_Y_DEFAULT: f64 = 28.0;
 
     pub fn import_from_svg_data(
-        svg: &str,
+        svg_data: &str,
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
-        let intrinsic_size = compose::svg_intrinsic_size(svg).unwrap_or_else(|| {
+        let intrinsic_size = compose::svg_intrinsic_size(svg_data).unwrap_or_else(|| {
             na::vector![VectorImage::SIZE_X_DEFAULT, VectorImage::SIZE_Y_DEFAULT]
         });
 
@@ -100,7 +100,7 @@ impl VectorImage {
             },
         );
 
-        let svg_data = compose::remove_xml_header(svg);
+        let svg_data = compose::remove_xml_header(svg_data);
 
         let vector_image = Self {
             bounds,

@@ -571,7 +571,12 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .build();
 
     // Developer mode
-    //let devel = appwindow.app_settings().boolean("devel");
+    let devel = appwindow.app_settings().boolean("devel");
+    appwindow
+        .penssidebar()
+        .brush_page()
+        .brushstyle_experimental_row()
+        .set_visible(devel);
 
     // Devel settings
     let action_devel_settings = app.lookup_action("devel-settings").unwrap();

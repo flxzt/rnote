@@ -109,6 +109,7 @@
                     <child>
                       <object class="AdwActionRow" id="brushstyle_textured_row">
                         <property name="title">Textured</property>
+                        <property name="visible">false</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon-name">pen-brush-style-textured-symbolic</property>

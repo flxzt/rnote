@@ -204,6 +204,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
             action_devel_settings.set_enabled(state);
             appwindow.devel_actions_revealer().set_reveal_child(state);
+            appwindow.penssidebar().brush_page().brushstyle_experimental_row().set_visible(state);
 
             if !state {
                 appwindow.application().unwrap().change_action_state("visual-debug", &false.to_variant());

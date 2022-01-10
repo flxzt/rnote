@@ -62,6 +62,7 @@
       <description>
         <p>this release changes:</p>
         <ul>
+          <li>using libadwaita 1.0!</li>
           <li>Tools as new pen type. Expand the sheet vertically, modify stroke elements by dragging</li>
           <li>asynchronous import, export</li>
           <li>bug fixes</li>

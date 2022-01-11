@@ -1,197 +1,7 @@
-use gtk4::{gio, glib};
+use super::{curves, geometry};
+
 use svg::node::element::path;
 
-use super::curves;
-
-const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
-const SVG_ROOT_REGEX: &str = r#"<svg[^>]*>|<[^/svg]*/svg>"#;
-
-#[allow(dead_code)]
-pub fn check_xml_header(svg: &str) -> bool {
-    let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
-    re.is_match(svg)
-}
-
-#[allow(dead_code)]
-pub fn add_xml_header(svg: &str) -> String {
-    let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
-    if !re.is_match(svg) {
-        String::from(r#"<?xml version="1.0" standalone="no"?>"#) + "\n" + svg
-    } else {
-        String::from(svg)
-    }
-}
-
-#[allow(dead_code)]
-pub fn remove_xml_header(svg: &str) -> String {
-    let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
-    String::from(re.replace_all(svg, ""))
-}
-
-#[allow(dead_code)]
-pub fn check_svg_root(svg: &str) -> bool {
-    let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
-    re.is_match(svg)
-}
-
-pub fn wrap_svg_root(
-    data: &str,
-    bounds: Option<p2d::bounding_volume::AABB>,
-    viewbox: Option<p2d::bounding_volume::AABB>,
-    xml_header: bool,
-    preserve_aspectratio: bool,
-) -> String {
-    const SVG_WRAP_TEMPL_STR: &str = r#"
-<svg
-  x="{{x}}"
-  y="{{y}}"
-  width="{{width}}"
-  height="{{height}}"
-  {{viewbox}}
-  preserveAspectRatio="{{preserve_aspectratio}}"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  >
-  {{data}}
-</svg>
-"#;
-    let mut cx = tera::Context::new();
-
-    let (x, y, width, height) = if let Some(bounds) = bounds {
-        let x = format!("{:.3}", bounds.mins[0]);
-        let y = format!("{:.3}", bounds.mins[1]);
-        let width = format!("{:.3}", bounds.extents()[0]);
-        let height = format!("{:.3}", bounds.extents()[1]);
-
-        (x, y, width, height)
-    } else {
-        (
-            String::from("0"),
-            String::from("0"),
-            String::from("100%"),
-            String::from("100%"),
-        )
-    };
-
-    let viewbox = if let Some(viewbox) = viewbox {
-        format!(
-            "viewBox=\"{:.3} {:.3} {:.3} {:.3}\"",
-            viewbox.mins[0],
-            viewbox.mins[1],
-            viewbox.extents()[0],
-            viewbox.extents()[1]
-        )
-    } else {
-        String::from("")
-    };
-    let preserve_aspectratio = if preserve_aspectratio {
-        String::from("xMidyMid")
-    } else {
-        String::from("none")
-    };
-
-    cx.insert("xml_header", &xml_header);
-    cx.insert("data", data);
-    cx.insert("x", &x);
-    cx.insert("y", &y);
-    cx.insert("width", &width);
-    cx.insert("height", &height);
-    cx.insert("viewbox", &viewbox);
-    cx.insert("preserve_aspectratio", &preserve_aspectratio);
-
-    tera::Tera::one_off(SVG_WRAP_TEMPL_STR, &cx, false).expect("failed to create svg from template")
-}
-
-#[allow(dead_code)]
-pub fn strip_svg_root(svg: &str) -> String {
-    let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
-    String::from(re.replace_all(svg, ""))
-}
-
-/// patterns are rendered rather slow, so this should be used carefully!
-pub fn wrap_svg_pattern(data: &str, id: &str, bounds: p2d::bounding_volume::AABB) -> String {
-    const SVG_PATTERN_TEMPL_STR: &str = r#"
-<defs>
-    <pattern
-        id="{{id}}"
-        x="{{x}}"
-        y="{{y}}"
-        width="{{width}}"
-        height="{{height}}"
-        patternUnits="userSpaceOnUse"
-        >
-        {{data}}
-    </pattern>
-</defs>
-"#;
-    let mut cx = tera::Context::new();
-    let x = format!("{:3}", bounds.mins[0]);
-    let y = format!("{:3}", bounds.mins[1]);
-    let width = format!("{:3}", bounds.extents()[0]);
-    let height = format!("{:3}", bounds.extents()[1]);
-    cx.insert("id", &id);
-    cx.insert("x", &x);
-    cx.insert("y", &y);
-    cx.insert("width", &width);
-    cx.insert("height", &height);
-    cx.insert("data", &data);
-
-    tera::Tera::one_off(SVG_PATTERN_TEMPL_STR, &cx, false)
-        .expect("failed to create svg from template")
-}
-
-/// wraps the data in a group, and translates and scales them with the transform attribute
-pub fn wrap_svg_group(
-    data: &str,
-    offset: na::Vector2<f64>,
-    scalevector: na::Vector2<f64>,
-) -> String {
-    const SVG_GROUP_TEMPL_STR: &str = r#"
-<g transform="
-  translate({{translate_x}} {{translate_y}})
-  scale({{scale_x}} {{scale_y}})
-  "
->
-  {{data}}
-</g>
-"#;
-    let mut cx = tera::Context::new();
-    let translate_x = format!("{:3}", offset[0]);
-    let translate_y = format!("{:3}", offset[1]);
-    let scale_x = format!("{:3}", scalevector[0]);
-    let scale_y = format!("{:3}", scalevector[1]);
-    cx.insert("translate_x", &translate_x);
-    cx.insert("translate_y", &translate_y);
-    cx.insert("scale_x", &scale_x);
-    cx.insert("scale_y", &scale_y);
-    cx.insert("data", data);
-
-    tera::Tera::one_off(SVG_GROUP_TEMPL_STR, &cx, false)
-        .expect("failed to create svg from template")
-}
-
-pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
-    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
-    if let Ok(handle) = librsvg::Loader::new()
-        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
-    {
-        let renderer = librsvg::CairoRenderer::new(&handle);
-
-        let intrinsic_size = if let Some(size) = renderer.intrinsic_size_in_pixels() {
-            Some(na::vector![size.0, size.1])
-        } else {
-            log::debug!("intrinsic_size_in_pixels() returns None in svg_intrinsic_size()");
-            None
-        };
-
-        intrinsic_size
-    } else {
-        None
-    }
-}
-
-#[allow(dead_code)]
 pub fn compose_line(line: curves::Line, move_start: bool) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
@@ -215,9 +25,8 @@ pub fn compose_line_offsetted(
     end_offset_dist: f64,
     move_start: bool,
 ) -> Vec<path::Command> {
-    let direction_unit_norm = curves::vector2_unit_norm(line.end - line.start);
+    let direction_unit_norm = geometry::vector2_unit_norm(line.end - line.start);
     let start_offset = direction_unit_norm * start_offset_dist;
-
     let end_offset = direction_unit_norm * end_offset_dist;
 
     let mut commands = Vec::new();
@@ -251,7 +60,7 @@ pub fn compose_line_variable_width(
         start: line.end,
         end: line.start,
     };
-    let direction_unit_norm = curves::vector2_unit_norm(line.end - line.start);
+    let direction_unit_norm = geometry::vector2_unit_norm(line.end - line.start);
 
     let mut commands = Vec::new();
     commands.append(&mut compose_line_offsetted(
@@ -308,7 +117,6 @@ pub fn compose_line_variable_width(
     commands
 }
 
-#[allow(dead_code)]
 pub fn compose_quadbez(quadbez: curves::QuadBezier, move_start: bool) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
@@ -337,8 +145,8 @@ pub fn compose_quadbez_offsetted(
 ) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
-    let start_unit_norm = curves::vector2_unit_norm(quadbez.cp - quadbez.start);
-    let end_unit_norm = curves::vector2_unit_norm(quadbez.end - quadbez.cp);
+    let start_unit_norm = geometry::vector2_unit_norm(quadbez.cp - quadbez.start);
+    let end_unit_norm = geometry::vector2_unit_norm(quadbez.end - quadbez.cp);
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
@@ -493,8 +301,8 @@ pub fn compose_quadbez_variable_width(
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
 
-    let start_unit_norm = curves::vector2_unit_norm(quadbez.cp - quadbez.start);
-    let end_unit_norm = curves::vector2_unit_norm(quadbez.end - quadbez.cp);
+    let start_unit_norm = geometry::vector2_unit_norm(quadbez.cp - quadbez.start);
+    let end_unit_norm = geometry::vector2_unit_norm(quadbez.end - quadbez.cp);
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
@@ -589,8 +397,8 @@ pub fn compose_cubbez_variable_width(
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
 
-    let start_unit_norm = curves::vector2_unit_norm(cubbez.cp1 - cubbez.start);
-    let end_unit_norm = curves::vector2_unit_norm(cubbez.end - cubbez.cp2);
+    let start_unit_norm = geometry::vector2_unit_norm(cubbez.cp1 - cubbez.start);
+    let end_unit_norm = geometry::vector2_unit_norm(cubbez.end - cubbez.cp2);
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;

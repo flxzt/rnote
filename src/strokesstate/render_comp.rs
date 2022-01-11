@@ -9,8 +9,10 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct RenderComponent {
     pub render: bool,
+    #[serde(skip)]
     pub regenerate_flag: bool,
     #[serde(skip)]
     pub images: Vec<render::Image>,

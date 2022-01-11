@@ -1,5 +1,6 @@
 use crate::drawbehaviour::DrawBehaviour;
-use crate::{compose, geometry, render};
+use crate::{compose, render, utils};
+use crate::compose::geometry;
 
 use anyhow::Context;
 use serde::{Deserialize, Serialize};
@@ -74,7 +75,7 @@ impl VectorImage {
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
     ) -> Result<Self, anyhow::Error> {
-        let intrinsic_size = compose::svg_intrinsic_size(svg_data).unwrap_or_else(|| {
+        let intrinsic_size = utils::svg_intrinsic_size(svg_data).unwrap_or_else(|| {
             na::vector![VectorImage::SIZE_X_DEFAULT, VectorImage::SIZE_Y_DEFAULT]
         });
 

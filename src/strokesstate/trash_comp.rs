@@ -8,6 +8,7 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(default)]
 pub struct TrashComponent {
     pub trashed: bool,
 }

@@ -11,14 +11,15 @@ use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
 
+use crate::compose::geometry;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::tools::DragProximityTool;
+use crate::render;
 use crate::strokes::bitmapimage::BitmapImage;
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokes::vectorimage::VectorImage;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{geometry, render};
 
 use gtk4::{glib, glib::clone, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
@@ -56,6 +57,7 @@ slotmap::new_key_type! {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct StrokesState {
     // Components
     strokes: HopSlotMap<StrokeKey, StrokeStyle>,
@@ -104,15 +106,6 @@ impl Default for StrokesState {
             channel_source: None,
             selection_bounds: None,
             threadpool,
-        }
-    }
-}
-
-impl Drop for StrokesState {
-    fn drop(&mut self) {
-        //let _ = self.render_tx.send(Command::Quit);
-        if let Some(source) = self.channel_source.take() {
-            source.destroy();
         }
     }
 }
@@ -207,7 +200,9 @@ impl StrokesState {
                         }
 
                     }
-                    StateTask::Quit => return glib::Continue(false),
+                    StateTask::Quit => {
+                        return glib::Continue(false);
+                    }
                 }
 
                 glib::Continue(true)

@@ -5,7 +5,6 @@ use rand::{Rng, SeedableRng};
 
 use crate::options::Options;
 
-#[allow(dead_code)]
 pub(crate) fn merge<T>(this: Option<T>, other: Option<T>) -> Option<T> {
     match this {
         Some(t) => Some(t),

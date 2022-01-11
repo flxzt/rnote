@@ -1,7 +1,8 @@
 use super::{StrokeKey, StrokeStyle, StrokesState};
+use crate::compose::geometry;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::selector::{self, Selector};
-use crate::{compose, geometry, render};
+use crate::{compose, render};
 
 use geo::line_string;
 use geo::prelude::*;
@@ -11,6 +12,7 @@ use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(default)]
 pub struct SelectionComponent {
     pub selected: bool,
 }

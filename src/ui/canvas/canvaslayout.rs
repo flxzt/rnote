@@ -8,7 +8,7 @@ mod imp {
     use gtk4::SizeRequestMode;
     use gtk4::Widget;
 
-    use crate::geometry;
+    use crate::compose::geometry;
     use crate::ui::canvas::Canvas;
     use crate::ui::selectionmodifier;
     use crate::ui::selectionmodifier::SelectionModifier;

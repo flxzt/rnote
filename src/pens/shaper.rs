@@ -189,9 +189,4 @@ impl Shaper {
     pub fn set_fill(&mut self, fill: Option<utils::Color>) {
         self.fill = fill;
     }
-
-    pub fn apply_roughconfig_onto(&self, options: &mut rough_rs::options::Options) {
-        options.roughness = self.roughconfig.roughness();
-        options.bowing = self.roughconfig.bowing();
-    }
 }

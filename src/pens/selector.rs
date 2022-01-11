@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{render, utils};
+use crate::{render, utils, compose};
 
 use gtk4::{gdk, prelude::*, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
@@ -127,9 +127,9 @@ impl PenBehaviour for Selector {
                 .set("stroke-dasharray", "4 6")
                 .set("fill", Self::FILL_COLOR.to_css_color());
 
-            let svg_data = rough_rs::node_to_string(&svg_path).map_err(|e| {
+            let svg_data = compose::node_to_string(&svg_path).map_err(|e| {
                 anyhow::anyhow!(
-                    "rough_rs::node_to_string failed in gen_svg_path() for selector, {}",
+                    "node_to_string() failed in gen_svg_path() for selector, {}",
                     e
                 )
             })?;

@@ -10,6 +10,7 @@ mod imp {
     use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
 
     use crate::audioplayer::RnoteAudioPlayer;
+    use crate::strokesstate::StateTask;
     use crate::ui::appsettings;
     use crate::{
         app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
@@ -138,6 +139,28 @@ mod imp {
         fn close_request(&self, obj: &Self::Type) -> Inhibit {
             // Setting all gstreamer pipelines state to Null
             obj.audioplayer().borrow_mut().set_states_null();
+            // Closing the state tasks channel receiver
+            if let Some(tasks_tx) = obj
+                .canvas()
+                .sheet()
+                .strokes_state()
+                .borrow()
+                .tasks_tx
+                .as_ref()
+            {
+                let _ = tasks_tx.send(StateTask::Quit);
+            }
+
+            if let Some(source) = obj
+                .canvas()
+                .sheet()
+                .strokes_state()
+                .borrow_mut()
+                .channel_source
+                .take()
+            {
+                source.destroy();
+            }
 
             if let Err(err) = obj.save_window_size() {
                 log::error!("Failed to save window state, {}", &err);
@@ -760,7 +783,7 @@ impl RnoteAppWindow {
             }
             utils::FileType::Folder => {
                 if let Some(path) = file.path() {
-                    self.workspacebrowser().set_primary_path(&path);
+                    self.workspacebrowser().set_primary_path(Some(&path));
                 }
             }
             utils::FileType::UnknownFile => {

@@ -226,7 +226,7 @@ pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
                     match dialog_open_workspace.file() {
                         Some(file) => {
                             if let Some(workspace_path) = file.path() {
-                                appwindow.workspacebrowser().set_primary_path(&workspace_path);
+                                appwindow.workspacebrowser().set_primary_path(Some(&workspace_path));
                             } else {
                                 log::error!("Can't open workspace. not a valid path.")
                             }

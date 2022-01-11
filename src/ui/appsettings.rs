@@ -236,9 +236,9 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
     // Workspace directory
     appwindow
         .workspacebrowser()
-        .set_primary_path(&path::PathBuf::from(
+        .set_primary_path(Some(&path::PathBuf::from(
             appwindow.app_settings().string("workspace-dir").as_str(),
-        ));
+        )));
 
     // color schemes
     match appwindow.app_settings().string("color-scheme").as_str() {

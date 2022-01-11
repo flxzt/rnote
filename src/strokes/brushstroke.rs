@@ -1,9 +1,9 @@
+use crate::compose::geometry;
+use crate::compose::{self, curves, solid, textured};
 use crate::drawbehaviour::DrawBehaviour;
-use crate::geometry;
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
 use crate::{
-    compose, curves,
     pens::brush::{self, Brush},
     render,
 };
@@ -53,12 +53,16 @@ impl DrawBehaviour for BrushStroke {
                     .zip(self.elements.par_iter().skip(2))
                     .zip(self.elements.par_iter().skip(3))
                     .filter_map(|(((first, second), third), forth)| {
-                        let brush_width = self.brush.width();
                         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
-                        if let Some(cubbez) =
-                            curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
-                        {
+                        let brush_width = self.brush.width();
+
+                        if let Some(cubbez) = curves::gen_cubbez_w_catmull_rom(
+                            first.inputdata.pos(),
+                            second.inputdata.pos(),
+                            third.inputdata.pos(),
+                            forth.inputdata.pos(),
+                        ) {
                             // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
                             bounds.take_point(na::Point2::<f64>::from(cubbez.start));
                             bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
@@ -69,7 +73,9 @@ impl DrawBehaviour for BrushStroke {
                             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
                             bounds = geometry::aabb_ceil(bounds);
                             Some(bounds)
-                        } else if let Some(line) = curves::gen_line(second, third) {
+                        } else if let Some(line) =
+                            curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
+                        {
                             bounds.take_point(na::Point2::<f64>::from(line.start));
                             bounds.take_point(na::Point2::<f64>::from(line.end));
                             bounds.loosen(brush_width);
@@ -305,9 +311,12 @@ impl BrushStroke {
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
-        if let Some(mut cubbez) =
-            curves::gen_cubbez_w_catmull_rom(elements.0, elements.1, elements.2, elements.3)
-        {
+        if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(
+            elements.0.inputdata.pos(),
+            elements.1.inputdata.pos(),
+            elements.2.inputdata.pos(),
+            elements.3.inputdata.pos(),
+        ) {
             cubbez.start += offset;
             cubbez.cp1 += offset;
             cubbez.cp2 += offset;
@@ -318,43 +327,40 @@ impl BrushStroke {
             bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
             bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
             bounds.take_point(na::Point2::<f64>::from(cubbez.end));
-            bounds.loosen(start_width.max(end_width));
 
             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
             bounds = geometry::aabb_ceil(bounds);
 
+            let n_splits = 5;
             // Number of splits for the bezier curve approximation
-            let lines = curves::approx_offsetted_cubbez_with_lines_w_subdivision(
-                cubbez,
-                start_width / 2.0,
-                end_width / 2.0,
-            );
-            let n_splits = lines.len() as i32;
+            let lines = curves::approx_cubbez_with_lines(cubbez, n_splits);
+            let n_lines = lines.len() as i32;
 
             for (i, line) in lines.iter().enumerate() {
                 // splitted line start / end widths are a linear interpolation between the start and end width / n splits.
                 // Not mathematically correct, TODO to carry the t of the splits through approx_offsetted_cubbez_with_lines_w_subdivion()
                 let line_start_width = start_width
-                    + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_splits));
+                    + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_lines));
                 let line_end_width = start_width
-                    + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_splits));
+                    + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_lines));
 
-                commands.append(&mut compose::compose_line_variable_width(
+                commands.append(&mut solid::compose_line_variable_width(
                     *line,
                     line_start_width,
                     line_end_width,
                     true,
                 ));
             }
-        } else if let Some(mut line) = curves::gen_line(elements.1, elements.2) {
+        } else if let Some(mut line) =
+            curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
+        {
             line.start += offset;
             line.end += offset;
 
             bounds.take_point(na::Point2::<f64>::from(line.start));
             bounds.take_point(na::Point2::<f64>::from(line.end));
-            bounds.loosen(start_width.max(end_width));
 
-            commands.append(&mut compose::compose_line_variable_width(
+            commands.append(&mut solid::compose_line_variable_width(
                 line,
                 start_width,
                 end_width,
@@ -364,6 +370,8 @@ impl BrushStroke {
             return None;
         }
 
+        bounds.loosen(start_width.max(end_width));
+
         let path = svg::node::element::Path::new()
             .set("stroke", "none")
             //.set("stroke", self.brush.color.to_css_color())
@@ -371,22 +379,19 @@ impl BrushStroke {
             .set("fill", self.brush.color.to_css_color())
             .set("d", path::Data::from(commands));
 
-        match rough_rs::node_to_string(&path) {
-            Ok(mut svg_data) => {
-                if svg_root {
-                    svg_data =
-                        compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
-                }
-                Some(render::Svg { svg_data, bounds })
-            }
-            Err(e) => {
-                log::error!(
-                    "rough_rs::node_to_string() failed in linear_svg_data() of brushstroke, {}",
+        let mut svg_data = compose::node_to_string(&path)
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "node_to_string() failed in gen_svg_elem_solid() of brushstroke with Err `{}`",
                     e
-                );
-                None
-            }
+                )
+            })
+            .ok()?;
+
+        if svg_root {
+            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
         }
+        Some(render::Svg { svg_data, bounds })
     }
 
     pub fn gen_svgs_solid(
@@ -414,49 +419,41 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Option<render::Svg> {
-        let mut commands = Vec::new();
-        let start_width = elements.0.inputdata.pressure() * self.brush.width();
-        let end_width = elements.1.inputdata.pressure() * self.brush.width();
+        let start_width = elements.1.inputdata.pressure() * self.brush.width();
+        let _end_width = elements.2.inputdata.pressure() * self.brush.width();
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
-        if let Some(mut line) = curves::gen_line(elements.1, elements.2) {
+
+        let element = if let Some(mut line) =
+            curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
+        {
             line.start += offset;
             line.end += offset;
 
             bounds.take_point(na::Point2::<f64>::from(line.start));
             bounds.take_point(na::Point2::<f64>::from(line.end));
-            bounds.loosen(start_width.max(end_width));
 
-            commands.append(&mut compose::compose_line_variable_width(
-                line,
-                start_width,
-                end_width,
-                true,
-            ));
+            textured::compose_line(line, start_width, &self.brush)
         } else {
             return None;
-        }
-        let path = svg::node::element::Path::new()
-            .set("stroke", "none")
-            .set("fill", self.brush.color.to_css_color())
-            .set("d", path::Data::from(commands));
+        };
 
-        match rough_rs::node_to_string(&path) {
-            Ok(mut svg_data) => {
-                if svg_root {
-                    svg_data =
-                        compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
-                }
-                Some(render::Svg { svg_data, bounds })
-            }
-            Err(e) => {
-                log::error!(
-                    "rough_rs::node_to_string() failed in linear_svg_data() of brushstroke, {}",
+        bounds.loosen(self.brush.width());
+
+        let mut svg_data = compose::node_to_string(&element)
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "node_to_string() failed in gen_svg_elem_textured() of brushstroke with Err `{}`",
                     e
-                );
-                None
-            }
+                )
+            })
+            .ok()?;
+
+        if svg_root {
+            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
         }
+
+        Some(render::Svg { svg_data, bounds })
     }
     pub fn gen_svgs_textured(
         &self,
@@ -490,9 +487,12 @@ impl BrushStroke {
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
-        if let Some(mut cubbez) =
-            curves::gen_cubbez_w_catmull_rom(elements.0, elements.1, elements.2, elements.3)
-        {
+        if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(
+            elements.0.inputdata.pos(),
+            elements.1.inputdata.pos(),
+            elements.2.inputdata.pos(),
+            elements.3.inputdata.pos(),
+        ) {
             cubbez.start += offset;
             cubbez.cp1 += offset;
             cubbez.cp2 += offset;
@@ -513,6 +513,7 @@ impl BrushStroke {
                 cubbez,
                 start_width / 2.0,
                 end_width / 2.0,
+                std::f64::consts::PI / 9.0,
             );
             let n_splits = lines.len() as i32;
 
@@ -523,14 +524,16 @@ impl BrushStroke {
                 let line_end_width = start_width
                     + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_splits));
 
-                commands.append(&mut compose::compose_line_variable_width(
+                commands.append(&mut solid::compose_line_variable_width(
                     *line,
                     line_start_width,
                     line_end_width,
                     true,
                 ));
             }
-        } else if let Some(mut line) = curves::gen_line(elements.1, elements.2) {
+        } else if let Some(mut line) =
+            curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
+        {
             line.start += offset;
             line.end += offset;
 
@@ -538,7 +541,7 @@ impl BrushStroke {
             bounds.take_point(na::Point2::<f64>::from(line.end));
             bounds.loosen(start_width.max(end_width));
 
-            commands.append(&mut compose::compose_line_variable_width(
+            commands.append(&mut solid::compose_line_variable_width(
                 line,
                 start_width,
                 end_width,
@@ -555,22 +558,19 @@ impl BrushStroke {
             .set("fill", self.brush.color.to_css_color())
             .set("d", path::Data::from(commands));
 
-        match rough_rs::node_to_string(&path) {
-            Ok(mut svg_data) => {
-                if svg_root {
-                    svg_data =
-                        compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
-                }
-                Some(render::Svg { svg_data, bounds })
-            }
-            Err(e) => {
-                log::error!(
-                    "rough_rs::node_to_string() failed in linear_svg_data() of brushstroke, {}",
+        let mut svg_data = compose::node_to_string(&path)
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "node_to_string() failed in gen_svg_elem_experimental() of brushstroke with Err `{}`",
                     e
-                );
-                None
-            }
+                )
+            })
+            .ok()?;
+
+        if svg_root {
+            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
         }
+        Some(render::Svg { svg_data, bounds })
     }
 
     pub fn gen_svgs_experimental(

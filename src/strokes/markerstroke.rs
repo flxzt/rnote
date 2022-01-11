@@ -1,6 +1,6 @@
+use crate::compose::{self, curves, geometry, solid};
 use crate::{
-    compose, curves, drawbehaviour::DrawBehaviour, geometry, pens::marker::Marker, render,
-    strokes::strokestyle::Element,
+    drawbehaviour::DrawBehaviour, pens::marker::Marker, render, strokes::strokestyle::Element,
 };
 use p2d::bounding_volume::BoundingVolume;
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
@@ -56,9 +56,12 @@ impl DrawBehaviour for MarkerStroke {
 
                         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
-                        if let Some(cubbez) =
-                            curves::gen_cubbez_w_catmull_rom(first, second, third, forth)
-                        {
+                        if let Some(cubbez) = curves::gen_cubbez_w_catmull_rom(
+                            first.inputdata.pos(),
+                            second.inputdata.pos(),
+                            third.inputdata.pos(),
+                            forth.inputdata.pos(),
+                        ) {
                             // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
                             bounds.take_point(na::Point2::<f64>::from(cubbez.start));
                             bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
@@ -69,7 +72,9 @@ impl DrawBehaviour for MarkerStroke {
                             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
                             bounds = geometry::aabb_ceil(bounds);
                             Some(bounds)
-                        } else if let Some(line) = curves::gen_line(second, third) {
+                        } else if let Some(line) =
+                            curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
+                        {
                             bounds.take_point(na::Point2::<f64>::from(line.start));
                             bounds.take_point(na::Point2::<f64>::from(line.end));
 
@@ -277,9 +282,12 @@ impl MarkerStroke {
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
-        if let Some(mut cubbez) =
-            curves::gen_cubbez_w_catmull_rom(elements.0, elements.1, elements.2, elements.3)
-        {
+        if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(
+            elements.0.inputdata.pos(),
+            elements.1.inputdata.pos(),
+            elements.2.inputdata.pos(),
+            elements.3.inputdata.pos(),
+        ) {
             cubbez.start += offset;
             cubbez.cp1 += offset;
             cubbez.cp2 += offset;
@@ -290,24 +298,26 @@ impl MarkerStroke {
             bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
             bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
             bounds.take_point(na::Point2::<f64>::from(cubbez.end));
-            bounds.loosen(marker_width);
 
             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
             bounds = geometry::aabb_ceil(bounds);
 
-            commands.append(&mut compose::compose_cubbez(cubbez, true));
-        } else if let Some(mut line) = curves::gen_line(elements.1, elements.2) {
+            commands.append(&mut solid::compose_cubbez(cubbez, true));
+        } else if let Some(mut line) =
+            curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
+        {
             line.start += offset;
             line.end += offset;
 
             bounds.take_point(na::Point2::<f64>::from(line.start));
             bounds.take_point(na::Point2::<f64>::from(line.end));
-            bounds.loosen(marker_width);
 
-            commands.append(&mut compose::compose_line(line, true));
+            commands.append(&mut solid::compose_line(line, true));
         } else {
             return None;
         }
+
+        bounds.loosen(marker_width);
 
         let path = svg::node::element::Path::new()
             .set("stroke", self.marker.color.to_css_color())
@@ -317,21 +327,18 @@ impl MarkerStroke {
             .set("fill", "none")
             .set("d", path::Data::from(commands));
 
-        match rough_rs::node_to_string(&path) {
-            Ok(mut svg_data) => {
-                if svg_root {
-                    svg_data =
-                        compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
-                }
-                Some(render::Svg { svg_data, bounds })
-            }
-            Err(e) => {
-                log::error!(
-                    "rough_rs::node_to_string() failed in gen_svg_elem() of brushstroke, {}",
+        let mut svg_data = compose::node_to_string(&path)
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "node_to_string() failed in gen_svg_elem() of markerstroke with Err `{}`",
                     e
-                );
-                None
-            }
+                )
+            })
+            .ok()?;
+
+        if svg_root {
+            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
         }
+        Some(render::Svg { svg_data, bounds })
     }
 }

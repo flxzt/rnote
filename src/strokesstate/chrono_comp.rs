@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use super::{StrokeKey, StrokesState};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Eq, Ord, PartialEq, PartialOrd)]
+#[serde(default)]
 pub struct ChronoComponent {
     pub t: u32,
 }

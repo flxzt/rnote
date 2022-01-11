@@ -32,6 +32,7 @@ pub fn filter_mapped_inputdata(
 
 pub fn retreive_pointer_inputdata(x: f64, y: f64) -> VecDeque<InputData> {
     let mut data_entries: VecDeque<InputData> = VecDeque::with_capacity(1);
+    //std::thread::sleep(std::time::Duration::from_millis(100));
 
     data_entries.push_back(InputData::new(
         na::vector![x, y],
@@ -48,6 +49,7 @@ pub fn retreive_stylus_inputdata(
     y: f64,
 ) -> VecDeque<InputData> {
     let mut data_entries: VecDeque<InputData> = VecDeque::new();
+    //std::thread::sleep(std::time::Duration::from_millis(100));
 
     if with_backlog {
         if let Some(backlog) = gesture_stylus.backlog() {

@@ -1,8 +1,9 @@
 use std::collections::VecDeque;
 
+use crate::compose::geometry;
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{geometry, utils};
+use crate::utils;
 
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 

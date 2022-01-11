@@ -2,8 +2,9 @@ use gtk4::{glib, gsk, Snapshot};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
+use crate::compose::geometry;
 use crate::render::Renderer;
-use crate::{compose, geometry, render, utils};
+use crate::{compose, render, utils};
 
 #[derive(
     Debug,
@@ -290,9 +291,8 @@ impl Background {
                 ));
             }
         }
-        let svg_data = rough_rs::node_to_string(&group).map_err(|e| {
-            anyhow::anyhow!("rough_rs::node_to_string() failed for background, {}", e)
-        })?;
+        let svg_data = compose::node_to_string(&group)
+            .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
 
         Ok(render::Svg { svg_data, bounds })
     }

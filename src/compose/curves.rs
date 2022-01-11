@@ -1,12 +1,25 @@
 use serde::{Deserialize, Serialize};
 
-use crate::strokes::strokestyle::Element;
+use super::shapes::Rectangle;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Line {
     pub start: na::Vector2<f64>,
     pub end: na::Vector2<f64>,
+}
+
+impl Line {
+    pub fn line_w_width_to_rect(self, width: f64) -> Rectangle {
+        let vec = self.end - self.start;
+        let magn = vec.magnitude();
+        let angle = vec.angle(&na::Vector2::<f64>::x_axis());
+
+        Rectangle {
+            shape: p2d::shape::Cuboid::new(na::vector![magn / 2.0, width / 2.0]),
+            transform: na::Isometry2::new(self.start + vec / 2.0, angle),
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
@@ -26,31 +39,9 @@ pub struct CubicBezier {
     pub end: na::Vector2<f64>,
 }
 
-#[allow(dead_code)]
-pub fn vector2_unit_tang(vec: na::Vector2<f64>) -> na::Vector2<f64> {
-    if vec.magnitude() > 0.0 {
-        vec.normalize()
-    } else {
-        na::Vector2::<f64>::from_element(0.0)
-    }
-}
-
-pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
-    let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
-
-    let normalized = if vec.magnitude() > 0.0 {
-        vec.normalize()
-    } else {
-        return na::Vector2::<f64>::from_element(0.0);
-    };
-
-    rot_90deg * normalized
-}
-
 /// Bezier Curves
 
 // Coefficient a of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-#[allow(dead_code)]
 fn quadbez_coeff_a(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
@@ -60,19 +51,16 @@ fn quadbez_coeff_a(
 }
 
 // Coefficient b of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-#[allow(dead_code)]
 fn quadbez_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }
 
 // Coefficient c of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-#[allow(dead_code)]
 fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
     p0
 }
 
 // calculating the bezier curve for t: between 0.0 and 1.0
-#[allow(dead_code)]
 fn quadbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
@@ -83,7 +71,6 @@ fn quadbez_calc(
 }
 
 // Coefficient a of quadratic bezier derivation in polynomial form: C' = a * t + b
-#[allow(dead_code)]
 fn quad_bezier_derive_coeff_a(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
@@ -93,13 +80,11 @@ fn quad_bezier_derive_coeff_a(
 }
 
 // Coefficient b of quadratic bezier derivation in polynomial form: C' = a * t + b
-#[allow(dead_code)]
 fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }
 
 // calculating the derivative of the bezier curve for t: between 0.0 and 1.0
-#[allow(dead_code)]
 fn quadbez_derive_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
@@ -160,21 +145,19 @@ fn quadbez_solve_critical_points(
 
 // See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
 pub fn gen_cubbez_w_catmull_rom(
-    first: &Element,
-    second: &Element,
-    third: &Element,
-    forth: &Element,
+    first: na::Vector2<f64>,
+    second: na::Vector2<f64>,
+    third: na::Vector2<f64>,
+    forth: na::Vector2<f64>,
 ) -> Option<CubicBezier> {
     // Tension factor (tau)
     let tension = 1.0;
 
     // Creating cubic bezier with catmull-rom
-    let start = second.inputdata.pos();
-    let cp1 =
-        second.inputdata.pos() + (third.inputdata.pos() - first.inputdata.pos()) / (6.0 * tension);
-    let cp2 =
-        third.inputdata.pos() - (forth.inputdata.pos() - second.inputdata.pos()) / (6.0 * tension);
-    let end = third.inputdata.pos();
+    let start = second;
+    let cp1 = second + (third - first) / (6.0 * tension);
+    let cp2 = third - (forth - second) / (6.0 * tension);
+    let end = third;
 
     let cubbez = CubicBezier {
         start,
@@ -192,10 +175,10 @@ pub fn gen_cubbez_w_catmull_rom(
     Some(cubbez)
 }
 
-pub fn gen_line(first: &Element, second: &Element) -> Option<Line> {
+pub fn gen_line(first: na::Vector2<f64>, second: na::Vector2<f64>) -> Option<Line> {
     let line = Line {
-        start: first.inputdata.pos(),
-        end: second.inputdata.pos(),
+        start: first,
+        end: second,
     };
 
     let start_to_end = line.end - line.start;
@@ -208,11 +191,11 @@ pub fn gen_line(first: &Element, second: &Element) -> Option<Line> {
     Some(line)
 }
 
-/// Splits quadratic bezier at angle condition ( rad ) to minimize max error when flattening the curve.
+/// Calcs quadratic bezier t at angle condition ( in rad ) to minimize max error when flattening the curve.
 /// returns the t for the angle condition. is between 0.0 and 1.0 if the condition is met and the quadbez should be splitted.
 /// See "precise offsetting of quadratic bezier curves, Section 3.3 split curve by angle"
-pub fn calc_quadbez_angle_condition(quad_to_split: QuadBezier, angle_condition: f64) -> f64 {
-    let m = angle_condition.atan();
+pub fn calc_quadbez_angle_condition(quad_to_split: QuadBezier, angle: f64) -> f64 {
+    let m = angle.tan();
 
     let a = quadbez_coeff_a(quad_to_split.start, quad_to_split.cp, quad_to_split.end);
     let b = quadbez_coeff_b(quad_to_split.start, quad_to_split.cp);
@@ -349,63 +332,51 @@ pub fn approx_offsetted_cubbez_with_lines_w_subdivision(
     cubbez: CubicBezier,
     start_offset_dist: f64,
     end_offset_dist: f64,
+    angle_split: f64,
 ) -> Vec<Line> {
-    let t = 0.5;
-    let mid_offset_dist = start_offset_dist + (end_offset_dist - start_offset_dist) * t;
-    let angle_condition = std::f64::consts::PI / 9.0;
+    let t_mid = 0.5;
+    let mid_offset_dist = start_offset_dist + (end_offset_dist - start_offset_dist) * t_mid;
     let mut lines = Vec::new();
 
-    let (first_cubic, second_cubic) = split_cubbez(cubbez, t);
+    let (first_cubic, second_cubic) = split_cubbez(cubbez, t_mid);
     let first_quad = approx_cubbez_with_quadbez(first_cubic);
     let second_quad = approx_cubbez_with_quadbez(second_cubic);
 
-    let mut quads_to_split = vec![];
+    let mut quads_to_approx = vec![];
 
     let (mut first_quads, _, _) =
         split_offsetted_quadbez_critical_points(first_quad, start_offset_dist, mid_offset_dist);
-    quads_to_split.append(&mut first_quads);
+    quads_to_approx.append(&mut first_quads);
 
     let (mut second_quads, _, _) =
         split_offsetted_quadbez_critical_points(second_quad, mid_offset_dist, end_offset_dist);
-    quads_to_split.append(&mut second_quads);
+    quads_to_approx.append(&mut second_quads);
 
-    for mut quad_to_split in quads_to_split {
-        let mut t = calc_quadbez_angle_condition(quad_to_split, angle_condition);
-
+    for mut quad_to_approx in quads_to_approx {
         // Abort after 10 iterations
         let mut i = 0;
 
         while i < 10 {
-            if !(0.0..1.0).contains(&t) {
+            let t = calc_quadbez_angle_condition(quad_to_approx, angle_split);
+
+            if (0.0..1.0).contains(&t) {
+                let (first, second) = split_quadbez(quad_to_approx, t);
+
                 lines.push(Line {
-                    start: quadbez_calc(
-                        quad_to_split.start,
-                        quad_to_split.cp,
-                        quad_to_split.end,
-                        0.0,
-                    ),
-                    end: quadbez_calc(
-                        quad_to_split.start,
-                        quad_to_split.cp,
-                        quad_to_split.end,
-                        1.0,
-                    ),
+                    start: first.start,
+                    end: first.end,
+                });
+
+                quad_to_approx = second;
+            } else {
+                lines.push(Line {
+                    start: quad_to_approx.start,
+                    end: quad_to_approx.end,
                 });
 
                 // Break if angle conditions is no longer met
                 break;
             }
-
-            let (first, second) = split_quadbez(quad_to_split, t);
-
-            lines.push(Line {
-                start: quadbez_calc(first.start, first.cp, first.end, 0.0),
-                end: quadbez_calc(first.start, first.cp, first.end, 1.0),
-            });
-
-            quad_to_split = second;
-
-            t = calc_quadbez_angle_condition(quad_to_split, angle_condition);
             i += 1;
         }
     }

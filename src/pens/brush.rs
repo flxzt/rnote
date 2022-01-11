@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 
+use crate::compose::textured;
 use crate::strokes::brushstroke::BrushStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokesstate::StrokeKey;
@@ -30,6 +31,7 @@ pub struct Brush {
     sensitivity: f64,
     pub color: utils::Color,
     style: BrushStyle,
+    pub textured_conf: textured::TexturedConfig,
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,
 }
@@ -41,6 +43,7 @@ impl Default for Brush {
             sensitivity: Self::SENSITIVITY_DEFAULT,
             color: utils::Color::from(Self::COLOR_DEFAULT),
             style: BrushStyle::default(),
+            textured_conf: textured::TexturedConfig::default(),
             current_stroke: None,
         }
     }

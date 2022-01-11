@@ -1,7 +1,8 @@
 use std::io;
 
+use crate::compose::geometry;
 use crate::drawbehaviour::DrawBehaviour;
-use crate::{compose, geometry, render};
+use crate::{compose, render};
 use anyhow::Context;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};

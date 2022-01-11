@@ -8,7 +8,7 @@ use gtk4::{
     Native, Snapshot, Widget,
 };
 
-use crate::{compose, geometry};
+use crate::compose::{self, geometry};
 
 #[derive(Debug, Clone)]
 pub enum RendererBackend {
@@ -296,7 +296,6 @@ pub fn draw_svgs_to_cairo_context(
     Ok(())
 }
 
-#[allow(dead_code)]
 fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow::Error> {
     if svg.bounds.extents()[0] < 0.0 || svg.bounds.extents()[1] < 0.0 {
         return Err(anyhow::anyhow!(

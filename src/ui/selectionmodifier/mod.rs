@@ -76,7 +76,7 @@ pub mod imp {
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use gtk4::{EventSequenceState, GestureDrag, PropagationPhase};
 
-use crate::geometry;
+use crate::compose::geometry;
 use crate::{ui::appwindow::RnoteAppWindow, ui::selectionmodifier::modifiernode::ModifierNode};
 
 glib::wrapper! {

@@ -6,11 +6,12 @@ mod imp {
 
     use super::canvaslayout::CanvasLayout;
     use super::debug;
+    use crate::compose::geometry;
+    use crate::config;
     use crate::pens::penbehaviour::PenBehaviour;
     use crate::pens::{PenStyle, Pens};
     use crate::sheet::Sheet;
     use crate::ui::selectionmodifier::SelectionModifier;
-    use crate::{config, geometry};
 
     use gtk4::{
         gdk, glib, graphene, gsk, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
@@ -570,13 +571,14 @@ mod imp {
 }
 
 use crate::audioplayer::RnoteAudioPlayer;
+use crate::compose::geometry;
+use crate::input;
 use crate::pens::penbehaviour::PenBehaviour;
 use crate::strokes::strokestyle::InputData;
 use crate::ui::selectionmodifier::SelectionModifier;
 use crate::{
     app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow,
 };
-use crate::{geometry, input};
 
 use std::cell::RefCell;
 use std::collections::VecDeque;
@@ -1295,7 +1297,7 @@ impl Canvas {
 pub mod debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
 
-    use crate::geometry;
+    use crate::compose::geometry;
 
     pub const COLOR_POS: gdk::RGBA = gdk::RGBA {
         red: 1.0,

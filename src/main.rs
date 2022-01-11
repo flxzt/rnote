@@ -1,11 +1,11 @@
 #![warn(missing_debug_implementations)]
+#![allow(dead_code)]
+
 pub mod app;
 pub mod audioplayer;
 pub mod compose;
 pub mod config;
-pub mod curves;
 pub mod drawbehaviour;
-pub mod geometry;
 pub mod globals;
 pub mod input;
 pub mod pens;

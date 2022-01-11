@@ -1,8 +1,9 @@
+use crate::compose::geometry;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::shaper::{self, DrawStyle};
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
-use crate::{geometry, render};
+use crate::{compose, render};
 use crate::{pens::shaper::CurrentShape, pens::shaper::Shaper};
 
 use p2d::bounding_volume::BoundingVolume;
@@ -98,8 +99,6 @@ impl DrawBehaviour for ShapeStroke {
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let mut svg_data = String::new();
-
         let element: svg::node::element::Element = match self.shape_style {
             ShapeStyle::Line { ref start, ref end } => match self.shaper.drawstyle {
                 shaper::DrawStyle::Smooth => {
@@ -251,14 +250,12 @@ impl DrawBehaviour for ShapeStroke {
             },
         };
 
-        svg_data += rough_rs::node_to_string(&element)
-            .map_err(|e| {
-                anyhow::anyhow!(
-                    "rough_rs::node_to_string() failed in gen_svg_data() for a shapestroke, {}",
-                    e
-                )
-            })?
-            .as_str();
+        let svg_data = compose::node_to_string(&element).map_err(|e| {
+            anyhow::anyhow!(
+                "node_to_string() failed in gen_svg_data() for a shapestroke, {}",
+                e
+            )
+        })?;
 
         let svg = render::Svg {
             bounds: self.bounds,

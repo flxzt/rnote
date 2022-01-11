@@ -63,7 +63,7 @@ mod imp {
                 clone!(@weak obj => move |_workspace_pathup_button| {
                         if let Some(current_path) = obj.primary_path() {
                             if let Some(parent_path) = current_path.parent() {
-                                obj.set_primary_path(parent_path);
+                                obj.set_primary_path(Some(parent_path));
                             }
                         }
                 }),
@@ -142,14 +142,6 @@ impl WorkspaceBrowser {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "open-workspace", None);
             }),
         );
-
-        priv_.primary_dirlist.connect_file_notify(clone!(@weak appwindow => move |primary_dirlist| {
-            if let Some(file) = primary_dirlist.file() {
-                if let Some(path) = file.path() {
-                    appwindow.app_settings().set_string("workspace-dir", &path.to_string_lossy()).unwrap();
-                }
-            }
-        }));
 
         priv_
             .primary_dirlist
@@ -352,12 +344,22 @@ impl WorkspaceBrowser {
         }));
 
         priv_.primary_dirlist.connect_file_notify(
-            clone!(@weak filefilter, @weak alphanumeric_sorter => move |_| {
+            clone!(@weak appwindow, @weak filefilter, @weak alphanumeric_sorter => move |primary_dirlist| {
+                if let Some(file) = primary_dirlist.file() {
+                    if let Some(path) = file.path() {
+                        appwindow.app_settings().set_string("workspace-dir", &path.to_string_lossy()).unwrap();
+                    }
+                }
 
                 alphanumeric_sorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }),
         );
+
+        priv_.primary_dirlist.connect_items_changed(clone!(@weak filefilter, @weak alphanumeric_sorter => move |_primary_dirlist, _position, _removed, _added| {
+                alphanumeric_sorter.changed(SorterChange::Different);
+                filefilter.changed(FilterChange::Different);
+        }));
     }
 
     pub fn primary_path(&self) -> Option<PathBuf> {
@@ -370,17 +372,10 @@ impl WorkspaceBrowser {
         }
     }
 
-    pub fn set_primary_path(&self, path: &Path) {
+    pub fn set_primary_path(&self, path: Option<&Path>) {
         let priv_ = imp::WorkspaceBrowser::from_instance(self);
+        let path = path.map(|path| gio::File::for_path(path));
 
-        priv_
-            .primary_dirlist
-            .set_file(Some(&gio::File::for_path(path)));
-    }
-
-    pub fn remove_primary_path(&self) {
-        let priv_ = imp::WorkspaceBrowser::from_instance(self);
-
-        priv_.primary_dirlist.set_file(None as Option<&gio::File>);
+        priv_.primary_dirlist.set_file(path.as_ref());
     }
 }

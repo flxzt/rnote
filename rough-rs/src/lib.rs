@@ -1,4 +1,5 @@
 #![warn(missing_docs)]
+#![allow(dead_code)]
 
 //! The rough-rs crate.
 //!
@@ -6,7 +7,6 @@
 //!
 //! Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
 //! The library defines primitives to draw lines, curves, arcs, polygons, circles, and ellipses. It also supports drawing SVG paths.
-use std::io;
 
 /// The generator module
 pub mod generator;
@@ -24,7 +24,7 @@ where
     N: svg::Node,
 {
     let mut document_buffer = Vec::<u8>::new();
-    svg::write(io::BufWriter::new(&mut document_buffer), node)?;
+    svg::write(&mut document_buffer, node)?;
     Ok(String::from_utf8(document_buffer)?)
 }
 

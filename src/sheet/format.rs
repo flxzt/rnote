@@ -156,7 +156,7 @@ use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 
-use crate::geometry;
+use crate::compose::geometry;
 use crate::ui::appwindow::RnoteAppWindow;
 
 glib::wrapper! {

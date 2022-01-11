@@ -1,4 +1,5 @@
-use crate::{geometry, render};
+use crate::compose::geometry;
+use crate::render;
 
 use p2d::bounding_volume::BoundingVolume;
 
@@ -9,6 +10,7 @@ pub trait DrawBehaviour {
     /// sets the bounds of this stroke
     fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB);
     /// generates the bounds of this stroke
+    /// Implementation may implement a more efficient way of generating the bounds, without generating every Svg
     fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
         if let Ok(svgs) = self.gen_svgs(na::vector![0.0, 0.0]) {
             let mut svgs_iter = svgs.iter();

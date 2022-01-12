@@ -105,7 +105,6 @@
                 {
                     "type": "git",
                     "url": "https://gitlab.gnome.org/GNOME/gtk.git",
-                    "branch": "main",
                     "commit": "45d6b3ba51d54106076a4f4310c7502f87ee767d"
                 }
             ]

@@ -56,25 +56,29 @@
             ]
         },
         {
-            "name" : "libsass",
-            "buildsystem" : "meson",
-            "cleanup": ["*"],
-            "sources" : [
+            "name": "libsass",
+            "buildsystem": "meson",
+            "cleanup": [
+                "*"
+            ],
+            "sources": [
                 {
-                    "type" : "git",
-                    "url" : "https://github.com/lazka/libsass.git",
+                    "type": "git",
+                    "url": "https://github.com/lazka/libsass.git",
                     "commit": "302397c0c8ae2d7ab02f45ea461c2c3d768f248e"
                 }
             ]
         },
         {
-            "name" : "sassc",
-            "buildsystem" : "meson",
-            "cleanup": ["*"],
-            "sources" : [
+            "name": "sassc",
+            "buildsystem": "meson",
+            "cleanup": [
+                "*"
+            ],
+            "sources": [
                 {
-                    "type" : "git",
-                    "url" : "https://github.com/lazka/sassc.git",
+                    "type": "git",
+                    "url": "https://github.com/lazka/sassc.git",
                     "commit": "82803377c33247265d779af034eceb5949e78354"
                 }
             ]
@@ -93,15 +97,16 @@
         {
             "name": "gtk",
             "buildsystem": "meson",
-            "config-opts" : [
-                    "-Dbuild-examples=false",
-                    "-Dbuild-tests=false"
+            "config-opts": [
+                "-Dbuild-examples=false",
+                "-Dbuild-tests=false"
             ],
             "sources": [
                 {
-                  "type": "git",
-                  "url": "https://gitlab.gnome.org/GNOME/gtk.git",
-                  "commit" : "21d40fc0386794a5c4991ce8f5eeba96cdf23884"
+                    "type": "git",
+                    "url": "https://gitlab.gnome.org/GNOME/gtk.git",
+                    "branch": "main",
+                    "commit": "45d6b3ba51d54106076a4f4310c7502f87ee767d"
                 }
             ]
         },
@@ -116,9 +121,9 @@
             ],
             "sources": [
                 {
-                  "type": "archive",
-                  "url": "https://download.gnome.org/sources/libadwaita/1.0/libadwaita-1.0.1.tar.xz",
-                  "sha256" : "bb49cf5a09d2e8bc144946c2c3272aecd611667fd027f3808b95d7101ed473d6"
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/libadwaita/1.0/libadwaita-1.0.1.tar.xz",
+                    "sha256": "bb49cf5a09d2e8bc144946c2c3272aecd611667fd027f3808b95d7101ed473d6"
                 }
             ]
         },

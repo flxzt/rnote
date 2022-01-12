@@ -73,9 +73,9 @@ pub fn random_u64_full(seed: Option<u64>) -> u64 {
 /// Random i32 with full number range
 pub fn random_i32_full(seed: Option<u64>) -> i32 {
     let mut rng = if let Some(seed) = seed {
-        rand::rngs::StdRng::seed_from_u64(seed)
+        rand_pcg::Pcg64::seed_from_u64(seed)
     } else {
-        rand::rngs::StdRng::from_entropy()
+        rand_pcg::Pcg64::from_entropy()
     };
     rng.gen()
 }
@@ -83,9 +83,9 @@ pub fn random_i32_full(seed: Option<u64>) -> i32 {
 /// Random f64 between 0.0 and 1.0
 fn random_f64_0to1(seed: Option<u64>) -> f64 {
     let mut rng = if let Some(seed) = seed {
-        rand::rngs::StdRng::seed_from_u64(seed)
+        rand_pcg::Pcg64::seed_from_u64(seed)
     } else {
-        rand::rngs::StdRng::from_entropy()
+        rand_pcg::Pcg64::from_entropy()
     };
     rng.gen_range(0.0..1.0)
 }

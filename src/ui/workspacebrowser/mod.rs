@@ -354,7 +354,6 @@ impl WorkspaceBrowser {
         );
 
         priv_.primary_dirlist.connect_items_changed(clone!(@weak filefilter, @weak multisorter => move |_primary_dirlist, _position, _removed, _added| {
-            log::debug!("signal `items-changed` emitted in primary_dirlist of workspacebrowser.");
             multisorter.changed(SorterChange::Different);
             filefilter.changed(FilterChange::Different);
         }));

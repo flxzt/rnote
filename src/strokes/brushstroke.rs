@@ -293,7 +293,8 @@ impl BrushStroke {
     ) -> Result<Option<render::Svg>, anyhow::Error> {
         let mut seed = self.seed;
 
-        for _ in 0..self.elements.len() {
+        // Advance the seed (skip first three elements) so that stroke keeps generating the same patterns
+        for _ in 3..self.elements.len() {
             seed = seed.map(|seed| utils::seed_advance(seed));
         }
 

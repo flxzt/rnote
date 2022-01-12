@@ -34,7 +34,7 @@ pub fn compose_line(line: curves::Line, width: f64, brush: &Brush) -> Element {
     let vec = line.end - line.start;
     let radii = (na::Rotation2::<f64>::new(
         rng.gen_range(range_rot) + vec.angle(&na::Vector2::<f64>::x_axis()),
-    ) * na::vector![1.0, 0.1])
+    ) * na::vector![1.0, 0.3])
     .abs();
 
     let mut group = element::Group::new();

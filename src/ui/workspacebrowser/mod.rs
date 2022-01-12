@@ -329,7 +329,7 @@ impl WorkspaceBrowser {
             .get()
             .set_model(Some(&primary_selection_model));
 
-        priv_.primary_list.get().connect_activate(clone!(@weak filefilter, @weak alphanumeric_sorter, @weak appwindow => move |primary_list, position| {
+        priv_.primary_list.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |primary_list, position| {
             let model = primary_list.model().expect("model for primary_list does not exist.");
             let fileinfo = model.item(position).expect("selected item in primary_list does not exist.").downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
@@ -339,26 +339,27 @@ impl WorkspaceBrowser {
                 appwindow.open_file_w_dialogs(&file, None);
             };
 
-            alphanumeric_sorter.changed(SorterChange::Different);
+            multisorter.changed(SorterChange::Different);
             filefilter.changed(FilterChange::Different);
         }));
 
         priv_.primary_dirlist.connect_file_notify(
-            clone!(@weak appwindow, @weak filefilter, @weak alphanumeric_sorter => move |primary_dirlist| {
+            clone!(@weak appwindow, @weak filefilter, @weak multisorter => move |primary_dirlist| {
                 if let Some(file) = primary_dirlist.file() {
                     if let Some(path) = file.path() {
                         appwindow.app_settings().set_string("workspace-dir", &path.to_string_lossy()).unwrap();
                     }
                 }
 
-                alphanumeric_sorter.changed(SorterChange::Different);
+                multisorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }),
         );
 
-        priv_.primary_dirlist.connect_items_changed(clone!(@weak filefilter, @weak alphanumeric_sorter => move |_primary_dirlist, _position, _removed, _added| {
-                alphanumeric_sorter.changed(SorterChange::Different);
-                filefilter.changed(FilterChange::Different);
+        priv_.primary_dirlist.connect_items_changed(clone!(@weak filefilter, @weak multisorter => move |_primary_dirlist, _position, _removed, _added| {
+            dbg!("changed");
+            multisorter.changed(SorterChange::Different);
+            filefilter.changed(FilterChange::Different);
         }));
     }
 

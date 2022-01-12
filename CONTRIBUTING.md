@@ -10,6 +10,7 @@ Use Gnome Builder or vscode with the flatpak extension to build and run the appl
 
 - If you encounter `bwrap: Can't find source path /run/user/1000/doc/by-app/com.github.flxzt.rnote: No such file or directory` when trying to run the flatpak, `xdg-document-portal` did not start yet. Starting it manually with `systemctl start --user xdg-document-portal` should fix it.
 
+- As long as the flatpak is not installed on the system, The DirectoryList in the workspace browser does not update when files are created, removed or changed. It will work in the released flatpak.
 --- 
 
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:

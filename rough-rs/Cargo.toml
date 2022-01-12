@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 rand = "0.8"
+rand_pcg = "0.3"
 svg = "0.10"
 anyhow = "1.0"
 serde = {version = "1.0", features = ["derive"]}

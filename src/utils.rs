@@ -1,12 +1,14 @@
+use crate::config;
+
 use flate2::read::MultiGzDecoder;
 use flate2::{Compression, GzBuilder};
 use gtk4::{gdk, gio, glib, prelude::*};
+use rand::distributions::uniform::{SampleRange, SampleUniform};
+use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
-
-use crate::config;
 
 #[derive(Copy, Clone, Debug, glib::GBoxed)]
 #[gboxed(type_name = "BoxedPos")]
@@ -222,7 +224,6 @@ pub fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error>
     Ok(bytes)
 }
 
-
 pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
     let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
     if let Ok(handle) = librsvg::Loader::new()
@@ -245,4 +246,27 @@ pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
 
 pub fn str_to_file(string: &str, file_path: &str) -> Result<(), anyhow::Error> {
     Ok(fs::write(PathBuf::from(file_path), string)?)
+}
+
+/// Ran
+pub fn seed_advance(seed: u64) -> u64 {
+    let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
+    rng.gen()
+}
+
+/// advancing the seed and returning random value from the range
+pub fn rand_range_advance<T, R>(seed: &mut Option<u64>, range: R) -> T
+where
+    T: SampleUniform,
+    R: SampleRange<T>,
+{
+    let mut rng = if let Some(seed) = seed {
+        let mut rng = rand_pcg::Pcg64::seed_from_u64(*seed);
+        *seed = rng.gen();
+        rng
+    } else {
+        rand_pcg::Pcg64::from_entropy()
+    };
+
+    rng.gen_range(range)
 }

@@ -335,16 +335,16 @@ impl StrokeBehaviour for ShapeStroke {
             } => match self.shaper.drawstyle {
                 DrawStyle::Smooth => {
                     *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                        + na::Vector2::<f64>::from_element(self.shaper.width());
+                        + na::Vector2::from_element(self.shaper.width());
                     *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                        - na::Vector2::<f64>::from_element(self.shaper.width());
+                        - na::Vector2::from_element(self.shaper.width());
                 }
                 DrawStyle::Rough => {
                     *start = na::vector![new_bounds.mins[0], new_bounds.mins[1]]
-                        + na::Vector2::<f64>::from_element(self.shaper.width())
+                        + na::Vector2::from_element(self.shaper.width())
                         + na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
                     *end = na::vector![new_bounds.maxs[0], new_bounds.maxs[1]]
-                        - na::Vector2::<f64>::from_element(self.shaper.width())
+                        - na::Vector2::from_element(self.shaper.width())
                         - na::Vector2::from_element(DrawStyle::ROUGH_MARGIN);
                 }
             },

@@ -7,7 +7,7 @@ pub fn vector2_unit_tang(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     if vec.magnitude() > 0.0 {
         vec.normalize()
     } else {
-        na::Vector2::<f64>::from_element(0.0)
+        na::Vector2::from_element(0.0)
     }
 }
 
@@ -17,14 +17,14 @@ pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     let normalized = if vec.magnitude() > 0.0 {
         vec.normalize()
     } else {
-        return na::Vector2::<f64>::from_element(0.0);
+        return na::Vector2::from_element(0.0);
     };
 
     rot_90deg * normalized
 }
 
 pub fn default_cuboid() -> p2d::shape::Cuboid {
-    p2d::shape::Cuboid::new(na::Vector2::<f64>::zeros())
+    p2d::shape::Cuboid::new(na::Vector2::zeros())
 }
 
 pub fn default_isometry() -> na::Isometry2<f64> {
@@ -238,8 +238,8 @@ pub fn aabb_clamp(
 /// Scale a aabb by the zoom
 pub fn aabb_scale(aabb: p2d::bounding_volume::AABB, zoom: f64) -> p2d::bounding_volume::AABB {
     p2d::bounding_volume::AABB::new(
-        na::Point2::<f64>::from(na::vector![aabb.mins[0], aabb.mins[1]].scale(zoom)),
-        na::Point2::<f64>::from(na::vector![aabb.maxs[0], aabb.maxs[1]].scale(zoom)),
+        na::Point2::from(na::vector![aabb.mins[0], aabb.mins[1]].scale(zoom)),
+        na::Point2::from(na::vector![aabb.maxs[0], aabb.maxs[1]].scale(zoom)),
     )
 }
 

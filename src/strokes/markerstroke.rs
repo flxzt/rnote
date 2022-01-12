@@ -42,7 +42,7 @@ impl DrawBehaviour for MarkerStroke {
     fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
         if let Some(&first) = self.elements.iter().peekable().peek() {
             let mut bounds = p2d::bounding_volume::AABB::new_invalid();
-            bounds.take_point(na::Point2::<f64>::from(first.inputdata.pos()));
+            bounds.take_point(na::Point2::from(first.inputdata.pos()));
 
             bounds.merge(
                 &self
@@ -63,10 +63,10 @@ impl DrawBehaviour for MarkerStroke {
                             forth.inputdata.pos(),
                         ) {
                             // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-                            bounds.take_point(na::Point2::<f64>::from(cubbez.start));
-                            bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
-                            bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
-                            bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+                            bounds.take_point(na::Point2::from(cubbez.start));
+                            bounds.take_point(na::Point2::from(cubbez.cp1));
+                            bounds.take_point(na::Point2::from(cubbez.cp2));
+                            bounds.take_point(na::Point2::from(cubbez.end));
 
                             bounds.loosen(marker_width);
                             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
@@ -75,8 +75,8 @@ impl DrawBehaviour for MarkerStroke {
                         } else if let Some(line) =
                             curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
                         {
-                            bounds.take_point(na::Point2::<f64>::from(line.start));
-                            bounds.take_point(na::Point2::<f64>::from(line.end));
+                            bounds.take_point(na::Point2::from(line.start));
+                            bounds.take_point(na::Point2::from(line.end));
 
                             bounds.loosen(marker_width);
                             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
@@ -294,10 +294,10 @@ impl MarkerStroke {
             cubbez.end += offset;
 
             // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-            bounds.take_point(na::Point2::<f64>::from(cubbez.start));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+            bounds.take_point(na::Point2::from(cubbez.start));
+            bounds.take_point(na::Point2::from(cubbez.cp1));
+            bounds.take_point(na::Point2::from(cubbez.cp2));
+            bounds.take_point(na::Point2::from(cubbez.end));
 
             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
             bounds = geometry::aabb_ceil(bounds);
@@ -309,8 +309,8 @@ impl MarkerStroke {
             line.start += offset;
             line.end += offset;
 
-            bounds.take_point(na::Point2::<f64>::from(line.start));
-            bounds.take_point(na::Point2::<f64>::from(line.end));
+            bounds.take_point(na::Point2::from(line.start));
+            bounds.take_point(na::Point2::from(line.end));
 
             commands.append(&mut solid::compose_line(line, true));
         } else {

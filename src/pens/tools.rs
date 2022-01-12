@@ -132,8 +132,8 @@ pub struct DragProximityTool {
 impl Default for DragProximityTool {
     fn default() -> Self {
         Self {
-            pos: na::Vector2::<f64>::zeros(),
-            offset: na::Vector2::<f64>::zeros(),
+            pos: na::Vector2::zeros(),
+            offset: na::Vector2::zeros(),
             radius: Self::RADIUS_DEFAULT,
         }
     }
@@ -170,10 +170,10 @@ impl DragProximityTool {
             na::vector![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
             na::vector![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
         );
-        draw_bounds.take_point(na::Point2::<f64>::from(
+        draw_bounds.take_point(na::Point2::from(
             self.pos.add_scalar(-Self::OUTLINE_WIDTH),
         ));
-        draw_bounds.take_point(na::Point2::<f64>::from(
+        draw_bounds.take_point(na::Point2::from(
             self.pos.add_scalar(Self::OUTLINE_WIDTH),
         ));
 
@@ -236,7 +236,7 @@ impl PenBehaviour for Tools {
                 }
                 ToolStyle::DragProximity => {
                     self.drag_proximity_tool.pos = inputdata.pos();
-                    self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
+                    self.drag_proximity_tool.offset = na::Vector2::zeros();
                 }
             }
         }
@@ -277,7 +277,7 @@ impl PenBehaviour for Tools {
                             .drag_strokes_proximity(&self.drag_proximity_tool);
 
                         self.drag_proximity_tool.pos = inputdata.pos();
-                        self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
+                        self.drag_proximity_tool.offset = na::Vector2::zeros();
                     }
                 }
             }
@@ -295,8 +295,8 @@ impl PenBehaviour for Tools {
                 self.expand_sheet_tool.y_current_pos = 0.0;
             }
             ToolStyle::DragProximity => {
-                self.drag_proximity_tool.pos = na::Vector2::<f64>::zeros();
-                self.drag_proximity_tool.offset = na::Vector2::<f64>::zeros();
+                self.drag_proximity_tool.pos = na::Vector2::zeros();
+                self.drag_proximity_tool.offset = na::Vector2::zeros();
             }
         }
 

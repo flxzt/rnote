@@ -10,8 +10,6 @@ mod imp {
     use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
 
     use crate::audioplayer::RnoteAudioPlayer;
-    use crate::strokesstate::StateTask;
-    use crate::ui::appsettings;
     use crate::{
         app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
         ui::mainheader::MainHeader, ui::penssidebar::PensSideBar, ui::settingspanel::SettingsPanel,
@@ -137,39 +135,6 @@ mod imp {
     impl WindowImpl for RnoteAppWindow {
         // Save window state right before the window will be closed
         fn close_request(&self, obj: &Self::Type) -> Inhibit {
-            // Setting all gstreamer pipelines state to Null
-            obj.audioplayer().borrow_mut().set_states_null();
-            // Closing the state tasks channel receiver
-            if let Some(tasks_tx) = obj
-                .canvas()
-                .sheet()
-                .strokes_state()
-                .borrow()
-                .tasks_tx
-                .as_ref()
-            {
-                let _ = tasks_tx.send(StateTask::Quit);
-            }
-
-            if let Some(source) = obj
-                .canvas()
-                .sheet()
-                .strokes_state()
-                .borrow_mut()
-                .channel_source
-                .take()
-            {
-                source.destroy();
-            }
-
-            if let Err(err) = obj.save_window_size() {
-                log::error!("Failed to save window state, {}", &err);
-            }
-
-            if let Err(err) = appsettings::save_state_to_settings(obj) {
-                log::error!("Failed to save app state, {}", &err);
-            }
-
             // Save current sheet
             if obj
                 .application()
@@ -180,8 +145,9 @@ mod imp {
             {
                 dialogs::dialog_quit_save(obj);
             } else {
-                obj.destroy();
+                obj.close();
             }
+
             // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
             Inhibit(true)
         }
@@ -344,6 +310,7 @@ use crate::{
     app::RnoteApp,
     audioplayer::RnoteAudioPlayer,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
+    strokesstate::StateTask,
     ui::canvas::Canvas,
     ui::develactions::DevelActions,
     ui::settingspanel::SettingsPanel,
@@ -365,6 +332,47 @@ impl RnoteAppWindow {
 
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
+    }
+
+    /// Called to close the window
+    pub fn close(&self) {
+        // Saving the window size
+        if let Err(err) = self.save_window_size() {
+            log::error!("Failed to save window state, {}", &err);
+        }
+
+        // Saving all state
+        if let Err(err) = appsettings::save_state_to_settings(self) {
+            log::error!("Failed to save app state, {}", &err);
+        }
+
+        // Setting all gstreamer pipelines state to Null
+        self.audioplayer().borrow_mut().set_states_null();
+
+        // Closing the state tasks channel receiver
+        if let Some(tasks_tx) = self
+            .canvas()
+            .sheet()
+            .strokes_state()
+            .borrow()
+            .tasks_tx
+            .as_ref()
+        {
+            let _ = tasks_tx.send(StateTask::Quit);
+        }
+
+        if let Some(source) = self
+            .canvas()
+            .sheet()
+            .strokes_state()
+            .borrow_mut()
+            .channel_source
+            .take()
+        {
+            source.destroy();
+        }
+
+        self.destroy();
     }
 
     pub fn app_settings(&self) -> &gio::Settings {

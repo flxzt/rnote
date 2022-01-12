@@ -1,8 +1,7 @@
-use crate::pens::brush::Brush;
+use crate::utils;
 
 use super::curves;
 
-use rand::Rng;
 use serde::{Deserialize, Serialize};
 use svg::node::element::{self, Element};
 
@@ -11,39 +10,43 @@ use svg::node::element::{self, Element};
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default)]
 pub struct TexturedConfig {
+    pub seed: Option<u64>,
     /// Amount dots per square dot area
-    density: f64,
+    pub density: f64,
+    pub color: utils::Color,
 }
 
 impl Default for TexturedConfig {
     fn default() -> Self {
-        Self { density: 0.5 }
+        Self {
+            seed: None,
+            density: 0.5,
+            color: utils::Color::black(),
+        }
     }
 }
 
-pub fn compose_line(line: curves::Line, width: f64, brush: &Brush) -> Element {
-    let mut rng = rand::thread_rng();
-
+pub fn compose_line(line: curves::Line, width: f64, config: &mut TexturedConfig) -> Element {
     let rect = line.line_w_width_to_rect(width);
     let area = 4.0 * rect.shape.half_extents[0] * rect.shape.half_extents[1];
     let range_x = -rect.shape.half_extents[0]..rect.shape.half_extents[0];
     let range_y = -rect.shape.half_extents[1]..rect.shape.half_extents[1];
-    let range_rot = -std::f64::consts::FRAC_PI_4..std::f64::consts::FRAC_PI_4;
+    let range_rot = -std::f64::consts::FRAC_PI_8..std::f64::consts::FRAC_PI_8;
 
-    let n_dots = (area * brush.textured_conf.density).round() as i32;
+    let n_dots = (area * config.density).round() as i32;
     let vec = line.end - line.start;
-    let radii = (na::Rotation2::<f64>::new(
-        rng.gen_range(range_rot) + vec.angle(&na::Vector2::<f64>::x_axis()),
-    ) * na::vector![1.0, 0.3])
-    .abs();
+
+    let radii_angle = na::Vector2::x().angle(&vec)
+        + utils::rand_range_advance(&mut config.seed, range_rot);
+    let radii = (na::Rotation2::new(radii_angle) * na::vector![0.5, 0.07]).abs();
 
     let mut group = element::Group::new();
 
     for _ in 0..n_dots {
         let pos = rect.transform
             * na::point![
-                rng.gen_range(range_x.clone()),
-                rng.gen_range(range_y.clone())
+                utils::rand_range_advance(&mut config.seed, range_x.clone()),
+                utils::rand_range_advance(&mut config.seed, range_y.clone())
             ];
 
         let ellipse = element::Ellipse::new()
@@ -51,8 +54,7 @@ pub fn compose_line(line: curves::Line, width: f64, brush: &Brush) -> Element {
             .set("cy", pos[1])
             .set("rx", radii[0])
             .set("ry", radii[1])
-            .set("fill", brush.color.to_css_color())
-            .set("stroke", brush.color.to_css_color());
+            .set("fill", config.color.to_css_color());
 
         group = group.add(ellipse);
     }

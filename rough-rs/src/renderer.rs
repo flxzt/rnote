@@ -3,7 +3,7 @@ use svg::node::element::path;
 
 fn offset(min: f64, max: f64, options: &mut Options, roughness_gain: Option<f64>) -> f64 {
     let roughness_gain = roughness_gain.unwrap_or(1.0);
-    options.roughness * roughness_gain * (utils::random_next(options) * (max - min) + min)
+    options.roughness * roughness_gain * (utils::rand_f64_0to1_next(options) * (max - min) + min)
 }
 
 fn offset_opt(x: f64, options: &mut Options, roughness_gain: Option<f64>) -> f64 {
@@ -33,7 +33,7 @@ pub(crate) fn line(
     };
     let half_offset = offset * 0.5;
 
-    let diverge_point = 0.2 + utils::random_f64_0to1(options.seed) * 0.2;
+    let diverge_point = 0.2 + utils::rand_f64_0to1_next(options) * 0.2;
 
     let mid_disp_x = options.bowing * options.max_randomness_offset * (end[1] - start[1]) / 200.0;
     let mid_disp_y = options.bowing * options.max_randomness_offset * (start[0] - end[0]) / 200.0;

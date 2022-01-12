@@ -63,9 +63,9 @@ impl Color {
 /// Random u64 with full number range
 pub fn random_u64_full(seed: Option<u64>) -> u64 {
     let mut rng = if let Some(seed) = seed {
-        rand::rngs::StdRng::seed_from_u64(seed)
+        rand_pcg::Pcg64::seed_from_u64(seed)
     } else {
-        rand::rngs::StdRng::from_entropy()
+        rand_pcg::Pcg64::from_entropy()
     };
     rng.gen()
 }
@@ -81,7 +81,7 @@ pub fn random_i32_full(seed: Option<u64>) -> i32 {
 }
 
 /// Random f64 between 0.0 and 1.0
-pub fn random_f64_0to1(seed: Option<u64>) -> f64 {
+fn random_f64_0to1(seed: Option<u64>) -> f64 {
     let mut rng = if let Some(seed) = seed {
         rand::rngs::StdRng::seed_from_u64(seed)
     } else {
@@ -91,7 +91,7 @@ pub fn random_f64_0to1(seed: Option<u64>) -> f64 {
 }
 
 /// returning random f64 from 0.0 to 1.0 created from seed and advancing it
-pub fn random_next(options: &mut Options) -> f64 {
+pub fn rand_f64_0to1_next(options: &mut Options) -> f64 {
     if let Some(ref mut seed) = options.seed {
         *seed = random_u64_full(Some(*seed));
     };

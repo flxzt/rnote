@@ -169,7 +169,7 @@ impl Default for Background {
                 a: 1.0,
             },
             pattern: PatternStyle::default(),
-            pattern_size: na::Vector2::<f64>::from_element(Self::PATTERN_SIZE_DEFAULT),
+            pattern_size: na::Vector2::from_element(Self::PATTERN_SIZE_DEFAULT),
             pattern_color: utils::Color {
                 r: 0.3,
                 g: 0.7,
@@ -229,7 +229,7 @@ impl Background {
     pub fn tile_size(&self) -> na::Vector2<f64> {
         // Calculate tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
         let tile_factor =
-            na::Vector2::<f64>::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
+            na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
         let tile_width = if tile_factor[0] > 1.0 {
             tile_factor[0].floor() * self.pattern_size[0]

@@ -668,7 +668,7 @@ impl StrokesState {
 
     pub fn drag_strokes_proximity(&mut self, drag_proximity_tool: &DragProximityTool) {
         let sphere = p2d::bounding_volume::BoundingSphere {
-            center: na::Point2::<f64>::from(drag_proximity_tool.pos),
+            center: na::Point2::from(drag_proximity_tool.pos),
             radius: drag_proximity_tool.radius,
         };
         let tool_bounds = geometry::aabb_new_positive(
@@ -689,7 +689,7 @@ impl StrokesState {
                 StrokeStyle::MarkerStroke(markerstroke) => {
                     if markerstroke.bounds().intersects(&tool_bounds) {
                         markerstroke.elements.iter_mut().for_each(|element| {
-                            if sphere.contains_local_point(&na::Point2::<f64>::from(
+                            if sphere.contains_local_point(&na::Point2::from(
                                 element.inputdata.pos(),
                             )) {
                                 // Zero when right at drag_proximity_tool position, One when right at the radius
@@ -713,7 +713,7 @@ impl StrokesState {
                 StrokeStyle::BrushStroke(brushstroke) => {
                     if brushstroke.bounds().intersects(&tool_bounds) {
                         brushstroke.elements.iter_mut().for_each(|element| {
-                            if sphere.contains_local_point(&na::Point2::<f64>::from(
+                            if sphere.contains_local_point(&na::Point2::from(
                                 element.inputdata.pos(),
                             )) {
                                 // Zero when right at drag_proximity_tool position, One when right at the radius

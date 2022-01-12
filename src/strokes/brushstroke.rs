@@ -3,6 +3,7 @@ use crate::compose::{self, curves, solid, textured};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
+use crate::utils;
 use crate::{
     pens::brush::{self, Brush},
     render,
@@ -18,6 +19,7 @@ use super::strokestyle::InputData;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct BrushStroke {
+    pub seed: Option<u64>,
     pub elements: Vec<Element>,
     pub brush: Brush,
     pub bounds: p2d::bounding_volume::AABB,
@@ -43,7 +45,7 @@ impl DrawBehaviour for BrushStroke {
     fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
         if let Some(&first) = self.elements.iter().peekable().peek() {
             let mut bounds = p2d::bounding_volume::AABB::new_invalid();
-            bounds.take_point(na::Point2::<f64>::from(first.inputdata.pos()));
+            bounds.take_point(na::Point2::from(first.inputdata.pos()));
 
             bounds.merge(
                 &self
@@ -64,10 +66,10 @@ impl DrawBehaviour for BrushStroke {
                             forth.inputdata.pos(),
                         ) {
                             // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-                            bounds.take_point(na::Point2::<f64>::from(cubbez.start));
-                            bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
-                            bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
-                            bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+                            bounds.take_point(na::Point2::from(cubbez.start));
+                            bounds.take_point(na::Point2::from(cubbez.cp1));
+                            bounds.take_point(na::Point2::from(cubbez.cp2));
+                            bounds.take_point(na::Point2::from(cubbez.end));
                             bounds.loosen(brush_width);
 
                             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
@@ -76,8 +78,8 @@ impl DrawBehaviour for BrushStroke {
                         } else if let Some(line) =
                             curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
                         {
-                            bounds.take_point(na::Point2::<f64>::from(line.start));
-                            bounds.take_point(na::Point2::<f64>::from(line.end));
+                            bounds.take_point(na::Point2::from(line.start));
+                            bounds.take_point(na::Point2::from(line.end));
                             bounds.loosen(brush_width);
 
                             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
@@ -149,6 +151,7 @@ impl BrushStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
 
     pub fn new(element: Element, brush: Brush) -> Self {
+        let seed = Some(rough_rs::utils::random_u64_full(None));
         let elements = Vec::with_capacity(20);
         let bounds = p2d::bounding_volume::AABB::new(
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
@@ -157,6 +160,7 @@ impl BrushStroke {
         let hitbox = Vec::new();
 
         let mut brushstroke = Self {
+            seed,
             elements,
             brush,
             bounds,
@@ -287,13 +291,19 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
+        let mut seed = self.seed;
+
+        for _ in 0..self.elements.len() {
+            seed = seed.map(|seed| utils::seed_advance(seed));
+        }
+
         match self.brush.style() {
             brush::BrushStyle::Solid => Ok(self.gen_svg_elem_solid(elements, offset, svg_root)),
             brush::BrushStyle::Textured => {
-                Ok(self.gen_svg_elem_textured(elements, offset, svg_root))
+                Ok(self.gen_svg_elem_textured(seed, elements, offset, svg_root))
             }
             brush::BrushStyle::Experimental => {
-                Ok(self.gen_svg_elem_experimental(elements, offset, svg_root))
+                Ok(self.gen_svg_elem_experimental(seed, elements, offset, svg_root))
             }
         }
     }
@@ -323,10 +333,10 @@ impl BrushStroke {
             cubbez.end += offset;
 
             // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-            bounds.take_point(na::Point2::<f64>::from(cubbez.start));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+            bounds.take_point(na::Point2::from(cubbez.start));
+            bounds.take_point(na::Point2::from(cubbez.cp1));
+            bounds.take_point(na::Point2::from(cubbez.cp2));
+            bounds.take_point(na::Point2::from(cubbez.end));
 
             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
             bounds = geometry::aabb_ceil(bounds);
@@ -357,8 +367,8 @@ impl BrushStroke {
             line.start += offset;
             line.end += offset;
 
-            bounds.take_point(na::Point2::<f64>::from(line.start));
-            bounds.take_point(na::Point2::<f64>::from(line.end));
+            bounds.take_point(na::Point2::from(line.start));
+            bounds.take_point(na::Point2::from(line.end));
 
             commands.append(&mut solid::compose_line_variable_width(
                 line,
@@ -415,6 +425,7 @@ impl BrushStroke {
 
     pub fn gen_svg_elem_textured(
         &self,
+        seed: Option<u64>,
         elements: (&Element, &Element, &Element, &Element),
         offset: na::Vector2<f64>,
         svg_root: bool,
@@ -424,16 +435,21 @@ impl BrushStroke {
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
+        // Configure the textured Configuration
+        let mut textured_conf = self.brush.textured_conf.clone();
+        textured_conf.seed = seed;
+        textured_conf.color = self.brush.color;
+
         let element = if let Some(mut line) =
             curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
         {
             line.start += offset;
             line.end += offset;
 
-            bounds.take_point(na::Point2::<f64>::from(line.start));
-            bounds.take_point(na::Point2::<f64>::from(line.end));
+            bounds.take_point(na::Point2::from(line.start));
+            bounds.take_point(na::Point2::from(line.end));
 
-            textured::compose_line(line, start_width, &self.brush)
+            textured::compose_line(line, start_width, &mut textured_conf)
         } else {
             return None;
         };
@@ -460,6 +476,8 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let mut seed = self.seed;
+
         let svgs: Vec<render::Svg> = self
             .elements
             .iter()
@@ -467,7 +485,9 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
             .filter_map(|(((first, second), third), forth)| {
-                self.gen_svg_elem_textured((first, second, third, forth), offset, svg_root)
+                seed = seed.map(|seed| utils::seed_advance(seed));
+
+                self.gen_svg_elem_textured(seed, (first, second, third, forth), offset, svg_root)
             })
             .collect();
 
@@ -476,6 +496,7 @@ impl BrushStroke {
 
     pub fn gen_svg_elem_experimental(
         &self,
+        _seed: Option<u64>,
         elements: (&Element, &Element, &Element, &Element),
         offset: na::Vector2<f64>,
         svg_root: bool,
@@ -499,10 +520,10 @@ impl BrushStroke {
             cubbez.end += offset;
 
             // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-            bounds.take_point(na::Point2::<f64>::from(cubbez.start));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.cp1));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.cp2));
-            bounds.take_point(na::Point2::<f64>::from(cubbez.end));
+            bounds.take_point(na::Point2::from(cubbez.start));
+            bounds.take_point(na::Point2::from(cubbez.cp1));
+            bounds.take_point(na::Point2::from(cubbez.cp2));
+            bounds.take_point(na::Point2::from(cubbez.end));
             bounds.loosen(start_width.max(end_width));
 
             // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
@@ -537,8 +558,8 @@ impl BrushStroke {
             line.start += offset;
             line.end += offset;
 
-            bounds.take_point(na::Point2::<f64>::from(line.start));
-            bounds.take_point(na::Point2::<f64>::from(line.end));
+            bounds.take_point(na::Point2::from(line.start));
+            bounds.take_point(na::Point2::from(line.end));
             bounds.loosen(start_width.max(end_width));
 
             commands.append(&mut solid::compose_line_variable_width(
@@ -578,6 +599,8 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let mut seed = self.seed;
+
         let svgs: Vec<render::Svg> = self
             .elements
             .iter()
@@ -585,7 +608,14 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(2))
             .zip(self.elements.iter().skip(3))
             .filter_map(|(((first, second), third), forth)| {
-                self.gen_svg_elem_experimental((first, second, third, forth), offset, svg_root)
+                seed = seed.map(|seed| utils::seed_advance(seed));
+
+                self.gen_svg_elem_experimental(
+                    seed,
+                    (first, second, third, forth),
+                    offset,
+                    svg_root,
+                )
             })
             .collect();
 

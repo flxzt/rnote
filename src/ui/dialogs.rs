@@ -117,7 +117,7 @@ pub fn dialog_quit_save(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Ok => {
                     dialog_quit_save.close();
-                    appwindow.destroy();
+                    appwindow.close();
                 },
                 ResponseType::Apply => {
                     dialog_quit_save.close();

@@ -13,7 +13,7 @@ impl Line {
     pub fn line_w_width_to_rect(self, width: f64) -> Rectangle {
         let vec = self.end - self.start;
         let magn = vec.magnitude();
-        let angle = vec.angle(&na::Vector2::<f64>::x_axis());
+        let angle = na::Vector2::y().angle(&vec) + std::f64::consts::FRAC_PI_2;
 
         Rectangle {
             shape: p2d::shape::Cuboid::new(na::vector![magn / 2.0, width / 2.0]),

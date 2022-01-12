@@ -27,7 +27,7 @@
         <property name="hscrollbar-policy">never</property>
         <property name="min-content-width">100</property>
         <child>
-          <object class="GtkListView" id="primary_list">
+          <object class="GtkListView" id="primary_listview">
             <style>
               <class name="rich-list"></class>
               <class name="separators"></class>

@@ -69,6 +69,7 @@
       <object class="GtkButton" id="delete_button">
         <property name="icon_name">selection-delete-symbolic</property>
         <property name="tooltip_text">delete selection</property>
+        <property name="margin-bottom">6</property>
         <style>
           <class name="destructive-action" />
         </style>

@@ -273,7 +273,7 @@ impl StrokesState {
             StrokeStyle::BitmapImage(_bitmapimage) => {}
         }
 
-        self.append_rendering_new_elem_threaded(key);
+        self.append_rendering_new_elem(key);
         Some(key)
     }
 

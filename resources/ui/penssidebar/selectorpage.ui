@@ -32,18 +32,28 @@
         </style>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_polygon_toggle">
-            <property name="icon_name">selector-polygon-symbolic</property>
             <property name="tooltip_text">selecting with a polygon</property>
             <property name="vexpand">true</property>
             <property name="group">selectorstyle_rect_toggle</property>
             <property name="active">true</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">selector-polygon-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_rect_toggle">
-            <property name="icon_name">selector-rectangle-symbolic</property>
             <property name="tooltip_text">selecting with a rectangle</property>
             <property name="vexpand">true</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">selector-rectangle-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

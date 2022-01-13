@@ -31,30 +31,25 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
-            <property name="width_request">50</property>
-            <property name="margin-start">0</property>
-            <property name="margin-end">0</property>
-            <property name="margin-top">0</property>
-            <property name="margin-bottom">0</property>
             <child>
               <object class="GtkImage" id="header_icon_image">
-                <property name="visible">true</property>
+                <property name="width_request">46</property>
                 <property name="margin-start">12</property>
                 <property name="margin-end">12</property>
-                <property name="margin-top">6</property>
-                <property name="margin-bottom">6</property>
-                <property name="pixel-size">24</property>
+                <property name="visible">true</property>
+                <property name="pixel-size">28</property>
                 <style>
                   <class name="header_icon_image" />
                   <class name="lowres-icon" />
                 </style>
               </object>
             </child>
-          </object>
-        </child>
-        <child type="start">
-          <object class="GtkSeparator">
-            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkSeparator">
+                <property name="orientation">vertical</property>
+                <property name="visible">false</property>
+              </object>
+            </child>
           </object>
         </child>
         <child type="start">

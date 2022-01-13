@@ -29,11 +29,11 @@ Rnote is available as  a flatpak on Flathub:
 
 ### Downgrading
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
-| version | command |
-| --- | --- |
-| v0.2.3 | `sudo flatpak update --commit=38b8d93e8c552b4408d55364e9320d6cc2005199ee222ea0b321c3928a2f8c21 com.github.flxzt.rnote` |
-| v0.1.6 | `sudo flatpak update --commit=ffb9781989704f3eb28910437bb26709357566a977178d5fb4ef1a2926edae8b com.github.flxzt.rnote` |
-| v0.1.5 | `sudo flatpak update --commit=721f94f5f9806fa1e80d928071e2094a75ba622c7da32bee4af9d8a6c1a82d15 com.github.flxzt.rnote` |
+| version | command                                                                                                                |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| v0.2.3  | `sudo flatpak update --commit=38b8d93e8c552b4408d55364e9320d6cc2005199ee222ea0b321c3928a2f8c21 com.github.flxzt.rnote` |
+| v0.1.6  | `sudo flatpak update --commit=ffb9781989704f3eb28910437bb26709357566a977178d5fb4ef1a2926edae8b com.github.flxzt.rnote` |
+| v0.1.5  | `sudo flatpak update --commit=721f94f5f9806fa1e80d928071e2094a75ba622c7da32bee4af9d8a6c1a82d15 com.github.flxzt.rnote` |
 
 After downgrading, the version can be pinned or unpinned with:
 ```
@@ -64,9 +64,11 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 - [x] implement bezier curve stroke with variable stroke width
     (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
+- [x] Textured brush strokes with tweakable parameters
+- [x] Stroke elements drag tool: drag along parts of the selected strokes based on the proximity of a round pen tool
 - [x] parallelizing rendering and actions which affect many strokes.
 - [x] asychronous rendering
-- [x] Stroke elements drag tool: drag along parts of the selected strokes based on the proximity of a round pen tool
+- [ ] cancellable rendering
 - [ ] sheet tabs
 - [ ] strokes rotation
 - [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)

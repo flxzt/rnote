@@ -73,6 +73,7 @@
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon-name">pen-brush-style-solid-symbolic</property>
+                            <property name="icon-size">large</property>
                           </object>
                         </child>
                       </object>
@@ -84,6 +85,7 @@
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon-name">pen-brush-style-textured-symbolic</property>
+                            <property name="icon-size">large</property>
                           </object>
                         </child>
                       </object>
@@ -94,6 +96,7 @@
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon-name">pen-brush-style-experimental-symbolic</property>
+                            <property name="icon-size">large</property>
                           </object>
                         </child>
                       </object>

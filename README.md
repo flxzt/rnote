@@ -69,7 +69,6 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 - [x] parallelizing rendering and actions which affect many strokes.
 - [x] asychronous rendering
 - [ ] cancellable rendering
-- [ ] sheet tabs
 - [ ] strokes rotation
 - [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
 - [ ] export as bitmap picture
@@ -77,12 +76,14 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 - [ ] implement optional stroke smoothing
 
 ## Feature Ideas:
-* Stroke history list widget
-    * with the ability to move them up and down the history / layers
+* Stroke Layers
+* History list
+    * with the ability to move them up and down the history
 * Stroke trash restorer
     *  with a preview of the deleted strokes
 * Stylus buttons configuration to map them to different actions and / or pen types 
-* Locked strokes: Selection mode to toggle the mutability of strokes
+* Locked strokes: mode to toggle the mutability of strokes
+* Multiple sheet tabs
 * Share and synchronize sheets with others ( via e.g. the peer-2-peer protocol libp2p ).
 
 ## File Format

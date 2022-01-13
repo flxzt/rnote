@@ -58,6 +58,16 @@
   </provides>
 
   <releases>
+    <release version="0.2.5" date="2022-01-13">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>Textured brush with tweakable parameters</li>
+          <li>UI improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.4" date="2022-01-10">
       <description>
         <p>this release changes:</p>

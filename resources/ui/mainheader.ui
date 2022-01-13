@@ -31,12 +31,13 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
+            <property name="width_request">46</property>
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
             <child>
               <object class="GtkImage" id="header_icon_image">
-                <property name="width_request">46</property>
-                <property name="margin-start">12</property>
-                <property name="margin-end">12</property>
-                <property name="visible">true</property>
+                <property name="visible">false</property>
+                <property name="halign">center</property>
                 <property name="pixel-size">28</property>
                 <style>
                   <class name="header_icon_image" />
@@ -46,8 +47,12 @@
             </child>
             <child>
               <object class="GtkSeparator">
+                <style>
+                  <class name="spacer" />
+                </style>
+                <property name="halign">fill</property>
                 <property name="orientation">vertical</property>
-                <property name="visible">false</property>
+                <property name="visible">true</property>
               </object>
             </child>
           </object>

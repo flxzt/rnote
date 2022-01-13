@@ -17,8 +17,6 @@ mod imp {
         #[template_child]
         pub roughconfig_popover: TemplateChild<Popover>,
         #[template_child]
-        pub roughconfig_revealer: TemplateChild<Revealer>,
-        #[template_child]
         pub roughconfig_roughness_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub roughconfig_roughness_adj: TemplateChild<Adjustment>,
@@ -125,12 +123,6 @@ impl ShaperPage {
     pub fn roughconfig_popover(&self) -> Popover {
         imp::ShaperPage::from_instance(self)
             .roughconfig_popover
-            .get()
-    }
-
-    pub fn roughconfig_revealer(&self) -> Revealer {
-        imp::ShaperPage::from_instance(self)
-            .roughconfig_revealer
             .get()
     }
 
@@ -275,14 +267,14 @@ impl ShaperPage {
         self.drawstyle_smooth_toggle().connect_active_notify(clone!(@weak appwindow => move |drawstyle_smooth_toggle| {
             if drawstyle_smooth_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-drawstyle", Some(&"smooth".to_variant()));
-                appwindow.penssidebar().shaper_page().roughconfig_revealer().set_reveal_child(false);
+                appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_sensitive(false);
             }
         }));
 
         self.drawstyle_rough_toggle().connect_active_notify(clone!(@weak appwindow => move |drawstyle_rough_toggle| {
             if drawstyle_rough_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-drawstyle", Some(&"rough".to_variant()));
-                appwindow.penssidebar().shaper_page().roughconfig_revealer().set_reveal_child(true);
+                appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_sensitive(true);
             }
         }));
 

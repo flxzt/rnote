@@ -1,2 +1,55 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="16" height="16" fill="#bebebe" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg"><use transform="rotate(21.664 4.8975 33.424)" xlink:href="#b"/><path id="b" d="m 2.31,8.5 c 1,6.44 2.65,8.5 3.86,11.9 0.33,0.66 0.82,0.45 0.74,-0.35 C 6.3,14.44 6.5,13.5 5,7.74 4.5,8.5 3.3,8.8 2.31,8.5 Z"/><use transform="rotate(11.45,10.93,31.7)" xlink:href="#b"/><path id="a" d="m12.83 1.6c-0.07 0-0.13 0-0.2 0.01 1.37 2.36-1.34 3.59-1.4 5.16-0.06 1.8 1.64 2.37 2.62 2.11 1.23-0.32 1.79-1.38 1.84-2.38 0.09-1.8-1.8-4.76-2.86-4.9z"/><use transform="matrix(-1,0,0,1,16.24,-1.27)" xlink:href="#a"/><use transform="matrix(.92 0 0 .9 -3.9 -1.35)" xlink:href="#a"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   fill="#bebebe"
+   version="1.1"
+   id="svg12"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs16" />
+  <g
+     id="g839"
+     transform="matrix(0.61771661,0,0,0.61771661,2.9841411,1.0755435)">
+    <use
+       transform="rotate(21.664,4.8975,33.424)"
+       xlink:href="#b"
+       id="use2"
+       x="0"
+       y="0"
+       width="100%"
+       height="100%" />
+    <path
+       id="b"
+       d="m 2.31,8.5 c 1,6.44 2.65,8.5 3.86,11.9 0.33,0.66 0.82,0.45 0.74,-0.35 C 6.3,14.44 6.5,13.5 5,7.74 4.5,8.5 3.3,8.8 2.31,8.5 Z" />
+    <use
+       transform="rotate(11.45,10.93,31.7)"
+       xlink:href="#b"
+       id="use5"
+       x="0"
+       y="0"
+       width="100%"
+       height="100%" />
+    <path
+       id="a"
+       d="m 12.83,1.6 c -0.07,0 -0.13,0 -0.2,0.01 1.37,2.36 -1.34,3.59 -1.4,5.16 -0.06,1.8 1.64,2.37 2.62,2.11 C 15.08,8.56 15.64,7.5 15.69,6.5 15.78,4.7 13.89,1.74 12.83,1.6 Z" />
+    <use
+       transform="matrix(-1,0,0,1,16.24,-1.27)"
+       xlink:href="#a"
+       id="use8"
+       x="0"
+       y="0"
+       width="100%"
+       height="100%" />
+    <use
+       transform="matrix(0.92,0,0,0.9,-3.9,-1.35)"
+       xlink:href="#a"
+       id="use10"
+       x="0"
+       y="0"
+       width="100%"
+       height="100%" />
+  </g>
+</svg>

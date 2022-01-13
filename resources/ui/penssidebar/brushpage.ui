@@ -23,51 +23,22 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="width_resetbutton">
-        <property name="icon_name">reset-width-symbolic</property>
-        <property name="tooltip_text">reset brush width</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAdjustment" id="width_adj">
-        <property name="step-increment">1</property>
-      </object>
-      <object class="GtkSpinButton" id="width_spinbutton">
-        <property name="adjustment">width_adj</property>
-        <property name="orientation">vertical</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
-      </object>
-    </child>
-    <child>
-      <object class="ColorPicker" id="colorpicker">
-        <property name="height_request">400</property>
-        <property name="amount-colorbuttons">8</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkSeparator">
-        <property name="orientation">vertical</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
-      </object>
-    </child>
-    <child>
       <object class="GtkBox">
-
+        <property name="orientation">vertical</property>
+        <property name="vexpand">false</property>
         <child>
           <object class="GtkMenuButton" id="brushstyle_menubutton">
-            <property name="icon-name">pen-brush-style-symbolic</property>
             <property name="hexpand">true</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
             <property name="tooltip_text">Brush Style</property>
             <property name="popover">brushstyle_popover</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pen-brush-style-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
@@ -133,6 +104,161 @@
             </child>
           </object>
         </child>
+      </object>
+    </child>
+    <!-- Brush styles config -->
+    <child>
+      <object class="GtkBox">
+        <child>
+          <object class="GtkMenuButton" id="styleconfig_menubutton">
+            <property name="icon-name">settings-symbolic</property>
+            <property name="sensitive">false</property>
+            <property name="hexpand">true</property>
+            <property name="halign">fill</property>
+            <property name="direction">left</property>
+            <property name="tooltip_text">Brush styles configuration</property>
+            <property name="popover">styleconfig_popover</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkPopover" id="styleconfig_popover">
+            <child>
+              <object class="GtkBox">
+                <property name="orientation">vertical</property>
+                <property name="margin-top">12</property>
+                <property name="margin-bottom">12</property>
+                <property name="spacing">12</property>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label">Brush styles configuration</property>
+                    <property name="halign">center</property>
+                    <property name="margin-top">12</property>
+                    <property name="margin-bottom">24</property>
+                    <style>
+                      <class name="title-4" />
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkListBox">
+                    <property name="width-request">300</property>
+                    <property name="selection-mode">none</property>
+                    <style>
+                      <class name="content" />
+                      <class name="medium" />
+                    </style>
+                    <child>
+                      <object class="AdwActionRow">
+                        <property name="title">Density</property>
+                        <property name="subtitle">the density is the amount of a textured brush stroke per 10x10 area</property>
+                        <child type="suffix">
+                          <object class="GtkAdjustment" id="texturedstyle_density_adj">
+                            <property name="step-increment">0.05</property>
+                          </object>
+                          <object class="GtkSpinButton" id="texturedstyle_density_spinbutton">
+                            <property name="valign">center</property>
+                            <property name="margin_start">12</property>
+                            <property name="adjustment">texturedstyle_density_adj</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="digits">2</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow">
+                        <property name="title">Dot Radii</property>
+                        <property name="subtitle">the radii of the dots</property>
+                        <child type="suffix">
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <child>
+                              <object class="GtkAdjustment" id="texturedstyle_radius_x_adj">
+                                <property name="step-increment">0.05</property>
+                              </object>
+                              <object class="GtkSpinButton" id="texturedstyle_radius_x_spinbutton">
+                                <property name="valign">center</property>
+                                <property name="margin_start">12</property>
+                                <property name="adjustment">texturedstyle_radius_x_adj</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="digits">2</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkAdjustment" id="texturedstyle_radius_y_adj">
+                                <property name="step-increment">0.05</property>
+                              </object>
+                              <object class="GtkSpinButton" id="texturedstyle_radius_y_spinbutton">
+                                <property name="valign">center</property>
+                                <property name="margin_start">12</property>
+                                <property name="adjustment">texturedstyle_radius_y_adj</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="digits">2</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="AdwActionRow">
+                        <property name="title">Uniformity</property>
+                        <property name="subtitle">the uniformity how the dots are spread out. 1.0 to spread them evenly, 0.0 to be very close to the path</property>
+                        <child type="suffix">
+                          <object class="GtkAdjustment" id="texturedstyle_uniformity_adj">
+                            <property name="step-increment">0.05</property>
+                          </object>
+                          <object class="GtkSpinButton" id="texturedstyle_uniformity_spinbutton">
+                            <property name="valign">center</property>
+                            <property name="margin_start">12</property>
+                            <property name="adjustment">texturedstyle_uniformity_adj</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="digits">2</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="width_resetbutton">
+        <property name="icon_name">reset-width-symbolic</property>
+        <property name="tooltip_text">reset brush width</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkAdjustment" id="width_adj">
+        <property name="step-increment">1</property>
+      </object>
+      <object class="GtkSpinButton" id="width_spinbutton">
+        <property name="adjustment">width_adj</property>
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+        <property name="margin_top">6</property>
+        <property name="margin_bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="ColorPicker" id="colorpicker">
+        <property name="height_request">400</property>
+        <property name="amount-colorbuttons">8</property>
       </object>
     </child>
   </template>

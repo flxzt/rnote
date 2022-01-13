@@ -341,7 +341,7 @@ glib::wrapper! {
 
 impl Default for ColorPicker {
     fn default() -> Self {
-        Self::new(utils::Color::black().to_gdk())
+        Self::new(utils::Color::BLACK.to_gdk())
     }
 }
 

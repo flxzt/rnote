@@ -432,14 +432,15 @@ impl BrushStroke {
         svg_root: bool,
     ) -> Option<render::Svg> {
         let start_width = elements.1.inputdata.pressure() * self.brush.width();
-        let _end_width = elements.2.inputdata.pressure() * self.brush.width();
+        let end_width = elements.2.inputdata.pressure() * self.brush.width();
+        let mid_width = (start_width + end_width) * 0.5;
 
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
         // Configure the textured Configuration
         let mut textured_conf = self.brush.textured_conf.clone();
-        textured_conf.seed = seed;
-        textured_conf.color = self.brush.color;
+        textured_conf.set_seed(seed);
+        textured_conf.set_color(self.brush.color);
 
         let element = if let Some(mut line) =
             curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
@@ -450,7 +451,7 @@ impl BrushStroke {
             bounds.take_point(na::Point2::from(line.start));
             bounds.take_point(na::Point2::from(line.end));
 
-            textured::compose_line(line, start_width, &mut textured_conf)
+            textured::compose_line(line, mid_width, &mut textured_conf)
         } else {
             return None;
         };
@@ -472,6 +473,7 @@ impl BrushStroke {
 
         Some(render::Svg { svg_data, bounds })
     }
+
     pub fn gen_svgs_textured(
         &self,
         offset: na::Vector2<f64>,

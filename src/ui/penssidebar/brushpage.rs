@@ -3,7 +3,7 @@ mod imp {
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
     };
-    use gtk4::{ListBox, MenuButton};
+    use gtk4::{ListBox, MenuButton, Popover};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
@@ -26,6 +26,18 @@ mod imp {
         pub brushstyle_textured_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub brushstyle_experimental_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub styleconfig_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub styleconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub texturedstyle_density_adj: TemplateChild<Adjustment>,
+        #[template_child]
+        pub texturedstyle_radius_x_adj: TemplateChild<Adjustment>,
+        #[template_child]
+        pub texturedstyle_radius_y_adj: TemplateChild<Adjustment>,
+        #[template_child]
+        pub texturedstyle_uniformity_adj: TemplateChild<Adjustment>,
     }
 
     #[glib::object_subclass]
@@ -58,10 +70,13 @@ mod imp {
     impl WidgetImpl for BrushPage {}
 }
 
+use crate::compose::textured::TexturedConfig;
 use crate::pens::brush::Brush;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use crate::utils;
-use gtk4::{gdk, Accessible, Actionable, Buildable, ConstraintTarget, ListBox, MenuButton};
+use gtk4::{
+    gdk, Accessible, Actionable, Buildable, ConstraintTarget, ListBox, MenuButton, Popover,
+};
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
     SpinButton, Widget,
@@ -128,7 +143,20 @@ impl BrushPage {
             .get()
     }
 
+    pub fn styleconfig_menubutton(&self) -> MenuButton {
+        imp::BrushPage::from_instance(self)
+            .styleconfig_menubutton
+            .get()
+    }
+
+    pub fn styleconfigonfig_popover(&self) -> Popover {
+        imp::BrushPage::from_instance(self)
+            .styleconfig_popover
+            .get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
+        let priv_ = imp::BrushPage::from_instance(self);
         let width_adj = self.width_adj();
 
         self.width_adj().set_lower(Brush::WIDTH_MIN);
@@ -154,24 +182,118 @@ impl BrushPage {
         );
 
         self.brushstyle_listbox().connect_row_selected(
-            clone!(@weak appwindow => move |_brushstyle_listbox, selected_row| {
+            clone!(@weak self as brushpage, @weak appwindow => move |_brushstyle_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
                     match selected_row.index() {
                         // Solid
                         0 => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"solid".to_variant()));
+                            brushpage.styleconfig_menubutton().set_sensitive(false);
                         }
                         // Textured
                         1 => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"textured".to_variant()));
+                            brushpage.styleconfig_menubutton().set_sensitive(true);
                         }
                         // Experimental
                         2 => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"experimental".to_variant()));
+                            brushpage.styleconfig_menubutton().set_sensitive(false);
                         }
                         _ => {}
                     }
                 }
+            }),
+        );
+
+        // Textured style
+        // Density
+        priv_
+            .texturedstyle_density_adj
+            .get()
+            .set_lower(TexturedConfig::DENSITY_MIN);
+        priv_
+            .texturedstyle_density_adj
+            .get()
+            .set_upper(TexturedConfig::DENSITY_MAX);
+        priv_
+            .texturedstyle_density_adj
+            .get()
+            .set_value(TexturedConfig::DENSITY_DEFAULT);
+
+        priv_.texturedstyle_density_adj.get().connect_value_changed(
+            clone!(@weak appwindow => move |texturedstyle_density_adj| {
+                appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_density(texturedstyle_density_adj.value());
+            }),
+        );
+
+        // Radius X
+        priv_
+            .texturedstyle_radius_x_adj
+            .get()
+            .set_lower(TexturedConfig::RADII_MIN[0]);
+        priv_
+            .texturedstyle_radius_x_adj
+            .get()
+            .set_upper(TexturedConfig::RADII_MAX[0]);
+        priv_
+            .texturedstyle_radius_x_adj
+            .get()
+            .set_value(TexturedConfig::RADII_DEFAULT[0]);
+
+        priv_
+            .texturedstyle_radius_x_adj
+            .get()
+            .connect_value_changed(
+                clone!(@weak appwindow => move |texturedstyle_radius_x_adj| {
+                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_conf.radii();
+                    radii[0] = texturedstyle_radius_x_adj.value();
+                    appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_radii(radii);
+                }),
+            );
+
+        // Radius Y
+        priv_
+            .texturedstyle_radius_y_adj
+            .get()
+            .set_lower(TexturedConfig::RADII_MIN[1]);
+        priv_
+            .texturedstyle_radius_y_adj
+            .get()
+            .set_upper(TexturedConfig::RADII_MAX[1]);
+        priv_
+            .texturedstyle_radius_y_adj
+            .get()
+            .set_value(TexturedConfig::RADII_DEFAULT[1]);
+
+        priv_
+            .texturedstyle_radius_y_adj
+            .get()
+            .connect_value_changed(
+                clone!(@weak appwindow => move |texturedstyle_radius_y_adj| {
+                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_conf.radii();
+                    radii[1] = texturedstyle_radius_y_adj.value();
+                    appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_radii(radii);
+                }),
+            );
+
+        // Uniformity
+        priv_
+            .texturedstyle_uniformity_adj
+            .get()
+            .set_lower(TexturedConfig::UNIFORMITY_MIN);
+        priv_
+            .texturedstyle_uniformity_adj
+            .get()
+            .set_upper(TexturedConfig::UNIFORMITY_MAX);
+        priv_
+            .texturedstyle_uniformity_adj
+            .get()
+            .set_value(TexturedConfig::UNIFORMITY_DEFAULT);
+
+        priv_.texturedstyle_uniformity_adj.get().connect_value_changed(
+            clone!(@weak appwindow => move |texturedstyle_uniformity_adj| {
+                appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_uniformity(texturedstyle_uniformity_adj.value());
             }),
         );
     }

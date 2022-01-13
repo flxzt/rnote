@@ -161,9 +161,9 @@ impl BrushPage {
             .clone()
     }
 
-    pub fn set_background_pattern_variant(&self, distribution: TexturedDotsDistribution) {
+    pub fn set_texturedstyle_distribution_variant(&self, distribution: TexturedDotsDistribution) {
         let priv_ = imp::BrushPage::from_instance(self);
-        let background_pattern_listmodel = priv_
+        let texturedstyle_distribution_listmodel = priv_
             .texturedstyle_distribution_row
             .get()
             .model()
@@ -173,7 +173,7 @@ impl BrushPage {
         priv_
             .texturedstyle_distribution_row
             .get()
-            .set_selected(background_pattern_listmodel.find_position(distribution as i32));
+            .set_selected(texturedstyle_distribution_listmodel.find_position(distribution as i32));
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -299,6 +299,8 @@ impl BrushPage {
             );
 
         // Distribution
+        self.set_texturedstyle_distribution_variant(appwindow.canvas().pens().borrow().brush.textured_conf.distribution());
+
         priv_.texturedstyle_distribution_row.get().connect_selected_item_notify(clone!(@weak self as brushpage, @weak appwindow => move |texturedstyle_distribution_row| {
             if let Some(selected_item) = texturedstyle_distribution_row.selected_item() {
                 match selected_item

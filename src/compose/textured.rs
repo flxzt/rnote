@@ -37,7 +37,7 @@ pub enum TexturedDotsDistribution {
 
 impl Default for TexturedDotsDistribution {
     fn default() -> Self {
-        Self::Uniform
+        Self::Normal
     }
 }
 

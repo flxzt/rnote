@@ -290,11 +290,13 @@ impl StrokesState {
     }
 
     pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: glib::Bytes) {
+        let renderer = self.renderer.clone();
+
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {
                 let svg = String::from_utf8_lossy(&bytes);
 
-                match VectorImage::import_from_svg_data(&svg, pos, None) {
+                match VectorImage::import_from_svg_data(&svg, pos, None, &renderer.read().unwrap()) {
                     Ok(vectorimage) => {
                         let vectorimage = StrokeStyle::VectorImage(vectorimage);
 
@@ -339,9 +341,11 @@ impl StrokesState {
         page_width: Option<i32>,
         bytes: glib::Bytes,
     ) {
+        let renderer = self.renderer.clone();
+
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {
-                match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width) {
+                match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width, &renderer.read().unwrap()) {
                     Ok(images) => {
                         for image in images {
                             let image = StrokeStyle::VectorImage(image);
@@ -689,9 +693,9 @@ impl StrokesState {
                 StrokeStyle::MarkerStroke(markerstroke) => {
                     if markerstroke.bounds().intersects(&tool_bounds) {
                         markerstroke.elements.iter_mut().for_each(|element| {
-                            if sphere.contains_local_point(&na::Point2::from(
-                                element.inputdata.pos(),
-                            )) {
+                            if sphere
+                                .contains_local_point(&na::Point2::from(element.inputdata.pos()))
+                            {
                                 // Zero when right at drag_proximity_tool position, One when right at the radius
                                 let distance_ratio = (1.0
                                     - (element.inputdata.pos() - drag_proximity_tool.pos)
@@ -713,9 +717,9 @@ impl StrokesState {
                 StrokeStyle::BrushStroke(brushstroke) => {
                     if brushstroke.bounds().intersects(&tool_bounds) {
                         brushstroke.elements.iter_mut().for_each(|element| {
-                            if sphere.contains_local_point(&na::Point2::from(
-                                element.inputdata.pos(),
-                            )) {
+                            if sphere
+                                .contains_local_point(&na::Point2::from(element.inputdata.pos()))
+                            {
                                 // Zero when right at drag_proximity_tool position, One when right at the radius
                                 let distance_ratio = (1.0
                                     - (element.inputdata.pos() - drag_proximity_tool.pos)

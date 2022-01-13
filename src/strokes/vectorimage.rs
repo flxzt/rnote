@@ -1,8 +1,10 @@
-use crate::drawbehaviour::DrawBehaviour;
-use crate::{compose, render, utils};
 use crate::compose::geometry;
+use crate::drawbehaviour::DrawBehaviour;
+use crate::render::Renderer;
+use crate::{compose, render};
 
 use anyhow::Context;
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 use super::strokebehaviour::StrokeBehaviour;
@@ -74,10 +76,22 @@ impl VectorImage {
         svg_data: &str,
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
+        renderer: &Renderer,
     ) -> Result<Self, anyhow::Error> {
-        let intrinsic_size = utils::svg_intrinsic_size(svg_data).unwrap_or_else(|| {
-            na::vector![VectorImage::SIZE_X_DEFAULT, VectorImage::SIZE_Y_DEFAULT]
-        });
+        // Random prefix to ensure uniqueness
+        let rand_prefix = rand::thread_rng()
+            .sample_iter(&rand::distributions::Alphanumeric)
+            .take(8)
+            .map(char::from)
+            .collect::<String>();
+        let mut xml_options = renderer.usvg_xml_options.clone();
+        xml_options.id_prefix = Some(rand_prefix);
+
+        let rtree = usvg::Tree::from_str(svg_data, &renderer.usvg_options.to_ref())?;
+        let svg_data = rtree.to_string(&xml_options);
+
+        let svg_node = rtree.svg_node();
+        let intrinsic_size = na::vector![svg_node.size.width(), svg_node.size.height()];
 
         let bounds = size.map_or_else(
             || {
@@ -90,8 +104,6 @@ impl VectorImage {
                 p2d::bounding_volume::AABB::new(na::Point2::from(pos), na::Point2::from(size + pos))
             },
         );
-
-        let svg_data = compose::remove_xml_header(svg_data);
 
         let vector_image = Self {
             bounds,
@@ -106,6 +118,7 @@ impl VectorImage {
         to_be_read: &[u8],
         pos: na::Vector2<f64>,
         page_width: Option<i32>,
+        renderer: &Renderer,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let doc = poppler::Document::from_data(to_be_read, None)?;
 
@@ -180,6 +193,7 @@ impl VectorImage {
                     &svg_data.to_string(),
                     na::vector![x, y],
                     Some(na::vector![width, height]),
+                    renderer,
                 )?);
             }
         }

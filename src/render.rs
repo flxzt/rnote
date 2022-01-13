@@ -39,6 +39,7 @@ pub struct Svg {
 pub struct Renderer {
     pub backend: RendererBackend,
     pub usvg_options: usvg::Options,
+    pub usvg_xml_options: usvg::XmlOptions,
 }
 
 impl Default for Renderer {
@@ -46,9 +47,19 @@ impl Default for Renderer {
         let mut usvg_options = usvg::Options::default();
         usvg_options.fontdb.load_system_fonts();
 
+        let usvg_xml_options = usvg::XmlOptions {
+            id_prefix: None,
+            writer_opts: xmlwriter::Options {
+                use_single_quote: false,
+                indent: xmlwriter::Indent::None,
+                attributes_indent: xmlwriter::Indent::None,
+            }
+        };
+
         Self {
             backend: RendererBackend::Librsvg,
             usvg_options,
+            usvg_xml_options
         }
     }
 }

@@ -253,26 +253,6 @@ pub fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error>
     Ok(bytes)
 }
 
-pub fn svg_intrinsic_size(svg: &str) -> Option<na::Vector2<f64>> {
-    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg.as_bytes()));
-    if let Ok(handle) = librsvg::Loader::new()
-        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
-    {
-        let renderer = librsvg::CairoRenderer::new(&handle);
-
-        let intrinsic_size = if let Some(size) = renderer.intrinsic_size_in_pixels() {
-            Some(na::vector![size.0, size.1])
-        } else {
-            log::debug!("intrinsic_size_in_pixels() returns None in svg_intrinsic_size()");
-            None
-        };
-
-        intrinsic_size
-    } else {
-        None
-    }
-}
-
 pub fn str_to_file(string: &str, file_path: &str) -> Result<(), anyhow::Error> {
     Ok(fs::write(PathBuf::from(file_path), string)?)
 }

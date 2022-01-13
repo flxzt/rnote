@@ -2259,6 +2259,7 @@ dependencies = [
  "tiny-skia",
  "tuple-conv",
  "usvg",
+ "xmlwriter",
 ]
 
 [[package]]

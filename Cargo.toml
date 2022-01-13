@@ -42,5 +42,6 @@ cairo-rs = {version = "0.14", features = ["png"]}
 librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
 resvg = "0.18"
 usvg = "0.18"
+xmlwriter = "0.1"
 tiny-skia = "0.6"
 slotmap = { version = "1.0", features = ["serde"] }

@@ -42,6 +42,8 @@
         <file compressed="true">icons/scalable/actions/pen-brush-style-experimental-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-shaper-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-shaper-style-smooth-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-shaper-style-rough-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-expandsheettool-symbolic.svg</file>

@@ -32,7 +32,12 @@
         </style>
         <child>
           <object class="GtkToggleButton" id="drawstyle_smooth_toggle">
-            <property name="label">s</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
             <property name="tooltip_text">smooth shapes</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
@@ -40,7 +45,12 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="drawstyle_rough_toggle">
-            <property name="label">r</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pen-shaper-style-rough-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
             <property name="tooltip_text">rough shapes</property>
             <property name="vexpand">true</property>
             <property name="group">drawstyle_smooth_toggle</property>

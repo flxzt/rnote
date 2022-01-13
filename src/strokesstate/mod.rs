@@ -476,7 +476,7 @@ impl StrokesState {
                         render_comp.images = vec![image];
                     }
                     Err(e) => {
-                        log::error!(
+                        log::debug!(
                             "gen_image() failed in regenerate_rendering_current_view() for stroke with key: {:?}, with Err {}",
                             key,
                             e

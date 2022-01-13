@@ -103,7 +103,7 @@ impl StrokesState {
                     render_comp.images = vec![image];
                 }
                 Err(e) => {
-                    log::error!(
+                    log::debug!(
                         "gen_image() failed in regenerate_rendering_for_stroke() for stroke with key: {:?}, {}",
                         key,
                         e
@@ -137,7 +137,7 @@ impl StrokesState {
                         });
                     }
                     Err(e) => {
-                        log::error!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
+                        log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
                     }
                 }
             });
@@ -193,7 +193,7 @@ impl StrokesState {
                                     }
                                 }
                                 Err(e) => {
-                                    log::error!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}", key, e);
+                                    log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}", key, e);
                                 }
                             }
                         }
@@ -240,7 +240,7 @@ impl StrokesState {
                                     }
                                 }
                                 Err(e) => {
-                                    log::error!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
+                                    log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
                                 }
                             }
                         }
@@ -257,7 +257,7 @@ impl StrokesState {
                             render_comp.images = vec![image];
                         }
                         Err(e) => {
-                            log::error!(
+                            log::debug!(
                                 "stroke.gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, with Err {}",
                                 key,
                                 e
@@ -325,7 +325,7 @@ impl StrokesState {
                                         });
                                     }
                                     Err(e) => {
-                                        log::error!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}",key, e);
+                                        log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}",key, e);
                                     }
                                 }
                             }
@@ -367,7 +367,7 @@ impl StrokesState {
                                         });
                                     }
                                     Err(e) => {
-                                        log::error!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?} with Err {}", key, e);
+                                        log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?} with Err {}", key, e);
                                     }
                                 }
                             }
@@ -387,7 +387,7 @@ impl StrokesState {
                                 });
                             }
                             Err(e) => {
-                                log::error!(
+                                log::debug!(
                                     "stroke.gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, with Err {}",
                                     key,
                                     e

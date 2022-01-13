@@ -467,7 +467,7 @@ mod imp {
                 zoom,
                 snapshot,
             ) {
-                log::error!("pens draw() failed in canvas snapshot() with Err {}", e);
+                log::debug!("pens draw() failed in canvas snapshot() with Err {}", e);
             };
 
             if self.visual_debug.get() {

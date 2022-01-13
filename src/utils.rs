@@ -3,7 +3,6 @@ use crate::config;
 use flate2::read::MultiGzDecoder;
 use flate2::{Compression, GzBuilder};
 use gtk4::{gdk, gio, glib, prelude::*};
-use rand::distributions::uniform::{SampleRange, SampleUniform};
 use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -257,25 +256,8 @@ pub fn str_to_file(string: &str, file_path: &str) -> Result<(), anyhow::Error> {
     Ok(fs::write(PathBuf::from(file_path), string)?)
 }
 
-/// Ran
+/// returns a new seed by generating a random value seeded from the old seed
 pub fn seed_advance(seed: u64) -> u64 {
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
     rng.gen()
-}
-
-/// advancing the seed and returning random value from the range
-pub fn rand_range_advance<T, R>(seed: &mut Option<u64>, range: R) -> T
-where
-    T: SampleUniform,
-    R: SampleRange<T>,
-{
-    let mut rng = if let Some(seed) = seed {
-        let mut rng = rand_pcg::Pcg64::seed_from_u64(*seed);
-        *seed = rng.gen();
-        rng
-    } else {
-        rand_pcg::Pcg64::from_entropy()
-    };
-
-    rng.gen_range(range)
 }

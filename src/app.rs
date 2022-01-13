@@ -25,7 +25,7 @@ mod imp {
             settingspanel::SettingsPanel, unitentry::UnitEntry, workspacebrowser::filerow::FileRow,
             workspacebrowser::WorkspaceBrowser,
         },
-        utils,
+        utils, compose::textured::TexturedDotsDistribution,
     };
 
     #[derive(Debug, Default)]
@@ -111,6 +111,7 @@ mod imp {
             MeasureUnit::static_type();
             PatternStyle::static_type();
             UnitEntry::static_type();
+            TexturedDotsDistribution::static_type();
 
             // Load the resource
             application.set_resource_base_path(Some(config::APP_IDPATH));

@@ -37,7 +37,7 @@ mod imp {
         #[template_child]
         pub texturedstyle_radius_y_adj: TemplateChild<Adjustment>,
         #[template_child]
-        pub texturedstyle_uniformity_adj: TemplateChild<Adjustment>,
+        pub texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
     }
 
     #[glib::object_subclass]
@@ -70,16 +70,16 @@ mod imp {
     impl WidgetImpl for BrushPage {}
 }
 
-use crate::compose::textured::TexturedConfig;
+use crate::compose::textured::{TexturedConfig, TexturedDotsDistribution};
 use crate::pens::brush::Brush;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use crate::utils;
+use adw::prelude::*;
 use gtk4::{
     gdk, Accessible, Actionable, Buildable, ConstraintTarget, ListBox, MenuButton, Popover,
 };
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
-    SpinButton, Widget,
+    glib, glib::clone, subclass::prelude::*, Adjustment, Button, Orientable, SpinButton, Widget,
 };
 
 glib::wrapper! {
@@ -153,6 +153,27 @@ impl BrushPage {
         imp::BrushPage::from_instance(self)
             .styleconfig_popover
             .get()
+    }
+
+    pub fn texturedstyle_distribution_row(&self) -> adw::ComboRow {
+        imp::BrushPage::from_instance(self)
+            .texturedstyle_distribution_row
+            .clone()
+    }
+
+    pub fn set_background_pattern_variant(&self, distribution: TexturedDotsDistribution) {
+        let priv_ = imp::BrushPage::from_instance(self);
+        let background_pattern_listmodel = priv_
+            .texturedstyle_distribution_row
+            .get()
+            .model()
+            .unwrap()
+            .downcast::<adw::EnumListModel>()
+            .unwrap();
+        priv_
+            .texturedstyle_distribution_row
+            .get()
+            .set_selected(background_pattern_listmodel.find_position(distribution as i32));
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -277,24 +298,37 @@ impl BrushPage {
                 }),
             );
 
-        // Uniformity
-        priv_
-            .texturedstyle_uniformity_adj
-            .get()
-            .set_lower(TexturedConfig::UNIFORMITY_MIN);
-        priv_
-            .texturedstyle_uniformity_adj
-            .get()
-            .set_upper(TexturedConfig::UNIFORMITY_MAX);
-        priv_
-            .texturedstyle_uniformity_adj
-            .get()
-            .set_value(TexturedConfig::UNIFORMITY_DEFAULT);
+        // Distribution
+        priv_.texturedstyle_distribution_row.get().connect_selected_item_notify(clone!(@weak self as brushpage, @weak appwindow => move |texturedstyle_distribution_row| {
+            if let Some(selected_item) = texturedstyle_distribution_row.selected_item() {
+                match selected_item
+                    .downcast::<adw::EnumListItem>()
+                    .unwrap()
+                    .nick()
+                    .unwrap()
+                    .as_str()
+                {
+                    "uniform" => {
+                        appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_distribution(TexturedDotsDistribution::Uniform);
+                    },
+                    "normal" => {
+                        appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_distribution(TexturedDotsDistribution::Normal);
+                    },
+                    "exponential" => {
+                        appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_distribution(TexturedDotsDistribution::Exponential);
+                    },
+                    "reverse-exponential" => {
+                        appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_distribution(TexturedDotsDistribution::ReverseExponential);
+                    },
+                    _ => {
+                        log::error!(
+                            "invalid nick string when selecting a distribution in texturedstyle_distribution_row"
+                        );
+                    }
+                };
 
-        priv_.texturedstyle_uniformity_adj.get().connect_value_changed(
-            clone!(@weak appwindow => move |texturedstyle_uniformity_adj| {
-                appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_uniformity(texturedstyle_uniformity_adj.value());
-            }),
-        );
+                appwindow.canvas().regenerate_background(true);
+            }
+        }));
     }
 }

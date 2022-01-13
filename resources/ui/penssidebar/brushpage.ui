@@ -133,7 +133,7 @@
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label">Brush styles configuration</property>
+                    <property name="label">Brush configuration</property>
                     <property name="halign">center</property>
                     <property name="margin-top">12</property>
                     <property name="margin-bottom">24</property>
@@ -151,9 +151,10 @@
                       <class name="medium" />
                     </style>
                     <child>
+                      <!-- Textured Brush -->
                       <object class="AdwActionRow">
                         <property name="title">Density</property>
-                        <property name="subtitle">the density is the amount of a textured brush stroke per 10x10 area</property>
+                        <property name="subtitle">the density is the amount of dots per 10x10 area</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="texturedstyle_density_adj">
                             <property name="step-increment">0.05</property>
@@ -204,21 +205,17 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow">
-                        <property name="title">Uniformity</property>
-                        <property name="subtitle">the uniformity how the dots are spread out. 1.0 to spread them evenly, 0.0 to be very close to the path</property>
-                        <child type="suffix">
-                          <object class="GtkAdjustment" id="texturedstyle_uniformity_adj">
-                            <property name="step-increment">0.05</property>
+                      <object class="AdwComboRow" id="texturedstyle_distribution_row">
+                        <property name="title">Distribution</property>
+                        <property name="subtitle">Choose a dots position probability distribution</property>
+                        <property name="model">
+                          <object class="AdwEnumListModel">
+                            <property name="enum-type">TexturedDotsDistribution</property>
                           </object>
-                          <object class="GtkSpinButton" id="texturedstyle_uniformity_spinbutton">
-                            <property name="valign">center</property>
-                            <property name="margin_start">12</property>
-                            <property name="adjustment">texturedstyle_uniformity_adj</property>
-                            <property name="orientation">horizontal</property>
-                            <property name="digits">2</property>
-                          </object>
-                        </child>
+                        </property>
+                        <property name="expression">
+                          <lookup type="AdwEnumListItem" name="name" />
+                        </property>
                       </object>
                     </child>
                   </object>

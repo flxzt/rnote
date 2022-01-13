@@ -67,9 +67,14 @@
     </child>
     <child>
       <object class="GtkButton" id="delete_button">
-        <property name="icon_name">selection-delete-symbolic</property>
         <property name="tooltip_text">delete selection</property>
         <property name="margin-bottom">6</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon_name">selection-delete-symbolic</property>
+            <property name="icon-size">large</property>
+          </object>
+        </child>
         <style>
           <class name="destructive-action" />
         </style>
@@ -77,8 +82,13 @@
     </child>
     <child>
       <object class="GtkButton" id="duplicate_button">
-        <property name="icon_name">selection-duplicate-symbolic</property>
         <property name="tooltip_text">duplicate selection</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon_name">selection-duplicate-symbolic</property>
+            <property name="icon-size">large</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

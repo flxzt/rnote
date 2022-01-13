@@ -32,28 +32,28 @@
         </style>
         <child>
           <object class="GtkToggleButton" id="drawstyle_smooth_toggle">
+            <property name="tooltip_text">smooth shapes</property>
+            <property name="vexpand">true</property>
+            <property name="active">true</property>
             <child>
               <object class="GtkImage">
                 <property name="icon-name">pen-shaper-style-smooth-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
-            <property name="tooltip_text">smooth shapes</property>
-            <property name="vexpand">true</property>
-            <property name="active">true</property>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="drawstyle_rough_toggle">
+            <property name="tooltip_text">rough shapes</property>
+            <property name="vexpand">true</property>
+            <property name="group">drawstyle_smooth_toggle</property>
             <child>
               <object class="GtkImage">
                 <property name="icon-name">pen-shaper-style-rough-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
-            <property name="tooltip_text">rough shapes</property>
-            <property name="vexpand">true</property>
-            <property name="group">drawstyle_smooth_toggle</property>
           </object>
         </child>
       </object>
@@ -184,7 +184,6 @@
     <child>
       <object class="GtkBox" id="shapes_togglebox">
         <property name="orientation">vertical</property>
-        <property name="height_request">120</property>
         <property name="homogeneous">true</property>
         <property name="vexpand">false</property>
         <style>
@@ -192,26 +191,41 @@
         </style>
         <child>
           <object class="GtkToggleButton" id="line_toggle">
-            <property name="icon_name">shape-line-symbolic</property>
             <property name="tooltip_text">Line</property>
             <property name="vexpand">true</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">shape-line-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="rectangle_toggle">
-            <property name="icon_name">shape-rectangle-symbolic</property>
             <property name="tooltip_text">Rectangle</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
             <property name="group">line_toggle</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">shape-rectangle-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>
           <object class="GtkToggleButton" id="ellipse_toggle">
-            <property name="icon_name">shape-ellipse-symbolic</property>
             <property name="tooltip_text">Ellipse</property>
             <property name="vexpand">true</property>
             <property name="group">line_toggle</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">shape-ellipse-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

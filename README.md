@@ -52,6 +52,10 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 ![multiple_pages](./resources/screenshots/multiple_pages.png)
 ![selection](./resources/screenshots/selection.png)
 
+# Images drawn with Rnote
+
+![tree](./resources/images/tree.svg)
+
 ## Pitfalls
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
 

@@ -3,7 +3,7 @@ mod imp {
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
     };
-    use gtk4::{ListBox, MenuButton, Popover};
+    use gtk4::{Image, ListBox, MenuButton, Popover};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
@@ -18,6 +18,8 @@ mod imp {
         pub colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
         pub brushstyle_menubutton: TemplateChild<MenuButton>,
+        #[template_child]
+        pub brushstyle_image: TemplateChild<Image>,
         #[template_child]
         pub brushstyle_listbox: TemplateChild<ListBox>,
         #[template_child]
@@ -76,7 +78,7 @@ use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use crate::utils;
 use adw::prelude::*;
 use gtk4::{
-    gdk, Accessible, Actionable, Buildable, ConstraintTarget, ListBox, MenuButton, Popover,
+    gdk, Accessible, Actionable, Buildable, ConstraintTarget, Image, ListBox, MenuButton, Popover,
 };
 use gtk4::{
     glib, glib::clone, subclass::prelude::*, Adjustment, Button, Orientable, SpinButton, Widget,
@@ -119,6 +121,10 @@ impl BrushPage {
         imp::BrushPage::from_instance(self)
             .brushstyle_menubutton
             .get()
+    }
+
+    pub fn brushstyle_image(&self) -> Image {
+        imp::BrushPage::from_instance(self).brushstyle_image.get()
     }
 
     pub fn brushstyle_listbox(&self) -> ListBox {
@@ -209,16 +215,19 @@ impl BrushPage {
                         // Solid
                         0 => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"solid".to_variant()));
+                            brushpage.brushstyle_image().set_icon_name(Some("pen-brush-style-solid-symbolic"));
                             brushpage.styleconfig_menubutton().set_sensitive(false);
                         }
                         // Textured
                         1 => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"textured".to_variant()));
+                            brushpage.brushstyle_image().set_icon_name(Some("pen-brush-style-textured-symbolic"));
                             brushpage.styleconfig_menubutton().set_sensitive(true);
                         }
                         // Experimental
                         2 => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"experimental".to_variant()));
+                            brushpage.brushstyle_image().set_icon_name(Some("pen-brush-style-experimental-symbolic"));
                             brushpage.styleconfig_menubutton().set_sensitive(false);
                         }
                         _ => {}
@@ -299,7 +308,15 @@ impl BrushPage {
             );
 
         // Distribution
-        self.set_texturedstyle_distribution_variant(appwindow.canvas().pens().borrow().brush.textured_conf.distribution());
+        self.set_texturedstyle_distribution_variant(
+            appwindow
+                .canvas()
+                .pens()
+                .borrow()
+                .brush
+                .textured_conf
+                .distribution(),
+        );
 
         priv_.texturedstyle_distribution_row.get().connect_selected_item_notify(clone!(@weak self as brushpage, @weak appwindow => move |texturedstyle_distribution_row| {
             if let Some(selected_item) = texturedstyle_distribution_row.selected_item() {

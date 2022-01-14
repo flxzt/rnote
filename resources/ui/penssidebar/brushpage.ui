@@ -34,8 +34,8 @@
             <property name="tooltip_text">Brush Style</property>
             <property name="popover">brushstyle_popover</property>
             <child>
-              <object class="GtkImage">
-                <property name="icon-name">pen-brush-style-symbolic</property>
+              <object class="GtkImage" id="brushstyle_image">
+                <property name="icon-name">pen-brush-style-solid-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>

@@ -119,7 +119,7 @@ impl PenBehaviour for Marker {
 impl Marker {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 2.0;
+    pub const WIDTH_DEFAULT: f64 = 20.0;
 
     pub const COLOR_DEFAULT: utils::Color = utils::Color {
         r: 0.0,

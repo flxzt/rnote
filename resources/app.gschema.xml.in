@@ -83,7 +83,7 @@
       <summary>Marker colors in decima encoded as RGBA values (8-bit per color)</summary>
     </key>
     <key name="brush-width" type="d">
-      <default>8</default>
+      <default>6</default>
       <summary>Brush width in px</summary>
     </key>
     <key name="brush-colors" type="(uuuuuuuu)">

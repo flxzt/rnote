@@ -53,13 +53,13 @@ impl Default for Renderer {
                 use_single_quote: false,
                 indent: xmlwriter::Indent::None,
                 attributes_indent: xmlwriter::Indent::None,
-            }
+            },
         };
 
         Self {
             backend: RendererBackend::Librsvg,
             usvg_options,
-            usvg_xml_options
+            usvg_xml_options,
         }
     }
 }
@@ -112,8 +112,7 @@ impl Renderer {
             .map(|svg| svg.svg_data.as_str())
             .collect::<Vec<&str>>()
             .join("\n");
-        svg_data =
-            compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
+        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
 
         // Context in new scope, else accessing the surface data fails with a borrow error
         {
@@ -181,8 +180,7 @@ impl Renderer {
             .map(|svg| svg.svg_data.as_str())
             .collect::<Vec<&str>>()
             .join("\n");
-        svg_data =
-            compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
+        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
 
         let mut pixmap = tiny_skia::Pixmap::new(width_scaled as u32, height_scaled as u32)
             .ok_or_else(|| {
@@ -286,7 +284,7 @@ pub fn draw_svgs_to_cairo_context(
         .map(|svg| svg.svg_data.as_str())
         .collect::<Vec<&str>>()
         .join("\n");
-    svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true, false);
+    svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
 
     let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 

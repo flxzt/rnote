@@ -9,8 +9,9 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "render_component")]
 pub struct RenderComponent {
+    #[serde(rename = "render")]
     pub render: bool,
     #[serde(skip)]
     pub regenerate_flag: bool,
@@ -273,7 +274,6 @@ impl StrokesState {
             );
         }
     }
-
 
     /// Append the last elements to the render_comp of the stroke threaded. The rendering for strokes that don't support generating rendering for only the last elements are regenerated completely
     pub fn append_rendering_new_elem_threaded_fifo(&mut self, key: StrokeKey) {
@@ -688,7 +688,7 @@ impl StrokesState {
                             snapshot,
                         )
                     }
-                    for &hitbox_elem in brushstroke.hitbox.iter() {
+                    for &hitbox_elem in brushstroke.hitboxes.iter() {
                         canvas::debug::draw_bounds(
                             hitbox_elem,
                             canvas::debug::COLOR_STROKE_HITBOX,

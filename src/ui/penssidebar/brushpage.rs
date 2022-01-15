@@ -192,7 +192,7 @@ impl BrushPage {
 
         self.colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |colorpicker, _paramspec| {
             let color = colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().brush.color = utils::Color::from(color);
+            appwindow.canvas().pens().borrow_mut().brush.set_color(utils::Color::from(color));
         }));
 
         self.width_resetbutton().connect_clicked(
@@ -253,7 +253,7 @@ impl BrushPage {
 
         priv_.texturedstyle_density_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
-                appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_density(texturedstyle_density_adj.value());
+                appwindow.canvas().pens().borrow_mut().brush.textured_config.set_density(texturedstyle_density_adj.value());
             }),
         );
 
@@ -276,9 +276,9 @@ impl BrushPage {
             .get()
             .connect_value_changed(
                 clone!(@weak appwindow => move |texturedstyle_radius_x_adj| {
-                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_conf.radii();
+                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_config.radii();
                     radii[0] = texturedstyle_radius_x_adj.value();
-                    appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_radii(radii);
+                    appwindow.canvas().pens().borrow_mut().brush.textured_config.set_radii(radii);
                 }),
             );
 
@@ -301,9 +301,9 @@ impl BrushPage {
             .get()
             .connect_value_changed(
                 clone!(@weak appwindow => move |texturedstyle_radius_y_adj| {
-                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_conf.radii();
+                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_config.radii();
                     radii[1] = texturedstyle_radius_y_adj.value();
-                    appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_radii(radii);
+                    appwindow.canvas().pens().borrow_mut().brush.textured_config.set_radii(radii);
                 }),
             );
 
@@ -314,7 +314,7 @@ impl BrushPage {
                 .pens()
                 .borrow()
                 .brush
-                .textured_conf
+                .textured_config
                 .distribution(),
         );
 
@@ -328,16 +328,16 @@ impl BrushPage {
                     .as_str()
                 {
                     "uniform" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_distribution(TexturedDotsDistribution::Uniform);
+                        appwindow.canvas().pens().borrow_mut().brush.textured_config.set_distribution(TexturedDotsDistribution::Uniform);
                     },
                     "normal" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_distribution(TexturedDotsDistribution::Normal);
+                        appwindow.canvas().pens().borrow_mut().brush.textured_config.set_distribution(TexturedDotsDistribution::Normal);
                     },
                     "exponential" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_distribution(TexturedDotsDistribution::Exponential);
+                        appwindow.canvas().pens().borrow_mut().brush.textured_config.set_distribution(TexturedDotsDistribution::Exponential);
                     },
                     "reverse-exponential" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_conf.set_distribution(TexturedDotsDistribution::ReverseExponential);
+                        appwindow.canvas().pens().borrow_mut().brush.textured_config.set_distribution(TexturedDotsDistribution::ReverseExponential);
                     },
                     _ => {
                         log::error!(

@@ -1,6 +1,8 @@
-use super::{curves, geometry};
+use crate::pens::shaper::Shaper;
 
-use svg::node::element::path;
+use super::{curves, geometry, shapes};
+
+use svg::node::element::{self, path};
 
 pub fn compose_line(line: curves::Line, move_start: bool) -> Vec<path::Command> {
     let mut commands = Vec::new();
@@ -447,4 +449,61 @@ pub fn compose_cubbez_variable_width(
     ));
 
     commands
+}
+
+pub fn compose_rectangle(rectangle: shapes::Rectangle, shaper: &Shaper) -> element::Element {
+    let color = if let Some(color) = shaper.color() {
+        color.to_css_color()
+    } else {
+        String::from("none")
+    };
+    let fill = if let Some(fill) = shaper.fill() {
+        fill.to_css_color()
+    } else {
+        String::from("none")
+    };
+
+    let (mins, maxs) = geometry::vec2_mins_maxs(
+        -rectangle.cuboid.half_extents,
+        rectangle.cuboid.half_extents,
+    );
+
+    let transform_string = rectangle.transform.matrix_as_svg_transform_attr();
+
+    svg::node::element::Rectangle::new()
+        .set("transform", transform_string)
+        .set("x", mins[0])
+        .set("y", mins[1])
+        .set("width", maxs[0] - mins[0])
+        .set("height", maxs[1] - mins[1])
+        .set("stroke", color)
+        .set("stroke-width", shaper.width())
+        .set("fill", fill)
+        .into()
+}
+
+pub fn compose_ellipse(ellipse: shapes::Ellipse, shaper: &Shaper) -> element::Element {
+    let color = if let Some(color) = shaper.color() {
+        color.to_css_color()
+    } else {
+        String::from("none")
+    };
+    let fill = if let Some(fill) = shaper.fill() {
+        fill.to_css_color()
+    } else {
+        String::from("none")
+    };
+
+    let transform_string = ellipse.transform.matrix_as_svg_transform_attr();
+
+    svg::node::element::Ellipse::new()
+        .set("transform", transform_string)
+        .set("cx", 0.0)
+        .set("cy", 0.0)
+        .set("rx", ellipse.radii[0])
+        .set("ry", ellipse.radii[1])
+        .set("stroke", color)
+        .set("stroke-width", shaper.width())
+        .set("fill", fill)
+        .into()
 }

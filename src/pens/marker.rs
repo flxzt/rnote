@@ -10,9 +10,11 @@ use crate::{input, utils};
 use super::penbehaviour::PenBehaviour;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "marker")]
 pub struct Marker {
+    #[serde(rename = "width")]
     width: f64,
+    #[serde(rename = "color")]
     pub color: utils::Color,
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,

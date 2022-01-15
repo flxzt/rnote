@@ -10,21 +10,28 @@ use crate::{input, utils};
 use super::penbehaviour::PenBehaviour;
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
-pub enum CurrentShape {
+#[serde(rename = "shapestyle")]
+pub enum ShapeStyle {
+    #[serde(rename = "line")]
     Line,
+    #[serde(rename = "rectangle")]
     Rectangle,
+    #[serde(rename = "ellipse")]
     Ellipse,
 }
 
-impl Default for CurrentShape {
+impl Default for ShapeStyle {
     fn default() -> Self {
         Self::Rectangle
     }
 }
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[serde(rename = "drawstyle")]
 pub enum DrawStyle {
+    #[serde(rename = "smooth")]
     Smooth,
+    #[serde(rename = "rough")]
     Rough,
 }
 
@@ -39,14 +46,20 @@ impl DrawStyle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "shaper")]
 pub struct Shaper {
-    pub current_shape: CurrentShape,
-    pub drawstyle: DrawStyle,
+    #[serde(rename = "shapestyle")]
+    shapestyle: ShapeStyle,
+    #[serde(rename = "drawstyle")]
+    drawstyle: DrawStyle,
+    #[serde(rename = "width")]
     width: f64,
+    #[serde(rename = "color")]
     color: Option<utils::Color>,
+    #[serde(rename = "fill")]
     fill: Option<utils::Color>,
-    pub roughconfig: rough_rs::options::Options,
+    #[serde(rename = "rough_config")]
+    pub rough_config: rough_rs::options::Options,
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,
 }
@@ -54,12 +67,12 @@ pub struct Shaper {
 impl Default for Shaper {
     fn default() -> Self {
         Self {
-            current_shape: CurrentShape::default(),
+            shapestyle: ShapeStyle::default(),
             drawstyle: DrawStyle::default(),
             width: Shaper::WIDTH_DEFAULT,
             color: Shaper::COLOR_DEFAULT,
             fill: Shaper::FILL_DEFAULT,
-            roughconfig: rough_rs::options::Options::default(),
+            rough_config: rough_rs::options::Options::default(),
             current_stroke: None,
         }
     }
@@ -172,6 +185,22 @@ impl Shaper {
 
     pub fn set_width(&mut self, width: f64) {
         self.width = width.clamp(Shaper::WIDTH_MIN, Shaper::WIDTH_MAX);
+    }
+
+    pub fn shapestyle(&self) -> ShapeStyle {
+        self.shapestyle
+    }
+
+    pub fn set_shapestyle(&mut self, shapestyle: ShapeStyle) {
+        self.shapestyle = shapestyle;
+    }
+
+    pub fn drawstyle(&self) -> DrawStyle {
+        self.drawstyle
+    }
+
+    pub fn set_drawstyle(&mut self, drawstyle: DrawStyle) {
+        self.drawstyle = drawstyle;
     }
 
     pub fn color(&self) -> Option<utils::Color> {

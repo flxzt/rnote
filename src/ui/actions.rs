@@ -292,11 +292,11 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             match action_shaper_drawstyle.state().unwrap().str().unwrap() {
                 "smooth" => {
                     appwindow.penssidebar().shaper_page().drawstyle_smooth_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::DrawStyle::Smooth;
+                    appwindow.canvas().pens().borrow_mut().shaper.set_drawstyle(shaper::DrawStyle::Smooth);
                 },
                 "rough" => {
                     appwindow.penssidebar().shaper_page().drawstyle_rough_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::DrawStyle::Rough;
+                    appwindow.canvas().pens().borrow_mut().shaper.set_drawstyle(shaper::DrawStyle::Rough);
                 },
                 _ => { log::error!("set invalid state of action `shaper-drawstyle`")}
             }
@@ -345,17 +345,17 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             match action_current_shape.state().unwrap().str().unwrap() {
                 "line" => {
                     appwindow.penssidebar().shaper_page().line_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().shaper.current_shape = shaper::CurrentShape::Line;
+                    appwindow.canvas().pens().borrow_mut().shaper.set_shapestyle(shaper::ShapeStyle::Line);
                     appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(false);
                 },
                 "rectangle" => {
                     appwindow.penssidebar().shaper_page().rectangle_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().shaper.current_shape = shaper::CurrentShape::Rectangle;
+                    appwindow.canvas().pens().borrow_mut().shaper.set_shapestyle(shaper::ShapeStyle::Rectangle);
                     appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
                 },
                 "ellipse" => {
                     appwindow.penssidebar().shaper_page().ellipse_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().shaper.current_shape = shaper::CurrentShape::Ellipse;
+                    appwindow.canvas().pens().borrow_mut().shaper.set_shapestyle(shaper::ShapeStyle::Ellipse);
                     appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
                 },
                 _ => { log::error!("set invalid state of action `current-shape`")}
@@ -731,7 +731,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     .join("\n");
 
                 if let Some(selection_bounds) = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds {
-                    svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true, true);
+                    svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true);
 
                     let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(svg_data.as_bytes()));
                     match appwindow.clipboard().set_content(Some(&svg_content_provider)) {

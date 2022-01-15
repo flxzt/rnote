@@ -2,7 +2,6 @@ use geo::line_string;
 use gtk4::graphene;
 use p2d::query::PointQuery;
 
-
 pub fn vector2_unit_tang(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     if vec.magnitude() > 0.0 {
         vec.normalize()
@@ -21,14 +20,6 @@ pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     };
 
     rot_90deg * normalized
-}
-
-pub fn default_cuboid() -> p2d::shape::Cuboid {
-    p2d::shape::Cuboid::new(na::Vector2::zeros())
-}
-
-pub fn default_isometry() -> na::Isometry2<f64> {
-    na::Isometry2::<f64>::new(na::vector![0.0, 0.0], 0.0)
 }
 
 /// Match offset to the aspect ratio of the AABB
@@ -191,8 +182,8 @@ pub fn aabb_new_zero() -> p2d::bounding_volume::AABB {
 }
 
 pub fn aabb_new_positive(
-    start: na::Vector2<f64>,
-    end: na::Vector2<f64>,
+    start: na::Point2<f64>,
+    end: na::Point2<f64>,
 ) -> p2d::bounding_volume::AABB {
     if start[0] <= end[0] && start[1] <= end[1] {
         p2d::bounding_volume::AABB::new(na::point![start[0], start[1]], na::point![end[0], end[1]])

@@ -75,7 +75,7 @@ impl ExpandSheetTool {
         let width = sheet_bounds.extents()[0];
         let height = self.y_current_pos - self.y_start_pos;
         let bounds =
-            geometry::aabb_new_positive(na::vector![x, y], na::vector![x + width, y + height]);
+            geometry::aabb_new_positive(na::point![x, y], na::point![x + width, y + height]);
 
         let bounds_rect = svg::node::element::Rectangle::new()
             .set("x", bounds.mins[0])
@@ -167,15 +167,11 @@ impl DragProximityTool {
         let cy = self.pos[1] + self.offset[1];
         let r = self.radius;
         let mut draw_bounds = geometry::aabb_new_positive(
-            na::vector![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
-            na::vector![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
+            na::point![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
+            na::point![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
         );
-        draw_bounds.take_point(na::Point2::from(
-            self.pos.add_scalar(-Self::OUTLINE_WIDTH),
-        ));
-        draw_bounds.take_point(na::Point2::from(
-            self.pos.add_scalar(Self::OUTLINE_WIDTH),
-        ));
+        draw_bounds.take_point(na::Point2::from(self.pos.add_scalar(-Self::OUTLINE_WIDTH)));
+        draw_bounds.take_point(na::Point2::from(self.pos.add_scalar(Self::OUTLINE_WIDTH)));
 
         let mut group = svg::node::element::Group::new();
 

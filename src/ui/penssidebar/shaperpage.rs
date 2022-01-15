@@ -214,7 +214,7 @@ impl ShaperPage {
 
         priv_.roughconfig_roughness_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_roughness_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_roughness(roughconfig_roughness_adj.value());
+                appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_roughness(roughconfig_roughness_adj.value());
             }),
         );
 
@@ -234,7 +234,7 @@ impl ShaperPage {
 
         priv_.roughconfig_bowing_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_bowing_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_bowing(roughconfig_bowing_adj.value());
+                appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_bowing(roughconfig_bowing_adj.value());
             }),
         );
 
@@ -254,13 +254,13 @@ impl ShaperPage {
 
         priv_.roughconfig_curvestepcount_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_curvestepcount_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_curve_stepcount(roughconfig_curvestepcount_adj.value());
+                appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_curve_stepcount(roughconfig_curvestepcount_adj.value());
             }),
         );
 
         // Multistroke
         priv_.roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
-            appwindow.canvas().pens().borrow_mut().shaper.roughconfig.set_multistroke(roughconfig_multistroke_switch.state());
+            appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_multistroke(roughconfig_multistroke_switch.state());
         }));
 
         // Smooth / Rough shape toggle

@@ -57,19 +57,27 @@ slotmap::new_key_type! {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "strokes_state")]
 pub struct StrokesState {
+    #[serde(rename = "strokes")]
     // Components
     strokes: HopSlotMap<StrokeKey, StrokeStyle>,
+    #[serde(rename = "trash_components")]
     trash_components: SecondaryMap<StrokeKey, TrashComponent>,
+    #[serde(rename = "selection_components")]
     selection_components: SecondaryMap<StrokeKey, SelectionComponent>,
+    #[serde(rename = "chrono_components")]
     chrono_components: SecondaryMap<StrokeKey, ChronoComponent>,
+    #[serde(rename = "render_components")]
     render_components: SecondaryMap<StrokeKey, RenderComponent>,
 
     // Other state
     /// value is equal chrono_component of the newest inserted or modified stroke.
+    #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
+    #[serde(rename = "selection_bounds")]
     pub selection_bounds: Option<p2d::bounding_volume::AABB>,
+
     #[serde(skip)]
     pub zoom: f64, // changes with the canvas zoom
     #[serde(skip)]
@@ -419,8 +427,12 @@ impl StrokesState {
                 StrokeStyle::ShapeStroke(shapestroke) => {
                     shapestroke.update_geometry();
                 }
-                StrokeStyle::VectorImage(ref mut _vectorimage) => {}
-                StrokeStyle::BitmapImage(ref mut _bitmapimage) => {}
+                StrokeStyle::VectorImage(ref mut vectorimage) => {
+                    vectorimage.update_geometry();
+                }
+                StrokeStyle::BitmapImage(ref mut bitmapimage) => {
+                    bitmapimage.update_geometry();
+                }
             }
         } else {
             log::debug!(
@@ -600,6 +612,7 @@ impl StrokesState {
         Ok(svgs)
     }
 
+    /// Translate the strokes with the offset
     pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
@@ -620,6 +633,17 @@ impl StrokesState {
         });
     }
 
+    /// Rotates the stroke with angle (rad) around the center
+    pub fn rotate_strokes(&mut self, strokes: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
+        strokes.iter().for_each(|&key| {
+            if let Some(stroke) = self.strokes.get_mut(key) {
+                stroke.rotate(angle, center);
+                self.regenerate_rendering_for_stroke(key)
+            }
+        });
+    }
+
+    // Resizes the strokes to new bounds
     pub fn resize_strokes(
         &mut self,
         strokes: &[StrokeKey],
@@ -634,24 +658,15 @@ impl StrokesState {
                     old_bounds,
                     new_bounds,
                 );
-                stroke.resize(new_stroke_bounds);
 
-                if let Some(render_comp) = self.render_components.get_mut(key) {
-                    for image in render_comp.images.iter_mut() {
-                        image.bounds = geometry::scale_inner_bounds_to_new_outer_bounds(
-                            image.bounds,
-                            old_stroke_bounds,
-                            new_stroke_bounds,
-                        )
-                    }
+                let offset = new_stroke_bounds.center() - old_stroke_bounds.center();
+                let scale = new_stroke_bounds
+                    .extents()
+                    .component_div(&old_stroke_bounds.extents());
+                stroke.translate(offset);
+                stroke.scale(scale);
 
-                    if let Some(new_rendernode) =
-                        render::images_to_rendernode(&render_comp.images, self.zoom)
-                    {
-                        render_comp.rendernode = new_rendernode;
-                    }
-                    render_comp.regenerate_flag = true;
-                }
+                self.regenerate_rendering_for_stroke(key);
             }
         });
     }
@@ -676,11 +691,11 @@ impl StrokesState {
             radius: drag_proximity_tool.radius,
         };
         let tool_bounds = geometry::aabb_new_positive(
-            na::vector![
+            na::point![
                 drag_proximity_tool.pos[0] - drag_proximity_tool.radius,
                 drag_proximity_tool.pos[1] - drag_proximity_tool.radius
             ],
-            na::vector![
+            na::point![
                 drag_proximity_tool.pos[0] + drag_proximity_tool.radius,
                 drag_proximity_tool.pos[1] + drag_proximity_tool.radius
             ],

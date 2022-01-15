@@ -10,6 +10,7 @@ mod imp {
     use once_cell::sync::Lazy;
 
     use crate::{
+        compose::textured::TexturedDotsDistribution,
         config,
         sheet::format::MeasureUnit,
         sheet::Sheet,
@@ -25,7 +26,7 @@ mod imp {
             settingspanel::SettingsPanel, unitentry::UnitEntry, workspacebrowser::filerow::FileRow,
             workspacebrowser::WorkspaceBrowser,
         },
-        utils, compose::textured::TexturedDotsDistribution,
+        utils,
     };
 
     #[derive(Debug, Default)]

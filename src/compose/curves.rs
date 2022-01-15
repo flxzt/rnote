@@ -1,23 +1,76 @@
 use serde::{Deserialize, Serialize};
 
+use crate::strokes::strokebehaviour::{self, StrokeBehaviour};
+
+use super::geometry;
 use super::shapes::Rectangle;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "line")]
 pub struct Line {
+    #[serde(rename = "start")]
     pub start: na::Vector2<f64>,
+    #[serde(rename = "end")]
     pub end: na::Vector2<f64>,
 }
 
+impl StrokeBehaviour for Line {
+    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+        self.start += offset;
+        self.end += offset;
+    }
+
+    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+        let mut isometry = na::Isometry2::identity();
+        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
+
+        self.start = (isometry * na::Point2::from(self.start)).coords;
+        self.end = (isometry * na::Point2::from(self.end)).coords;
+    }
+
+    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+        let mid = (self.end + self.start) / 2.0;
+        let half_vec = (self.end - self.start) / 2.0;
+
+        self.start = mid - half_vec.component_mul(&scale);
+        self.end = mid + half_vec.component_mul(&scale);
+    }
+
+    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
+        let mid = (self.end + self.start) / 2.0;
+        let half_vec = (self.end - self.start) / 2.0;
+
+        let mut shear_matrix = na::Matrix3::<f64>::identity();
+        shear_matrix[(0, 1)] = shear[0].tan();
+        shear_matrix[(1, 0)] = shear[1].tan();
+
+        let half_vec: na::Vector2<f64> = na::Point2::from_homogeneous(
+            shear_matrix * na::Point2::from(half_vec).to_homogeneous(),
+        )
+        .unwrap()
+        .coords;
+
+        self.start = mid - half_vec;
+        self.end = mid + half_vec;
+    }
+}
+
 impl Line {
+    pub fn global_aabb(&self) -> p2d::bounding_volume::AABB {
+        geometry::aabb_new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
+    }
+
     pub fn line_w_width_to_rect(self, width: f64) -> Rectangle {
         let vec = self.end - self.start;
         let magn = vec.magnitude();
         let angle = na::Rotation2::rotation_between(&na::Vector2::x(), &vec).angle();
 
         Rectangle {
-            shape: p2d::shape::Cuboid::new(na::vector![magn / 2.0, width / 2.0]),
-            transform: na::Isometry2::new(self.start + vec / 2.0, angle),
+            cuboid: p2d::shape::Cuboid::new(na::vector![magn / 2.0, width / 2.0]),
+            transform: strokebehaviour::StrokeTransform::new_w_isometry(na::Isometry2::new(
+                self.start + vec / 2.0,
+                angle,
+            )),
         }
     }
 }

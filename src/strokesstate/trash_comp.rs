@@ -8,8 +8,9 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "trash_component")]
 pub struct TrashComponent {
+    #[serde(rename = "trashed")]
     pub trashed: bool,
 }
 
@@ -148,7 +149,7 @@ impl StrokesState {
                     StrokeStyle::BrushStroke(brushstroke) => {
                         // First check markerstroke bounds, then conditionally check hitbox
                         if eraser_bounds.intersects(&brushstroke.bounds) {
-                            for hitbox_elem in brushstroke.hitbox.iter() {
+                            for hitbox_elem in brushstroke.hitboxes.iter() {
                                 if eraser_bounds.intersects(hitbox_elem) {
                                     if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                         trash_comp.trashed = true;

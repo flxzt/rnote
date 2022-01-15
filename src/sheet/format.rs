@@ -3,10 +3,8 @@ mod imp {
 
     use gtk4::{glib, prelude::*, subclass::prelude::*};
     use once_cell::sync::Lazy;
-    use serde::{Deserialize, Serialize};
 
-    #[derive(Debug, Clone, Serialize, Deserialize)]
-    #[serde(default)]
+    #[derive(Debug, Clone)]
     pub struct Format {
         width: Cell<i32>,
         height: Cell<i32>,
@@ -168,7 +166,7 @@ impl Serialize for Format {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("Format", 4)?;
+        let mut state = serializer.serialize_struct("format", 4)?;
         state.serialize_field("width", &self.width())?;
         state.serialize_field("height", &self.height())?;
         state.serialize_field("dpi", &self.dpi())?;
@@ -198,7 +196,7 @@ impl<'de> Deserialize<'de> for Format {
             type Value = Format;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("struct Format")
+                formatter.write_str("the Format struct")
             }
 
             fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
@@ -308,7 +306,7 @@ impl<'de> Deserialize<'de> for Format {
         }
 
         const FIELDS: &[&str] = &["width", "height", "dpi", "orientation"];
-        deserializer.deserialize_struct("Format", FIELDS, FormatVisitor)
+        deserializer.deserialize_struct("format", FIELDS, FormatVisitor)
     }
 }
 

@@ -143,7 +143,7 @@ impl Serialize for Sheet {
     where
         S: serde::Serializer,
     {
-        let mut state = serializer.serialize_struct("Sheet", 12)?;
+        let mut state = serializer.serialize_struct("sheet", 9)?;
         state.serialize_field("version", &*self.version())?;
         state.serialize_field("strokes_state", &*self.strokes_state().borrow())?;
         state.serialize_field("format", &self.format())?;
@@ -183,7 +183,7 @@ impl<'de> Deserialize<'de> for Sheet {
             type Value = Sheet;
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("struct Sheet")
+                formatter.write_str("the Sheet struct")
             }
 
             fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
@@ -379,9 +379,8 @@ impl<'de> Deserialize<'de> for Sheet {
         }
 
         const FIELDS: &[&str] = &[
-            "strokes",
-            "strokes_trash",
-            "selection",
+            "version",
+            "strokes_state",
             "format",
             "background",
             "x",
@@ -392,7 +391,7 @@ impl<'de> Deserialize<'de> for Sheet {
             "endless_sheet",
             "format_borders",
         ];
-        deserializer.deserialize_struct("Sheet", FIELDS, SheetVisitor)
+        deserializer.deserialize_struct("sheet", FIELDS, SheetVisitor)
     }
 }
 
@@ -639,7 +638,6 @@ impl Sheet {
             svg_data.as_str(),
             Some(sheet_bounds),
             Some(sheet_bounds),
-            true,
             true,
         );
 

@@ -147,11 +147,15 @@ pub fn gen_dots_pattern(
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "background")]
 pub struct Background {
+    #[serde(rename = "color")]
     color: utils::Color,
+    #[serde(rename = "pattern")]
     pattern: PatternStyle,
+    #[serde(rename = "pattern_size")]
     pattern_size: na::Vector2<f64>,
+    #[serde(rename = "pattern_color")]
     pattern_color: utils::Color,
     #[serde(skip)]
     image: Option<render::Image>,
@@ -304,8 +308,7 @@ impl Background {
         bounds: p2d::bounding_volume::AABB,
     ) -> Result<render::Image, anyhow::Error> {
         let mut svg = self.gen_svg(bounds)?;
-        svg.svg_data =
-            compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), None, true, false);
+        svg.svg_data = compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), None, true);
 
         renderer.gen_image(zoom, &[svg], bounds)
     }

@@ -12,9 +12,13 @@ use serde::{Deserialize, Serialize};
 use super::penbehaviour::PenBehaviour;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename = "brushstyle")]
 pub enum BrushStyle {
+    #[serde(rename = "solid")]
     Solid,
+    #[serde(rename = "textured")]
     Textured,
+    #[serde(rename = "experimental")]
     Experimental,
 }
 
@@ -25,13 +29,18 @@ impl Default for BrushStyle {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "brush")]
 pub struct Brush {
+    #[serde(rename = "width")]
     width: f64,
+    #[serde(rename = "sensitivity")]
     sensitivity: f64,
-    pub color: utils::Color,
+    #[serde(rename = "color")]
+    color: utils::Color,
+    #[serde(rename = "style")]
     style: BrushStyle,
-    pub textured_conf: textured::TexturedConfig,
+    #[serde(rename = "textured_config")]
+    pub textured_config: textured::TexturedConfig,
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,
 }
@@ -43,7 +52,7 @@ impl Default for Brush {
             sensitivity: Self::SENSITIVITY_DEFAULT,
             color: utils::Color::from(Self::COLOR_DEFAULT),
             style: BrushStyle::default(),
-            textured_conf: textured::TexturedConfig::default(),
+            textured_config: textured::TexturedConfig::default(),
             current_stroke: None,
         }
     }
@@ -168,6 +177,14 @@ impl Brush {
 
     pub fn set_sensitivity(&mut self, sensitivity: f64) {
         self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
+    }
+
+    pub fn color(&self) -> utils::Color {
+        self.color
+    }
+
+    pub fn set_color(&mut self, color: utils::Color) {
+        self.color = color;
     }
 
     pub fn style(&self) -> BrushStyle {

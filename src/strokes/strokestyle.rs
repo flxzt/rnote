@@ -14,11 +14,17 @@ use super::strokebehaviour::StrokeBehaviour;
 use super::vectorimage::VectorImage;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "strokestyle")]
 pub enum StrokeStyle {
+    #[serde(rename = "markerstroke")]
     MarkerStroke(MarkerStroke),
+    #[serde(rename = "brushstroke")]
     BrushStroke(BrushStroke),
+    #[serde(rename = "shapestroke")]
     ShapeStroke(ShapeStroke),
+    #[serde(rename = "vectorimage")]
     VectorImage(VectorImage),
+    #[serde(rename = "bitmapimage")]
     BitmapImage(BitmapImage),
 }
 
@@ -75,22 +81,62 @@ impl StrokeBehaviour for StrokeStyle {
         }
     }
 
-    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
         match self {
             Self::MarkerStroke(markerstroke) => {
-                markerstroke.resize(new_bounds);
+                markerstroke.rotate(angle, center);
             }
             Self::BrushStroke(brushstroke) => {
-                brushstroke.resize(new_bounds);
+                brushstroke.rotate(angle, center);
             }
             Self::ShapeStroke(shapestroke) => {
-                shapestroke.resize(new_bounds);
+                shapestroke.rotate(angle, center);
             }
             Self::VectorImage(vectorimage) => {
-                vectorimage.resize(new_bounds);
+                vectorimage.rotate(angle, center);
             }
             Self::BitmapImage(bitmapimage) => {
-                bitmapimage.resize(new_bounds);
+                bitmapimage.rotate(angle, center);
+            }
+        }
+    }
+
+    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+        match self {
+            Self::MarkerStroke(markerstroke) => {
+                markerstroke.scale(scale);
+            }
+            Self::BrushStroke(brushstroke) => {
+                brushstroke.scale(scale);
+            }
+            Self::ShapeStroke(shapestroke) => {
+                shapestroke.scale(scale);
+            }
+            Self::VectorImage(vectorimage) => {
+                vectorimage.scale(scale);
+            }
+            Self::BitmapImage(bitmapimage) => {
+                bitmapimage.scale(scale);
+            }
+        }
+    }
+
+    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
+        match self {
+            Self::MarkerStroke(markerstroke) => {
+                markerstroke.shear(shear);
+            }
+            Self::BrushStroke(brushstroke) => {
+                brushstroke.shear(shear);
+            }
+            Self::ShapeStroke(shapestroke) => {
+                shapestroke.shear(shear);
+            }
+            Self::VectorImage(vectorimage) => {
+                vectorimage.shear(shear);
+            }
+            Self::BitmapImage(bitmapimage) => {
+                bitmapimage.shear(shear);
             }
         }
     }
@@ -148,9 +194,11 @@ impl InputData {
 
 // Represents a single Stroke Element
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[serde(rename = "element")]
 pub struct Element {
+    #[serde(rename = "inputdata")]
     pub inputdata: InputData,
-    #[serde(default = "default_datetime")]
+    #[serde(rename = "timpestamp", default = "default_datetime")]
     pub timestamp: chrono::DateTime<Utc>,
 }
 

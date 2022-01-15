@@ -12,8 +12,9 @@ use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "selection_component")]
 pub struct SelectionComponent {
+    #[serde(default, rename = "selected")]
     pub selected: bool,
 }
 
@@ -124,7 +125,7 @@ impl StrokesState {
         });
 
         // Offsetting the new selected stroke to make the duplication apparent to the user
-        self.translate_selection(offset);
+        self.translate_strokes(&selected, offset);
         self.update_selection_bounds();
     }
 
@@ -220,7 +221,7 @@ impl StrokesState {
                         } else if selector_polygon
                             .contains(&geometry::p2d_aabb_to_geo_polygon(brushstroke.bounds))
                         {
-                            for &hitbox_elem in brushstroke.hitbox.iter() {
+                            for &hitbox_elem in brushstroke.hitboxes.iter() {
                                 if !selector_polygon
                                     .contains(&geometry::p2d_aabb_to_geo_polygon(hitbox_elem))
                                 {
@@ -284,35 +285,14 @@ impl StrokesState {
         }
     }
 
-    /// Translate the selection with its contents with an offset relative to the current position
-    pub fn translate_selection(&mut self, offset: na::Vector2<f64>) {
-        let selection_keys = self.selection_keys();
-
-        self.translate_strokes(&selection_keys, offset);
-
-        self.selection_bounds = self
-            .selection_bounds
-            .map(|selection_bounds| geometry::aabb_translate(selection_bounds, offset));
-    }
-
-    /// Resizing the selection with its contents to the new bounds. Stroke rendering regeneration is needed when resizing is finished.
-    pub fn resize_selection(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        let selection_keys = self.selection_keys();
-
-        if let Some(selection_bounds) = self.selection_bounds {
-            self.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-
-            self.selection_bounds = Some(new_bounds);
-        }
-    }
-
     /// the svgs of the current selection, without xml header or svg root
     pub fn gen_svgs_selection(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
         if self.selection_bounds.is_none() {
             return Ok(vec![]);
         }
 
-        Ok(self.keys_sorted_chrono()
+        Ok(self
+            .keys_sorted_chrono()
             .iter()
             .filter(|&&key| {
                 self.does_render(key).unwrap_or(false)
@@ -347,7 +327,6 @@ impl StrokesState {
             svg_data.as_str(),
             Some(selection_bounds),
             Some(selection_bounds),
-            true,
             true,
         );
 

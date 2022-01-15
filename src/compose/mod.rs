@@ -1,6 +1,6 @@
+pub mod curves;
 pub mod geometry;
 pub mod shapes;
-pub mod curves;
 pub mod solid;
 pub mod textured;
 
@@ -37,7 +37,6 @@ pub fn wrap_svg_root(
     data: &str,
     bounds: Option<p2d::bounding_volume::AABB>,
     viewbox: Option<p2d::bounding_volume::AABB>,
-    xml_header: bool,
     preserve_aspectratio: bool,
 ) -> String {
     const SVG_WRAP_TEMPL_STR: &str = r#"
@@ -90,7 +89,6 @@ pub fn wrap_svg_root(
         String::from("none")
     };
 
-    cx.insert("xml_header", &xml_header);
     cx.insert("data", data);
     cx.insert("x", &x);
     cx.insert("y", &y);

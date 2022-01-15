@@ -1,4 +1,4 @@
-use crate::compose::geometry;
+use crate::compose::{geometry, shapes};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
 use crate::{compose, render};
@@ -6,23 +6,30 @@ use crate::{compose, render};
 use anyhow::Context;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
+use svg::node::{self, element};
 
-use super::strokebehaviour::StrokeBehaviour;
+use super::strokebehaviour::{self, StrokeBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "vectorimage")]
 pub struct VectorImage {
-    pub bounds: p2d::bounding_volume::AABB,
-    pub intrinsic_size: na::Vector2<f64>,
+    #[serde(rename = "svg_data")]
     pub svg_data: String,
+    #[serde(rename = "intrinsic_size")]
+    pub intrinsic_size: na::Vector2<f64>,
+    #[serde(rename = "rectangle")]
+    pub rectangle: shapes::Rectangle,
+    #[serde(rename = "bounds")]
+    pub bounds: p2d::bounding_volume::AABB,
 }
 
 impl Default for VectorImage {
     fn default() -> Self {
         Self {
-            bounds: geometry::aabb_new_zero(),
-            intrinsic_size: na::vector![0.0, 0.0],
             svg_data: String::default(),
+            intrinsic_size: na::Vector2::zeros(),
+            rectangle: shapes::Rectangle::default(),
+            bounds: geometry::aabb_new_zero(),
         }
     }
 }
@@ -36,41 +43,75 @@ impl DrawBehaviour for VectorImage {
         self.bounds = bounds;
     }
 
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let bounds = geometry::aabb_translate(self.bounds, offset);
-        let intrinsic_bounds = p2d::bounding_volume::AABB::new(
-            na::point![0.0, 0.0],
-            na::point![self.intrinsic_size[0], self.intrinsic_size[1]],
-        );
+    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+        Some(self.rectangle.global_aabb())
+    }
 
-        let svg_data = compose::wrap_svg_root(
-            self.svg_data.as_str(),
-            Some(bounds),
-            Some(intrinsic_bounds),
-            false,
-            false,
-        );
-        let svg = render::Svg { bounds, svg_data };
+    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let mut rectangle = self.rectangle.clone();
+        rectangle
+            .transform
+            .isometry
+            .append_translation_mut(&na::Translation2::from(offset));
+
+        let transform_string = rectangle.transform.matrix_as_svg_transform_attr();
+
+        let svg_root = element::SVG::new()
+            .set("x", -self.rectangle.cuboid.half_extents[0])
+            .set("y", -self.rectangle.cuboid.half_extents[1])
+            .set("width", 2.0 * self.rectangle.cuboid.half_extents[0])
+            .set("height", 2.0 * self.rectangle.cuboid.half_extents[1])
+            .set(
+                "viewBox",
+                format!(
+                    "{:.3} {:.3} {:.3} {:.3}",
+                    0.0, 0.0, self.intrinsic_size[0], self.intrinsic_size[1]
+                ),
+            )
+            .set("preserveAspectRatio", "none")
+            .add(node::Text::new(self.svg_data.clone()));
+
+        let group = element::Group::new()
+            .set("transform", transform_string)
+            .add(svg_root);
+
+        let svg_data = compose::node_to_string(&group)?;
+        let svg = render::Svg {
+            bounds: geometry::aabb_translate(self.bounds, offset),
+            svg_data,
+        };
 
         Ok(vec![svg])
     }
 }
 
 impl StrokeBehaviour for VectorImage {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
-        self.bounds = geometry::aabb_translate(self.bounds, offset);
+    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+        self.rectangle.translate(offset);
+        self.update_geometry();
     }
 
-    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        self.bounds = new_bounds;
+    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+        self.rectangle.rotate(angle, center);
+        self.update_geometry();
+    }
+
+    fn scale(&mut self, scale: na::Vector2<f64>) {
+        self.rectangle.scale(scale);
+        self.update_geometry();
+    }
+
+    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
+        self.rectangle.shear(shear);
+        self.update_geometry();
     }
 }
 
 impl VectorImage {
     pub const SIZE_X_DEFAULT: f64 = 500.0;
     pub const SIZE_Y_DEFAULT: f64 = 500.0;
-    pub const OFFSET_X_DEFAULT: f64 = 28.0;
-    pub const OFFSET_Y_DEFAULT: f64 = 28.0;
+    pub const OFFSET_X_DEFAULT: f64 = 32.0;
+    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
 
     pub fn import_from_svg_data(
         svg_data: &str,
@@ -93,23 +134,30 @@ impl VectorImage {
         let svg_node = rtree.svg_node();
         let intrinsic_size = na::vector![svg_node.size.width(), svg_node.size.height()];
 
-        let bounds = size.map_or_else(
-            || {
-                p2d::bounding_volume::AABB::new(
-                    na::Point2::from(pos),
-                    na::Point2::from(intrinsic_size + pos),
-                )
-            },
-            |size| {
-                p2d::bounding_volume::AABB::new(na::Point2::from(pos), na::Point2::from(size + pos))
-            },
-        );
+        let rectangle =
+            if let Some(size) = size {
+                shapes::Rectangle {
+                    cuboid: p2d::shape::Cuboid::new(size / 2.0),
+                    transform: strokebehaviour::StrokeTransform::new_w_isometry(
+                        na::Isometry2::new(pos + size / 2.0, 0.0),
+                    ),
+                }
+            } else {
+                shapes::Rectangle {
+                    cuboid: p2d::shape::Cuboid::new(intrinsic_size / 2.0),
+                    transform: strokebehaviour::StrokeTransform::new_w_isometry(
+                        na::Isometry2::new(pos + intrinsic_size / 2.0, 0.0),
+                    ),
+                }
+            };
 
-        let vector_image = Self {
-            bounds,
-            intrinsic_size,
+        let mut vector_image = Self {
             svg_data,
+            intrinsic_size,
+            rectangle,
+            bounds: geometry::aabb_new_zero(),
         };
+        vector_image.update_geometry();
 
         Ok(vector_image)
     }
@@ -199,5 +247,11 @@ impl VectorImage {
         }
 
         Ok(images)
+    }
+
+    pub fn update_geometry(&mut self) {
+        if let Some(new_bounds) = self.gen_bounds() {
+            self.set_bounds(new_bounds);
+        }
     }
 }

@@ -97,17 +97,22 @@ impl TexturedDotsDistribution {
 /// The Configuration of how the textured shape should look
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "textured_config")]
 pub struct TexturedConfig {
     /// An optional seed to generate reproducable strokes
+    #[serde(rename = "seed")]
     seed: Option<u64>,
     /// The color of the dots
+    #[serde(rename = "color")]
     color: utils::Color,
     /// Amount dots per 10x10 area
+    #[serde(rename = "density")]
     density: f64,
     /// the radii of the dots
+    #[serde(rename = "radii")]
     radii: na::Vector2<f64>,
     /// the distribution type
+    #[serde(rename = "distribution")]
     distribution: TexturedDotsDistribution,
 }
 
@@ -190,11 +195,11 @@ impl TexturedConfig {
 
 pub fn compose_line(line: curves::Line, width: f64, config: &mut TexturedConfig) -> Element {
     let rect = line.line_w_width_to_rect(width);
-    let area = 4.0 * rect.shape.half_extents[0] * rect.shape.half_extents[1];
+    let area = 4.0 * rect.cuboid.half_extents[0] * rect.cuboid.half_extents[1];
 
     // Ranges for randomization
-    let range_x = -rect.shape.half_extents[0]..rect.shape.half_extents[0];
-    let range_y = -rect.shape.half_extents[1]..rect.shape.half_extents[1];
+    let range_x = -rect.cuboid.half_extents[0]..rect.cuboid.half_extents[0];
+    let range_y = -rect.cuboid.half_extents[1]..rect.cuboid.half_extents[1];
     let range_dots_rot = -std::f64::consts::FRAC_PI_8..std::f64::consts::FRAC_PI_8;
     let range_dots_rx = config.radii[0] * 0.8..config.radii[0] * 1.25;
     let range_dots_ry = config.radii[1] * 0.8..config.radii[1] * 1.25;
@@ -221,7 +226,7 @@ pub fn compose_line(line: curves::Line, width: f64, config: &mut TexturedConfig)
             .distribution
             .sample_for_range_symmetrical_clipped(&mut rng, range_y.clone());
 
-        let pos = rect.transform * na::point![x_pos, y_pos];
+        let pos = rect.transform.isometry * na::point![x_pos, y_pos];
 
         let rotation_angle = na::Rotation2::rotation_between(&na::Vector2::x(), &vec).angle()
             + distr_dots_rot.sample(&mut rng);

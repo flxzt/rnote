@@ -10,6 +10,7 @@ use crate::{
 };
 
 use p2d::bounding_volume::BoundingVolume;
+use rand::{Rng, SeedableRng};
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
@@ -17,14 +18,18 @@ use svg::node::element::path;
 use super::strokestyle::InputData;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "brushstroke")]
 pub struct BrushStroke {
+    #[serde(rename = "seed")]
     pub seed: Option<u64>,
+    #[serde(rename = "elements")]
     pub elements: Vec<Element>,
+    #[serde(rename = "brush")]
     pub brush: Brush,
+    #[serde(rename = "bounds")]
     pub bounds: p2d::bounding_volume::AABB,
     #[serde(skip)]
-    pub hitbox: Vec<p2d::bounding_volume::AABB>,
+    pub hitboxes: Vec<p2d::bounding_volume::AABB>,
 }
 
 impl Default for BrushStroke {
@@ -112,38 +117,53 @@ impl DrawBehaviour for BrushStroke {
 }
 
 impl StrokeBehaviour for BrushStroke {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.elements.iter_mut().for_each(|element| {
             element.inputdata.set_pos(element.inputdata.pos() + offset);
         });
-
-        self.bounds = geometry::aabb_translate(self.bounds, offset);
-        self.hitbox = self.gen_hitbox();
+        self.update_geometry();
     }
-
-    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        let offset = na::vector![
-            new_bounds.mins[0] - self.bounds.mins[0],
-            new_bounds.mins[1] - self.bounds.mins[1]
-        ];
-
-        let scalevector = na::vector![
-            (new_bounds.extents()[0]) / (self.bounds.extents()[0]),
-            (new_bounds.extents()[1]) / (self.bounds.extents()[1])
-        ];
+    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+        let mut isometry = na::Isometry2::identity();
+        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
         self.elements.iter_mut().for_each(|element| {
-            let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
+            element
+                .inputdata
+                .set_pos((isometry * na::Point2::from(element.inputdata.pos())).coords);
+        });
+        self.update_geometry();
+    }
+    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+        let center = self.bounds.center().coords;
 
-            element.inputdata.set_pos(
-                ((element.inputdata.pos() - top_left).component_mul(&scalevector))
-                    + top_left
-                    + offset,
-            );
+        self.elements.iter_mut().for_each(|element| {
+            element
+                .inputdata
+                .set_pos(((element.inputdata.pos() - center).component_mul(&scale)) + center);
+        });
+        self.update_geometry();
+    }
+    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
+        let center = self.bounds.center().coords;
+
+        let mut shear_matrix = na::Matrix3::<f64>::identity();
+        shear_matrix[(0, 1)] = shear[0].tan();
+        shear_matrix[(1, 0)] = shear[1].tan();
+
+        self.elements.iter_mut().for_each(|element| {
+            let pos_local = element.inputdata.pos() - center;
+
+            let pos_local_new: na::Vector2<f64> = na::Point2::from_homogeneous(
+                shear_matrix * na::Point2::from(pos_local).to_homogeneous(),
+            )
+            .unwrap()
+            .coords;
+
+            element.inputdata.set_pos(center + pos_local_new);
         });
 
-        self.bounds = new_bounds;
-        self.hitbox = self.gen_hitbox();
+        self.update_geometry();
     }
 }
 
@@ -151,7 +171,8 @@ impl BrushStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
 
     pub fn new(element: Element, brush: Brush) -> Self {
-        let seed = Some(rough_rs::utils::random_u64_full(None));
+        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+
         let elements = Vec::with_capacity(20);
         let bounds = p2d::bounding_volume::AABB::new(
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
@@ -164,7 +185,7 @@ impl BrushStroke {
             elements,
             brush,
             bounds,
-            hitbox,
+            hitboxes: hitbox,
         };
 
         // Pushing with push_elem() instead filling vector, because bounds are getting updated there too
@@ -207,7 +228,7 @@ impl BrushStroke {
         if let Some(new_bounds) = self.gen_bounds() {
             self.set_bounds(new_bounds);
         }
-        self.hitbox = self.gen_hitbox();
+        self.hitboxes = self.gen_hitboxes();
     }
 
     fn update_bounds_to_last_elem(&mut self) {
@@ -226,7 +247,7 @@ impl BrushStroke {
         }
     }
 
-    fn gen_hitbox(&self) -> Vec<p2d::bounding_volume::AABB> {
+    fn gen_hitboxes(&self) -> Vec<p2d::bounding_volume::AABB> {
         let mut hitbox: Vec<p2d::bounding_volume::AABB> =
             Vec::with_capacity(self.elements.len() as usize);
         let mut elements_iter = self.elements.iter().peekable();
@@ -266,21 +287,25 @@ impl BrushStroke {
             };
 
             geometry::aabb_new_positive(
-                first - na::vector![brush_x / 2.0, brush_y / 2.0],
-                first + delta + na::vector![brush_x / 2.0, brush_y / 2.0],
+                na::Point2::from(first - na::vector![brush_x / 2.0, brush_y / 2.0]),
+                na::Point2::from(first + delta + na::vector![brush_x / 2.0, brush_y / 2.0]),
             )
         } else {
             geometry::aabb_new_positive(
-                first
-                    - na::vector![
-                        (Self::HITBOX_DEFAULT + brush_width) / 2.0,
-                        (Self::HITBOX_DEFAULT + brush_width / 2.0)
-                    ],
-                first
-                    + na::vector![
-                        Self::HITBOX_DEFAULT + brush_width,
-                        Self::HITBOX_DEFAULT + brush_width
-                    ],
+                na::Point2::from(
+                    first
+                        - na::vector![
+                            (Self::HITBOX_DEFAULT + brush_width) / 2.0,
+                            (Self::HITBOX_DEFAULT + brush_width / 2.0)
+                        ],
+                ),
+                na::Point2::from(
+                    first
+                        + na::vector![
+                            Self::HITBOX_DEFAULT + brush_width,
+                            Self::HITBOX_DEFAULT + brush_width
+                        ],
+                ),
             )
         }
     }
@@ -387,7 +412,7 @@ impl BrushStroke {
             .set("stroke", "none")
             //.set("stroke", self.brush.color.to_css_color())
             //.set("stroke-width", 1.0)
-            .set("fill", self.brush.color.to_css_color())
+            .set("fill", self.brush.color().to_css_color())
             .set("d", path::Data::from(commands));
 
         let mut svg_data = compose::node_to_string(&path)
@@ -400,7 +425,7 @@ impl BrushStroke {
             .ok()?;
 
         if svg_root {
-            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
+            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true);
         }
         Some(render::Svg { svg_data, bounds })
     }
@@ -438,9 +463,9 @@ impl BrushStroke {
         let mut bounds = p2d::bounding_volume::AABB::new_invalid();
 
         // Configure the textured Configuration
-        let mut textured_conf = self.brush.textured_conf.clone();
+        let mut textured_conf = self.brush.textured_config.clone();
         textured_conf.set_seed(seed);
-        textured_conf.set_color(self.brush.color);
+        textured_conf.set_color(self.brush.color());
 
         let element = if let Some(mut line) =
             curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
@@ -468,7 +493,7 @@ impl BrushStroke {
             .ok()?;
 
         if svg_root {
-            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
+            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true);
         }
 
         Some(render::Svg { svg_data, bounds })
@@ -579,7 +604,7 @@ impl BrushStroke {
             .set("stroke", "none")
             //.set("stroke", self.brush.color.to_css_color())
             //.set("stroke-width", 1.0)
-            .set("fill", self.brush.color.to_css_color())
+            .set("fill", self.brush.color().to_css_color())
             .set("d", path::Data::from(commands));
 
         let mut svg_data = compose::node_to_string(&path)
@@ -592,7 +617,7 @@ impl BrushStroke {
             .ok()?;
 
         if svg_root {
-            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
+            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true);
         }
         Some(render::Svg { svg_data, bounds })
     }

@@ -1299,7 +1299,7 @@ dependencies = [
  "libc",
  "locale_config",
  "markup5ever",
- "nalgebra",
+ "nalgebra 0.29.0",
  "num-traits",
  "once_cell",
  "pango",
@@ -1458,8 +1458,24 @@ dependencies = [
  "num-complex",
  "num-rational 0.4.0",
  "num-traits",
+ "simba 0.6.0",
+ "typenum",
+]
+
+[[package]]
+name = "nalgebra"
+version = "0.30.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4fb2d0de08694bed883320212c18ee3008576bfe8c306f4c3c4a58b4876998be"
+dependencies = [
+ "approx 0.5.0",
+ "matrixmultiply",
+ "nalgebra-macros",
+ "num-complex",
+ "num-rational 0.4.0",
+ "num-traits",
  "serde",
- "simba",
+ "simba 0.7.0",
  "typenum",
 ]
 
@@ -1690,21 +1706,21 @@ dependencies = [
 
 [[package]]
 name = "parry2d-f64"
-version = "0.7.1"
+version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7aba2b62d73d90e48a1403ddd197183c04c4f8c06bf37a14492c8246928d852c"
+checksum = "e96040e0f10b65df992e8367983b7c3ac779046cd6d9a4a7cd1496e8c6b6ef51"
 dependencies = [
  "approx 0.5.0",
  "arrayvec 0.7.2",
  "bitflags",
  "downcast-rs",
  "either",
- "nalgebra",
+ "nalgebra 0.30.1",
  "num-derive",
  "num-traits",
  "rustc-hash",
  "serde",
- "simba",
+ "simba 0.7.0",
  "slab",
  "smallvec",
 ]
@@ -2255,7 +2271,7 @@ dependencies = [
  "libadwaita",
  "librsvg",
  "log",
- "nalgebra",
+ "nalgebra 0.30.1",
  "num-derive",
  "num-traits",
  "once_cell",
@@ -2291,7 +2307,7 @@ name = "rough-rs"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "nalgebra",
+ "nalgebra 0.30.1",
  "rand 0.8.4",
  "rand_pcg 0.3.1",
  "serde",
@@ -2504,6 +2520,19 @@ name = "simba"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0b7840f121a46d63066ee7a99fc81dcabbc6105e437cae43528cea199b5a05f"
+dependencies = [
+ "approx 0.5.0",
+ "num-complex",
+ "num-traits",
+ "paste",
+ "wide",
+]
+
+[[package]]
+name = "simba"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6fa406d0a270fc91831a28f705ba803ad05b971486af492317f1607390245b99"
 dependencies = [
  "approx 0.5.0",
  "num-complex",

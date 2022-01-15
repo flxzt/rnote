@@ -1,14 +1,18 @@
 pub mod modifiernode;
 
 pub mod imp {
+    use std::cell::Cell;
+
     use super::modifiernode::ModifierNode;
 
     use gtk4::gdk;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
 
-    #[derive(Default, Debug, CompositeTemplate)]
+    #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/selectionmodifier.ui")]
     pub struct SelectionModifier {
+        pub bounds: Cell<Option<p2d::bounding_volume::AABB>>,
+
         #[template_child]
         pub resize_tl: TemplateChild<ModifierNode>,
         #[template_child]
@@ -19,6 +23,22 @@ pub mod imp {
         pub resize_br: TemplateChild<ModifierNode>,
         #[template_child]
         pub translate_node: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub rotate_node: TemplateChild<ModifierNode>,
+    }
+
+    impl Default for SelectionModifier {
+        fn default() -> Self {
+            Self {
+                bounds: Cell::new(None),
+                resize_tl: TemplateChild::default(),
+                resize_tr: TemplateChild::default(),
+                resize_bl: TemplateChild::default(),
+                resize_br: TemplateChild::default(),
+                translate_node: TemplateChild::default(),
+                rotate_node: TemplateChild::default(),
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -55,6 +75,10 @@ pub mod imp {
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
 
             self.resize_br
+                .image()
+                .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
+
+            self.rotate_node
                 .image()
                 .set_pixel_size(super::SelectionModifier::RESIZE_NODE_SIZE);
 
@@ -116,6 +140,12 @@ impl SelectionModifier {
         imp::SelectionModifier::from_instance(self).resize_br.get()
     }
 
+    pub fn rotate_node(&self) -> ModifierNode {
+        imp::SelectionModifier::from_instance(self)
+            .rotate_node
+            .get()
+    }
+
     pub fn translate_node(&self) -> gtk4::Box {
         imp::SelectionModifier::from_instance(self)
             .translate_node
@@ -127,6 +157,7 @@ impl SelectionModifier {
         self.init_resize_tr_node(appwindow);
         self.init_resize_bl_node(appwindow);
         self.init_resize_br_node(appwindow);
+        self.init_rotate_node(appwindow);
         self.init_translate_node(appwindow);
     }
 
@@ -166,9 +197,11 @@ impl SelectionModifier {
                             new_bounds.maxs[1]
                         ]
                     );
-                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
 
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().selection_bounds = Some(new_bounds);
 
                     obj.queue_resize();
                     appwindow.canvas().queue_draw();
@@ -220,9 +253,11 @@ impl SelectionModifier {
                             new_bounds.maxs[1]
                         ]
                     );
-                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
 
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().selection_bounds = Some(new_bounds);
 
                     obj.queue_resize();
                     appwindow.canvas().queue_draw();
@@ -260,10 +295,6 @@ impl SelectionModifier {
                     let zoom = appwindow.canvas().zoom();
                     let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-/*                         if drag_gesture.current_event_state().contains(gdk::ModifierType::SHIFT_MASK) {
-                        offset = geometry::restrict_offset_to_aabb_aspect_ratio(start_bounds, offset);
-                    } */
-
                     let new_bounds = p2d::bounding_volume::AABB::new(
                         na::point![
                         selection_bounds.mins[0] + offset[0], selection_bounds.mins[1]],
@@ -279,9 +310,11 @@ impl SelectionModifier {
                             new_bounds.mins[1] + Self::SELECTION_MIN
                         ]
                     );
-                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
 
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().selection_bounds = Some(new_bounds);
 
                     obj.queue_resize();
                     appwindow.canvas().queue_draw();
@@ -333,9 +366,11 @@ impl SelectionModifier {
                             new_bounds.mins[1] + Self::SELECTION_MIN
                         ]
                     );
-                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
 
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_selection(new_bounds);
+                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().selection_bounds = Some(new_bounds);
 
                     obj.queue_resize();
                     appwindow.canvas().queue_draw();
@@ -354,26 +389,70 @@ impl SelectionModifier {
     pub fn init_translate_node(&self, appwindow: &RnoteAppWindow) {
         let priv_ = imp::SelectionModifier::from_instance(self);
 
-        let translate_drag_gesture = GestureDrag::builder()
+        let translate_node_drag_gesture = GestureDrag::builder()
             .name("translate_drag")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        priv_.translate_node.add_controller(&translate_drag_gesture);
+        priv_
+            .translate_node
+            .add_controller(&translate_node_drag_gesture);
 
-        translate_drag_gesture.connect_drag_begin(
-            clone!(@weak self as obj, @weak appwindow => move |translate_drag_gesture, _x, _y| {
-                translate_drag_gesture.set_state(EventSequenceState::Claimed);
+        translate_node_drag_gesture.connect_drag_begin(
+            clone!(@weak self as obj, @weak appwindow => move |translate_node_drag_gesture, _x, _y| {
+                translate_node_drag_gesture.set_state(EventSequenceState::Claimed);
             }),
         );
-        translate_drag_gesture.connect_drag_update(
-            clone!(@weak self as obj, @weak appwindow => move |_translate_drag_gesture, x, y| {
+        translate_node_drag_gesture.connect_drag_update(
+            clone!(@weak self as obj, @weak appwindow => move |_translate_node_drag_gesture, x, y| {
                 let zoom = appwindow.canvas().zoom();
                 let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-                appwindow.canvas().sheet().strokes_state().borrow_mut().translate_selection(offset);
+                let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
+                appwindow.canvas().sheet().strokes_state().borrow_mut().translate_strokes(&selection_keys, offset);
+                appwindow.canvas().sheet().strokes_state().borrow_mut().update_selection_bounds();
 
                 obj.queue_resize();
                 appwindow.canvas().queue_draw();
+            }),
+        );
+        translate_node_drag_gesture.connect_drag_end(
+            clone!(@weak self as obj, @weak appwindow => move |_translate_node_drag_gesture, _x, _y| {
+            }),
+        );
+    }
+
+    pub fn init_rotate_node(&self, appwindow: &RnoteAppWindow) {
+        let priv_ = imp::SelectionModifier::from_instance(self);
+
+        let rotate_node_drag_gesture = GestureDrag::builder()
+            .name("rotate_node_drag_gesture")
+            .propagation_phase(PropagationPhase::Capture)
+            .build();
+        priv_.rotate_node.add_controller(&rotate_node_drag_gesture);
+
+        rotate_node_drag_gesture.connect_drag_begin(
+            clone!(@weak self as obj, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+            }),
+        );
+        rotate_node_drag_gesture.connect_drag_update(
+            clone!(@weak self as obj, @weak appwindow => move |_rotate_node_drag_gesture, x, y| {
+                let selection_bounds = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds;
+
+                if let Some(selection_bounds) = selection_bounds {
+                    let angle = na::vector![x, y].magnitude() / (100.0 * std::f64::consts::PI * 2.0);
+
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().rotate_strokes(&selection_keys, angle, selection_bounds.center());
+                    appwindow.canvas().sheet().strokes_state().borrow_mut().update_selection_bounds();
+
+                    obj.queue_resize();
+                    appwindow.canvas().queue_draw();
+                }
+            }),
+        );
+        rotate_node_drag_gesture.connect_drag_end(
+            clone!(@weak self as obj, @weak appwindow => move |_drag_gesture, _x, _y| {
             }),
         );
     }

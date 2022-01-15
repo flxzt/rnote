@@ -46,6 +46,18 @@
       </object>
     </child>
     <child>
+      <object class="ModifierNode" id="rotate_node">
+        <property name="hexpand">true</property>
+        <property name="vexpand">true</property>
+        <property name="halign">end</property>
+        <property name="valign">center</property>
+        <layout>
+          <property name="column">2</property>
+          <property name="row">1</property>
+        </layout>
+      </object>
+    </child>
+    <child>
       <object class="ModifierNode" id="resize_br">
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>

@@ -10,10 +10,13 @@ use svg::node::element::path;
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default)]
+#[serde(default, rename = "markerstroke")]
 pub struct MarkerStroke {
+    #[serde(rename = "elements")]
     pub elements: Vec<Element>,
+    #[serde(rename = "marker")]
     pub marker: Marker,
+    #[serde(rename = "bounds")]
     pub bounds: p2d::bounding_volume::AABB,
     #[serde(skip)]
     pub hitbox: Vec<p2d::bounding_volume::AABB>,
@@ -116,38 +119,53 @@ impl DrawBehaviour for MarkerStroke {
 }
 
 impl StrokeBehaviour for MarkerStroke {
-    fn translate(&mut self, offset: na::Vector2<f64>) {
+    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.elements.iter_mut().for_each(|element| {
             element.inputdata.set_pos(element.inputdata.pos() + offset);
         });
-
-        self.bounds = geometry::aabb_translate(self.bounds, offset);
-        self.hitbox = self.gen_hitbox();
+        self.update_geometry();
     }
-
-    fn resize(&mut self, new_bounds: p2d::bounding_volume::AABB) {
-        let offset = na::vector![
-            new_bounds.mins[0] - self.bounds.mins[0],
-            new_bounds.mins[1] - self.bounds.mins[1]
-        ];
-
-        let scalevector = na::vector![
-            (new_bounds.extents()[0]) / (self.bounds().extents()[0]),
-            (new_bounds.extents()[1]) / (self.bounds().extents()[1])
-        ];
+    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+        let mut isometry = na::Isometry2::identity();
+        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
 
         self.elements.iter_mut().for_each(|element| {
-            let top_left = na::vector![self.bounds.mins[0], self.bounds.mins[1]];
+            element
+                .inputdata
+                .set_pos((isometry * na::Point2::from(element.inputdata.pos())).coords);
+        });
+        self.update_geometry();
+    }
+    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+        let center = self.bounds.center().coords;
 
-            element.inputdata.set_pos(
-                ((element.inputdata.pos() - top_left).component_mul(&scalevector))
-                    + top_left
-                    + offset,
-            );
+        self.elements.iter_mut().for_each(|element| {
+            element
+                .inputdata
+                .set_pos(((element.inputdata.pos() - center).component_mul(&scale)) + center);
+        });
+        self.update_geometry();
+    }
+    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
+        let center = self.bounds.center().coords;
+
+        let mut shear_matrix = na::Matrix3::<f64>::identity();
+        shear_matrix[(0, 1)] = shear[0].tan();
+        shear_matrix[(1, 0)] = shear[1].tan();
+
+        self.elements.iter_mut().for_each(|element| {
+            let pos_local = element.inputdata.pos() - center;
+
+            let pos_local_new: na::Vector2<f64> = na::Point2::from_homogeneous(
+                shear_matrix * na::Point2::from(pos_local).to_homogeneous(),
+            )
+            .unwrap()
+            .coords;
+
+            element.inputdata.set_pos(center + pos_local_new);
         });
 
-        self.bounds = new_bounds;
-        self.hitbox = self.gen_hitbox();
+        self.update_geometry();
     }
 }
 
@@ -252,21 +270,25 @@ impl MarkerStroke {
             };
 
             geometry::aabb_new_positive(
-                first - na::vector![marker_x / 2.0, marker_y / 2.0],
-                first + delta + na::vector![marker_x / 2.0, marker_y / 2.0],
+                na::Point2::from(first - na::vector![marker_x / 2.0, marker_y / 2.0]),
+                na::Point2::from(first + delta + na::vector![marker_x / 2.0, marker_y / 2.0]),
             )
         } else {
             geometry::aabb_new_positive(
-                first
-                    - na::vector![
-                        (Self::HITBOX_DEFAULT + marker_width) / 2.0,
-                        (Self::HITBOX_DEFAULT + marker_width / 2.0)
-                    ],
-                first
-                    + na::vector![
-                        Self::HITBOX_DEFAULT + marker_width,
-                        Self::HITBOX_DEFAULT + marker_width
-                    ],
+                na::Point2::from(
+                    first
+                        - na::vector![
+                            (Self::HITBOX_DEFAULT + marker_width) / 2.0,
+                            (Self::HITBOX_DEFAULT + marker_width / 2.0)
+                        ],
+                ),
+                na::Point2::from(
+                    first
+                        + na::vector![
+                            Self::HITBOX_DEFAULT + marker_width,
+                            Self::HITBOX_DEFAULT + marker_width
+                        ],
+                ),
             )
         }
     }
@@ -337,7 +359,7 @@ impl MarkerStroke {
             .ok()?;
 
         if svg_root {
-            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true, false);
+            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true);
         }
         Some(render::Svg { svg_data, bounds })
     }

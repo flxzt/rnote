@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{render, utils, compose};
+use crate::{compose, render, utils};
 
 use gtk4::{gdk, prelude::*, Snapshot};
 use p2d::bounding_volume::BoundingVolume;

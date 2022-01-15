@@ -31,10 +31,17 @@ resources = gnome.compile_resources(
 desktop_conf = configuration_data()
 desktop_conf.set('APP_ID', app_id)
 desktop_conf.set('APP_NAME', app_name)
-desktop_file = configure_file(
+desktop_file_in = configure_file(
   input: 'app.desktop.in',
   output: app_id + '.desktop',
   configuration: desktop_conf,
+)
+
+desktop_file = i18n.merge_file(
+  input: desktop_file_in,
+  output: app_id + '.desktop',
+  type: 'desktop',
+  po_dir: '../po',
   install: true,
   install_dir: datadir / 'applications',
 )
@@ -77,10 +84,16 @@ endif
 appdata_conf = configuration_data()
 appdata_conf.set('APP_ID', app_id)
 appdata_conf.set('APP_NAME', app_name)
-appdata_file = configure_file(
+appdata_file_in = configure_file(
   input: 'app.metainfo.xml.in',
   output: app_id + '.metainfo.xml',
   configuration: appdata_conf,
+)
+
+appdata_file = i18n.merge_file(
+  input: appdata_file_in,
+  output: app_id + '.metainfo.xml',
+  po_dir: '../po',
   install: true,
   install_dir: datadir / 'metainfo',
 )

@@ -22,16 +22,16 @@
           </section>
           <section>
             <item>
-              <attribute name="label">Developer mode</attribute>
+              <attribute name="label" translatable="yes">Developer mode</attribute>
               <attribute name="toggle" />
               <attribute name="action">app.devel</attribute>
             </item>
             <submenu>
-              <attribute name="label">Developer settings</attribute>
+              <attribute name="label" translatable="yes">Developer settings</attribute>
               <attribute name="action">app.devel-settings</attribute>
               <attribute name="hidden-when">action-disabled</attribute>
               <section>
-                <attribute name="label">Renderer backend</attribute>
+                <attribute name="label" translatable="yes">Renderer backend</attribute>
                 <item>
                   <attribute name="label">librsvg</attribute>
                   <attribute name="action">app.renderer-backend</attribute>
@@ -47,11 +47,11 @@
           </section>
           <section>
             <item>
-              <attribute name="label">Keyboard Shortcuts</attribute>
+              <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
               <attribute name="action">win.keyboard-shortcuts</attribute>
             </item>
             <item>
-              <attribute name="label">About Rnote</attribute>
+              <attribute name="label" translatable="yes">About Rnote</attribute>
               <attribute name="action">win.about</attribute>
             </item>
           </section>
@@ -68,7 +68,7 @@
             <property name="margin-end">12</property>
             <child>
               <object class="GtkToggleButton" id="default_theme_toggle">
-                <property name="tooltip_text">Use system colors preference</property>
+                <property name="tooltip_text" translatable="yes">Use system colors preference</property>
                 <property name="height-request">50</property>
                 <property name="width-request">50</property>
                 <property name="halign">center</property>
@@ -81,7 +81,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="light_theme_toggle">
-                <property name="tooltip_text">Use light colors</property>
+                <property name="tooltip_text" translatable="yes">Use light colors</property>
                 <property name="height-request">50</property>
                 <property name="width-request">50</property>
                 <property name="halign">center</property>
@@ -95,7 +95,7 @@
             </child>
             <child>
               <object class="GtkToggleButton" id="dark_theme_toggle">
-                <property name="tooltip_text">Use dark colors</property>
+                <property name="tooltip_text" translatable="yes">Use dark colors</property>
                 <property name="height-request">50</property>
                 <property name="width-request">50</property>
                 <property name="halign">center</property>

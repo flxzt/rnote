@@ -1,3 +1,4 @@
+use gettextrs::gettext;
 use gtk4::{glib, glib::clone, prelude::*, Builder};
 use gtk4::{
     AboutDialog, FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType,
@@ -14,7 +15,7 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         .modal(true)
         .transient_for(appwindow)
         .program_name("Rnote")
-        .comments("Create handwritten notes")
+        .comments(&gettext("Create handwritten notes"))
         .logo_icon_name(config::APP_ID)
         .website(config::APP_WEBSITE)
         .authors(
@@ -23,6 +24,8 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
                 .map(|&s| String::from(s))
                 .collect(),
         )
+        // TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
+        .translator_credits(&gettext("translator-credits"))
         .license_type(config::APP_LICENSE)
         .version((String::from(config::APP_VERSION) + config::APP_VERSION_SUFFIX).as_str())
         .build();
@@ -170,14 +173,14 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
 pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_pattern("*.rnote");
-    filter.set_name(Some(".rnote file"));
+    filter.set_name(Some(&gettext(".rnote file")));
 
     let dialog_open_file: FileChooserNative = FileChooserNative::builder()
-        .title("Open File")
+        .title(&gettext("Open File"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label("Open")
-        .cancel_label("Cancel")
+        .accept_label(&gettext("Open"))
+        .cancel_label(&gettext("Cancel"))
         .action(FileChooserAction::Open)
         .select_multiple(false)
         .build();
@@ -210,11 +213,11 @@ pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
 
 pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
     let dialog_open_workspace: FileChooserNative = FileChooserNative::builder()
-        .title("Open Workspace")
+        .title(&gettext("Open Workspace"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label("Open")
-        .cancel_label("Cancel")
+        .accept_label(&gettext("Open"))
+        .cancel_label(&gettext("Cancel"))
         .action(FileChooserAction::SelectFolder)
         .select_multiple(false)
         .build();
@@ -249,14 +252,14 @@ pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
 pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_pattern("*.rnote");
-    filter.set_name(Some(".rnote file"));
+    filter.set_name(Some(&gettext(".rnote file")));
 
     let dialog_save_sheet_as: FileChooserNative = FileChooserNative::builder()
-        .title("Save Sheet As")
+        .title(&gettext("Save Sheet As"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label("Save As")
-        .cancel_label("Cancel")
+        .accept_label(&gettext("Save As"))
+        .cancel_label(&gettext("Cancel"))
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
@@ -301,14 +304,14 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
     filter.add_pattern("*.png");
     filter.add_pattern("*.jpg");
     filter.add_pattern("*.pdf");
-    filter.set_name(Some("PNG / SVG / JPG / PDF file"));
+    filter.set_name(Some(&gettext("PNG / SVG / JPG / PDF file")));
 
     let dialog_import_file: FileChooserNative = FileChooserNative::builder()
-        .title("Import File")
+        .title(&gettext("Import File"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label("Import")
-        .cancel_label("Cancel")
+        .accept_label(&gettext("Import"))
+        .cancel_label(&gettext("Cancel"))
         .action(FileChooserAction::Open)
         .select_multiple(false)
         .build();
@@ -343,14 +346,14 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("image/svg+xml");
     filter.add_pattern("*.svg");
-    filter.set_name(Some("SVG file"));
+    filter.set_name(Some(&gettext("SVG file")));
 
     let dialog_export_selection: FileChooserNative = FileChooserNative::builder()
-        .title("Export Selection")
+        .title(&gettext("Export Selection"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label("Export")
-        .cancel_label("Cancel")
+        .accept_label(&gettext("Export"))
+        .cancel_label(&gettext("Cancel"))
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
@@ -385,14 +388,14 @@ pub fn dialog_export_sheet(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("image/svg+xml");
     filter.add_pattern("*.svg");
-    filter.set_name(Some("SVG file"));
+    filter.set_name(Some(&gettext("SVG file")));
 
     let dialog_export_sheet: FileChooserNative = FileChooserNative::builder()
-        .title("Export Sheet")
+        .title(&gettext("Export Sheet"))
         .modal(true)
         .transient_for(appwindow)
-        .accept_label("Export")
-        .cancel_label("Cancel")
+        .accept_label(&gettext("Export"))
+        .cancel_label(&gettext("Cancel"))
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();

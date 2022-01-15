@@ -55,7 +55,7 @@
           </child>
           <child>
             <object class="GtkButton" id="colorchooser_editor_selectbutton">
-              <property name="label">Select</property>
+              <property name="label" translatable="yes">Select</property>
               <property name="hexpand">false</property>
               <property name="halign">end</property>
               <property name="vexpand">false</property>

@@ -6,6 +6,8 @@ pub const APP_VERSION_SUFFIX: &str = @VERSION_SUFFIX@;
 pub const APP_AUTHORS: &[&str] = &["Felix Zwettler"];
 pub const APP_WEBSITE: &str = "https://github.com/flxzt/rnote";
 pub const APP_LICENSE: gtk4::License = gtk4::License::Gpl30;
+pub const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
+pub const LOCALEDIR: &str = @LOCALEDIR@;
 
 pub const RESOURCES_FILE: &str = @RESOURCES_FILE@;
 //pub const PROFILE: &str = @PROFILE@;

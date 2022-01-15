@@ -218,7 +218,7 @@
                     <child>
                       <object class="AdwViewStackPage">
                         <property name="name">workspacebrowser_page</property>
-                        <property name="title">Workspace</property>
+                        <property name="title" translatable="yes">Workspace</property>
                         <property name="icon-name">workspacebrowser-symbolic</property>
                         <property name="child">
                           <object class="WorkspaceBrowser" id="workspacebrowser"></object>
@@ -229,7 +229,7 @@
                     <child>
                       <object class="AdwViewStackPage">
                         <property name="name">settings_page</property>
-                        <property name="title">Settings</property>
+                        <property name="title" translatable="yes">Settings</property>
                         <property name="icon-name">settings-symbolic</property>
                         <property name="child">
                           <object class="SettingsPanel" id="settings_panel"></object>

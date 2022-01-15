@@ -4,7 +4,7 @@
   <id>@APP_ID@</id>
   <metadata_license>CC0</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <name>Rnote</name>
+  <name translatable="no">Rnote</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   <summary>An easy and simple vector-based note taking app</summary>
 
@@ -49,7 +49,7 @@
 
   <url type="homepage">https://github.com/flxzt/rnote</url>
   <url type="bugtracker">https://github.com/flxzt/rnote/issues</url>
-  <developer_name>Felix Zwettler</developer_name>
+  <developer_name translatable="no">Felix Zwettler</developer_name>
   <update_contact>f.zwettler@posteo.de</update_contact>
   <content_rating type="oars-1.0" />
 

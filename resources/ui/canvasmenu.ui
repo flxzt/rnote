@@ -22,63 +22,63 @@
           </section>
           <section>
             <item>
-              <attribute name="label">Draw with touch input</attribute>
+              <attribute name="label" translatable="yes">Draw with touch input</attribute>
               <attribute name="toggle" />
               <attribute name="action">app.touch-drawing</attribute>
             </item>
             <item>
-              <attribute name="label">Endless sheet</attribute>
+              <attribute name="label" translatable="yes">Endless sheet</attribute>
               <attribute name="toggle" />
               <attribute name="action">app.endless-sheet</attribute>
             </item>
             <item>
-              <attribute name="label">Show format borders</attribute>
+              <attribute name="label" translatable="yes">Show format borders</attribute>
               <attribute name="toggle" />
               <attribute name="action">app.format-borders</attribute>
             </item>
             <item>
-              <attribute name="label">Pen sounds</attribute>
+              <attribute name="label" translatable="yes">Pen sounds</attribute>
               <attribute name="toggle" />
               <attribute name="action">app.pen-sounds</attribute>
             </item>
             <item>
-              <attribute name="label">Clear sheet</attribute>
+              <attribute name="label" translatable="yes">Clear sheet</attribute>
               <attribute name="action">win.clear-sheet</attribute>
             </item>
           </section>
           <section>
             <item>
-              <attribute name="label">New</attribute>
+              <attribute name="label" translatable="yes">New</attribute>
               <attribute name="action">win.new-sheet</attribute>
             </item>
             <item>
-              <attribute name="label">Open</attribute>
+              <attribute name="label" translatable="yes">Open</attribute>
               <attribute name="action">win.open-sheet</attribute>
             </item>
             <item>
-              <attribute name="label">Save</attribute>
+              <attribute name="label" translatable="yes">Save</attribute>
               <attribute name="action">win.save-sheet</attribute>
             </item>
             <item>
-              <attribute name="label">Save As</attribute>
+              <attribute name="label" translatable="yes">Save As</attribute>
               <attribute name="action">win.save-sheet-as</attribute>
             </item>
             <item>
-              <attribute name="label">Print</attribute>
+              <attribute name="label" translatable="yes">Print</attribute>
               <attribute name="action">win.print-sheet</attribute>
             </item>
             <item>
-              <attribute name="label">Import file</attribute>
+              <attribute name="label" translatable="yes">Import file</attribute>
               <attribute name="action">win.import-file</attribute>
             </item>
             <submenu>
-              <attribute name="label">Export ..</attribute>
+              <attribute name="label" translatable="yes">Export ..</attribute>
               <item>
-                <attribute name="label">Export selection as SVG</attribute>
+                <attribute name="label" translatable="yes">Export selection as SVG</attribute>
                 <attribute name="action">win.export-selection-as-svg</attribute>
               </item>
               <item>
-                <attribute name="label">Export sheet as SVG</attribute>
+                <attribute name="label" translatable="yes">Export sheet as SVG</attribute>
                 <attribute name="action">win.export-sheet-as-svg</attribute>
               </item>
             </submenu>
@@ -135,7 +135,7 @@
                 </layout>
                 <property name="hexpand">false</property>
                 <property name="icon_name">zoom-fit-width-symbolic</property>
-                <property name="tooltip_text">Zoom to fit sheet width</property>
+                <property name="tooltip_text" translatable="yes">Zoom to fit sheet width</property>
               </object>
             </child>
             <child>

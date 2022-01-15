@@ -68,5 +68,6 @@ meson.add_dist_script(
 subdir('resources')
 subdir('rough-rs/src')
 subdir('src')
+subdir('po')
 
 meson.add_install_script('build-aux/meson_post_install.py')

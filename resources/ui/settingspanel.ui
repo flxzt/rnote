@@ -38,11 +38,11 @@
                 <!-- General Group -->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title">General</property>
+                    <property name="title" translatable="yes">General</property>
                     <child>
                       <object class="AdwActionRow" id="general_sheet_margin_row">
-                        <property name="title">Sheet Margin</property>
-                        <property name="subtitle">Set the margins around the sheet</property>
+                        <property name="title" translatable="yes">Sheet Margin</property>
+                        <property name="subtitle" translatable="yes">Set the margins around the sheet</property>
                         <child type="suffix">
                           <object class="UnitEntry" id="general_sheet_margin_unitentry">
                             <property name="vexpand">false</property>
@@ -55,8 +55,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="general_pdf_import_width_row">
-                        <property name="title">PDF import width (%)</property>
-                        <property name="subtitle">Set the width of imported PDF's in percentage to the sheet width</property>
+                        <property name="title" translatable="yes">PDF import width (%)</property>
+                        <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the sheet width</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="general_pdf_import_width_adj">
                             <property name="step-increment">1</property>
@@ -76,8 +76,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="general_pdf_import_image_type_row">
-                        <property name="title">PDF import image type</property>
-                        <property name="subtitle">Set if PDFs should be imported as vector or bitmap images</property>
+                        <property name="title" translatable="yes">PDF import image type</property>
+                        <property name="subtitle" translatable="yes">Set if PDFs should be imported as vector or bitmap images</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
@@ -89,13 +89,13 @@
                             </style>
                             <child>
                               <object class="GtkToggleButton" id="general_pdf_import_as_vector_toggle">
-                                <property name="label">Vector</property>
+                                <property name="label" translatable="yes">Vector</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkToggleButton" id="general_pdf_import_as_bitmap_toggle">
                                 <property name="group">general_pdf_import_as_vector_toggle</property>
-                                <property name="label">Bitmap</property>
+                                <property name="label" translatable="yes">Bitmap</property>
                               </object>
                             </child>
                           </object>
@@ -107,11 +107,11 @@
                 <!-- Format Group -->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title">Sheet Format</property>
+                    <property name="title" translatable="yes">Sheet Format</property>
                     <child>
                       <object class="AdwComboRow" id="format_predefined_formats_row">
-                        <property name="title">Format</property>
-                        <property name="subtitle">Choose a format</property>
+                        <property name="title" translatable="yes">Format</property>
+                        <property name="subtitle" translatable="yes">Choose a format</property>
                         <property name="model">
                           <object class="AdwEnumListModel">
                             <property name="enum-type">PredefinedFormats</property>
@@ -124,8 +124,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="format_orientation_row">
-                        <property name="title">Orientation</property>
-                        <property name="subtitle">Set the format orientation</property>
+                        <property name="title" translatable="yes">Orientation</property>
+                        <property name="subtitle" translatable="yes">Set the format orientation</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
@@ -137,13 +137,13 @@
                             </style>
                             <child>
                               <object class="GtkToggleButton" id="format_orientation_portrait_toggle">
-                                <property name="label">Portrait</property>
+                                <property name="label" translatable="yes">Portrait</property>
                                 <property name="active">true</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkToggleButton" id="format_orientation_landscape_toggle">
-                                <property name="label">Landscape</property>
+                                <property name="label" translatable="yes">Landscape</property>
                                 <property name="group">format_orientation_portrait_toggle</property>
                               </object>
                             </child>
@@ -153,8 +153,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="format_width_row">
-                        <property name="title">Width</property>
-                        <property name="subtitle">Set the format width</property>
+                        <property name="title" translatable="yes">Width</property>
+                        <property name="subtitle" translatable="yes">Set the format width</property>
                         <child type="suffix">
                           <object class="UnitEntry" id="format_width_unitentry">
                             <property name="vexpand">false</property>
@@ -167,8 +167,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="format_height_row">
-                        <property name="title">Height</property>
-                        <property name="subtitle">Set the format height</property>
+                        <property name="title" translatable="yes">Height</property>
+                        <property name="subtitle" translatable="yes">Set the format height</property>
                         <child type="suffix">
                           <object class="UnitEntry" id="format_height_unitentry">
                             <property name="vexpand">false</property>
@@ -181,8 +181,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="format_dpi_row">
-                        <property name="title">DPI</property>
-                        <property name="subtitle">Set the DPI (dots per inch). Defaults to 96</property>
+                        <property name="title" translatable="yes">DPI</property>
+                        <property name="subtitle" translatable="yes">Set the DPI (dots per inch). Defaults to 96</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="format_dpi_adj">
                             <property name="step-increment">1</property>
@@ -205,7 +205,7 @@
                           <object class="GtkButton" id="format_revert_button">
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
-                            <property name="label">Revert</property>
+                            <property name="label" translatable="yes">Revert</property>
                           </object>
                         </child>
                         <child type="suffix">
@@ -214,7 +214,7 @@
                             <property name="halign">end</property>
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
-                            <property name="label">Apply</property>
+                            <property name="label" translatable="yes">Apply</property>
                             <style>
                               <class name="suggested-action" />
                             </style>
@@ -227,11 +227,11 @@
                 <!-- Background Group -->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title">Sheet Background</property>
+                    <property name="title" translatable="yes">Sheet Background</property>
                     <child>
                       <object class="AdwActionRow" id="background_color_row">
-                        <property name="title">Color</property>
-                        <property name="subtitle">Set the background color</property>
+                        <property name="title" translatable="yes">Color</property>
+                        <property name="subtitle" translatable="yes">Set the background color</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
@@ -248,8 +248,8 @@
                     </child>
                     <child>
                       <object class="AdwComboRow" id="background_patterns_row">
-                        <property name="title">Pattern</property>
-                        <property name="subtitle">Choose a background pattern</property>
+                        <property name="title" translatable="yes">Pattern</property>
+                        <property name="subtitle" translatable="yes">Choose a background pattern</property>
                         <property name="model">
                           <object class="AdwEnumListModel">
                             <property name="enum-type">PatternStyle</property>
@@ -262,8 +262,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="background_pattern_color_row">
-                        <property name="title">Pattern Color</property>
-                        <property name="subtitle">Set the background pattern color</property>
+                        <property name="title" translatable="yes">Pattern Color</property>
+                        <property name="subtitle" translatable="yes">Set the background pattern color</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
@@ -280,8 +280,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="background_pattern_width_row">
-                        <property name="title">Pattern Width</property>
-                        <property name="subtitle">Set the background pattern width</property>
+                        <property name="title" translatable="yes">Pattern Width</property>
+                        <property name="subtitle" translatable="yes">Set the background pattern width</property>
                         <child type="suffix">
                           <object class="UnitEntry" id="background_pattern_width_unitentry">
                             <property name="vexpand">false</property>
@@ -294,8 +294,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="background_pattern_height_row">
-                        <property name="title">Pattern Height</property>
-                        <property name="subtitle">Set the background pattern height</property>
+                        <property name="title" translatable="yes">Pattern Height</property>
+                        <property name="subtitle" translatable="yes">Set the background pattern height</property>
                         <child type="suffix">
                           <object class="UnitEntry" id="background_pattern_height_unitentry">
                             <property name="vexpand">false</property>

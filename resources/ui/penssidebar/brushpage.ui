@@ -31,7 +31,7 @@
             <property name="hexpand">true</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
-            <property name="tooltip_text">Brush Style</property>
+            <property name="tooltip_text" translatable="yes">Brush Style</property>
             <property name="popover">brushstyle_popover</property>
             <child>
               <object class="GtkImage" id="brushstyle_image">
@@ -51,7 +51,7 @@
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label">Brush Styles</property>
+                    <property name="label" translatable="yes">Brush Styles</property>
                     <property name="halign">center</property>
                     <property name="margin-bottom">12</property>
                     <style>
@@ -69,7 +69,7 @@
                     </style>
                     <child>
                       <object class="AdwActionRow" id="brushstyle_solid_row">
-                        <property name="title">Solid</property>
+                        <property name="title" translatable="yes">Solid</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon-name">pen-brush-style-solid-symbolic</property>
@@ -80,7 +80,7 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="brushstyle_textured_row">
-                        <property name="title">Textured</property>
+                        <property name="title" translatable="yes">Textured</property>
                         <property name="visible">true</property>
                         <child type="prefix">
                           <object class="GtkImage">
@@ -92,7 +92,7 @@
                     </child>
                     <child>
                       <object class="AdwActionRow" id="brushstyle_experimental_row">
-                        <property name="title">Experimental</property>
+                        <property name="title" translatable="yes">Experimental</property>
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon-name">pen-brush-style-experimental-symbolic</property>
@@ -119,7 +119,7 @@
             <property name="hexpand">true</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
-            <property name="tooltip_text">Brush styles configuration</property>
+            <property name="tooltip_text" translatable="yes">Brush styles configuration</property>
             <property name="popover">styleconfig_popover</property>
           </object>
         </child>
@@ -133,7 +133,7 @@
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label">Brush configuration</property>
+                    <property name="label" translatable="yes">Brush configuration</property>
                     <property name="halign">center</property>
                     <property name="margin-top">12</property>
                     <property name="margin-bottom">24</property>
@@ -153,8 +153,8 @@
                     <child>
                       <!-- Textured Brush -->
                       <object class="AdwActionRow">
-                        <property name="title">Density</property>
-                        <property name="subtitle">the density is the amount of dots per 10x10 area</property>
+                        <property name="title" translatable="yes">Density</property>
+                        <property name="subtitle" translatable="yes">the density is the amount of dots per 10x10 area</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="texturedstyle_density_adj">
                             <property name="step-increment">0.05</property>
@@ -171,8 +171,8 @@
                     </child>
                     <child>
                       <object class="AdwActionRow">
-                        <property name="title">Dot Radii</property>
-                        <property name="subtitle">the radii of the dots</property>
+                        <property name="title" translatable="yes">Dot Radii</property>
+                        <property name="subtitle" translatable="yes">the radii of the dots</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
@@ -206,8 +206,8 @@
                     </child>
                     <child>
                       <object class="AdwComboRow" id="texturedstyle_distribution_row">
-                        <property name="title">Distribution</property>
-                        <property name="subtitle">Choose a dots position probability distribution</property>
+                        <property name="title" translatable="yes">Distribution</property>
+                        <property name="subtitle" translatable="yes">Choose a dots position probability distribution</property>
                         <property name="model">
                           <object class="AdwEnumListModel">
                             <property name="enum-type">TexturedDotsDistribution</property>
@@ -236,7 +236,7 @@
     <child>
       <object class="GtkButton" id="width_resetbutton">
         <property name="icon_name">reset-width-symbolic</property>
-        <property name="tooltip_text">reset brush width</property>
+        <property name="tooltip_text" translatable="yes">reset brush width</property>
       </object>
     </child>
     <child>

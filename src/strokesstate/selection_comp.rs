@@ -330,12 +330,12 @@ impl StrokesState {
             true,
         );
 
-        file.replace_async::<gio::Cancellable, _>(
+        file.replace_async(
             None,
             false,
             gio::FileCreateFlags::REPLACE_DESTINATION,
             glib::PRIORITY_HIGH_IDLE,
-            None,
+            None::<&gio::Cancellable>,
             move |result| {
                 let output_stream = match result {
                     Ok(output_stream) => output_stream,
@@ -348,13 +348,14 @@ impl StrokesState {
                     }
                 };
 
-                if let Err(e) = output_stream.write::<gio::Cancellable>(svg_data.as_bytes(), None) {
+                if let Err(e) = output_stream.write(svg_data.as_bytes(), None::<&gio::Cancellable>)
+                {
                     log::error!(
                         "output_stream().write() failed in export_selection_as_svg() with Err {}",
                         e
                     );
                 };
-                if let Err(e) = output_stream.close::<gio::Cancellable>(None) {
+                if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
                     log::error!(
                         "output_stream().close() failed in export_selection_as_svg() with Err {}",
                         e

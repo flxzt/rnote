@@ -4,6 +4,7 @@ use crate::compose::{geometry, shapes};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::{compose, render};
 use anyhow::Context;
+use gtk4::cairo;
 use image::{io::Reader, GenericImageView};
 use serde::{Deserialize, Serialize};
 use svg::node::element;

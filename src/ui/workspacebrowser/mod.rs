@@ -83,7 +83,7 @@ use std::path::{Path, PathBuf};
 
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, ClosureExpression,
+    gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*,
     ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, ListItem,
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
     Widget,
@@ -175,36 +175,39 @@ impl WorkspaceBrowser {
             let fileinfo_expr =
                 PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item");
 
-            let content_provider_expr = ClosureExpression::new(
-                move |expressions| {
-                    if let Some(fileinfo) = expressions[1].get::<Option<glib::Object>>().expect(
-                        "failed to get::<glib::Object>() from fileinfo_expression[1]. Wrong Type",
-                    ) {
-                        let fileinfo = fileinfo.downcast::<gio::FileInfo>().expect("fileinfo.downcast() failed() inside content_provider_expr in workspacebrowser");
+            let content_provider_expr =
+                fileinfo_expr.chain_closure::<gdk::ContentProvider>(closure!(
+                    |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                        if let Some(fileinfo_obj) = fileinfo_obj {
+                            if let Some(file) = fileinfo_obj
+                                .downcast::<gio::FileInfo>()
+                                .unwrap()
+                                .attribute_object("standard::file")
+                            {
+                                let file = file
+                                    .downcast::<gio::File>()
+                                    .expect("failed to downcast::<gio::File>() from file GObject");
 
-                        if let Some(file) = fileinfo.attribute_object("standard::file") {
-                            let file = file
-                                .downcast::<gio::File>()
-                                .expect("failed to downcast::<gio::File>() from file GObject");
-
-                            return gdk::ContentProvider::for_value(&file.to_value());
+                                return gdk::ContentProvider::for_value(&file.to_value());
+                            }
                         }
+
+                        gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
                     }
+                ));
 
-                    gdk::ContentProvider::for_value(&None::<gio::File>.to_value())
-                },
-                &[fileinfo_expr.clone().upcast()],
-            );
-
-            let icon_name_expr = ClosureExpression::new(
-                move |expressions| {
-                    if let Some(fileinfo) = expressions[1].get::<Option<glib::Object>>().expect(
-                        "failed to get::<glib::Object>() from fileinfo_expression[1]. Wrong Type",
-                    ) {
-                        let fileinfo = fileinfo.downcast::<gio::FileInfo>().expect("fileinfo.downcast() failed() inside icon_name_expr in workspacebrowser");
-
-                        if let Some(themed_icon) =
-                            fileinfo.attribute_object("standard::symbolic-icon")
+            let icon_name_expr =
+                fileinfo_expr.chain_closure::<gio::ThemedIcon>(closure!(|_: Option<
+                    glib::Object,
+                >,
+                                                                         fileinfo_obj: Option<
+                    glib::Object,
+                >| {
+                    if let Some(fileinfo_obj) = fileinfo_obj {
+                        if let Some(themed_icon) = fileinfo_obj
+                            .downcast::<gio::FileInfo>()
+                            .unwrap()
+                            .attribute_object("standard::symbolic-icon")
                         {
                             return themed_icon.downcast::<gio::ThemedIcon>().unwrap();
                         }
@@ -214,18 +217,19 @@ impl WorkspaceBrowser {
                         "workspace-folder-symbolic",
                         "folder-documents-symbolic",
                     ])
-                },
-                &[fileinfo_expr.clone().upcast()],
-            );
+                }));
 
-            let basename_expr = ClosureExpression::new(
-                clone!(@strong fileinfo_expr => move |expressions| {
-                    if let Some(fileinfo) = expressions[1].get::<Option<glib::Object>>().expect(
-                        "failed to get::<glib::Object>() from fileinfo_expression[1]. Wrong Type",
-                    ) {
-                        let fileinfo = fileinfo.downcast::<gio::FileInfo>().expect("fileinfo.downcast() failed() inside basename_expr in workspacebrowser");
-
-                        if let Some(file) = fileinfo.attribute_object("standard::file") {
+            let basename_expr =
+                fileinfo_expr.chain_closure::<String>(closure!(|_: Option<glib::Object>,
+                                                                fileinfo_obj: Option<
+                    glib::Object,
+                >| {
+                    if let Some(fileinfo_obj) = fileinfo_obj {
+                        if let Some(file) = fileinfo_obj
+                            .downcast::<gio::FileInfo>()
+                            .unwrap()
+                            .attribute_object("standard::file")
+                        {
                             let file = file
                                 .downcast::<gio::File>()
                                 .expect("failed to downcast::<gio::File>() from file GObject");
@@ -239,9 +243,7 @@ impl WorkspaceBrowser {
                     }
 
                     String::from("")
-                }),
-                &[fileinfo_expr.upcast()],
-            );
+                }));
 
             basename_expr.bind(&filerow.file_label(), "label", Some(&filerow.file_label()));
             icon_name_expr.bind(&filerow.file_image(), "gicon", Some(&filerow.file_image()));

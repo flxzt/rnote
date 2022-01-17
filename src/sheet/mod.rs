@@ -79,7 +79,7 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![glib::ParamSpec::new_boolean(
+                vec![glib::ParamSpecBoolean::new(
                     "endless-sheet",
                     "endless-sheet",
                     "endless-sheet",
@@ -537,7 +537,7 @@ impl Sheet {
 
     pub fn open_sheet_from_bytes(&self, bytes: glib::Bytes) -> Result<(), anyhow::Error> {
         let decompressed_bytes = utils::decompress_from_gzip(&bytes)?;
-        let sheet: Sheet = serde_json::from_str(&String::from_utf8_lossy(&decompressed_bytes))?;
+        let sheet: Sheet = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
 
         self.strokes_state()
             .borrow_mut()
@@ -564,33 +564,31 @@ impl Sheet {
                         &file_name.to_string_lossy(),
                     )?;
 
-                    file.replace_async::<gio::Cancellable, _>(
+                    file.replace_async(
                         None,
                         false,
                         gio::FileCreateFlags::REPLACE_DESTINATION,
                         glib::PRIORITY_HIGH_IDLE,
-                        None,
+                        None::<&gio::Cancellable>,
                         move |result| {
                             let output_stream = match result {
                                 Ok(output_stream) => output_stream,
                                 Err(e) => {
                                     log::error!(
-                            "replace_async() failed in save_sheet_to_file() with Err {}",
-                            e
-                        );
+                                        "replace_async() failed in save_sheet_to_file() with Err {}",
+                                        e
+                                    );
                                     return;
                                 }
                             };
 
-                            if let Err(e) =
-                                output_stream.write::<gio::Cancellable>(&compressed_bytes, None)
-                            {
+                            if let Err(e) = output_stream.write(&compressed_bytes, None::<&gio::Cancellable>) {
                                 log::error!(
                         "output_stream().write() failed in save_sheet_to_file() with Err {}",
                         e
                     );
                             };
-                            if let Err(e) = output_stream.close::<gio::Cancellable>(None) {
+                            if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
                                 log::error!(
                         "output_stream().close() failed in save_sheet_to_file() with Err {}",
                         e
@@ -641,12 +639,12 @@ impl Sheet {
             true,
         );
 
-        file.replace_async::<gio::Cancellable, _>(
+        file.replace_async(
             None,
             false,
             gio::FileCreateFlags::REPLACE_DESTINATION,
             glib::PRIORITY_HIGH_IDLE,
-            None,
+            None::<&gio::Cancellable>,
             move |result| {
                 let output_stream = match result {
                     Ok(output_stream) => output_stream,
@@ -659,13 +657,14 @@ impl Sheet {
                     }
                 };
 
-                if let Err(e) = output_stream.write::<gio::Cancellable>(svg_data.as_bytes(), None) {
+                if let Err(e) = output_stream.write(svg_data.as_bytes(), None::<&gio::Cancellable>)
+                {
                     log::error!(
                         "output_stream().write() failed in export_sheet_as_svg() with Err {}",
                         e
                     );
                 };
-                if let Err(e) = output_stream.close::<gio::Cancellable>(None) {
+                if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
                     log::error!(
                         "output_stream().close() failed in export_sheet_as_svg() with Err {}",
                         e

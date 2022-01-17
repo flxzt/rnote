@@ -124,15 +124,7 @@ mod imp {
                     // unnecessary, but makes GTK not spit out warnings
                     let _ = selection_modifier.measure(Orientation::Horizontal, -1);
 
-                    selection_modifier.size_allocate(
-                        &gdk::Rectangle {
-                            x,
-                            y,
-                            width,
-                            height,
-                        },
-                        -1,
-                    )
+                    selection_modifier.size_allocate(&gdk::Rectangle::new(x, y, width, height), -1)
                 } else {
                     selection_modifier.set_visible(false);
                 }

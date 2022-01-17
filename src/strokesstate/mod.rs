@@ -302,20 +302,25 @@ impl StrokesState {
 
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {
-                let svg = String::from_utf8_lossy(&bytes);
+                match String::from_utf8(bytes.to_vec()) {
+                    Ok(svg) => {
+                        match VectorImage::import_from_svg_data(svg.as_str(), pos, None, &renderer.read().unwrap()) {
+                            Ok(vectorimage) => {
+                                let vectorimage = StrokeStyle::VectorImage(vectorimage);
 
-                match VectorImage::import_from_svg_data(&svg, pos, None, &renderer.read().unwrap()) {
-                    Ok(vectorimage) => {
-                        let vectorimage = StrokeStyle::VectorImage(vectorimage);
-
-                        tasks_tx.send(StateTask::InsertStroke {
-                            stroke: vectorimage
-                        }).unwrap_or_else(|e| {
-                            log::error!("tasks_tx.send() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
-                        });
+                                tasks_tx.send(StateTask::InsertStroke {
+                                    stroke: vectorimage
+                                }).unwrap_or_else(|e| {
+                                    log::error!("tasks_tx.send() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
+                                });
+                            }
+                            Err(e) => {
+                                log::error!("VectorImage::import_from_svg_data() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
+                            }
+                        }
                     }
                     Err(e) => {
-                        log::error!("VectorImage::import_from_svg_data() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
+                        log::error!("from_utf8() failed in thread from insert_vectorimages_bytes_threaded() with Err {}", e);
                     }
                 }
             });
@@ -623,11 +628,8 @@ impl StrokesState {
                         image.bounds = geometry::aabb_translate(image.bounds, offset);
                     }
 
-                    if let Some(new_rendernode) =
+                    render_comp.rendernode =
                         render::images_to_rendernode(&render_comp.images, self.zoom)
-                    {
-                        render_comp.rendernode = new_rendernode;
-                    }
                 }
             }
         });

@@ -488,18 +488,18 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.main_grid().attach(&appwindow.devel_actions_revealer(), 2, 1 ,1, 1);
             appwindow.main_grid().attach(&appwindow.canvas_scroller(), 2, 2 ,1, 1);
 
-            appwindow.mainheader().headerbar().remove::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
-            appwindow.mainheader().headerbar().remove::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_end::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_start::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove(&appwindow.mainheader().quickactions_box());
+            appwindow.mainheader().headerbar().pack_end(&appwindow.mainheader().quickactions_box());
+            appwindow.mainheader().headerbar().pack_start(&appwindow.mainheader().pens_togglebox());
 
             appwindow.canvas_scroller().set_window_placement(CornerType::BottomRight);
 
             appwindow.sidebar_scroller().set_window_placement(CornerType::TopRight);
-            appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
-            appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
-            appwindow.penssidebar().shaper_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
-            appwindow.penssidebar().shaper_page().fill_colorpicker().set_property("position", PositionType::Left.to_value()).unwrap();
+            appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Left.to_value());
+            appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Left.to_value());
+            appwindow.penssidebar().shaper_page().stroke_colorpicker().set_property("position", PositionType::Left.to_value());
+            appwindow.penssidebar().shaper_page().fill_colorpicker().set_property("position", PositionType::Left.to_value());
             appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Right);
             appwindow.penssidebar().brush_page().brushstyle_menubutton().set_direction(ArrowType::Right);
 
@@ -516,18 +516,18 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.main_grid().attach(&appwindow.sidebar_sep(), 1, 1 ,1, 2);
             appwindow.main_grid().attach(&appwindow.sidebar_grid(), 2, 1 ,1, 2);
 
-            appwindow.mainheader().headerbar().remove::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
-            appwindow.mainheader().headerbar().remove::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_start::<gtk4::Box>(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_end::<gtk4::Box>(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove(&appwindow.mainheader().quickactions_box());
+            appwindow.mainheader().headerbar().pack_start(&appwindow.mainheader().quickactions_box());
+            appwindow.mainheader().headerbar().pack_end(&appwindow.mainheader().pens_togglebox());
 
             appwindow.canvas_scroller().set_window_placement(CornerType::BottomLeft);
 
             appwindow.sidebar_scroller().set_window_placement(CornerType::TopLeft);
-            appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
-            appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
-            appwindow.penssidebar().shaper_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
-            appwindow.penssidebar().shaper_page().fill_colorpicker().set_property("position", PositionType::Right.to_value()).unwrap();
+            appwindow.penssidebar().marker_page().colorpicker().set_property("position", PositionType::Right.to_value());
+            appwindow.penssidebar().brush_page().colorpicker().set_property("position", PositionType::Right.to_value());
+            appwindow.penssidebar().shaper_page().stroke_colorpicker().set_property("position", PositionType::Right.to_value());
+            appwindow.penssidebar().shaper_page().fill_colorpicker().set_property("position", PositionType::Right.to_value());
             appwindow.penssidebar().shaper_page().roughconfig_menubutton().set_direction(ArrowType::Left);
             appwindow.penssidebar().brush_page().brushstyle_menubutton().set_direction(ArrowType::Left);
 
@@ -655,23 +655,17 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             print_op.set_n_pages(appwindow.canvas().sheet().calc_n_pages());
         }));
 
-        let sheet_svgs = match appwindow.canvas().sheet().gen_svgs() {
+        let _sheet_svgs = match appwindow.canvas().sheet().gen_svgs() {
             Ok(sheet_svgs) => sheet_svgs,
             Err(e) => {
                 log::error!("gen_svg() failed in print-sheet action with Err {}", e);
                 return;
             }
         };
-        let sheet_bounds = appwindow.canvas().sheet().bounds();
+        let _sheet_bounds = appwindow.canvas().sheet().bounds();
 
         print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
-            let cx = match print_cx.cairo_context() {
-                None => {
-                    log::error!("failed to get cairo context in print_op.connect_draw_page().");
-                    return;
-                }
-                Some(cx) => { cx }
-            };
+            let cx = print_cx.cairo_context();
 
             let width_scale = print_cx.width() / f64::from(appwindow.canvas().sheet().format().width());
             let height_scale = print_cx.height() / f64::from(appwindow.canvas().sheet().format().height());
@@ -693,10 +687,9 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             );
             cx.clip();
 
-            if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &sheet_svgs, sheet_bounds, &cx) {
+/*             if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &sheet_svgs, sheet_bounds, &cx) {
                 log::error!("render::draw_svgs_to_cairo_context() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
-
-            }
+            } */
         }));
 
         if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
@@ -752,11 +745,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     // Clipboard paste as selection
     action_clipboard_paste_selection.connect_activate(clone!(@weak appwindow => move |_, _| {
         let clipboard = appwindow.clipboard();
-        if let Some(formats) = clipboard.formats() {
-            for mime_type in formats.mime_types() {
+            for mime_type in clipboard.formats().mime_types() {
                     match mime_type.as_str() {
                         "image/svg+xml" => {
-                            appwindow.clipboard().read_text_async(gio::NONE_CANCELLABLE, clone!(@weak appwindow => move |text_res| {
+                            appwindow.clipboard().read_text_async::<gio::Cancellable, _>(None, clone!(@weak appwindow => move |text_res| {
                                 match text_res {
                                     Ok(Some(text)) => {
                                         appwindow.load_in_vectorimage_bytes(glib::Bytes::from(text.as_bytes()), None).unwrap_or_else(|e| {
@@ -807,7 +799,6 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                         _ => {}
                     }
             }
-        }
     }));
 }
 

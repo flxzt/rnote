@@ -48,7 +48,7 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 // Any unsaved changes of the current application state
-                vec![glib::ParamSpec::new_boolean(
+                vec![glib::ParamSpecBoolean::new(
                     "unsaved-changes",
                     "unsaved-changes",
                     "unsaved-changes",
@@ -129,8 +129,7 @@ mod imp {
             appwindow.init();
 
             // add icon theme resource path because automatic lookup does not work in Devel build.
-            let app_icon_theme = IconTheme::for_display(&appwindow.display())
-                .expect("failed to get icon theme for appwindow");
+            let app_icon_theme = IconTheme::for_display(&appwindow.display());
             app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
             application.setup_app(&appwindow);
@@ -213,19 +212,11 @@ impl RnoteApp {
     }
 
     pub fn unsaved_changes(&self) -> bool {
-        self.property("unsaved-changes")
-            .unwrap()
-            .get::<bool>()
-            .unwrap()
+        self.property::<bool>("unsaved-changes")
     }
 
     pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        match self.set_property("unsaved-changes", unsaved_changes.to_value()) {
-            Ok(_) => {}
-            Err(e) => {
-                log::error!("failed to set property `unsaved-changes` of `App`, {}", e)
-            }
-        }
+        self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
     // Anything that needs to be done right before showing the appwindow

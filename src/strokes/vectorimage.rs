@@ -3,7 +3,6 @@ use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
 use crate::{compose, render};
 
-use anyhow::Context;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use svg::node::{self, element};
@@ -193,7 +192,7 @@ impl VectorImage {
                     cairo::SvgSurface::for_stream(intrinsic_size.0, intrinsic_size.1, svg_stream)
                         .map_err(|e| {
                         anyhow::anyhow!(
-                            "create SvgSurface with dimensions ({}, {}) failed, {}",
+                            "create SvgSurface with dimensions ({}, {}) failed in vectorimage import_from_pdf_bytes with Err {}",
                             intrinsic_size.0,
                             intrinsic_size.1,
                             e
@@ -201,7 +200,12 @@ impl VectorImage {
                     })?;
 
                 {
-                    let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+                    let cx = cairo::Context::new(&surface).map_err(|e| {
+                        anyhow::anyhow!(
+                            "new cairo::Context failed in vectorimage import_from_pdf_bytes() with Err {}",
+                            e
+                        )
+                    })?;
 
                     // Set margin to white
                     cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
@@ -235,10 +239,10 @@ impl VectorImage {
                         continue;
                     }
                 };
-                let svg_data = String::from_utf8_lossy(&svg_data);
+                let svg_data = String::from_utf8(svg_data)?;
 
                 images.push(Self::import_from_svg_data(
-                    &svg_data.to_string(),
+                    svg_data.as_str(),
                     na::vector![x, y],
                     Some(na::vector![width, height]),
                     renderer,

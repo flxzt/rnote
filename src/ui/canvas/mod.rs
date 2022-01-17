@@ -7,11 +7,11 @@ mod imp {
     use super::canvaslayout::CanvasLayout;
     use super::debug;
     use crate::compose::geometry;
-    use crate::config;
     use crate::pens::penbehaviour::PenBehaviour;
     use crate::pens::{PenStyle, Pens};
     use crate::sheet::Sheet;
     use crate::ui::selectionmodifier::SelectionModifier;
+    use crate::{config, utils};
 
     use gtk4::{
         gdk, glib, graphene, gsk, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
@@ -168,13 +168,9 @@ mod imp {
 
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                let interface: glib::object::InterfaceRef<Scrollable> =
-                    glib::Interface::from_type(Scrollable::static_type()).unwrap();
-
-                // The temporary zoom factor (multiplied on top of zoom!) which is used when doing zoom gestures ( to avoid strokes redrawing )
                 vec![
                     // The margin of the sheet in px when zoom = 1.0
-                    glib::ParamSpec::new_double(
+                    glib::ParamSpecDouble::new(
                         "sheet-margin",
                         "sheet-margin",
                         "sheet-margin",
@@ -184,7 +180,7 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // The zoom of the canvas in relation to the sheet
-                    glib::ParamSpec::new_double(
+                    glib::ParamSpecDouble::new(
                         "zoom",
                         "zoom",
                         "zoom",
@@ -194,7 +190,7 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // The temporary zoom (on top of the normal zoom)
-                    glib::ParamSpec::new_double(
+                    glib::ParamSpecDouble::new(
                         "temporary-zoom",
                         "temporary-zoom",
                         "temporary-zoom",
@@ -204,7 +200,7 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // import PDFs with with in percentage to sheet width
-                    glib::ParamSpec::new_double(
+                    glib::ParamSpecDouble::new(
                         "pdf-import-width",
                         "pdf-import-width",
                         "pdf-import-width",
@@ -214,7 +210,7 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // import PDFs as vector images ( if false = as bitmap images )
-                    glib::ParamSpec::new_boolean(
+                    glib::ParamSpecBoolean::new(
                         "pdf-import-as-vector",
                         "pdf-import-as-vector",
                         "pdf-import-as-vector",
@@ -222,7 +218,7 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // Visual debugging, which shows bounding boxes, hitboxes, ... (enable in developer action menu)
-                    glib::ParamSpec::new_boolean(
+                    glib::ParamSpecBoolean::new(
                         "visual-debug",
                         "visual-debug",
                         "visual-debug",
@@ -230,7 +226,7 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // Wether to enable touch drawing
-                    glib::ParamSpec::new_boolean(
+                    glib::ParamSpecBoolean::new(
                         "touch-drawing",
                         "touch-drawing",
                         "touch-drawing",
@@ -238,7 +234,7 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // Flag for any unsaved changes on the canvas. Propagates to the application 'unsaved-changes' property
-                    glib::ParamSpec::new_boolean(
+                    glib::ParamSpecBoolean::new(
                         "unsaved-changes",
                         "unsaved-changes",
                         "unsaved-changes",
@@ -246,7 +242,7 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // Wether the canvas is empty
-                    glib::ParamSpec::new_boolean(
+                    glib::ParamSpecBoolean::new(
                         "empty",
                         "empty",
                         "empty",
@@ -254,22 +250,10 @@ mod imp {
                         glib::ParamFlags::READWRITE,
                     ),
                     // Scrollable properties
-                    glib::ParamSpec::new_override(
-                        "hscroll-policy",
-                        &interface.find_property("hscroll-policy").unwrap(),
-                    ),
-                    glib::ParamSpec::new_override(
-                        "vscroll-policy",
-                        &interface.find_property("vscroll-policy").unwrap(),
-                    ),
-                    glib::ParamSpec::new_override(
-                        "hadjustment",
-                        &interface.find_property("hadjustment").unwrap(),
-                    ),
-                    glib::ParamSpec::new_override(
-                        "vadjustment",
-                        &interface.find_property("vadjustment").unwrap(),
-                    ),
+                    glib::ParamSpecOverride::for_interface::<Scrollable>("hscroll-policy"),
+                    glib::ParamSpecOverride::for_interface::<Scrollable>("vscroll-policy"),
+                    glib::ParamSpecOverride::for_interface::<Scrollable>("hadjustment"),
+                    glib::ParamSpecOverride::for_interface::<Scrollable>("vadjustment"),
                 ]
             });
             PROPERTIES.as_ref()
@@ -487,6 +471,12 @@ mod imp {
 
     impl Canvas {
         pub const SHADOW_WIDTH: f64 = 30.0;
+        pub const SHADOW_COLOR: utils::Color = utils::Color {
+            r: 0.1,
+            g: 0.1,
+            b: 0.1,
+            a: 0.3,
+        };
 
         pub fn draw_shadow(
             &self,
@@ -494,12 +484,6 @@ mod imp {
             width: f64,
             snapshot: &Snapshot,
         ) {
-            let shadow_color = gdk::RGBA {
-                red: 0.1,
-                green: 0.1,
-                blue: 0.1,
-                alpha: 0.3,
-            };
             let corner_radius = graphene::Size::new(width as f32 / 4.0, width as f32 / 4.0);
 
             let rounded_rect = gsk::RoundedRect::new(
@@ -512,7 +496,7 @@ mod imp {
 
             snapshot.append_outset_shadow(
                 &rounded_rect,
-                &shadow_color,
+                &Self::SHADOW_COLOR.to_gdk(),
                 0.0,
                 0.0,
                 (width / 2.0) as f32,
@@ -640,88 +624,59 @@ impl Canvas {
     }
 
     pub fn sheet_margin(&self) -> f64 {
-        self.property("sheet-margin").unwrap().get::<f64>().unwrap()
+        self.property::<f64>("sheet-margin")
     }
 
     pub fn set_sheet_margin(&self, sheet_margin: f64) {
-        self.set_property("sheet-margin", sheet_margin.to_value())
-            .unwrap();
+        self.set_property("sheet-margin", sheet_margin.to_value());
     }
 
     pub fn zoom(&self) -> f64 {
-        self.property("zoom").unwrap().get::<f64>().unwrap()
+        self.property::<f64>("zoom")
     }
 
     fn set_zoom(&self, zoom: f64) {
-        self.set_property("zoom", zoom.to_value()).unwrap();
+        self.set_property("zoom", zoom.to_value());
     }
 
     pub fn temporary_zoom(&self) -> f64 {
-        self.property("temporary-zoom")
-            .unwrap()
-            .get::<f64>()
-            .unwrap()
+        self.property::<f64>("temporary-zoom")
     }
 
     fn set_temporary_zoom(&self, temporary_zoom: f64) {
-        self.set_property("temporary-zoom", temporary_zoom.to_value())
-            .unwrap();
+        self.set_property("temporary-zoom", temporary_zoom.to_value());
     }
 
     pub fn pdf_import_width(&self) -> f64 {
-        self.property("pdf-import-width")
-            .unwrap()
-            .get::<f64>()
-            .unwrap()
+        self.property::<f64>("pdf-import-width")
     }
 
     pub fn set_pdf_import_width(&self, pdf_import_width: f64) {
-        self.set_property("pdf-import-width", pdf_import_width.to_value())
-            .unwrap();
+        self.set_property("pdf-import-width", pdf_import_width.to_value());
     }
 
     pub fn pdf_import_as_vector(&self) -> bool {
-        self.property("pdf-import-as-vector")
-            .unwrap()
-            .get::<bool>()
-            .unwrap()
+        self.property::<bool>("pdf-import-as-vector")
     }
 
     pub fn set_pdf_import_as_vector(&self, as_vector: bool) {
-        self.set_property("pdf-import-as-vector", as_vector.to_value())
-            .unwrap();
+        self.set_property("pdf-import-as-vector", as_vector.to_value());
     }
 
     pub fn unsaved_changes(&self) -> bool {
-        self.property("unsaved-changes")
-            .unwrap()
-            .get::<bool>()
-            .unwrap()
+        self.property::<bool>("unsaved-changes")
     }
 
     pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        match self.set_property("unsaved-changes", unsaved_changes.to_value()) {
-            Ok(_) => {}
-            Err(e) => {
-                log::error!(
-                    "failed to set property `unsaved-changes` of `Canvas`, {}",
-                    e
-                )
-            }
-        }
+        self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
     pub fn empty(&self) -> bool {
-        self.property("empty").unwrap().get::<bool>().unwrap()
+        self.property::<bool>("empty")
     }
 
     pub fn set_empty(&self, empty: bool) {
-        match self.set_property("empty", empty.to_value()) {
-            Ok(_) => {}
-            Err(e) => {
-                log::error!("failed to set property `empty` of `Canvas`, {}", e)
-            }
-        }
+        self.set_property("empty", empty.to_value());
     }
 
     fn set_hadjustment(&self, adj: Option<Adjustment>) {
@@ -1102,8 +1057,8 @@ impl Canvas {
     ) {
         let priv_ = imp::Canvas::from_instance(self);
 
-        if let Some(zoom_timeout) = priv_.zoom_timeout_id.take() {
-            glib::source::source_remove(zoom_timeout);
+        if let Some(zoom_timeout_id) = priv_.zoom_timeout_id.take() {
+            zoom_timeout_id.remove();
         }
 
         self.zoom_temporarily_to(zoom);
@@ -1121,7 +1076,7 @@ impl Canvas {
                     // Removing the timeout id
                     let mut zoom_timeout_id = priv_.zoom_timeout_id.borrow_mut();
                     if let Some(zoom_timeout_id) = zoom_timeout_id.take() {
-                        glib::source::source_remove(zoom_timeout_id);
+                        zoom_timeout_id.remove();
                     }
                 }),
             ));
@@ -1208,20 +1163,19 @@ impl Canvas {
 
         priv_.snapshot(self, &snapshot);
 
-        let texture = if let Some(node) = snapshot.to_node() {
-            let texture = render::rendernode_to_texture(self.upcast_ref::<Widget>(), &node, None)
+        let texture =
+            render::rendernode_to_texture(self.upcast_ref::<Widget>(), &snapshot.to_node(), None)
                 .unwrap_or_else(|e| {
-                    log::error!("rendernode_to_texture() in current_content_as_texture() failed with Err {}", e);
-                    None
-                });
-            texture
-        } else {
-            None
-        };
+                log::error!(
+                    "rendernode_to_texture() in current_content_as_texture() failed with Err {}",
+                    e
+                );
+                None
+            })?;
 
         self.selection_modifier().set_visible(true);
 
-        texture
+        Some(texture)
     }
 
     /// Process pen input start
@@ -1295,58 +1249,57 @@ impl Canvas {
 
 /// fmodule for visual debugging
 pub mod debug {
-    use gtk4::{gdk, graphene, gsk, Snapshot};
+    use gtk4::{graphene, gsk, Snapshot};
 
     use crate::compose::geometry;
+    use crate::utils;
 
-    pub const COLOR_POS: gdk::RGBA = gdk::RGBA {
-        red: 1.0,
-        green: 0.0,
-        blue: 0.0,
-        alpha: 1.0,
+    pub const COLOR_POS: utils::Color = utils::Color {
+        r: 1.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
     };
-    pub const COLOR_POS_ALT: gdk::RGBA = gdk::RGBA {
-        red: 1.0,
-        green: 1.0,
-        blue: 0.0,
-        alpha: 1.0,
+    pub const COLOR_POS_ALT: utils::Color = utils::Color {
+        r: 1.0,
+        g: 1.0,
+        b: 0.0,
+        a: 1.0,
     };
-    pub const COLOR_STROKE_HITBOX: gdk::RGBA = gdk::RGBA {
-        red: 0.0,
-        green: 0.8,
-        blue: 0.2,
-        alpha: 0.7,
+    pub const COLOR_STROKE_HITBOX: utils::Color = utils::Color {
+        r: 0.0,
+        g: 0.8,
+        b: 0.2,
+        a: 0.5,
     };
-    pub const COLOR_STROKE_BOUNDS: gdk::RGBA = gdk::RGBA {
-        red: 0.0,
-        green: 0.8,
-        blue: 0.8,
-        alpha: 1.0,
+    pub const COLOR_STROKE_BOUNDS: utils::Color = utils::Color {
+        r: 0.0,
+        g: 0.8,
+        b: 0.8,
+        a: 1.0,
     };
-
-    pub const COLOR_STROKE_REGENERATE_FLAG: gdk::RGBA = gdk::RGBA {
-        red: 0.9,
-        green: 0.0,
-        blue: 0.0,
-        alpha: 0.3,
+    pub const COLOR_STROKE_REGENERATE_FLAG: utils::Color = utils::Color {
+        r: 0.9,
+        g: 0.0,
+        b: 0.8,
+        a: 0.3,
     };
-
-    pub const COLOR_SELECTOR_BOUNDS: gdk::RGBA = gdk::RGBA {
-        red: 1.0,
-        green: 0.0,
-        blue: 0.0,
-        alpha: 1.0,
+    pub const COLOR_SELECTOR_BOUNDS: utils::Color = utils::Color {
+        r: 1.0,
+        g: 0.0,
+        b: 0.8,
+        a: 1.0,
     };
-    pub const COLOR_SHEET_BOUNDS: gdk::RGBA = gdk::RGBA {
-        red: 0.8,
-        green: 0.0,
-        blue: 0.8,
-        alpha: 1.0,
+    pub const COLOR_SHEET_BOUNDS: utils::Color = utils::Color {
+        r: 0.8,
+        g: 0.0,
+        b: 0.8,
+        a: 1.0,
     };
 
     pub fn draw_bounds(
         bounds: p2d::bounding_volume::AABB,
-        color: gdk::RGBA,
+        color: utils::Color,
         zoom: f64,
         snapshot: &Snapshot,
     ) {
@@ -1369,13 +1322,18 @@ pub mod debug {
         snapshot.append_border(
             &rounded_rect,
             &[border_width, border_width, border_width, border_width],
-            &[color, color, color, color],
+            &[
+                color.to_gdk(),
+                color.to_gdk(),
+                color.to_gdk(),
+                color.to_gdk(),
+            ],
         )
     }
 
-    pub fn draw_pos(pos: na::Vector2<f64>, color: gdk::RGBA, zoom: f64, snapshot: &Snapshot) {
+    pub fn draw_pos(pos: na::Vector2<f64>, color: utils::Color, zoom: f64, snapshot: &Snapshot) {
         snapshot.append_color(
-            &color,
+            &color.to_gdk(),
             &graphene::Rect::new(
                 (zoom * pos[0] - 1.0) as f32,
                 (zoom * pos[1] - 1.0) as f32,
@@ -1387,12 +1345,12 @@ pub mod debug {
 
     pub fn draw_fill(
         rect: p2d::bounding_volume::AABB,
-        color: gdk::RGBA,
+        color: utils::Color,
         zoom: f64,
         snapshot: &Snapshot,
     ) {
         snapshot.append_color(
-            &color,
+            &color.to_gdk(),
             &geometry::aabb_to_graphene_rect(geometry::aabb_scale(rect, zoom)),
         );
     }

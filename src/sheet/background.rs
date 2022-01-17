@@ -7,26 +7,18 @@ use crate::render::Renderer;
 use crate::{compose, render, utils};
 
 #[derive(
-    Debug,
-    Eq,
-    PartialEq,
-    Clone,
-    Copy,
-    glib::GEnum,
-    Serialize,
-    Deserialize,
-    num_derive::FromPrimitive,
+    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
 )]
 #[repr(u32)]
-#[genum(type_name = "PatternStyle")]
+#[enum_type(name = "PatternStyle")]
 pub enum PatternStyle {
-    #[genum(name = "None", nick = "none")]
+    #[enum_value(name = "None", nick = "none")]
     None = 0,
-    #[genum(name = "Lines", nick = "lines")]
+    #[enum_value(name = "Lines", nick = "lines")]
     Lines,
-    #[genum(name = "Grid", nick = "grid")]
+    #[enum_value(name = "Grid", nick = "grid")]
     Grid,
-    #[genum(name = "Dots", nick = "dots")]
+    #[enum_value(name = "Dots", nick = "dots")]
     Dots,
 }
 
@@ -334,7 +326,7 @@ impl Background {
         &mut self,
         zoom: f64,
         bounds: p2d::bounding_volume::AABB,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+    ) -> Result<gsk::RenderNode, anyhow::Error> {
         let snapshot = Snapshot::new();
         let tile_size = self.tile_size();
 
@@ -369,7 +361,7 @@ impl Background {
         sheet_bounds: p2d::bounding_volume::AABB,
     ) -> Result<(), anyhow::Error> {
         match self.gen_rendernode(zoom, sheet_bounds) {
-            Ok(Some(new_rendernode)) => {
+            Ok(new_rendernode) => {
                 self.rendernode = new_rendernode;
             }
             Err(e) => {
@@ -377,9 +369,6 @@ impl Background {
                     "gen_rendernode() failed in update_rendernode() of background with Err: {}",
                     e
                 );
-            }
-            _ => {
-                log::error!("gen_rendernode() returned None in update_rendernode() of background");
             }
         }
 

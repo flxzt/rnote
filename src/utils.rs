@@ -9,13 +9,6 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
-#[derive(Copy, Clone, Debug, glib::GBoxed)]
-#[gboxed(type_name = "BoxedPos")]
-pub struct BoxedPos {
-    pub x: f64,
-    pub y: f64,
-}
-
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Color {
@@ -105,12 +98,7 @@ impl Color {
     }
 
     pub fn to_gdk(&self) -> gdk::RGBA {
-        gdk::RGBA {
-            red: self.r,
-            green: self.g,
-            blue: self.b,
-            alpha: self.a,
-        }
+        gdk::RGBA::new(self.r, self.g, self.b, self.a)
     }
 
     pub fn to_u32(&self) -> u32 {
@@ -124,10 +112,10 @@ impl Color {
 impl From<gdk::RGBA> for Color {
     fn from(gdk_color: gdk::RGBA) -> Self {
         Self {
-            r: gdk_color.red,
-            g: gdk_color.green,
-            b: gdk_color.blue,
-            a: gdk_color.alpha,
+            r: gdk_color.red(),
+            g: gdk_color.green(),
+            b: gdk_color.blue(),
+            a: gdk_color.alpha(),
         }
     }
 }
@@ -145,7 +133,7 @@ impl From<u32> for Color {
 }
 
 pub fn now() -> String {
-    match glib::DateTime::new_now_local() {
+    match glib::DateTime::now_local() {
         Ok(datetime) => match datetime.format("%F_%T") {
             Ok(s) => s.to_string(),
             Err(_) => String::from("1970-01-01_12:00::00"),
@@ -158,7 +146,7 @@ pub fn app_config_base_dirpath() -> Option<PathBuf> {
     let mut app_config_dirpath = glib::user_config_dir();
     app_config_dirpath.push(config::APP_NAME);
     let app_config_dir = gio::File::for_path(app_config_dirpath.clone());
-    match app_config_dir.make_directory_with_parents::<gio::Cancellable>(None) {
+    match app_config_dir.make_directory_with_parents(None::<&gio::Cancellable>) {
         Ok(()) => Some(app_config_dirpath),
         Err(e) => match e.kind::<gio::IOErrorEnum>() {
             Some(gio::IOErrorEnum::Exists) => Some(app_config_dirpath),
@@ -182,9 +170,11 @@ pub enum FileType {
 
 impl FileType {
     pub fn lookup_file_type(file: &gio::File) -> Self {
-        if let Ok(info) =
-            file.query_info::<gio::Cancellable>("standard::*", gio::FileQueryInfoFlags::NONE, None)
-        {
+        if let Ok(info) = file.query_info(
+            "standard::*",
+            gio::FileQueryInfoFlags::NONE,
+            None::<&gio::Cancellable>,
+        ) {
             match info.file_type() {
                 gio::FileType::Regular => {
                     if let Some(content_type) = info.content_type() {

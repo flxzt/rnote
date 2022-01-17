@@ -51,7 +51,7 @@ mod imp {
                 colorchooser_editor_selectbutton: TemplateChild::<Button>::default(),
                 position: Cell::new(PositionType::Right),
                 amount_colorbuttons: Cell::new(super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT),
-                current_color: Cell::new(super::ColorPicker::COLOR_DEFAULT),
+                current_color: Cell::new(super::ColorPicker::COLOR_DEFAULT.to_gdk()),
                 currentcolor_setters: Rc::new(RefCell::new(Vec::with_capacity(
                     super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT as usize,
                 ))),
@@ -85,8 +85,8 @@ mod imp {
 
             self.currentcolor_setter1.connect_clicked(
                 clone!(@weak obj => move |currentcolor_setter1| {
-                    let color = currentcolor_setter1.property("color").unwrap().get::<gdk::RGBA>().unwrap();
-                    obj.set_property("current-color", &color.to_value()).expect("settings `color` property");
+                    let color = currentcolor_setter1.property::<gdk::RGBA>("color");
+                    obj.set_property("current-color", &color.to_value());
                 }),
             );
 
@@ -114,7 +114,7 @@ mod imp {
 
             self.colorchooser.connect_rgba_notify(clone!(@weak obj, @weak currentcolor_setter1, @weak self.currentcolor_setters as currentcolor_setters => move |colorchooser| {
                 let color = colorchooser.rgba();
-                obj.set_property("current-color", &color.to_value()).expect("settings `color` property");
+                obj.set_property("current-color", &color.to_value());
 
             }));
 
@@ -123,11 +123,11 @@ mod imp {
 
                 // store color in the buttons
                 if currentcolor_setter1.is_active() {
-                    currentcolor_setter1.set_property("color", &current_color.to_value()).expect("settings `color` property");
+                    currentcolor_setter1.set_property("color", &current_color.to_value());
                 } else {
                     for setter_button in &*currentcolor_setters.borrow() {
                         if setter_button.is_active() {
-                            setter_button.set_property("color", &current_color.to_value()).expect("settings `color` property");
+                            setter_button.set_property("color", &current_color.to_value());
                         }
                     }
                 }
@@ -143,7 +143,7 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpec::new_enum(
+                    glib::ParamSpecEnum::new(
                         // Name
                         "position",
                         // Nickname
@@ -157,7 +157,7 @@ mod imp {
                         // The property can be read and written to
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_uint(
+                    glib::ParamSpecUInt::new(
                         "amount-colorbuttons",
                         "amount-colorbuttons",
                         "The amount of colorbuttons shown",
@@ -166,7 +166,7 @@ mod imp {
                         super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT,
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_boxed(
+                    glib::ParamSpecBoxed::new(
                         "current-color",
                         "current-color",
                         "current-color",
@@ -198,11 +198,9 @@ mod imp {
                         .expect("value not of type `PositionType`");
                     self.position.replace(position);
 
-                    self.currentcolor_setter1
-                        .set_property("position", position)
-                        .unwrap();
+                    self.currentcolor_setter1.set_property("position", position);
                     for setter_button in self.currentcolor_setters.borrow().iter() {
-                        setter_button.set_property("position", position).unwrap();
+                        setter_button.set_property("position", position);
                     }
 
                     match position {
@@ -295,8 +293,8 @@ mod imp {
                 setterbox.append(&setter_button);
 
                 setter_button.connect_clicked(clone!(@weak obj => move |setter_button| {
-                    let color = setter_button.property("color").unwrap().get::<gdk::RGBA>().unwrap();
-                    obj.set_property("current-color", &color.to_value()).expect("settings `color` property");
+                    let color = setter_button.property::<gdk::RGBA>("color");
+                    obj.set_property("current-color", &color.to_value());
                 }));
 
                 self.currentcolor_setters.borrow_mut().push(setter_button);
@@ -314,18 +312,13 @@ mod imp {
             for (i, setter_button) in self.currentcolor_setters.borrow().iter().rev().enumerate() {
                 let i = i + 1;
 
-                let color = gdk::RGBA {
-                    red: 0.5 * (i as f32 * color_step + 0.0 * rgb_offset + color_offset).sin()
-                        + 0.5,
-                    green: 0.5 * (i as f32 * color_step + 1.0 * rgb_offset + color_offset).sin()
-                        + 0.5,
-                    blue: 0.5 * (i as f32 * color_step + 2.0 * rgb_offset + color_offset).sin()
-                        + 0.5,
-                    alpha: 1.0,
-                };
-                setter_button
-                    .set_property("color", &color.to_value())
-                    .expect("settings `color` property");
+                let color = gdk::RGBA::new(
+                    0.5 * (i as f32 * color_step + 0.0 * rgb_offset + color_offset).sin() + 0.5,
+                    0.5 * (i as f32 * color_step + 1.0 * rgb_offset + color_offset).sin() + 0.5,
+                    0.5 * (i as f32 * color_step + 2.0 * rgb_offset + color_offset).sin() + 0.5,
+                    1.0,
+                );
+                setter_button.set_property("color", &color.to_value());
             }
         }
     }
@@ -346,12 +339,7 @@ impl Default for ColorPicker {
 }
 
 impl ColorPicker {
-    pub const COLOR_DEFAULT: gdk::RGBA = gdk::RGBA {
-        red: 0.0,
-        green: 0.0,
-        blue: 0.0,
-        alpha: 1.0,
-    };
+    pub const COLOR_DEFAULT: utils::Color = utils::Color::BLACK;
     pub const AMOUNT_COLORBUTTONS_MIN: u32 = 1;
     pub const AMOUNT_COLORBUTTONS_MAX: u32 = 1000;
     pub const AMOUNT_COLORBUTTONS_DEFAULT: u32 = 8;
@@ -364,38 +352,27 @@ impl ColorPicker {
     }
 
     pub fn position(&self) -> PositionType {
-        self.property("position")
-            .unwrap()
-            .get::<PositionType>()
-            .expect("value not of type `PositionType`")
+        self.property::<PositionType>("position")
     }
 
     pub fn set_position(&self, position: PositionType) {
-        self.set_property("position", position.to_value()).unwrap();
+        self.set_property("position", position.to_value());
     }
 
     pub fn current_color(&self) -> gdk::RGBA {
-        self.property("current-color")
-            .unwrap()
-            .get::<gdk::RGBA>()
-            .expect("value not of type `PositionType`")
+        self.property::<gdk::RGBA>("current-color")
     }
 
     pub fn set_current_color(&self, current_color: gdk::RGBA) {
-        self.set_property("current-color", current_color.to_value())
-            .unwrap();
+        self.set_property("current-color", current_color.to_value());
     }
 
     pub fn amount_colorbuttons(&self) -> u32 {
-        self.property("amount-colorbuttons")
-            .unwrap()
-            .get::<u32>()
-            .expect("value not of type `u32`")
+        self.property::<u32>("amount-colorbuttons")
     }
 
     pub fn set_amount_colorbuttons(&self, amount: u32) {
-        self.set_property("amount-colorbuttons", amount.to_value())
-            .unwrap();
+        self.set_property("amount-colorbuttons", amount.to_value());
     }
 
     pub fn fetch_all_colors(&self) -> Vec<utils::Color> {

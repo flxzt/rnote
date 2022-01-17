@@ -12,26 +12,18 @@ use svg::node::element::{self, Element};
 
 /// The distribution for the spread of dots across the width of the textured stroke
 #[derive(
-    Debug,
-    Eq,
-    PartialEq,
-    Clone,
-    Copy,
-    glib::GEnum,
-    Serialize,
-    Deserialize,
-    num_derive::FromPrimitive,
+    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
 )]
 #[repr(u32)]
-#[genum(type_name = "TexturedDotsDistribution")]
+#[enum_type(name = "TexturedDotsDistribution")]
 pub enum TexturedDotsDistribution {
-    #[genum(name = "Uniform", nick = "uniform")]
+    #[enum_value(name = "Uniform", nick = "uniform")]
     Uniform = 0,
-    #[genum(name = "Normal", nick = "normal")]
+    #[enum_value(name = "Normal", nick = "normal")]
     Normal,
-    #[genum(name = "Exponential", nick = "exponential")]
+    #[enum_value(name = "Exponential", nick = "exponential")]
     Exponential,
-    #[genum(name = "ReverseExponential", nick = "reverse-exponential")]
+    #[enum_value(name = "ReverseExponential", nick = "reverse-exponential")]
     ReverseExponential,
 }
 

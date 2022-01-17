@@ -1,12 +1,6 @@
 use std::ops::Deref;
 
-use anyhow::Context;
-use gtk4::{
-    gdk, gio, glib, graphene,
-    gsk::{self, IsRenderNode},
-    prelude::*,
-    Native, Snapshot, Widget,
-};
+use gtk4::{gdk, glib, graphene, gsk, prelude::*, Native, Snapshot, Widget};
 
 use crate::compose::{self, geometry};
 
@@ -81,12 +75,13 @@ impl Renderer {
                 "gen_image() failed, bounds extents are <= 0.0",
             ));
         }
-        match self.backend {
+        /*         match self.backend {
             RendererBackend::Librsvg => self.gen_image_librsvg(zoom, svgs, bounds),
             RendererBackend::Resvg => self.gen_image_resvg(zoom, svgs, bounds),
-        }
+        } */
+        self.gen_image_resvg(zoom, svgs, bounds)
     }
-
+    /*
     fn gen_image_librsvg(
         &self,
         zoom: f64,
@@ -164,7 +159,7 @@ impl Renderer {
             data_height: height_scaled,
             memory_format: gdk::MemoryFormat::B8g8r8a8Premultiplied,
         })
-    }
+    } */
 
     fn gen_image_resvg(
         &self,
@@ -231,7 +226,7 @@ pub fn image_to_rendernode(image: &Image, zoom: f64) -> gsk::RenderNode {
     .upcast()
 }
 
-pub fn images_to_rendernode(images: &[Image], zoom: f64) -> Option<gsk::RenderNode> {
+pub fn images_to_rendernode(images: &[Image], zoom: f64) -> gsk::RenderNode {
     let snapshot = Snapshot::new();
 
     for image in images {
@@ -245,7 +240,7 @@ pub fn append_images_to_rendernode(
     rendernode: &gsk::RenderNode,
     images: &[Image],
     zoom: f64,
-) -> Option<gsk::RenderNode> {
+) -> gsk::RenderNode {
     let snapshot = Snapshot::new();
 
     snapshot.append_node(rendernode);
@@ -264,15 +259,17 @@ pub fn rendernode_to_texture(
     let viewport = viewport.map(geometry::aabb_to_graphene_rect);
 
     if let Some(root) = active_widget.root() {
-        if let Some(root_renderer) = root.upcast::<Native>().renderer() {
-            let texture = root_renderer.render_texture(node, viewport.as_ref());
-            return Ok(texture);
-        }
+        let texture = root
+            .upcast::<Native>()
+            .renderer()
+            .render_texture(node, viewport.as_ref());
+        return Ok(Some(texture));
     }
 
     Ok(None)
 }
 
+/*
 pub fn draw_svgs_to_cairo_context(
     zoom: f64,
     svgs: &[Svg],
@@ -312,12 +309,6 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
         ));
     }
 
-    /*     let caironode_bounds = graphene::Rect::new(
-        (svg.bounds.mins[0] * zoom).floor() as f32,
-        (svg.bounds.mins[1] * zoom).floor() as f32,
-        ((svg.bounds.extents()[0]) * zoom).ceil() as f32,
-        ((svg.bounds.extents()[1]) * zoom).ceil() as f32,
-    ); */
     let caironode_bounds = geometry::aabb_scale(geometry::aabb_ceil(svg.bounds), zoom);
 
     let new_caironode = gsk::CairoNode::new(&geometry::aabb_to_graphene_rect(caironode_bounds));
@@ -329,3 +320,4 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
 
     Ok(new_caironode)
 }
+ */

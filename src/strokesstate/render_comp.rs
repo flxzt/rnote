@@ -1,10 +1,10 @@
 use super::StateTask;
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::drawbehaviour::DrawBehaviour;
-use crate::render;
 use crate::ui::canvas;
+use crate::{render, utils};
 
-use gtk4::{gdk, graphene, gsk, Snapshot};
+use gtk4::{graphene, gsk, Snapshot};
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
@@ -181,17 +181,13 @@ impl StrokesState {
                                 Ok(last_elems_image) => {
                                     let mut images = vec![last_elems_image];
 
-                                    if let Some(new_rendernode) =
-                                        render::append_images_to_rendernode(
-                                            &render_comp.rendernode,
-                                            &images,
-                                            self.zoom,
-                                        )
-                                    {
-                                        render_comp.rendernode = new_rendernode;
-                                        render_comp.images.append(&mut images);
-                                        render_comp.regenerate_flag = false;
-                                    }
+                                    render_comp.rendernode = render::append_images_to_rendernode(
+                                        &render_comp.rendernode,
+                                        &images,
+                                        self.zoom,
+                                    );
+                                    render_comp.images.append(&mut images);
+                                    render_comp.regenerate_flag = false;
                                 }
                                 Err(e) => {
                                     log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}", key, e);
@@ -228,17 +224,13 @@ impl StrokesState {
                                 Ok(last_elems_image) => {
                                     let mut images = vec![last_elems_image];
 
-                                    if let Some(new_rendernode) =
-                                        render::append_images_to_rendernode(
-                                            &render_comp.rendernode,
-                                            &images,
-                                            self.zoom,
-                                        )
-                                    {
-                                        render_comp.rendernode = new_rendernode;
-                                        render_comp.images.append(&mut images);
-                                        render_comp.regenerate_flag = false;
-                                    }
+                                    render_comp.rendernode = render::append_images_to_rendernode(
+                                        &render_comp.rendernode,
+                                        &images,
+                                        self.zoom,
+                                    );
+                                    render_comp.images.append(&mut images);
+                                    render_comp.regenerate_flag = false;
                                 }
                                 Err(e) => {
                                     log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
@@ -454,11 +446,9 @@ impl StrokesState {
 
     pub fn regenerate_rendering_with_images(&mut self, key: StrokeKey, images: Vec<render::Image>) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            if let Some(new_rendernode) = render::images_to_rendernode(&images, self.zoom) {
-                render_comp.regenerate_flag = false;
-                render_comp.rendernode = new_rendernode;
-                render_comp.images = images;
-            }
+            render_comp.rendernode = render::images_to_rendernode(&images, self.zoom);
+            render_comp.regenerate_flag = false;
+            render_comp.images = images;
         } else {
             log::debug!(
                     "get render_comp returned None in update_rendering_with_images() for stroke with key {:?}",
@@ -469,13 +459,10 @@ impl StrokesState {
 
     pub fn append_images_to_rendering(&mut self, key: StrokeKey, mut images: Vec<render::Image>) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            if let Some(new_rendernode) =
-                render::append_images_to_rendernode(&render_comp.rendernode, &images, self.zoom)
-            {
-                render_comp.regenerate_flag = false;
-                render_comp.rendernode = new_rendernode;
-                render_comp.images.append(&mut images);
-            }
+            render_comp.rendernode =
+                render::append_images_to_rendernode(&render_comp.rendernode, &images, self.zoom);
+            render_comp.regenerate_flag = false;
+            render_comp.images.append(&mut images);
         }
     }
 
@@ -484,11 +471,7 @@ impl StrokesState {
         self.render_components
             .iter_mut()
             .for_each(|(_key, render_comp)| {
-                if let Some(new_rendernode) =
-                    render::images_to_rendernode(&render_comp.images, zoom)
-                {
-                    render_comp.rendernode = new_rendernode;
-                }
+                render_comp.rendernode = render::images_to_rendernode(&render_comp.images, zoom)
             });
     }
 
@@ -529,11 +512,11 @@ impl StrokesState {
                 (bounds.extents()[1]) as f32,
             )
             .scale(zoom as f32, zoom as f32);
-            let border_color = gdk::RGBA {
-                red: 0.0,
-                green: 0.2,
-                blue: 0.8,
-                alpha: 0.4,
+            let border_color = utils::Color {
+                r: 0.0,
+                g: 0.2,
+                b: 0.8,
+                a: 0.4,
             };
             let border_width = 2.0;
 
@@ -546,7 +529,12 @@ impl StrokesState {
                     graphene::Size::zero(),
                 ),
                 &[border_width, border_width, border_width, border_width],
-                &[border_color, border_color, border_color, border_color],
+                &[
+                    border_color.to_gdk(),
+                    border_color.to_gdk(),
+                    border_color.to_gdk(),
+                    border_color.to_gdk(),
+                ],
             );
         }
 
@@ -583,23 +571,21 @@ impl StrokesState {
             )
             .scale(zoom as f32, zoom as f32);
 
-            let selection_border_color = gdk::RGBA {
-                red: 0.49,
-                green: 0.56,
-                blue: 0.63,
-                alpha: 0.3,
+            let selection_border_color = utils::Color {
+                r: 0.49,
+                g: 0.56,
+                b: 0.63,
+                a: 0.3,
             };
             let selection_border_width = 4.0;
+            let selection_border_fill = utils::Color {
+                r: 0.49,
+                g: 0.56,
+                b: 0.63,
+                a: 0.1,
+            };
 
-            snapshot.append_color(
-                &gdk::RGBA {
-                    red: 0.49,
-                    green: 0.56,
-                    blue: 0.63,
-                    alpha: 0.1,
-                },
-                &selection_bounds,
-            );
+            snapshot.append_color(&selection_border_fill.to_gdk(), &selection_bounds);
             snapshot.append_border(
                 &gsk::RoundedRect::new(
                     graphene::Rect::new(
@@ -620,10 +606,10 @@ impl StrokesState {
                     selection_border_width,
                 ],
                 &[
-                    selection_border_color,
-                    selection_border_color,
-                    selection_border_color,
-                    selection_border_color,
+                    selection_border_color.to_gdk(),
+                    selection_border_color.to_gdk(),
+                    selection_border_color.to_gdk(),
+                    selection_border_color.to_gdk(),
                 ],
             );
         }

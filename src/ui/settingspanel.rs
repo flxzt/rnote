@@ -165,29 +165,23 @@ mod imp {
                 }),
             );
 
-            self.format_width_unitentry
-                .get()
-                .connect_local(
-                    "measurement-changed",
-                    false,
-                    clone!(@weak obj as settings_panel => @default-return None, move |_args| {
-                            settings_panel.update_temporary_format_from_rows();
-                            None
-                    }),
-                )
-                .unwrap();
+            self.format_width_unitentry.get().connect_local(
+                "measurement-changed",
+                false,
+                clone!(@weak obj as settings_panel => @default-return None, move |_args| {
+                        settings_panel.update_temporary_format_from_rows();
+                        None
+                }),
+            );
 
-            self.format_height_unitentry
-                .get()
-                .connect_local(
-                    "measurement-changed",
-                    false,
-                    clone!(@weak obj as settings_panel => @default-return None, move |_args| {
-                            settings_panel.update_temporary_format_from_rows();
-                            None
-                    }),
-                )
-                .unwrap();
+            self.format_height_unitentry.get().connect_local(
+                "measurement-changed",
+                false,
+                clone!(@weak obj as settings_panel => @default-return None, move |_args| {
+                        settings_panel.update_temporary_format_from_rows();
+                        None
+                }),
+            );
 
             self.format_dpi_adj.connect_value_changed(
                 clone!(@weak obj as settings_panel => move |_format_dpi_adj| {
@@ -237,7 +231,6 @@ mod imp {
                     .downcast::<adw::EnumListItem>()
                     .unwrap()
                     .nick()
-                    .unwrap()
                     .as_str()
                 {
                     "a2" => {
@@ -574,8 +567,7 @@ impl SettingsPanel {
 
                     None
             }),
-        )
-        .unwrap();
+        );
 
         priv_
             .general_pdf_import_width_adj
@@ -648,7 +640,6 @@ impl SettingsPanel {
                     .downcast::<adw::EnumListItem>()
                     .unwrap()
                     .nick()
-                    .unwrap()
                     .as_str()
                 {
                     "none" => {
@@ -701,8 +692,7 @@ impl SettingsPanel {
 
                     None
             }),
-        )
-        .unwrap();
+        );
 
         priv_.background_pattern_height_unitentry.get().connect_local(
             "measurement-changed",
@@ -716,8 +706,7 @@ impl SettingsPanel {
 
                     None
             }),
-        )
-        .unwrap();
+        );
     }
 
     pub fn update_temporary_format_from_rows(&self) {

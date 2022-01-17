@@ -293,18 +293,19 @@ impl MainHeader {
 
     pub fn set_title_for_file(&self, file: Option<&gio::File>) {
         if let Some(file) = file {
-            match file.query_info::<gio::Cancellable>(
+            match file.query_info(
                 "standard::*",
                 gio::FileQueryInfoFlags::NONE,
-                None,
+                None::<&gio::Cancellable>,
             ) {
                 Ok(fileinfo) => {
                     self.main_title()
                         .set_title(fileinfo.display_name().as_str());
-                    if let Some(path) = file.path() {
-                        self.main_title().set_subtitle(&String::from(
-                            glib::path_get_dirname(path).to_string_lossy() + "/",
-                        ));
+                    if let Some(mut path) = file.path() {
+                        if path.pop() {
+                            self.main_title()
+                                .set_subtitle(&String::from(path.to_string_lossy() + "/"));
+                        }
                     }
                 }
                 Err(e) => {

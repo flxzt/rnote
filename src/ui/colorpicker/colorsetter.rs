@@ -25,7 +25,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 css: CssProvider::new(),
-                color: Cell::new(super::ColorSetter::COLOR_DEFAULT),
+                color: Cell::new(super::ColorSetter::COLOR_DEFAULT.to_gdk()),
                 position: Cell::new(PositionType::Right),
             }
         }
@@ -37,8 +37,11 @@ mod imp {
 
             obj.set_css_classes(&["setter-button"]);
             self.css.load_from_data(
-                self.generate_css_string(&super::ColorSetter::COLOR_DEFAULT, self.position.get())
-                    .as_bytes(),
+                self.generate_css_string(
+                    &super::ColorSetter::COLOR_DEFAULT.to_gdk(),
+                    self.position.get(),
+                )
+                .as_bytes(),
             );
             obj.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -47,14 +50,14 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpec::new_boxed(
+                    glib::ParamSpecBoxed::new(
                         "color",
                         "color",
                         "color",
                         gdk::RGBA::static_type(),
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_enum(
+                    glib::ParamSpecEnum::new(
                         // Name
                         "position",
                         // Nickname
@@ -195,10 +198,10 @@ mod imp {
                 position_string,
                 properties_string,
                 properties_checked_string,
-                (rgba.red * 255.0) as i32,
-                (rgba.green * 255.0) as i32,
-                (rgba.blue * 255.0) as i32,
-                (rgba.alpha * 1000.0).round() / 1000.0
+                (rgba.red() * 255.0) as i32,
+                (rgba.green() * 255.0) as i32,
+                (rgba.blue() * 255.0) as i32,
+                (rgba.alpha() * 1000.0).round() / 1000.0
             );
             parsed
         }
@@ -206,6 +209,8 @@ mod imp {
 }
 
 use gtk4::{gdk, glib, prelude::*, Button, PositionType, ToggleButton, Widget};
+
+use crate::utils;
 
 glib::wrapper! {
     pub struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
@@ -219,32 +224,25 @@ impl Default for ColorSetter {
 }
 
 impl ColorSetter {
-    pub const COLOR_DEFAULT: gdk::RGBA = gdk::RGBA {
-        red: 0.0,
-        green: 0.0,
-        blue: 0.0,
-        alpha: 1.0,
-    };
+    pub const COLOR_DEFAULT: utils::Color = utils::Color::BLACK;
+
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("failed to create `ColorSetter")
     }
 
     pub fn position(&self) -> PositionType {
-        self.property("position")
-            .unwrap()
-            .get::<PositionType>()
-            .expect("value not of type `PositionType`")
+        self.property::<PositionType>("position")
     }
 
     pub fn set_position(&self, position: PositionType) {
-        self.set_property("position", position.to_value()).unwrap();
+        self.set_property("position", position.to_value());
     }
 
     pub fn color(&self) -> gdk::RGBA {
-        self.property("color").unwrap().get::<gdk::RGBA>().unwrap()
+        self.property::<gdk::RGBA>("color")
     }
 
     pub fn set_color(&self, color: gdk::RGBA) {
-        self.set_property("color", color.to_value()).unwrap();
+        self.set_property("color", color.to_value());
     }
 }

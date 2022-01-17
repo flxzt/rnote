@@ -96,7 +96,7 @@ impl RnoteAudioPlayer {
                             Some(format!("marker_file_{}", marker_location.0).as_str()),
                         )?;
 
-                        file_src.set_property("location", marker_location.1.as_str())?;
+                        file_src.set_property("location", marker_location.1.as_str());
 
                         pipeline.add(&file_src)?;
                         file_src.link(&selector)?;
@@ -197,7 +197,7 @@ impl RnoteAudioPlayer {
                         Some(format!("{}", brush_file_location).as_str()),
                     )?;
                     brush_file_src
-                        .set_property("location", brush_file_location.to_string().as_str())?;
+                        .set_property("location", brush_file_location.to_string().as_str());
 
                     // Creating the pipeline
                     let pipeline = gst::Pipeline::new(Some("brush_pipeline"));
@@ -360,9 +360,7 @@ impl RnoteAudioPlayer {
             if self.marker_file_srcs.get(i).is_some() {
                 match marker_selector.static_pad(format!("sink_{}", i).as_str()) {
                     Some(active_pad) => {
-                        marker_selector
-                            .set_property("active-pad", active_pad)
-                            .unwrap();
+                        marker_selector.set_property("active-pad", active_pad);
                     }
                     None => {
                         log::error!(
@@ -392,7 +390,7 @@ impl RnoteAudioPlayer {
         if let Some(brush_pipeline) = &self.brush_pipeline {
             // remove the old timeout
             if let Some(play_timeout_id) = self.play_timeout_id.borrow_mut().take() {
-                glib::source::source_remove(play_timeout_id);
+                play_timeout_id.remove();
             } else {
                 /*                 // Set a random time out of the BRUSH_SEEK_TIMES
                 let mut rng = rand::thread_rng();
@@ -430,10 +428,7 @@ impl RnoteAudioPlayer {
                     };
 
                     // Removing the timeout id
-                    let mut play_timeout_id = play_timeout_id.borrow_mut();
-                    if let Some(play_timeout_id) = play_timeout_id.take() {
-                        glib::source::source_remove(play_timeout_id);
-                    }
+                    play_timeout_id.borrow_mut().take();
                 }),
             ));
         };

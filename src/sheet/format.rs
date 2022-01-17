@@ -34,7 +34,7 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpec::new_int(
+                    glib::ParamSpecInt::new(
                         // Name
                         "width",
                         // Nickname
@@ -50,7 +50,7 @@ mod imp {
                         // The property can be read and written to
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_int(
+                    glib::ParamSpecInt::new(
                         // Name
                         "height",
                         // Nickname
@@ -66,7 +66,7 @@ mod imp {
                         // The property can be read and written to
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_double(
+                    glib::ParamSpecDouble::new(
                         // Name
                         "dpi",
                         // Nickname
@@ -82,7 +82,7 @@ mod imp {
                         // The property can be read and written to
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_enum(
+                    glib::ParamSpecEnum::new(
                         // Name
                         "orientation",
                         // Nickname
@@ -149,13 +149,14 @@ mod imp {
     }
 }
 
-use gtk4::{gdk, glib, glib::clone, graphene, gsk, prelude::*, Snapshot};
+use gtk4::{glib, glib::clone, graphene, gsk, prelude::*, Snapshot};
 use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 
 use crate::compose::geometry;
 use crate::ui::appwindow::RnoteAppWindow;
+use crate::utils;
 
 glib::wrapper! {
     pub struct Format(ObjectSubclass<imp::Format>);
@@ -329,11 +330,11 @@ impl Format {
     pub const DPI_MAX: f64 = 5000.0;
     pub const DPI_DEFAULT: f64 = 96.0;
 
-    pub const FORMAT_BORDER_COLOR: gdk::RGBA = gdk::RGBA {
-        red: 0.6,
-        green: 0.0,
-        blue: 0.0,
-        alpha: 1.0,
+    pub const FORMAT_BORDER_COLOR: utils::Color = utils::Color {
+        r: 0.6,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
     };
 
     pub fn new() -> Self {
@@ -341,47 +342,43 @@ impl Format {
             ("width", &Self::WIDTH_DEFAULT),
             ("height", &Self::HEIGHT_DEFAULT),
             ("dpi", &Self::DPI_DEFAULT),
-            ("orientation", &Orientation::Portrait),
+            ("orientation", &Orientation::Portrait.to_value()),
         ])
         .expect("Failed to create Format")
     }
 
     pub fn width(&self) -> i32 {
-        self.property("width").unwrap().get::<i32>().unwrap()
+        self.property::<i32>("width")
     }
 
     pub fn set_width(&self, width: i32) {
-        self.set_property("width", width.to_value()).unwrap();
+        self.set_property("width", width.to_value());
     }
 
     pub fn height(&self) -> i32 {
-        self.property("height").unwrap().get::<i32>().unwrap()
+        self.property::<i32>("height")
     }
 
     pub fn set_height(&self, height: i32) {
-        self.set_property("height", height.to_value()).unwrap();
+        self.set_property("height", height.to_value());
     }
 
     pub fn dpi(&self) -> f64 {
-        self.property("dpi").unwrap().get::<f64>().unwrap()
+        self.property::<f64>("dpi")
     }
 
     pub fn set_dpi(&self, dpi: f64) {
-        self.set_property("dpi", dpi.to_value()).unwrap();
+        self.set_property("dpi", dpi.to_value());
     }
 
     /// Width and height are independent of the orientation and should be updated when the orientation changes. Its use is mainly for printing and selecting predefined formats
     pub fn orientation(&self) -> Orientation {
-        self.property("orientation")
-            .unwrap()
-            .get::<Orientation>()
-            .unwrap()
+        self.property::<Orientation>("orientation")
     }
 
     /// Width and height are independent of the orientation and should be updated when the orientation changes. Its use is mainly for printing and selecting predefined formats
     pub fn set_orientation(&self, orientation: Orientation) {
-        self.set_property("orientation", orientation.to_value())
-            .unwrap();
+        self.set_property("orientation", orientation.to_value());
     }
 
     pub fn import_format(&self, format: Self) {
@@ -421,10 +418,10 @@ impl Format {
                 &rounded_rect,
                 &[border_width, border_width, border_width, border_width],
                 &[
-                    Self::FORMAT_BORDER_COLOR,
-                    Self::FORMAT_BORDER_COLOR,
-                    Self::FORMAT_BORDER_COLOR,
-                    Self::FORMAT_BORDER_COLOR,
+                    Self::FORMAT_BORDER_COLOR.to_gdk(),
+                    Self::FORMAT_BORDER_COLOR.to_gdk(),
+                    Self::FORMAT_BORDER_COLOR.to_gdk(),
+                    Self::FORMAT_BORDER_COLOR.to_gdk(),
                 ],
             );
             offset_y += f64::from(self.height());
@@ -443,34 +440,26 @@ impl Format {
 }
 
 #[derive(
-    Debug,
-    Eq,
-    PartialEq,
-    Clone,
-    Copy,
-    glib::GEnum,
-    Serialize,
-    Deserialize,
-    num_derive::FromPrimitive,
+    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
 )]
 #[repr(u32)]
-#[genum(type_name = "PredefinedFormats")]
+#[enum_type(name = "PredefinedFormats")]
 pub enum PredefinedFormat {
-    #[genum(name = "A6", nick = "a6")]
+    #[enum_value(name = "A6", nick = "a6")]
     A6 = 0,
-    #[genum(name = "A5", nick = "a5")]
+    #[enum_value(name = "A5", nick = "a5")]
     A5,
-    #[genum(name = "A4", nick = "a4")]
+    #[enum_value(name = "A4", nick = "a4")]
     A4,
-    #[genum(name = "A3", nick = "a3")]
+    #[enum_value(name = "A3", nick = "a3")]
     A3,
-    #[genum(name = "A2", nick = "a2")]
+    #[enum_value(name = "A2", nick = "a2")]
     A2,
-    #[genum(name = "US Letter", nick = "us-letter")]
+    #[enum_value(name = "US Letter", nick = "us-letter")]
     UsLetter,
-    #[genum(name = "US Legal", nick = "us-legal")]
+    #[enum_value(name = "US Legal", nick = "us-legal")]
     UsLegal,
-    #[genum(name = "Custom", nick = "custom")]
+    #[enum_value(name = "Custom", nick = "custom")]
     Custom,
 }
 
@@ -481,24 +470,16 @@ impl Default for PredefinedFormat {
 }
 
 #[derive(
-    Debug,
-    Eq,
-    PartialEq,
-    Clone,
-    Copy,
-    glib::GEnum,
-    Serialize,
-    Deserialize,
-    num_derive::FromPrimitive,
+    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
 )]
 #[repr(u32)]
-#[genum(type_name = "MeasureUnits")]
+#[enum_type(name = "MeasureUnits")]
 pub enum MeasureUnit {
-    #[genum(name = "Pixel", nick = "px")]
+    #[enum_value(name = "Pixel", nick = "px")]
     Px = 0,
-    #[genum(name = "Millimeter", nick = "mm")]
+    #[enum_value(name = "Millimeter", nick = "mm")]
     Mm,
-    #[genum(name = "Centimeter", nick = "cm")]
+    #[enum_value(name = "Centimeter", nick = "cm")]
     Cm,
 }
 
@@ -533,22 +514,14 @@ impl MeasureUnit {
 }
 
 #[derive(
-    Debug,
-    Eq,
-    PartialEq,
-    Clone,
-    Copy,
-    glib::GEnum,
-    Serialize,
-    Deserialize,
-    num_derive::FromPrimitive,
+    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
 )]
 #[repr(u32)]
-#[genum(type_name = "FormatOrientation")]
+#[enum_type(name = "FormatOrientation")]
 pub enum Orientation {
-    #[genum(name = "Portrait", nick = "portrait")]
+    #[enum_value(name = "Portrait", nick = "portrait")]
     Portrait = 0,
-    #[genum(name = "Landscape", nick = "landscape")]
+    #[enum_value(name = "Landscape", nick = "landscape")]
     Landscape,
 }
 

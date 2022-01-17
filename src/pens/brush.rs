@@ -6,7 +6,7 @@ use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokesstate::StrokeKey;
 use crate::{input, utils};
 
-use gtk4::{gdk, prelude::*};
+use gtk4::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
@@ -50,7 +50,7 @@ impl Default for Brush {
         Self {
             width: Self::WIDTH_DEFAULT,
             sensitivity: Self::SENSITIVITY_DEFAULT,
-            color: utils::Color::from(Self::COLOR_DEFAULT),
+            color: utils::Color::BLACK,
             style: BrushStyle::default(),
             textured_config: textured::TexturedConfig::default(),
             current_stroke: None,
@@ -156,11 +156,11 @@ impl Brush {
 
     pub const TEMPLATE_BOUNDS_PADDING: f64 = 50.0;
 
-    pub const COLOR_DEFAULT: gdk::RGBA = gdk::RGBA {
-        red: 0.0,
-        green: 0.0,
-        blue: 0.0,
-        alpha: 1.0,
+    pub const COLOR_DEFAULT: utils::Color = utils::Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
     };
 
     pub fn width(&self) -> f64 {

@@ -92,7 +92,6 @@ mod imp {
                             .downcast::<adw::EnumListItem>()
                             .unwrap()
                             .nick()
-                            .unwrap()
                             .as_str()
                         {
                             "px" => Some(format::MeasureUnit::Px),
@@ -133,7 +132,7 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    glib::ParamSpec::new_double(
+                    glib::ParamSpecDouble::new(
                         "value",
                         "value",
                         "value",
@@ -142,7 +141,7 @@ mod imp {
                         1.0,
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_enum(
+                    glib::ParamSpecEnum::new(
                         "unit",
                         "unit",
                         "unit",
@@ -150,7 +149,7 @@ mod imp {
                         format::MeasureUnit::Px as i32,
                         glib::ParamFlags::READWRITE,
                     ),
-                    glib::ParamSpec::new_double(
+                    glib::ParamSpecDouble::new(
                         "dpi",
                         "dpi",
                         "dpi",
@@ -185,7 +184,7 @@ mod imp {
                     let value_ = value.get::<f64>().expect("The value must be of type 'f64'");
                     if value_ != self.value.get() {
                         self.value.replace(value_);
-                        obj.emit_by_name("measurement-changed", &[]).unwrap();
+                        obj.emit_by_name::<()>("measurement-changed", &[]);
                     }
                 }
                 "unit" => {
@@ -195,14 +194,14 @@ mod imp {
 
                     if unit != self.unit.get() {
                         self.unit.replace(unit);
-                        obj.emit_by_name("measurement-changed", &[]).unwrap();
+                        obj.emit_by_name::<()>("measurement-changed", &[]);
                     }
                 }
                 "dpi" => {
                     let dpi = value.get::<f64>().expect("The value must be of type 'f64'");
                     if dpi != self.dpi.get() {
                         self.dpi.replace(dpi);
-                        obj.emit_by_name("measurement-changed", &[]).unwrap();
+                        obj.emit_by_name::<()>("measurement-changed", &[]);
                     }
                 }
                 _ => unimplemented!(),
@@ -248,30 +247,27 @@ impl UnitEntry {
     }
 
     pub fn value(&self) -> f64 {
-        self.property("value").unwrap().get::<f64>().unwrap()
+        self.property::<f64>("value")
     }
 
     pub fn set_value(&self, value: f64) {
-        self.set_property("value", value.to_value()).unwrap();
+        self.set_property("value", value.to_value());
     }
 
     pub fn unit(&self) -> format::MeasureUnit {
-        self.property("unit")
-            .unwrap()
-            .get::<format::MeasureUnit>()
-            .unwrap()
+        self.property::<format::MeasureUnit>("unit")
     }
 
     pub fn set_unit(&self, unit: format::MeasureUnit) {
-        self.set_property("unit", unit.to_value()).unwrap();
+        self.set_property("unit", unit.to_value());
     }
 
     pub fn dpi(&self) -> f64 {
-        self.property("dpi").unwrap().get::<f64>().unwrap()
+        self.property::<f64>("dpi")
     }
 
     pub fn set_dpi(&self, dpi: f64) {
-        self.set_property("dpi", dpi.to_value()).unwrap();
+        self.set_property("dpi", dpi.to_value());
     }
 
     pub fn value_in_px(&self) -> i32 {

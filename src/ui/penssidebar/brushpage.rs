@@ -190,10 +190,13 @@ impl BrushPage {
         self.width_adj().set_upper(Brush::WIDTH_MAX);
         self.width_adj().set_value(Brush::WIDTH_DEFAULT);
 
-        self.colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |colorpicker, _paramspec| {
-            let color = colorpicker.property("current-color").unwrap().get::<gdk::RGBA>().unwrap();
-            appwindow.canvas().pens().borrow_mut().brush.set_color(utils::Color::from(color));
-        }));
+        self.colorpicker().connect_notify_local(
+            Some("current-color"),
+            clone!(@weak appwindow => move |colorpicker, _paramspec| {
+                let color = colorpicker.property::<gdk::RGBA>("current-color");
+                appwindow.canvas().pens().borrow_mut().brush.set_color(utils::Color::from(color));
+            }),
+        );
 
         self.width_resetbutton().connect_clicked(
             clone!(@weak width_adj, @weak appwindow => move |_| {
@@ -324,7 +327,6 @@ impl BrushPage {
                     .downcast::<adw::EnumListItem>()
                     .unwrap()
                     .nick()
-                    .unwrap()
                     .as_str()
                 {
                     "uniform" => {

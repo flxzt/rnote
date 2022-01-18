@@ -13,6 +13,7 @@ use self::tools::Tools;
 use self::{brush::Brush, eraser::Eraser, marker::Marker, selector::Selector, shaper::Shaper};
 
 use gtk4::Snapshot;
+use p2d::bounding_volume::AABB;
 
 #[derive(Eq, PartialEq, Clone, Copy, Debug)]
 pub enum PenStyle {
@@ -135,7 +136,7 @@ impl PenBehaviour for Pens {
 
     fn draw(
         &self,
-        sheet_bounds: p2d::bounding_volume::AABB,
+        sheet_bounds: AABB,
         renderer: &Renderer,
         zoom: f64,
         snapshot: &Snapshot,

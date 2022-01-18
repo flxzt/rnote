@@ -7,7 +7,7 @@ use crate::{compose, render};
 use geo::line_string;
 use geo::prelude::*;
 use gtk4::{gio, glib, prelude::*};
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -60,8 +60,6 @@ impl StrokesState {
                 self.chrono_counter += 1;
                 chrono_comp.t = self.chrono_counter;
             }
-
-            self.update_selection_bounds();
         } else {
             log::debug!(
                 "get selection_comp in set_selected() returned None for stroke with key {:?}",
@@ -90,8 +88,8 @@ impl StrokesState {
         self.selection_keys().len()
     }
 
-    pub fn update_selection_bounds(&mut self) {
-        self.selection_bounds = self.gen_bounds(&self.selection_keys());
+    pub fn gen_selection_bounds(&self) -> Option<AABB> {
+        self.gen_bounds(&self.selection_keys())
     }
 
     pub fn deselect_all_strokes(&mut self) {
@@ -106,8 +104,6 @@ impl StrokesState {
                 }
             }
         });
-
-        self.selection_bounds = None;
     }
 
     pub fn duplicate_selection(&mut self) {
@@ -126,14 +122,13 @@ impl StrokesState {
 
         // Offsetting the new selected stroke to make the duplication apparent to the user
         self.translate_strokes(&selected, offset);
-        self.update_selection_bounds();
     }
 
     /// Returns true if selection has changed
     pub fn update_selection_for_selector(
         &mut self,
         selector: &Selector,
-        viewport: Option<p2d::bounding_volume::AABB>,
+        viewport: Option<AABB>,
     ) -> bool {
         let selection_len_prev = self.selection_len();
 
@@ -277,7 +272,6 @@ impl StrokesState {
         });
 
         if self.selection_len() != selection_len_prev {
-            self.update_selection_bounds();
             self.regenerate_rendering_for_selection_threaded();
             true
         } else {
@@ -287,10 +281,6 @@ impl StrokesState {
 
     /// the svgs of the current selection, without xml header or svg root
     pub fn gen_svgs_selection(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
-        if self.selection_bounds.is_none() {
-            return Ok(vec![]);
-        }
-
         Ok(self
             .keys_sorted_chrono()
             .iter()
@@ -311,6 +301,11 @@ impl StrokesState {
 
     pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
         let selection_svgs = self.gen_svgs_selection()?;
+        let selection_bounds = if let Some(selection_bounds) = self.gen_selection_bounds() {
+            selection_bounds
+        } else {
+            return Ok(());
+        };
 
         let mut svg_data = selection_svgs
             .iter()
@@ -318,11 +313,6 @@ impl StrokesState {
             .collect::<Vec<&str>>()
             .join("\n");
 
-        let selection_bounds = if let Some(selection_bounds) = self.selection_bounds {
-            selection_bounds
-        } else {
-            return Ok(());
-        };
         svg_data = compose::wrap_svg_root(
             svg_data.as_str(),
             Some(selection_bounds),

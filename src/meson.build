@@ -35,6 +35,10 @@ rust_sources = files(
     'compose/curves.rs',
     'compose/solid.rs',
     'compose/textured.rs',
+    'compose/rough/mod.rs',
+    'compose/rough/roughoptions.rs',
+    'compose/rough/roughshapes.rs',
+    'compose/rough/roughutils.rs',
     'render.rs',
     'drawbehaviour.rs',
     'audioplayer.rs',
@@ -90,7 +94,7 @@ rust_sources = files(
     'ui/colorpicker/colorsetter.rs',
 )
 
-sources = [rust_sources, rough_rs_rust_sources, cargo_sources]
+sources = [rust_sources, cargo_sources]
 
 custom_target(
   'cargo-build',

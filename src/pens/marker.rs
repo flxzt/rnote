@@ -1,4 +1,5 @@
 use gtk4::prelude::*;
+use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
@@ -41,7 +42,7 @@ impl PenBehaviour for Marker {
             .canvas()
             .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-        let filter_bounds = p2d::bounding_volume::AABB::new(
+        let filter_bounds = AABB::new(
             na::point![-input::INPUT_OVERSHOOT, -input::INPUT_OVERSHOOT],
             na::point![
                 (appwindow.canvas().sheet().width()) as f64 + input::INPUT_OVERSHOOT,
@@ -71,7 +72,7 @@ impl PenBehaviour for Marker {
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
         if let Some(current_stroke_key) = self.current_stroke {
-            let filter_bounds = p2d::bounding_volume::AABB::new(
+            let filter_bounds = AABB::new(
                 na::point![-input::INPUT_OVERSHOOT, -input::INPUT_OVERSHOOT],
                 na::point![
                     (appwindow.canvas().sheet().width()) as f64 + input::INPUT_OVERSHOOT,

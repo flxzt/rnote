@@ -2467,7 +2467,6 @@ dependencies = [
  "rayon",
  "regex",
  "resvg",
- "rough-rs",
  "serde",
  "serde_json",
  "slotmap",
@@ -2484,18 +2483,6 @@ name = "robust"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e5864e7ef1a6b7bcf1d6ca3f655e65e724ed3b52546a0d0a663c991522f552ea"
-
-[[package]]
-name = "rough-rs"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "nalgebra 0.30.1",
- "rand 0.8.4",
- "rand_pcg 0.3.1",
- "serde",
- "svg",
-]
 
 [[package]]
 name = "roxmltree"

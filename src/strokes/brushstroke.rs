@@ -9,7 +9,7 @@ use crate::{
     render,
 };
 
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use rand::{Rng, SeedableRng};
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
@@ -27,9 +27,9 @@ pub struct BrushStroke {
     #[serde(rename = "brush")]
     pub brush: Brush,
     #[serde(rename = "bounds")]
-    pub bounds: p2d::bounding_volume::AABB,
+    pub bounds: AABB,
     #[serde(skip)]
-    pub hitboxes: Vec<p2d::bounding_volume::AABB>,
+    pub hitboxes: Vec<AABB>,
 }
 
 impl Default for BrushStroke {
@@ -39,17 +39,17 @@ impl Default for BrushStroke {
 }
 
 impl DrawBehaviour for BrushStroke {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> AABB {
         self.bounds
     }
 
-    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+    fn set_bounds(&mut self, bounds: AABB) {
         self.bounds = bounds;
     }
 
-    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+    fn gen_bounds(&self) -> Option<AABB> {
         if let Some(&first) = self.elements.iter().peekable().peek() {
-            let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+            let mut bounds = AABB::new_invalid();
             bounds.take_point(na::Point2::from(first.inputdata.pos()));
 
             bounds.merge(
@@ -60,7 +60,7 @@ impl DrawBehaviour for BrushStroke {
                     .zip(self.elements.par_iter().skip(2))
                     .zip(self.elements.par_iter().skip(3))
                     .filter_map(|(((first, second), third), forth)| {
-                        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+                        let mut bounds = AABB::new_invalid();
 
                         let brush_width = self.brush.width();
 
@@ -95,9 +95,7 @@ impl DrawBehaviour for BrushStroke {
                             None
                         }
                     })
-                    .reduce(p2d::bounding_volume::AABB::new_invalid, |i, next| {
-                        i.merged(&next)
-                    }),
+                    .reduce(AABB::new_invalid, |i, next| i.merged(&next)),
             );
             Some(bounds)
         } else {
@@ -144,27 +142,6 @@ impl StrokeBehaviour for BrushStroke {
         });
         self.update_geometry();
     }
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        let center = self.bounds.center().coords;
-
-        let mut shear_matrix = na::Matrix3::<f64>::identity();
-        shear_matrix[(0, 1)] = shear[0].tan();
-        shear_matrix[(1, 0)] = shear[1].tan();
-
-        self.elements.iter_mut().for_each(|element| {
-            let pos_local = element.inputdata.pos() - center;
-
-            let pos_local_new: na::Vector2<f64> = na::Point2::from_homogeneous(
-                shear_matrix * na::Point2::from(pos_local).to_homogeneous(),
-            )
-            .unwrap()
-            .coords;
-
-            element.inputdata.set_pos(center + pos_local_new);
-        });
-
-        self.update_geometry();
-    }
 }
 
 impl BrushStroke {
@@ -174,7 +151,7 @@ impl BrushStroke {
         let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
 
         let elements = Vec::with_capacity(20);
-        let bounds = p2d::bounding_volume::AABB::new(
+        let bounds = AABB::new(
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
         );
@@ -234,7 +211,7 @@ impl BrushStroke {
     fn update_bounds_to_last_elem(&mut self) {
         // Making sure bounds are always outside of coord + width
         if let Some(last) = self.elements.last() {
-            self.bounds.merge(&p2d::bounding_volume::AABB::new(
+            self.bounds.merge(&AABB::new(
                 na::Point2::from(
                     last.inputdata.pos() - na::vector![self.brush.width(), self.brush.width()],
                 ),
@@ -247,9 +224,8 @@ impl BrushStroke {
         }
     }
 
-    fn gen_hitboxes(&self) -> Vec<p2d::bounding_volume::AABB> {
-        let mut hitbox: Vec<p2d::bounding_volume::AABB> =
-            Vec::with_capacity(self.elements.len() as usize);
+    fn gen_hitboxes(&self) -> Vec<AABB> {
+        let mut hitbox: Vec<AABB> = Vec::with_capacity(self.elements.len() as usize);
         let mut elements_iter = self.elements.iter().peekable();
         while let Some(first) = elements_iter.next() {
             let second = if let Some(&second) = elements_iter.peek() {
@@ -263,11 +239,7 @@ impl BrushStroke {
         hitbox
     }
 
-    fn gen_hitbox_for_elems(
-        &self,
-        first: &Element,
-        second: Option<&Element>,
-    ) -> p2d::bounding_volume::AABB {
+    fn gen_hitbox_for_elems(&self, first: &Element, second: Option<&Element>) -> AABB {
         let brush_width = self.brush.width();
 
         let first = first.inputdata.pos();
@@ -345,7 +317,7 @@ impl BrushStroke {
         let start_width = elements.1.inputdata.pressure() * self.brush.width();
         let end_width = elements.2.inputdata.pressure() * self.brush.width();
 
-        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+        let mut bounds = AABB::new_invalid();
 
         if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(
             elements.0.inputdata.pos(),
@@ -460,7 +432,7 @@ impl BrushStroke {
         let end_width = elements.2.inputdata.pressure() * self.brush.width();
         let mid_width = (start_width + end_width) * 0.5;
 
-        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+        let mut bounds = AABB::new_invalid();
 
         // Configure the textured Configuration
         let mut textured_conf = self.brush.textured_config.clone();
@@ -534,7 +506,7 @@ impl BrushStroke {
         let start_width = elements.1.inputdata.pressure() * self.brush.width();
         let end_width = elements.2.inputdata.pressure() * self.brush.width();
 
-        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+        let mut bounds = AABB::new_invalid();
 
         if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(
             elements.0.inputdata.pos(),

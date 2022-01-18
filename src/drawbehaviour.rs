@@ -1,17 +1,17 @@
 use crate::compose::geometry;
 use crate::render;
 
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 
 /// Specifing that a type can be drawn
 pub trait DrawBehaviour {
     /// returns the current bounds of this stroke
-    fn bounds(&self) -> p2d::bounding_volume::AABB;
+    fn bounds(&self) -> AABB;
     /// sets the bounds of this stroke
-    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB);
+    fn set_bounds(&mut self, bounds: AABB);
     /// generates the bounds of this stroke
     /// Implementation may implement a more efficient way of generating the bounds, without generating every Svg
-    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+    fn gen_bounds(&self) -> Option<AABB> {
         if let Ok(svgs) = self.gen_svgs(na::vector![0.0, 0.0]) {
             let mut svgs_iter = svgs.iter();
             if let Some(first) = svgs_iter.next() {

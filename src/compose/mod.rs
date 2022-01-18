@@ -1,5 +1,8 @@
+use p2d::bounding_volume::AABB;
+
 pub mod curves;
 pub mod geometry;
+pub mod rough;
 pub mod shapes;
 pub mod solid;
 pub mod textured;
@@ -35,8 +38,8 @@ pub fn check_svg_root(svg: &str) -> bool {
 
 pub fn wrap_svg_root(
     data: &str,
-    bounds: Option<p2d::bounding_volume::AABB>,
-    viewbox: Option<p2d::bounding_volume::AABB>,
+    bounds: Option<AABB>,
+    viewbox: Option<AABB>,
     preserve_aspectratio: bool,
 ) -> String {
     const SVG_WRAP_TEMPL_STR: &str = r#"
@@ -106,7 +109,7 @@ pub fn strip_svg_root(svg: &str) -> String {
 }
 
 /// patterns are rendered rather slow, so this should be used carefully!
-pub fn wrap_svg_pattern(data: &str, id: &str, bounds: p2d::bounding_volume::AABB) -> String {
+pub fn wrap_svg_pattern(data: &str, id: &str, bounds: AABB) -> String {
     const SVG_PATTERN_TEMPL_STR: &str = r#"
 <defs>
     <pattern

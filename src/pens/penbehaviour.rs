@@ -1,6 +1,7 @@
 use std::collections::VecDeque;
 
 use gtk4::Snapshot;
+use p2d::bounding_volume::AABB;
 
 use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
@@ -12,7 +13,7 @@ pub trait PenBehaviour {
     fn end(&mut self, data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow);
     fn draw(
         &self,
-        _sheet_bounds: p2d::bounding_volume::AABB,
+        _sheet_bounds: AABB,
         _renderer: &Renderer,
         _zoom: f64,
         _snapshot: &Snapshot,

@@ -2,7 +2,8 @@ use crate::config;
 
 use flate2::read::MultiGzDecoder;
 use flate2::{Compression, GzBuilder};
-use gtk4::{gdk, gio, glib, prelude::*};
+use gtk4::{gdk, gio, glib, prelude::*, Widget};
+use p2d::bounding_volume::AABB;
 use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 use std::fs;
@@ -250,4 +251,21 @@ pub fn str_to_file(string: &str, file_path: &str) -> Result<(), anyhow::Error> {
 pub fn seed_advance(seed: u64) -> u64 {
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
     rng.gen()
+}
+
+/// Translates a AABB to the coordinate space of the dest_widget. None if the widgets don't have a common ancestor
+pub fn translate_aabb_to_widget(
+    aabb: AABB,
+    widget: &impl IsA<Widget>,
+    dest_widget: &impl IsA<Widget>,
+) -> Option<AABB> {
+    let mins = {
+        let coords = widget.translate_coordinates(dest_widget, aabb.mins[0], aabb.mins[1])?;
+        na::point![coords.0, coords.1]
+    };
+    let maxs = {
+        let coords = widget.translate_coordinates(dest_widget, aabb.maxs[0], aabb.maxs[1])?;
+        na::point![coords.0, coords.1]
+    };
+    Some(AABB::new(mins, maxs))
 }

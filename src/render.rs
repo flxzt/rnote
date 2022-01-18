@@ -1,6 +1,8 @@
 use std::ops::Deref;
 
+use anyhow::Context;
 use gtk4::{gdk, glib, graphene, gsk, prelude::*, Native, Snapshot, Widget};
+use p2d::bounding_volume::AABB;
 
 use crate::compose::{self, geometry};
 
@@ -14,7 +16,7 @@ pub enum RendererBackend {
 pub struct Image {
     pub data: Vec<u8>,
     /// bounds in the coordinate space of the sheet
-    pub bounds: p2d::bounding_volume::AABB,
+    pub bounds: AABB,
     /// width of the data
     pub data_width: i32,
     /// height of the data
@@ -26,7 +28,7 @@ pub struct Image {
 #[derive(Debug, Clone)]
 pub struct Svg {
     pub svg_data: String,
-    pub bounds: p2d::bounding_volume::AABB,
+    pub bounds: AABB,
 }
 
 #[derive(Debug, Clone)]
@@ -61,12 +63,7 @@ impl Default for Renderer {
 impl Renderer {
     /// generates images from SVGs. bounds are in coordinate space of the sheet, (not zoomed)
     /// expects the svgs to be raw svg tags, no svg root or xml header needed
-    pub fn gen_image(
-        &self,
-        zoom: f64,
-        svgs: &[Svg],
-        bounds: p2d::bounding_volume::AABB,
-    ) -> Result<Image, anyhow::Error> {
+    pub fn gen_image(&self, zoom: f64, svgs: &[Svg], bounds: AABB) -> Result<Image, anyhow::Error> {
         if svgs.is_empty() {
             return Err(anyhow::Error::msg("gen_image() failed, no svg's in slice."));
         }
@@ -86,7 +83,7 @@ impl Renderer {
         &self,
         zoom: f64,
         svgs: &[Svg],
-        bounds: p2d::bounding_volume::AABB,
+        bounds: AABB,
     ) -> Result<Image, anyhow::Error> {
         let width_scaled = ((bounds.extents()[0]) * zoom).round() as i32;
         let height_scaled = ((bounds.extents()[1]) * zoom).round() as i32;
@@ -165,7 +162,7 @@ impl Renderer {
         &self,
         zoom: f64,
         svgs: &[Svg],
-        bounds: p2d::bounding_volume::AABB,
+        bounds: AABB,
     ) -> Result<Image, anyhow::Error> {
         let width_scaled = ((bounds.extents()[0]) * zoom).round() as i32;
         let height_scaled = ((bounds.extents()[1]) * zoom).round() as i32;
@@ -204,57 +201,67 @@ pub fn default_rendernode() -> gsk::RenderNode {
     gsk::CairoNode::new(&bounds).upcast()
 }
 
-pub fn image_to_memtexture(image: &Image) -> gdk::MemoryTexture {
+pub fn image_to_memtexture(image: &Image) -> Result<gdk::MemoryTexture, anyhow::Error> {
+    if image.data_width <= 0 || image.data_height <= 0 || image.data.is_empty() {
+        return Err(anyhow::anyhow!(
+            "image_to_memtexture() failed, invalid image"
+        ));
+    }
     let bytes = image.data.deref();
 
-    gdk::MemoryTexture::new(
+    Ok(gdk::MemoryTexture::new(
         image.data_width,
         image.data_height,
         image.memory_format,
         &glib::Bytes::from(bytes),
         (image.data_width * 4) as usize,
-    )
+    ))
 }
 
-pub fn image_to_rendernode(image: &Image, zoom: f64) -> gsk::RenderNode {
-    let memtexture = image_to_memtexture(image);
+pub fn image_to_rendernode(image: &Image, zoom: f64) -> Result<gsk::RenderNode, anyhow::Error> {
+    let memtexture = image_to_memtexture(image)?;
 
-    gsk::TextureNode::new(
+    let rendernode = gsk::TextureNode::new(
         &memtexture,
         &geometry::aabb_to_graphene_rect(geometry::aabb_scale(image.bounds, zoom)),
     )
-    .upcast()
+    .upcast();
+    Ok(rendernode)
 }
 
-pub fn images_to_rendernode(images: &[Image], zoom: f64) -> gsk::RenderNode {
+pub fn images_to_rendernode(images: &[Image], zoom: f64) -> Result<gsk::RenderNode, anyhow::Error> {
     let snapshot = Snapshot::new();
 
     for image in images {
-        snapshot.append_node(&image_to_rendernode(image, zoom));
+        snapshot
+            .append_node(&image_to_rendernode(image, zoom).context("images_to_rendernode failed")?);
     }
 
-    snapshot.to_node()
+    Ok(snapshot.to_node())
 }
 
 pub fn append_images_to_rendernode(
     rendernode: &gsk::RenderNode,
     images: &[Image],
     zoom: f64,
-) -> gsk::RenderNode {
+) -> Result<gsk::RenderNode, anyhow::Error> {
     let snapshot = Snapshot::new();
 
     snapshot.append_node(rendernode);
     for image in images {
-        snapshot.append_node(&image_to_rendernode(image, zoom));
+        snapshot.append_node(
+            &image_to_rendernode(image, zoom)
+                .context("image_to_rendernode() failed in append_images_to_rendernode()")?,
+        );
     }
 
-    snapshot.to_node()
+    Ok(snapshot.to_node())
 }
 
 pub fn rendernode_to_texture(
     active_widget: &Widget,
     node: &gsk::RenderNode,
-    viewport: Option<p2d::bounding_volume::AABB>,
+    viewport: Option<AABB>,
 ) -> Result<Option<gdk::Texture>, anyhow::Error> {
     let viewport = viewport.map(geometry::aabb_to_graphene_rect);
 
@@ -273,7 +280,7 @@ pub fn rendernode_to_texture(
 pub fn draw_svgs_to_cairo_context(
     zoom: f64,
     svgs: &[Svg],
-    bounds: p2d::bounding_volume::AABB,
+    bounds: AABB,
     cx: &cairo::Context,
 ) -> Result<(), anyhow::Error> {
     let mut svg_data = svgs

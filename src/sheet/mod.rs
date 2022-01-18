@@ -123,7 +123,7 @@ use crate::{render, utils};
 use self::{background::Background, format::Format};
 
 use gtk4::{gio, glib, graphene, prelude::*, subclass::prelude::*, Snapshot};
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
@@ -470,8 +470,8 @@ impl Sheet {
         imp::Sheet::from_instance(self).background.clone()
     }
 
-    pub fn bounds(&self) -> p2d::bounding_volume::AABB {
-        p2d::bounding_volume::AABB::new(
+    pub fn bounds(&self) -> AABB {
+        AABB::new(
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )

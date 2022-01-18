@@ -1,3 +1,4 @@
+use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
 use crate::strokes::strokebehaviour::{self, StrokeBehaviour};
@@ -35,28 +36,10 @@ impl StrokeBehaviour for Line {
         self.start = mid - half_vec.component_mul(&scale);
         self.end = mid + half_vec.component_mul(&scale);
     }
-
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        let mid = (self.end + self.start) / 2.0;
-        let half_vec = (self.end - self.start) / 2.0;
-
-        let mut shear_matrix = na::Matrix3::<f64>::identity();
-        shear_matrix[(0, 1)] = shear[0].tan();
-        shear_matrix[(1, 0)] = shear[1].tan();
-
-        let half_vec: na::Vector2<f64> = na::Point2::from_homogeneous(
-            shear_matrix * na::Point2::from(half_vec).to_homogeneous(),
-        )
-        .unwrap()
-        .coords;
-
-        self.start = mid - half_vec;
-        self.end = mid + half_vec;
-    }
 }
 
 impl Line {
-    pub fn global_aabb(&self) -> p2d::bounding_volume::AABB {
+    pub fn global_aabb(&self) -> AABB {
         geometry::aabb_new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
     }
 

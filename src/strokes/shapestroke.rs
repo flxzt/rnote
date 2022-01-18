@@ -1,12 +1,12 @@
-use crate::compose::{curves, geometry, shapes};
+use crate::compose::{curves, geometry, rough, shapes};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::shaper::{self, DrawStyle};
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
-use crate::{compose, render};
+use crate::{compose, render, utils};
 use crate::{pens::shaper::ShapeStyle, pens::shaper::Shaper};
 
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 
@@ -66,24 +66,10 @@ impl StrokeBehaviour for Shape {
             }
         }
     }
-
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        match self {
-            Self::Line(line) => {
-                line.shear(shear);
-            }
-            Self::Rectangle(rectangle) => {
-                rectangle.shear(shear);
-            }
-            Self::Ellipse(ellipse) => {
-                ellipse.shear(shear);
-            }
-        }
-    }
 }
 
 impl Shape {
-    pub fn bounds(&self) -> p2d::bounding_volume::AABB {
+    pub fn bounds(&self) -> AABB {
         match self {
             Self::Line(line) => line.global_aabb(),
             Self::Rectangle(rectangle) => rectangle.global_aabb(),
@@ -102,7 +88,7 @@ pub struct ShapeStroke {
     #[serde(rename = "shaper")]
     pub shaper: Shaper,
     #[serde(rename = "bounds")]
-    pub bounds: p2d::bounding_volume::AABB,
+    pub bounds: AABB,
 }
 
 impl Default for ShapeStroke {
@@ -112,15 +98,15 @@ impl Default for ShapeStroke {
 }
 
 impl DrawBehaviour for ShapeStroke {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> AABB {
         self.bounds
     }
 
-    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+    fn set_bounds(&mut self, bounds: AABB) {
         self.bounds = bounds;
     }
 
-    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+    fn gen_bounds(&self) -> Option<AABB> {
         let mut new_bounds = match self.shaper.drawstyle() {
             shaper::DrawStyle::Smooth => self.shape.bounds().loosened(self.shaper.width() * 0.5),
             shaper::DrawStyle::Rough => {
@@ -168,110 +154,77 @@ impl DrawBehaviour for ShapeStroke {
                             .into()
                     }
                     shaper::DrawStyle::Rough => {
-                        let mut rough_config = self.shaper.rough_config.clone();
+                        let mut rough_options = self.shaper.rough_config.clone();
 
                         if let Some(color) = self.shaper.color() {
-                            rough_config.stroke = Some(rough_rs::utils::Color::new(
-                                color.r, color.g, color.b, color.a,
-                            ));
+                            rough_options.stroke =
+                                Some(utils::Color::new(color.r, color.g, color.b, color.a));
                         }
                         if let Some(fill) = self.shaper.fill() {
-                            rough_config.fill =
-                                Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                            rough_options.fill =
+                                Some(utils::Color::new(fill.r, fill.g, fill.b, fill.a));
                         }
 
-                        rough_config.stroke_width = self.shaper.width();
-                        rough_config.seed = self.seed;
-
-                        let mut rough_generator =
-                            rough_rs::generator::RoughGenerator::new(Some(rough_config));
+                        rough_options.stroke_width = self.shaper.width();
+                        rough_options.seed = self.seed;
 
                         svg::node::element::Group::new()
-                            .add(rough_generator.line(line.start, line.end))
+                            .add(rough::line(&mut rough_options, line))
                             .into()
                     }
                 }
             }
             Shape::Rectangle(ref rectangle) => {
                 let mut rectangle = rectangle.clone();
-                rectangle
-                    .transform
-                    .isometry
-                    .append_translation_mut(&na::Translation2::from(offset));
+                rectangle.transform.append_translation_mut(offset);
 
                 match self.shaper.drawstyle() {
                     shaper::DrawStyle::Smooth => {
                         compose::solid::compose_rectangle(rectangle, &self.shaper)
                     }
                     shaper::DrawStyle::Rough => {
-                        let mut rough_config = self.shaper.rough_config.clone();
+                        let mut rough_options = self.shaper.rough_config.clone();
 
                         if let Some(color) = self.shaper.color() {
-                            rough_config.stroke = Some(rough_rs::utils::Color::new(
-                                color.r, color.g, color.b, color.a,
-                            ));
+                            rough_options.stroke =
+                                Some(utils::Color::new(color.r, color.g, color.b, color.a));
                         }
                         if let Some(fill) = self.shaper.fill() {
-                            rough_config.fill =
-                                Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                            rough_options.fill =
+                                Some(utils::Color::new(fill.r, fill.g, fill.b, fill.a));
                         }
 
-                        rough_config.stroke_width = self.shaper.width();
-                        rough_config.seed = self.seed;
+                        rough_options.stroke_width = self.shaper.width();
+                        rough_options.seed = self.seed;
 
-                        let mut rough_generator =
-                            rough_rs::generator::RoughGenerator::new(Some(rough_config));
-
-                        let (mins, maxs) = geometry::vec2_mins_maxs(
-                            -rectangle.cuboid.half_extents,
-                            rectangle.cuboid.half_extents,
-                        );
-
-                        let transform_string = rectangle.transform.matrix_as_svg_transform_attr();
-
-                        rough_generator
-                            .rectangle(mins, maxs)
-                            .set("transform", transform_string)
-                            .into()
+                        rough::rectangle(&mut rough_options, rectangle).into()
                     }
                 }
             }
             Shape::Ellipse(ref ellipse) => {
                 let mut ellipse = ellipse.clone();
-                ellipse
-                    .transform
-                    .isometry
-                    .append_translation_mut(&na::Translation2::from(offset));
+                ellipse.transform.append_translation_mut(offset);
 
                 match self.shaper.drawstyle() {
                     shaper::DrawStyle::Smooth => {
                         compose::solid::compose_ellipse(ellipse, &self.shaper)
                     }
                     shaper::DrawStyle::Rough => {
-                        let mut rough_config = self.shaper.rough_config.clone();
+                        let mut rough_options = self.shaper.rough_config.clone();
 
                         if let Some(color) = self.shaper.color() {
-                            rough_config.stroke = Some(rough_rs::utils::Color::new(
-                                color.r, color.g, color.b, color.a,
-                            ));
+                            rough_options.stroke =
+                                Some(utils::Color::new(color.r, color.g, color.b, color.a));
                         }
                         if let Some(fill) = self.shaper.fill() {
-                            rough_config.fill =
-                                Some(rough_rs::utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                            rough_options.fill =
+                                Some(utils::Color::new(fill.r, fill.g, fill.b, fill.a));
                         }
 
-                        rough_config.stroke_width = self.shaper.width();
-                        rough_config.seed = self.seed;
+                        rough_options.stroke_width = self.shaper.width();
+                        rough_options.seed = self.seed;
 
-                        let mut rough_generator =
-                            rough_rs::generator::RoughGenerator::new(Some(rough_config));
-
-                        let transform_string = ellipse.transform.matrix_as_svg_transform_attr();
-
-                        rough_generator
-                            .ellipse(na::vector![0.0, 0.0], ellipse.radii[0], ellipse.radii[1])
-                            .set("transform", transform_string)
-                            .into()
+                        rough::ellipse(&mut rough_options, ellipse).into()
                     }
                 }
             }
@@ -303,10 +256,6 @@ impl StrokeBehaviour for ShapeStroke {
     }
     fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
         self.shape.scale(scale);
-        self.update_geometry();
-    }
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        self.shape.shear(shear);
         self.update_geometry();
     }
 }
@@ -356,21 +305,25 @@ impl ShapeStroke {
                 line.end = element.inputdata.pos();
             }
             Shape::Rectangle(ref mut rectangle) => {
-                let offset =
-                    element.inputdata.pos() - rectangle.transform.isometry.translation.vector;
+                let offset = element.inputdata.pos()
+                    - rectangle
+                        .transform
+                        .transform_point(na::point![0.0, 0.0])
+                        .coords;
 
                 if offset[0] > 0.0 {
-                    //rectangle.transform.append_translation_mut(&na::Translation2::from(na::vector![offset[0], 0.0]));
                     rectangle.cuboid.half_extents[0] = offset[0];
                 }
                 if offset[1] > 0.0 {
-                    //rectangle.transform.append_translation_mut(&na::Translation2::from(na::vector![0.0, offset[1]]));
                     rectangle.cuboid.half_extents[1] = offset[1];
                 }
             }
             Shape::Ellipse(ref mut ellipse) => {
-                let offset =
-                    element.inputdata.pos() - ellipse.transform.isometry.translation.vector;
+                let offset = element.inputdata.pos()
+                    - ellipse
+                        .transform
+                        .transform_point(na::point![0.0, 0.0])
+                        .coords;
 
                 if offset[0] > 0.0 {
                     ellipse.radii[0] = offset[0];

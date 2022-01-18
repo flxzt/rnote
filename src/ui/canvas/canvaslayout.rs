@@ -95,38 +95,37 @@ mod imp {
             {
                 let selection_modifier = child.downcast_ref::<SelectionModifier>().unwrap();
 
+                // update the selection_modifier internal state before allocation
+                selection_modifier.update_state(canvas);
+
                 // Allocate the selection_modifier child
-                if let Some(selection_bounds) =
-                    canvas.sheet().strokes_state().borrow().selection_bounds
-                {
+                if let Some(selection_bounds) = selection_modifier.selection_bounds() {
                     let selection_bounds_zoomed =
                         geometry::aabb_scale(selection_bounds, total_zoom);
 
-                    selection_modifier
-                        .translate_node()
-                        .set_width_request((selection_bounds_zoomed.extents()[0]).round() as i32);
-                    selection_modifier
-                        .translate_node()
-                        .set_height_request((selection_bounds_zoomed.extents()[1]).round() as i32);
+                    let selection_modifier_x =
+                        (sheet_margin_zoomed + selection_bounds_zoomed.mins[0] - hadj.value())
+                            .round() as i32
+                            - SelectionModifier::RESIZE_NODE_SIZE;
+                    let selection_modifier_y =
+                        (sheet_margin_zoomed + selection_bounds_zoomed.mins[1] - vadj.value())
+                            .round() as i32
+                            - SelectionModifier::RESIZE_NODE_SIZE;
 
-                    let x = (sheet_margin_zoomed + selection_bounds_zoomed.mins[0] - hadj.value())
-                        .round() as i32
-                        - SelectionModifier::RESIZE_NODE_SIZE;
-                    let y = (sheet_margin_zoomed + selection_bounds_zoomed.mins[1] - vadj.value())
-                        .round() as i32
-                        - SelectionModifier::RESIZE_NODE_SIZE;
+                    let (_, selection_modifier_width, _, _) =
+                        selection_modifier.measure(Orientation::Horizontal, -1);
+                    let (_, selection_modifier_height, _, _) =
+                        selection_modifier.measure(Orientation::Vertical, -1);
 
-                    let width = (selection_bounds_zoomed.extents()[0]).round() as i32
-                        + 2 * SelectionModifier::RESIZE_NODE_SIZE;
-                    let height = (selection_bounds_zoomed.extents()[1]).round() as i32
-                        + 2 * SelectionModifier::RESIZE_NODE_SIZE;
-
-                    // unnecessary, but makes GTK not spit out warnings
-                    let _ = selection_modifier.measure(Orientation::Horizontal, -1);
-
-                    selection_modifier.size_allocate(&gdk::Rectangle::new(x, y, width, height), -1)
-                } else {
-                    selection_modifier.set_visible(false);
+                    selection_modifier.size_allocate(
+                        &gdk::Rectangle::new(
+                            selection_modifier_x,
+                            selection_modifier_y,
+                            selection_modifier_width,
+                            selection_modifier_height,
+                        ),
+                        -1,
+                    )
                 }
             }
         }

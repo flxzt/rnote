@@ -12,6 +12,7 @@ use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
     PrintOperation, PrintOperationAction, Unit,
 };
+use p2d::bounding_volume::AABB;
 
 /* Actions follow this principle:
 without any state: the activation triggers the callback
@@ -672,7 +673,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             let print_zoom = width_scale.min(height_scale);
             let y_offset = f64::from(page_nr * appwindow.canvas().sheet().format().height()) * print_zoom;
 
-            let format_bounds_scaled = p2d::bounding_volume::AABB::new(
+            let format_bounds_scaled = AABB::new(
                 na::point![0.0, y_offset],
                 na::point![f64::from(appwindow.canvas().sheet().format().width()) * print_zoom, y_offset + f64::from(appwindow.canvas().sheet().format().height()) * print_zoom]
             );
@@ -723,7 +724,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
                     .collect::<Vec<&str>>()
                     .join("\n");
 
-                if let Some(selection_bounds) = appwindow.canvas().sheet().strokes_state().borrow().selection_bounds {
+                if let Some(selection_bounds) = appwindow.canvas().sheet().strokes_state().borrow().gen_selection_bounds() {
                     svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true);
 
                     let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(svg_data.as_bytes()));

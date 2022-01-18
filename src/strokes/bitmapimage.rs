@@ -6,6 +6,7 @@ use crate::{compose, render};
 use anyhow::Context;
 use gtk4::cairo;
 use image::{io::Reader, GenericImageView};
+use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -43,7 +44,7 @@ pub struct BitmapImage {
     #[serde(rename = "rectangle")]
     pub rectangle: shapes::Rectangle,
     #[serde(rename = "bounds")]
-    pub bounds: p2d::bounding_volume::AABB,
+    pub bounds: AABB,
 }
 
 impl Default for BitmapImage {
@@ -59,26 +60,23 @@ impl Default for BitmapImage {
 }
 
 impl DrawBehaviour for BitmapImage {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> AABB {
         self.bounds
     }
 
-    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+    fn set_bounds(&mut self, bounds: AABB) {
         self.bounds = bounds;
     }
 
-    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+    fn gen_bounds(&self) -> Option<AABB> {
         Some(self.rectangle.global_aabb())
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
         let mut rectangle = self.rectangle.clone();
-        rectangle
-            .transform
-            .isometry
-            .append_translation_mut(&na::Translation2::from(offset));
+        rectangle.transform.append_translation_mut(offset);
 
-        let transform_string = rectangle.transform.matrix_as_svg_transform_attr();
+        let transform_string = rectangle.transform.transform_as_svg_transform_attr();
 
         let svg_root = element::Image::new()
             .set("x", -self.rectangle.cuboid.half_extents[0])
@@ -126,11 +124,6 @@ impl StrokeBehaviour for BitmapImage {
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.rectangle.scale(scale);
-        self.update_geometry();
-    }
-
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        self.rectangle.shear(shear);
         self.update_geometry();
     }
 }

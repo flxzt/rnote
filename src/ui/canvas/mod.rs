@@ -20,7 +20,7 @@ mod imp {
     use gtk4::{AccessibleRole, Adjustment, Scrollable, ScrollablePolicy};
 
     use once_cell::sync::Lazy;
-    use p2d::bounding_volume::BoundingVolume;
+    use p2d::bounding_volume::{BoundingVolume, AABB};
 
     #[derive(Debug)]
     pub struct Canvas {
@@ -478,12 +478,7 @@ mod imp {
             a: 0.3,
         };
 
-        pub fn draw_shadow(
-            &self,
-            bounds: p2d::bounding_volume::AABB,
-            width: f64,
-            snapshot: &Snapshot,
-        ) {
+        pub fn draw_shadow(&self, bounds: AABB, width: f64, snapshot: &Snapshot) {
             let corner_radius = graphene::Size::new(width as f32 / 4.0, width as f32 / 4.0);
 
             let rounded_rect = gsk::RoundedRect::new(
@@ -573,7 +568,7 @@ use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*};
 use gtk4::{
     gio, Adjustment, DropTarget, EventSequenceState, PropagationPhase, Scrollable, Snapshot, Widget,
 };
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 
 glib::wrapper! {
     pub struct Canvas(ObjectSubclass<imp::Canvas>)
@@ -903,15 +898,15 @@ impl Canvas {
     }
 
     /// The widget bounds in its coordinate space. Is the bounds of the view, not the bounds of the scaled sheet!
-    pub fn bounds(&self) -> p2d::bounding_volume::AABB {
-        p2d::bounding_volume::AABB::new(
+    pub fn bounds(&self) -> AABB {
+        AABB::new(
             na::point![0.0, 0.0],
             na::point![f64::from(self.width()), f64::from(self.height())],
         )
     }
 
     /// The bounds of the drawn content, meaning the bounds of the scaled sheet + margin
-    pub fn content_bounds(&self) -> p2d::bounding_volume::AABB {
+    pub fn content_bounds(&self) -> AABB {
         let zoom = self.zoom();
 
         self.sheet_bounds_in_canvas_coords()
@@ -919,11 +914,11 @@ impl Canvas {
     }
 
     /// The bounds of the sheet in the coordinate space of the canvas
-    pub fn sheet_bounds_in_canvas_coords(&self) -> p2d::bounding_volume::AABB {
+    pub fn sheet_bounds_in_canvas_coords(&self) -> AABB {
         let zoom = self.zoom();
         let sheet_margin = self.sheet_margin();
 
-        p2d::bounding_volume::AABB::new(
+        AABB::new(
             na::point![sheet_margin * zoom, sheet_margin * zoom],
             na::point![
                 (sheet_margin + f64::from(self.sheet().width())) * zoom,
@@ -932,7 +927,14 @@ impl Canvas {
         )
     }
 
-    /// transforming coordinates of canvas coordinate space into sheet coordinate space
+    /// transforming a AABB in canvas coordinate space into sheet coordinate space
+    pub fn transform_canvas_aabb_to_sheet(&self, aabb: AABB) -> AABB {
+        let mins = na::Point2::from(self.transform_canvas_coords_to_sheet_coords(aabb.mins.coords));
+        let maxs = na::Point2::from(self.transform_canvas_coords_to_sheet_coords(aabb.maxs.coords));
+        AABB::new(mins, maxs)
+    }
+
+    /// transforming coordinates in canvas coordinate space into sheet coordinate space
     pub fn transform_canvas_coords_to_sheet_coords(
         &self,
         canvas_coords: na::Vector2<f64>,
@@ -948,18 +950,21 @@ impl Canvas {
             - na::vector![self.sheet_margin(), self.sheet_margin()]
     }
 
-    /// transforming coordinates of canvas coordinate space into sheet coordinate space
+    /// transforming a AABB in sheet coordinate space into canvas coordinate space
+    pub fn transform_sheet_aabb_to_canvas(&self, aabb: AABB) -> AABB {
+        let mins = na::Point2::from(self.transform_sheet_coords_to_canvas_coords(aabb.mins.coords));
+        let maxs = na::Point2::from(self.transform_sheet_coords_to_canvas_coords(aabb.maxs.coords));
+        AABB::new(mins, maxs)
+    }
+
+    /// transforming coordinates in sheet coordinate space into canvas coordinate space
     pub fn transform_sheet_coords_to_canvas_coords(
         &self,
         sheet_coords: na::Vector2<f64>,
     ) -> na::Vector2<f64> {
         let total_zoom = self.total_zoom();
 
-        sheet_coords
-            + na::vector![
-                self.sheet_margin() * total_zoom,
-                self.sheet_margin() * total_zoom
-            ]
+        (sheet_coords + na::vector![self.sheet_margin(), self.sheet_margin()]) * total_zoom
             - na::vector![
                 self.hadjustment().unwrap().value(),
                 self.vadjustment().unwrap().value()
@@ -967,7 +972,7 @@ impl Canvas {
     }
 
     /// The view of the parent scroller onto the Canvas
-    pub fn viewport(&self) -> p2d::bounding_volume::AABB {
+    pub fn viewport(&self) -> AABB {
         let parent = self.parent().unwrap();
         let (parent_width, parent_height) = (f64::from(parent.width()), f64::from(parent.height()));
         let (parent_offset_x, parent_offset_y) = self
@@ -979,14 +984,14 @@ impl Canvas {
             self.vadjustment().unwrap().value() - parent_offset_y,
         );
 
-        p2d::bounding_volume::AABB::new(
+        AABB::new(
             na::point![x, y],
             na::point![x + parent_width, y + parent_height],
         )
     }
 
     /// The viewport transformed to match the coordinate space of the sheet
-    pub fn viewport_in_sheet_coords(&self) -> p2d::bounding_volume::AABB {
+    pub fn viewport_in_sheet_coords(&self) -> AABB {
         let mut viewport = self.viewport();
         let total_zoom = self.total_zoom();
         let sheet_margin = self.sheet_margin();
@@ -1229,14 +1234,8 @@ impl Canvas {
             .unwrap()
             .change_action_state("tmperaser", &false.to_variant());
 
-        // Show the selection modifier if selection bounds are some
-        self.selection_modifier().set_visible(
-            self.sheet()
-                .strokes_state()
-                .borrow()
-                .selection_bounds
-                .is_some(),
-        );
+        // Shows the selection modifier if selection bounds are some
+        self.selection_modifier().update_state(self);
 
         if self.sheet().resize_endless() {
             self.update_background_rendernode(false);
@@ -1247,9 +1246,10 @@ impl Canvas {
     }
 }
 
-/// fmodule for visual debugging
+/// module for visual debugging
 pub mod debug {
     use gtk4::{graphene, gsk, Snapshot};
+    use p2d::bounding_volume::AABB;
 
     use crate::compose::geometry;
     use crate::utils;
@@ -1297,12 +1297,7 @@ pub mod debug {
         a: 1.0,
     };
 
-    pub fn draw_bounds(
-        bounds: p2d::bounding_volume::AABB,
-        color: utils::Color,
-        zoom: f64,
-        snapshot: &Snapshot,
-    ) {
+    pub fn draw_bounds(bounds: AABB, color: utils::Color, zoom: f64, snapshot: &Snapshot) {
         let bounds = graphene::Rect::new(
             bounds.mins[0] as f32,
             bounds.mins[1] as f32,
@@ -1343,12 +1338,7 @@ pub mod debug {
         );
     }
 
-    pub fn draw_fill(
-        rect: p2d::bounding_volume::AABB,
-        color: utils::Color,
-        zoom: f64,
-        snapshot: &Snapshot,
-    ) {
+    pub fn draw_fill(rect: AABB, color: utils::Color, zoom: f64, snapshot: &Snapshot) {
         snapshot.append_color(
             &color.to_gdk(),
             &geometry::aabb_to_graphene_rect(geometry::aabb_scale(rect, zoom)),

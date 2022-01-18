@@ -5,13 +5,12 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[workspace]
-members = [
-    "rough-rs",
-]
+#[workspace]
+#members = [
+#    "rnotecompose",
+#]
 
 [dependencies]
-rough-rs = { path = "./rough-rs" } 
 num-derive = "0.3"
 num-traits = "0.2"
 flate2 = "1.0"

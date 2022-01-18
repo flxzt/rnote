@@ -2,6 +2,7 @@ use crate::drawbehaviour::DrawBehaviour;
 use crate::render;
 
 use chrono::{TimeZone, Utc};
+use p2d::bounding_volume::AABB;
 use rand::distributions::Uniform;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -29,7 +30,7 @@ pub enum StrokeStyle {
 }
 
 impl DrawBehaviour for StrokeStyle {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> AABB {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.bounds(),
             Self::BrushStroke(brushstroke) => brushstroke.bounds(),
@@ -39,7 +40,7 @@ impl DrawBehaviour for StrokeStyle {
         }
     }
 
-    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+    fn set_bounds(&mut self, bounds: AABB) {
         match self {
             Self::MarkerStroke(markerstroke) => markerstroke.set_bounds(bounds),
             Self::BrushStroke(brushstroke) => brushstroke.set_bounds(bounds),
@@ -120,26 +121,6 @@ impl StrokeBehaviour for StrokeStyle {
             }
         }
     }
-
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        match self {
-            Self::MarkerStroke(markerstroke) => {
-                markerstroke.shear(shear);
-            }
-            Self::BrushStroke(brushstroke) => {
-                brushstroke.shear(shear);
-            }
-            Self::ShapeStroke(shapestroke) => {
-                shapestroke.shear(shear);
-            }
-            Self::VectorImage(vectorimage) => {
-                vectorimage.shear(shear);
-            }
-            Self::BitmapImage(bitmapimage) => {
-                bitmapimage.shear(shear);
-            }
-        }
-    }
 }
 
 impl Default for StrokeStyle {
@@ -216,7 +197,7 @@ impl Element {
         }
     }
 
-    pub fn validation_data(bounds: p2d::bounding_volume::AABB) -> Vec<Self> {
+    pub fn validation_data(bounds: AABB) -> Vec<Self> {
         let mut rng = rand::thread_rng();
         let data_entries_uniform = Uniform::from(0..=20);
         let x_uniform = Uniform::from(bounds.mins[0]..=bounds.maxs[0]);

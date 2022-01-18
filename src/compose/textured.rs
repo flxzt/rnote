@@ -218,7 +218,7 @@ pub fn compose_line(line: curves::Line, width: f64, config: &mut TexturedConfig)
             .distribution
             .sample_for_range_symmetrical_clipped(&mut rng, range_y.clone());
 
-        let pos = rect.transform.isometry * na::point![x_pos, y_pos];
+        let pos = rect.transform.transform * na::point![x_pos, y_pos];
 
         let rotation_angle = na::Rotation2::rotation_between(&na::Vector2::x(), &vec).angle()
             + distr_dots_rot.sample(&mut rng);

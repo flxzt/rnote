@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-use crate::utils::{self};
+use crate::utils;
 
 /// The options
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -71,7 +71,7 @@ impl Default for Options {
             roughness: Self::ROUGHNESS_DEFAULT,
             bowing: Self::BOWING_DEFAULT,
             seed: None,
-            stroke: Some(utils::Color::black()),
+            stroke: Some(utils::Color::BLACK),
             stroke_width: 1.0,
             fill: None,
             fill_style: FillStyle::Hachure,
@@ -116,7 +116,7 @@ impl Options {
     /// Curve stepcount default
     pub const CURVESTEPCOUNT_DEFAULT: f64 = 9.0;
 
-    pub(crate) fn apply_to_line(&self, mut path: element::Path) -> element::Path {
+    pub(super) fn apply_to_line(&self, mut path: element::Path) -> element::Path {
         path = if let Some(stroke) = self.stroke {
             path.set("stroke", stroke.to_css_color())
         } else {
@@ -142,7 +142,7 @@ impl Options {
         path
     }
 
-    pub(crate) fn apply_to_fill_polygon_solid(&self, mut path: element::Path) -> element::Path {
+    pub(super) fn apply_to_fill_polygon_solid(&self, mut path: element::Path) -> element::Path {
         path = path.set("stroke", "none");
 
         path = if let Some(fill) = self.fill {
@@ -154,7 +154,7 @@ impl Options {
         path
     }
 
-    pub(crate) fn apply_to_rect(&mut self, mut rect: element::Path) -> element::Path {
+    pub(super) fn apply_to_rect(&mut self, mut rect: element::Path) -> element::Path {
         rect = if let Some(stroke) = self.stroke {
             rect.set("stroke", stroke.to_css_color())
         } else {
@@ -180,18 +180,18 @@ impl Options {
         rect
     }
 
-    pub(crate) fn apply_to_ellipse(&mut self, mut ellipse: element::Path) -> element::Path {
-        ellipse = if let Some(stroke) = self.stroke {
-            ellipse.set("stroke", stroke.to_css_color())
+    pub(super) fn apply_to_ellipse(&mut self, mut ellipse_path: element::Path) -> element::Path {
+        ellipse_path = if let Some(stroke) = self.stroke {
+            ellipse_path.set("stroke", stroke.to_css_color())
         } else {
-            ellipse.set("stroke", "none")
+            ellipse_path.set("stroke", "none")
         };
-        ellipse = ellipse.set("stroke-width", self.stroke_width);
+        ellipse_path = ellipse_path.set("stroke-width", self.stroke_width);
 
         // the fill is in generated with the fill_polygon
-        ellipse = ellipse.set("fill", "none");
+        ellipse_path = ellipse_path.set("fill", "none");
 
-        ellipse = ellipse.set(
+        ellipse_path = ellipse_path.set(
             "stroke-dasharray",
             self.stroke_line_dash
                 .iter()
@@ -201,9 +201,9 @@ impl Options {
                 .collect::<Vec<String>>()
                 .join(" "),
         );
-        ellipse = ellipse.set("stroke-dashoffset", self.stroke_line_dash_offset);
+        ellipse_path = ellipse_path.set("stroke-dashoffset", self.stroke_line_dash_offset);
 
-        ellipse
+        ellipse_path
     }
 
     /// Returns the roughness

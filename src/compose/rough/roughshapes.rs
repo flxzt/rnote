@@ -1,16 +1,18 @@
-use crate::{options::Options, utils};
+use super::{roughoptions::Options, roughutils};
 use svg::node::element::path;
 
 fn offset(min: f64, max: f64, options: &mut Options, roughness_gain: Option<f64>) -> f64 {
     let roughness_gain = roughness_gain.unwrap_or(1.0);
-    options.roughness * roughness_gain * (utils::rand_f64_0to1_next(options) * (max - min) + min)
+    options.roughness
+        * roughness_gain
+        * (roughutils::rand_f64_0to1_next(options) * (max - min) + min)
 }
 
 fn offset_opt(x: f64, options: &mut Options, roughness_gain: Option<f64>) -> f64 {
     offset(-x, x, options, roughness_gain)
 }
 
-pub(crate) fn line(
+pub(super) fn line(
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,
     options: &mut Options,
@@ -33,7 +35,7 @@ pub(crate) fn line(
     };
     let half_offset = offset * 0.5;
 
-    let diverge_point = 0.2 + utils::rand_f64_0to1_next(options) * 0.2;
+    let diverge_point = 0.2 + roughutils::rand_f64_0to1_next(options) * 0.2;
 
     let mid_disp_x = options.bowing * options.max_randomness_offset * (end[1] - start[1]) / 200.0;
     let mid_disp_y = options.bowing * options.max_randomness_offset * (start[0] - end[0]) / 200.0;
@@ -167,7 +169,7 @@ pub(crate) fn line(
     commands
 }
 
-pub fn doubleline(
+pub(super) fn doubleline(
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,
     options: &mut Options,
@@ -176,7 +178,7 @@ pub fn doubleline(
 
     let mut second_options = options.clone();
     if let Some(seed) = options.seed {
-        second_options.seed = Some(utils::random_u64_full(Some(seed)));
+        second_options.seed = Some(roughutils::random_u64_full(Some(seed)));
         //second_options.seed = None;
     };
 
@@ -185,7 +187,7 @@ pub fn doubleline(
     commands
 }
 
-pub fn cubic_bezier(
+pub(super) fn cubic_bezier(
     start: na::Vector2<f64>,
     first: na::Vector2<f64>,
     second: na::Vector2<f64>,
@@ -254,7 +256,10 @@ pub fn cubic_bezier(
     commands
 }
 
-pub fn fill_polygon(points: Vec<na::Vector2<f64>>, _options: &mut Options) -> Vec<path::Command> {
+pub(super) fn fill_polygon(
+    points: Vec<na::Vector2<f64>>,
+    _options: &mut Options,
+) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
     for (i, point) in points.iter().enumerate() {
@@ -275,7 +280,7 @@ pub fn fill_polygon(points: Vec<na::Vector2<f64>>, _options: &mut Options) -> Ve
     commands
 }
 
-pub fn ellipse(
+pub(super) fn ellipse(
     center: na::Vector2<f64>,
     radius_x: f64,
     radius_y: f64,
@@ -319,7 +324,7 @@ pub fn ellipse(
     }
 }
 
-pub fn curve(
+pub(super) fn curve(
     points: Vec<na::Vector2<f64>>,
     close_point: Option<na::Vector2<f64>>,
     options: &mut Options,
@@ -391,13 +396,14 @@ pub fn curve(
     commands
 }
 
+#[derive(Debug, Clone)]
 pub struct EllipseResult {
     pub estimated_points: Vec<na::Vector2<f64>>,
     pub commands: Vec<path::Command>,
 }
 
 // Returns (all_points, core_points)
-pub fn compute_ellipse_points(
+pub(super) fn compute_ellipse_points(
     increment: f64,
     center: na::Vector2<f64>,
     radius_x: f64,

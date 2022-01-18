@@ -150,6 +150,7 @@ mod imp {
 }
 
 use gtk4::{glib, glib::clone, graphene, gsk, prelude::*, Snapshot};
+use p2d::bounding_volume::AABB;
 use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
@@ -388,7 +389,7 @@ impl Format {
         self.set_orientation(format.orientation());
     }
 
-    pub fn draw(&self, sheet_bounds: p2d::bounding_volume::AABB, snapshot: &Snapshot, zoom: f64) {
+    pub fn draw(&self, sheet_bounds: AABB, snapshot: &Snapshot, zoom: f64) {
         let border_radius = graphene::Size::new(0.0, 0.0);
         let border_width = 2.0;
 

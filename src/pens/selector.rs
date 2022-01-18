@@ -4,8 +4,9 @@ use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, render, utils};
 
+use anyhow::Context;
 use gtk4::{gdk, prelude::*, Snapshot};
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -81,7 +82,7 @@ impl PenBehaviour for Selector {
 
     fn draw(
         &self,
-        _sheet_bounds: p2d::bounding_volume::AABB,
+        _sheet_bounds: AABB,
         renderer: &render::Renderer,
         zoom: f64,
         snapshot: &Snapshot,
@@ -136,7 +137,8 @@ impl PenBehaviour for Selector {
 
             let svg = render::Svg { bounds, svg_data };
             let image = renderer.gen_image(zoom, &[svg], bounds)?;
-            let rendernode = render::image_to_rendernode(&image, zoom);
+            let rendernode =
+                render::image_to_rendernode(&image, zoom).context("selector.draw() failed")?;
             snapshot.append_node(&rendernode);
         }
         Ok(())
@@ -171,17 +173,17 @@ impl Selector {
         self.style = style;
     }
 
-    pub fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+    pub fn gen_bounds(&self) -> Option<AABB> {
         // Making sure bounds are always outside of coord + width
         let mut path_iter = self.path.iter();
         if let Some(first) = path_iter.next() {
-            let mut new_bounds = p2d::bounding_volume::AABB::new(
+            let mut new_bounds = AABB::new(
                 na::Point2::from(first.pos() - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
                 na::Point2::from(first.pos() + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
             );
 
             path_iter.for_each(|inputdata| {
-                let pos_bounds = p2d::bounding_volume::AABB::new(
+                let pos_bounds = AABB::new(
                     na::Point2::from(
                         inputdata.pos() - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH],
                     ),

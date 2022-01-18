@@ -258,7 +258,7 @@ mod imp {
             self.flap_resizer.add_controller(&resizer_drag_gesture);
 
             // Dirty hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
-            let prev_folded = Rc::new(Cell::new(flap.is_folded()));
+            let prev_folded = Rc::new(Cell::new(self.flap.get().is_folded()));
 
             resizer_drag_gesture.connect_drag_begin(clone!(@strong prev_folded, @weak flap, @weak flap_box => move |_resizer_drag_gesture, _x , _y| {
                     prev_folded.set(flap.is_folded());

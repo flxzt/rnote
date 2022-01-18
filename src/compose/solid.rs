@@ -468,7 +468,7 @@ pub fn compose_rectangle(rectangle: shapes::Rectangle, shaper: &Shaper) -> eleme
         rectangle.cuboid.half_extents,
     );
 
-    let transform_string = rectangle.transform.matrix_as_svg_transform_attr();
+    let transform_string = rectangle.transform.transform_as_svg_transform_attr();
 
     svg::node::element::Rectangle::new()
         .set("transform", transform_string)
@@ -494,7 +494,7 @@ pub fn compose_ellipse(ellipse: shapes::Ellipse, shaper: &Shaper) -> element::El
         String::from("none")
     };
 
-    let transform_string = ellipse.transform.matrix_as_svg_transform_attr();
+    let transform_string = ellipse.transform.transform_as_svg_transform_attr();
 
     svg::node::element::Ellipse::new()
         .set("transform", transform_string)

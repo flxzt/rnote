@@ -1,5 +1,4 @@
 use p2d::bounding_volume::AABB;
-use p2d::utils::IsometryOps;
 use serde::{Deserialize, Serialize};
 
 use crate::strokes::strokebehaviour::{self, StrokeBehaviour};
@@ -23,44 +22,29 @@ impl Default for Rectangle {
 }
 
 impl Rectangle {
-    pub fn global_aabb(&self) -> p2d::bounding_volume::AABB {
-        let center = na::Point2::from(self.transform.isometry.translation.vector);
-        let ws_half_extents = self.transform.shear
-            * self
-                .transform
-                .isometry
-                .absolute_transform_vector(&self.cuboid.half_extents);
+    pub fn global_aabb(&self) -> AABB {
+        let center = self.transform.transform * na::point![0.0, 0.0];
+        // using a vector to ignore the translation
+        let half_extents = na::Vector2::from_homogeneous(
+            self.transform.transform.into_inner().abs() * self.cuboid.half_extents.to_homogeneous(),
+        )
+        .unwrap();
 
-        AABB::from_half_extents(center, ws_half_extents)
+        AABB::from_half_extents(center, half_extents)
     }
 }
 
 impl StrokeBehaviour for Rectangle {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
-        let translation = na::Translation2::<f64>::from(offset);
-
-        self.transform.isometry.append_translation_mut(&translation);
+        self.transform.append_translation_mut(offset);
     }
 
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
-        self.transform
-            .isometry
-            .append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center)
+        self.transform.append_rotation_wrt_point_mut(angle, center)
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
-        self.cuboid.half_extents =
-            na::Vector2::from(self.cuboid.half_extents.component_mul(&scale));
-    }
-
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        let mut shear_matrix = na::Matrix3::<f64>::identity();
-        shear_matrix[(0, 1)] = shear[0].tan();
-        shear_matrix[(1, 0)] = shear[1].tan();
-
-        // Unwrapping because we know its an Affine2
-        self.transform.shear =
-            na::try_convert(shear_matrix * self.transform.shear.to_homogeneous()).unwrap();
+        self.transform.append_scale_mut(scale);
     }
 }
 
@@ -86,41 +70,27 @@ impl Default for Ellipse {
 
 impl StrokeBehaviour for Ellipse {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
-        let translation = na::Translation2::<f64>::from(offset);
-
-        self.transform.isometry.append_translation_mut(&translation);
+        self.transform.append_translation_mut(offset);
     }
 
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
-        self.transform
-            .isometry
-            .append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center)
+        self.transform.append_rotation_wrt_point_mut(angle, center)
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
-        self.radii = na::Vector2::from(self.radii.component_mul(&scale));
-    }
-
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        let mut shear_matrix = na::Matrix3::<f64>::identity();
-        shear_matrix[(0, 1)] = shear[0].tan();
-        shear_matrix[(1, 0)] = shear[1].tan();
-
-        // Unwrapping because we know its an Affine2
-        self.transform.shear =
-            na::try_convert(shear_matrix * self.transform.shear.to_homogeneous()).unwrap();
+        self.transform.append_scale_mut(scale);
     }
 }
 
 impl Ellipse {
-    pub fn global_aabb(&self) -> p2d::bounding_volume::AABB {
-        let center = na::Point2::from(self.transform.isometry.translation.vector);
-        let ws_half_extents = self.transform.shear
-            * self
-                .transform
-                .isometry
-                .absolute_transform_vector(&self.radii);
+    pub fn global_aabb(&self) -> AABB {
+        let center = self.transform.transform * na::point![0.0, 0.0];
+        // using a vector to ignore the translation
+        let half_extents = na::Vector2::from_homogeneous(
+            self.transform.transform.into_inner().abs() * self.radii.to_homogeneous(),
+        )
+        .unwrap();
 
-        AABB::from_half_extents(center, ws_half_extents)
+        AABB::from_half_extents(center, half_extents)
     }
 }

@@ -1,4 +1,6 @@
+use anyhow::Context;
 use gtk4::{glib, gsk, Snapshot};
+use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -29,7 +31,7 @@ impl Default for PatternStyle {
 }
 
 pub fn gen_horizontal_line_pattern(
-    bounds: p2d::bounding_volume::AABB,
+    bounds: AABB,
     spacing: f64,
     color: utils::Color,
     line_width: f64,
@@ -58,7 +60,7 @@ pub fn gen_horizontal_line_pattern(
 }
 
 pub fn gen_grid_pattern(
-    bounds: p2d::bounding_volume::AABB,
+    bounds: AABB,
     row_spacing: f64,
     column_spacing: f64,
     color: utils::Color,
@@ -103,7 +105,7 @@ pub fn gen_grid_pattern(
 }
 
 pub fn gen_dots_pattern(
-    bounds: p2d::bounding_volume::AABB,
+    bounds: AABB,
     row_spacing: f64,
     column_spacing: f64,
     color: utils::Color,
@@ -243,10 +245,7 @@ impl Background {
     }
 
     /// Generates the background svg, without xml header or svg root
-    pub fn gen_svg(
-        &self,
-        bounds: p2d::bounding_volume::AABB,
-    ) -> Result<render::Svg, anyhow::Error> {
+    pub fn gen_svg(&self, bounds: AABB) -> Result<render::Svg, anyhow::Error> {
         let mut group = element::Group::new();
 
         // background color
@@ -297,7 +296,7 @@ impl Background {
         &self,
         renderer: &Renderer,
         zoom: f64,
-        bounds: p2d::bounding_volume::AABB,
+        bounds: AABB,
     ) -> Result<render::Image, anyhow::Error> {
         let mut svg = self.gen_svg(bounds)?;
         svg.svg_data = compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), None, true);
@@ -309,13 +308,10 @@ impl Background {
         &mut self,
         renderer: &Renderer,
         zoom: f64,
-        sheet_bounds: p2d::bounding_volume::AABB,
+        sheet_bounds: AABB,
     ) -> Result<(), anyhow::Error> {
         let tile_size = self.tile_size();
-        let tile_bounds = p2d::bounding_volume::AABB::new(
-            na::point![0.0, 0.0],
-            na::point![tile_size[0], tile_size[1]],
-        );
+        let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 
         self.image = Some(self.gen_image(renderer, zoom, tile_bounds)?);
         self.update_rendernode(zoom, sheet_bounds)?;
@@ -325,7 +321,7 @@ impl Background {
     pub fn gen_rendernode(
         &mut self,
         zoom: f64,
-        bounds: p2d::bounding_volume::AABB,
+        bounds: AABB,
     ) -> Result<gsk::RenderNode, anyhow::Error> {
         let snapshot = Snapshot::new();
         let tile_size = self.tile_size();
@@ -341,7 +337,8 @@ impl Background {
         );
 
         if let Some(image) = &self.image {
-            let new_texture = render::image_to_memtexture(image);
+            let new_texture = render::image_to_memtexture(image)
+                .context("image_to_memtexture() failed in gen_rendernode().")?;
             for aabb in geometry::split_aabb_extended(bounds, tile_size) {
                 snapshot.append_texture(
                     &new_texture,
@@ -358,7 +355,7 @@ impl Background {
     pub fn update_rendernode(
         &mut self,
         zoom: f64,
-        sheet_bounds: p2d::bounding_volume::AABB,
+        sheet_bounds: AABB,
     ) -> Result<(), anyhow::Error> {
         match self.gen_rendernode(zoom, sheet_bounds) {
             Ok(new_rendernode) => {

@@ -22,7 +22,7 @@ use crate::strokes::vectorimage::VectorImage;
 use crate::ui::appwindow::RnoteAppWindow;
 
 use gtk4::{glib, glib::clone, prelude::*};
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB, BoundingSphere};
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -75,8 +75,6 @@ pub struct StrokesState {
     /// value is equal chrono_component of the newest inserted or modified stroke.
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
-    #[serde(rename = "selection_bounds")]
-    pub selection_bounds: Option<p2d::bounding_volume::AABB>,
 
     #[serde(skip)]
     pub zoom: f64, // changes with the canvas zoom
@@ -112,7 +110,6 @@ impl Default for StrokesState {
             tasks_tx: Some(render_tx),
             tasks_rx: Some(render_rx),
             channel_source: None,
-            selection_bounds: None,
             threadpool,
         }
     }
@@ -288,7 +285,6 @@ impl StrokesState {
     /// Clears every stroke and every component
     pub fn clear(&mut self) {
         self.chrono_counter = 0;
-        self.selection_bounds = None;
 
         self.strokes.clear();
         self.trash_components.clear();
@@ -409,7 +405,6 @@ impl StrokesState {
     pub fn import_state(&mut self, strokes_state: &Self) {
         self.clear();
         self.chrono_counter = strokes_state.chrono_counter;
-        self.selection_bounds = strokes_state.selection_bounds;
 
         self.strokes = strokes_state.strokes.clone();
         self.trash_components = strokes_state.trash_components.clone();
@@ -465,7 +460,7 @@ impl StrokesState {
 
     pub fn regenerate_strokes_current_view(
         &mut self,
-        viewport: Option<p2d::bounding_volume::AABB>,
+        viewport: Option<AABB>,
         force_regenerate: bool,
     ) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
@@ -488,9 +483,16 @@ impl StrokesState {
 
                 match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
                     Ok(image) => {
-                        render_comp.regenerate_flag = false;
-                        render_comp.rendernode = render::image_to_rendernode(&image, self.zoom);
-                        render_comp.images = vec![image];
+                        let images = vec![image];
+
+                        match render::images_to_rendernode(&images, self.zoom) {
+                            Ok(rendernode) => {
+                                render_comp.rendernode = rendernode;
+                                render_comp.regenerate_flag = false;
+                                render_comp.images = images;
+                            }
+                            Err(e) => log::error!("stroke.gen_images() failed in regenerate_stroke_current_view() with Err {}", e),
+                        }
                     }
                     Err(e) => {
                         log::debug!(
@@ -511,7 +513,7 @@ impl StrokesState {
 
     pub fn regenerate_strokes_current_view_threaded(
         &mut self,
-        viewport: Option<p2d::bounding_volume::AABB>,
+        viewport: Option<AABB>,
         force_regenerate: bool,
     ) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
@@ -565,8 +567,8 @@ impl StrokesState {
         new_height
     }
 
-    /// Generates the bounds needed to fit the strokes
-    pub fn gen_bounds(&self, keys: &[StrokeKey]) -> Option<p2d::bounding_volume::AABB> {
+    /// Generates the bounds which enclose the strokes
+    pub fn gen_bounds(&self, keys: &[StrokeKey]) -> Option<AABB> {
         let mut keys_iter = keys.iter();
         if let Some(&key) = keys_iter.next() {
             if let Some(first) = self.strokes.get(key) {
@@ -628,8 +630,16 @@ impl StrokesState {
                         image.bounds = geometry::aabb_translate(image.bounds, offset);
                     }
 
-                    render_comp.rendernode =
-                        render::images_to_rendernode(&render_comp.images, self.zoom)
+                    match render::images_to_rendernode(&render_comp.images, self.zoom) {
+                        Ok(rendernode) => {
+                            render_comp.rendernode = rendernode;
+                            // NOt touch the regenerate flag consciously
+                        }
+                        Err(e) => log::error!(
+                            "images_to_rendernode() failed in translate_strokes() with Err {}",
+                            e
+                        ),
+                    }
                 }
             }
         });
@@ -646,12 +656,7 @@ impl StrokesState {
     }
 
     // Resizes the strokes to new bounds
-    pub fn resize_strokes(
-        &mut self,
-        strokes: &[StrokeKey],
-        old_bounds: p2d::bounding_volume::AABB,
-        new_bounds: p2d::bounding_volume::AABB,
-    ) {
+    pub fn resize_strokes(&mut self, strokes: &[StrokeKey], old_bounds: AABB, new_bounds: AABB) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 let old_stroke_bounds = stroke.bounds();
@@ -665,6 +670,7 @@ impl StrokesState {
                 let scale = new_stroke_bounds
                     .extents()
                     .component_div(&old_stroke_bounds.extents());
+
                 stroke.translate(offset);
                 stroke.scale(scale);
 
@@ -688,7 +694,7 @@ impl StrokesState {
     }
 
     pub fn drag_strokes_proximity(&mut self, drag_proximity_tool: &DragProximityTool) {
-        let sphere = p2d::bounding_volume::BoundingSphere {
+        let sphere = BoundingSphere {
             center: na::Point2::from(drag_proximity_tool.pos),
             radius: drag_proximity_tool.radius,
         };

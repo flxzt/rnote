@@ -6,6 +6,7 @@ use crate::ui::appwindow::RnoteAppWindow;
 use crate::utils;
 
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
+use p2d::bounding_volume::AABB;
 
 use super::penbehaviour::PenBehaviour;
 
@@ -58,7 +59,7 @@ impl PenBehaviour for Eraser {
 
     fn draw(
         &self,
-        _sheet_bounds: p2d::bounding_volume::AABB,
+        _sheet_bounds: AABB,
         _renderer: &crate::render::Renderer,
         zoom: f64,
         snapshot: &Snapshot,
@@ -124,11 +125,11 @@ impl Eraser {
         self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
     }
 
-    pub fn gen_bounds(&self, zoom: f64) -> Option<p2d::bounding_volume::AABB> {
+    pub fn gen_bounds(&self, zoom: f64) -> Option<AABB> {
         self.current_input.map_or_else(
             || None,
             |current_input| {
-                Some(p2d::bounding_volume::AABB::new(
+                Some(AABB::new(
                     na::point![
                         ((current_input.pos()[0]) - self.width / 2.0) * zoom,
                         ((current_input.pos()[1]) - self.width / 2.0) * zoom

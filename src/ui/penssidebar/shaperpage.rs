@@ -80,6 +80,7 @@ mod imp {
     impl WidgetImpl for ShaperPage {}
 }
 
+use crate::compose::rough::roughoptions;
 use crate::pens::shaper::Shaper;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use crate::utils;
@@ -202,15 +203,15 @@ impl ShaperPage {
         priv_
             .roughconfig_roughness_adj
             .get()
-            .set_lower(rough_rs::options::Options::ROUGHNESS_MIN);
+            .set_lower(roughoptions::Options::ROUGHNESS_MIN);
         priv_
             .roughconfig_roughness_adj
             .get()
-            .set_upper(rough_rs::options::Options::ROUGHNESS_MAX);
+            .set_upper(roughoptions::Options::ROUGHNESS_MAX);
         priv_
             .roughconfig_roughness_adj
             .get()
-            .set_value(rough_rs::options::Options::ROUGHNESS_DEFAULT);
+            .set_value(roughoptions::Options::ROUGHNESS_DEFAULT);
 
         priv_.roughconfig_roughness_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_roughness_adj| {
@@ -222,15 +223,15 @@ impl ShaperPage {
         priv_
             .roughconfig_bowing_adj
             .get()
-            .set_lower(rough_rs::options::Options::BOWING_MIN);
+            .set_lower(roughoptions::Options::BOWING_MIN);
         priv_
             .roughconfig_bowing_adj
             .get()
-            .set_upper(rough_rs::options::Options::BOWING_MAX);
+            .set_upper(roughoptions::Options::BOWING_MAX);
         priv_
             .roughconfig_bowing_adj
             .get()
-            .set_value(rough_rs::options::Options::BOWING_DEFAULT);
+            .set_value(roughoptions::Options::BOWING_DEFAULT);
 
         priv_.roughconfig_bowing_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_bowing_adj| {
@@ -242,15 +243,15 @@ impl ShaperPage {
         priv_
             .roughconfig_curvestepcount_adj
             .get()
-            .set_lower(rough_rs::options::Options::CURVESTEPCOUNT_MIN);
+            .set_lower(roughoptions::Options::CURVESTEPCOUNT_MIN);
         priv_
             .roughconfig_curvestepcount_adj
             .get()
-            .set_upper(rough_rs::options::Options::CURVESTEPCOUNT_MAX);
+            .set_upper(roughoptions::Options::CURVESTEPCOUNT_MAX);
         priv_
             .roughconfig_curvestepcount_adj
             .get()
-            .set_value(rough_rs::options::Options::CURVESTEPCOUNT_DEFAULT);
+            .set_value(roughoptions::Options::CURVESTEPCOUNT_DEFAULT);
 
         priv_.roughconfig_curvestepcount_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_curvestepcount_adj| {

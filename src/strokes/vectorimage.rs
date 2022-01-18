@@ -3,6 +3,7 @@ use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
 use crate::{compose, render};
 
+use p2d::bounding_volume::AABB;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 use svg::node::{self, element};
@@ -19,7 +20,7 @@ pub struct VectorImage {
     #[serde(rename = "rectangle")]
     pub rectangle: shapes::Rectangle,
     #[serde(rename = "bounds")]
-    pub bounds: p2d::bounding_volume::AABB,
+    pub bounds: AABB,
 }
 
 impl Default for VectorImage {
@@ -34,15 +35,15 @@ impl Default for VectorImage {
 }
 
 impl DrawBehaviour for VectorImage {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> AABB {
         self.bounds
     }
 
-    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+    fn set_bounds(&mut self, bounds: AABB) {
         self.bounds = bounds;
     }
 
-    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+    fn gen_bounds(&self) -> Option<AABB> {
         Some(self.rectangle.global_aabb())
     }
 
@@ -50,10 +51,9 @@ impl DrawBehaviour for VectorImage {
         let mut rectangle = self.rectangle.clone();
         rectangle
             .transform
-            .isometry
-            .append_translation_mut(&na::Translation2::from(offset));
+            .append_translation_mut(offset);
 
-        let transform_string = rectangle.transform.matrix_as_svg_transform_attr();
+        let transform_string = rectangle.transform.transform_as_svg_transform_attr();
 
         let svg_root = element::SVG::new()
             .set("x", -self.rectangle.cuboid.half_extents[0])
@@ -97,11 +97,6 @@ impl StrokeBehaviour for VectorImage {
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.rectangle.scale(scale);
-        self.update_geometry();
-    }
-
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        self.rectangle.shear(shear);
         self.update_geometry();
     }
 }

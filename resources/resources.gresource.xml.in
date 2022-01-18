@@ -31,6 +31,9 @@
         <file compressed="true">icons/scalable/actions/selection-delete-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/modifiernode-default-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/modifiernode-resize-northeast-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/modifiernode-resize-northwest-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/modifiernode-rotate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvas-cursor.svg</file>
         <file compressed="true">icons/scalable/actions/canvas-motion-cursor.svg</file>
         <file compressed="true">icons/scalable/actions/reset-width-symbolic.svg</file>

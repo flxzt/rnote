@@ -7,6 +7,7 @@ use crate::strokesstate::StrokeKey;
 use crate::{input, utils};
 
 use gtk4::prelude::*;
+use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
@@ -69,7 +70,7 @@ impl PenBehaviour for Brush {
             .canvas()
             .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-        let filter_bounds = p2d::bounding_volume::AABB::new(
+        let filter_bounds = AABB::new(
             na::point![-input::INPUT_OVERSHOOT, -input::INPUT_OVERSHOOT],
             na::point![
                 (appwindow.canvas().sheet().width()) as f64 + input::INPUT_OVERSHOOT,
@@ -99,7 +100,7 @@ impl PenBehaviour for Brush {
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
         if let Some(current_stroke_key) = self.current_stroke {
-            let filter_bounds = p2d::bounding_volume::AABB::new(
+            let filter_bounds = AABB::new(
                 na::point![-input::INPUT_OVERSHOOT, -input::INPUT_OVERSHOOT],
                 na::point![
                     (appwindow.canvas().sheet().width()) as f64 + input::INPUT_OVERSHOOT,

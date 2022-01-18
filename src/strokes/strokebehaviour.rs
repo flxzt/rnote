@@ -8,56 +8,73 @@ pub trait StrokeBehaviour {
     fn rotate(&mut self, angle: f64, center: na::Point2<f64>);
     /// scales the stroke by the desired scale
     fn scale(&mut self, scale: na::Vector2<f64>);
-    /// shears the stroke by the x_angle (rad) and y_angle (rad)
-    fn shear(&mut self, shear: na::Vector2<f64>);
 }
 
 /// To be used as state in a stroke to help implement the StrokeBehaviour trait
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_transform")]
 pub struct StrokeTransform {
-    #[serde(rename = "isometry")]
-    pub isometry: na::Isometry2<f64>,
-    #[serde(rename = "scale")]
-    pub shear: na::Affine2<f64>,
+    #[serde(rename = "transform")]
+    pub transform: na::Affine2<f64>,
 }
 
 impl Default for StrokeTransform {
     fn default() -> Self {
         Self {
-            isometry: na::Isometry2::identity(),
-            shear: na::Affine2::identity(),
+            transform: na::Affine2::identity(),
         }
     }
 }
 
 impl StrokeTransform {
-    pub fn new(isometry: na::Isometry2<f64>, shear: na::Affine2<f64>) -> Self {
-        Self { isometry, shear }
+    pub fn new(transform: na::Affine2<f64>) -> Self {
+        Self { transform }
     }
 
     pub fn new_w_isometry(isometry: na::Isometry2<f64>) -> Self {
         Self {
-            isometry,
-            ..Self::default()
+            transform: na::convert(isometry),
         }
     }
 
-    pub fn matrix(&self) -> na::Affine2<f64> {
-        self.shear * self.isometry
+    pub fn transform_point(&self, point: na::Point2<f64>) -> na::Point2<f64> {
+        self.transform * point
     }
 
-    pub fn matrix_as_svg_transform_attr(&self) -> String {
-        let transform_matrix = self.matrix();
+    pub fn append_translation_mut(&mut self, offset: na::Vector2<f64>) {
+        self.transform = na::Translation2::from(offset) * self.transform;
+    }
+
+    pub fn append_rotation_wrt_point_mut(&mut self, angle: f64, center: na::Point2<f64>) {
+        self.transform = na::Translation2::from(-center.coords) * self.transform;
+        self.transform = na::Rotation2::new(angle) * self.transform;
+        self.transform = na::Translation2::from(center.coords) * self.transform;
+    }
+
+    pub fn append_scale_mut(&mut self, scale: na::Vector2<f64>) {
+        let translation = (self.transform * na::point![0.0, 0.0]).coords;
+
+        self.transform = na::Translation2::from(-translation) * self.transform;
+
+        self.transform = na::try_convert(
+            na::Scale2::<f64>::from(scale).to_homogeneous() * self.transform.to_homogeneous(),
+        )
+        .unwrap();
+
+        self.transform = na::Translation2::from(translation) * self.transform;
+    }
+
+    pub fn transform_as_svg_transform_attr(&self) -> String {
+        let matrix = self.transform;
 
         format!(
             "matrix({:.3} {:.3} {:.3} {:.3} {:.3} {:.3})",
-            transform_matrix[(0, 0)],
-            transform_matrix[(1, 0)],
-            transform_matrix[(0, 1)],
-            transform_matrix[(1, 1)],
-            transform_matrix[(0, 2)],
-            transform_matrix[(1, 2)],
+            matrix[(0, 0)],
+            matrix[(1, 0)],
+            matrix[(0, 1)],
+            matrix[(1, 1)],
+            matrix[(0, 2)],
+            matrix[(1, 2)],
         )
     }
 }

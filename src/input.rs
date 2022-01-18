@@ -1,4 +1,5 @@
 use gtk4::{gdk, GestureStylus};
+use p2d::bounding_volume::AABB;
 use std::collections::VecDeque;
 
 use crate::strokes::strokestyle::InputData;
@@ -23,10 +24,7 @@ pub fn map_inputdata(
 }
 
 /// Filter inputdata to sheet bounds
-pub fn filter_mapped_inputdata(
-    filter_bounds: p2d::bounding_volume::AABB,
-    data_entries: &mut VecDeque<InputData>,
-) {
+pub fn filter_mapped_inputdata(filter_bounds: AABB, data_entries: &mut VecDeque<InputData>) {
     data_entries.retain(|data| filter_bounds.contains_local_point(&na::Point2::from(data.pos())));
 }
 

@@ -10,7 +10,7 @@
       <object class="GtkGridLayout" />
     </property>
     <child>
-      <object class="ModifierNode" id="resize_tl">
+      <object class="ModifierNode" id="resize_tl_node">
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>
         <property name="halign">start</property>
@@ -22,7 +22,7 @@
       </object>
     </child>
     <child>
-      <object class="ModifierNode" id="resize_tr">
+      <object class="ModifierNode" id="resize_tr_node">
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>
         <property name="halign">end</property>
@@ -34,7 +34,7 @@
       </object>
     </child>
     <child>
-      <object class="ModifierNode" id="resize_bl">
+      <object class="ModifierNode" id="resize_bl_node">
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>
         <property name="halign">start</property>
@@ -58,7 +58,7 @@
       </object>
     </child>
     <child>
-      <object class="ModifierNode" id="resize_br">
+      <object class="ModifierNode" id="resize_br_node">
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>
         <property name="halign">end</property>

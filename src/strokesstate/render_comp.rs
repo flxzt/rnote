@@ -5,7 +5,7 @@ use crate::ui::canvas;
 use crate::{render, utils};
 
 use gtk4::{graphene, gsk, Snapshot};
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,9 +99,14 @@ impl StrokesState {
         {
             match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
                 Ok(image) => {
-                    render_comp.regenerate_flag = false;
-                    render_comp.rendernode = render::image_to_rendernode(&image, self.zoom);
-                    render_comp.images = vec![image];
+                    match render::image_to_rendernode(&image, self.zoom) {
+                        Ok(rendernode) => {
+                            render_comp.rendernode = rendernode;
+                            render_comp.regenerate_flag = false;
+                            render_comp.images = vec![image];
+                        }
+                        Err(e) => log::error!("image_to_rendernode() failed in regenerate_rendering_for_stroke() with Err {}", e),
+                    }
                 }
                 Err(e) => {
                     log::debug!(
@@ -181,13 +186,18 @@ impl StrokesState {
                                 Ok(last_elems_image) => {
                                     let mut images = vec![last_elems_image];
 
-                                    render_comp.rendernode = render::append_images_to_rendernode(
+                                    match render::append_images_to_rendernode(
                                         &render_comp.rendernode,
                                         &images,
                                         self.zoom,
-                                    );
-                                    render_comp.images.append(&mut images);
-                                    render_comp.regenerate_flag = false;
+                                    ) {
+                                        Ok(rendernode) => {
+                                            render_comp.rendernode = rendernode;
+                                            render_comp.images.append(&mut images);
+                                            render_comp.regenerate_flag = false;
+                                        }
+                                        Err(e) => log::error!("append_images_to_rendernode() failed in append_rendering_new_elem() with Err {}", e),
+                                    }
                                 }
                                 Err(e) => {
                                     log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}", key, e);
@@ -224,13 +234,18 @@ impl StrokesState {
                                 Ok(last_elems_image) => {
                                     let mut images = vec![last_elems_image];
 
-                                    render_comp.rendernode = render::append_images_to_rendernode(
+                                    match render::append_images_to_rendernode(
                                         &render_comp.rendernode,
                                         &images,
                                         self.zoom,
-                                    );
-                                    render_comp.images.append(&mut images);
-                                    render_comp.regenerate_flag = false;
+                                    ) {
+                                        Ok(rendernode) => {
+                                            render_comp.rendernode = rendernode;
+                                            render_comp.images.append(&mut images);
+                                            render_comp.regenerate_flag = false;
+                                        }
+                                        Err(e) => log::error!("append_images_to_rendernode() failed in append_rendering_new_elem() with Err {}", e),
+                                    }
                                 }
                                 Err(e) => {
                                     log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
@@ -245,9 +260,14 @@ impl StrokesState {
                 | StrokeStyle::BitmapImage(_) => {
                     match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
                         Ok(image) => {
-                            render_comp.regenerate_flag = false;
-                            render_comp.rendernode = render::image_to_rendernode(&image, self.zoom);
-                            render_comp.images = vec![image];
+                            match render::image_to_rendernode(&image, self.zoom) {
+                                Ok(rendernode) => {
+                                    render_comp.rendernode = rendernode;
+                                    render_comp.regenerate_flag = false;
+                                    render_comp.images = vec![image];
+                                }
+                                Err(e) => log::error!("image_to_rendernode() failed in regenerate_rendering_for_stroke() with Err {}", e),
+                            }
                         }
                         Err(e) => {
                             log::debug!(
@@ -446,12 +466,20 @@ impl StrokesState {
 
     pub fn regenerate_rendering_with_images(&mut self, key: StrokeKey, images: Vec<render::Image>) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            render_comp.rendernode = render::images_to_rendernode(&images, self.zoom);
-            render_comp.regenerate_flag = false;
-            render_comp.images = images;
+            match render::images_to_rendernode(&images, self.zoom) {
+                Ok(rendernode) => {
+                    render_comp.rendernode = rendernode;
+                    render_comp.regenerate_flag = false;
+                    render_comp.images = images;
+                }
+                Err(e) => log::error!(
+                    "image_to_rendernode() failed in regenerate_rendering_with_images() with Err {}",
+                    e
+                ),
+            }
         } else {
             log::debug!(
-                    "get render_comp returned None in update_rendering_with_images() for stroke with key {:?}",
+                    "get render_comp returned None in regenerate_rendering_with_images() for stroke with key {:?}",
                     key
                 );
         }
@@ -459,10 +487,17 @@ impl StrokesState {
 
     pub fn append_images_to_rendering(&mut self, key: StrokeKey, mut images: Vec<render::Image>) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            render_comp.rendernode =
-                render::append_images_to_rendernode(&render_comp.rendernode, &images, self.zoom);
-            render_comp.regenerate_flag = false;
-            render_comp.images.append(&mut images);
+            match render::append_images_to_rendernode(&render_comp.rendernode, &images, self.zoom) {
+                Ok(rendernode) => {
+                    render_comp.rendernode = rendernode;
+                    render_comp.regenerate_flag = false;
+                    render_comp.images.append(&mut images);
+                }
+                Err(e) => log::error!(
+                    "append_images_to_rendernode() failed in append_images_to_rendering() with Err {}",
+                    e
+                ),
+            }
         }
     }
 
@@ -471,11 +506,20 @@ impl StrokesState {
         self.render_components
             .iter_mut()
             .for_each(|(_key, render_comp)| {
-                render_comp.rendernode = render::images_to_rendernode(&render_comp.images, zoom)
+                match render::images_to_rendernode(&render_comp.images, zoom) {
+                    Ok(rendernode) => {
+                        render_comp.rendernode = rendernode;
+                    }
+                    Err(e) => log::error!(
+                        "images_to_rendernode() failed in update_rendernodes_current_zoom() with Err {}",
+                        e
+                    ),
+                }
             });
     }
 
-    pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<p2d::bounding_volume::AABB>) {
+    /// Draws the strokes without the selection
+    pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<AABB>) {
         self.keys_sorted_chrono()
             .iter()
             .filter(|&&key| {
@@ -499,12 +543,10 @@ impl StrokesState {
             });
     }
 
+    /// Draws the selection
     pub fn draw_selection(&self, zoom: f64, snapshot: &Snapshot) {
-        fn draw_selected_bounds(
-            bounds: p2d::bounding_volume::AABB,
-            zoom: f64,
-            snapshot: &Snapshot,
-        ) {
+
+        fn draw_selected_bounds(bounds: AABB, zoom: f64, snapshot: &Snapshot) {
             let bounds = graphene::Rect::new(
                 bounds.mins[0] as f32,
                 bounds.mins[1] as f32,
@@ -516,7 +558,7 @@ impl StrokesState {
                 r: 0.0,
                 g: 0.2,
                 b: 0.8,
-                a: 0.4,
+                a: 0.2,
             };
             let border_width = 2.0;
 
@@ -558,61 +600,6 @@ impl StrokesState {
                     }
                 }
             });
-        self.draw_selection_bounds(zoom, snapshot);
-    }
-
-    pub fn draw_selection_bounds(&self, zoom: f64, snapshot: &Snapshot) {
-        if let Some(selection_bounds) = self.selection_bounds {
-            let selection_bounds = graphene::Rect::new(
-                selection_bounds.mins[0] as f32,
-                selection_bounds.mins[1] as f32,
-                (selection_bounds.extents()[0]) as f32,
-                (selection_bounds.extents()[1]) as f32,
-            )
-            .scale(zoom as f32, zoom as f32);
-
-            let selection_border_color = utils::Color {
-                r: 0.49,
-                g: 0.56,
-                b: 0.63,
-                a: 0.3,
-            };
-            let selection_border_width = 4.0;
-            let selection_border_fill = utils::Color {
-                r: 0.49,
-                g: 0.56,
-                b: 0.63,
-                a: 0.1,
-            };
-
-            snapshot.append_color(&selection_border_fill.to_gdk(), &selection_bounds);
-            snapshot.append_border(
-                &gsk::RoundedRect::new(
-                    graphene::Rect::new(
-                        selection_bounds.x(),
-                        selection_bounds.y(),
-                        selection_bounds.width(),
-                        selection_bounds.height(),
-                    ),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                ),
-                &[
-                    selection_border_width,
-                    selection_border_width,
-                    selection_border_width,
-                    selection_border_width,
-                ],
-                &[
-                    selection_border_color.to_gdk(),
-                    selection_border_color.to_gdk(),
-                    selection_border_color.to_gdk(),
-                    selection_border_color.to_gdk(),
-                ],
-            );
-        }
     }
 
     pub fn draw_debug(&self, zoom: f64, snapshot: &Snapshot) {

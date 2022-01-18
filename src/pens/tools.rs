@@ -7,7 +7,9 @@ use crate::strokesstate::StrokeKey;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, render, utils};
 
+use anyhow::Context;
 use gtk4::{prelude::*, Snapshot};
+use p2d::bounding_volume::AABB;
 
 use super::penbehaviour::PenBehaviour;
 
@@ -65,7 +67,7 @@ impl ExpandSheetTool {
 
     pub fn draw(
         &self,
-        sheet_bounds: p2d::bounding_volume::AABB,
+        sheet_bounds: AABB,
         renderer: &Renderer,
         zoom: f64,
         snapshot: &Snapshot,
@@ -115,7 +117,8 @@ impl ExpandSheetTool {
         let svg = render::Svg { svg_data, bounds };
 
         let image = renderer.gen_image(zoom, &[svg], bounds)?;
-        let rendernode = render::image_to_rendernode(&image, zoom);
+        let rendernode =
+            render::image_to_rendernode(&image, zoom).context("ExpandSheetTool draw() failed")?;
         snapshot.append_node(&rendernode);
 
         Ok(())
@@ -158,7 +161,7 @@ impl DragProximityTool {
 
     pub fn draw(
         &self,
-        _sheet_bounds: p2d::bounding_volume::AABB,
+        _sheet_bounds: AABB,
         renderer: &Renderer,
         zoom: f64,
         snapshot: &Snapshot,
@@ -197,7 +200,8 @@ impl DragProximityTool {
         };
 
         let image = renderer.gen_image(zoom, &[svg], draw_bounds)?;
-        let rendernode = render::image_to_rendernode(&image, zoom);
+        let rendernode =
+            render::image_to_rendernode(&image, zoom).context("DrawProximityTool draw() failed")?;
         snapshot.append_node(&rendernode);
 
         Ok(())
@@ -306,7 +310,7 @@ impl PenBehaviour for Tools {
 
     fn draw(
         &self,
-        sheet_bounds: p2d::bounding_volume::AABB,
+        sheet_bounds: AABB,
         renderer: &Renderer,
         zoom: f64,
         snapshot: &Snapshot,

@@ -2,7 +2,7 @@ use crate::compose::{self, curves, geometry, solid};
 use crate::{
     drawbehaviour::DrawBehaviour, pens::marker::Marker, render, strokes::strokestyle::Element,
 };
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
@@ -17,9 +17,9 @@ pub struct MarkerStroke {
     #[serde(rename = "marker")]
     pub marker: Marker,
     #[serde(rename = "bounds")]
-    pub bounds: p2d::bounding_volume::AABB,
+    pub bounds: AABB,
     #[serde(skip)]
-    pub hitbox: Vec<p2d::bounding_volume::AABB>,
+    pub hitbox: Vec<AABB>,
 }
 
 impl Default for MarkerStroke {
@@ -34,17 +34,17 @@ impl Default for MarkerStroke {
 }
 
 impl DrawBehaviour for MarkerStroke {
-    fn bounds(&self) -> p2d::bounding_volume::AABB {
+    fn bounds(&self) -> AABB {
         self.bounds
     }
 
-    fn set_bounds(&mut self, bounds: p2d::bounding_volume::AABB) {
+    fn set_bounds(&mut self, bounds: AABB) {
         self.bounds = bounds;
     }
 
-    fn gen_bounds(&self) -> Option<p2d::bounding_volume::AABB> {
+    fn gen_bounds(&self) -> Option<AABB> {
         if let Some(&first) = self.elements.iter().peekable().peek() {
-            let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+            let mut bounds = AABB::new_invalid();
             bounds.take_point(na::Point2::from(first.inputdata.pos()));
 
             bounds.merge(
@@ -57,7 +57,7 @@ impl DrawBehaviour for MarkerStroke {
                     .filter_map(|(((first, second), third), forth)| {
                         let marker_width = self.marker.width();
 
-                        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+                        let mut bounds = AABB::new_invalid();
 
                         if let Some(cubbez) = curves::gen_cubbez_w_catmull_rom(
                             first.inputdata.pos(),
@@ -90,9 +90,7 @@ impl DrawBehaviour for MarkerStroke {
                             None
                         }
                     })
-                    .reduce(p2d::bounding_volume::AABB::new_invalid, |i, next| {
-                        i.merged(&next)
-                    }),
+                    .reduce(AABB::new_invalid, |i, next| i.merged(&next)),
             );
             Some(bounds)
         } else {
@@ -146,27 +144,6 @@ impl StrokeBehaviour for MarkerStroke {
         });
         self.update_geometry();
     }
-    fn shear(&mut self, shear: nalgebra::Vector2<f64>) {
-        let center = self.bounds.center().coords;
-
-        let mut shear_matrix = na::Matrix3::<f64>::identity();
-        shear_matrix[(0, 1)] = shear[0].tan();
-        shear_matrix[(1, 0)] = shear[1].tan();
-
-        self.elements.iter_mut().for_each(|element| {
-            let pos_local = element.inputdata.pos() - center;
-
-            let pos_local_new: na::Vector2<f64> = na::Point2::from_homogeneous(
-                shear_matrix * na::Point2::from(pos_local).to_homogeneous(),
-            )
-            .unwrap()
-            .coords;
-
-            element.inputdata.set_pos(center + pos_local_new);
-        });
-
-        self.update_geometry();
-    }
 }
 
 impl MarkerStroke {
@@ -174,11 +151,11 @@ impl MarkerStroke {
 
     pub fn new(element: Element, marker: Marker) -> Self {
         let elements = Vec::with_capacity(20);
-        let bounds = p2d::bounding_volume::AABB::new(
+        let bounds = AABB::new(
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
         );
-        let hitbox: Vec<p2d::bounding_volume::AABB> = Vec::new();
+        let hitbox: Vec<AABB> = Vec::new();
 
         let mut markerstroke = Self {
             elements,
@@ -216,7 +193,7 @@ impl MarkerStroke {
     fn update_bounds_to_last_elem(&mut self) {
         // Making sure bounds are always outside of coord + width
         if let Some(last) = self.elements.last() {
-            self.bounds.merge(&p2d::bounding_volume::AABB::new(
+            self.bounds.merge(&AABB::new(
                 na::Point2::from(
                     last.inputdata.pos() - na::vector![self.marker.width(), self.marker.width()],
                 ),
@@ -229,9 +206,8 @@ impl MarkerStroke {
         }
     }
 
-    fn gen_hitbox(&self) -> Vec<p2d::bounding_volume::AABB> {
-        let mut hitbox: Vec<p2d::bounding_volume::AABB> =
-            Vec::with_capacity(self.elements.len() as usize);
+    fn gen_hitbox(&self) -> Vec<AABB> {
+        let mut hitbox: Vec<AABB> = Vec::with_capacity(self.elements.len() as usize);
         let mut elements_iter = self.elements.iter().peekable();
         while let Some(first) = elements_iter.next() {
             let second = if let Some(&second) = elements_iter.peek() {
@@ -246,11 +222,7 @@ impl MarkerStroke {
         hitbox
     }
 
-    fn gen_hitbox_for_elems(
-        &self,
-        first: &Element,
-        second: Option<&Element>,
-    ) -> p2d::bounding_volume::AABB {
+    fn gen_hitbox_for_elems(&self, first: &Element, second: Option<&Element>) -> AABB {
         let marker_width = self.marker.width();
 
         let first = first.inputdata.pos();
@@ -302,7 +274,7 @@ impl MarkerStroke {
         let mut commands = Vec::new();
         let marker_width = self.marker.width();
 
-        let mut bounds = p2d::bounding_volume::AABB::new_invalid();
+        let mut bounds = AABB::new_invalid();
 
         if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(
             elements.0.inputdata.pos(),

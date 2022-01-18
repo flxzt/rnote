@@ -11,4 +11,3 @@
 /.vscode
 src/config.rs
 /tests
-/rough-rs/target

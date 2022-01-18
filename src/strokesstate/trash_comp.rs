@@ -4,7 +4,7 @@ use crate::strokes::strokestyle::StrokeStyle;
 
 use super::{StrokeKey, StrokesState};
 
-use p2d::bounding_volume::BoundingVolume;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -97,17 +97,12 @@ impl StrokesState {
                 }
             }
         });
-        self.selection_bounds = None;
     }
 
     /// trash strokes that collide with the eraser
-    pub fn trash_colliding_strokes(
-        &mut self,
-        eraser: &Eraser,
-        viewport: Option<p2d::bounding_volume::AABB>,
-    ) {
+    pub fn trash_colliding_strokes(&mut self, eraser: &Eraser, viewport: Option<AABB>) {
         if let Some(eraser_current_input) = eraser.current_input() {
-            let eraser_bounds = p2d::bounding_volume::AABB::new(
+            let eraser_bounds = AABB::new(
                 na::Point2::from(
                     eraser_current_input.pos()
                         - na::vector![eraser.width() / 2.0, eraser.width() / 2.0],

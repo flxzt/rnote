@@ -109,7 +109,7 @@
             <property name="width_request">48</property>
             <property name="vexpand">false</property>
             <property name="valign">center</property>
-            <property name="tooltip_text">Change workspace directory</property>
+            <property name="tooltip_text" translatable="yes">Change workspace directory</property>
           </object>
         </child>
       </object>

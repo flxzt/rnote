@@ -227,6 +227,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37b2a672a2cb129a2e41c10b1224bb368f9f37a2b16b612598138befd7b37eb5"
 
 [[package]]
+name = "cc"
+version = "1.0.72"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "22a9137b95ea06864e018375b72adfb7db6e6f68cfc8df5a04d00288050485ee"
+
+[[package]]
 name = "cfg-expr"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -746,9 +752,9 @@ dependencies = [
 
 [[package]]
 name = "gdk4"
-version = "0.4.2"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "228384db1fd6539f51152c97e59fbf29b6293988ee89bc915ebff229eb5cda58"
+checksum = "319c74160dbe3e29cc1bf36ae4a08b9072f352b751e9e3e5501b3aa3ca633f66"
 dependencies = [
  "bitflags",
  "cairo-rs 0.15.1",
@@ -859,6 +865,26 @@ dependencies = [
  "cfg-if",
  "libc",
  "wasi 0.10.2+wasi-snapshot-preview1",
+]
+
+[[package]]
+name = "gettext-rs"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e49ea8a8fad198aaa1f9655a2524b64b70eb06b2f3ff37da407566c93054f364"
+dependencies = [
+ "gettext-sys",
+ "locale_config",
+]
+
+[[package]]
+name = "gettext-sys"
+version = "0.21.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "afa9e06ab9e7514cc9ae668ea3b71ea1536259d767dff0289ac23ad134f99929"
+dependencies = [
+ "cc",
+ "temp-dir",
 ]
 
 [[package]]
@@ -1091,9 +1117,9 @@ dependencies = [
 
 [[package]]
 name = "gsk4"
-version = "0.4.2"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc7de6ca62027aea1d3ab5d4a6bb2db24a296f56473d8a9a4d7ee33042745ff3"
+checksum = "0672c63e4101e19d5e9cb4a0aed8b3278e9573529bd0b6a86d9c748c71bd9882"
 dependencies = [
  "bitflags",
  "cairo-rs 0.15.1",
@@ -1123,9 +1149,9 @@ dependencies = [
 
 [[package]]
 name = "gstreamer"
-version = "0.18.0"
+version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "939fd4f8afd09be887d05bb7ced532f215f21401837bf59f9fd2f68608e1e285"
+checksum = "8050dd478c50f1796595275eb8f21b2e1c2604f7797fcd2cc513c7af710bb4ac"
 dependencies = [
  "bitflags",
  "cfg-if",
@@ -1160,9 +1186,9 @@ dependencies = [
 
 [[package]]
 name = "gtk4"
-version = "0.4.2"
+version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8622c50f55cbe83e78335cf95850ccefa99e8eac3335ef7d17473312402d7e89"
+checksum = "b5020aeb559e0431930d66d85b8f16fc453fc0863466b13b7e1e1b800cf1a47b"
 dependencies = [
  "bitflags",
  "cairo-rs 0.15.1",
@@ -1183,9 +1209,9 @@ dependencies = [
 
 [[package]]
 name = "gtk4-macros"
-version = "0.4.2"
+version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c666e9d310431da43cb9d24995b247e5e24d11972d19bcd8b40e1663d25d0f51"
+checksum = "573db42bb64973a4d5f718b73caa7204285a1a665308a23b11723d0ee56ec305"
 dependencies = [
  "anyhow",
  "proc-macro-crate",
@@ -2306,9 +2332,9 @@ dependencies = [
 
 [[package]]
 name = "rand_distr"
-version = "0.4.2"
+version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "964d548f8e7d12e102ef183a0de7e98180c9f8729f555897a857b96e48122d2f"
+checksum = "32cb0b9bc82b0a0876c2dd994a7e7a2683d3e7390ca40e6886785ef0c7e3ee31"
 dependencies = [
  "num-traits",
  "rand 0.8.4",
@@ -2448,6 +2474,7 @@ dependencies = [
  "chrono",
  "flate2",
  "geo",
+ "gettext-rs",
  "gstreamer",
  "gtk4",
  "image",
@@ -2840,9 +2867,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.85"
+version = "1.0.86"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a684ac3dcd8913827e18cd09a68384ee66c1de24157e3c556c9ab16d85695fb7"
+checksum = "8a65b3f4ffa0092e9887669db0eae07941f023991ab58ea44da8fe8e2d511c6b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2879,6 +2906,12 @@ dependencies = [
  "toml",
  "version-compare 0.1.0",
 ]
+
+[[package]]
+name = "temp-dir"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af547b166dd1ea4b472165569fc456cfb6818116f854690b0ff205e636523dab"
 
 [[package]]
 name = "tendril"

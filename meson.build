@@ -8,8 +8,11 @@ i18n = import('i18n')
 gnome = import('gnome')
 fs = import('fs')
 
-app_name = meson.project_name()
+app_name = 'rnote'
+app_name_capitalized = 'Rnote'
 base_id = 'com.github.flxzt.' + app_name
+app_website = 'https://github.com/flxzt/rnote'
+app_authors = 'Felix Zwettler'
 
 if get_option('profile') == 'devel'
   profile = 'devel'
@@ -67,5 +70,6 @@ meson.add_dist_script(
 
 subdir('resources')
 subdir('src')
+subdir('po')
 
 meson.add_install_script('build-aux/meson_post_install.py')

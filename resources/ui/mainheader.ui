@@ -17,8 +17,8 @@
         </child>
         <child type="end">
           <object class="AdwWindowTitle" id="main_title">
-            <property name="title">New Document</property>
-            <property name="subtitle">Draft</property>
+            <property name="title" translatable="yes">New document</property>
+            <property name="subtitle" translatable="yes">Draft</property>
             <style>
               <class name="main_title" />
             </style>
@@ -73,13 +73,13 @@
                     <child>
                       <object class="GtkButton" id="add_page_button">
                         <property name="icon_name">add-page-symbolic</property>
-                        <property name="tooltip_text">add page</property>
+                        <property name="tooltip_text" translatable="yes">Add page</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton" id="resize_to_format_button">
                         <property name="icon_name">resize-to-format-symbolic</property>
-                        <property name="tooltip_text">resize to format</property>
+                        <property name="tooltip_text" translatable="yes">Resize to fit sheet format</property>
                       </object>
                     </child>
                   </object>
@@ -89,13 +89,13 @@
             <child>
               <object class="GtkButton" id="undo_button">
                 <property name="icon_name">edit-undo-symbolic</property>
-                <property name="tooltip_text">undo last stroke</property>
+                <property name="tooltip_text" translatable="yes">Undo last stroke</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="redo_button">
                 <property name="icon_name">edit-redo-symbolic</property>
-                <property name="tooltip_text">redo last stroke</property>
+                <property name="tooltip_text" translatable="yes">Redo last stroke</property>
               </object>
             </child>
           </object>
@@ -127,7 +127,7 @@
             <child>
               <object class="GtkToggleButton" id="marker_toggle">
                 <property name="icon_name">pen-marker-symbolic</property>
-                <property name="tooltip_text">Marker</property>
+                <property name="tooltip_text" translatable="yes">Marker</property>
                 <property name="hexpand">true</property>
                 <property name="active">true</property>
               </object>
@@ -135,7 +135,7 @@
             <child>
               <object class="GtkToggleButton" id="brush_toggle">
                 <property name="icon_name">pen-brush-symbolic</property>
-                <property name="tooltip_text">Brush</property>
+                <property name="tooltip_text" translatable="yes">Brush</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
               </object>
@@ -143,7 +143,7 @@
             <child>
               <object class="GtkToggleButton" id="shaper_toggle">
                 <property name="icon_name">pen-shaper-symbolic</property>
-                <property name="tooltip_text">Shaper</property>
+                <property name="tooltip_text" translatable="yes">Shaper</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
               </object>
@@ -151,7 +151,7 @@
             <child>
               <object class="GtkToggleButton" id="eraser_toggle">
                 <property name="icon_name">pen-eraser-symbolic</property>
-                <property name="tooltip_text">Eraser</property>
+                <property name="tooltip_text" translatable="yes">Eraser</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
               </object>
@@ -159,7 +159,7 @@
             <child>
               <object class="GtkToggleButton" id="selector_toggle">
                 <property name="icon_name">pen-selector-symbolic</property>
-                <property name="tooltip_text">Selector</property>
+                <property name="tooltip_text" translatable="yes">Selector</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
               </object>
@@ -167,7 +167,7 @@
             <child>
               <object class="GtkToggleButton" id="tools_toggle">
                 <property name="icon_name">pen-tools-symbolic</property>
-                <property name="tooltip_text">Tools</property>
+                <property name="tooltip_text" translatable="yes">Tools</property>
                 <property name="hexpand">true</property>
                 <property name="group">marker_toggle</property>
               </object>

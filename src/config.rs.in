@@ -1,11 +1,14 @@
 pub const APP_NAME: &str = @APP_NAME@;
+pub const APP_NAME_CAPITALIZED: &str = @APP_NAME_CAPITALIZED@;
 pub const APP_ID: &str = @APP_ID@;
 pub const APP_IDPATH: &str = @APP_IDPATH@;
 pub const APP_VERSION: &str = @VERSION@;
 pub const APP_VERSION_SUFFIX: &str = @VERSION_SUFFIX@;
-pub const APP_AUTHORS: &[&str] = &["Felix Zwettler"];
-pub const APP_WEBSITE: &str = "https://github.com/flxzt/rnote";
+pub const APP_AUTHORS: &[&str] = &[@APP_AUTHORS@];
+pub const APP_WEBSITE: &str = @APP_WEBSITE@;
 pub const APP_LICENSE: gtk4::License = gtk4::License::Gpl30;
+pub const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
+pub const LOCALEDIR: &str = @LOCALEDIR@;
 
 pub const RESOURCES_FILE: &str = @RESOURCES_FILE@;
 //pub const PROFILE: &str = @PROFILE@;

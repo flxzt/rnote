@@ -32,7 +32,7 @@
         </style>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_polygon_toggle">
-            <property name="tooltip_text">selecting with a polygon</property>
+            <property name="tooltip_text" translatable="yes">Selecting with a polygon</property>
             <property name="vexpand">true</property>
             <property name="group">selectorstyle_rect_toggle</property>
             <property name="active">true</property>
@@ -46,7 +46,7 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="selectorstyle_rect_toggle">
-            <property name="tooltip_text">selecting with a rectangle</property>
+            <property name="tooltip_text" translatable="yes">Selecting with a rectangle</property>
             <property name="vexpand">true</property>
             <child>
               <object class="GtkImage">
@@ -67,7 +67,7 @@
     </child>
     <child>
       <object class="GtkButton" id="delete_button">
-        <property name="tooltip_text">delete selection</property>
+        <property name="tooltip_text" translatable="yes">Delete selection</property>
         <property name="margin-bottom">6</property>
         <child>
           <object class="GtkImage">
@@ -82,7 +82,7 @@
     </child>
     <child>
       <object class="GtkButton" id="duplicate_button">
-        <property name="tooltip_text">duplicate selection</property>
+        <property name="tooltip_text" translatable="yes">Duplicate selection</property>
         <child>
           <object class="GtkImage">
             <property name="icon_name">selection-duplicate-symbolic</property>

@@ -4,16 +4,16 @@
 
   <object class="GtkMessageDialog" id="dialog_new_sheet">
     <property name="modal">true</property>
-    <property name="title">New Sheet</property>
-    <property name="text">Creating a new sheet erases any unsaved changes. Are you sure?</property>
+    <property name="title" translatable="yes">New Sheet</property>
+    <property name="text" translatable="yes">Creating a new sheet erases any unsaved changes. Are you sure?</property>
     <child type="action">
       <object class="GtkButton" id="new_sheet_button_cancel">
-        <property name="label">Cancel</property>
+        <property name="label" translatable="yes">Cancel</property>
       </object>
     </child>
     <child type="action">
       <object class="GtkButton" id="new_sheet_button_save_as">
-        <property name="label">Save current sheet as</property>
+        <property name="label" translatable="yes">Save current sheet as</property>
         <style>
           <class name="suggested-action" />
         </style>
@@ -21,7 +21,7 @@
     </child>
     <child type="action">
       <object class="GtkButton" id="new_sheet_button_ok">
-        <property name="label">New</property>
+        <property name="label" translatable="yes">New</property>
         <style>
           <class name="destructive-action" />
         </style>
@@ -36,16 +36,16 @@
 
   <object class="GtkMessageDialog" id="dialog_quit_save">
     <property name="modal">true</property>
-    <property name="title">Quit Application</property>
-    <property name="text">Any unsaved changes will be lost. Do you want to quit anyways?</property>
+    <property name="title" translatable="yes">Quit Application</property>
+    <property name="text" translatable="yes">Any unsaved changes will be lost. Do you want to quit anyways?</property>
     <child type="action">
       <object class="GtkButton" id="quit_save_button_cancel">
-        <property name="label">Cancel</property>
+        <property name="label" translatable="yes">Cancel</property>
       </object>
     </child>
     <child type="action">
       <object class="GtkButton" id="quit_save_button_save_as">
-        <property name="label">Save current sheet as</property>
+        <property name="label" translatable="yes">Save current sheet as</property>
         <style>
           <class name="suggested-action" />
         </style>
@@ -53,7 +53,7 @@
     </child>
     <child type="action">
       <object class="GtkButton" id="quit_save_button_ok">
-        <property name="label">Quit</property>
+        <property name="label" translatable="yes">Quit</property>
         <style>
           <class name="destructive-action" />
         </style>
@@ -68,16 +68,16 @@
 
   <object class="GtkMessageDialog" id="dialog_open_overwrite">
     <property name="modal">true</property>
-    <property name="title">Open File</property>
-    <property name="text">Opening this file overwrites any unsaved changes.</property>
+    <property name="title" translatable="yes">Open File</property>
+    <property name="text" translatable="yes">Opening this file overwrites any unsaved changes.</property>
     <child type="action">
       <object class="GtkButton" id="open_overwrite_button_cancel">
-        <property name="label">Cancel</property>
+        <property name="label" translatable="yes">Cancel</property>
       </object>
     </child>
     <child type="action">
       <object class="GtkButton" id="open_overwrite_button_save_as">
-        <property name="label">Save current sheet as</property>
+        <property name="label" translatable="yes">Save current sheet as</property>
         <style>
           <class name="suggested-action" />
         </style>
@@ -85,7 +85,7 @@
     </child>
     <child type="action">
       <object class="GtkButton" id="open_overwrite_button_ok">
-        <property name="label">Open</property>
+        <property name="label" translatable="yes">Open</property>
         <style>
           <class name="destructive-action" />
         </style>
@@ -100,16 +100,16 @@
 
   <object class="GtkMessageDialog" id="dialog_clear_sheet">
     <property name="modal">true</property>
-    <property name="title">Clear Sheet</property>
-    <property name="text">This clears the entire sheet. Please confirm.</property>
+    <property name="title" translatable="yes">Clear Sheet</property>
+    <property name="text" translatable="yes">This clears the entire sheet. Please confirm.</property>
     <child type="action">
       <object class="GtkButton" id="clear_sheet_button_cancel">
-        <property name="label">Cancel</property>
+        <property name="label" translatable="yes">Cancel</property>
       </object>
     </child>
     <child type="action">
       <object class="GtkButton" id="clear_sheet_button_ok">
-        <property name="label">Clear</property>
+        <property name="label" translatable="yes">Clear</property>
         <style>
           <class name="destructive-action" />
         </style>

@@ -36,7 +36,7 @@
                 <property name="icon-size">large</property>
               </object>
             </child>
-            <property name="tooltip_text">expand the sheet vertically</property>
+            <property name="tooltip_text" translatable="yes">Expand the sheet vertically</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
           </object>
@@ -49,7 +49,7 @@
                 <property name="icon-size">large</property>
               </object>
             </child>
-            <property name="tooltip_text">drag stroke elements based on proximity</property>
+            <property name="tooltip_text" translatable="yes">Drag stroke elements based on proximity</property>
             <property name="group">toolstyle_expandsheet_toggle</property>
             <property name="vexpand">true</property>
           </object>

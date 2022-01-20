@@ -45,3 +45,4 @@ usvg = "0.18"
 tiny-skia = "0.6"
 xmlwriter = "0.1"
 poppler-rs = "0.19"
+gettext-rs = { version = "0.7.0", features = ["gettext-system"] }

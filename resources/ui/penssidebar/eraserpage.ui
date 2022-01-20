@@ -25,7 +25,7 @@
     <child>
       <object class="GtkButton" id="width_resetbutton">
         <property name="icon_name">reset-width-symbolic</property>
-        <property name="tooltip_text">reset eraser width</property>
+        <property name="tooltip_text" translatable="yes">Reset eraser width</property>
       </object>
     </child>
     <child>

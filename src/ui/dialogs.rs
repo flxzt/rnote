@@ -14,8 +14,8 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
     let aboutdialog = AboutDialog::builder()
         .modal(true)
         .transient_for(appwindow)
-        .program_name("Rnote")
-        .comments(&gettext("Create handwritten notes"))
+        .program_name(config::APP_NAME_CAPITALIZED)
+        .comments(&gettext("An easy and simple vector-based note taking app"))
         .logo_icon_name(config::APP_ID)
         .website(config::APP_WEBSITE)
         .authors(
@@ -173,7 +173,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
 pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_pattern("*.rnote");
-    filter.set_name(Some(&gettext(".rnote file")));
+    filter.set_name(Some(&gettext(".rnote File")));
 
     let dialog_open_file: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Open File"))
@@ -252,7 +252,7 @@ pub fn dialog_open_workspace(appwindow: &RnoteAppWindow) {
 pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_pattern("*.rnote");
-    filter.set_name(Some(&gettext(".rnote file")));
+    filter.set_name(Some(&gettext(".rnote File")));
 
     let dialog_save_sheet_as: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Save Sheet As"))
@@ -267,7 +267,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
     dialog_save_sheet_as.add_filter(&filter);
 
     dialog_save_sheet_as
-        .set_current_name(format!("{}_{}_sheet.rnote", utils::now(), config::APP_NAME).as_str());
+        .set_current_name(format!("{}_sheet.rnote", utils::now()).as_str());
 
     dialog_save_sheet_as.connect_response(clone!(@weak appwindow => move |dialog_save_sheet_as, responsetype| {
         match responsetype {
@@ -304,7 +304,7 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
     filter.add_pattern("*.png");
     filter.add_pattern("*.jpg");
     filter.add_pattern("*.pdf");
-    filter.set_name(Some(&gettext("PNG / SVG / JPG / PDF file")));
+    filter.set_name(Some(&gettext("PNG / SVG / JPG / PDF File")));
 
     let dialog_import_file: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Import File"))
@@ -346,7 +346,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("image/svg+xml");
     filter.add_pattern("*.svg");
-    filter.set_name(Some(&gettext("SVG file")));
+    filter.set_name(Some(&gettext("SVG File")));
 
     let dialog_export_selection: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Export Selection"))
@@ -360,7 +360,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
     dialog_export_selection.add_filter(&filter);
 
     dialog_export_selection
-        .set_current_name(format!("{}_{}_selection.svg", utils::now(), config::APP_NAME).as_str());
+        .set_current_name(format!("{}_selection.svg", utils::now()).as_str());
 
     dialog_export_selection.connect_response(clone!(@weak appwindow => move |dialog_export_selection, responsetype| {
             match responsetype {
@@ -402,7 +402,7 @@ pub fn dialog_export_sheet(appwindow: &RnoteAppWindow) {
     dialog_export_sheet.add_filter(&filter);
 
     dialog_export_sheet
-        .set_current_name(format!("{}_{}_sheet.svg", utils::now(), config::APP_NAME).as_str());
+        .set_current_name(format!("{}_sheet.svg", utils::now()).as_str());
 
     dialog_export_sheet.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {

@@ -31,7 +31,7 @@
             <property name="hexpand">true</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Brush Style</property>
+            <property name="tooltip_text" translatable="yes">Brush style</property>
             <property name="popover">brushstyle_popover</property>
             <child>
               <object class="GtkImage" id="brushstyle_image">
@@ -51,7 +51,7 @@
                 <property name="spacing">12</property>
                 <child>
                   <object class="GtkLabel">
-                    <property name="label" translatable="yes">Brush Styles</property>
+                    <property name="label" translatable="yes">Brush styles</property>
                     <property name="halign">center</property>
                     <property name="margin-bottom">12</property>
                     <style>
@@ -154,7 +154,7 @@
                       <!-- Textured Brush -->
                       <object class="AdwActionRow">
                         <property name="title" translatable="yes">Density</property>
-                        <property name="subtitle" translatable="yes">the density is the amount of dots per 10x10 area</property>
+                        <property name="subtitle" translatable="yes">The density is the amount of dots per 10x10 area</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="texturedstyle_density_adj">
                             <property name="step-increment">0.05</property>
@@ -172,7 +172,7 @@
                     <child>
                       <object class="AdwActionRow">
                         <property name="title" translatable="yes">Dot Radii</property>
-                        <property name="subtitle" translatable="yes">the radii of the dots</property>
+                        <property name="subtitle" translatable="yes">The radii of the dots</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>
@@ -236,7 +236,7 @@
     <child>
       <object class="GtkButton" id="width_resetbutton">
         <property name="icon_name">reset-width-symbolic</property>
-        <property name="tooltip_text" translatable="yes">reset brush width</property>
+        <property name="tooltip_text" translatable="yes">Reset brush width</property>
       </object>
     </child>
     <child>

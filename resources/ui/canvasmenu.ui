@@ -60,7 +60,7 @@
               <attribute name="action">win.save-sheet</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">Save As</attribute>
+              <attribute name="label" translatable="yes">Save as</attribute>
               <attribute name="action">win.save-sheet-as</attribute>
             </item>
             <item>

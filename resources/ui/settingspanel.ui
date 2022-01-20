@@ -41,7 +41,7 @@
                     <property name="title" translatable="yes">General</property>
                     <child>
                       <object class="AdwActionRow" id="general_sheet_margin_row">
-                        <property name="title" translatable="yes">Sheet Margin</property>
+                        <property name="title" translatable="yes">Sheet margin</property>
                         <property name="subtitle" translatable="yes">Set the margins around the sheet</property>
                         <child type="suffix">
                           <object class="UnitEntry" id="general_sheet_margin_unitentry">
@@ -77,7 +77,7 @@
                     <child>
                       <object class="AdwActionRow" id="general_pdf_import_image_type_row">
                         <property name="title" translatable="yes">PDF import image type</property>
-                        <property name="subtitle" translatable="yes">Set if PDFs should be imported as vector or bitmap images</property>
+                        <property name="subtitle" translatable="yes">Set wether PDFs should be imported as vector or bitmap images</property>
                         <child type="suffix">
                           <object class="GtkBox">
                             <property name="orientation">horizontal</property>

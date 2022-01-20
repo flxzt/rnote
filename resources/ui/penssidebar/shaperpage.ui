@@ -32,7 +32,7 @@
         </style>
         <child>
           <object class="GtkToggleButton" id="drawstyle_smooth_toggle">
-            <property name="tooltip_text" translatable="yes">smooth shapes</property>
+            <property name="tooltip_text" translatable="yes">Smooth shapes</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
             <child>
@@ -45,7 +45,7 @@
         </child>
         <child>
           <object class="GtkToggleButton" id="drawstyle_rough_toggle">
-            <property name="tooltip_text" translatable="yes">rough shapes</property>
+            <property name="tooltip_text" translatable="yes">Rough shapes</property>
             <property name="vexpand">true</property>
             <property name="group">drawstyle_smooth_toggle</property>
             <child>
@@ -68,7 +68,7 @@
             <property name="sensitive">false</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Rough shape configuration</property>
+            <property name="tooltip_text" translatable="yes">Rough shapes configuration</property>
             <property name="popover">roughconfig_popover</property>
           </object>
         </child>
@@ -102,7 +102,7 @@
                     <child>
                       <object class="AdwActionRow">
                         <property name="title" translatable="yes">Roughness</property>
-                        <property name="subtitle" translatable="yes">indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0</property>
+                        <property name="subtitle" translatable="yes">Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="roughconfig_roughness_adj">
                             <property name="step-increment">0.05</property>
@@ -120,7 +120,7 @@
                     <child>
                       <object class="AdwActionRow">
                         <property name="title" translatable="yes">Bowing</property>
-                        <property name="subtitle" translatable="yes">how curvy the lines are when drawing a sketch. 0.0 is a straight line. Defaults to 1.0</property>
+                        <property name="subtitle" translatable="yes">How curvy the lines are when drawing a rough shape. 0.0 is a straight line. Defaults to 1.0</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="roughconfig_bowing_adj">
                             <property name="step-increment">0.05</property>
@@ -138,7 +138,7 @@
                     <child>
                       <object class="AdwActionRow">
                         <property name="title" translatable="yes">Curve step count</property>
-                        <property name="subtitle" translatable="yes">how many steps make up a curve. Defaults to 9</property>
+                        <property name="subtitle" translatable="yes">How many steps make up a curve. Defaults to 9</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="roughconfig_curvestepcount_adj">
                             <property name="step-increment">1.0</property>
@@ -156,7 +156,7 @@
                     <child>
                       <object class="AdwActionRow">
                         <property name="title" translatable="yes">Multistroke</property>
-                        <property name="subtitle" translatable="yes">multiple stroke generation for a sketched look. Defaults to true</property>
+                        <property name="subtitle" translatable="yes">Multiple stroke generation for a sketched look. Defaults to true</property>
                         <child type="suffix">
                           <object class="GtkSwitch" id="roughconfig_multistroke_switch">
                             <property name="valign">center</property>
@@ -240,7 +240,7 @@
     <child>
       <object class="GtkButton" id="width_resetbutton">
         <property name="icon_name">reset-width-symbolic</property>
-        <property name="tooltip_text" translatable="yes">reset shape stroke width</property>
+        <property name="tooltip_text" translatable="yes">Reset shape stroke width</property>
       </object>
     </child>
     <child>

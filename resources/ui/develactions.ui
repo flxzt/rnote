@@ -26,14 +26,14 @@
               <object class="GtkButton" id="element_stepback_button">
                 <property name="visible">false</property>
                 <property name="icon_name">edit-undo-symbolic</property>
-                <property name="tooltip-text" translatable="yes">step back one element in stroke</property>
+                <property name="tooltip-text" translatable="yes">Step back one element in stroke</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="element_stepforward_button">
                 <property name="visible">false</property>
                 <property name="icon_name">edit-redo-symbolic</property>
-                <property name="tooltip-text" translatable="yes">step forward one element in stroke</property>
+                <property name="tooltip-text" translatable="yes">Step forward one element in stroke</property>
               </object>
             </child>
           </object>

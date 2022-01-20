@@ -8,8 +8,11 @@ i18n = import('i18n')
 gnome = import('gnome')
 fs = import('fs')
 
-app_name = meson.project_name()
+app_name = 'rnote'
+app_name_capitalized = 'Rnote'
 base_id = 'com.github.flxzt.' + app_name
+app_website = 'https://github.com/flxzt/rnote'
+app_authors = 'Felix Zwettler'
 
 if get_option('profile') == 'devel'
   profile = 'devel'

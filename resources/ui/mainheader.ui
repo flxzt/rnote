@@ -17,7 +17,7 @@
         </child>
         <child type="end">
           <object class="AdwWindowTitle" id="main_title">
-            <property name="title" translatable="yes">New Document</property>
+            <property name="title" translatable="yes">New document</property>
             <property name="subtitle" translatable="yes">Draft</property>
             <style>
               <class name="main_title" />
@@ -73,13 +73,13 @@
                     <child>
                       <object class="GtkButton" id="add_page_button">
                         <property name="icon_name">add-page-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">add page</property>
+                        <property name="tooltip_text" translatable="yes">Add page</property>
                       </object>
                     </child>
                     <child>
                       <object class="GtkButton" id="resize_to_format_button">
                         <property name="icon_name">resize-to-format-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">resize to format</property>
+                        <property name="tooltip_text" translatable="yes">Resize to fit sheet format</property>
                       </object>
                     </child>
                   </object>
@@ -89,13 +89,13 @@
             <child>
               <object class="GtkButton" id="undo_button">
                 <property name="icon_name">edit-undo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">undo last stroke</property>
+                <property name="tooltip_text" translatable="yes">Undo last stroke</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="redo_button">
                 <property name="icon_name">edit-redo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">redo last stroke</property>
+                <property name="tooltip_text" translatable="yes">Redo last stroke</property>
               </object>
             </child>
           </object>

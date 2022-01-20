@@ -11,7 +11,7 @@
             <property name="title" context="shortcut window" translatable="yes">General</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Show Keyboard Shortcuts</property>
+                <property name="title" context="shortcut window" translatable="yes">Show keyboard shortcuts</property>
                 <property name="accelerator">&lt;ctrl&gt;question</property>
               </object>
             </child>

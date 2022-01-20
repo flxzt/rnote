@@ -47,7 +47,7 @@
           </section>
           <section>
             <item>
-              <attribute name="label" translatable="yes">Keyboard Shortcuts</attribute>
+              <attribute name="label" translatable="yes">Keyboard shortcuts</attribute>
               <attribute name="action">win.keyboard-shortcuts</attribute>
             </item>
             <item>

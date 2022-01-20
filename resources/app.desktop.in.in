@@ -1,0 +1,15 @@
+[Desktop Entry]
+# Translators: This is the App name, don't translate this.
+Name=@APP_NAME_CAPITALIZED@
+Comment=An easy and simple vector-based note taking app
+# Translators: Do NOT translate or transliterate this text, this is an icon file name!
+Icon=@APP_ID@
+#DBusActivatable=true
+Exec=@APP_NAME@ %f
+Terminal=false
+MimeType=application/rnote;image/svg+xml;image/png;image/jpeg;application/pdf;
+Type=Application
+Categories=GNOME;GTK;Graphics;
+# Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+Keywords=Gnome;GTK;Office;Graphics;Notes;
+StartupNotify=true

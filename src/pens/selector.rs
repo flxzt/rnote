@@ -147,18 +147,18 @@ impl PenBehaviour for Selector {
 
 impl Selector {
     pub const STROKE_DASHARRAY: &'static str = "4 6";
-    pub const PATH_WIDTH: f64 = 2.0;
+    pub const PATH_WIDTH: f64 = 3.0;
     pub const PATH_COLOR: utils::Color = utils::Color {
-        r: 0.7,
-        g: 0.7,
-        b: 0.7,
+        r: 0.6,
+        g: 0.6,
+        b: 0.6,
         a: 0.7,
     };
     pub const FILL_COLOR: utils::Color = utils::Color {
         r: 0.9,
         g: 0.9,
         b: 0.9,
-        a: 0.15,
+        a: 0.2,
     };
 
     pub fn new() -> Self {

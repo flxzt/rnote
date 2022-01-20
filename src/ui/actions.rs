@@ -429,6 +429,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         clone!(@weak appwindow => move |_action_duplicate_selection, _| {
             appwindow.canvas().sheet().strokes_state().borrow_mut().duplicate_selection();
 
+            appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
             appwindow.canvas().regenerate_content(false, true);
         }),
     );

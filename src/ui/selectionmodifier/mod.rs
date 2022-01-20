@@ -475,6 +475,9 @@ impl SelectionModifier {
                 .get()
                 .set_height_request((selection_bounds.extents()[1] * total_zoom).round() as i32);
         };
+
+        self.queue_resize();
+        self.queue_draw();
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

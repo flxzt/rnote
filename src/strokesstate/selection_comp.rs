@@ -112,16 +112,20 @@ impl StrokesState {
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
         ];
 
-        let selected = self.selection_keys();
+        let old_selected = self.selection_keys();
         self.deselect_all_strokes();
 
-        selected.iter().for_each(|&key| {
-            let new_key = self.insert_stroke(self.strokes.get(key).unwrap().clone());
-            self.set_selected(new_key, true);
-        });
+        let new_selected = old_selected
+            .iter()
+            .map(|&key| {
+                let new_key = self.insert_stroke(self.strokes.get(key).unwrap().clone());
+                self.set_selected(new_key, true);
+                new_key
+            })
+            .collect::<Vec<StrokeKey>>();
 
         // Offsetting the new selected stroke to make the duplication apparent to the user
-        self.translate_strokes(&selected, offset);
+        self.translate_strokes(&new_selected, offset);
     }
 
     /// Returns true if selection has changed

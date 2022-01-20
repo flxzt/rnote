@@ -11,3 +11,4 @@
 /.vscode
 src/config.rs
 /tests
+*.mo

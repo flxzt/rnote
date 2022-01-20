@@ -749,7 +749,7 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             for mime_type in clipboard.formats().mime_types() {
                     match mime_type.as_str() {
                         "image/svg+xml" => {
-                            appwindow.clipboard().read_text_async::<gio::Cancellable, _>(None, clone!(@weak appwindow => move |text_res| {
+                            appwindow.clipboard().read_text_async(None::<&gio::Cancellable>, clone!(@weak appwindow => move |text_res| {
                                 match text_res {
                                     Ok(Some(text)) => {
                                         appwindow.load_in_vectorimage_bytes(glib::Bytes::from(text.as_bytes()), None).unwrap_or_else(|e| {

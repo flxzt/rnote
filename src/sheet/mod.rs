@@ -117,8 +117,17 @@ mod imp {
 
 use std::{cell::RefCell, rc::Rc};
 
-use crate::{compose, strokesstate::StrokesState, utils::FileType};
+use crate::pens::brush::Brush;
+use crate::strokes::brushstroke::BrushStroke;
+use crate::strokes::strokebehaviour::StrokeBehaviour;
+use crate::strokes::strokestyle::Element;
+use crate::strokes::strokestyle::InputData;
+use crate::strokes::strokestyle::StrokeStyle;
+use crate::{compose, strokesstate::StrokesState};
 use crate::{render, utils};
+use notetakingfileformats::xoppformat;
+use notetakingfileformats::FileFormatLoader;
+use notetakingfileformats::FileFormatSaver;
 
 use self::{background::Background, format::Format};
 
@@ -221,7 +230,7 @@ impl<'de> Deserialize<'de> for Sheet {
                 let sheet = Sheet::new();
                 sheet.set_version(version);
                 *sheet.strokes_state().borrow_mut() = strokes_state;
-                sheet.format().import_format(format);
+                sheet.format().import_format(&format);
                 *sheet.background().borrow_mut() = background;
                 sheet.set_width(width);
                 sheet.set_height(height);
@@ -366,7 +375,7 @@ impl<'de> Deserialize<'de> for Sheet {
                 let sheet = Sheet::new();
                 sheet.set_version(version);
                 *sheet.strokes_state().borrow_mut() = strokes_state;
-                sheet.format().import_format(format);
+                sheet.format().import_format(&format);
                 *sheet.background().borrow_mut() = background;
                 sheet.set_width(width);
                 sheet.set_height(height);
@@ -515,6 +524,29 @@ impl Sheet {
         }
     }
 
+    pub fn gen_pages_bounds(&self) -> Vec<AABB> {
+        let n_pages = self.calc_n_pages();
+        let sheet_bounds = self.bounds();
+
+        let page_width = f64::from(self.format().width());
+        let page_height = f64::from(self.format().height());
+
+        (0..n_pages)
+            .map(|i| {
+                AABB::new(
+                    na::point![
+                        sheet_bounds.mins[0],
+                        sheet_bounds.mins[1] + page_height * f64::from(i)
+                    ],
+                    na::point![
+                        sheet_bounds.mins[0] + page_width,
+                        sheet_bounds.mins[1] + page_height * f64::from(i + 1)
+                    ],
+                )
+            })
+            .collect::<Vec<AABB>>()
+    }
+
     pub fn draw(&self, zoom: f64, snapshot: &Snapshot) {
         let priv_ = imp::Sheet::from_instance(self);
 
@@ -535,14 +567,11 @@ impl Sheet {
         snapshot.pop();
     }
 
-    pub fn open_sheet_from_bytes(&self, bytes: glib::Bytes) -> Result<(), anyhow::Error> {
-        let decompressed_bytes = utils::decompress_from_gzip(&bytes)?;
-        let sheet: Sheet = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
-
+    pub fn import_sheet(&self, sheet: &Self) {
         self.strokes_state()
             .borrow_mut()
             .import_state(&*sheet.strokes_state().borrow());
-        self.format().import_format(sheet.format());
+        self.format().import_format(&sheet.format());
         self.background()
             .borrow_mut()
             .import_background(&*sheet.background().borrow());
@@ -550,63 +579,219 @@ impl Sheet {
         self.set_height(sheet.height());
         self.set_padding_bottom(sheet.padding_bottom());
         self.set_endless_sheet(sheet.endless_sheet());
+    }
+
+    pub fn open_sheet_from_rnote_bytes(&self, bytes: glib::Bytes) -> Result<(), anyhow::Error> {
+        let decompressed_bytes = utils::decompress_from_gzip(&bytes)?;
+        let sheet: Sheet = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
+
+        self.import_sheet(&sheet);
 
         Ok(())
     }
 
-    pub fn save_sheet_to_file(&self, file: &gio::File) -> Result<(), anyhow::Error> {
-        match FileType::lookup_file_type(file) {
-            FileType::RnoteFile => {
-                let json_output = serde_json::to_string(self)?;
-                if let Some(file_name) = file.basename() {
-                    let compressed_bytes = utils::compress_to_gzip(
-                        json_output.as_bytes(),
-                        &file_name.to_string_lossy(),
-                    )?;
+    pub fn open_from_xopp_bytes(&mut self, bytes: glib::Bytes) -> Result<(), anyhow::Error> {
+        let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
 
-                    file.replace_async(
-                        None,
-                        false,
-                        gio::FileCreateFlags::REPLACE_DESTINATION,
-                        glib::PRIORITY_HIGH_IDLE,
-                        None::<&gio::Cancellable>,
-                        move |result| {
-                            let output_stream = match result {
-                                Ok(output_stream) => output_stream,
-                                Err(e) => {
-                                    log::error!(
-                                        "replace_async() failed in save_sheet_to_file() with Err {}",
-                                        e
-                                    );
-                                    return;
-                                }
-                            };
+        // Extract the largest width of all sheets, add together all heights
+        let (sheet_width, sheet_height) = xopp_file
+            .xopp_root
+            .pages
+            .iter()
+            .map(|page| (page.width, page.height))
+            .fold((0_f64, 0_f64), |prev, next| {
+                (prev.0.max(next.0), prev.1 + next.1)
+            });
+        let no_pages = xopp_file.xopp_root.pages.len() as u32;
 
-                            if let Err(e) = output_stream.write(&compressed_bytes, None::<&gio::Cancellable>) {
-                                log::error!(
-                        "output_stream().write() failed in save_sheet_to_file() with Err {}",
-                        e
-                    );
-                            };
-                            if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                                log::error!(
-                        "output_stream().close() failed in save_sheet_to_file() with Err {}",
-                        e
-                    );
-                            };
-                        },
-                    );
-                } else {
-                    log::error!("failed to get file name while saving sheet. Invalid file");
-                }
-            }
-            _ => {
-                log::error!("invalid file type for saving sheet in native format");
+        let sheet = Self::default();
+        let format = Format::default();
+        let mut background = Background::default();
+
+        // We set the sheet dpi to 72, so no need to convert values or coordinates anywhere
+        format.set_dpi(72.0);
+
+        sheet.set_width(sheet_width.round() as i32);
+        sheet.set_height(sheet_height.round() as i32);
+
+        format.set_width(sheet_width.round() as i32);
+        format.set_height((sheet_height / f64::from(no_pages)).round() as i32);
+
+        if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
+            if let xoppformat::XoppBackgroundType::Solid {
+                color: _color,
+                style: _style,
+            } = &first_page.background.bg_type
+            {
+                // Background styles would not align with Rnotes background patterns, so everything is plain
+                background.set_pattern(background::PatternStyle::None);
             }
         }
+
+        // Offsetting as rnote has one global coordinate space
+        let mut y_offset = 0.0;
+
+        for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
+            for layers in page.layers.into_iter() {
+                for stroke in layers.strokes.into_iter() {
+                    let mut brush = Brush::default();
+                    brush.set_color(compose::Color::from(stroke.color));
+
+                    let mut width_iter = stroke.width.iter();
+                    // The first element is the absolute width, every following is the relative width (between 0.0 and 1.0)
+                    if let Some(&width) = width_iter.next() {
+                        brush.set_width(width);
+                    }
+
+                    let elements = stroke
+                        .coords
+                        .into_iter()
+                        .map(|mut coords| {
+                            coords[1] += y_offset;
+                            // Defaulting to PRESSURE_DEFAULT if width iterator is shorter than the coords vec
+                            let pressure =
+                                width_iter.next().unwrap_or(&InputData::PRESSURE_DEFAULT);
+
+                            Element::new(InputData::new(coords, *pressure))
+                        })
+                        .collect::<Vec<Element>>();
+
+                    if let Some(new_stroke) = BrushStroke::new_w_elements(&elements, brush) {
+                        sheet
+                            .strokes_state()
+                            .borrow_mut()
+                            .insert_stroke(StrokeStyle::BrushStroke(new_stroke));
+                    }
+                }
+            }
+
+            y_offset += page.height;
+        }
+
+        *sheet.background().borrow_mut() = background;
+        sheet.format().import_format(&format);
+
+        self.import_sheet(&sheet);
+
         Ok(())
     }
 
+    pub fn save_sheet_as_rnote_bytes(&self, filename: &str) -> Result<Vec<u8>, anyhow::Error> {
+        let json_output = serde_json::to_string(self)?;
+
+        let compressed_bytes = utils::compress_to_gzip(json_output.as_bytes(), filename)?;
+
+        Ok(compressed_bytes)
+    }
+
+    pub fn export_sheet_as_xopp_bytes(&self, filename: &str) -> Result<Vec<u8>, anyhow::Error> {
+        let current_dpi = self.format().dpi();
+
+        // Only one background for all pages
+        let background = xoppformat::XoppBackground {
+            bg_type: xoppformat::XoppBackgroundType::Solid {
+                color: self.background().borrow().color().into(),
+                style: xoppformat::XoppBackgroundSolidStyle::Plain,
+            },
+        };
+
+        // xopp spec needs at least one page in vec, but its fine since pages_bounds() always produces at least one
+        let pages = self
+            .gen_pages_bounds()
+            .iter()
+            .map(|&page_bounds| {
+                let page_keys = self
+                    .strokes_state()
+                    .borrow()
+                    .stroke_keys_intersect_bounds(page_bounds);
+
+                let strokes = self
+                    .strokes_state()
+                    .borrow()
+                    .clone_strokes_for_keys(&page_keys);
+
+                // Translate to page mins
+                let xopp_strokestyles = strokes
+                    .into_iter()
+                    .filter_map(|mut stroke| {
+                        stroke.translate(-page_bounds.mins.coords);
+                        stroke.to_xopp(current_dpi)
+                    })
+                    .collect::<Vec<xoppformat::XoppStrokeStyle>>();
+
+                // Extract the strokes
+                let xopp_strokes = xopp_strokestyles
+                    .iter()
+                    .filter_map(|stroke| {
+                        if let xoppformat::XoppStrokeStyle::XoppStroke(xoppstroke) = stroke {
+                            Some(xoppstroke.clone())
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<xoppformat::XoppStroke>>();
+
+                // Extract the texts
+                let xopp_texts = xopp_strokestyles
+                    .iter()
+                    .filter_map(|stroke| {
+                        if let xoppformat::XoppStrokeStyle::XoppText(xopptext) = stroke {
+                            Some(xopptext.clone())
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<xoppformat::XoppText>>();
+
+                // Extract the images
+                let xopp_images = xopp_strokestyles
+                    .iter()
+                    .filter_map(|stroke| {
+                        if let xoppformat::XoppStrokeStyle::XoppImage(xoppstroke) = stroke {
+                            Some(xoppstroke.clone())
+                        } else {
+                            None
+                        }
+                    })
+                    .collect::<Vec<xoppformat::XoppImage>>();
+
+                let layer = xoppformat::XoppLayer {
+                    strokes: xopp_strokes,
+                    texts: xopp_texts,
+                    images: xopp_images,
+                };
+
+                let page_dimensions = utils::convert_coord_dpi(
+                    page_bounds.extents(),
+                    current_dpi,
+                    xoppformat::XoppRoot::DPI,
+                );
+
+                xoppformat::XoppPage {
+                    width: page_dimensions[0],
+                    height: page_dimensions[1],
+                    background: background.clone(),
+                    layers: vec![layer],
+                }
+            })
+            .collect::<Vec<xoppformat::XoppPage>>();
+
+        let title = String::from("Xournal++ document - see https://github.com/xournalpp/xournalpp (exported from Rnote - see https://github.com/flxzt/rnote)");
+
+        let xopp_root = xoppformat::XoppRoot {
+            title,
+            fileversion: String::from("4"),
+            preview: String::from(""),
+            pages,
+        };
+        let xopp_file = xoppformat::XoppFile { xopp_root };
+
+        let xoppfile_bytes = xopp_file.save_as_bytes(filename)?;
+
+        Ok(xoppfile_bytes)
+    }
+
+    /// Generates all containing svgs for the sheet without root or xml header.
     pub fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
         let sheet_bounds = self.bounds();
         let mut svgs = vec![];
@@ -622,7 +807,7 @@ impl Sheet {
         Ok(svgs)
     }
 
-    pub fn export_sheet_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
+    pub fn export_sheet_as_svg(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         let sheet_bounds = self.bounds();
         let svgs = self.gen_svgs()?;
 

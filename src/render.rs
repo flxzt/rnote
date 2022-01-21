@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
 use anyhow::Context;
-use gtk4::{gdk, glib, graphene, gsk, prelude::*, Native, Snapshot, Widget};
+use gtk4::{gdk, glib, gsk, prelude::*, Native, Snapshot, Widget};
 use p2d::bounding_volume::AABB;
 
 use crate::compose::{self, geometry};
@@ -18,9 +18,9 @@ pub struct Image {
     /// bounds in the coordinate space of the sheet
     pub bounds: AABB,
     /// width of the data
-    pub data_width: i32,
+    pub data_width: u32,
     /// height of the data
-    pub data_height: i32,
+    pub data_height: u32,
     /// the memory format
     pub memory_format: gdk::MemoryFormat,
 }
@@ -67,11 +67,9 @@ impl Renderer {
         if svgs.is_empty() {
             return Err(anyhow::Error::msg("gen_image() failed, no svg's in slice."));
         }
-        if bounds.extents()[0] <= 0.0 || bounds.extents()[1] <= 0.0 {
-            return Err(anyhow::Error::msg(
-                "gen_image() failed, bounds extents are <= 0.0",
-            ));
-        }
+
+        assert_bounds(bounds)?;
+
         /*         match self.backend {
             RendererBackend::Librsvg => self.gen_image_librsvg(zoom, svgs, bounds),
             RendererBackend::Resvg => self.gen_image_resvg(zoom, svgs, bounds),
@@ -164,8 +162,8 @@ impl Renderer {
         svgs: &[Svg],
         bounds: AABB,
     ) -> Result<Image, anyhow::Error> {
-        let width_scaled = ((bounds.extents()[0]) * zoom).round() as i32;
-        let height_scaled = ((bounds.extents()[1]) * zoom).round() as i32;
+        let width_scaled = ((bounds.extents()[0]) * zoom).round() as u32;
+        let height_scaled = ((bounds.extents()[1]) * zoom).round() as u32;
 
         let mut svg_data = svgs
             .iter()
@@ -174,10 +172,9 @@ impl Renderer {
             .join("\n");
         svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
 
-        let mut pixmap = tiny_skia::Pixmap::new(width_scaled as u32, height_scaled as u32)
-            .ok_or_else(|| {
-                anyhow::Error::msg("tiny_skia::Pixmap::new() failed in gen_image_resvg()")
-            })?;
+        let mut pixmap = tiny_skia::Pixmap::new(width_scaled, height_scaled).ok_or_else(|| {
+            anyhow::Error::msg("tiny_skia::Pixmap::new() failed in gen_image_resvg()")
+        })?;
 
         let rtree = usvg::Tree::from_data(svg_data.as_bytes(), &self.usvg_options.to_ref())?;
 
@@ -196,22 +193,14 @@ impl Renderer {
     }
 }
 
-pub fn default_rendernode() -> gsk::RenderNode {
-    let bounds = graphene::Rect::new(0.0, 0.0, 0.0, 0.0);
-    gsk::CairoNode::new(&bounds).upcast()
-}
-
 pub fn image_to_memtexture(image: &Image) -> Result<gdk::MemoryTexture, anyhow::Error> {
-    if image.data_width <= 0 || image.data_height <= 0 || image.data.is_empty() {
-        return Err(anyhow::anyhow!(
-            "image_to_memtexture() failed, invalid image"
-        ));
-    }
+    assert_image(image)?;
+
     let bytes = image.data.deref();
 
     Ok(gdk::MemoryTexture::new(
-        image.data_width,
-        image.data_height,
+        image.data_width as i32,
+        image.data_height as i32,
         image.memory_format,
         &glib::Bytes::from(bytes),
         (image.data_width * 4) as usize,
@@ -219,17 +208,29 @@ pub fn image_to_memtexture(image: &Image) -> Result<gdk::MemoryTexture, anyhow::
 }
 
 pub fn image_to_rendernode(image: &Image, zoom: f64) -> Result<gsk::RenderNode, anyhow::Error> {
+    assert_image(image)?;
+
     let memtexture = image_to_memtexture(image)?;
 
-    let rendernode = gsk::TextureNode::new(
-        &memtexture,
-        &geometry::aabb_to_graphene_rect(geometry::aabb_scale(image.bounds, zoom)),
-    )
-    .upcast();
+    let scaled_bounds = geometry::aabb_scale(image.bounds, zoom);
+    assert_bounds(scaled_bounds)?;
+
+    let rendernode =
+        gsk::TextureNode::new(&memtexture, &geometry::aabb_to_graphene_rect(scaled_bounds))
+            .upcast();
     Ok(rendernode)
 }
 
-pub fn images_to_rendernode(images: &[Image], zoom: f64) -> Result<gsk::RenderNode, anyhow::Error> {
+/// images to rendernode. Returns Ok(None) when no images in slice
+pub fn images_to_rendernode(
+    images: &[Image],
+    zoom: f64,
+) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
+    // Must be checked or to_node() panics
+    if images.is_empty() {
+        return Ok(None);
+    };
+
     let snapshot = Snapshot::new();
 
     for image in images {
@@ -237,25 +238,33 @@ pub fn images_to_rendernode(images: &[Image], zoom: f64) -> Result<gsk::RenderNo
             .append_node(&image_to_rendernode(image, zoom).context("images_to_rendernode failed")?);
     }
 
-    Ok(snapshot.to_node())
+    Ok(Some(snapshot.to_node()))
 }
 
 pub fn append_images_to_rendernode(
-    rendernode: &gsk::RenderNode,
+    rendernode: Option<&gsk::RenderNode>,
     images: &[Image],
     zoom: f64,
-) -> Result<gsk::RenderNode, anyhow::Error> {
+) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
     let snapshot = Snapshot::new();
 
-    snapshot.append_node(rendernode);
+    // Ensure snapshot is not empty
+    if let Some(rendernode) = rendernode {
+        snapshot.append_node(rendernode);
+    } else if images.is_empty() {
+        return Ok(None);
+    }
+
     for image in images {
+        assert_image(image)?;
+
         snapshot.append_node(
             &image_to_rendernode(image, zoom)
                 .context("image_to_rendernode() failed in append_images_to_rendernode()")?,
         );
     }
 
-    Ok(snapshot.to_node())
+    Ok(Some(snapshot.to_node()))
 }
 
 pub fn rendernode_to_texture(
@@ -263,6 +272,10 @@ pub fn rendernode_to_texture(
     node: &gsk::RenderNode,
     viewport: Option<AABB>,
 ) -> Result<Option<gdk::Texture>, anyhow::Error> {
+    if let Some(viewport) = viewport {
+        assert_bounds(viewport)?;
+    }
+
     let viewport = viewport.map(geometry::aabb_to_graphene_rect);
 
     if let Some(root) = active_widget.root() {
@@ -328,3 +341,33 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
     Ok(new_caironode)
 }
  */
+
+pub fn assert_bounds(bounds: AABB) -> Result<(), anyhow::Error> {
+    if bounds.extents()[0] <= 0.0
+        || bounds.extents()[1] <= 0.0
+        || bounds.mins[0] < 0.0
+        || bounds.mins[1] < 0.0
+        || bounds.maxs[0] <= bounds.mins[0]
+        || bounds.maxs[1] <= bounds.mins[1]
+    {
+        Err(anyhow::anyhow!(
+            "assert_bounds() failed, invalid bounds `{:?}`",
+            bounds,
+        ))
+    } else {
+        Ok(())
+    }
+}
+
+pub fn assert_image(image: &Image) -> Result<(), anyhow::Error> {
+    assert_bounds(image.bounds)?;
+
+    if image.data_width == 0
+        || image.data_width == 0
+        || image.data.len() as u32 != 4 * image.data_width * image.data_height
+    {
+        Err(anyhow::anyhow!("assert_image() failed, invalid image data"))
+    } else {
+        Ok(())
+    }
+}

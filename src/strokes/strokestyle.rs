@@ -1,7 +1,8 @@
 use crate::drawbehaviour::DrawBehaviour;
-use crate::render;
+use crate::{render, utils};
 
 use chrono::{TimeZone, Utc};
+use notetakingfileformats::xoppformat;
 use p2d::bounding_volume::AABB;
 use rand::distributions::Uniform;
 use rand::prelude::*;
@@ -27,6 +28,12 @@ pub enum StrokeStyle {
     VectorImage(VectorImage),
     #[serde(rename = "bitmapimage")]
     BitmapImage(BitmapImage),
+}
+
+impl Default for StrokeStyle {
+    fn default() -> Self {
+        Self::MarkerStroke(MarkerStroke::default())
+    }
 }
 
 impl DrawBehaviour for StrokeStyle {
@@ -123,9 +130,75 @@ impl StrokeBehaviour for StrokeStyle {
     }
 }
 
-impl Default for StrokeStyle {
-    fn default() -> Self {
-        Self::MarkerStroke(MarkerStroke::default())
+impl StrokeStyle {
+    pub fn to_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeStyle> {
+        match self {
+            StrokeStyle::MarkerStroke(markerstroke) => {
+                let color = markerstroke.marker.color.into();
+                let tool = xoppformat::XoppTool::Pen;
+                let width = vec![utils::convert_value_dpi(
+                    markerstroke.marker.width(),
+                    current_dpi,
+                    xoppformat::XoppRoot::DPI,
+                )];
+                let coords = markerstroke
+                    .elements
+                    .iter()
+                    .map(|element| {
+                        utils::convert_coord_dpi(
+                            element.inputdata.pos(),
+                            current_dpi,
+                            xoppformat::XoppRoot::DPI,
+                        )
+                    })
+                    .collect::<Vec<na::Vector2<f64>>>();
+
+                Some(xoppformat::XoppStrokeStyle::XoppStroke(
+                    xoppformat::XoppStroke {
+                        tool,
+                        color,
+                        width,
+                        coords,
+                    },
+                ))
+            }
+            StrokeStyle::BrushStroke(brushstroke) => {
+                let color = brushstroke.brush.color().into();
+                let tool = xoppformat::XoppTool::Pen;
+
+                // The first width element is the absolute width of the stroke
+                let mut width = vec![utils::convert_value_dpi(
+                    brushstroke.brush.width(),
+                    current_dpi,
+                    xoppformat::XoppRoot::DPI,
+                )];
+                // the rest are pressures between 0.0 and 1.0
+                let mut pressures = brushstroke
+                    .elements
+                    .iter()
+                    .map(|element| element.inputdata.pressure())
+                    .collect::<Vec<f64>>();
+                width.append(&mut pressures);
+
+                let coords = brushstroke
+                    .elements
+                    .iter()
+                    .map(|element| {
+                        xoppformat::XoppRoot::DPI * (element.inputdata.pos() / current_dpi)
+                    })
+                    .collect::<Vec<na::Vector2<f64>>>();
+
+                Some(xoppformat::XoppStrokeStyle::XoppStroke(
+                    xoppformat::XoppStroke {
+                        tool,
+                        color,
+                        width,
+                        coords,
+                    },
+                ))
+            }
+            _ => None,
+        }
     }
 }
 

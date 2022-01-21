@@ -3,15 +3,15 @@ pub mod modifiernode;
 pub mod imp {
     use std::cell::Cell;
 
-    use crate::compose::geometry;
     use crate::ui::canvas::Canvas;
     use crate::{compose, render, utils};
 
     use super::modifiernode::ModifierNode;
 
     use anyhow::Context;
-    use gtk4::{gdk, graphene, Orientation, SizeRequestMode, Snapshot};
+    use gtk4::{gdk, graphene, Snapshot};
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
+    use once_cell::sync::Lazy;
     use p2d::bounding_volume::AABB;
     use svg::node::element;
 
@@ -31,6 +31,8 @@ pub mod imp {
         #[template_child]
         pub rotate_node: TemplateChild<ModifierNode>,
 
+        pub resize_lock_aspectratio: Cell<bool>,
+
         // Internal state for allocation, drawing
         pub(super) selection_bounds: Cell<Option<AABB>>,
         pub(super) current_rotation_center: Cell<Option<na::Point2<f64>>>,
@@ -46,6 +48,8 @@ pub mod imp {
                 resize_br_node: TemplateChild::default(),
                 translate_node: TemplateChild::default(),
                 rotate_node: TemplateChild::default(),
+
+                resize_lock_aspectratio: Cell::new(false),
 
                 selection_bounds: Cell::new(None),
                 current_rotation_center: Cell::new(None),
@@ -121,75 +125,80 @@ pub mod imp {
                 child.unparent();
             }
         }
-    }
-    impl WidgetImpl for SelectionModifier {
-        fn request_mode(&self, _widget: &Self::Type) -> SizeRequestMode {
-            SizeRequestMode::ConstantSize
+
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                vec![
+                    // The margin of the sheet in px when zoom = 1.0
+                    glib::ParamSpecBoolean::new(
+                        "resize-lock-aspectratio",
+                        "resize-lock-aspectratio",
+                        "resize-lock-aspectratio",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                ]
+            });
+            PROPERTIES.as_ref()
         }
 
-        fn measure(
-            &self,
-            widget: &Self::Type,
-            orientation: Orientation,
-            _for_size: i32,
-        ) -> (i32, i32, i32, i32) {
-            // Only makes sense to draw selection when it has Canvas as Parent
-            if let (Some(canvas), Some(selection_bounds)) =
-                (widget.parent(), self.selection_bounds.get())
-            {
-                let canvas = canvas.downcast_ref::<Canvas>().unwrap();
-                widget.set_visible(true);
-
-                let selection_bounds_zoomed =
-                    geometry::aabb_scale(selection_bounds, canvas.total_zoom());
-
-                if orientation == Orientation::Vertical {
-                    let natural_height = selection_bounds_zoomed.extents()[1].round() as i32
-                        + 2 * super::SelectionModifier::RESIZE_NODE_SIZE;
-
-                    (0, natural_height, -1, -1)
-                } else {
-                    let natural_width = selection_bounds_zoomed.extents()[0].round() as i32
-                        + 2 * super::SelectionModifier::RESIZE_NODE_SIZE;
-
-                    (0, natural_width, -1, -1)
-                }
-            } else {
-                widget.set_visible(false);
-                (0, 0, -1, -1)
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "resize-lock-aspectratio" => self.resize_lock_aspectratio.get().to_value(),
+                _ => unimplemented!(),
             }
         }
 
-        fn snapshot(&self, widget: &Self::Type, snapshot: &Snapshot) {
-            let bounds = AABB::new(
-                na::point![0.0, 0.0],
-                na::point![f64::from(widget.width()), f64::from(widget.height())],
-            );
+        fn set_property(
+            &self,
+            _obj: &Self::Type,
+            _id: usize,
+            value: &glib::Value,
+            pspec: &glib::ParamSpec,
+        ) {
+            match pspec.name() {
+                "resize-lock-aspectratio" => {
+                    let resize_locked_aspectratio = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
 
+                    self.resize_lock_aspectratio
+                        .replace(resize_locked_aspectratio);
+                }
+                _ => unimplemented!(),
+            }
+        }
+    }
+    impl WidgetImpl for SelectionModifier {
+        fn snapshot(&self, widget: &Self::Type, snapshot: &Snapshot) {
             // Only makes sense to draw selection when it has Canvas as Parent
             if let Some(canvas) = widget.parent() {
                 let canvas = canvas.downcast_ref::<Canvas>().unwrap();
+                let bounds = AABB::new(
+                    na::point![0.0, 0.0],
+                    na::point![f64::from(widget.width()), f64::from(widget.height())],
+                );
 
                 self.draw_selection_overlay(widget, snapshot, bounds, canvas);
                 self.draw_rotation_indicator(widget, snapshot, bounds, canvas);
+
+                // Clip everything outside the current view
+                snapshot.push_clip(&graphene::Rect::new(
+                    bounds.mins[0] as f32,
+                    bounds.mins[1] as f32,
+                    bounds.maxs[0] as f32,
+                    bounds.maxs[1] as f32,
+                ));
+
+                widget.snapshot_child(&self.resize_tl_node.get(), snapshot);
+                widget.snapshot_child(&self.resize_tr_node.get(), snapshot);
+                widget.snapshot_child(&self.resize_bl_node.get(), snapshot);
+                widget.snapshot_child(&self.resize_br_node.get(), snapshot);
+                widget.snapshot_child(&self.rotate_node.get(), snapshot);
+                widget.snapshot_child(&self.translate_node.get(), snapshot);
+
+                snapshot.pop();
             }
-
-            // Clip everything outside the current view
-            snapshot.push_clip(&graphene::Rect::new(
-                bounds.mins[0] as f32,
-                bounds.mins[1] as f32,
-                bounds.maxs[0] as f32,
-                bounds.maxs[1] as f32,
-            ));
-
-            widget.snapshot_child(&self.resize_tl_node.get(), snapshot);
-            widget.snapshot_child(&self.resize_tr_node.get(), snapshot);
-            widget.snapshot_child(&self.resize_bl_node.get(), snapshot);
-            widget.snapshot_child(&self.resize_br_node.get(), snapshot);
-            widget.snapshot_child(&self.rotate_node.get(), snapshot);
-            widget.snapshot_child(&self.translate_node.get(), snapshot);
-
-            snapshot.pop();
         }
     }
 
@@ -201,13 +210,13 @@ pub mod imp {
             _widget_bounds: AABB,
             canvas: &Canvas,
         ) {
-            const SELECTION_BOUNDS_COLOR: utils::Color = utils::Color {
+            const SELECTION_BOUNDS_COLOR: compose::Color = compose::Color {
                 r: 0.5,
                 g: 0.5,
                 b: 0.5,
                 a: 0.7,
             };
-            const SELECTION_BOUNDS_FILL: utils::Color = utils::Color {
+            const SELECTION_BOUNDS_FILL: compose::Color = compose::Color {
                 r: 0.49,
                 g: 0.56,
                 b: 0.63,
@@ -299,7 +308,7 @@ pub mod imp {
             _widget_bounds: AABB,
             canvas: &Canvas,
         ) {
-            const ROTATION_LINESTART_COLOR: utils::Color = utils::Color {
+            const ROTATION_LINESTART_COLOR: compose::Color = compose::Color {
                 r: 0.7,
                 g: 0.3,
                 b: 0.3,
@@ -385,8 +394,8 @@ pub mod imp {
 use std::cell::Cell;
 use std::rc::Rc;
 
+use gtk4::{gdk, EventSequenceState, GestureDrag, PropagationPhase};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
-use gtk4::{EventSequenceState, GestureDrag, PropagationPhase};
 use p2d::bounding_volume::AABB;
 
 use crate::compose::geometry;
@@ -407,7 +416,7 @@ impl Default for SelectionModifier {
 
 impl SelectionModifier {
     pub const RESIZE_NODE_SIZE: i32 = 18;
-    pub const SELECTION_MIN: f64 = 3.0;
+    pub const SELECTION_BOUNDS_MIN: f64 = 3.0;
 
     pub fn new() -> Self {
         let selection_modifier: Self =
@@ -451,20 +460,38 @@ impl SelectionModifier {
             .get()
     }
 
+    pub fn resize_lock_aspectratio(&self) -> bool {
+        self.property::<bool>("resize-lock-aspectratio")
+    }
+
+    pub fn set_resize_lock_aspectratio(&self, resize_lock_aspectratio: bool) {
+        self.set_property::<bool>("resize-lock-aspectratio", resize_lock_aspectratio);
+    }
+
     pub fn selection_bounds(&self) -> Option<AABB> {
         self.imp().selection_bounds.get()
     }
 
+    pub fn set_selection_bounds(&self, bounds: Option<AABB>) {
+        self.imp()
+            .selection_bounds
+            .set(bounds.map(|bounds| geometry::aabb_new_positive(bounds.mins, bounds.maxs)));
+    }
+
+    /// Updates the internal state for measuring the widgets size, allocation, etc.
     pub fn update_state(&self, canvas: &Canvas) {
         let priv_ = self.imp();
 
-        priv_
-            .selection_bounds
-            .set(canvas.sheet().strokes_state().borrow().gen_selection_bounds());
-        self.set_visible(priv_.selection_bounds.get().is_some());
+        self.set_selection_bounds(
+            canvas
+                .sheet()
+                .strokes_state()
+                .borrow()
+                .gen_selection_bounds(),
+        );
+        self.set_visible(self.selection_bounds().is_some());
 
-        if let Some(selection_bounds) = priv_.selection_bounds.get() {
-
+        if let Some(selection_bounds) = self.selection_bounds() {
             let total_zoom = canvas.total_zoom();
             priv_
                 .translate_node
@@ -478,6 +505,22 @@ impl SelectionModifier {
 
         self.queue_resize();
         self.queue_draw();
+    }
+
+    pub fn update_translate_node_size_request(&self, canvas: &Canvas) {
+        let priv_ = self.imp();
+
+        if let Some(selection_bounds) = self.selection_bounds() {
+            let total_zoom = canvas.total_zoom();
+            priv_
+                .translate_node
+                .get()
+                .set_width_request((selection_bounds.extents()[0] * total_zoom).ceil() as i32);
+            priv_
+                .translate_node
+                .get()
+                .set_height_request((selection_bounds.extents()[1] * total_zoom).ceil() as i32);
+        };
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -498,49 +541,64 @@ impl SelectionModifier {
             .build();
         priv_.resize_tl_node.add_controller(&resize_tl_drag_gesture);
 
+        let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
+
         resize_tl_drag_gesture.connect_drag_begin(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |resize_tl_drag_gesture, _x, _y| {
-                resize_tl_drag_gesture.set_state(EventSequenceState::Claimed);
-                
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+                start_bounds.set(selection_modifier.selection_bounds());
+
                 selection_modifier.update_state(&appwindow.canvas());
             }),
         );
         resize_tl_drag_gesture.connect_drag_update(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |_resize_tl_drag_gesture, x, y| {
-                if let Some(selection_bounds) = selection_modifier.selection_bounds() {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
+                if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
                     let zoom = appwindow.canvas().zoom();
-                    let offset = na::vector![x.round() / zoom, y.round() / zoom];
+                    let offset = na::vector![-x.round() / zoom, -y.round() / zoom];
+
+                    // Lock aspectratio when property is set or with left click drag + ctrl
+                    let new_extents = if selection_modifier.resize_lock_aspectratio()
+                        || (drag_gesture.current_event_state() == gdk::ModifierType::BUTTON1_MASK | gdk::ModifierType::SHIFT_MASK) {
+                            geometry::scale_with_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
+                    } else {
+                        selection_bounds.extents() + offset
+                    };
+                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN));
 
                     let new_bounds = AABB::new(
                         na::point![
-                        selection_bounds.mins[0] + offset[0], selection_bounds.mins[1] + offset[1]],
-                        na::point![selection_bounds.maxs[0], selection_bounds.maxs[1]]
-                    );
-                    let min_bounds = AABB::new(
-                        na::point![
-                            new_bounds.maxs[0] - Self::SELECTION_MIN,
-                            new_bounds.maxs[1] - Self::SELECTION_MIN
+                            start_bounds.maxs[0] - new_extents[0],
+                            start_bounds.maxs[1] - new_extents[1]
                         ],
                         na::point![
-                            new_bounds.maxs[0],
-                            new_bounds.maxs[1]
+                            start_bounds.maxs[0],
+                            start_bounds.maxs[1]
                         ]
                     );
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
 
-                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                     appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    selection_modifier.set_selection_bounds(Some(new_bounds));
 
+                    selection_modifier.update_translate_node_size_request(&appwindow.canvas());
                     selection_modifier.queue_resize();
+                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             })
         );
         resize_tl_drag_gesture.connect_drag_end(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |_resize_tl_drag_gesture, _x, _y| {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
+                start_bounds.set(None);
+
                 appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
                 selection_modifier.update_state(&appwindow.canvas());
+
+                selection_modifier.queue_resize();
+                selection_modifier.queue_draw();
+                appwindow.canvas().queue_draw();
             }),
         );
     }
@@ -554,49 +612,64 @@ impl SelectionModifier {
             .build();
         priv_.resize_tr_node.add_controller(&resize_tr_drag_gesture);
 
+        let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
+
         resize_tr_drag_gesture.connect_drag_begin(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |resize_tr_drag_gesture, _x, _y| {
-                resize_tr_drag_gesture.set_state(EventSequenceState::Claimed);
-                
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+                start_bounds.set(selection_modifier.selection_bounds());
+
                 selection_modifier.update_state(&appwindow.canvas());
             }),
         );
         resize_tr_drag_gesture.connect_drag_update(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |_resize_tr_drag_gesture, x, y| {
-                if let Some(selection_bounds) = selection_modifier.selection_bounds() {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
+                if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
                     let zoom = appwindow.canvas().zoom();
-                    let offset = na::vector![x.round() / zoom, y.round() / zoom];
+                    let offset = na::vector![x.round() / zoom, -y.round() / zoom];
+
+                    // Lock aspectratio when property is set or with left click drag + ctrl
+                    let new_extents = if selection_modifier.resize_lock_aspectratio()
+                        || (drag_gesture.current_event_state() == gdk::ModifierType::BUTTON1_MASK | gdk::ModifierType::SHIFT_MASK) {
+                            geometry::scale_with_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
+                    } else {
+                        selection_bounds.extents() + offset
+                    };
+                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN));
 
                     let new_bounds = AABB::new(
                         na::point![
-                        selection_bounds.mins[0], selection_bounds.mins[1] + offset[1]],
-                        na::point![selection_bounds.maxs[0] + offset[0], selection_bounds.maxs[1]]
-                    );
-                    let min_bounds = AABB::new(
-                        na::point![
-                            new_bounds.mins[0],
-                            new_bounds.maxs[1] - Self::SELECTION_MIN
+                            start_bounds.mins[0],
+                            start_bounds.maxs[1] - new_extents[1]
                         ],
                         na::point![
-                            new_bounds.mins[0] + Self::SELECTION_MIN,
-                            new_bounds.maxs[1]
+                            start_bounds.mins[0] + new_extents[0],
+                            start_bounds.maxs[1]
                         ]
                     );
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
 
-                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                     appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    selection_modifier.set_selection_bounds(Some(new_bounds));
 
+                    selection_modifier.update_translate_node_size_request(&appwindow.canvas());
                     selection_modifier.queue_resize();
+                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             })
         );
         resize_tr_drag_gesture.connect_drag_end(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |_resize_tr_drag_gesture, _x, _y| {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
+                start_bounds.set(None);
+
                 appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
                 selection_modifier.update_state(&appwindow.canvas());
+
+                selection_modifier.queue_resize();
+                selection_modifier.queue_draw();
+                appwindow.canvas().queue_draw();
             }),
         );
     }
@@ -610,48 +683,64 @@ impl SelectionModifier {
             .build();
         priv_.resize_bl_node.add_controller(&resize_bl_drag_gesture);
 
+        let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
+
         resize_bl_drag_gesture.connect_drag_begin(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |resize_bl_drag_gesture, _x, _y| {
-                resize_bl_drag_gesture.set_state(EventSequenceState::Claimed);
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+                start_bounds.set(selection_modifier.selection_bounds());
+
                 selection_modifier.update_state(&appwindow.canvas());
             }),
         );
         resize_bl_drag_gesture.connect_drag_update(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |_resize_bl_drag_gesture, x, y| {
-                if let Some(selection_bounds) = selection_modifier.selection_bounds() {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
+                if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
                     let zoom = appwindow.canvas().zoom();
-                    let offset = na::vector![x.round() / zoom, y.round() / zoom];
+                    let offset = na::vector![-x.round() / zoom, y.round() / zoom];
+
+                    // Lock aspectratio when property is set or with left click drag + ctrl
+                    let new_extents = if selection_modifier.resize_lock_aspectratio()
+                        || (drag_gesture.current_event_state() == gdk::ModifierType::BUTTON1_MASK | gdk::ModifierType::SHIFT_MASK) {
+                            geometry::scale_with_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
+                    } else {
+                        selection_bounds.extents() + offset
+                    };
+                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN));
 
                     let new_bounds = AABB::new(
                         na::point![
-                        selection_bounds.mins[0] + offset[0], selection_bounds.mins[1]],
-                        na::point![selection_bounds.maxs[0], selection_bounds.maxs[1] + offset[1]]
-                    );
-                    let min_bounds = AABB::new(
-                        na::point![
-                            new_bounds.maxs[0] - Self::SELECTION_MIN,
-                            new_bounds.mins[1]
+                            start_bounds.maxs[0] - new_extents[0],
+                            start_bounds.mins[1]
                         ],
                         na::point![
-                            new_bounds.maxs[0],
-                            new_bounds.mins[1] + Self::SELECTION_MIN
+                            start_bounds.maxs[0],
+                            start_bounds.mins[1] + new_extents[1]
                         ]
                     );
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
 
-                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                     appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    selection_modifier.set_selection_bounds(Some(new_bounds));
 
+                    selection_modifier.update_translate_node_size_request(&appwindow.canvas());
                     selection_modifier.queue_resize();
+                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             })
         );
         resize_bl_drag_gesture.connect_drag_end(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |_resize_bl_drag_gesture, _x, _y| {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
+                start_bounds.set(None);
+
                 appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
                 selection_modifier.update_state(&appwindow.canvas());
+
+                selection_modifier.queue_resize();
+                selection_modifier.queue_draw();
+                appwindow.canvas().queue_draw();
             }),
         );
     }
@@ -665,49 +754,64 @@ impl SelectionModifier {
             .build();
         priv_.resize_br_node.add_controller(&resize_br_drag_gesture);
 
+        let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
+
         resize_br_drag_gesture.connect_drag_begin(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |resize_br_drag_gesture, _x, _y| {
-                resize_br_drag_gesture.set_state(EventSequenceState::Claimed);
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, _x, _y| {
+                drag_gesture.set_state(EventSequenceState::Claimed);
+                start_bounds.set(selection_modifier.selection_bounds());
 
                 selection_modifier.update_state(&appwindow.canvas());
             }),
         );
         resize_br_drag_gesture.connect_drag_update(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |_resize_br_drag_gesture, x, y| {
-                if let Some(selection_bounds) = selection_modifier.selection_bounds() {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
+                if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
                     let zoom = appwindow.canvas().zoom();
                     let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
+                    // Lock aspectratio when property is set or with left click drag + ctrl
+                    let new_extents = if selection_modifier.resize_lock_aspectratio()
+                        || (drag_gesture.current_event_state() == gdk::ModifierType::BUTTON1_MASK | gdk::ModifierType::SHIFT_MASK) {
+                            geometry::scale_with_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
+                    } else {
+                        selection_bounds.extents() + offset
+                    };
+                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN));
+
                     let new_bounds = AABB::new(
                         na::point![
-                        selection_bounds.mins[0], selection_bounds.mins[1]],
-                        na::point![selection_bounds.maxs[0] + offset[0], selection_bounds.maxs[1] + offset[1]]
-                    );
-                    let min_bounds = AABB::new(
-                        na::point![
-                            new_bounds.mins[0],
-                            new_bounds.mins[1]
+                            start_bounds.mins[0],
+                            start_bounds.mins[1]
                         ],
                         na::point![
-                            new_bounds.mins[0] + Self::SELECTION_MIN,
-                            new_bounds.mins[1] + Self::SELECTION_MIN
+                            start_bounds.mins[0] + new_extents[0],
+                            start_bounds.mins[1] + new_extents[1]
                         ]
                     );
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
 
-                    let new_bounds = geometry::aabb_clamp(new_bounds, Some(min_bounds), None);
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                     appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    selection_modifier.set_selection_bounds(Some(new_bounds));
 
+                    selection_modifier.update_translate_node_size_request(&appwindow.canvas());
                     selection_modifier.queue_resize();
+                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             })
         );
         resize_br_drag_gesture.connect_drag_end(
-            clone!(@weak self as selection_modifier, @weak appwindow => move |_resize_br_drag_gesture, _x, _y| {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
+                start_bounds.set(None);
+
                 appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
                 selection_modifier.update_state(&appwindow.canvas());
+
+                selection_modifier.queue_resize();
+                selection_modifier.queue_draw();
+                appwindow.canvas().queue_draw();
             }),
         );
     }
@@ -732,20 +836,26 @@ impl SelectionModifier {
         );
         translate_node_drag_gesture.connect_drag_update(
             clone!(@weak self as selection_modifier, @weak appwindow => move |_translate_node_drag_gesture, x, y| {
+                let priv_ = selection_modifier.imp();
                 let zoom = appwindow.canvas().zoom();
                 let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-                let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
+                let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                 appwindow.canvas().sheet().strokes_state().borrow_mut().translate_strokes(&selection_keys, offset);
+                selection_modifier.set_selection_bounds(priv_.selection_bounds.get().map(|selection_bounds| geometry::aabb_translate(selection_bounds, offset)));
 
+                selection_modifier.update_translate_node_size_request(&appwindow.canvas());
                 selection_modifier.queue_resize();
+                selection_modifier.queue_draw();
                 appwindow.canvas().queue_draw();
             }),
         );
         translate_node_drag_gesture.connect_drag_end(
             clone!(@weak self as selection_modifier, @weak appwindow => move |_translate_node_drag_gesture, _x, _y| {
                 selection_modifier.update_state(&appwindow.canvas());
+
                 selection_modifier.queue_resize();
+                selection_modifier.queue_draw();
                 appwindow.canvas().queue_draw();
             }),
         );
@@ -796,13 +906,15 @@ impl SelectionModifier {
 
                     let angle_delta = angle - angle_prev.get();
 
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys();
+                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                     appwindow.canvas().sheet().strokes_state().borrow_mut().rotate_strokes(&selection_keys, angle_delta, start_bounds.center());
                     selection_modifier.update_state(&appwindow.canvas());
 
                     angle_prev.set(angle);
 
+                    selection_modifier.update_translate_node_size_request(&appwindow.canvas());
                     selection_modifier.queue_resize();
+                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             }),
@@ -815,6 +927,7 @@ impl SelectionModifier {
                 selection_modifier.update_state(&appwindow.canvas());
 
                 selection_modifier.queue_resize();
+                selection_modifier.queue_draw();
                 appwindow.canvas().queue_draw();
             }),
         );

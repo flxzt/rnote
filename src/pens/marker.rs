@@ -6,7 +6,7 @@ use std::collections::VecDeque;
 use crate::strokes::markerstroke::MarkerStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokesstate::StrokeKey;
-use crate::{input, utils};
+use crate::{compose, input};
 
 use super::penbehaviour::PenBehaviour;
 
@@ -16,7 +16,7 @@ pub struct Marker {
     #[serde(rename = "width")]
     width: f64,
     #[serde(rename = "color")]
-    pub color: utils::Color,
+    pub color: compose::Color,
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,
 }
@@ -124,7 +124,7 @@ impl Marker {
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 20.0;
 
-    pub const COLOR_DEFAULT: utils::Color = utils::Color {
+    pub const COLOR_DEFAULT: compose::Color = compose::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,

@@ -22,7 +22,7 @@ use crate::strokes::vectorimage::VectorImage;
 use crate::ui::appwindow::RnoteAppWindow;
 
 use gtk4::{glib, glib::clone, prelude::*};
-use p2d::bounding_volume::{BoundingVolume, AABB, BoundingSphere};
+use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -293,6 +293,44 @@ impl StrokesState {
         self.render_components.clear();
     }
 
+    /// Returns the stroke keys in the order that they should be rendered. Does not return the selection keys!
+    pub fn stroke_keys_in_order_rendered(&self) -> Vec<StrokeKey> {
+        let keys_sorted_chrono = self.keys_sorted_chrono();
+
+        keys_sorted_chrono
+            .iter()
+            .filter_map(|&key| {
+                if self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && !(self.selected(key).unwrap_or(false))
+                {
+                    Some(key)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<StrokeKey>>()
+    }
+
+    pub fn stroke_keys_intersect_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+        self.stroke_keys_in_order_rendered().iter()
+            .filter_map(|&key| {
+                let stroke = self.strokes.get(key)?;
+                if stroke.bounds().intersects(&bounds) {
+                    Some(key)
+                } else {
+                    None
+                }
+            })
+            .collect::<Vec<StrokeKey>>()
+    }
+
+    pub fn clone_strokes_for_keys(&self, keys: &[StrokeKey]) -> Vec<StrokeStyle> {
+        keys.iter()
+            .filter_map(|&key| Some(self.strokes.get(key)?.clone()))
+            .collect::<Vec<StrokeStyle>>()
+    }
+
     pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: glib::Bytes) {
         let renderer = self.renderer.clone();
 
@@ -451,7 +489,7 @@ impl StrokesState {
     }
 
     pub fn update_geometry_selection_strokes(&mut self) {
-        let keys: Vec<StrokeKey> = self.selection_keys();
+        let keys: Vec<StrokeKey> = self.selection_keys_in_order_rendered();
 
         keys.iter().for_each(|&key| {
             self.update_geometry_for_stroke(key);

@@ -16,7 +16,7 @@ pub mod strokesstate;
 pub mod ui;
 pub mod utils;
 
-use gettextrs::{LocaleCategory};
+use gettextrs::LocaleCategory;
 use gtk4::prelude::*;
 extern crate gstreamer as gst;
 extern crate nalgebra as na;

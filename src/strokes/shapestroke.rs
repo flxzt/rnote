@@ -3,7 +3,7 @@ use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::shaper::{self, DrawStyle};
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
-use crate::{compose, render, utils};
+use crate::{compose, render};
 use crate::{pens::shaper::ShapeStyle, pens::shaper::Shaper};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -158,11 +158,11 @@ impl DrawBehaviour for ShapeStroke {
 
                         if let Some(color) = self.shaper.color() {
                             rough_options.stroke =
-                                Some(utils::Color::new(color.r, color.g, color.b, color.a));
+                                Some(compose::Color::new(color.r, color.g, color.b, color.a));
                         }
                         if let Some(fill) = self.shaper.fill() {
                             rough_options.fill =
-                                Some(utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                                Some(compose::Color::new(fill.r, fill.g, fill.b, fill.a));
                         }
 
                         rough_options.stroke_width = self.shaper.width();
@@ -187,11 +187,11 @@ impl DrawBehaviour for ShapeStroke {
 
                         if let Some(color) = self.shaper.color() {
                             rough_options.stroke =
-                                Some(utils::Color::new(color.r, color.g, color.b, color.a));
+                                Some(compose::Color::new(color.r, color.g, color.b, color.a));
                         }
                         if let Some(fill) = self.shaper.fill() {
                             rough_options.fill =
-                                Some(utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                                Some(compose::Color::new(fill.r, fill.g, fill.b, fill.a));
                         }
 
                         rough_options.stroke_width = self.shaper.width();
@@ -214,11 +214,11 @@ impl DrawBehaviour for ShapeStroke {
 
                         if let Some(color) = self.shaper.color() {
                             rough_options.stroke =
-                                Some(utils::Color::new(color.r, color.g, color.b, color.a));
+                                Some(compose::Color::new(color.r, color.g, color.b, color.a));
                         }
                         if let Some(fill) = self.shaper.fill() {
                             rough_options.fill =
-                                Some(utils::Color::new(fill.r, fill.g, fill.b, fill.a));
+                                Some(compose::Color::new(fill.r, fill.g, fill.b, fill.a));
                         }
 
                         rough_options.stroke_width = self.shaper.width();

@@ -498,8 +498,8 @@ pub fn compose_ellipse(ellipse: shapes::Ellipse, shaper: &Shaper) -> element::El
 
     svg::node::element::Ellipse::new()
         .set("transform", transform_string)
-        .set("cx", 0.0)
-        .set("cy", 0.0)
+        .set("cx", 0_f64)
+        .set("cy", 0_f64)
         .set("rx", ellipse.radii[0])
         .set("ry", ellipse.radii[1])
         .set("stroke", color)

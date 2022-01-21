@@ -150,7 +150,7 @@ impl BrushStroke {
     pub fn new(element: Element, brush: Brush) -> Self {
         let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
 
-        let elements = Vec::with_capacity(20);
+        let elements = Vec::with_capacity(4);
         let bounds = AABB::new(
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
@@ -171,20 +171,34 @@ impl BrushStroke {
         brushstroke
     }
 
-    pub fn validation_stroke(elements: &[Element], brush: &Brush) -> Option<Self> {
-        let mut data_entries_iter = elements.iter();
-        let mut stroke = if let Some(first_entry) = data_entries_iter.next() {
-            Self::new(*first_entry, brush.clone())
+    pub fn new_w_elements(elements: &[Element], brush: Brush) -> Option<Self> {
+        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+        let mut elements_iter = elements.iter();
+
+        if let Some(first) = elements_iter.next() {
+            let bounds = AABB::new(
+                na::point![first.inputdata.pos()[0], first.inputdata.pos()[1]],
+                na::point![first.inputdata.pos()[0], first.inputdata.pos()[1]],
+            );
+            let hitboxes: Vec<AABB> = Vec::new();
+
+            let mut brushstroke = Self {
+                seed,
+                elements: vec![*first],
+                brush,
+                bounds,
+                hitboxes,
+            };
+
+            for element in elements_iter {
+                brushstroke.elements.push(*element);
+            }
+            brushstroke.update_geometry();
+
+            Some(brushstroke)
         } else {
-            return None;
-        };
-
-        for data_entry in data_entries_iter {
-            stroke.push_elem(*data_entry);
+            None
         }
-        stroke.update_geometry();
-
-        Some(stroke)
     }
 
     pub fn push_elem(&mut self, element: Element) {

@@ -72,10 +72,10 @@ mod imp {
     impl WidgetImpl for BrushPage {}
 }
 
+use crate::compose;
 use crate::compose::textured::{TexturedConfig, TexturedDotsDistribution};
 use crate::pens::brush::Brush;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use crate::utils;
 use adw::prelude::*;
 use gtk4::{
     gdk, Accessible, Actionable, Buildable, ConstraintTarget, Image, ListBox, MenuButton, Popover,
@@ -194,7 +194,7 @@ impl BrushPage {
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color");
-                appwindow.canvas().pens().borrow_mut().brush.set_color(utils::Color::from(color));
+                appwindow.canvas().pens().borrow_mut().brush.set_color(compose::Color::from(color));
             }),
         );
 

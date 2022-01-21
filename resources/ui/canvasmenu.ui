@@ -81,6 +81,10 @@
                 <attribute name="label" translatable="yes">Export sheet as SVG</attribute>
                 <attribute name="action">win.export-sheet-as-svg</attribute>
               </item>
+              <item>
+                <attribute name="label" translatable="yes">Export sheet as Xournal++ .xopp</attribute>
+                <attribute name="action">win.export-sheet-as-xopp</attribute>
+              </item>
             </submenu>
           </section>
         </menu>

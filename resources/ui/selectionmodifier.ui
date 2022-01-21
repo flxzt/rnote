@@ -2,6 +2,7 @@
 <!-- ### SelectionModifier ### -->
 <interface>
   <template class="SelectionModifier" parent="GtkWidget">
+    <property name="visible">false</property>
     <property name="hexpand">true</property>
     <property name="vexpand">true</property>
     <property name="halign">fill</property>

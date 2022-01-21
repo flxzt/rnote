@@ -47,9 +47,9 @@ mod imp {
     impl WidgetImpl for MarkerPage {}
 }
 
+use crate::compose;
 use crate::pens::marker::Marker;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use crate::utils;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
     SpinButton, Widget,
@@ -100,7 +100,7 @@ impl MarkerPage {
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color");
-                appwindow.canvas().pens().borrow_mut().marker.color = utils::Color::from(color);
+                appwindow.canvas().pens().borrow_mut().marker.color = compose::Color::from(color);
             }),
         );
 

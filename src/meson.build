@@ -97,7 +97,7 @@ rust_sources = files(
     'ui/colorpicker/colorsetter.rs',
 )
 
-sources = [rust_sources, cargo_sources]
+sources = [notetakingfileformats_sources, rust_sources, cargo_sources]
 
 custom_target(
   'cargo-build',

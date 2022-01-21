@@ -1,6 +1,6 @@
 use std::ops::Range;
 
-use crate::utils;
+use crate::compose;
 
 use super::curves;
 
@@ -96,7 +96,7 @@ pub struct TexturedConfig {
     seed: Option<u64>,
     /// The color of the dots
     #[serde(rename = "color")]
-    color: utils::Color,
+    color: compose::Color,
     /// Amount dots per 10x10 area
     #[serde(rename = "density")]
     density: f64,
@@ -122,7 +122,7 @@ impl Default for TexturedConfig {
 
 impl TexturedConfig {
     /// The default color
-    pub const COLOR_DEFAULT: utils::Color = utils::Color {
+    pub const COLOR_DEFAULT: compose::Color = compose::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
@@ -149,11 +149,11 @@ impl TexturedConfig {
         self.seed = seed
     }
 
-    pub fn color(&self) -> utils::Color {
+    pub fn color(&self) -> compose::Color {
         self.color
     }
 
-    pub fn set_color(&mut self, color: utils::Color) {
+    pub fn set_color(&mut self, color: compose::Color) {
         self.color = color;
     }
 

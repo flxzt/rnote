@@ -1,0 +1,764 @@
+# Spanish translations for rnote package.
+# Copyright (C) 2022 THE rnote'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the rnote package.
+# Automatically generated, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rnote\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-01-20 15:49+0100\n"
+"PO-Revision-Date: 2022-01-22 01:14+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. Translators: This is the App name, don't translate this.
+#: resources/app.desktop.in.in:4
+msgid "@APP_NAME_CAPITALIZED@"
+msgstr ""
+
+#: resources/app.desktop.in.in:5 resources/app.metainfo.xml.in.in:9
+#: src/ui/dialogs.rs:18
+msgid "An easy and simple vector-based note taking app"
+msgstr "Una aplicación fácil y sencilla para tomar notas basadas en vectores"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: resources/app.desktop.in.in:15
+msgid "Gnome;GTK;Office;Graphics;Notes;"
+msgstr "Gnome;GTK;Office;Graphics;Notes;Oficina;Gráficos;Notas;"
+
+#: resources/app.metainfo.xml.in.in:18
+msgid ""
+"Rnote is a simple vector based note taking application for handwritten notes "
+"or to annotate documents and pictures."
+msgstr ""
+"Rnote es una sencilla aplicación de toma de notas basada en vectores para "
+"tomar notas a mano o para anotar documentos e imágenes."
+
+#: resources/app.metainfo.xml.in.in:24
+msgid "Main window in light colors"
+msgstr "Ventana principal en colores claros"
+
+#: resources/app.metainfo.xml.in.in:28
+msgid "Main window in dark colors"
+msgstr "Ventana principal en colores oscuros"
+
+#: resources/app.metainfo.xml.in.in:32
+msgid "A PDF annotation"
+msgstr "Una anotación en PDF"
+
+#: resources/app.metainfo.xml.in.in:36
+msgid "A selection"
+msgstr "Una selección"
+
+#: resources/app.metainfo.xml.in.in:40
+msgid "Multiple pages"
+msgstr "Varias páginas"
+
+#: resources/ui/appmenu.ui:25
+msgid "Developer mode"
+msgstr "Modo de desarrollo"
+
+#: resources/ui/appmenu.ui:30
+msgid "Developer settings"
+msgstr "Configuración de desarrollo"
+
+#: resources/ui/appmenu.ui:34
+msgid "Renderer backend"
+msgstr "Backend del renderizador"
+
+#: resources/ui/appmenu.ui:50
+msgid "Keyboard shortcuts"
+msgstr "Atajos del teclado"
+
+#: resources/ui/appmenu.ui:54
+msgid "About Rnote"
+msgstr "Acerca de Rnote"
+
+#: resources/ui/appmenu.ui:71
+msgid "Use system colors preference"
+msgstr "Usar la preferencia de colores del sistema"
+
+#: resources/ui/appmenu.ui:84
+msgid "Use light colors"
+msgstr "Usar colores claros"
+
+#: resources/ui/appmenu.ui:98
+msgid "Use dark colors"
+msgstr "Usar colores oscuros"
+
+#: resources/ui/appwindow.ui:221
+msgid "Workspace"
+msgstr "Área de trabajo"
+
+#: resources/ui/appwindow.ui:232
+msgid "Settings"
+msgstr "Configuración"
+
+#: resources/ui/canvasmenu.ui:25
+msgid "Draw with touch input"
+msgstr "Dibujar con entrada táctil"
+
+#: resources/ui/canvasmenu.ui:30
+msgid "Endless sheet"
+msgstr "Hoja interminable"
+
+#: resources/ui/canvasmenu.ui:35
+msgid "Show format borders"
+msgstr "Mostrar los bordes del formato"
+
+#: resources/ui/canvasmenu.ui:40
+msgid "Pen sounds"
+msgstr "Sonidos de bolígrafo"
+
+#: resources/ui/canvasmenu.ui:45
+msgid "Clear sheet"
+msgstr "Limpiar hoja"
+
+#: resources/ui/canvasmenu.ui:51 resources/ui/dialogs.ui:24
+msgid "New"
+msgstr "Nuevo"
+
+#: resources/ui/canvasmenu.ui:55 resources/ui/dialogs.ui:88
+#: src/ui/dialogs.rs:182 src/ui/dialogs.rs:219
+msgid "Open"
+msgstr "Abrir"
+
+#: resources/ui/canvasmenu.ui:59
+msgid "Save"
+msgstr "Guardar"
+
+#: resources/ui/canvasmenu.ui:63
+msgid "Save as"
+msgstr "Guardar como"
+
+#: resources/ui/canvasmenu.ui:67
+msgid "Print"
+msgstr "Imprimir"
+
+#: resources/ui/canvasmenu.ui:71
+msgid "Import file"
+msgstr "Importar archivo"
+
+#: resources/ui/canvasmenu.ui:75
+msgid "Export .."
+msgstr "Exportar…"
+
+#: resources/ui/canvasmenu.ui:77
+msgid "Export selection as SVG"
+msgstr "Exportar selección como SVG"
+
+#: resources/ui/canvasmenu.ui:81
+msgid "Export sheet as SVG"
+msgstr "Exportar hoja como SVG"
+
+#: resources/ui/canvasmenu.ui:138
+msgid "Zoom to fit sheet width"
+msgstr "Zoom para ajustar el ancho de la hoja"
+
+#: resources/ui/colorpicker.ui:58
+msgid "Select"
+msgstr "Seleccionar"
+
+#: resources/ui/develactions.ui:29
+msgid "Step back one element in stroke"
+msgstr "Retroceder un elemento en el trazado"
+
+#: resources/ui/develactions.ui:36
+msgid "Step forward one element in stroke"
+msgstr "Avanzar un elemento en el trazado"
+
+#: resources/ui/develactions.ui:52
+msgid "visual debugging"
+msgstr "depuración visual"
+
+#: resources/ui/dialogs.ui:7
+msgid "New Sheet"
+msgstr "Hoja nueva"
+
+#: resources/ui/dialogs.ui:8
+msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
+msgstr ""
+"Al crear una hoja nueva se perderán los cambios no guardados. ¿Está seguro?"
+
+#: resources/ui/dialogs.ui:11 resources/ui/dialogs.ui:43
+#: resources/ui/dialogs.ui:75 resources/ui/dialogs.ui:107 src/ui/dialogs.rs:183
+#: src/ui/dialogs.rs:220 src/ui/dialogs.rs:262 src/ui/dialogs.rs:314
+#: src/ui/dialogs.rs:356 src/ui/dialogs.rs:398
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: resources/ui/dialogs.ui:16 resources/ui/dialogs.ui:48
+#: resources/ui/dialogs.ui:80
+msgid "Save current sheet as"
+msgstr "Guardar la hoja actual como"
+
+#: resources/ui/dialogs.ui:39
+msgid "Quit Application"
+msgstr "Salir de la aplicación"
+
+#: resources/ui/dialogs.ui:40
+msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
+msgstr "Cualquier cambio no guardado se perderá. ¿Quiere salir de todos modos?"
+
+#: resources/ui/dialogs.ui:56
+msgid "Quit"
+msgstr "Salir"
+
+#: resources/ui/dialogs.ui:71 src/ui/dialogs.rs:179
+msgid "Open File"
+msgstr "Abrir archivo"
+
+#: resources/ui/dialogs.ui:72
+msgid "Opening this file overwrites any unsaved changes."
+msgstr "Al abrir este archivo se sobrescriben los cambios no guardados."
+
+#: resources/ui/dialogs.ui:103
+msgid "Clear Sheet"
+msgstr "Limpiar hoja"
+
+#: resources/ui/dialogs.ui:104
+msgid "This clears the entire sheet. Please confirm."
+msgstr "Esto limpia toda la hoja. Por favor, confirme."
+
+#: resources/ui/dialogs.ui:112
+msgid "Clear"
+msgstr "Limpiar"
+
+#: resources/ui/mainheader.ui:20
+msgid "New document"
+msgstr "Documento nuevo"
+
+#: resources/ui/mainheader.ui:21
+msgid "Draft"
+msgstr "Borrador"
+
+#: resources/ui/mainheader.ui:76
+msgid "Add page"
+msgstr "Añadir página"
+
+#: resources/ui/mainheader.ui:82
+msgid "Resize to fit sheet format"
+msgstr "Cambiar el tamaño al formato"
+
+#: resources/ui/mainheader.ui:92
+msgid "Undo last stroke"
+msgstr "Deshacer el último trazo"
+
+#: resources/ui/mainheader.ui:98
+msgid "Redo last stroke"
+msgstr "Rehacer el último trazo"
+
+#: resources/ui/mainheader.ui:130 resources/ui/penssidebar/penssidebar.ui:17
+msgid "Marker"
+msgstr "Marcador"
+
+#: resources/ui/mainheader.ui:138 resources/ui/penssidebar/penssidebar.ui:34
+msgid "Brush"
+msgstr "Pincel"
+
+#: resources/ui/mainheader.ui:146 resources/ui/penssidebar/penssidebar.ui:51
+msgid "Shaper"
+msgstr "Formas"
+
+#: resources/ui/mainheader.ui:154 resources/ui/penssidebar/penssidebar.ui:68
+msgid "Eraser"
+msgstr "Borrador"
+
+#: resources/ui/mainheader.ui:162 resources/ui/penssidebar/penssidebar.ui:85
+msgid "Selector"
+msgstr "Selector"
+
+#: resources/ui/mainheader.ui:170 resources/ui/penssidebar/penssidebar.ui:102
+msgid "Tools"
+msgstr "Herramientas"
+
+#: resources/ui/settingspanel.ui:41
+msgid "General"
+msgstr "General"
+
+#: resources/ui/settingspanel.ui:44
+msgid "Sheet margin"
+msgstr "Margen de la hoja"
+
+#: resources/ui/settingspanel.ui:45
+msgid "Set the margins around the sheet"
+msgstr "Establecer los márgenes alrededor de la hoja"
+
+#: resources/ui/settingspanel.ui:58
+msgid "PDF import width (%)"
+msgstr "Anchura de importación del PDF (%)"
+
+#: resources/ui/settingspanel.ui:59
+msgid "Set the width of imported PDF's in percentage to the sheet width"
+msgstr ""
+"Establecer la anchura de los PDF importados en porcentaje a la anchura de la "
+"hoja"
+
+#: resources/ui/settingspanel.ui:79
+msgid "PDF import image type"
+msgstr "Tipo de imagen de importación de PDF"
+
+#: resources/ui/settingspanel.ui:80
+msgid "Set wether PDFs should be imported as vector or bitmap images"
+msgstr ""
+"Establecer si los PDF deben importarse como imágenes vectoriales o de mapa "
+"de bits"
+
+#: resources/ui/settingspanel.ui:92
+msgid "Vector"
+msgstr "Vectorial"
+
+#: resources/ui/settingspanel.ui:98
+msgid "Bitmap"
+msgstr "Mapa de bits"
+
+#: resources/ui/settingspanel.ui:110
+msgid "Sheet Format"
+msgstr "Formato de la hoja"
+
+#: resources/ui/settingspanel.ui:113
+msgid "Format"
+msgstr "Formato"
+
+#: resources/ui/settingspanel.ui:114
+msgid "Choose a format"
+msgstr "Elegir un formato"
+
+#: resources/ui/settingspanel.ui:127
+msgid "Orientation"
+msgstr "Orientación"
+
+#: resources/ui/settingspanel.ui:128
+msgid "Set the format orientation"
+msgstr "Establecer la orientación del formato"
+
+#: resources/ui/settingspanel.ui:140
+msgid "Portrait"
+msgstr "Retrato"
+
+#: resources/ui/settingspanel.ui:146
+msgid "Landscape"
+msgstr "Paisaje"
+
+#: resources/ui/settingspanel.ui:156
+msgid "Width"
+msgstr "Ancho"
+
+#: resources/ui/settingspanel.ui:157
+msgid "Set the format width"
+msgstr "Establecer el ancho del formato"
+
+#: resources/ui/settingspanel.ui:170
+msgid "Height"
+msgstr "Largo"
+
+#: resources/ui/settingspanel.ui:171
+msgid "Set the format height"
+msgstr "Establecer el alto del formato"
+
+#: resources/ui/settingspanel.ui:184
+msgid "DPI"
+msgstr "PPP"
+
+#: resources/ui/settingspanel.ui:185
+msgid "Set the DPI (dots per inch). Defaults to 96"
+msgstr "Establecer los PPP (puntos por pulgada). El valor predeterminado es 96"
+
+#: resources/ui/settingspanel.ui:208
+msgid "Revert"
+msgstr "Revertir"
+
+#: resources/ui/settingspanel.ui:217
+msgid "Apply"
+msgstr "Aplicar"
+
+#: resources/ui/settingspanel.ui:230
+msgid "Sheet Background"
+msgstr "Fondo de la hoja"
+
+#: resources/ui/settingspanel.ui:233
+msgid "Color"
+msgstr "Color"
+
+#: resources/ui/settingspanel.ui:234
+msgid "Set the background color"
+msgstr "Establecer el color de fondo"
+
+#: resources/ui/settingspanel.ui:251
+msgid "Pattern"
+msgstr "Patrón"
+
+#: resources/ui/settingspanel.ui:252
+msgid "Choose a background pattern"
+msgstr "Elegir un patrón de fondo"
+
+#: resources/ui/settingspanel.ui:265
+msgid "Pattern Color"
+msgstr "Color del patrón"
+
+#: resources/ui/settingspanel.ui:266
+msgid "Set the background pattern color"
+msgstr "Establecer el color de fondo del patrón"
+
+#: resources/ui/settingspanel.ui:283
+msgid "Pattern Width"
+msgstr "Ancho del patrón"
+
+#: resources/ui/settingspanel.ui:284
+msgid "Set the background pattern width"
+msgstr "Establecer el ancho del fondo del patrón"
+
+#: resources/ui/settingspanel.ui:297
+msgid "Pattern Height"
+msgstr "Alto del patrón"
+
+#: resources/ui/settingspanel.ui:298
+msgid "Set the background pattern height"
+msgstr "Establecer el alto del fondo del patrón"
+
+#: resources/ui/shortcuts.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "General"
+
+#: resources/ui/shortcuts.ui:14
+msgctxt "shortcut window"
+msgid "Show keyboard shortcuts"
+msgstr "Mostrar Atajos del teclado"
+
+#: resources/ui/shortcuts.ui:20
+msgctxt "shortcut window"
+msgid "Close the active window"
+msgstr "Cerrar la ventana activa"
+
+#: resources/ui/shortcuts.ui:26
+msgctxt "shortcut window"
+msgid "Quit the application"
+msgstr "Salir de la aplicación"
+
+#: resources/ui/shortcuts.ui:32
+msgctxt "shortcut window"
+msgid "Open the canvas menu"
+msgstr "Abrir el menú del lienzo"
+
+#: resources/ui/shortcuts.ui:38
+msgctxt "shortcut window"
+msgid "Open the app menu"
+msgstr "Abrir el menú de la aplicación"
+
+#: resources/ui/shortcuts.ui:46
+msgctxt "shortcut window"
+msgid "Navigation"
+msgstr "Navegación"
+
+#: resources/ui/shortcuts.ui:49 resources/ui/shortcuts.ui:55
+msgctxt "shortcut window"
+msgid "Zoom in"
+msgstr "Ampliar"
+
+#: resources/ui/shortcuts.ui:61 resources/ui/shortcuts.ui:67
+msgctxt "shortcut window"
+msgid "Zoom out"
+msgstr "Alejar"
+
+#: resources/ui/shortcuts.ui:75
+msgctxt "shortcut window"
+msgid "Sheet"
+msgstr "Hoja"
+
+#: resources/ui/shortcuts.ui:78
+msgctxt "shortcut window"
+msgid "New sheet"
+msgstr "Hoja nueva"
+
+#: resources/ui/shortcuts.ui:84
+msgctxt "shortcut window"
+msgid "Open sheet"
+msgstr "Abrir hoja"
+
+#: resources/ui/shortcuts.ui:90
+msgctxt "shortcut window"
+msgid "Save sheet"
+msgstr "Guardar hoja"
+
+#: resources/ui/shortcuts.ui:96
+msgctxt "shortcut window"
+msgid "Save sheet as"
+msgstr "Guardar hoja como"
+
+#: resources/ui/shortcuts.ui:102
+msgctxt "shortcut window"
+msgid "Clear sheet"
+msgstr "Limpiar hoja"
+
+#: resources/ui/shortcuts.ui:108
+msgctxt "shortcut window"
+msgid "Print sheet"
+msgstr "Imprimir hoja"
+
+#: resources/ui/shortcuts.ui:114
+msgctxt "shortcut window"
+msgid "Import file"
+msgstr "Importar archivo"
+
+#: resources/ui/shortcuts.ui:120
+msgctxt "shortcut window"
+msgid "Drawing"
+msgstr "Dibujo"
+
+#: resources/ui/shortcuts.ui:123
+msgctxt "shortcut window"
+msgid "Delete current selection"
+msgstr "Borrar la selección actual"
+
+#: resources/ui/shortcuts.ui:129
+msgctxt "shortcut window"
+msgid "Duplicate current selection"
+msgstr "Duplicar la selección actual"
+
+#: resources/ui/shortcuts.ui:135
+msgctxt "shortcut window"
+msgid "Copy selection into clipboard"
+msgstr "Copiar la selección al portapapeles"
+
+#: resources/ui/shortcuts.ui:141
+msgctxt "shortcut window"
+msgid "Paste clipboard as selection"
+msgstr "Pegar el portapapeles como selección"
+
+#: resources/ui/shortcuts.ui:147
+msgctxt "shortcut window"
+msgid "Enable temporary Eraser"
+msgstr "Activar el borrador temporal"
+
+#: resources/ui/shortcuts.ui:153
+msgctxt "shortcut window"
+msgid "Undo last stroke"
+msgstr "Deshacer el último trazo"
+
+#: resources/ui/shortcuts.ui:159
+msgctxt "shortcut window"
+msgid "Redo last stroke"
+msgstr "Rehacer el último trazo"
+
+#: resources/ui/workspacebrowser.ui:112
+msgid "Change workspace directory"
+msgstr "Cambiar el directorio del área de trabajo"
+
+#: resources/ui/penssidebar/brushpage.ui:34
+msgid "Brush style"
+msgstr "Estilo del pincel"
+
+#: resources/ui/penssidebar/brushpage.ui:54
+msgid "Brush styles"
+msgstr "Estilos del pincel"
+
+#: resources/ui/penssidebar/brushpage.ui:72
+msgid "Solid"
+msgstr "Sólido"
+
+#: resources/ui/penssidebar/brushpage.ui:83
+msgid "Textured"
+msgstr "Texturizado"
+
+#: resources/ui/penssidebar/brushpage.ui:95
+msgid "Experimental"
+msgstr "Experimental"
+
+#: resources/ui/penssidebar/brushpage.ui:122
+msgid "Brush styles configuration"
+msgstr "Configuración de estilos de pinceles"
+
+#: resources/ui/penssidebar/brushpage.ui:136
+msgid "Brush configuration"
+msgstr "Configuración de los pinceles"
+
+#: resources/ui/penssidebar/brushpage.ui:156
+msgid "Density"
+msgstr "Densidad"
+
+#: resources/ui/penssidebar/brushpage.ui:157
+msgid "The density is the amount of dots per 10x10 area"
+msgstr "La densidad es la cantidad de puntos por cada 10x10 de superficie"
+
+#: resources/ui/penssidebar/brushpage.ui:174
+msgid "Dot Radii"
+msgstr "Radios de puntos"
+
+#: resources/ui/penssidebar/brushpage.ui:175
+msgid "The radii of the dots"
+msgstr "Los radios de los puntos"
+
+#: resources/ui/penssidebar/brushpage.ui:209
+msgid "Distribution"
+msgstr "Distribución"
+
+#: resources/ui/penssidebar/brushpage.ui:210
+msgid "Choose a dots position probability distribution"
+msgstr "Elija una distribución de probabilidad de la posición de los puntos"
+
+#: resources/ui/penssidebar/brushpage.ui:239
+msgid "Reset brush width"
+msgstr "Restablecer el ancho del cepillo"
+
+#: resources/ui/penssidebar/eraserpage.ui:28
+msgid "Reset eraser width"
+msgstr "Restablecer el ancho del borrador"
+
+#: resources/ui/penssidebar/markerpage.ui:28
+msgid "Reset marker width"
+msgstr "Restablecer el ancho del marcador"
+
+#: resources/ui/penssidebar/selectorpage.ui:35
+msgid "Selecting with a polygon"
+msgstr "Seleccionar con un polígono"
+
+#: resources/ui/penssidebar/selectorpage.ui:49
+msgid "Selecting with a rectangle"
+msgstr "Seleccionar con un rectángulo"
+
+#: resources/ui/penssidebar/selectorpage.ui:70
+msgid "Delete selection"
+msgstr "Eliminar selección"
+
+#: resources/ui/penssidebar/selectorpage.ui:85
+msgid "Duplicate selection"
+msgstr "Duplicar selección"
+
+#: resources/ui/penssidebar/shaperpage.ui:35
+msgid "Smooth shapes"
+msgstr "Formas lisas"
+
+#: resources/ui/penssidebar/shaperpage.ui:48
+msgid "Rough shapes"
+msgstr "Formas rugosas"
+
+#: resources/ui/penssidebar/shaperpage.ui:71
+#: resources/ui/penssidebar/shaperpage.ui:85
+msgid "Rough shapes configuration"
+msgstr "Configuración de las formas rugosas"
+
+#: resources/ui/penssidebar/shaperpage.ui:104
+msgid "Roughness"
+msgstr "Rugosidad"
+
+#: resources/ui/penssidebar/shaperpage.ui:105
+msgid ""
+"Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
+msgstr ""
+"Indica el grado de rugosidad del dibujo. 0.0 es una línea suave. El valor "
+"predeterminado es 1.0"
+
+#: resources/ui/penssidebar/shaperpage.ui:122
+msgid "Bowing"
+msgstr "Inclinación"
+
+#: resources/ui/penssidebar/shaperpage.ui:123
+msgid ""
+"How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
+"Defaults to 1.0"
+msgstr ""
+"Cómo de curvas son las líneas al dibujar un boceto. 0.0 es una línea recta. "
+"El valor predeterminado es 1.0"
+
+#: resources/ui/penssidebar/shaperpage.ui:140
+msgid "Curve step count"
+msgstr "Recuento de pasos de la curva"
+
+#: resources/ui/penssidebar/shaperpage.ui:141
+msgid "How many steps make up a curve. Defaults to 9"
+msgstr "Cuántos pasos componen una curva. El valor predeterminado es 9"
+
+#: resources/ui/penssidebar/shaperpage.ui:158
+msgid "Multistroke"
+msgstr "Multitrazo"
+
+#: resources/ui/penssidebar/shaperpage.ui:159
+msgid "Multiple stroke generation for a sketched look. Defaults to true"
+msgstr ""
+"Generación de varios trazos para un aspecto de boceto. El valor "
+"predeterminado es verdadero"
+
+#: resources/ui/penssidebar/shaperpage.ui:194
+msgid "Line"
+msgstr "Línea"
+
+#: resources/ui/penssidebar/shaperpage.ui:206
+msgid "Rectangle"
+msgstr "Rectángulo"
+
+#: resources/ui/penssidebar/shaperpage.ui:220
+msgid "Ellipse"
+msgstr "Elipse"
+
+#: resources/ui/penssidebar/shaperpage.ui:243
+msgid "Reset shape stroke width"
+msgstr "Restablecer el ancho del trazo de la forma"
+
+#: resources/ui/penssidebar/toolspage.ui:39
+msgid "Expand the sheet vertically"
+msgstr "Expandir la hoja verticalmente"
+
+#: resources/ui/penssidebar/toolspage.ui:52
+msgid "Drag stroke elements based on proximity"
+msgstr "Arrastrar elementos del trazo en función de la proximidad"
+
+#. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
+#: src/ui/dialogs.rs:28
+msgid "translator-credits"
+msgstr "Óscar Fernández Díaz <oscfdezdz@tuta.io>"
+
+#: src/ui/dialogs.rs:176 src/ui/dialogs.rs:255
+msgid ".rnote File"
+msgstr "Archivo .rnote"
+
+#: src/ui/dialogs.rs:216
+msgid "Open Workspace"
+msgstr "Abrir Área de trabajo"
+
+#: src/ui/dialogs.rs:258
+msgid "Save Sheet As"
+msgstr "Guardar hoja como"
+
+#: src/ui/dialogs.rs:261
+msgid "Save As"
+msgstr "Guardar como"
+
+#: src/ui/dialogs.rs:307
+msgid "PNG / SVG / JPG / PDF File"
+msgstr "Archivo PNG / SVG / JPG / PDF"
+
+#: src/ui/dialogs.rs:310
+msgid "Import File"
+msgstr "Importar archivo"
+
+#: src/ui/dialogs.rs:313
+msgid "Import"
+msgstr "Importar"
+
+#: src/ui/dialogs.rs:349
+msgid "SVG File"
+msgstr "Archivo SVG"
+
+#: src/ui/dialogs.rs:352
+msgid "Export Selection"
+msgstr "Exportar selección"
+
+#: src/ui/dialogs.rs:355 src/ui/dialogs.rs:397
+msgid "Export"
+msgstr "Exportar"
+
+#: src/ui/dialogs.rs:391
+msgid "SVG file"
+msgstr "Archivo SVG"
+
+#: src/ui/dialogs.rs:394
+msgid "Export Sheet"
+msgstr "Exportar hoja"

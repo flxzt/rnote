@@ -12,7 +12,7 @@
 </div><br>
 
 # Rnote
-A simple drawing application to create handwritten notes.
+A simple drawing application to create handwritten notes.  
 Written in Rust and GTK4.
 
 Rnote aims to be a simple but functional note taking application for freehand drawing or annotating pictures or documents. It eventually should be able to import / export various media file formats.  

@@ -1,0 +1,751 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: rnote\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-01-20 13:00+0100\n"
+"PO-Revision-Date: 2022-01-21 19:39+0200\n"
+"Last-Translator: Volodymyr M. Lisivka <vlisivka@gmail.com>\n"
+"Language-Team: Ukrainian, https://linux.org.ua\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Translators: This is the App name, don't translate this.
+#: resources/app.desktop.in.in:4
+msgid "@APP_NAME_CAPITALIZED@"
+msgstr ""
+
+#: resources/app.desktop.in.in:5 resources/app.metainfo.xml.in.in:9
+#: src/ui/dialogs.rs:18
+msgid "An easy and simple vector-based note taking app"
+msgstr "Проста та проста векторна програма для нотаток"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: resources/app.desktop.in.in:15
+msgid "Gnome;GTK;Office;Graphics;Notes;"
+msgstr "Gnome;GTK;Офіс;Графіка;Примітки;"
+
+#: resources/app.metainfo.xml.in.in:18
+msgid ""
+"Rnote is a simple vector based note taking application for handwritten notes "
+"or to annotate documents and pictures."
+msgstr ""
+"Rnote - це простий векторний додаток для нотаток для рукописних нотаток або "
+"для анотування документів і зображень."
+
+#: resources/app.metainfo.xml.in.in:24
+msgid "Main window in light colors"
+msgstr "Головне вікно в світлих тонах"
+
+#: resources/app.metainfo.xml.in.in:28
+msgid "Main window in dark colors"
+msgstr "Головне вікно темних кольорів"
+
+#: resources/app.metainfo.xml.in.in:32
+msgid "A PDF annotation"
+msgstr "Анотація PDF"
+
+#: resources/app.metainfo.xml.in.in:36
+msgid "A selection"
+msgstr "Вибір"
+
+#: resources/app.metainfo.xml.in.in:40
+msgid "Multiple pages"
+msgstr "Кілька сторінок"
+
+#: resources/ui/appmenu.ui:25
+msgid "Developer mode"
+msgstr "Режим розробника"
+
+#: resources/ui/appmenu.ui:30
+msgid "Developer settings"
+msgstr "Налаштування розробника"
+
+#: resources/ui/appmenu.ui:34
+msgid "Renderer backend"
+msgstr "Двигун рендерера"
+
+#: resources/ui/appmenu.ui:50
+msgid "Keyboard shortcuts"
+msgstr "Комбінації клавіш"
+
+#: resources/ui/appmenu.ui:54
+msgid "About Rnote"
+msgstr "Про Rnote"
+
+#: resources/ui/appmenu.ui:71
+msgid "Use system colors preference"
+msgstr "Вжити налаштування системних кольорів"
+
+#: resources/ui/appmenu.ui:84
+msgid "Use light colors"
+msgstr "Вжити світлі кольори"
+
+#: resources/ui/appmenu.ui:98
+msgid "Use dark colors"
+msgstr "Вжити темні кольори"
+
+#: resources/ui/appwindow.ui:221
+msgid "Workspace"
+msgstr "Робоча область"
+
+#: resources/ui/appwindow.ui:232
+msgid "Settings"
+msgstr "Налаштування"
+
+#: resources/ui/canvasmenu.ui:25
+msgid "Draw with touch input"
+msgstr "Малюйте за допомогою сенсорного введення"
+
+#: resources/ui/canvasmenu.ui:30
+msgid "Endless sheet"
+msgstr "Нескінченний аркуш"
+
+#: resources/ui/canvasmenu.ui:35
+msgid "Show format borders"
+msgstr "Показати межі формату"
+
+#: resources/ui/canvasmenu.ui:40
+msgid "Pen sounds"
+msgstr "Звуки пера"
+
+#: resources/ui/canvasmenu.ui:45
+msgid "Clear sheet"
+msgstr "Очистити аркуш"
+
+#: resources/ui/canvasmenu.ui:51 resources/ui/dialogs.ui:24
+msgid "New"
+msgstr "Новий"
+
+#: resources/ui/canvasmenu.ui:55 resources/ui/dialogs.ui:88
+#: src/ui/dialogs.rs:182 src/ui/dialogs.rs:219
+msgid "Open"
+msgstr "Відкрити"
+
+#: resources/ui/canvasmenu.ui:59
+msgid "Save"
+msgstr "Зберегти"
+
+#: resources/ui/canvasmenu.ui:63
+msgid "Save as"
+msgstr "Зберегти як"
+
+#: resources/ui/canvasmenu.ui:67
+msgid "Print"
+msgstr "Друк"
+
+#: resources/ui/canvasmenu.ui:71
+msgid "Import file"
+msgstr "Імпортувати файл"
+
+#: resources/ui/canvasmenu.ui:75
+msgid "Export .."
+msgstr "Експортувати .."
+
+#: resources/ui/canvasmenu.ui:77
+msgid "Export selection as SVG"
+msgstr "Експортувати вибране як SVG"
+
+#: resources/ui/canvasmenu.ui:81
+msgid "Export sheet as SVG"
+msgstr "Експортувати аркуш як SVG"
+
+#: resources/ui/canvasmenu.ui:138
+msgid "Zoom to fit sheet width"
+msgstr "Збільшити до ширини аркуша"
+
+#: resources/ui/colorpicker.ui:58
+msgid "Select"
+msgstr "Вибрати"
+
+#: resources/ui/develactions.ui:29
+msgid "Step back one element in stroke"
+msgstr "Крок назад на один елемент у обведенні"
+
+#: resources/ui/develactions.ui:36
+msgid "Step forward one element in stroke"
+msgstr "Крок вперед на один елемент у обведенні"
+
+#: resources/ui/develactions.ui:52
+msgid "visual debugging"
+msgstr "візуальне налагодження"
+
+#: resources/ui/dialogs.ui:7
+msgid "New Sheet"
+msgstr "Новий аркуш"
+
+#: resources/ui/dialogs.ui:8
+msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
+msgstr "Створення нового аркуша стирає всі незбережені зміни. Ви впевнені?"
+
+#: resources/ui/dialogs.ui:11 resources/ui/dialogs.ui:43
+#: resources/ui/dialogs.ui:75 resources/ui/dialogs.ui:107 src/ui/dialogs.rs:183
+#: src/ui/dialogs.rs:220 src/ui/dialogs.rs:262 src/ui/dialogs.rs:314
+#: src/ui/dialogs.rs:356 src/ui/dialogs.rs:398
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: resources/ui/dialogs.ui:16 resources/ui/dialogs.ui:48
+#: resources/ui/dialogs.ui:80
+msgid "Save current sheet as"
+msgstr "Зберегти поточний аркуш як"
+
+#: resources/ui/dialogs.ui:39
+msgid "Quit Application"
+msgstr "Вийти з програми"
+
+#: resources/ui/dialogs.ui:40
+msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
+msgstr "Усі незбережені зміни буде втрачено. Ви все одно хочете вийти?"
+
+#: resources/ui/dialogs.ui:56
+msgid "Quit"
+msgstr "Вийти"
+
+#: resources/ui/dialogs.ui:71 src/ui/dialogs.rs:179
+msgid "Open File"
+msgstr "Відкрити файл"
+
+#: resources/ui/dialogs.ui:72
+msgid "Opening this file overwrites any unsaved changes."
+msgstr "Відкриття цього файлу перезаписує будь-які незбережені зміни."
+
+#: resources/ui/dialogs.ui:103
+msgid "Clear Sheet"
+msgstr "Очистити аркуш"
+
+#: resources/ui/dialogs.ui:104
+msgid "This clears the entire sheet. Please confirm."
+msgstr "Це очищає весь аркуш. Будь ласка, підтвердьте."
+
+#: resources/ui/dialogs.ui:112
+msgid "Clear"
+msgstr "Очистити"
+
+#: resources/ui/mainheader.ui:20
+msgid "New document"
+msgstr "Новий документ"
+
+#: resources/ui/mainheader.ui:21
+msgid "Draft"
+msgstr "Чернетка"
+
+#: resources/ui/mainheader.ui:76
+msgid "Add page"
+msgstr "Додати сторінку"
+
+#: resources/ui/mainheader.ui:82
+msgid "Resize to fit sheet format"
+msgstr "Змінити розмір відповідно до формату аркуша"
+
+#: resources/ui/mainheader.ui:92
+msgid "Undo last stroke"
+msgstr "Скасувати останній штрих"
+
+#: resources/ui/mainheader.ui:98
+msgid "Redo last stroke"
+msgstr "Повторити останній штрих"
+
+#: resources/ui/mainheader.ui:130 resources/ui/penssidebar/penssidebar.ui:17
+msgid "Marker"
+msgstr "Маркер"
+
+#: resources/ui/mainheader.ui:138 resources/ui/penssidebar/penssidebar.ui:34
+msgid "Brush"
+msgstr "Пензлик"
+
+#: resources/ui/mainheader.ui:146 resources/ui/penssidebar/penssidebar.ui:51
+msgid "Shaper"
+msgstr "Шейпер"
+
+#: resources/ui/mainheader.ui:154 resources/ui/penssidebar/penssidebar.ui:68
+msgid "Eraser"
+msgstr "Гумка"
+
+#: resources/ui/mainheader.ui:162 resources/ui/penssidebar/penssidebar.ui:85
+msgid "Selector"
+msgstr "Селектор"
+
+#: resources/ui/mainheader.ui:170 resources/ui/penssidebar/penssidebar.ui:102
+msgid "Tools"
+msgstr "Інструменти"
+
+#: resources/ui/settingspanel.ui:41
+msgid "General"
+msgstr "Загальні"
+
+#: resources/ui/settingspanel.ui:44
+msgid "Sheet margin"
+msgstr "Поле аркуша"
+
+#: resources/ui/settingspanel.ui:45
+msgid "Set the margins around the sheet"
+msgstr "Встановити поля навколо аркуша"
+
+#: resources/ui/settingspanel.ui:58
+msgid "PDF import width (%)"
+msgstr "Ширина імпорту PDF (%)"
+
+#: resources/ui/settingspanel.ui:59
+msgid "Set the width of imported PDF's in percentage to the sheet width"
+msgstr "Встановити ширину імпортованих PDF-файлів у відсотках до ширини аркуша"
+
+#: resources/ui/settingspanel.ui:79
+msgid "PDF import image type"
+msgstr "Тип зображення імпорту PDF"
+
+#: resources/ui/settingspanel.ui:80
+msgid "Set wether PDFs should be imported as vector or bitmap images"
+msgstr ""
+"Встановити, чи потрібно імпортувати PDF-файли як векторні або растрові "
+"зображення"
+
+#: resources/ui/settingspanel.ui:92
+msgid "Vector"
+msgstr "Вектор"
+
+#: resources/ui/settingspanel.ui:98
+msgid "Bitmap"
+msgstr "Растр"
+
+#: resources/ui/settingspanel.ui:110
+msgid "Sheet Format"
+msgstr "Формат аркуша"
+
+#: resources/ui/settingspanel.ui:113
+msgid "Format"
+msgstr "Формат"
+
+#: resources/ui/settingspanel.ui:114
+msgid "Choose a format"
+msgstr "Виберіть формат"
+
+#: resources/ui/settingspanel.ui:127
+msgid "Orientation"
+msgstr "Орієнтація"
+
+#: resources/ui/settingspanel.ui:128
+msgid "Set the format orientation"
+msgstr "Встановити орієнтацію формату"
+
+#: resources/ui/settingspanel.ui:140
+msgid "Portrait"
+msgstr "Портрет"
+
+#: resources/ui/settingspanel.ui:146
+msgid "Landscape"
+msgstr "Пейзаж"
+
+#: resources/ui/settingspanel.ui:156
+msgid "Width"
+msgstr "Ширина"
+
+#: resources/ui/settingspanel.ui:157
+msgid "Set the format width"
+msgstr "Встановити ширину формату"
+
+#: resources/ui/settingspanel.ui:170
+msgid "Height"
+msgstr "Висота"
+
+#: resources/ui/settingspanel.ui:171
+msgid "Set the format height"
+msgstr "Встановити висоту формату"
+
+#: resources/ui/settingspanel.ui:184
+msgid "DPI"
+msgstr "DPI"
+
+#: resources/ui/settingspanel.ui:185
+msgid "Set the DPI (dots per inch). Defaults to 96"
+msgstr "Встановити DPI (точок на дюйм). Типово: 96"
+
+#: resources/ui/settingspanel.ui:208
+msgid "Revert"
+msgstr "Повернути"
+
+#: resources/ui/settingspanel.ui:217
+msgid "Apply"
+msgstr "Застосувати"
+
+#: resources/ui/settingspanel.ui:230
+msgid "Sheet Background"
+msgstr "Фон аркуша"
+
+#: resources/ui/settingspanel.ui:233
+msgid "Color"
+msgstr "Колір"
+
+#: resources/ui/settingspanel.ui:234
+msgid "Set the background color"
+msgstr "Встановити колір фону"
+
+#: resources/ui/settingspanel.ui:251
+msgid "Pattern"
+msgstr "Шаблон"
+
+#: resources/ui/settingspanel.ui:252
+msgid "Choose a background pattern"
+msgstr "Виберіть шаблон фону"
+
+#: resources/ui/settingspanel.ui:265
+msgid "Pattern Color"
+msgstr "Колір візерунка"
+
+#: resources/ui/settingspanel.ui:266
+msgid "Set the background pattern color"
+msgstr "Встановити колір фонового візерунка"
+
+#: resources/ui/settingspanel.ui:283
+msgid "Pattern Width"
+msgstr "Ширина візерунка"
+
+#: resources/ui/settingspanel.ui:284
+msgid "Set the background pattern width"
+msgstr "Встановити ширину візерунка фону"
+
+#: resources/ui/settingspanel.ui:297
+msgid "Pattern Height"
+msgstr "Висота шаблону"
+
+#: resources/ui/settingspanel.ui:298
+msgid "Set the background pattern height"
+msgstr "Встановити висоту фонового шаблону"
+
+#: resources/ui/shortcuts.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "Загальні"
+
+#: resources/ui/shortcuts.ui:14
+msgctxt "shortcut window"
+msgid "Show keyboard shortcuts"
+msgstr "Показати комбінації клавіш"
+
+#: resources/ui/shortcuts.ui:20
+msgctxt "shortcut window"
+msgid "Close the active window"
+msgstr "Закрити активне вікно"
+
+#: resources/ui/shortcuts.ui:26
+msgctxt "shortcut window"
+msgid "Quit the application"
+msgstr "Закрити програму"
+
+#: resources/ui/shortcuts.ui:32
+msgctxt "shortcut window"
+msgid "Open the canvas menu"
+msgstr "Відкрити меню полотна"
+
+#: resources/ui/shortcuts.ui:38
+msgctxt "shortcut window"
+msgid "Open the app menu"
+msgstr "Відкрити меню програми"
+
+#: resources/ui/shortcuts.ui:46
+msgctxt "shortcut window"
+msgid "Navigation"
+msgstr "Навігація"
+
+#: resources/ui/shortcuts.ui:49 resources/ui/shortcuts.ui:55
+msgctxt "shortcut window"
+msgid "Zoom in"
+msgstr "Збільшити"
+
+#: resources/ui/shortcuts.ui:61 resources/ui/shortcuts.ui:67
+msgctxt "shortcut window"
+msgid "Zoom out"
+msgstr "Зменшити масштаб"
+
+#: resources/ui/shortcuts.ui:75
+msgctxt "shortcut window"
+msgid "Sheet"
+msgstr "Аркуш"
+
+#: resources/ui/shortcuts.ui:78
+msgctxt "shortcut window"
+msgid "New sheet"
+msgstr "Новий аркуш"
+
+#: resources/ui/shortcuts.ui:84
+msgctxt "shortcut window"
+msgid "Open sheet"
+msgstr "Відкрити аркуш"
+
+#: resources/ui/shortcuts.ui:90
+msgctxt "shortcut window"
+msgid "Save sheet"
+msgstr "Зберегти аркуш"
+
+#: resources/ui/shortcuts.ui:96
+msgctxt "shortcut window"
+msgid "Save sheet as"
+msgstr "Зберегти аркуш як"
+
+#: resources/ui/shortcuts.ui:102
+msgctxt "shortcut window"
+msgid "Clear sheet"
+msgstr "Очистити аркуш"
+
+#: resources/ui/shortcuts.ui:108
+msgctxt "shortcut window"
+msgid "Print sheet"
+msgstr "Друк аркуша"
+
+#: resources/ui/shortcuts.ui:114
+msgctxt "shortcut window"
+msgid "Import file"
+msgstr "Імпортувати файл"
+
+#: resources/ui/shortcuts.ui:120
+msgctxt "shortcut window"
+msgid "Drawing"
+msgstr "Малюнок"
+
+#: resources/ui/shortcuts.ui:123
+msgctxt "shortcut window"
+msgid "Delete current selection"
+msgstr "Видалити поточне виділення"
+
+#: resources/ui/shortcuts.ui:129
+msgctxt "shortcut window"
+msgid "Duplicate current selection"
+msgstr "Зробити дублікат поточного виділення"
+
+#: resources/ui/shortcuts.ui:135
+msgctxt "shortcut window"
+msgid "Copy selection into clipboard"
+msgstr "Копіювати виділене в буфер обміну"
+
+#: resources/ui/shortcuts.ui:141
+msgctxt "shortcut window"
+msgid "Paste clipboard as selection"
+msgstr "Вставити буфер обміну як виділення"
+
+#: resources/ui/shortcuts.ui:147
+msgctxt "shortcut window"
+msgid "Enable temporary Eraser"
+msgstr "Увімкнути тимчасову гумку"
+
+#: resources/ui/shortcuts.ui:153
+msgctxt "shortcut window"
+msgid "Undo last stroke"
+msgstr "Скасувати останній штрих"
+
+#: resources/ui/shortcuts.ui:159
+msgctxt "shortcut window"
+msgid "Redo last stroke"
+msgstr "Повторити останній штрих"
+
+#: resources/ui/workspacebrowser.ui:112
+msgid "Change workspace directory"
+msgstr "Змінити каталог робочої області"
+
+#: resources/ui/penssidebar/brushpage.ui:34
+msgid "Brush style"
+msgstr "Стиль пензля"
+
+#: resources/ui/penssidebar/brushpage.ui:54
+msgid "Brush styles"
+msgstr "Стилі пензля"
+
+#: resources/ui/penssidebar/brushpage.ui:72
+msgid "Solid"
+msgstr "Твердий"
+
+#: resources/ui/penssidebar/brushpage.ui:83
+msgid "Textured"
+msgstr "Текстурований"
+
+#: resources/ui/penssidebar/brushpage.ui:95
+msgid "Experimental"
+msgstr "Експериментальний"
+
+#: resources/ui/penssidebar/brushpage.ui:122
+msgid "Brush styles configuration"
+msgstr "Конфігурація стилів пензля"
+
+#: resources/ui/penssidebar/brushpage.ui:136
+msgid "Brush configuration"
+msgstr "Конфігурація пензля"
+
+#: resources/ui/penssidebar/brushpage.ui:156
+msgid "Density"
+msgstr "Щільність"
+
+#: resources/ui/penssidebar/brushpage.ui:157
+msgid "The density is the amount of dots per 10x10 area"
+msgstr "Щільність - це кількість точок на площу 10x10"
+
+#: resources/ui/penssidebar/brushpage.ui:174
+msgid "Dot Radii"
+msgstr "Радіуси точки"
+
+#: resources/ui/penssidebar/brushpage.ui:175
+msgid "The radii of the dots"
+msgstr "Радіуси точок"
+
+#: resources/ui/penssidebar/brushpage.ui:209
+msgid "Distribution"
+msgstr "Розповсюдження"
+
+#: resources/ui/penssidebar/brushpage.ui:210
+msgid "Choose a dots position probability distribution"
+msgstr "Виберіть розподіл ймовірності розташування точок"
+
+#: resources/ui/penssidebar/brushpage.ui:239
+msgid "Reset brush width"
+msgstr "Скинути ширину пензля"
+
+#: resources/ui/penssidebar/eraserpage.ui:28
+msgid "Reset eraser width"
+msgstr "Скинути ширину гумки"
+
+#: resources/ui/penssidebar/markerpage.ui:28
+msgid "Reset marker width"
+msgstr "Скинути ширину маркера"
+
+#: resources/ui/penssidebar/selectorpage.ui:35
+msgid "Selecting with a polygon"
+msgstr "Вибір за допомогою багатокутника"
+
+#: resources/ui/penssidebar/selectorpage.ui:49
+msgid "Selecting with a rectangle"
+msgstr "Вибір за допомогою прямокутника"
+
+#: resources/ui/penssidebar/selectorpage.ui:70
+msgid "Delete selection"
+msgstr "Видалити виділення"
+
+#: resources/ui/penssidebar/selectorpage.ui:85
+msgid "Duplicate selection"
+msgstr "Дублікат виділення"
+
+#: resources/ui/penssidebar/shaperpage.ui:35
+msgid "Smooth shapes"
+msgstr "Гладкі форми"
+
+#: resources/ui/penssidebar/shaperpage.ui:48
+msgid "Rough shapes"
+msgstr "Грубі форми"
+
+#: resources/ui/penssidebar/shaperpage.ui:71
+#: resources/ui/penssidebar/shaperpage.ui:85
+msgid "Rough shapes configuration"
+msgstr "Налаштування грубих форм"
+
+#: resources/ui/penssidebar/shaperpage.ui:104
+msgid "Roughness"
+msgstr "Грубість"
+
+#: resources/ui/penssidebar/shaperpage.ui:105
+msgid ""
+"Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
+msgstr ""
+"Вказує, наскільки грубим є малюнок. 0,0 — плавна лінія. За замовчуванням 1,0"
+
+#: resources/ui/penssidebar/shaperpage.ui:122
+msgid "Bowing"
+msgstr "Поклон"
+
+#: resources/ui/penssidebar/shaperpage.ui:123
+msgid ""
+"How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
+"Defaults to 1.0"
+msgstr ""
+"Наскільки криволінійними є лінії при малюванні грубої форми. 0,0 - це пряма "
+"лінія.За замовчуванням 1.0"
+
+#: resources/ui/penssidebar/shaperpage.ui:140
+msgid "Curve step count"
+msgstr "Кількість кроків кривої"
+
+#: resources/ui/penssidebar/shaperpage.ui:141
+msgid "How many steps make up a curve. Defaults to 9"
+msgstr "Скільки кроків складає криву. За замовчуванням 9"
+
+#: resources/ui/penssidebar/shaperpage.ui:158
+msgid "Multistroke"
+msgstr "Багатоштрих"
+
+#: resources/ui/penssidebar/shaperpage.ui:159
+msgid "Multiple stroke generation for a sketched look. Defaults to true"
+msgstr "Генерація кількох штрихів для ескізного вигляду. Типово: true"
+
+#: resources/ui/penssidebar/shaperpage.ui:194
+msgid "Line"
+msgstr "Лінія"
+
+#: resources/ui/penssidebar/shaperpage.ui:206
+msgid "Rectangle"
+msgstr "Прямокутник"
+
+#: resources/ui/penssidebar/shaperpage.ui:220
+msgid "Ellipse"
+msgstr "Еліпс"
+
+#: resources/ui/penssidebar/shaperpage.ui:243
+msgid "Reset shape stroke width"
+msgstr "Скинути ширину обведення фігури"
+
+#: resources/ui/penssidebar/toolspage.ui:39
+msgid "Expand the sheet vertically"
+msgstr "Розгорнути аркуш по вертикалі"
+
+#: resources/ui/penssidebar/toolspage.ui:52
+msgid "Drag stroke elements based on proximity"
+msgstr "Перетягніть елементи обведення на основі близькості"
+
+#. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
+#: src/ui/dialogs.rs:28
+msgid "translator-credits"
+msgstr "Володимир Лісівка <vlisivka@gmail.com>, https://linux.org.ua"
+
+#: src/ui/dialogs.rs:176 src/ui/dialogs.rs:255
+msgid ".rnote File"
+msgstr "Файл .rnote"
+
+#: src/ui/dialogs.rs:216
+msgid "Open Workspace"
+msgstr "Відкрити робочу область"
+
+#: src/ui/dialogs.rs:258
+msgid "Save Sheet As"
+msgstr "Зберегти аркуш як"
+
+#: src/ui/dialogs.rs:261
+msgid "Save As"
+msgstr "Зберегти як"
+
+#: src/ui/dialogs.rs:307
+msgid "PNG / SVG / JPG / PDF File"
+msgstr "файл PNG / SVG / JPG / PDF"
+
+#: src/ui/dialogs.rs:310
+msgid "Import File"
+msgstr "Імпортувати файл"
+
+#: src/ui/dialogs.rs:313
+msgid "Import"
+msgstr "Імпортувати"
+
+#: src/ui/dialogs.rs:349
+msgid "SVG File"
+msgstr "файл SVG"
+
+#: src/ui/dialogs.rs:352
+msgid "Export Selection"
+msgstr "Експортувати вибір"
+
+#: src/ui/dialogs.rs:355 src/ui/dialogs.rs:397
+msgid "Export"
+msgstr "Експортувати"
+
+#: src/ui/dialogs.rs:391
+msgid "SVG file"
+msgstr "файл SVG"
+
+#: src/ui/dialogs.rs:394
+msgid "Export Sheet"
+msgstr "Експортувати аркуш"

@@ -12,7 +12,8 @@
 </div><br>
 
 # Rnote
-A simple note taking application written in Rust and GTK4.
+A simple drawing application to create handwritten notes.
+Written in Rust and GTK4.
 
 Rnote aims to be a simple but functional note taking application for freehand drawing or annotating pictures or documents. It eventually should be able to import / export various media file formats.  
 One main consideration is that it is vector based, which should make it very flexible in editing and altering the contents.

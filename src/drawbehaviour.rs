@@ -1,4 +1,3 @@
-use crate::compose::geometry;
 use crate::render;
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -20,7 +19,6 @@ pub trait DrawBehaviour {
                 svgs_iter.for_each(|svg| {
                     new_bounds.merge(&svg.bounds);
                 });
-                new_bounds = geometry::aabb_ceil(new_bounds);
 
                 return Some(new_bounds);
             }

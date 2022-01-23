@@ -77,8 +77,6 @@ impl DrawBehaviour for BrushStroke {
                             bounds.take_point(na::Point2::from(cubbez.end));
                             bounds.loosen(brush_width);
 
-                            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-                            bounds = geometry::aabb_ceil(bounds);
                             Some(bounds)
                         } else if let Some(line) =
                             curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
@@ -86,9 +84,6 @@ impl DrawBehaviour for BrushStroke {
                             bounds.take_point(na::Point2::from(line.start));
                             bounds.take_point(na::Point2::from(line.end));
                             bounds.loosen(brush_width);
-
-                            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-                            bounds = geometry::aabb_ceil(bounds);
 
                             Some(bounds)
                         } else {
@@ -233,8 +228,6 @@ impl BrushStroke {
                     last.inputdata.pos() + na::vector![self.brush.width(), self.brush.width()],
                 ),
             ));
-
-            self.bounds = geometry::aabb_ceil(self.bounds);
         }
     }
 
@@ -349,9 +342,6 @@ impl BrushStroke {
             bounds.take_point(na::Point2::from(cubbez.cp1));
             bounds.take_point(na::Point2::from(cubbez.cp2));
             bounds.take_point(na::Point2::from(cubbez.end));
-
-            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-            bounds = geometry::aabb_ceil(bounds);
 
             let n_splits = 5;
             // Number of splits for the bezier curve approximation
@@ -539,9 +529,6 @@ impl BrushStroke {
             bounds.take_point(na::Point2::from(cubbez.cp2));
             bounds.take_point(na::Point2::from(cubbez.end));
             bounds.loosen(start_width.max(end_width));
-
-            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-            bounds = geometry::aabb_ceil(bounds);
 
             // Number of splits for the bezier curve approximation
             let lines = curves::approx_offsetted_cubbez_with_lines_w_subdivision(

@@ -433,7 +433,7 @@ impl Default for SelectionModifier {
 
 impl SelectionModifier {
     pub const RESIZE_NODE_SIZE: i32 = 18;
-    pub const SELECTION_BOUNDS_MIN: f64 = 3.0;
+    pub const SELECTION_BOUNDS_MIN: f64 = 50.0;
 
     pub fn new() -> Self {
         let selection_modifier: Self =
@@ -581,7 +581,7 @@ impl SelectionModifier {
                     } else {
                         selection_bounds.extents() + offset
                     };
-                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN));
+                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
 
                     let new_bounds = AABB::new(
                         na::point![
@@ -652,7 +652,7 @@ impl SelectionModifier {
                     } else {
                         selection_bounds.extents() + offset
                     };
-                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN));
+                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
 
                     let new_bounds = AABB::new(
                         na::point![
@@ -723,7 +723,7 @@ impl SelectionModifier {
                     } else {
                         selection_bounds.extents() + offset
                     };
-                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN));
+                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
 
                     let new_bounds = AABB::new(
                         na::point![
@@ -794,7 +794,7 @@ impl SelectionModifier {
                     } else {
                         selection_bounds.extents() + offset
                     };
-                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN));
+                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
 
                     let new_bounds = AABB::new(
                         na::point![

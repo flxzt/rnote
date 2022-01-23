@@ -167,6 +167,7 @@ impl Renderer {
         svgs: &[Svg],
         bounds: AABB,
     ) -> Result<Option<Image>, anyhow::Error> {
+        let bounds = geometry::aabb_ceil(bounds);
         let width_scaled = ((bounds.extents()[0]) * zoom).round() as u32;
         let height_scaled = ((bounds.extents()[1]) * zoom).round() as u32;
 

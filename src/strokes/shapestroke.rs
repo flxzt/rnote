@@ -107,7 +107,7 @@ impl DrawBehaviour for ShapeStroke {
     }
 
     fn gen_bounds(&self) -> Option<AABB> {
-        let mut new_bounds = match self.shaper.drawstyle() {
+        let new_bounds = match self.shaper.drawstyle() {
             shaper::DrawStyle::Smooth => self.shape.bounds().loosened(self.shaper.width() * 0.5),
             shaper::DrawStyle::Rough => {
                 self.shape
@@ -116,7 +116,6 @@ impl DrawBehaviour for ShapeStroke {
                     .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN)
             }
         };
-        new_bounds = geometry::aabb_ceil(new_bounds);
 
         Some(new_bounds)
     }

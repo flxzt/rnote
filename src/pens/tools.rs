@@ -172,10 +172,10 @@ impl DragProximityTool {
         let cx = self.pos[0] + self.offset[0];
         let cy = self.pos[1] + self.offset[1];
         let r = self.radius;
-        let mut draw_bounds = geometry::aabb_ceil(geometry::aabb_new_positive(
+        let mut draw_bounds = geometry::aabb_new_positive(
             na::point![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
             na::point![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
-        ));
+        );
         draw_bounds.take_point(na::Point2::from(self.pos.add_scalar(-Self::OUTLINE_WIDTH)));
         draw_bounds.take_point(na::Point2::from(self.pos.add_scalar(Self::OUTLINE_WIDTH)));
 

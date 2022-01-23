@@ -72,8 +72,7 @@ impl DrawBehaviour for MarkerStroke {
                             bounds.take_point(na::Point2::from(cubbez.end));
 
                             bounds.loosen(marker_width);
-                            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-                            bounds = geometry::aabb_ceil(bounds);
+
                             Some(bounds)
                         } else if let Some(line) =
                             curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
@@ -82,8 +81,6 @@ impl DrawBehaviour for MarkerStroke {
                             bounds.take_point(na::Point2::from(line.end));
 
                             bounds.loosen(marker_width);
-                            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-                            bounds = geometry::aabb_ceil(bounds);
 
                             Some(bounds)
                         } else {
@@ -228,8 +225,6 @@ impl MarkerStroke {
                     last.inputdata.pos() + na::vector![self.marker.width(), self.marker.width()],
                 ),
             ));
-
-            self.bounds = geometry::aabb_ceil(self.bounds);
         }
     }
 
@@ -319,9 +314,6 @@ impl MarkerStroke {
             bounds.take_point(na::Point2::from(cubbez.cp1));
             bounds.take_point(na::Point2::from(cubbez.cp2));
             bounds.take_point(na::Point2::from(cubbez.end));
-
-            // Ceil to nearest integers to avoid subpixel placement errors between stroke elements.
-            bounds = geometry::aabb_ceil(bounds);
 
             commands.append(&mut solid::compose_cubbez(cubbez, true));
         } else if let Some(mut line) =

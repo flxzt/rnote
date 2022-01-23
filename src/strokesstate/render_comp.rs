@@ -2,7 +2,7 @@ use super::StateTask;
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::ui::canvas;
-use crate::{render, utils};
+use crate::{compose, render};
 
 use gtk4::{graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -17,8 +17,8 @@ pub struct RenderComponent {
     pub regenerate_flag: bool,
     #[serde(skip)]
     pub images: Vec<render::Image>,
-    #[serde(skip, default = "render::default_rendernode")]
-    pub rendernode: gsk::RenderNode,
+    #[serde(skip)]
+    pub rendernode: Option<gsk::RenderNode>,
 }
 
 impl Default for RenderComponent {
@@ -27,7 +27,7 @@ impl Default for RenderComponent {
             render: true,
             regenerate_flag: true,
             images: vec![],
-            rendernode: render::default_rendernode(),
+            rendernode: None,
         }
     }
 }
@@ -101,7 +101,7 @@ impl StrokesState {
                 Ok(image) => {
                     match render::image_to_rendernode(&image, self.zoom) {
                         Ok(rendernode) => {
-                            render_comp.rendernode = rendernode;
+                            render_comp.rendernode = Some(rendernode);
                             render_comp.regenerate_flag = false;
                             render_comp.images = vec![image];
                         }
@@ -187,7 +187,7 @@ impl StrokesState {
                                     let mut images = vec![last_elems_image];
 
                                     match render::append_images_to_rendernode(
-                                        &render_comp.rendernode,
+                                        render_comp.rendernode.as_ref(),
                                         &images,
                                         self.zoom,
                                     ) {
@@ -235,7 +235,7 @@ impl StrokesState {
                                     let mut images = vec![last_elems_image];
 
                                     match render::append_images_to_rendernode(
-                                        &render_comp.rendernode,
+                                        render_comp.rendernode.as_ref(),
                                         &images,
                                         self.zoom,
                                     ) {
@@ -262,7 +262,7 @@ impl StrokesState {
                         Ok(image) => {
                             match render::image_to_rendernode(&image, self.zoom) {
                                 Ok(rendernode) => {
-                                    render_comp.rendernode = rendernode;
+                                    render_comp.rendernode = Some(rendernode);
                                     render_comp.regenerate_flag = false;
                                     render_comp.images = vec![image];
                                 }
@@ -419,7 +419,7 @@ impl StrokesState {
     }
 
     pub fn regenerate_rendering_for_selection(&mut self) {
-        let selection_keys = self.selection_keys();
+        let selection_keys = self.selection_keys_in_order_rendered();
 
         selection_keys.iter().for_each(|&key| {
             self.regenerate_rendering_for_stroke(key);
@@ -427,7 +427,7 @@ impl StrokesState {
     }
 
     pub fn regenerate_rendering_for_selection_threaded(&mut self) {
-        let selection_keys = self.selection_keys();
+        let selection_keys = self.selection_keys_in_order_rendered();
 
         selection_keys.iter().for_each(|&key| {
             self.regenerate_rendering_for_stroke_threaded(key);
@@ -487,7 +487,7 @@ impl StrokesState {
 
     pub fn append_images_to_rendering(&mut self, key: StrokeKey, mut images: Vec<render::Image>) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            match render::append_images_to_rendernode(&render_comp.rendernode, &images, self.zoom) {
+            match render::append_images_to_rendernode(render_comp.rendernode.as_ref(), &images, self.zoom) {
                 Ok(rendernode) => {
                     render_comp.rendernode = rendernode;
                     render_comp.regenerate_flag = false;
@@ -520,13 +520,8 @@ impl StrokesState {
 
     /// Draws the strokes without the selection
     pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<AABB>) {
-        self.keys_sorted_chrono()
+        self.stroke_keys_in_order_rendered()
             .iter()
-            .filter(|&&key| {
-                self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && !(self.selected(key).unwrap_or(false))
-            })
             .for_each(|&key| {
                 if let (Some(stroke), Some(render_comp)) =
                     (self.strokes.get(key), self.render_components.get(key))
@@ -538,14 +533,15 @@ impl StrokesState {
                         }
                     }
 
-                    snapshot.append_node(&render_comp.rendernode);
+                    if let Some(rendernode) = render_comp.rendernode.as_ref() {
+                        snapshot.append_node(rendernode);
+                    }
                 }
             });
     }
 
     /// Draws the selection
     pub fn draw_selection(&self, zoom: f64, snapshot: &Snapshot) {
-
         fn draw_selected_bounds(bounds: AABB, zoom: f64, snapshot: &Snapshot) {
             let bounds = graphene::Rect::new(
                 bounds.mins[0] as f32,
@@ -554,7 +550,7 @@ impl StrokesState {
                 (bounds.extents()[1]) as f32,
             )
             .scale(zoom as f32, zoom as f32);
-            let border_color = utils::Color {
+            let border_color = compose::Color {
                 r: 0.0,
                 g: 0.2,
                 b: 0.8,
@@ -580,13 +576,8 @@ impl StrokesState {
             );
         }
 
-        self.keys_sorted_chrono()
+        self.selection_keys_in_order_rendered()
             .iter()
-            .filter(|&&key| {
-                self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && (self.selected(key).unwrap_or(false))
-            })
             .for_each(|&key| {
                 let render_comp = self.render_components.get(key).unwrap();
 
@@ -594,7 +585,9 @@ impl StrokesState {
                     (self.selection_components.get(key), self.strokes.get(key))
                 {
                     if selection_comp.selected {
-                        snapshot.append_node(&render_comp.rendernode);
+                        if let Some(rendernode) = render_comp.rendernode.as_ref() {
+                            snapshot.append_node(rendernode);
+                        }
 
                         draw_selected_bounds(stroke.bounds(), zoom, snapshot);
                     }

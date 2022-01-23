@@ -7,6 +7,7 @@ use crate::{
     render,
     ui::appwindow::RnoteAppWindow,
     ui::{canvas::Canvas, dialogs},
+    utils,
 };
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
@@ -82,6 +83,8 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
     appwindow.add_action(&action_export_selection_as_svg);
     let action_export_sheet_as_svg = gio::SimpleAction::new("export-sheet-as-svg", None);
     appwindow.add_action(&action_export_sheet_as_svg);
+    let action_export_sheet_as_xopp = gio::SimpleAction::new("export-sheet-as-xopp", None);
+    appwindow.add_action(&action_export_sheet_as_xopp);
     let action_clipboard_copy_selection = gio::SimpleAction::new("clipboard-copy-selection", None);
     appwindow.add_action(&action_clipboard_copy_selection);
     let action_clipboard_paste_selection =
@@ -633,11 +636,22 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
         }
 
         if let Some(output_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file() {
-            if let Err(e) = appwindow.canvas().sheet().save_sheet_to_file(&output_file) {
-                log::error!("failed to save sheet, {}", e);
-                appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
-            } else {
-                appwindow.canvas().set_unsaved_changes(false);
+            match output_file.basename() {
+                Some(basename) => {
+                    match appwindow.canvas().sheet().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {
+                        Ok(bytes) => {
+                            if let Err(e) = utils::replace_file_async(bytes, &output_file) {
+                                log::error!("saving sheet as .rnote failed, replace_file_async failed with Err {}", e);
+                            } else {
+                                appwindow.canvas().set_unsaved_changes(false);
+                            }
+                        },
+                        Err(e) => log::error!("saving sheet as .rnote failed with error `{}`", e),
+                    }
+                }
+                None => {
+                    log::error!("basename for file is None while trying to save sheet as .rnote");
+                }
             }
         }
     }));
@@ -712,7 +726,12 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
 
     // Export sheet as SVG
     action_export_sheet_as_svg.connect_activate(clone!(@weak appwindow => move |_,_| {
-        dialogs::dialog_export_sheet(&appwindow);
+        dialogs::dialog_export_sheet_as_svg(&appwindow);
+    }));
+
+    // Export sheet as Xopp
+    action_export_sheet_as_xopp.connect_activate(clone!(@weak appwindow => move |_,_| {
+        dialogs::dialog_export_sheet_as_xopp(&appwindow);
     }));
 
     // Clipboard copy selection

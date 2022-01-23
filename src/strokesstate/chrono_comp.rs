@@ -109,6 +109,7 @@ impl StrokesState {
         last_trashed_key.map(|(last_trashed_key, _i)| last_trashed_key)
     }
 
+    /// Returns the keys in chronological order, as in first: gets drawn first, last: gets drawn last
     pub fn keys_sorted_chrono(&self) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 

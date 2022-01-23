@@ -723,18 +723,18 @@ impl RnoteAppWindow {
 
         canvas_zoom_gesture.connect_cancel(
             clone!(@strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
-                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
-
                 zoomgesture_bbcenter_start.set(None);
+
+                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
             }),
         );
 
         canvas_zoom_gesture.connect_end(
             clone!(@strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
-                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
-
                 zoomgesture_bbcenter_start.set(None);
                 appwindow.canvas().zoom_to(new_zoom.get());
+
+                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
             }),
         );
 
@@ -772,19 +772,22 @@ impl RnoteAppWindow {
     pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
         match utils::FileType::lookup_file_type(file) {
-            utils::FileType::RnoteFile => {
+            utils::FileType::RnoteFile | utils::FileType::XoppFile => {
                 // Setting input file to hand it to the open overwrite dialog
                 app.set_input_file(Some(file.clone()));
 
                 if app.unsaved_changes() {
                     dialogs::dialog_open_overwrite(self);
                 } else if let Err(e) = self.load_in_file(file, target_pos) {
-                    log::error!("failed to load in file with FileType::RnoteFile, {}", e);
+                    log::error!(
+                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
+                        e
+                    );
                 }
             }
             utils::FileType::VectorImageFile
             | utils::FileType::BitmapImageFile
-            | utils::FileType::Pdf => {
+            | utils::FileType::PdfFile => {
                 if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
                 }
@@ -824,6 +827,19 @@ impl RnoteAppWindow {
                     }
                 }));
             }
+            utils::FileType::XoppFile => {
+                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    let result = file.load_bytes_future().await;
+                    if let Ok((file_bytes, _)) = result {
+                        if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes, file.path()) {
+                            log::error!(
+                                "load_in_xopp_bytes() failed in load_in_file() with Err {}",
+                                e
+                            );
+                        }
+                    }
+                }));
+            }
             utils::FileType::VectorImageFile => {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
                     let result = file.load_bytes_future().await;
@@ -850,7 +866,7 @@ impl RnoteAppWindow {
                     }
                 }));
             }
-            utils::FileType::Pdf => {
+            utils::FileType::PdfFile => {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
                     let result = file.load_bytes_future().await;
                     if let Ok((file_bytes, _)) = result {
@@ -884,7 +900,7 @@ impl RnoteAppWindow {
         P: AsRef<Path>,
     {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
-        self.canvas().sheet().open_sheet_from_bytes(bytes)?;
+        self.canvas().sheet().open_sheet_from_rnote_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
         self.settings_panel().load_all(self);
@@ -897,6 +913,32 @@ impl RnoteAppWindow {
         }
 
         self.canvas().set_unsaved_changes(false);
+        self.canvas().set_empty(false);
+        self.canvas().regenerate_background(false);
+        self.canvas().regenerate_content(true, true);
+
+        Ok(())
+    }
+
+    pub fn load_in_xopp_bytes<P>(
+        &self,
+        bytes: glib::Bytes,
+        _path: Option<P>,
+    ) -> Result<(), anyhow::Error>
+    where
+        P: AsRef<Path>,
+    {
+        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        self.canvas().sheet().open_from_xopp_bytes(bytes)?;
+
+        // Loading the sheet properties into the format settings panel
+        self.settings_panel().load_all(self);
+
+        self.canvas().set_unsaved_changes(true);
+        app.set_input_file(None);
+        app.set_output_file(None, self);
+
+        self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
         self.canvas().regenerate_background(false);
         self.canvas().regenerate_content(true, true);

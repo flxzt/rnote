@@ -68,6 +68,9 @@ meson.add_dist_script(
   meson.project_source_root()
 )
 
+# local crates
+subdir('notetakingfileformats')
+
 subdir('resources')
 subdir('src')
 subdir('po')

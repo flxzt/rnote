@@ -10,7 +10,6 @@ mod imp {
 
     use crate::compose::geometry;
     use crate::ui::canvas::Canvas;
-    use crate::ui::selectionmodifier;
     use crate::ui::selectionmodifier::SelectionModifier;
 
     #[derive(Debug, Default)]
@@ -65,8 +64,8 @@ mod imp {
             _baseline: i32,
         ) {
             let canvas = widget.downcast_ref::<Canvas>().unwrap();
+            let canvas_priv = canvas.imp();
             let total_zoom = canvas.total_zoom();
-            let sheet_margin_zoomed = canvas.sheet_margin() * total_zoom;
 
             let hadj = canvas.hadjustment().unwrap();
             hadj.configure(
@@ -88,45 +87,45 @@ mod imp {
                 height as f64,
             );
 
-            let child = canvas.first_child().unwrap();
-            if child
-                .type_()
-                .is_a(selectionmodifier::SelectionModifier::static_type())
+            // Allocate the selection_modifier child
             {
-                let selection_modifier = child.downcast_ref::<SelectionModifier>().unwrap();
+                canvas_priv.selection_modifier.update_translate_node_size_request(&canvas);
 
-                // update the selection_modifier internal state before allocation
-                selection_modifier.update_state(canvas);
+                let (_, selection_modifier_width, _, _) = canvas_priv
+                    .selection_modifier
+                    .measure(Orientation::Horizontal, -1);
+                let (_, selection_modifier_height, _, _) = canvas_priv
+                    .selection_modifier
+                    .measure(Orientation::Vertical, -1);
 
-                // Allocate the selection_modifier child
-                if let Some(selection_bounds) = selection_modifier.selection_bounds() {
+                let (selection_modifier_x, selection_modifier_y) = if let Some(selection_bounds) =
+                    canvas_priv.selection_modifier.selection_bounds()
+                {
+                    let sheet_margin_zoomed = canvas.sheet_margin() * total_zoom;
                     let selection_bounds_zoomed =
                         geometry::aabb_scale(selection_bounds, total_zoom);
 
-                    let selection_modifier_x =
+                    (
                         (sheet_margin_zoomed + selection_bounds_zoomed.mins[0] - hadj.value())
-                            .round() as i32
-                            - SelectionModifier::RESIZE_NODE_SIZE;
-                    let selection_modifier_y =
+                            .ceil() as i32
+                            - SelectionModifier::RESIZE_NODE_SIZE,
                         (sheet_margin_zoomed + selection_bounds_zoomed.mins[1] - vadj.value())
-                            .round() as i32
-                            - SelectionModifier::RESIZE_NODE_SIZE;
-
-                    let (_, selection_modifier_width, _, _) =
-                        selection_modifier.measure(Orientation::Horizontal, -1);
-                    let (_, selection_modifier_height, _, _) =
-                        selection_modifier.measure(Orientation::Vertical, -1);
-
-                    selection_modifier.size_allocate(
-                        &gdk::Rectangle::new(
-                            selection_modifier_x,
-                            selection_modifier_y,
-                            selection_modifier_width,
-                            selection_modifier_height,
-                        ),
-                        -1,
+                            .ceil() as i32
+                            - SelectionModifier::RESIZE_NODE_SIZE,
                     )
-                }
+                } else {
+                    (0, 0)
+                };
+
+                canvas_priv.selection_modifier.size_allocate(
+                    &gdk::Rectangle::new(
+                        selection_modifier_x,
+                        selection_modifier_y,
+                        selection_modifier_width,
+                        selection_modifier_height,
+                    ),
+                    -1,
+                );
             }
         }
     }

@@ -347,11 +347,11 @@ use gtk4::{Adjustment, ColorButton, ToggleButton};
 
 use super::appwindow::RnoteAppWindow;
 use super::canvas::Canvas;
+use crate::compose;
 use crate::sheet::background::PatternStyle;
 use crate::sheet::format::{self, Format};
 use crate::sheet::Sheet;
 use crate::ui::unitentry::UnitEntry;
-use crate::utils;
 
 glib::wrapper! {
     pub struct SettingsPanel(ObjectSubclass<imp::SettingsPanel>)
@@ -598,7 +598,7 @@ impl SettingsPanel {
         priv_.format_revert_button.get().connect_clicked(
             clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
                 let priv_ = imp::SettingsPanel::from_instance(&settings_panel);
-                priv_.temporary_format.import_format(appwindow.canvas().sheet().format());
+                priv_.temporary_format.import_format(&appwindow.canvas().sheet().format());
                 let revert_format = appwindow.canvas().sheet().format();
 
                 settings_panel.set_predefined_format_variant(format::PredefinedFormat::Custom);
@@ -619,7 +619,7 @@ impl SettingsPanel {
 
         priv_.format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
-                appwindow.canvas().sheet().format().import_format(temporary_format);
+                appwindow.canvas().sheet().format().import_format(&temporary_format);
                 appwindow.canvas().sheet().set_padding_bottom(appwindow.canvas().sheet().format().height());
 
                 appwindow.canvas().sheet().resize_to_format();
@@ -630,7 +630,7 @@ impl SettingsPanel {
 
         // Background
         priv_.background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.canvas().sheet().background().borrow_mut().set_color(utils::Color::from(background_color_choosebutton.rgba()));
+            appwindow.canvas().sheet().background().borrow_mut().set_color(compose::Color::from(background_color_choosebutton.rgba()));
             appwindow.canvas().regenerate_background(true);
         }));
 
@@ -675,7 +675,7 @@ impl SettingsPanel {
         }));
 
         priv_.background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
-            appwindow.canvas().sheet().background().borrow_mut().set_pattern_color(utils::Color::from(background_pattern_color_choosebutton.rgba()));
+            appwindow.canvas().sheet().background().borrow_mut().set_pattern_color(compose::Color::from(background_pattern_color_choosebutton.rgba()));
             appwindow.canvas().regenerate_background(true);
         }));
 

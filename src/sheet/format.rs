@@ -155,9 +155,9 @@ use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 
+use crate::compose;
 use crate::compose::geometry;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::utils;
 
 glib::wrapper! {
     pub struct Format(ObjectSubclass<imp::Format>);
@@ -331,7 +331,7 @@ impl Format {
     pub const DPI_MAX: f64 = 5000.0;
     pub const DPI_DEFAULT: f64 = 96.0;
 
-    pub const FORMAT_BORDER_COLOR: utils::Color = utils::Color {
+    pub const FORMAT_BORDER_COLOR: compose::Color = compose::Color {
         r: 0.6,
         g: 0.0,
         b: 0.0,
@@ -382,7 +382,7 @@ impl Format {
         self.set_property("orientation", orientation.to_value());
     }
 
-    pub fn import_format(&self, format: Self) {
+    pub fn import_format(&self, format: &Self) {
         self.set_width(format.width());
         self.set_height(format.height());
         self.set_dpi(format.dpi());

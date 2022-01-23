@@ -2,136 +2,12 @@ use crate::config;
 
 use flate2::read::MultiGzDecoder;
 use flate2::{Compression, GzBuilder};
-use gtk4::{gdk, gio, glib, prelude::*, Widget};
+use gtk4::{gio, glib, prelude::*, Widget};
 use p2d::bounding_volume::AABB;
 use rand::{Rng, SeedableRng};
-use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
-
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(default)]
-pub struct Color {
-    pub r: f32, // between 0.0 and 1.0
-    pub g: f32, // between 0.0 and 1.0
-    pub b: f32, // between 0.0 and 1.0
-    pub a: f32, // between 0.0 and 1.0
-}
-
-impl Default for Color {
-    fn default() -> Self {
-        Self::BLACK
-    }
-}
-
-impl Color {
-    pub const TRANSPARENT: Self = Self {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-        a: 0.0,
-    };
-    pub const BLACK: Self = Self {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    };
-    pub const WHITE: Self = Self {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0,
-        a: 1.0,
-    };
-    pub const RED: Self = Self {
-        r: 1.0,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    };
-    pub const GREEN: Self = Self {
-        r: 0.0,
-        g: 1.0,
-        b: 0.0,
-        a: 1.0,
-    };
-    pub const BLUE: Self = Self {
-        r: 0.0,
-        g: 0.0,
-        b: 1.0,
-        a: 1.0,
-    };
-
-    pub fn new(r: f32, g: f32, b: f32, a: f32) -> Self {
-        Self {
-            r: r.clamp(0.0, 1.0),
-            g: g.clamp(0.0, 1.0),
-            b: b.clamp(0.0, 1.0),
-            a: a.clamp(0.0, 1.0),
-        }
-    }
-
-    pub fn r(&self) -> f32 {
-        self.r
-    }
-
-    pub fn g(&self) -> f32 {
-        self.g
-    }
-
-    pub fn b(&self) -> f32 {
-        self.b
-    }
-
-    pub fn a(&self) -> f32 {
-        self.a
-    }
-
-    pub fn to_css_color(self) -> String {
-        format!(
-            "rgb({:03},{:03},{:03},{:.3})",
-            (self.r * 255.0) as i32,
-            (self.g * 255.0) as i32,
-            (self.b * 255.0) as i32,
-            ((1000.0 * self.a).round() / 1000.0),
-        )
-    }
-
-    pub fn to_gdk(&self) -> gdk::RGBA {
-        gdk::RGBA::new(self.r, self.g, self.b, self.a)
-    }
-
-    pub fn to_u32(&self) -> u32 {
-        ((((self.r * 255.0).round() as u32) & 0xff) << 24)
-            | ((((self.g * 255.0).round() as u32) & 0xff) << 16)
-            | ((((self.b * 255.0).round() as u32) & 0xff) << 8)
-            | (((self.a * 255.0).round() as u32) & 0xff)
-    }
-}
-
-impl From<gdk::RGBA> for Color {
-    fn from(gdk_color: gdk::RGBA) -> Self {
-        Self {
-            r: gdk_color.red(),
-            g: gdk_color.green(),
-            b: gdk_color.blue(),
-            a: gdk_color.alpha(),
-        }
-    }
-}
-
-// u32 encoded as RGBA
-impl From<u32> for Color {
-    fn from(value: u32) -> Self {
-        Self {
-            r: ((value >> 24) & 0xff) as f32 / 255.0,
-            g: ((value >> 16) & 0xff) as f32 / 255.0,
-            b: ((value >> 8) & 0xff) as f32 / 255.0,
-            a: ((value) & 0xff) as f32 / 255.0,
-        }
-    }
-}
 
 pub fn now() -> String {
     match glib::DateTime::now_local() {
@@ -163,9 +39,10 @@ pub fn app_config_base_dirpath() -> Option<PathBuf> {
 pub enum FileType {
     Folder,
     RnoteFile,
+    XoppFile,
     VectorImageFile,
     BitmapImageFile,
-    Pdf,
+    PdfFile,
     UnknownFile,
 }
 
@@ -180,6 +57,13 @@ impl FileType {
                 gio::FileType::Regular => {
                     if let Some(content_type) = info.content_type() {
                         match content_type.as_str() {
+                            "application/rnote" => {
+                                return Self::RnoteFile;
+                            }
+                            "application/x-xopp" => {
+                                log::debug!(" is a xopp file ");
+                                return Self::XoppFile;
+                            }
                             "image/svg+xml" => {
                                 return Self::VectorImageFile;
                             }
@@ -187,7 +71,7 @@ impl FileType {
                                 return Self::BitmapImageFile;
                             }
                             "application/pdf" => {
-                                return Self::Pdf;
+                                return Self::PdfFile;
                             }
                             _ => {}
                         }
@@ -205,11 +89,15 @@ impl FileType {
             log::warn!("failed to query FileInfo from file");
         }
 
+        // match on file extensions as fallback
         if let Some(path) = file.path() {
             if let Some(extension_str) = path.extension() {
                 match &*extension_str.to_string_lossy() {
                     "rnote" => {
                         return Self::RnoteFile;
+                    }
+                    "xopp" => {
+                        return Self::XoppFile;
                     }
                     _ => {}
                 }
@@ -268,4 +156,53 @@ pub fn translate_aabb_to_widget(
         na::point![coords.0, coords.1]
     };
     Some(AABB::new(mins, maxs))
+}
+
+pub fn replace_file_async(bytes: Vec<u8>, file: &gio::File) -> Result<(), anyhow::Error> {
+    file.replace_async(
+        None,
+        false,
+        gio::FileCreateFlags::REPLACE_DESTINATION,
+        glib::PRIORITY_HIGH_IDLE,
+        None::<&gio::Cancellable>,
+        move |result| {
+            let output_stream = match result {
+                Ok(output_stream) => output_stream,
+                Err(e) => {
+                    log::error!(
+                        "replace_async() failed in save_sheet_to_file() with Err {}",
+                        e
+                    );
+                    return;
+                }
+            };
+
+            if let Err(e) = output_stream.write(&bytes, None::<&gio::Cancellable>) {
+                log::error!(
+                    "output_stream().write() failed in save_sheet_to_file() with Err {}",
+                    e
+                );
+            };
+            if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
+                log::error!(
+                    "output_stream().close() failed in save_sheet_to_file() with Err {}",
+                    e
+                );
+            };
+        },
+    );
+
+    Ok(())
+}
+
+pub fn convert_value_dpi(value: f64, current_dpi: f64, target_dpi: f64) -> f64 {
+    (value / current_dpi) * target_dpi
+}
+
+pub fn convert_coord_dpi(
+    coord: na::Vector2<f64>,
+    current_dpi: f64,
+    target_dpi: f64,
+) -> na::Vector2<f64> {
+    (coord / current_dpi) * target_dpi
 }

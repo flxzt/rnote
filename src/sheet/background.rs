@@ -6,7 +6,7 @@ use svg::node::element;
 
 use crate::compose::geometry;
 use crate::render::Renderer;
-use crate::{compose, render, utils};
+use crate::{compose, render};
 
 #[derive(
     Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
@@ -33,7 +33,7 @@ impl Default for PatternStyle {
 pub fn gen_horizontal_line_pattern(
     bounds: AABB,
     spacing: f64,
-    color: utils::Color,
+    color: compose::Color,
     line_width: f64,
 ) -> svg::node::element::Element {
     let mut group = element::Group::new();
@@ -63,7 +63,7 @@ pub fn gen_grid_pattern(
     bounds: AABB,
     row_spacing: f64,
     column_spacing: f64,
-    color: utils::Color,
+    color: compose::Color,
     line_width: f64,
 ) -> svg::node::element::Element {
     let mut group = element::Group::new();
@@ -108,7 +108,7 @@ pub fn gen_dots_pattern(
     bounds: AABB,
     row_spacing: f64,
     column_spacing: f64,
-    color: utils::Color,
+    color: compose::Color,
     dots_width: f64,
 ) -> svg::node::element::Element {
     let mut group = element::Group::new();
@@ -144,23 +144,23 @@ pub fn gen_dots_pattern(
 #[serde(default, rename = "background")]
 pub struct Background {
     #[serde(rename = "color")]
-    color: utils::Color,
+    color: compose::Color,
     #[serde(rename = "pattern")]
     pattern: PatternStyle,
     #[serde(rename = "pattern_size")]
     pattern_size: na::Vector2<f64>,
     #[serde(rename = "pattern_color")]
-    pattern_color: utils::Color,
+    pattern_color: compose::Color,
     #[serde(skip)]
     image: Option<render::Image>,
-    #[serde(skip, default = "render::default_rendernode")]
-    rendernode: gsk::RenderNode,
+    #[serde(skip)]
+    rendernode: Option<gsk::RenderNode>,
 }
 
 impl Default for Background {
     fn default() -> Self {
         Self {
-            color: utils::Color {
+            color: compose::Color {
                 r: 1.0,
                 g: 1.0,
                 b: 1.0,
@@ -168,14 +168,14 @@ impl Default for Background {
             },
             pattern: PatternStyle::default(),
             pattern_size: na::Vector2::from_element(Self::PATTERN_SIZE_DEFAULT),
-            pattern_color: utils::Color {
+            pattern_color: compose::Color {
                 r: 0.3,
                 g: 0.7,
                 b: 1.0,
                 a: 1.0,
             },
             image: None,
-            rendernode: render::default_rendernode(),
+            rendernode: None,
         }
     }
 }
@@ -192,11 +192,11 @@ impl Background {
         self.pattern_color = background.pattern_color;
     }
 
-    pub fn color(&self) -> utils::Color {
+    pub fn color(&self) -> compose::Color {
         self.color
     }
 
-    pub fn set_color(&mut self, color: utils::Color) {
+    pub fn set_color(&mut self, color: compose::Color) {
         self.color = color;
     }
 
@@ -208,11 +208,11 @@ impl Background {
         self.pattern = pattern;
     }
 
-    pub fn pattern_color(&self) -> utils::Color {
+    pub fn pattern_color(&self) -> compose::Color {
         self.pattern_color
     }
 
-    pub fn set_pattern_color(&mut self, pattern_color: utils::Color) {
+    pub fn set_pattern_color(&mut self, pattern_color: compose::Color) {
         self.pattern_color = pattern_color;
     }
 
@@ -359,7 +359,7 @@ impl Background {
     ) -> Result<(), anyhow::Error> {
         match self.gen_rendernode(zoom, sheet_bounds) {
             Ok(new_rendernode) => {
-                self.rendernode = new_rendernode;
+                self.rendernode = Some(new_rendernode);
             }
             Err(e) => {
                 log::error!(
@@ -373,6 +373,8 @@ impl Background {
     }
 
     pub fn draw(&self, snapshot: &Snapshot) {
-        snapshot.append_node(&self.rendernode);
+        if let Some(rendernode) = self.rendernode.as_ref() {
+            snapshot.append_node(rendernode);
+        }
     }
 }

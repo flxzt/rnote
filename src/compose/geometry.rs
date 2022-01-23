@@ -23,28 +23,18 @@ pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     rot_90deg * normalized
 }
 
-/// Match offset to the aspect ratio of the AABB
-pub fn restrict_offset_to_aabb_aspect_ratio(
-    aabb: AABB,
-    offset: na::Vector2<f64>,
-) -> na::Vector2<f64> {
-    let aspect_ratio = aabb.extents()[1] / aabb.extents()[0];
-    let offsetted_aspect_ratio = (aabb.extents()[1] + offset[1]) / (aabb.extents()[0] + offset[0]);
+pub fn vector2_mins(vec: na::Vector2<f64>, other: na::Vector2<f64>) -> na::Vector2<f64> {
+    na::vector![
+        vec[0].min(other[0]),
+        vec[1].min(other[1])
+    ]
+}
 
-    if offsetted_aspect_ratio > aspect_ratio {
-        let scalefactor = aabb.extents()[1] / (aabb.extents()[1] - offset[1]);
-        na::vector![
-            aabb.extents()[0] - aabb.extents()[0] * scalefactor,
-            offset[1]
-        ]
-    } else {
-        let scalefactor = aabb.extents()[0] / (aabb.extents()[0] - offset[0]);
-        na::vector![
-            offset[0],
-            aabb.extents()[1] - aabb.extents()[1] * scalefactor
-        ]
-    }
-    //na::vector![0.0, offset[1]]
+pub fn vector2_maxs(vec: na::Vector2<f64>, other: na::Vector2<f64>) -> na::Vector2<f64> {
+    na::vector![
+        vec[0].max(other[0]),
+        vec[1].max(other[1])
+    ]
 }
 
 /// AABB to graphene Rect
@@ -243,6 +233,12 @@ pub fn aabb_ceil(aabb: AABB) -> AABB {
         na::point![aabb.mins[0].floor(), aabb.mins[1].floor()],
         na::point![aabb.maxs[0].ceil(), aabb.maxs[1].ceil()],
     )
+}
+
+pub fn scale_with_locked_aspectratio(src_size: na::Vector2<f64>, max_size: na::Vector2<f64>) -> na::Vector2<f64> {
+    let ratio = (max_size[0] / src_size[0]).min(max_size[1] / src_size[1]);
+
+    src_size * ratio
 }
 
 pub fn convexpolygon_contains_aabb(convexpolygon: &p2d::shape::ConvexPolygon, aabb: &AABB) -> bool {

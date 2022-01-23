@@ -80,10 +80,10 @@ mod imp {
     impl WidgetImpl for ShaperPage {}
 }
 
+use crate::compose;
 use crate::compose::rough::roughoptions;
 use crate::pens::shaper::Shaper;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use crate::utils;
 use gtk4::{gdk, Adjustment, Button, MenuButton, Popover, Revealer, ToggleButton};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, Widget};
 
@@ -190,13 +190,13 @@ impl ShaperPage {
         // Stroke color
         self.stroke_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
             let color = stroke_colorpicker.property::<gdk::RGBA>("current-color");
-            appwindow.canvas().pens().borrow_mut().shaper.set_color(Some(utils::Color::from(color)));
+            appwindow.canvas().pens().borrow_mut().shaper.set_color(Some(compose::Color::from(color)));
         }));
 
         // Fill color
         self.fill_colorpicker().connect_notify_local(Some("current-color"), clone!(@weak appwindow => move |fill_colorpicker, _paramspec| {
             let color = fill_colorpicker.property::<gdk::RGBA>("current-color");
-            appwindow.canvas().pens().borrow_mut().shaper.set_fill(Some(utils::Color::from(color)));
+            appwindow.canvas().pens().borrow_mut().shaper.set_fill(Some(compose::Color::from(color)));
         }));
 
         // Roughness

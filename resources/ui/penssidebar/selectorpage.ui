@@ -66,6 +66,18 @@
       </object>
     </child>
     <child>
+      <object class="GtkToggleButton" id="resize_lock_aspectratio_togglebutton">
+        <property name="tooltip_text" translatable="yes">Lock aspectratio while resizing the selection</property>
+        <property name="margin-bottom">6</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon_name">selection-resize-lock-aspectratio-symbolic</property>
+            <property name="icon-size">large</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
       <object class="GtkButton" id="delete_button">
         <property name="tooltip_text" translatable="yes">Delete selection</property>
         <property name="margin-bottom">6</property>

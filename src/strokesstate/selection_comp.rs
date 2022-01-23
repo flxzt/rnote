@@ -68,14 +68,17 @@ impl StrokesState {
         }
     }
 
-    /// Returns all keys for the selection
-    pub fn selection_keys(&self) -> Vec<StrokeKey> {
-        self.keys_sorted_chrono()
+    /// Returns the selection keys in the order that they should be rendered. Does not return the stroke keys!
+    pub fn selection_keys_in_order_rendered(&self) -> Vec<StrokeKey> {
+        let keys_sorted_chrono = self.keys_sorted_chrono();
+
+        keys_sorted_chrono
             .iter()
             .filter_map(|&key| {
-                let selection_comp = self.selection_components.get(key)?;
-
-                if selection_comp.selected {
+                if self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && (self.selected(key).unwrap_or(false))
+                {
                     Some(key)
                 } else {
                     None
@@ -85,11 +88,11 @@ impl StrokesState {
     }
 
     pub fn selection_len(&self) -> usize {
-        self.selection_keys().len()
+        self.selection_keys_in_order_rendered().len()
     }
 
     pub fn gen_selection_bounds(&self) -> Option<AABB> {
-        self.gen_bounds(&self.selection_keys())
+        self.gen_bounds(&self.selection_keys_in_order_rendered())
     }
 
     pub fn deselect_all_strokes(&mut self) {
@@ -112,7 +115,7 @@ impl StrokesState {
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
         ];
 
-        let old_selected = self.selection_keys();
+        let old_selected = self.selection_keys_in_order_rendered();
         self.deselect_all_strokes();
 
         let new_selected = old_selected

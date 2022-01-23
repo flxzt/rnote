@@ -7,7 +7,7 @@ use crate::compose::rough::roughoptions;
 use crate::strokes::shapestroke::ShapeStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokesstate::StrokeKey;
-use crate::{input, utils};
+use crate::{compose, input};
 
 use super::penbehaviour::PenBehaviour;
 
@@ -57,9 +57,9 @@ pub struct Shaper {
     #[serde(rename = "width")]
     width: f64,
     #[serde(rename = "color")]
-    color: Option<utils::Color>,
+    color: Option<compose::Color>,
     #[serde(rename = "fill")]
-    fill: Option<utils::Color>,
+    fill: Option<compose::Color>,
     #[serde(rename = "rough_config")]
     pub rough_config: roughoptions::Options,
     #[serde(skip)]
@@ -173,13 +173,13 @@ impl Shaper {
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 2.0;
 
-    pub const COLOR_DEFAULT: Option<utils::Color> = Some(utils::Color {
+    pub const COLOR_DEFAULT: Option<compose::Color> = Some(compose::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     });
-    pub const FILL_DEFAULT: Option<utils::Color> = None;
+    pub const FILL_DEFAULT: Option<compose::Color> = None;
 
     pub fn width(&self) -> f64 {
         self.width
@@ -205,19 +205,19 @@ impl Shaper {
         self.drawstyle = drawstyle;
     }
 
-    pub fn color(&self) -> Option<utils::Color> {
+    pub fn color(&self) -> Option<compose::Color> {
         self.color
     }
 
-    pub fn set_color(&mut self, color: Option<utils::Color>) {
+    pub fn set_color(&mut self, color: Option<compose::Color>) {
         self.color = color;
     }
 
-    pub fn fill(&self) -> Option<utils::Color> {
+    pub fn fill(&self) -> Option<compose::Color> {
         self.fill
     }
 
-    pub fn set_fill(&mut self, fill: Option<utils::Color>) {
+    pub fn set_fill(&mut self, fill: Option<compose::Color>) {
         self.fill = fill;
     }
 }

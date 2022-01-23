@@ -150,7 +150,7 @@ impl MarkerStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
 
     pub fn new(element: Element, marker: Marker) -> Self {
-        let elements = Vec::with_capacity(20);
+        let elements = Vec::with_capacity(4);
         let bounds = AABB::new(
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
             na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
@@ -164,10 +164,37 @@ impl MarkerStroke {
             hitbox,
         };
 
-        // Pushing with push_elem() instead filling vector, because bounds are getting updated there too
+        // Pushing with push_elem() instead pushing vector, because bounds are getting updated there too
         markerstroke.push_elem(element);
 
         markerstroke
+    }
+
+    pub fn new_w_elements(elements: &[Element], marker: Marker) -> Option<Self> {
+        let mut elements_iter = elements.iter();
+        if let Some(first) = elements_iter.next() {
+            let bounds = AABB::new(
+                na::point![first.inputdata.pos()[0], first.inputdata.pos()[1]],
+                na::point![first.inputdata.pos()[0], first.inputdata.pos()[1]],
+            );
+            let hitbox: Vec<AABB> = Vec::new();
+
+            let mut markerstroke = Self {
+                elements: vec![*first],
+                marker,
+                bounds,
+                hitbox,
+            };
+
+            for element in elements_iter {
+                markerstroke.elements.push(*element);
+            }
+            markerstroke.update_geometry();
+
+            Some(markerstroke)
+        } else {
+            None
+        }
     }
 
     pub fn push_elem(&mut self, element: Element) {

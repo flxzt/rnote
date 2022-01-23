@@ -49,9 +49,7 @@ impl DrawBehaviour for VectorImage {
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
         let mut rectangle = self.rectangle.clone();
-        rectangle
-            .transform
-            .append_translation_mut(offset);
+        rectangle.transform.append_translation_mut(offset);
 
         let transform_string = rectangle.transform.transform_as_svg_transform_attr();
 

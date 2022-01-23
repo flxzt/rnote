@@ -210,7 +210,7 @@ mod imp {
 
 use gtk4::{gdk, glib, prelude::*, Button, PositionType, ToggleButton, Widget};
 
-use crate::utils;
+use crate::compose;
 
 glib::wrapper! {
     pub struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
@@ -224,7 +224,7 @@ impl Default for ColorSetter {
 }
 
 impl ColorSetter {
-    pub const COLOR_DEFAULT: utils::Color = utils::Color::BLACK;
+    pub const COLOR_DEFAULT: compose::Color = compose::Color::BLACK;
 
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("failed to create `ColorSetter")

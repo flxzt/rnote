@@ -5,7 +5,7 @@ use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
 use crate::strokesstate::StrokeKey;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{compose, render, utils};
+use crate::{compose, render};
 
 use anyhow::Context;
 use gtk4::{prelude::*, Snapshot};
@@ -44,20 +44,20 @@ impl Default for ExpandSheetTool {
 
 impl ExpandSheetTool {
     pub const Y_OFFSET_THRESHOLD: f64 = 2.0;
-    pub const FILL_COLOR: utils::Color = utils::Color {
+    pub const FILL_COLOR: compose::Color = compose::Color {
         r: 0.8,
         g: 0.9,
         b: 1.0,
         a: 0.2,
     };
-    pub const THRESHOLD_LINE_COLOR: utils::Color = utils::Color {
+    pub const THRESHOLD_LINE_COLOR: compose::Color = compose::Color {
         r: 0.5,
         g: 0.7,
         b: 0.7,
         a: 1.0,
     };
     pub const THRESHOLD_LINE_STROKE_WIDTH: f64 = 10.0;
-    pub const OFFSET_LINE_COLOR: utils::Color = utils::Color {
+    pub const OFFSET_LINE_COLOR: compose::Color = compose::Color {
         r: 0.0,
         g: 0.7,
         b: 1.0,
@@ -144,14 +144,14 @@ impl Default for DragProximityTool {
 
 impl DragProximityTool {
     pub const OFFSET_MAGN_THRESHOLD: f64 = 4.0;
-    pub const OUTLINE_COLOR: utils::Color = utils::Color {
+    pub const OUTLINE_COLOR: compose::Color = compose::Color {
         r: 0.5,
         g: 0.7,
         b: 0.7,
         a: 1.0,
     };
     pub const OUTLINE_WIDTH: f64 = 1.0;
-    pub const FILL_COLOR: utils::Color = utils::Color {
+    pub const FILL_COLOR: compose::Color = compose::Color {
         r: 0.8,
         g: 0.8,
         b: 0.8,

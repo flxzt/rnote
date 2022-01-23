@@ -10,6 +10,8 @@ mod imp {
         #[template_child]
         pub selectorstyle_rect_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub resize_lock_aspectratio_togglebutton: TemplateChild<ToggleButton>,
+        #[template_child]
         pub delete_button: TemplateChild<Button>,
         #[template_child]
         pub duplicate_button: TemplateChild<Button>,
@@ -77,6 +79,12 @@ impl SelectorPage {
             .get()
     }
 
+    pub fn resize_lock_aspectratio_togglebutton(&self) -> ToggleButton {
+        imp::SelectorPage::from_instance(self)
+            .resize_lock_aspectratio_togglebutton
+            .get()
+    }
+
     pub fn delete_button(&self) -> Button {
         imp::SelectorPage::from_instance(self).delete_button.get()
     }
@@ -100,6 +108,16 @@ impl SelectorPage {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "selector-style", Some(&"rectangle".to_variant()));
             }
         }));
+
+        self.resize_lock_aspectratio_togglebutton()
+            .bind_property(
+                "active",
+                &appwindow.canvas().selection_modifier(),
+                "resize-lock-aspectratio",
+            )
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
+
         self.delete_button()
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "delete-selection", None);

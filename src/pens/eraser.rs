@@ -1,9 +1,8 @@
 use std::collections::VecDeque;
 
-use crate::compose::geometry;
+use crate::compose::{self, geometry};
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::utils;
 
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::AABB;
@@ -90,13 +89,13 @@ impl PenBehaviour for Eraser {
 }
 
 impl Eraser {
-    pub const OUTLINE_COLOR: utils::Color = utils::Color {
+    pub const OUTLINE_COLOR: compose::Color = compose::Color {
         r: 0.8,
         g: 0.1,
         b: 0.0,
         a: 0.5,
     };
-    pub const FILL_COLOR: utils::Color = utils::Color {
+    pub const FILL_COLOR: compose::Color = compose::Color {
         r: 0.7,
         g: 0.2,
         b: 0.1,

@@ -1,10 +1,10 @@
 use std::collections::VecDeque;
 
-use crate::compose::textured;
+use crate::compose::{self, textured};
+use crate::input;
 use crate::strokes::brushstroke::BrushStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokesstate::StrokeKey;
-use crate::{input, utils};
 
 use gtk4::prelude::*;
 use p2d::bounding_volume::AABB;
@@ -37,7 +37,7 @@ pub struct Brush {
     #[serde(rename = "sensitivity")]
     sensitivity: f64,
     #[serde(rename = "color")]
-    color: utils::Color,
+    color: compose::Color,
     #[serde(rename = "style")]
     style: BrushStyle,
     #[serde(rename = "textured_config")]
@@ -51,7 +51,7 @@ impl Default for Brush {
         Self {
             width: Self::WIDTH_DEFAULT,
             sensitivity: Self::SENSITIVITY_DEFAULT,
-            color: utils::Color::BLACK,
+            color: compose::Color::BLACK,
             style: BrushStyle::default(),
             textured_config: textured::TexturedConfig::default(),
             current_stroke: None,
@@ -157,7 +157,7 @@ impl Brush {
 
     pub const TEMPLATE_BOUNDS_PADDING: f64 = 50.0;
 
-    pub const COLOR_DEFAULT: utils::Color = utils::Color {
+    pub const COLOR_DEFAULT: compose::Color = compose::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
@@ -180,11 +180,11 @@ impl Brush {
         self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
     }
 
-    pub fn color(&self) -> utils::Color {
+    pub fn color(&self) -> compose::Color {
         self.color
     }
 
-    pub fn set_color(&mut self, color: utils::Color) {
+    pub fn set_color(&mut self, color: compose::Color) {
         self.color = color;
     }
 

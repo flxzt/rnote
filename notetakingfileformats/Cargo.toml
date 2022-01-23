@@ -1,0 +1,16 @@
+[package]
+name = "notetakingfileformats"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = { version = "0.30", features = ["serde-serialize"] }
+anyhow = "1.0"
+serde = {version = "1.0", features = ["derive"]}
+flate2 = "1.0"
+roxmltree = "0.14"
+xmlwriter = "0.1"
+
+[dev-dependencies]
+pretty_env_logger = "0.3"
+serde_json = { version="1.0" }

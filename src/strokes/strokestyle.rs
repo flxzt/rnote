@@ -262,7 +262,7 @@ impl InputData {
 pub struct Element {
     #[serde(rename = "inputdata")]
     pub inputdata: InputData,
-    #[serde(rename = "timpestamp", default = "default_datetime")]
+    #[serde(rename = "timestamp", default = "default_datetime")]
     pub timestamp: chrono::DateTime<Utc>,
 }
 

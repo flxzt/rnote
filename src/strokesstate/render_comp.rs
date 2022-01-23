@@ -98,7 +98,7 @@ impl StrokesState {
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
             match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
-                Ok(image) => {
+                Ok(Some(image)) => {
                     match render::image_to_rendernode(&image, self.zoom) {
                         Ok(rendernode) => {
                             render_comp.rendernode = Some(rendernode);
@@ -108,6 +108,7 @@ impl StrokesState {
                         Err(e) => log::error!("image_to_rendernode() failed in regenerate_rendering_for_stroke() with Err {}", e),
                     }
                 }
+                Ok(None) => {}
                 Err(e) => {
                     log::debug!(
                         "gen_image() failed in regenerate_rendering_for_stroke() for stroke with key: {:?}, {}",
@@ -134,7 +135,7 @@ impl StrokesState {
             // Spawn a new thread for image rendering
             self.threadpool.spawn(move || {
                 match stroke.gen_image(current_zoom, &renderer.read().unwrap()) {
-                    Ok(image) => {
+                    Ok(Some(image)) => {
                         tasks_tx.send(StateTask::UpdateStrokeWithImages {
                             key,
                             images: vec![image],
@@ -142,6 +143,7 @@ impl StrokesState {
                             log::error!("tasks_tx.send() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err, {}",key, e);
                         });
                     }
+                    Ok(None) => {}
                     Err(e) => {
                         log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
                     }
@@ -183,7 +185,7 @@ impl StrokesState {
                                 &[last_elems_svg],
                                 bounds,
                             ) {
-                                Ok(last_elems_image) => {
+                                Ok(Some(last_elems_image)) => {
                                     let mut images = vec![last_elems_image];
 
                                     match render::append_images_to_rendernode(
@@ -199,6 +201,7 @@ impl StrokesState {
                                         Err(e) => log::error!("append_images_to_rendernode() failed in append_rendering_new_elem() with Err {}", e),
                                     }
                                 }
+                                Ok(None) => {}
                                 Err(e) => {
                                     log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}", key, e);
                                 }
@@ -231,7 +234,7 @@ impl StrokesState {
                                 &[last_elems_svg],
                                 bounds,
                             ) {
-                                Ok(last_elems_image) => {
+                                Ok(Some(last_elems_image)) => {
                                     let mut images = vec![last_elems_image];
 
                                     match render::append_images_to_rendernode(
@@ -247,6 +250,7 @@ impl StrokesState {
                                         Err(e) => log::error!("append_images_to_rendernode() failed in append_rendering_new_elem() with Err {}", e),
                                     }
                                 }
+                                Ok(None) => {}
                                 Err(e) => {
                                     log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() with Err {}", e);
                                 }
@@ -259,7 +263,7 @@ impl StrokesState {
                 | StrokeStyle::VectorImage(_)
                 | StrokeStyle::BitmapImage(_) => {
                     match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
-                        Ok(image) => {
+                        Ok(Some(image)) => {
                             match render::image_to_rendernode(&image, self.zoom) {
                                 Ok(rendernode) => {
                                     render_comp.rendernode = Some(rendernode);
@@ -269,6 +273,7 @@ impl StrokesState {
                                 Err(e) => log::error!("image_to_rendernode() failed in regenerate_rendering_for_stroke() with Err {}", e),
                             }
                         }
+                        Ok(None) => {}
                         Err(e) => {
                             log::debug!(
                                 "stroke.gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, with Err {}",
@@ -327,7 +332,7 @@ impl StrokesState {
                                     &[last_elems_svg],
                                     bounds,
                                 ) {
-                                    Ok(last_elems_image) => {
+                                    Ok(Some(last_elems_image)) => {
                                         let images = vec![last_elems_image];
 
                                         tasks_tx.send(StateTask::AppendImagesToStroke {
@@ -337,6 +342,7 @@ impl StrokesState {
                                             log::error!("sending AppendImagesToStroke as task for markerstroke failed in regenerate_rendering_new_elem() for stroke with key {:?}, with Err {}", key, e);
                                         });
                                     }
+                                    Ok(None) => {}
                                     Err(e) => {
                                         log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?}, with Err {}",key, e);
                                     }
@@ -369,7 +375,7 @@ impl StrokesState {
                                     &[last_elems_svg],
                                     bounds,
                                 ) {
-                                    Ok(last_elems_image) => {
+                                    Ok(Some(last_elems_image)) => {
                                         let images = vec![last_elems_image];
 
                                         tasks_tx.send(StateTask::AppendImagesToStroke {
@@ -379,6 +385,7 @@ impl StrokesState {
                                             log::error!("sending AppendImagesToStroke as task for markerstroke failed in regenerate_rendering_new_elem() for stroke with key {:?}, with Err, {}",key, e);
                                         });
                                     }
+                                    Ok(None) => {}
                                     Err(e) => {
                                         log::warn!("renderer.gen_image() failed in regenerate_image_new_elem() for stroke with key {:?} with Err {}", key, e);
                                     }
@@ -391,7 +398,7 @@ impl StrokesState {
                     | StrokeStyle::VectorImage(_)
                     | StrokeStyle::BitmapImage(_) => {
                         match stroke.gen_image(zoom, &renderer.read().unwrap()) {
-                            Ok(image) => {
+                            Ok(Some(image)) => {
                                 tasks_tx.send(StateTask::UpdateStrokeWithImages {
                                     key,
                                     images: vec![image],
@@ -399,6 +406,7 @@ impl StrokesState {
                                     log::error!("sending task UpdateStrokeWithImages failed in regenerate_rendering_newest_elem() for stroke with key {:?}, with Err {}", key, e);
                                 });
                             }
+                            Ok(None) => {}
                             Err(e) => {
                                 log::debug!(
                                     "stroke.gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, with Err {}",
@@ -467,11 +475,12 @@ impl StrokesState {
     pub fn regenerate_rendering_with_images(&mut self, key: StrokeKey, images: Vec<render::Image>) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match render::images_to_rendernode(&images, self.zoom) {
-                Ok(rendernode) => {
-                    render_comp.rendernode = rendernode;
+                Ok(Some(rendernode)) => {
+                    render_comp.rendernode = Some(rendernode);
                     render_comp.regenerate_flag = false;
                     render_comp.images = images;
                 }
+                Ok(None) => {}
                 Err(e) => log::error!(
                     "image_to_rendernode() failed in regenerate_rendering_with_images() with Err {}",
                     e
@@ -507,9 +516,10 @@ impl StrokesState {
             .iter_mut()
             .for_each(|(_key, render_comp)| {
                 match render::images_to_rendernode(&render_comp.images, zoom) {
-                    Ok(rendernode) => {
-                        render_comp.rendernode = rendernode;
+                    Ok(Some(rendernode)) => {
+                        render_comp.rendernode = Some(rendernode);
                     }
+                    Ok(None) => {}
                     Err(e) => log::error!(
                         "images_to_rendernode() failed in update_rendernodes_current_zoom() with Err {}",
                         e

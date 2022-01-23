@@ -76,8 +76,10 @@ impl ExpandSheetTool {
         let y = self.y_start_pos;
         let width = sheet_bounds.extents()[0];
         let height = self.y_current_pos - self.y_start_pos;
-        let bounds =
-            geometry::aabb_new_positive(na::point![x, y], na::point![x + width, y + height]);
+        let bounds = geometry::aabb_ceil(geometry::aabb_new_positive(
+            na::point![x, y],
+            na::point![x + width, y + height],
+        ));
 
         let bounds_rect = svg::node::element::Rectangle::new()
             .set("x", bounds.mins[0])
@@ -116,10 +118,11 @@ impl ExpandSheetTool {
         let svg_data = compose::node_to_string(&group)?;
         let svg = render::Svg { svg_data, bounds };
 
-        let image = renderer.gen_image(zoom, &[svg], bounds)?;
-        let rendernode =
-            render::image_to_rendernode(&image, zoom).context("ExpandSheetTool draw() failed")?;
-        snapshot.append_node(&rendernode);
+        if let Some(image) = renderer.gen_image(zoom, &[svg], bounds)? {
+            let rendernode = render::image_to_rendernode(&image, zoom)
+                .context("ExpandSheetTool draw() failed")?;
+            snapshot.append_node(&rendernode);
+        }
 
         Ok(())
     }
@@ -169,10 +172,10 @@ impl DragProximityTool {
         let cx = self.pos[0] + self.offset[0];
         let cy = self.pos[1] + self.offset[1];
         let r = self.radius;
-        let mut draw_bounds = geometry::aabb_new_positive(
+        let mut draw_bounds = geometry::aabb_ceil(geometry::aabb_new_positive(
             na::point![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
             na::point![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
-        );
+        ));
         draw_bounds.take_point(na::Point2::from(self.pos.add_scalar(-Self::OUTLINE_WIDTH)));
         draw_bounds.take_point(na::Point2::from(self.pos.add_scalar(Self::OUTLINE_WIDTH)));
 
@@ -199,10 +202,11 @@ impl DragProximityTool {
             bounds: draw_bounds,
         };
 
-        let image = renderer.gen_image(zoom, &[svg], draw_bounds)?;
-        let rendernode =
-            render::image_to_rendernode(&image, zoom).context("DrawProximityTool draw() failed")?;
-        snapshot.append_node(&rendernode);
+        if let Some(image) = renderer.gen_image(zoom, &[svg], draw_bounds)? {
+            let rendernode = render::image_to_rendernode(&image, zoom)
+                .context("DrawProximityTool draw() failed")?;
+            snapshot.append_node(&rendernode);
+        }
 
         Ok(())
     }

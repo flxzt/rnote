@@ -63,9 +63,14 @@ impl Default for Renderer {
 impl Renderer {
     /// generates images from SVGs. bounds are in coordinate space of the sheet, (not zoomed)
     /// expects the svgs to be raw svg tags, no svg root or xml header needed
-    pub fn gen_image(&self, zoom: f64, svgs: &[Svg], bounds: AABB) -> Result<Image, anyhow::Error> {
+    pub fn gen_image(
+        &self,
+        zoom: f64,
+        svgs: &[Svg],
+        bounds: AABB,
+    ) -> Result<Option<Image>, anyhow::Error> {
         if svgs.is_empty() {
-            return Err(anyhow::Error::msg("gen_image() failed, no svg's in slice."));
+            return Ok(None);
         }
 
         assert_bounds(bounds)?;
@@ -82,7 +87,7 @@ impl Renderer {
         zoom: f64,
         svgs: &[Svg],
         bounds: AABB,
-    ) -> Result<Image, anyhow::Error> {
+    ) -> Result<Option<Image>, anyhow::Error> {
         let width_scaled = ((bounds.extents()[0]) * zoom).round() as i32;
         let height_scaled = ((bounds.extents()[1]) * zoom).round() as i32;
 
@@ -147,13 +152,13 @@ impl Renderer {
             })?
             .to_vec();
 
-        Ok(Image {
+        Ok(Some(Image {
             data,
             bounds,
             data_width: width_scaled,
             data_height: height_scaled,
             memory_format: gdk::MemoryFormat::B8g8r8a8Premultiplied,
-        })
+        }))
     } */
 
     fn gen_image_resvg(
@@ -161,9 +166,13 @@ impl Renderer {
         zoom: f64,
         svgs: &[Svg],
         bounds: AABB,
-    ) -> Result<Image, anyhow::Error> {
+    ) -> Result<Option<Image>, anyhow::Error> {
         let width_scaled = ((bounds.extents()[0]) * zoom).round() as u32;
         let height_scaled = ((bounds.extents()[1]) * zoom).round() as u32;
+
+        if width_scaled == 0 || height_scaled == 0 {
+            return Ok(None);
+        }
 
         let mut svg_data = svgs
             .iter()
@@ -183,13 +192,13 @@ impl Renderer {
 
         let data = pixmap.data().to_vec();
 
-        Ok(Image {
+        Ok(Some(Image {
             data,
             bounds,
             data_width: width_scaled,
             data_height: height_scaled,
             memory_format: gdk::MemoryFormat::R8g8b8a8Premultiplied,
-        })
+        }))
     }
 }
 
@@ -343,12 +352,10 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
  */
 
 pub fn assert_bounds(bounds: AABB) -> Result<(), anyhow::Error> {
-    if bounds.extents()[0] <= 0.0
-        || bounds.extents()[1] <= 0.0
-        || bounds.mins[0] < 0.0
-        || bounds.mins[1] < 0.0
-        || bounds.maxs[0] <= bounds.mins[0]
-        || bounds.maxs[1] <= bounds.mins[1]
+    if bounds.extents()[0] < 0.0
+        || bounds.extents()[1] < 0.0
+        || bounds.maxs[0] < bounds.mins[0]
+        || bounds.maxs[1] < bounds.mins[1]
     {
         Err(anyhow::anyhow!(
             "assert_bounds() failed, invalid bounds `{:?}`",

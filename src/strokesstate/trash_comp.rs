@@ -81,22 +81,24 @@ impl StrokesState {
     }
 
     pub fn trash_selection(&mut self) {
-        self.selection_keys_in_order_rendered().iter().for_each(|&key| {
-            if let Some(selection_comp) = self.selection_components.get_mut(key) {
-                if selection_comp.selected {
-                    selection_comp.selected = false;
+        self.selection_keys_in_order_rendered()
+            .iter()
+            .for_each(|&key| {
+                if let Some(selection_comp) = self.selection_components.get_mut(key) {
+                    if selection_comp.selected {
+                        selection_comp.selected = false;
 
-                    if let Some(trash_comp) = self.trash_components.get_mut(key) {
-                        trash_comp.trashed = true;
+                        if let Some(trash_comp) = self.trash_components.get_mut(key) {
+                            trash_comp.trashed = true;
 
-                        if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                            self.chrono_counter += 1;
-                            chrono_comp.t = self.chrono_counter;
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
     }
 
     /// trash strokes that collide with the eraser

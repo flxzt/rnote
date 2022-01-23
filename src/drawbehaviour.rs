@@ -35,7 +35,7 @@ pub trait DrawBehaviour {
         &self,
         zoom: f64,
         renderer: &render::Renderer,
-    ) -> Result<render::Image, anyhow::Error> {
+    ) -> Result<Option<render::Image>, anyhow::Error> {
         let offset = na::vector![0.0, 0.0];
         let svgs = self.gen_svgs(offset)?;
 

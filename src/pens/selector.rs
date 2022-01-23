@@ -136,10 +136,11 @@ impl PenBehaviour for Selector {
             })?;
 
             let svg = render::Svg { bounds, svg_data };
-            let image = renderer.gen_image(zoom, &[svg], bounds)?;
-            let rendernode =
-                render::image_to_rendernode(&image, zoom).context("selector.draw() failed")?;
-            snapshot.append_node(&rendernode);
+            if let Some(image) = renderer.gen_image(zoom, &[svg], bounds)? {
+                let rendernode =
+                    render::image_to_rendernode(&image, zoom).context("selector.draw() failed")?;
+                snapshot.append_node(&rendernode);
+            }
         }
         Ok(())
     }

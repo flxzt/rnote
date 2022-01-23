@@ -24,17 +24,11 @@ pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
 }
 
 pub fn vector2_mins(vec: na::Vector2<f64>, other: na::Vector2<f64>) -> na::Vector2<f64> {
-    na::vector![
-        vec[0].min(other[0]),
-        vec[1].min(other[1])
-    ]
+    na::vector![vec[0].min(other[0]), vec[1].min(other[1])]
 }
 
 pub fn vector2_maxs(vec: na::Vector2<f64>, other: na::Vector2<f64>) -> na::Vector2<f64> {
-    na::vector![
-        vec[0].max(other[0]),
-        vec[1].max(other[1])
-    ]
+    na::vector![vec[0].max(other[0]), vec[1].max(other[1])]
 }
 
 /// AABB to graphene Rect
@@ -235,7 +229,10 @@ pub fn aabb_ceil(aabb: AABB) -> AABB {
     )
 }
 
-pub fn scale_with_locked_aspectratio(src_size: na::Vector2<f64>, max_size: na::Vector2<f64>) -> na::Vector2<f64> {
+pub fn scale_with_locked_aspectratio(
+    src_size: na::Vector2<f64>,
+    max_size: na::Vector2<f64>,
+) -> na::Vector2<f64> {
     let ratio = (max_size[0] / src_size[0]).min(max_size[1] / src_size[1]);
 
     src_size * ratio

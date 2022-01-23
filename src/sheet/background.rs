@@ -297,7 +297,7 @@ impl Background {
         renderer: &Renderer,
         zoom: f64,
         bounds: AABB,
-    ) -> Result<render::Image, anyhow::Error> {
+    ) -> Result<Option<render::Image>, anyhow::Error> {
         let mut svg = self.gen_svg(bounds)?;
         svg.svg_data = compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), None, true);
 
@@ -313,7 +313,7 @@ impl Background {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 
-        self.image = Some(self.gen_image(renderer, zoom, tile_bounds)?);
+        self.image = self.gen_image(renderer, zoom, tile_bounds)?;
         self.update_rendernode(zoom, sheet_bounds)?;
         Ok(())
     }

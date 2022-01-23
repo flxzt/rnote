@@ -89,7 +89,9 @@ mod imp {
 
             // Allocate the selection_modifier child
             {
-                canvas_priv.selection_modifier.update_translate_node_size_request(&canvas);
+                canvas_priv
+                    .selection_modifier
+                    .update_translate_node_size_request(&canvas);
 
                 let (_, selection_modifier_width, _, _) = canvas_priv
                     .selection_modifier

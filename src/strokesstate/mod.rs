@@ -313,7 +313,8 @@ impl StrokesState {
     }
 
     pub fn stroke_keys_intersect_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
-        self.stroke_keys_in_order_rendered().iter()
+        self.stroke_keys_in_order_rendered()
+            .iter()
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
                 if stroke.bounds().intersects(&bounds) {
@@ -520,18 +521,20 @@ impl StrokesState {
                 }
 
                 match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
-                    Ok(image) => {
+                    Ok(Some(image)) => {
                         let images = vec![image];
 
                         match render::images_to_rendernode(&images, self.zoom) {
-                            Ok(rendernode) => {
-                                render_comp.rendernode = rendernode;
+                            Ok(Some(rendernode)) => {
+                                render_comp.rendernode = Some(rendernode);
                                 render_comp.regenerate_flag = false;
                                 render_comp.images = images;
                             }
+                            Ok(None) => {}
                             Err(e) => log::error!("stroke.gen_images() failed in regenerate_stroke_current_view() with Err {}", e),
                         }
                     }
+                    Ok(None) => {}
                     Err(e) => {
                         log::debug!(
                             "gen_image() failed in regenerate_rendering_current_view() for stroke with key: {:?}, with Err {}",
@@ -669,10 +672,10 @@ impl StrokesState {
                     }
 
                     match render::images_to_rendernode(&render_comp.images, self.zoom) {
-                        Ok(rendernode) => {
-                            render_comp.rendernode = rendernode;
-                            // NOt touch the regenerate flag consciously
+                        Ok(Some(rendernode)) => {
+                            render_comp.rendernode = Some(rendernode);
                         }
+                        Ok(None) => {}
                         Err(e) => log::error!(
                             "images_to_rendernode() failed in translate_strokes() with Err {}",
                             e

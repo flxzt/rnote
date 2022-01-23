@@ -277,18 +277,20 @@ pub mod imp {
                         bounds: transformed_selection_bounds,
                         svg_data,
                     };
-                    let image = canvas
+                    if let Some(image) = canvas
                         .sheet()
                         .strokes_state()
                         .borrow()
                         .renderer
                         .read()
                         .unwrap()
-                        .gen_image(1.0, &[svg], transformed_selection_bounds)?;
-                    let rendernode = render::image_to_rendernode(&image, 1.0).context(
-                        "image_to_rendernode() in draw_selection() in selection_modifier failed",
-                    )?;
-                    snapshot.append_node(&rendernode);
+                        .gen_image(1.0, &[svg], transformed_selection_bounds)?
+                    {
+                        let rendernode = render::image_to_rendernode(&image, 1.0).context(
+                            "image_to_rendernode() in draw_selection() in selection_modifier failed",
+                        )?;
+                        snapshot.append_node(&rendernode);
+                    }
                     Ok(())
                 };
 
@@ -379,17 +381,19 @@ pub mod imp {
                         bounds: transformed_selection_bounds,
                         svg_data,
                     };
-                    let image = canvas
+                    if let Some(image) = canvas
                         .sheet()
                         .strokes_state()
                         .borrow()
                         .renderer
                         .read()
                         .unwrap()
-                        .gen_image(1.0, &[svg], transformed_selection_bounds)?;
-                    let rendernode = render::image_to_rendernode(&image, 1.0)
-                        .context("image_to_rendernode() in draw_rotation_indicator() in selection_modifier failed")?;
-                    snapshot.append_node(&rendernode);
+                        .gen_image(1.0, &[svg], transformed_selection_bounds)?
+                    {
+                        let rendernode = render::image_to_rendernode(&image, 1.0)
+                            .context("image_to_rendernode() in draw_rotation_indicator() in selection_modifier failed")?;
+                        snapshot.append_node(&rendernode);
+                    }
                     Ok(())
                 };
 

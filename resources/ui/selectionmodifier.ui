@@ -49,9 +49,11 @@
     <child>
       <object class="ModifierNode" id="rotate_node">
         <property name="hexpand">true</property>
-        <property name="vexpand">true</property>
+        <property name="vexpand">false</property>
         <property name="halign">end</property>
-        <property name="valign">center</property>
+        <property name="valign">start</property>
+        <property name="margin-top">24</property>
+        <property name="margin-bottom">24</property>
         <layout>
           <property name="column">2</property>
           <property name="row">1</property>

@@ -35,7 +35,8 @@ pub mod imp {
 
         // Internal state for allocation, drawing
         pub(super) selection_bounds: Cell<Option<AABB>>,
-        pub(super) current_rotation_center: Cell<Option<na::Point2<f64>>>,
+        pub(super) start_rotation_center: Cell<Option<na::Point2<f64>>>,
+        pub(super) start_rotation_angle: Cell<f64>,
         pub(super) current_rotation_angle: Cell<f64>,
     }
 
@@ -52,7 +53,8 @@ pub mod imp {
                 resize_lock_aspectratio: Cell::new(false),
 
                 selection_bounds: Cell::new(None),
-                current_rotation_center: Cell::new(None),
+                start_rotation_center: Cell::new(None),
+                start_rotation_angle: Cell::new(0.0),
                 current_rotation_angle: Cell::new(0.0),
             }
         }
@@ -318,7 +320,7 @@ pub mod imp {
             const ROTATION_LINE_LEN: f64 = 150.0;
 
             if let (Some(current_rotation_center), Some(selection_bounds)) = (
-                self.current_rotation_center.get(),
+                self.start_rotation_center.get(),
                 self.selection_bounds.get(),
             ) {
                 let transformed_selection_bounds = utils::translate_aabb_to_widget(
@@ -339,14 +341,25 @@ pub mod imp {
                 let draw = || -> Result<(), anyhow::Error> {
                     let mut data = element::path::Data::new();
 
-                    data = data.move_to((center[0], center[1]));
-                    data = data.line_to((center[0] + ROTATION_LINE_LEN, center[1]));
-
-                    let rotation_vec = na::Rotation2::new(self.current_rotation_angle.get())
-                        .transform_vector(&(na::Vector2::x() * ((2.0 * ROTATION_LINE_LEN) / 3.0)));
+                    let start_rotation_vec = na::Rotation2::new(self.start_rotation_angle.get())
+                        .transform_vector(&(na::Vector2::x() * ROTATION_LINE_LEN));
 
                     data = data.move_to((center[0], center[1]));
-                    data = data.line_to((center[0] + rotation_vec[0], center[1] + rotation_vec[1]));
+                    data = data.line_to((
+                        center[0] + start_rotation_vec[0],
+                        center[1] + start_rotation_vec[1],
+                    ));
+
+                    let current_rotation_vec = na::Rotation2::new(
+                        self.current_rotation_angle.get(),
+                    )
+                    .transform_vector(&(na::Vector2::x() * ((2.0 * ROTATION_LINE_LEN) / 3.0)));
+
+                    data = data.move_to((center[0], center[1]));
+                    data = data.line_to((
+                        center[0] + current_rotation_vec[0],
+                        center[1] + current_rotation_vec[1],
+                    ));
                     data = data.close();
 
                     let svg_path = element::Path::new()
@@ -871,23 +884,38 @@ impl SelectionModifier {
         priv_.rotate_node.add_controller(&rotate_node_drag_gesture);
 
         let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
-        let angle_prev = Rc::new(Cell::new(0.0));
 
         rotate_node_drag_gesture.connect_drag_begin(
-            clone!(@strong start_bounds, @strong angle_prev, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, _x, _y| {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, _x, _y| {
                 drag_gesture.set_state(EventSequenceState::Claimed);
                 selection_modifier.update_state(&appwindow.canvas());
 
                 start_bounds.set(selection_modifier.selection_bounds());
-                if let Some(start_bounds) = start_bounds.get() {
-                    selection_modifier.imp().current_rotation_center.set(Some(start_bounds.center()));
+                if let (Some(start_bounds), Some(start_point)) = (start_bounds.get(), drag_gesture.start_point()) {
+                    selection_modifier.imp().start_rotation_center.set(Some(start_bounds.center()));
+
+                    let current_pos = {
+                        let pos = selection_modifier.rotate_node().translate_coordinates(&appwindow.canvas(), start_point.0, start_point.1).unwrap();
+                        appwindow.canvas().transform_canvas_coords_to_sheet_coords(na::vector![pos.0, pos.1])
+                    };
+                    let vec = current_pos - start_bounds.center().coords;
+                    let angle = {
+                        let mut angle = vec.angle(&na::Vector2::x());
+                        // .angle() finds the smallest angle, so * -1.0 is needed
+                        if vec[1] < 0.0 {
+                            angle *= -1.0;
+                        }
+                        angle
+                    };
+                    selection_modifier.imp().start_rotation_angle.set(angle);
+                    selection_modifier.imp().current_rotation_angle.set(angle);
                 }
-                angle_prev.set(0.0);
             }),
         );
         rotate_node_drag_gesture.connect_drag_update(
-            clone!(@strong start_bounds, @strong angle_prev, @weak self as selection_modifier, @weak appwindow => move |rotate_node_drag_gesture, x, y| {
-                if let (Some(start_bounds), Some(start_point)) = (start_bounds.get(), rotate_node_drag_gesture.start_point()) {
+            clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
+                if let (Some(start_bounds), Some(start_point)) = (start_bounds.get(), drag_gesture.start_point()) {
+                    let priv_ = selection_modifier.imp();
                     let current_pos = {
                         let pos = selection_modifier.rotate_node().translate_coordinates(&appwindow.canvas(), start_point.0 + x, start_point.1 + y).unwrap();
                         appwindow.canvas().transform_canvas_coords_to_sheet_coords(na::vector![pos.0, pos.1])
@@ -902,15 +930,14 @@ impl SelectionModifier {
                         angle
                     };
 
-                    selection_modifier.imp().current_rotation_angle.set(angle);
 
-                    let angle_delta = angle - angle_prev.get();
+                    let angle_delta = angle - priv_.current_rotation_angle.get();
 
                     let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                     appwindow.canvas().sheet().strokes_state().borrow_mut().rotate_strokes(&selection_keys, angle_delta, start_bounds.center());
                     selection_modifier.update_state(&appwindow.canvas());
 
-                    angle_prev.set(angle);
+                    priv_.current_rotation_angle.set(angle);
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
                     selection_modifier.queue_resize();
@@ -920,12 +947,12 @@ impl SelectionModifier {
             }),
         );
         rotate_node_drag_gesture.connect_drag_end(
-            clone!(@strong angle_prev, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
-                angle_prev.set(0.0);
-                selection_modifier.imp().current_rotation_center.set(None);
+            clone!(@weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
+                selection_modifier.imp().start_rotation_center.set(None);
+                selection_modifier.imp().start_rotation_angle.set(0.0);
                 selection_modifier.imp().current_rotation_angle.set(0.0);
-                selection_modifier.update_state(&appwindow.canvas());
 
+                selection_modifier.update_state(&appwindow.canvas());
                 selection_modifier.queue_resize();
                 selection_modifier.queue_draw();
                 appwindow.canvas().queue_draw();

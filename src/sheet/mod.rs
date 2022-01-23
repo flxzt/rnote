@@ -710,7 +710,7 @@ impl Sheet {
                     .borrow()
                     .clone_strokes_for_keys(&page_keys);
 
-                // Translate to page mins
+                // Translate strokes to to page mins and convert to XoppStrokStyle
                 let xopp_strokestyles = strokes
                     .into_iter()
                     .filter_map(|mut stroke| {

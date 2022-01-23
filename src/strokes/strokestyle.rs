@@ -134,6 +134,11 @@ impl StrokeStyle {
     pub fn to_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeStyle> {
         match self {
             StrokeStyle::MarkerStroke(markerstroke) => {
+                // Xopp expects at least 4 coordinates, so stroke with elements < 2 is not exported
+                if markerstroke.elements.len() < 2 {
+                    return None;
+                }
+
                 let color = markerstroke.marker.color.into();
                 let tool = xoppformat::XoppTool::Pen;
                 let width = vec![utils::convert_value_dpi(
@@ -163,6 +168,11 @@ impl StrokeStyle {
                 ))
             }
             StrokeStyle::BrushStroke(brushstroke) => {
+                // Xopp expects at least 4 coordinates, so stroke with elements < 2 is not exported
+                if brushstroke.elements.len() < 2 {
+                    return None;
+                }
+
                 let color = brushstroke.brush.color().into();
                 let tool = xoppformat::XoppTool::Pen;
 

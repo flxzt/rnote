@@ -643,6 +643,7 @@ impl Sheet {
                     brush.set_color(compose::Color::from(stroke.color));
 
                     let mut width_iter = stroke.width.iter();
+
                     // The first element is the absolute width, every following is the relative width (between 0.0 and 1.0)
                     if let Some(&width) = width_iter.next() {
                         brush.set_width(width);
@@ -654,10 +655,12 @@ impl Sheet {
                         .map(|mut coords| {
                             coords[1] += y_offset;
                             // Defaulting to PRESSURE_DEFAULT if width iterator is shorter than the coords vec
-                            let pressure =
-                                width_iter.next().unwrap_or(&InputData::PRESSURE_DEFAULT);
+                            let pressure = width_iter
+                                .next()
+                                .map(|&width| width / brush.width())
+                                .unwrap_or(InputData::PRESSURE_DEFAULT);
 
-                            Element::new(InputData::new(coords, *pressure))
+                            Element::new(InputData::new(coords, pressure))
                         })
                         .collect::<Vec<Element>>();
 

@@ -182,18 +182,21 @@ impl StrokeStyle {
                 let tool = xoppformat::XoppTool::Pen;
 
                 // The first width element is the absolute width of the stroke
-                let mut width = vec![utils::convert_value_dpi(
+                let stroke_width = utils::convert_value_dpi(
                     brushstroke.brush.width(),
                     current_dpi,
                     xoppformat::XoppFile::DPI,
-                )];
+                );
+
+                let mut width_vec = vec![stroke_width];
+
                 // the rest are pressures between 0.0 and 1.0
                 let mut pressures = brushstroke
                     .elements
                     .iter()
-                    .map(|element| element.inputdata.pressure())
+                    .map(|element| stroke_width * element.inputdata.pressure())
                     .collect::<Vec<f64>>();
-                width.append(&mut pressures);
+                width_vec.append(&mut pressures);
 
                 let coords = brushstroke
                     .elements
@@ -211,7 +214,7 @@ impl StrokeStyle {
                     xoppformat::XoppStroke {
                         tool,
                         color,
-                        width,
+                        width: width_vec,
                         coords,
                     },
                 ))

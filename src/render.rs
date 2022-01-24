@@ -12,17 +12,76 @@ pub enum RendererBackend {
     Resvg,
 }
 
+#[derive(Debug, Copy, Clone)]
+pub enum ImageMemoryFormat {
+    R8g8b8a8Premultiplied,
+    B8g8r8a8Premultiplied,
+}
+
+impl TryFrom<gdk::MemoryFormat> for ImageMemoryFormat {
+    type Error = anyhow::Error;
+    fn try_from(gdk_memory_format: gdk::MemoryFormat) -> Result<Self, Self::Error> {
+        match gdk_memory_format {
+            gdk::MemoryFormat::R8g8b8a8Premultiplied => Ok(Self::R8g8b8a8Premultiplied),
+            gdk::MemoryFormat::B8g8r8a8Premultiplied => Ok(Self::B8g8r8a8Premultiplied),
+            _ => Err(anyhow::anyhow!(
+                "ImageMemoryFormat try_from() failed, unsupported MemoryFormat `{:?}`",
+                gdk_memory_format
+            )),
+        }
+    }
+}
+
+impl Into<gdk::MemoryFormat> for ImageMemoryFormat {
+    fn into(self) -> gdk::MemoryFormat {
+        match self {
+            Self::R8g8b8a8Premultiplied => gdk::MemoryFormat::R8g8b8a8Premultiplied,
+            Self::B8g8r8a8Premultiplied => gdk::MemoryFormat::B8g8r8a8Premultiplied,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Image {
     pub data: Vec<u8>,
     /// bounds in the coordinate space of the sheet
     pub bounds: AABB,
     /// width of the data
-    pub data_width: u32,
+    pub pixel_width: u32,
     /// height of the data
-    pub data_height: u32,
+    pub pixel_height: u32,
     /// the memory format
-    pub memory_format: gdk::MemoryFormat,
+    pub memory_format: ImageMemoryFormat,
+}
+
+impl Image {
+    pub fn to_imgbuf(self) -> Result<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, anyhow::Error> {
+        match self.memory_format {
+            ImageMemoryFormat::R8g8b8a8Premultiplied => {
+                image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data).ok_or(
+                    anyhow::anyhow!(
+                    "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
+                    self.memory_format
+                ),
+                )
+            }
+            ImageMemoryFormat::B8g8r8a8Premultiplied => {
+                let data = self
+                    .data
+                    .windows(4)
+                    .map(|w| [w[2], w[1], w[0], w[3]])
+                    .flatten()
+                    .collect::<Vec<u8>>();
+
+                image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, data).ok_or(
+                    anyhow::anyhow!(
+                    "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
+                    self.memory_format
+                ),
+                )
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -157,7 +216,7 @@ impl Renderer {
             bounds,
             data_width: width_scaled,
             data_height: height_scaled,
-            memory_format: gdk::MemoryFormat::B8g8r8a8Premultiplied,
+            memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
         }))
     } */
 
@@ -196,11 +255,28 @@ impl Renderer {
         Ok(Some(Image {
             data,
             bounds,
-            data_width: width_scaled,
-            data_height: height_scaled,
-            memory_format: gdk::MemoryFormat::R8g8b8a8Premultiplied,
+            pixel_width: width_scaled,
+            pixel_height: height_scaled,
+            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
         }))
     }
+}
+
+pub fn image_to_bytes(
+    image: Image,
+    format: image::ImageOutputFormat,
+) -> Result<Vec<u8>, anyhow::Error> {
+    let mut bytes_buf: Vec<u8> = vec![];
+
+    let dynamic_image = image::DynamicImage::ImageRgba8(
+        image
+            .to_imgbuf()
+            .context("image.to_imgbuf() failed in image_to_bytes()")?,
+    );
+    dynamic_image.write_to(&mut bytes_buf, format)?;
+    //.context("dynamic_image.write_to() failed in image_to_bytes()")?;
+
+    Ok(bytes_buf)
 }
 
 pub fn image_to_memtexture(image: &Image) -> Result<gdk::MemoryTexture, anyhow::Error> {
@@ -209,11 +285,11 @@ pub fn image_to_memtexture(image: &Image) -> Result<gdk::MemoryTexture, anyhow::
     let bytes = image.data.deref();
 
     Ok(gdk::MemoryTexture::new(
-        image.data_width as i32,
-        image.data_height as i32,
-        image.memory_format,
+        image.pixel_width as i32,
+        image.pixel_height as i32,
+        image.memory_format.into(),
         &glib::Bytes::from(bytes),
-        (image.data_width * 4) as usize,
+        (image.pixel_width * 4) as usize,
     ))
 }
 
@@ -236,11 +312,6 @@ pub fn images_to_rendernode(
     images: &[Image],
     zoom: f64,
 ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-    // Must be checked or to_node() panics
-    if images.is_empty() {
-        return Ok(None);
-    };
-
     let snapshot = Snapshot::new();
 
     for image in images {
@@ -248,7 +319,7 @@ pub fn images_to_rendernode(
             .append_node(&image_to_rendernode(image, zoom).context("images_to_rendernode failed")?);
     }
 
-    Ok(Some(snapshot.to_node()))
+    Ok(snapshot.to_node())
 }
 
 pub fn append_images_to_rendernode(
@@ -258,11 +329,8 @@ pub fn append_images_to_rendernode(
 ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
     let snapshot = Snapshot::new();
 
-    // Ensure snapshot is not empty
     if let Some(rendernode) = rendernode {
         snapshot.append_node(rendernode);
-    } else if images.is_empty() {
-        return Ok(None);
     }
 
     for image in images {
@@ -274,7 +342,7 @@ pub fn append_images_to_rendernode(
         );
     }
 
-    Ok(Some(snapshot.to_node()))
+    Ok(snapshot.to_node())
 }
 
 pub fn rendernode_to_texture(
@@ -370,9 +438,9 @@ pub fn assert_bounds(bounds: AABB) -> Result<(), anyhow::Error> {
 pub fn assert_image(image: &Image) -> Result<(), anyhow::Error> {
     assert_bounds(image.bounds)?;
 
-    if image.data_width == 0
-        || image.data_width == 0
-        || image.data.len() as u32 != 4 * image.data_width * image.data_height
+    if image.pixel_width == 0
+        || image.pixel_width == 0
+        || image.data.len() as u32 != 4 * image.pixel_width * image.pixel_height
     {
         Err(anyhow::anyhow!("assert_image() failed, invalid image data"))
     } else {

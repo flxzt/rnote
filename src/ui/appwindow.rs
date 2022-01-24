@@ -888,7 +888,6 @@ impl RnoteAppWindow {
             }
         }
 
-
         Ok(())
     }
 
@@ -918,7 +917,9 @@ impl RnoteAppWindow {
         self.canvas().regenerate_background(false);
         self.canvas().regenerate_content(true, true);
 
-        self.canvas().selection_modifier().update_state(&self.canvas());
+        self.canvas()
+            .selection_modifier()
+            .update_state(&self.canvas());
 
         Ok(())
     }
@@ -946,7 +947,9 @@ impl RnoteAppWindow {
         self.canvas().regenerate_background(false);
         self.canvas().regenerate_content(true, true);
 
-        self.canvas().selection_modifier().update_state(&self.canvas());
+        self.canvas()
+            .selection_modifier()
+            .update_state(&self.canvas());
 
         Ok(())
     }
@@ -982,7 +985,9 @@ impl RnoteAppWindow {
         self.canvas().set_empty(false);
         self.canvas().queue_draw();
 
-        self.canvas().selection_modifier().update_state(&self.canvas());
+        self.canvas()
+            .selection_modifier()
+            .update_state(&self.canvas());
 
         Ok(())
     }

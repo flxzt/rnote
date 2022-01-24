@@ -39,6 +39,11 @@ impl FileFormatSaver for XoppFile {
     }
 }
 
+impl XoppFile {
+    /// The DPI of the Xopp file, is hardcoded to 72 DPI
+    pub const DPI: f64 = 72.0;
+}
+
 /// Represents a Xournal++ XML root element
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppRoot {
@@ -50,11 +55,6 @@ pub struct XoppRoot {
     pub preview: String,
     /// The pages elements
     pub pages: Vec<XoppPage>,
-}
-
-impl XoppRoot {
-    /// The DPI of the Xopp file, is hardcoded to 72 DPI
-    pub const DPI: f64 = 72.0;
 }
 
 impl XmlLoadable for XoppRoot {

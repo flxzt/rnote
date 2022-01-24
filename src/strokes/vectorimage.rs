@@ -3,6 +3,7 @@ use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
 use crate::{compose, render};
 
+use anyhow::Context;
 use p2d::bounding_volume::AABB;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
@@ -250,5 +251,58 @@ impl VectorImage {
         if let Some(new_bounds) = self.gen_bounds() {
             self.set_bounds(new_bounds);
         }
+    }
+
+    pub fn export_as_svg(&self) -> Result<String, anyhow::Error> {
+        let export_bounds = geometry::aabb_translate(self.bounds, -self.bounds().mins.coords);
+        let mut export_svg_data = self
+            .gen_svgs(-self.bounds().mins.coords)?
+            .iter()
+            .map(|svg| svg.svg_data.clone())
+            .collect::<Vec<String>>()
+            .join("\n");
+
+        export_svg_data = compose::wrap_svg_root(
+            export_svg_data.as_str(),
+            Some(export_bounds),
+            Some(export_bounds),
+            false,
+        );
+
+        Ok(export_svg_data)
+    }
+
+    pub fn export_as_image_bytes(
+        &self,
+        zoom: f64,
+        renderer: &Renderer,
+        format: image::ImageOutputFormat,
+    ) -> Result<Vec<u8>, anyhow::Error> {
+        let export_bounds = geometry::aabb_translate(self.bounds, -self.bounds().mins.coords);
+        let mut export_svg_data = self
+            .gen_svgs(-self.bounds().mins.coords)
+            .context("gen_svgs() failed in VectorImage export_as_bytes()")?
+            .iter()
+            .map(|svg| svg.svg_data.clone())
+            .collect::<Vec<String>>()
+            .join("\n");
+        export_svg_data = compose::wrap_svg_root(
+            export_svg_data.as_str(),
+            Some(export_bounds),
+            Some(export_bounds),
+            false,
+        );
+        let export_svg = render::Svg {
+            bounds: export_bounds,
+            svg_data: export_svg_data,
+        };
+
+        let image_raw = renderer
+            .gen_image(zoom, &[export_svg], export_bounds)?
+            .ok_or(anyhow::Error::msg(
+            "gen_image() returned None in VectorImage export_to_bytes(), even though it has gotten a SVG",
+        ))?;
+
+        Ok(render::image_to_bytes(image_raw, format)?)
     }
 }

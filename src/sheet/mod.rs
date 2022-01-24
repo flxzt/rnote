@@ -117,8 +117,12 @@ mod imp {
 
 use std::{cell::RefCell, rc::Rc};
 
+use crate::compose::shapes;
 use crate::pens::brush::Brush;
+use crate::strokes::bitmapimage;
+use crate::strokes::bitmapimage::BitmapImage;
 use crate::strokes::brushstroke::BrushStroke;
+use crate::strokes::strokebehaviour;
 use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
 use crate::strokes::strokestyle::InputData;
@@ -591,6 +595,9 @@ impl Sheet {
     }
 
     pub fn open_from_xopp_bytes(&mut self, bytes: glib::Bytes) -> Result<(), anyhow::Error> {
+        // We set the sheet dpi to the hardcoded xournal++ dpi, so no need to convert values or coordinates anywhere
+        self.format().set_dpi(xoppformat::XoppFile::DPI);
+
         let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
 
         // Extract the largest width of all sheets, add together all heights
@@ -607,9 +614,6 @@ impl Sheet {
         let sheet = Self::default();
         let format = Format::default();
         let mut background = Background::default();
-
-        // We set the sheet dpi to 72, so no need to convert values or coordinates anywhere
-        format.set_dpi(72.0);
 
         sheet.set_width(sheet_width.round() as i32);
         sheet.set_height(sheet_height.round() as i32);
@@ -633,6 +637,7 @@ impl Sheet {
 
         for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
             for layers in page.layers.into_iter() {
+                // import strokes
                 for stroke in layers.strokes.into_iter() {
                     let mut brush = Brush::default();
                     brush.set_color(compose::Color::from(stroke.color));
@@ -660,8 +665,41 @@ impl Sheet {
                         sheet
                             .strokes_state()
                             .borrow_mut()
-                            .insert_stroke(StrokeStyle::BrushStroke(new_stroke));
+                            .insert_stroke_threaded(StrokeStyle::BrushStroke(new_stroke));
                     }
+                }
+
+                // import images
+                for image in layers.images.into_iter() {
+                    let bounds = AABB::new(
+                        na::point![image.left, image.top],
+                        na::point![image.right, image.bottom],
+                    );
+
+                    let intrinsic_size =
+                        bitmapimage::extract_dimensions(&base64::decode(&image.data)?)?;
+
+                    let rectangle = shapes::Rectangle {
+                        cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
+                        transform: strokebehaviour::StrokeTransform::new_w_isometry(
+                            na::Isometry2::new(bounds.center().coords, 0.0),
+                        ),
+                    };
+
+                    let mut bitmapimage = BitmapImage {
+                        data_base64: image.data,
+                        // Xopp images are always Png
+                        format: bitmapimage::Format::Png,
+                        intrinsic_size,
+                        rectangle,
+                        ..BitmapImage::default()
+                    };
+                    bitmapimage.update_geometry();
+
+                    sheet
+                        .strokes_state()
+                        .borrow_mut()
+                        .insert_stroke_threaded(StrokeStyle::BitmapImage(bitmapimage));
                 }
             }
 
@@ -715,7 +753,10 @@ impl Sheet {
                     .into_iter()
                     .filter_map(|mut stroke| {
                         stroke.translate(-page_bounds.mins.coords);
-                        stroke.to_xopp(current_dpi)
+                        stroke.to_xopp(
+                            current_dpi,
+                            &self.strokes_state().borrow().renderer.read().unwrap(),
+                        )
                     })
                     .collect::<Vec<xoppformat::XoppStrokeStyle>>();
 
@@ -764,7 +805,7 @@ impl Sheet {
                 let page_dimensions = utils::convert_coord_dpi(
                     page_bounds.extents(),
                     current_dpi,
-                    xoppformat::XoppRoot::DPI,
+                    xoppformat::XoppFile::DPI,
                 );
 
                 xoppformat::XoppPage {

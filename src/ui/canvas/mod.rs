@@ -396,12 +396,24 @@ mod imp {
             let vadj = widget.vadjustment().unwrap();
             let sheet_margin = self.sheet_margin.get();
 
+            let (clip_x, clip_y, clip_width, clip_height) = if let Some(parent) = widget.parent() {
+                // unwrapping is fine, because its the parent
+                let (clip_x, clip_y) = parent.translate_coordinates(widget, 0.0, 0.0).unwrap();
+                (
+                    clip_x as f32,
+                    clip_y as f32,
+                    parent.width() as f32,
+                    parent.height() as f32,
+                )
+            } else {
+                (0.0, 0.0, widget.width() as f32, widget.height() as f32)
+            };
             // Clip everything outside the current view
             snapshot.push_clip(&graphene::Rect::new(
-                0.0,
-                0.0,
-                widget.width() as f32,
-                widget.height() as f32,
+                clip_x,
+                clip_y,
+                clip_width,
+                clip_height,
             ));
 
             snapshot.save();
@@ -1174,9 +1186,9 @@ impl Canvas {
 
         priv_.snapshot(self, &snapshot);
 
-        let texture =
-            render::rendernode_to_texture(self.upcast_ref::<Widget>(), &snapshot.to_node(), None)
-                .unwrap_or_else(|e| {
+        let rendernode = snapshot.to_node()?;
+        let texture = render::rendernode_to_texture(self.upcast_ref::<Widget>(), &rendernode, None)
+            .unwrap_or_else(|e| {
                 log::error!(
                     "rendernode_to_texture() in current_content_as_texture() failed with Err {}",
                     e

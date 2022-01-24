@@ -1,4 +1,5 @@
 use crate::drawbehaviour::DrawBehaviour;
+use crate::render::Renderer;
 use crate::{render, utils};
 
 use chrono::{TimeZone, Utc};
@@ -131,7 +132,11 @@ impl StrokeBehaviour for StrokeStyle {
 }
 
 impl StrokeStyle {
-    pub fn to_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeStyle> {
+    pub fn to_xopp(
+        self,
+        current_dpi: f64,
+        renderer: &Renderer,
+    ) -> Option<xoppformat::XoppStrokeStyle> {
         match self {
             StrokeStyle::MarkerStroke(markerstroke) => {
                 // Xopp expects at least 4 coordinates, so stroke with elements < 2 is not exported
@@ -144,7 +149,7 @@ impl StrokeStyle {
                 let width = vec![utils::convert_value_dpi(
                     markerstroke.marker.width(),
                     current_dpi,
-                    xoppformat::XoppRoot::DPI,
+                    xoppformat::XoppFile::DPI,
                 )];
                 let coords = markerstroke
                     .elements
@@ -153,7 +158,7 @@ impl StrokeStyle {
                         utils::convert_coord_dpi(
                             element.inputdata.pos(),
                             current_dpi,
-                            xoppformat::XoppRoot::DPI,
+                            xoppformat::XoppFile::DPI,
                         )
                     })
                     .collect::<Vec<na::Vector2<f64>>>();
@@ -180,7 +185,7 @@ impl StrokeStyle {
                 let mut width = vec![utils::convert_value_dpi(
                     brushstroke.brush.width(),
                     current_dpi,
-                    xoppformat::XoppRoot::DPI,
+                    xoppformat::XoppFile::DPI,
                 )];
                 // the rest are pressures between 0.0 and 1.0
                 let mut pressures = brushstroke
@@ -194,7 +199,11 @@ impl StrokeStyle {
                     .elements
                     .iter()
                     .map(|element| {
-                        xoppformat::XoppRoot::DPI * (element.inputdata.pos() / current_dpi)
+                        utils::convert_coord_dpi(
+                            element.inputdata.pos(),
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        )
                     })
                     .collect::<Vec<na::Vector2<f64>>>();
 
@@ -204,6 +213,84 @@ impl StrokeStyle {
                         color,
                         width,
                         coords,
+                    },
+                ))
+            }
+            StrokeStyle::VectorImage(vectorimage) => {
+                let png_data = match vectorimage.export_as_image_bytes(
+                    1.0,
+                    renderer,
+                    image::ImageOutputFormat::Png,
+                ) {
+                    Ok(image_bytes) => image_bytes,
+                    Err(e) => {
+                        log::error!("bitmapimage.export_as_bytes() failed in stroke to_xopp() with Err `{}`", e);
+                        return None;
+                    }
+                };
+
+                Some(xoppformat::XoppStrokeStyle::XoppImage(
+                    xoppformat::XoppImage {
+                        left: utils::convert_value_dpi(
+                            vectorimage.bounds.mins[0],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        top: utils::convert_value_dpi(
+                            vectorimage.bounds.mins[1],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        right: utils::convert_value_dpi(
+                            vectorimage.bounds.maxs[0],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        bottom: utils::convert_value_dpi(
+                            vectorimage.bounds.maxs[1],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        data: base64::encode(&png_data),
+                    },
+                ))
+            }
+            StrokeStyle::BitmapImage(bitmapimage) => {
+                let png_data = match bitmapimage.export_as_image_bytes(
+                    1.0,
+                    renderer,
+                    image::ImageOutputFormat::Png,
+                ) {
+                    Ok(image_bytes) => image_bytes,
+                    Err(e) => {
+                        log::error!("bitmapimage.export_as_bytes() failed in stroke to_xopp() with Err `{}`", e);
+                        return None;
+                    }
+                };
+
+                Some(xoppformat::XoppStrokeStyle::XoppImage(
+                    xoppformat::XoppImage {
+                        left: utils::convert_value_dpi(
+                            bitmapimage.bounds.mins[0],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        top: utils::convert_value_dpi(
+                            bitmapimage.bounds.mins[1],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        right: utils::convert_value_dpi(
+                            bitmapimage.bounds.maxs[0],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        bottom: utils::convert_value_dpi(
+                            bitmapimage.bounds.maxs[1],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        data: base64::encode(&png_data),
                     },
                 ))
             }

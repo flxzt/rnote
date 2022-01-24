@@ -322,7 +322,7 @@ impl Background {
         &mut self,
         zoom: f64,
         bounds: AABB,
-    ) -> Result<gsk::RenderNode, anyhow::Error> {
+    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let snapshot = Snapshot::new();
         let tile_size = self.tile_size();
 
@@ -359,7 +359,7 @@ impl Background {
     ) -> Result<(), anyhow::Error> {
         match self.gen_rendernode(zoom, sheet_bounds) {
             Ok(new_rendernode) => {
-                self.rendernode = Some(new_rendernode);
+                self.rendernode = new_rendernode;
             }
             Err(e) => {
                 log::error!(

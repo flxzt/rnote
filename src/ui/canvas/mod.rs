@@ -1206,7 +1206,7 @@ impl Canvas {
             .strokes_state()
             .borrow_mut()
             .deselect_all_strokes();
-        self.selection_modifier().set_visible(false);
+        self.selection_modifier().update_state(self);
 
         self.pens().borrow_mut().begin(data_entries, appwindow);
 

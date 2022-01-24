@@ -136,6 +136,7 @@ impl StrokesState {
                             .regenerate_rendering_with_images(key, images);
 
                         appwindow.canvas().queue_draw();
+                        appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                     }
                     StateTask::AppendImagesToStroke { key, images } => {
                         appwindow
@@ -146,6 +147,7 @@ impl StrokesState {
                             .append_images_to_rendering(key, images);
 
                         appwindow.canvas().queue_draw();
+                        appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                     }
                     StateTask::InsertStroke { stroke } => {
                         match stroke {
@@ -177,11 +179,11 @@ impl StrokesState {
                                     .borrow_mut()
                                     .set_selected(inserted, true);
 
-                                appwindow.canvas().selection_modifier().set_visible(true);
                                 appwindow.mainheader().selector_toggle().set_active(true);
 
                                 appwindow.canvas().sheet().resize_to_format();
                                 appwindow.canvas().update_background_rendernode(true);
+                                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                             }
                             StrokeStyle::BitmapImage(bitmapimage) => {
                                 let inserted = appwindow
@@ -196,11 +198,11 @@ impl StrokesState {
                                     .borrow_mut()
                                     .set_selected(inserted, true);
 
-                                appwindow.canvas().selection_modifier().set_visible(true);
                                 appwindow.mainheader().selector_toggle().set_active(true);
 
                                 appwindow.canvas().sheet().resize_to_format();
                                 appwindow.canvas().update_background_rendernode(false);
+                                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                             }
                         }
 

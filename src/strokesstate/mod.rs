@@ -95,7 +95,7 @@ impl Default for StrokesState {
         let threadpool = default_threadpool();
 
         let (render_tx, render_rx) =
-            glib::MainContext::channel::<StateTask>(glib::PRIORITY_HIGH_IDLE);
+            glib::MainContext::channel::<StateTask>(glib::PRIORITY_HIGH);
 
         Self {
             strokes: HopSlotMap::with_key(),

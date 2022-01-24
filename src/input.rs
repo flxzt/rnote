@@ -6,21 +6,18 @@ use crate::strokes::strokestyle::InputData;
 
 pub const INPUT_OVERSHOOT: f64 = 30.0;
 
-/// Map Stylus input to the position on a sheet
+/// Map pen input to the position on a sheet
 pub fn map_inputdata(
     zoom: f64,
     data_entries: &mut VecDeque<InputData>,
     mapped_offset: na::Vector2<f64>,
 ) {
-    *data_entries = data_entries
-        .iter()
-        .map(|inputdata| {
-            InputData::new(
-                inputdata.pos().scale(1.0 / zoom) + mapped_offset,
-                inputdata.pressure(),
-            )
-        })
-        .collect();
+    data_entries.iter_mut().for_each(|inputdata| {
+        *inputdata = InputData::new(
+            inputdata.pos().scale(1.0 / zoom) + mapped_offset,
+            inputdata.pressure(),
+        )
+    });
 }
 
 /// Filter inputdata to sheet bounds
@@ -28,6 +25,7 @@ pub fn filter_mapped_inputdata(filter_bounds: AABB, data_entries: &mut VecDeque<
     data_entries.retain(|data| filter_bounds.contains_local_point(&na::Point2::from(data.pos())));
 }
 
+/// Retreive inputdata from a (emulated) pointer
 pub fn retreive_pointer_inputdata(x: f64, y: f64) -> VecDeque<InputData> {
     let mut data_entries: VecDeque<InputData> = VecDeque::with_capacity(1);
     //std::thread::sleep(std::time::Duration::from_millis(100));

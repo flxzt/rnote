@@ -1196,7 +1196,7 @@ impl Canvas {
                 None
             })?;
 
-        self.selection_modifier().set_visible(true);
+        self.selection_modifier().update_state(self);
 
         Some(texture)
     }
@@ -1218,10 +1218,10 @@ impl Canvas {
             .strokes_state()
             .borrow_mut()
             .deselect_all_strokes();
-        self.selection_modifier().update_state(self);
 
         self.pens().borrow_mut().begin(data_entries, appwindow);
 
+        self.selection_modifier().update_state(self);
         self.queue_resize();
         self.queue_draw();
     }
@@ -1252,13 +1252,11 @@ impl Canvas {
             .unwrap()
             .change_action_state("tmperaser", &false.to_variant());
 
-        // Shows the selection modifier if selection bounds are some
-        self.selection_modifier().update_state(self);
-
         if self.sheet().resize_endless() {
             self.update_background_rendernode(false);
         }
 
+        self.selection_modifier().update_state(self);
         self.queue_resize();
         self.queue_draw();
     }

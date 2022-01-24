@@ -105,6 +105,7 @@ impl Default for StrokesState {
             render_components: SecondaryMap::new(),
 
             chrono_counter: 0,
+
             zoom: 1.0,
             renderer: Arc::new(RwLock::new(render::Renderer::default())),
             tasks_tx: Some(render_tx),

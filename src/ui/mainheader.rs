@@ -32,7 +32,7 @@ mod imp {
         #[template_child]
         pub redo_button: TemplateChild<Button>,
         #[template_child]
-        pub pens_togglebox: TemplateChild<gtk4::Box>,
+        pub pens_toggles_clamp: TemplateChild<adw::Clamp>,
         #[template_child]
         pub marker_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -156,8 +156,8 @@ impl MainHeader {
         imp::MainHeader::from_instance(self).redo_button.get()
     }
 
-    pub fn pens_togglebox(&self) -> gtk4::Box {
-        imp::MainHeader::from_instance(self).pens_togglebox.get()
+    pub fn pens_toggles_clamp(&self) -> adw::Clamp {
+        imp::MainHeader::from_instance(self).pens_toggles_clamp.get()
     }
 
     pub fn marker_toggle(&self) -> ToggleButton {

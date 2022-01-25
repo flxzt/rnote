@@ -493,10 +493,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.main_grid().attach(&appwindow.devel_actions_revealer(), 2, 1 ,1, 1);
             appwindow.main_grid().attach(&appwindow.canvas_scroller(), 2, 2 ,1, 1);
 
-            appwindow.mainheader().headerbar().remove(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove(&appwindow.mainheader().pens_toggles_clamp());
             appwindow.mainheader().headerbar().remove(&appwindow.mainheader().quickactions_box());
             appwindow.mainheader().headerbar().pack_end(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_start(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().pack_start(&appwindow.mainheader().pens_toggles_clamp());
 
             appwindow.canvas_scroller().set_window_placement(CornerType::BottomRight);
 
@@ -521,10 +521,10 @@ pub fn setup_actions(appwindow: &RnoteAppWindow) {
             appwindow.main_grid().attach(&appwindow.sidebar_sep(), 1, 1 ,1, 2);
             appwindow.main_grid().attach(&appwindow.sidebar_grid(), 2, 1 ,1, 2);
 
-            appwindow.mainheader().headerbar().remove(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().remove(&appwindow.mainheader().pens_toggles_clamp());
             appwindow.mainheader().headerbar().remove(&appwindow.mainheader().quickactions_box());
             appwindow.mainheader().headerbar().pack_start(&appwindow.mainheader().quickactions_box());
-            appwindow.mainheader().headerbar().pack_end(&appwindow.mainheader().pens_togglebox());
+            appwindow.mainheader().headerbar().pack_end(&appwindow.mainheader().pens_toggles_clamp());
 
             appwindow.canvas_scroller().set_window_placement(CornerType::BottomLeft);
 

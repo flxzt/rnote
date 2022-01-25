@@ -15,7 +15,7 @@
             <property name="visible">false</property>
           </object>
         </child>
-        <child type="end">
+        <child>
           <object class="AdwWindowTitle" id="main_title">
             <property name="title" translatable="yes">New document</property>
             <property name="subtitle" translatable="yes">Draft</property>
@@ -28,6 +28,7 @@
       <object class="AdwHeaderBar" id="headerbar">
         <property name="height-request">50</property>
         <property name="title-widget">main_titlebox</property>
+        <property name="centering-policy">loose</property>
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
@@ -116,62 +117,72 @@
           </object>
         </child>
         <child type="end">
-          <object class="GtkBox" id="pens_togglebox">
-            <property name="homogeneous">true</property>
-            <property name="width_request">420</property>
+          <object class="AdwClamp" id="pens_toggles_clamp">
             <property name="margin-start">6</property>
             <property name="margin-end">6</property>
-            <style>
-              <class name="linked" />
-            </style>
-            <child>
-              <object class="GtkToggleButton" id="marker_toggle">
-                <property name="icon_name">pen-marker-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Marker</property>
-                <property name="hexpand">true</property>
-                <property name="active">true</property>
+            <property name="maximum-size">450</property>
+            <property name="tightening-threshold">400</property>
+            <property name="hexpand">true</property>
+            <property name="vexpand">true</property>
+            <property name="valign">fill</property>
+            <property name="halign">fill</property>
+            <property name="child">
+              <object class="GtkBox">
+                <property name="width-request">280</property>
+                <property name="homogeneous">true</property>
+                <style>
+                  <class name="linked" />
+                </style>
+                <child>
+                  <object class="GtkToggleButton" id="marker_toggle">
+                    <property name="icon_name">pen-marker-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Marker</property>
+                    <property name="hexpand">true</property>
+                    <property name="active">true</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkToggleButton" id="brush_toggle">
+                    <property name="icon_name">pen-brush-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Brush</property>
+                    <property name="hexpand">true</property>
+                    <property name="group">marker_toggle</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkToggleButton" id="shaper_toggle">
+                    <property name="icon_name">pen-shaper-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Shaper</property>
+                    <property name="hexpand">true</property>
+                    <property name="group">marker_toggle</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkToggleButton" id="eraser_toggle">
+                    <property name="icon_name">pen-eraser-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Eraser</property>
+                    <property name="hexpand">true</property>
+                    <property name="group">marker_toggle</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkToggleButton" id="selector_toggle">
+                    <property name="icon_name">pen-selector-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Selector</property>
+                    <property name="hexpand">true</property>
+                    <property name="group">marker_toggle</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkToggleButton" id="tools_toggle">
+                    <property name="icon_name">pen-tools-symbolic</property>
+                    <property name="tooltip_text" translatable="yes">Tools</property>
+                    <property name="hexpand">true</property>
+                    <property name="group">marker_toggle</property>
+                  </object>
+                </child>
               </object>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="brush_toggle">
-                <property name="icon_name">pen-brush-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Brush</property>
-                <property name="hexpand">true</property>
-                <property name="group">marker_toggle</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="shaper_toggle">
-                <property name="icon_name">pen-shaper-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Shaper</property>
-                <property name="hexpand">true</property>
-                <property name="group">marker_toggle</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="eraser_toggle">
-                <property name="icon_name">pen-eraser-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Eraser</property>
-                <property name="hexpand">true</property>
-                <property name="group">marker_toggle</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="selector_toggle">
-                <property name="icon_name">pen-selector-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Selector</property>
-                <property name="hexpand">true</property>
-                <property name="group">marker_toggle</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkToggleButton" id="tools_toggle">
-                <property name="icon_name">pen-tools-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Tools</property>
-                <property name="hexpand">true</property>
-                <property name="group">marker_toggle</property>
-              </object>
-            </child>
+            </property>
           </object>
         </child>
       </object>

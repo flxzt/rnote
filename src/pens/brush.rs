@@ -41,7 +41,7 @@ pub struct Brush {
     #[serde(rename = "style")]
     style: BrushStyle,
     #[serde(rename = "textured_config")]
-    pub textured_config: textured::TexturedConfig,
+    pub textured_config: textured::TexturedOptions,
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,
 }
@@ -53,7 +53,7 @@ impl Default for Brush {
             sensitivity: Self::SENSITIVITY_DEFAULT,
             color: compose::Color::BLACK,
             style: BrushStyle::default(),
-            textured_config: textured::TexturedConfig::default(),
+            textured_config: textured::TexturedOptions::default(),
             current_stroke: None,
         }
     }

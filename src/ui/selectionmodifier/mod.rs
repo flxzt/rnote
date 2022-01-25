@@ -266,7 +266,7 @@ pub mod imp {
                         .set("stroke-width", SELECTION_BOUNDS_WIDTH)
                         .set("stroke-dasharray", "6 10");
 
-                    let svg_data = compose::node_to_string(&svg_path).map_err(|e| {
+                    let svg_data = compose::svg_node_to_string(&svg_path).map_err(|e| {
                         anyhow::anyhow!(
                             "node_to_string() failed in gen_svg_path() for selector, {}",
                             e
@@ -370,7 +370,7 @@ pub mod imp {
                         .set("stroke-width", ROTATION_LINESTART_WIDTH)
                         .set("stroke-dasharray", "5 5");
 
-                    let svg_data = compose::node_to_string(&svg_path).map_err(|e| {
+                    let svg_data = compose::svg_node_to_string(&svg_path).map_err(|e| {
                         anyhow::anyhow!(
                             "node_to_string() failed in gen_svg_path() for selector, {}",
                             e

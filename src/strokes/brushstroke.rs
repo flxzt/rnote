@@ -1,7 +1,7 @@
 use crate::compose::geometry;
-use crate::compose::{self, curves, solid, textured};
+use crate::compose::transformable::Transformable;
+use crate::compose::{self, curves, smooth, textured};
 use crate::drawbehaviour::DrawBehaviour;
-use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
 use crate::utils;
 use crate::{
@@ -109,7 +109,7 @@ impl DrawBehaviour for BrushStroke {
     }
 }
 
-impl StrokeBehaviour for BrushStroke {
+impl Transformable for BrushStroke {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.elements.iter_mut().for_each(|element| {
             element.inputdata.set_pos(element.inputdata.pos() + offset);
@@ -356,7 +356,7 @@ impl BrushStroke {
                 let line_end_width = start_width
                     + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_lines));
 
-                commands.append(&mut solid::compose_line_variable_width(
+                commands.append(&mut smooth::compose_line_variable_width(
                     *line,
                     line_start_width,
                     line_end_width,
@@ -372,7 +372,7 @@ impl BrushStroke {
             bounds.take_point(na::Point2::from(line.start));
             bounds.take_point(na::Point2::from(line.end));
 
-            commands.append(&mut solid::compose_line_variable_width(
+            commands.append(&mut smooth::compose_line_variable_width(
                 line,
                 start_width,
                 end_width,
@@ -391,7 +391,7 @@ impl BrushStroke {
             .set("fill", self.brush.color().to_css_color())
             .set("d", path::Data::from(commands));
 
-        let mut svg_data = compose::node_to_string(&path)
+        let mut svg_data = compose::svg_node_to_string(&path)
             .map_err(|e| {
                 anyhow::anyhow!(
                     "node_to_string() failed in gen_svg_elem_solid() of brushstroke with Err `{}`",
@@ -459,7 +459,7 @@ impl BrushStroke {
 
         bounds.loosen(self.brush.width());
 
-        let mut svg_data = compose::node_to_string(&element)
+        let mut svg_data = compose::svg_node_to_string(&element)
             .map_err(|e| {
                 anyhow::anyhow!(
                     "node_to_string() failed in gen_svg_elem_textured() of brushstroke with Err `{}`",
@@ -546,7 +546,7 @@ impl BrushStroke {
                 let line_end_width = start_width
                     + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_splits));
 
-                commands.append(&mut solid::compose_line_variable_width(
+                commands.append(&mut smooth::compose_line_variable_width(
                     *line,
                     line_start_width,
                     line_end_width,
@@ -563,7 +563,7 @@ impl BrushStroke {
             bounds.take_point(na::Point2::from(line.end));
             bounds.loosen(start_width.max(end_width));
 
-            commands.append(&mut solid::compose_line_variable_width(
+            commands.append(&mut smooth::compose_line_variable_width(
                 line,
                 start_width,
                 end_width,
@@ -580,7 +580,7 @@ impl BrushStroke {
             .set("fill", self.brush.color().to_css_color())
             .set("d", path::Data::from(commands));
 
-        let mut svg_data = compose::node_to_string(&path)
+        let mut svg_data = compose::svg_node_to_string(&path)
             .map_err(|e| {
                 anyhow::anyhow!(
                     "node_to_string() failed in gen_svg_elem_experimental() of brushstroke with Err `{}`",

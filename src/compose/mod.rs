@@ -1,14 +1,16 @@
 use gtk4::gdk;
 use notetakingfileformats::xoppformat;
 use p2d::bounding_volume::AABB;
+use rand::SeedableRng;
 use serde::{Deserialize, Serialize};
 
 pub mod curves;
 pub mod geometry;
 pub mod rough;
 pub mod shapes;
-pub mod solid;
+pub mod smooth;
 pub mod textured;
+pub mod transformable;
 
 // Miscalleneous SVG functions
 
@@ -111,70 +113,8 @@ pub fn strip_svg_root(svg: &str) -> String {
     String::from(re.replace_all(svg, ""))
 }
 
-/// patterns are rendered rather slow, so this should be used carefully!
-pub fn wrap_svg_pattern(data: &str, id: &str, bounds: AABB) -> String {
-    const SVG_PATTERN_TEMPL_STR: &str = r#"
-<defs>
-    <pattern
-        id="{{id}}"
-        x="{{x}}"
-        y="{{y}}"
-        width="{{width}}"
-        height="{{height}}"
-        patternUnits="userSpaceOnUse"
-        >
-        {{data}}
-    </pattern>
-</defs>
-"#;
-    let mut cx = tera::Context::new();
-    let x = format!("{:3}", bounds.mins[0]);
-    let y = format!("{:3}", bounds.mins[1]);
-    let width = format!("{:3}", bounds.extents()[0]);
-    let height = format!("{:3}", bounds.extents()[1]);
-    cx.insert("id", &id);
-    cx.insert("x", &x);
-    cx.insert("y", &y);
-    cx.insert("width", &width);
-    cx.insert("height", &height);
-    cx.insert("data", &data);
-
-    tera::Tera::one_off(SVG_PATTERN_TEMPL_STR, &cx, false)
-        .expect("failed to create svg from template")
-}
-
-/// wraps the data in a group, and translates and scales them with the transform attribute
-pub fn wrap_svg_group(
-    data: &str,
-    offset: na::Vector2<f64>,
-    scalevector: na::Vector2<f64>,
-) -> String {
-    const SVG_GROUP_TEMPL_STR: &str = r#"
-<g transform="
-  translate({{translate_x}} {{translate_y}})
-  scale({{scale_x}} {{scale_y}})
-  "
->
-  {{data}}
-</g>
-"#;
-    let mut cx = tera::Context::new();
-    let translate_x = format!("{:3}", offset[0]);
-    let translate_y = format!("{:3}", offset[1]);
-    let scale_x = format!("{:3}", scalevector[0]);
-    let scale_y = format!("{:3}", scalevector[1]);
-    cx.insert("translate_x", &translate_x);
-    cx.insert("translate_y", &translate_y);
-    cx.insert("scale_x", &scale_x);
-    cx.insert("scale_y", &scale_y);
-    cx.insert("data", data);
-
-    tera::Tera::one_off(SVG_GROUP_TEMPL_STR, &cx, false)
-        .expect("failed to create svg from template")
-}
-
 /// Converting a svg::Node to a String
-pub fn node_to_string<N>(node: &N) -> Result<String, anyhow::Error>
+pub fn svg_node_to_string<N>(node: &N) -> Result<String, anyhow::Error>
 where
     N: svg::Node,
 {
@@ -327,5 +267,13 @@ impl Into<xoppformat::XoppColor> for Color {
             blue: (self.b * 255.0).floor() as u8,
             alpha: (self.a * 255.0).floor() as u8,
         }
+    }
+}
+
+pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
+    if let Some(seed) = seed {
+        rand_pcg::Pcg64::seed_from_u64(seed)
+    } else {
+        rand_pcg::Pcg64::from_entropy()
     }
 }

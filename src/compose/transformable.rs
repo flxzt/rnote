@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Specifies that a type behaves as a stroke
-pub trait StrokeBehaviour {
+pub trait Transformable {
     /// translates (as in moves) the stroke with offset
     fn translate(&mut self, offset: na::Vector2<f64>);
     /// rotates the stroke in angle (rad)
@@ -13,12 +13,12 @@ pub trait StrokeBehaviour {
 /// To be used as state in a stroke to help implement the StrokeBehaviour trait
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_transform")]
-pub struct StrokeTransform {
+pub struct Transform {
     #[serde(rename = "transform")]
     pub transform: na::Affine2<f64>,
 }
 
-impl Default for StrokeTransform {
+impl Default for Transform {
     fn default() -> Self {
         Self {
             transform: na::Affine2::identity(),
@@ -26,7 +26,7 @@ impl Default for StrokeTransform {
     }
 }
 
-impl StrokeTransform {
+impl Transform {
     pub fn new(transform: na::Affine2<f64>) -> Self {
         Self { transform }
     }

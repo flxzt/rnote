@@ -12,11 +12,11 @@ use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
 
 use crate::compose::geometry;
+use crate::compose::transformable::Transformable;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::tools::DragProximityTool;
 use crate::render;
 use crate::strokes::bitmapimage::BitmapImage;
-use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokes::vectorimage::VectorImage;
 use crate::ui::appwindow::RnoteAppWindow;

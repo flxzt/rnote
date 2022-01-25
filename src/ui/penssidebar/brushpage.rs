@@ -73,7 +73,7 @@ mod imp {
 }
 
 use crate::compose;
-use crate::compose::textured::{TexturedConfig, TexturedDotsDistribution};
+use crate::compose::textured::{TexturedDotsDistribution, TexturedOptions};
 use crate::pens::brush::Brush;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use adw::prelude::*;
@@ -243,15 +243,15 @@ impl BrushPage {
         self.imp()
             .texturedstyle_density_adj
             .get()
-            .set_lower(TexturedConfig::DENSITY_MIN);
+            .set_lower(TexturedOptions::DENSITY_MIN);
         self.imp()
             .texturedstyle_density_adj
             .get()
-            .set_upper(TexturedConfig::DENSITY_MAX);
+            .set_upper(TexturedOptions::DENSITY_MAX);
         self.imp()
             .texturedstyle_density_adj
             .get()
-            .set_value(TexturedConfig::DENSITY_DEFAULT);
+            .set_value(TexturedOptions::DENSITY_DEFAULT);
 
         self.imp().texturedstyle_density_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
@@ -263,15 +263,15 @@ impl BrushPage {
         self.imp()
             .texturedstyle_radius_x_adj
             .get()
-            .set_lower(TexturedConfig::RADII_MIN[0]);
+            .set_lower(TexturedOptions::RADII_MIN[0]);
         self.imp()
             .texturedstyle_radius_x_adj
             .get()
-            .set_upper(TexturedConfig::RADII_MAX[0]);
+            .set_upper(TexturedOptions::RADII_MAX[0]);
         self.imp()
             .texturedstyle_radius_x_adj
             .get()
-            .set_value(TexturedConfig::RADII_DEFAULT[0]);
+            .set_value(TexturedOptions::RADII_DEFAULT[0]);
 
         self.imp()
             .texturedstyle_radius_x_adj
@@ -288,15 +288,15 @@ impl BrushPage {
         self.imp()
             .texturedstyle_radius_y_adj
             .get()
-            .set_lower(TexturedConfig::RADII_MIN[1]);
+            .set_lower(TexturedOptions::RADII_MIN[1]);
         self.imp()
             .texturedstyle_radius_y_adj
             .get()
-            .set_upper(TexturedConfig::RADII_MAX[1]);
+            .set_upper(TexturedOptions::RADII_MAX[1]);
         self.imp()
             .texturedstyle_radius_y_adj
             .get()
-            .set_value(TexturedConfig::RADII_DEFAULT[1]);
+            .set_value(TexturedOptions::RADII_DEFAULT[1]);
 
         self.imp()
             .texturedstyle_radius_y_adj

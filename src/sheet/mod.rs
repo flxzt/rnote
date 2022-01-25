@@ -118,12 +118,11 @@ mod imp {
 use std::{cell::RefCell, rc::Rc};
 
 use crate::compose::shapes;
+use crate::compose::transformable::{Transform, Transformable};
 use crate::pens::brush::Brush;
 use crate::strokes::bitmapimage;
 use crate::strokes::bitmapimage::BitmapImage;
 use crate::strokes::brushstroke::BrushStroke;
-use crate::strokes::strokebehaviour;
-use crate::strokes::strokebehaviour::StrokeBehaviour;
 use crate::strokes::strokestyle::Element;
 use crate::strokes::strokestyle::InputData;
 use crate::strokes::strokestyle::StrokeStyle;
@@ -676,9 +675,10 @@ impl Sheet {
 
                     let rectangle = shapes::Rectangle {
                         cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
-                        transform: strokebehaviour::StrokeTransform::new_w_isometry(
-                            na::Isometry2::new(bounds.center().coords, 0.0),
-                        ),
+                        transform: Transform::new_w_isometry(na::Isometry2::new(
+                            bounds.center().coords,
+                            0.0,
+                        )),
                     };
 
                     let mut bitmapimage = BitmapImage {

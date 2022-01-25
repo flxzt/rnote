@@ -11,9 +11,7 @@ use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-use crate::strokes::strokebehaviour::StrokeBehaviour;
-
-use super::strokebehaviour;
+use crate::compose::transformable::{Transform, Transformable};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "format")]
@@ -102,7 +100,7 @@ impl DrawBehaviour for BitmapImage {
                 ),
             );
 
-        let svg_data = compose::node_to_string(&svg_root)?;
+        let svg_data = compose::svg_node_to_string(&svg_root)?;
         let svg = render::Svg {
             bounds: geometry::aabb_translate(self.bounds, offset),
             svg_data,
@@ -112,7 +110,7 @@ impl DrawBehaviour for BitmapImage {
     }
 }
 
-impl StrokeBehaviour for BitmapImage {
+impl Transformable for BitmapImage {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.rectangle.translate(offset);
         self.update_geometry();
@@ -157,7 +155,7 @@ impl BitmapImage {
 
         let rectangle = shapes::Rectangle {
             cuboid: p2d::shape::Cuboid::new(intrinsic_size / 2.0),
-            transform: strokebehaviour::StrokeTransform::new_w_isometry(na::Isometry2::new(
+            transform: Transform::new_w_isometry(na::Isometry2::new(
                 pos + intrinsic_size / 2.0,
                 0.0,
             )),

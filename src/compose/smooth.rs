@@ -1,8 +1,77 @@
-use crate::pens::shaper::Shaper;
-
 use super::{curves, geometry, shapes};
+use crate::compose;
 
+use serde::{Deserialize, Serialize};
 use svg::node::element::{self, path};
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(default, rename = "smoothoptions")]
+pub struct SmoothOptions {
+    /// An optional seed to generate reproducable strokes
+    #[serde(rename = "seed")]
+    seed: Option<u64>,
+    #[serde(rename = "width")]
+    width: f64,
+    #[serde(rename = "color")]
+    color: Option<compose::Color>,
+    #[serde(rename = "fill")]
+    fill: Option<compose::Color>,
+}
+
+impl Default for SmoothOptions {
+    fn default() -> Self {
+        Self {
+            seed: None,
+            width: Self::WIDTH_DEFAULT,
+            color: Some(Self::COLOR_DEFAULT),
+            fill: None,
+        }
+    }
+}
+
+impl SmoothOptions {
+    /// The default width
+    pub const WIDTH_DEFAULT: f64 = 1.0;
+    /// The default color
+    pub const COLOR_DEFAULT: compose::Color = compose::Color {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
+    };
+
+    pub fn seed(&self) -> Option<u64> {
+        self.seed
+    }
+
+    pub fn set_seed(&mut self, seed: Option<u64>) {
+        self.seed = seed
+    }
+
+    pub fn width(&self) -> f64 {
+        self.width
+    }
+
+    pub fn set_width(&mut self, width: f64) {
+        self.width = width
+    }
+
+    pub fn color(&self) -> Option<compose::Color> {
+        self.color
+    }
+
+    pub fn set_color(&mut self, color: Option<compose::Color>) {
+        self.color = color;
+    }
+
+    pub fn fill(&self) -> Option<compose::Color> {
+        self.fill
+    }
+
+    pub fn set_fill(&mut self, fill: Option<compose::Color>) {
+        self.fill = fill;
+    }
+}
 
 pub fn compose_line(line: curves::Line, move_start: bool) -> Vec<path::Command> {
     let mut commands = Vec::new();
@@ -451,13 +520,16 @@ pub fn compose_cubbez_variable_width(
     commands
 }
 
-pub fn compose_rectangle(rectangle: shapes::Rectangle, shaper: &Shaper) -> element::Element {
-    let color = if let Some(color) = shaper.color() {
+pub fn compose_rectangle(
+    rectangle: shapes::Rectangle,
+    options: &SmoothOptions,
+) -> element::Element {
+    let color = if let Some(color) = options.color() {
         color.to_css_color()
     } else {
         String::from("none")
     };
-    let fill = if let Some(fill) = shaper.fill() {
+    let fill = if let Some(fill) = options.fill() {
         fill.to_css_color()
     } else {
         String::from("none")
@@ -477,18 +549,18 @@ pub fn compose_rectangle(rectangle: shapes::Rectangle, shaper: &Shaper) -> eleme
         .set("width", maxs[0] - mins[0])
         .set("height", maxs[1] - mins[1])
         .set("stroke", color)
-        .set("stroke-width", shaper.width())
+        .set("stroke-width", options.width())
         .set("fill", fill)
         .into()
 }
 
-pub fn compose_ellipse(ellipse: shapes::Ellipse, shaper: &Shaper) -> element::Element {
-    let color = if let Some(color) = shaper.color() {
+pub fn compose_ellipse(ellipse: shapes::Ellipse, options: &SmoothOptions) -> element::Element {
+    let color = if let Some(color) = options.color() {
         color.to_css_color()
     } else {
         String::from("none")
     };
-    let fill = if let Some(fill) = shaper.fill() {
+    let fill = if let Some(fill) = options.fill() {
         fill.to_css_color()
     } else {
         String::from("none")
@@ -503,7 +575,7 @@ pub fn compose_ellipse(ellipse: shapes::Ellipse, shaper: &Shaper) -> element::El
         .set("rx", ellipse.radii[0])
         .set("ry", ellipse.radii[1])
         .set("stroke", color)
-        .set("stroke-width", shaper.width())
+        .set("stroke-width", options.width())
         .set("fill", fill)
         .into()
 }

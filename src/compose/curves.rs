@@ -1,10 +1,9 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use crate::strokes::strokebehaviour::{self, StrokeBehaviour};
-
 use super::geometry;
 use super::shapes::Rectangle;
+use super::transformable::{Transform, Transformable};
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "line")]
@@ -15,7 +14,7 @@ pub struct Line {
     pub end: na::Vector2<f64>,
 }
 
-impl StrokeBehaviour for Line {
+impl Transformable for Line {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.start += offset;
         self.end += offset;
@@ -50,10 +49,7 @@ impl Line {
 
         Rectangle {
             cuboid: p2d::shape::Cuboid::new(na::vector![magn / 2.0, width / 2.0]),
-            transform: strokebehaviour::StrokeTransform::new_w_isometry(na::Isometry2::new(
-                self.start + vec / 2.0,
-                angle,
-            )),
+            transform: Transform::new_w_isometry(na::Isometry2::new(self.start + vec / 2.0, angle)),
         }
     }
 }

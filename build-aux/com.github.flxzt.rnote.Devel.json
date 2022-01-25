@@ -99,7 +99,8 @@
             "buildsystem": "meson",
             "config-opts": [
                 "-Dbuild-examples=false",
-                "-Dbuild-tests=false"
+                "-Dbuild-tests=false",
+                "-Dsysprof=enabled"
             ],
             "sources": [
                 {

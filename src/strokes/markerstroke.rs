@@ -1,4 +1,4 @@
-use crate::compose::{self, curves, geometry, solid};
+use crate::compose::{self, curves, geometry, smooth};
 use crate::{
     drawbehaviour::DrawBehaviour, pens::marker::Marker, render, strokes::strokestyle::Element,
 };
@@ -7,7 +7,7 @@ use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIter
 use serde::{Deserialize, Serialize};
 use svg::node::element::path;
 
-use crate::strokes::strokebehaviour::StrokeBehaviour;
+use crate::compose::transformable::Transformable;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "markerstroke")]
@@ -113,7 +113,7 @@ impl DrawBehaviour for MarkerStroke {
     }
 }
 
-impl StrokeBehaviour for MarkerStroke {
+impl Transformable for MarkerStroke {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.elements.iter_mut().for_each(|element| {
             element.inputdata.set_pos(element.inputdata.pos() + offset);
@@ -315,7 +315,7 @@ impl MarkerStroke {
             bounds.take_point(na::Point2::from(cubbez.cp2));
             bounds.take_point(na::Point2::from(cubbez.end));
 
-            commands.append(&mut solid::compose_cubbez(cubbez, true));
+            commands.append(&mut smooth::compose_cubbez(cubbez, true));
         } else if let Some(mut line) =
             curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
         {
@@ -325,7 +325,7 @@ impl MarkerStroke {
             bounds.take_point(na::Point2::from(line.start));
             bounds.take_point(na::Point2::from(line.end));
 
-            commands.append(&mut solid::compose_line(line, true));
+            commands.append(&mut smooth::compose_line(line, true));
         } else {
             return None;
         }
@@ -340,7 +340,7 @@ impl MarkerStroke {
             .set("fill", "none")
             .set("d", path::Data::from(commands));
 
-        let mut svg_data = compose::node_to_string(&path)
+        let mut svg_data = compose::svg_node_to_string(&path)
             .map_err(|e| {
                 anyhow::anyhow!(
                     "node_to_string() failed in gen_svg_elem() of markerstroke with Err `{}`",

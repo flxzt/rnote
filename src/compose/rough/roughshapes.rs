@@ -1,24 +1,33 @@
-use super::{roughoptions::Options, roughutils};
+use super::roughoptions::Options;
+use rand::Rng;
 use svg::node::element::path;
 
-fn offset(min: f64, max: f64, options: &mut Options, roughness_gain: Option<f64>) -> f64 {
+fn offset<R>(min: f64, max: f64, options: &Options, rng: &mut R, roughness_gain: Option<f64>) -> f64
+where
+    R: Rng + ?Sized,
+{
     let roughness_gain = roughness_gain.unwrap_or(1.0);
-    options.roughness
-        * roughness_gain
-        * (roughutils::rand_f64_0to1_next(options) * (max - min) + min)
+    options.roughness * roughness_gain * (rng.gen_range(0.0..1.0) * (max - min) + min)
 }
 
-fn offset_opt(x: f64, options: &mut Options, roughness_gain: Option<f64>) -> f64 {
-    offset(-x, x, options, roughness_gain)
+fn offset_opt<R>(x: f64, options: &Options, rng: &mut R, roughness_gain: Option<f64>) -> f64
+where
+    R: Rng + ?Sized,
+{
+    offset(-x, x, options, rng, roughness_gain)
 }
 
-pub(super) fn line(
+pub(super) fn line<R>(
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,
-    options: &mut Options,
+    options: &Options,
+    rng: &mut R,
     move_to: bool,
     overlay: bool,
-) -> Vec<path::Command> {
+) -> Vec<path::Command>
+where
+    R: Rng + ?Sized,
+{
     let len = (end - start).magnitude();
 
     let roughness_gain = if len < 200.0 {
@@ -35,12 +44,12 @@ pub(super) fn line(
     };
     let half_offset = offset * 0.5;
 
-    let diverge_point = 0.2 + roughutils::rand_f64_0to1_next(options) * 0.2;
+    let diverge_point = 0.2 + rng.gen_range(0.0..1.0) * 0.2;
 
     let mid_disp_x = options.bowing * options.max_randomness_offset * (end[1] - start[1]) / 200.0;
     let mid_disp_y = options.bowing * options.max_randomness_offset * (start[0] - end[0]) / 200.0;
-    let mid_disp_x = offset_opt(mid_disp_x, options, Some(roughness_gain));
-    let mid_disp_y = offset_opt(mid_disp_y, options, Some(roughness_gain));
+    let mid_disp_x = offset_opt(mid_disp_x, options, rng, Some(roughness_gain));
+    let mid_disp_y = offset_opt(mid_disp_y, options, rng, Some(roughness_gain));
 
     let mut commands = Vec::new();
 
@@ -50,13 +59,13 @@ pub(super) fn line(
                 + if options.preserve_vertices {
                     0.0
                 } else {
-                    offset_opt(half_offset, options, Some(roughness_gain))
+                    offset_opt(half_offset, options, rng, Some(roughness_gain))
                 };
             let y = start[1]
                 + if options.preserve_vertices {
                     0.0
                 } else {
-                    offset_opt(half_offset, options, Some(roughness_gain))
+                    offset_opt(half_offset, options, rng, Some(roughness_gain))
                 };
 
             commands.push(path::Command::Move(
@@ -68,13 +77,13 @@ pub(super) fn line(
                 + if options.preserve_vertices {
                     0.0
                 } else {
-                    offset_opt(offset, options, Some(roughness_gain))
+                    offset_opt(offset, options, rng, Some(roughness_gain))
                 };
             let y = start[1]
                 + if options.preserve_vertices {
                     0.0
                 } else {
-                    offset_opt(offset, options, Some(roughness_gain))
+                    offset_opt(offset, options, rng, Some(roughness_gain))
                 };
 
             commands.push(path::Command::Move(
@@ -89,13 +98,13 @@ pub(super) fn line(
             + if options.preserve_vertices {
                 0.0
             } else {
-                offset_opt(half_offset, options, Some(roughness_gain))
+                offset_opt(half_offset, options, rng, Some(roughness_gain))
             };
         let y2 = end[1]
             + if options.preserve_vertices {
                 0.0
             } else {
-                offset_opt(half_offset, options, Some(roughness_gain))
+                offset_opt(half_offset, options, rng, Some(roughness_gain))
             };
 
         commands.push(path::Command::CubicCurve(
@@ -105,21 +114,21 @@ pub(super) fn line(
                     mid_disp_x
                         + start[0]
                         + (end[0] - start[0]) * diverge_point
-                        + offset_opt(half_offset, options, Some(roughness_gain)),
+                        + offset_opt(half_offset, options, rng, Some(roughness_gain)),
                     mid_disp_y
                         + start[1]
                         + (end[1] - start[1]) * diverge_point
-                        + offset_opt(half_offset, options, Some(roughness_gain)),
+                        + offset_opt(half_offset, options, rng, Some(roughness_gain)),
                 ),
                 (
                     mid_disp_x
                         + start[0]
                         + 2.0 * (end[0] - start[0]) * diverge_point
-                        + offset_opt(half_offset, options, Some(roughness_gain)),
+                        + offset_opt(half_offset, options, rng, Some(roughness_gain)),
                     mid_disp_y
                         + start[1]
                         + 2.0 * (end[1] - start[1]) * diverge_point
-                        + offset_opt(half_offset, options, Some(roughness_gain)),
+                        + offset_opt(half_offset, options, rng, Some(roughness_gain)),
                 ),
                 (x2, y2),
             )),
@@ -129,13 +138,13 @@ pub(super) fn line(
             + if options.preserve_vertices {
                 0.0
             } else {
-                offset_opt(offset, options, Some(roughness_gain))
+                offset_opt(offset, options, rng, Some(roughness_gain))
             };
         let y2 = end[1]
             + if options.preserve_vertices {
                 0.0
             } else {
-                offset_opt(offset, options, Some(roughness_gain))
+                offset_opt(offset, options, rng, Some(roughness_gain))
             };
 
         commands.push(path::Command::CubicCurve(
@@ -145,21 +154,21 @@ pub(super) fn line(
                     mid_disp_x
                         + start[0]
                         + (end[0] - start[0]) * diverge_point
-                        + offset_opt(offset, options, Some(roughness_gain)),
+                        + offset_opt(offset, options, rng, Some(roughness_gain)),
                     mid_disp_y
                         + start[1]
                         + (end[1] - start[1]) * diverge_point
-                        + offset_opt(offset, options, Some(roughness_gain)),
+                        + offset_opt(offset, options, rng, Some(roughness_gain)),
                 ),
                 (
                     mid_disp_x
                         + start[0]
                         + 2.0 * (end[0] - start[0]) * diverge_point
-                        + offset_opt(offset, options, Some(roughness_gain)),
+                        + offset_opt(offset, options, rng, Some(roughness_gain)),
                     mid_disp_y
                         + start[1]
                         + 2.0 * (end[1] - start[1]) * diverge_point
-                        + offset_opt(offset, options, Some(roughness_gain)),
+                        + offset_opt(offset, options, rng, Some(roughness_gain)),
                 ),
                 (x2, y2),
             )),
@@ -169,31 +178,36 @@ pub(super) fn line(
     commands
 }
 
-pub(super) fn doubleline(
+pub(super) fn doubleline<R>(
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,
-    options: &mut Options,
-) -> Vec<path::Command> {
-    let mut commands = line(start, end, options, true, false);
+    options: &Options,
+    rng: &mut R,
+) -> Vec<path::Command>
+where
+    R: Rng + ?Sized,
+{
+    let mut commands = line(start, end, options, rng, true, false);
 
     let mut second_options = options.clone();
-    if let Some(seed) = options.seed {
-        second_options.seed = Some(roughutils::random_u64_full(Some(seed)));
-        //second_options.seed = None;
-    };
+    second_options.seed = Some(rng.gen::<u64>());
 
-    commands.append(&mut line(start, end, &mut second_options, true, true));
+    commands.append(&mut line(start, end, &mut second_options, rng, true, true));
 
     commands
 }
 
-pub(super) fn cubic_bezier(
+pub(super) fn cubic_bezier<R>(
     start: na::Vector2<f64>,
     first: na::Vector2<f64>,
     second: na::Vector2<f64>,
     end: na::Vector2<f64>,
-    options: &mut Options,
-) -> Vec<path::Command> {
+    options: &Options,
+    rng: &mut R,
+) -> Vec<path::Command>
+where
+    R: Rng + ?Sized,
+{
     let mut commands = Vec::new();
 
     let ros = [
@@ -217,8 +231,8 @@ pub(super) fn cubic_bezier(
                 na::vector![0.0, 0.0]
             } else {
                 na::vector![
-                    offset_opt(ros[0], options, None),
-                    offset_opt(ros[0], options, None)
+                    offset_opt(ros[0], options, rng, None),
+                    offset_opt(ros[0], options, rng, None)
                 ]
             };
 
@@ -232,8 +246,8 @@ pub(super) fn cubic_bezier(
             na::vector![end[0], end[1]]
         } else {
             na::vector![
-                end[0] + offset_opt(ros[i], options, None),
-                end[1] + offset_opt(ros[i], options, None)
+                end[0] + offset_opt(ros[i], options, rng, None),
+                end[1] + offset_opt(ros[i], options, rng, None)
             ]
         };
 
@@ -241,12 +255,12 @@ pub(super) fn cubic_bezier(
             path::Position::Absolute,
             path::Parameters::from((
                 (
-                    first[0] + offset_opt(ros[i], options, None),
-                    first[1] + offset_opt(ros[i], options, None),
+                    first[0] + offset_opt(ros[i], options, rng, None),
+                    first[1] + offset_opt(ros[i], options, rng, None),
                 ),
                 (
-                    second[0] + offset_opt(ros[i], options, None),
-                    second[1] + offset_opt(ros[i], options, None),
+                    second[0] + offset_opt(ros[i], options, rng, None),
+                    second[1] + offset_opt(ros[i], options, rng, None),
                 ),
                 (end_[0], end_[1]),
             )),
@@ -256,10 +270,14 @@ pub(super) fn cubic_bezier(
     commands
 }
 
-pub(super) fn fill_polygon(
+pub(super) fn fill_polygon<R>(
     points: Vec<na::Vector2<f64>>,
-    _options: &mut Options,
-) -> Vec<path::Command> {
+    _options: &Options,
+    _rng: &mut R,
+) -> Vec<path::Command>
+where
+    R: Rng + ?Sized,
+{
     let mut commands = Vec::new();
 
     for (i, point) in points.iter().enumerate() {
@@ -280,12 +298,16 @@ pub(super) fn fill_polygon(
     commands
 }
 
-pub(super) fn ellipse(
+pub(super) fn ellipse<R>(
     center: na::Vector2<f64>,
     radius_x: f64,
     radius_y: f64,
-    options: &mut Options,
-) -> EllipseResult {
+    options: &Options,
+    rng: &mut R,
+) -> EllipseResult
+where
+    R: Rng + ?Sized,
+{
     let mut commands = Vec::new();
 
     // generate ellipse parameters
@@ -298,24 +320,31 @@ pub(super) fn ellipse(
     let increment = (std::f64::consts::PI * 2.0) / stepcount;
     let curve_fitrandomness = 1.0 - options.curve_fitting;
 
-    let radius_x = radius_x + offset_opt(radius_x * curve_fitrandomness, options, None);
-    let radius_y = radius_y + offset_opt(radius_y * curve_fitrandomness, options, None);
+    let radius_x = radius_x + offset_opt(radius_x * curve_fitrandomness, options, rng, None);
+    let radius_y = radius_y + offset_opt(radius_y * curve_fitrandomness, options, rng, None);
 
     // creating ellipse
-    let overlap_1 =
-        increment * self::offset(0.1, self::offset(0.4, 1.0, options, None), options, None);
+    let overlap_1 = increment
+        * self::offset(
+            0.1,
+            self::offset(0.4, 1.0, options, rng, None),
+            options,
+            rng,
+            None,
+        );
 
     let (all_points_1, core_points_1) = compute_ellipse_points(
-        increment, center, radius_x, radius_y, 1.0, overlap_1, options,
+        increment, center, radius_x, radius_y, 1.0, overlap_1, options, rng,
     );
 
-    commands.append(&mut curve(all_points_1, None, options));
+    commands.append(&mut curve(all_points_1, None, options, rng));
 
     if !options.disable_multistroke {
-        let (all_points_2, _) =
-            compute_ellipse_points(increment, center, radius_x, radius_y, 1.5, 0.0, options);
+        let (all_points_2, _) = compute_ellipse_points(
+            increment, center, radius_x, radius_y, 1.5, 0.0, options, rng,
+        );
 
-        commands.append(&mut curve(all_points_2, None, options));
+        commands.append(&mut curve(all_points_2, None, options, rng));
     }
 
     EllipseResult {
@@ -324,11 +353,15 @@ pub(super) fn ellipse(
     }
 }
 
-pub(super) fn curve(
+pub(super) fn curve<R>(
     points: Vec<na::Vector2<f64>>,
     close_point: Option<na::Vector2<f64>>,
-    options: &mut Options,
-) -> Vec<path::Command> {
+    options: &Options,
+    rng: &mut R,
+) -> Vec<path::Command>
+where
+    R: Rng + ?Sized,
+{
     let mut commands = Vec::new();
     let len = points.len();
 
@@ -370,8 +403,10 @@ pub(super) fn curve(
                 commands.push(path::Command::Line(
                     path::Position::Absolute,
                     path::Parameters::from((
-                        close_point[0] + offset_opt(options.max_randomness_offset, options, None),
-                        close_point[1] + offset_opt(options.max_randomness_offset, options, None),
+                        close_point[0]
+                            + offset_opt(options.max_randomness_offset, options, rng, None),
+                        close_point[1]
+                            + offset_opt(options.max_randomness_offset, options, rng, None),
                     )),
                 ));
             }
@@ -390,7 +425,7 @@ pub(super) fn curve(
             )),
         ));
     } else if len == 2 {
-        commands.append(&mut doubleline(points[0], points[1], options));
+        commands.append(&mut doubleline(points[0], points[1], options, rng));
     }
 
     commands
@@ -403,29 +438,37 @@ pub struct EllipseResult {
 }
 
 // Returns (all_points, core_points)
-pub(super) fn compute_ellipse_points(
+pub(super) fn compute_ellipse_points<R>(
     increment: f64,
     center: na::Vector2<f64>,
     radius_x: f64,
     radius_y: f64,
     offset: f64,
     overlap: f64,
-    options: &mut Options,
-) -> (Vec<na::Vector2<f64>>, Vec<na::Vector2<f64>>) {
+    options: &Options,
+    rng: &mut R,
+) -> (Vec<na::Vector2<f64>>, Vec<na::Vector2<f64>>)
+where
+    R: Rng + ?Sized,
+{
     let mut core_points = Vec::new();
     let mut all_points = Vec::new();
 
-    let rad_offset = offset_opt(0.5, options, None) - std::f64::consts::PI / 2.0;
+    let rad_offset = offset_opt(0.5, options, rng, None) - std::f64::consts::PI / 2.0;
     all_points.push(na::vector![
-        offset_opt(offset, options, None) + center[0] + 0.9 * radius_x * (rad_offset - increment),
-        offset_opt(offset, options, None) + center[1] + 0.9 * radius_y * (rad_offset - increment)
+        offset_opt(offset, options, rng, None)
+            + center[0]
+            + 0.9 * radius_x * (rad_offset - increment),
+        offset_opt(offset, options, rng, None)
+            + center[1]
+            + 0.9 * radius_y * (rad_offset - increment)
     ]);
 
     let mut angle = rad_offset;
     while angle < (std::f64::consts::PI * 2.0 + rad_offset - 0.01) {
         let point = na::vector![
-            offset_opt(offset, options, None) + center[0] + radius_x * angle.cos(),
-            offset_opt(offset, options, None) + center[1] + radius_y * angle.sin()
+            offset_opt(offset, options, rng, None) + center[0] + radius_x * angle.cos(),
+            offset_opt(offset, options, rng, None) + center[1] + radius_y * angle.sin()
         ];
 
         all_points.push(point);
@@ -435,26 +478,26 @@ pub(super) fn compute_ellipse_points(
     }
 
     all_points.push(na::vector![
-        offset_opt(offset, options, None)
+        offset_opt(offset, options, rng, None)
             + center[0]
             + radius_x * (rad_offset + std::f64::consts::PI * 2.0 + overlap * 0.5).cos(),
-        offset_opt(offset, options, None)
+        offset_opt(offset, options, rng, None)
             + center[1]
             + radius_y * (rad_offset + std::f64::consts::PI * 2.0 + overlap * 0.5).sin()
     ]);
     all_points.push(na::vector![
-        offset_opt(offset, options, None)
+        offset_opt(offset, options, rng, None)
             + center[0]
             + 0.98 * radius_x * (rad_offset + overlap).cos(),
-        offset_opt(offset, options, None)
+        offset_opt(offset, options, rng, None)
             + center[1]
             + 0.98 * radius_y * (rad_offset + overlap).sin()
     ]);
     all_points.push(na::vector![
-        offset_opt(offset, options, None)
+        offset_opt(offset, options, rng, None)
             + center[0]
             + 0.9 * radius_x * (rad_offset + overlap * 0.5).cos(),
-        offset_opt(offset, options, None)
+        offset_opt(offset, options, rng, None)
             + center[1]
             + 0.9 * radius_y * (rad_offset + overlap * 0.5).sin()
     ]);

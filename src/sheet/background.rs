@@ -286,7 +286,7 @@ impl Background {
                 ));
             }
         }
-        let svg_data = compose::node_to_string(&group)
+        let svg_data = compose::svg_node_to_string(&group)
             .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
 
         Ok(render::Svg { svg_data, bounds })

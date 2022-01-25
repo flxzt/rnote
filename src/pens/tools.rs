@@ -115,7 +115,7 @@ impl ExpandSheetTool {
             .add(threshold_line)
             .add(offset_line);
 
-        let svg_data = compose::node_to_string(&group)?;
+        let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg { svg_data, bounds };
 
         if let Some(image) = renderer.gen_image(zoom, &[svg], bounds)? {
@@ -196,7 +196,7 @@ impl DragProximityTool {
             group = group.add(outline_circle);
         }
 
-        let svg_data = compose::node_to_string(&group)?;
+        let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg {
             svg_data,
             bounds: draw_bounds,

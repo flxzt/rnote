@@ -13,8 +13,8 @@ use super::bitmapimage::BitmapImage;
 use super::brushstroke::BrushStroke;
 use super::markerstroke::MarkerStroke;
 use super::shapestroke::ShapeStroke;
-use super::strokebehaviour::StrokeBehaviour;
 use super::vectorimage::VectorImage;
+use crate::compose::transformable::Transformable;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "strokestyle")]
@@ -69,7 +69,7 @@ impl DrawBehaviour for StrokeStyle {
     }
 }
 
-impl StrokeBehaviour for StrokeStyle {
+impl Transformable for StrokeStyle {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::MarkerStroke(markerstroke) => {

@@ -154,7 +154,7 @@ impl Options {
         path
     }
 
-    pub(super) fn apply_to_rect(&mut self, mut rect: element::Path) -> element::Path {
+    pub(super) fn apply_to_rect(&self, mut rect: element::Path) -> element::Path {
         rect = if let Some(stroke) = self.stroke {
             rect.set("stroke", stroke.to_css_color())
         } else {
@@ -180,7 +180,7 @@ impl Options {
         rect
     }
 
-    pub(super) fn apply_to_ellipse(&mut self, mut ellipse_path: element::Path) -> element::Path {
+    pub(super) fn apply_to_ellipse(&self, mut ellipse_path: element::Path) -> element::Path {
         ellipse_path = if let Some(stroke) = self.stroke {
             ellipse_path.set("stroke", stroke.to_css_color())
         } else {

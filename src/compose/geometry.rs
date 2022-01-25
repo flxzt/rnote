@@ -207,10 +207,7 @@ pub fn aabb_scale(aabb: AABB, zoom: f64) -> AABB {
 }
 
 pub fn aabb_translate(aabb: AABB, offset: na::Vector2<f64>) -> AABB {
-    AABB::new(
-        na::point![aabb.mins[0] + offset[0], aabb.mins[1] + offset[1]],
-        na::point![aabb.maxs[0] + offset[0], aabb.maxs[1] + offset[1]],
-    )
+    aabb.transform_by(&na::convert(na::Translation2::from(offset)))
 }
 
 /// Shrinks the aabb to the nearest integer of its vertices
@@ -229,6 +226,7 @@ pub fn aabb_ceil(aabb: AABB) -> AABB {
     )
 }
 
+/// Scale the source size with a specified max size, while keeping its aspect ratio
 pub fn scale_with_locked_aspectratio(
     src_size: na::Vector2<f64>,
     max_size: na::Vector2<f64>,

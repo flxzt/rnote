@@ -128,7 +128,7 @@ impl PenBehaviour for Selector {
                 .set("stroke-dasharray", "4 6")
                 .set("fill", Self::FILL_COLOR.to_css_color());
 
-            let svg_data = compose::node_to_string(&svg_path).map_err(|e| {
+            let svg_data = compose::svg_node_to_string(&svg_path).map_err(|e| {
                 anyhow::anyhow!(
                     "node_to_string() failed in gen_svg_path() for selector, {}",
                     e

@@ -1,11 +1,9 @@
 use std::ops::Range;
 
 use crate::compose;
-
 use super::curves;
 
 use gtk4::glib;
-use rand::SeedableRng;
 use rand_distr::{Distribution, Uniform};
 use serde::{Deserialize, Serialize};
 use svg::node::element::{self, Element};
@@ -86,11 +84,11 @@ impl TexturedDotsDistribution {
     }
 }
 
-/// The Configuration of how the textured shape should look
+/// The Options of how a textured shape should look
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(default, rename = "textured_config")]
-pub struct TexturedConfig {
+#[serde(default, rename = "textured_options")]
+pub struct TexturedOptions {
     /// An optional seed to generate reproducable strokes
     #[serde(rename = "seed")]
     seed: Option<u64>,
@@ -108,7 +106,7 @@ pub struct TexturedConfig {
     distribution: TexturedDotsDistribution,
 }
 
-impl Default for TexturedConfig {
+impl Default for TexturedOptions {
     fn default() -> Self {
         Self {
             seed: None,
@@ -120,13 +118,13 @@ impl Default for TexturedConfig {
     }
 }
 
-impl TexturedConfig {
+impl TexturedOptions {
     /// The default color
     pub const COLOR_DEFAULT: compose::Color = compose::Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
-        a: 0.0,
+        a: 1.0,
     };
     /// Density min
     pub const DENSITY_MIN: f64 = 0.0;
@@ -185,7 +183,8 @@ impl TexturedConfig {
     }
 }
 
-pub fn compose_line(line: curves::Line, width: f64, config: &mut TexturedConfig) -> Element {
+pub fn compose_line(line: curves::Line, width: f64, options: &mut TexturedOptions) -> Element {
+    let mut rng = compose::new_rng_default_pcg64(options.seed);
     let rect = line.line_w_width_to_rect(width);
     let area = 4.0 * rect.cuboid.half_extents[0] * rect.cuboid.half_extents[1];
 
@@ -193,28 +192,22 @@ pub fn compose_line(line: curves::Line, width: f64, config: &mut TexturedConfig)
     let range_x = -rect.cuboid.half_extents[0]..rect.cuboid.half_extents[0];
     let range_y = -rect.cuboid.half_extents[1]..rect.cuboid.half_extents[1];
     let range_dots_rot = -std::f64::consts::FRAC_PI_8..std::f64::consts::FRAC_PI_8;
-    let range_dots_rx = config.radii[0] * 0.8..config.radii[0] * 1.25;
-    let range_dots_ry = config.radii[1] * 0.8..config.radii[1] * 1.25;
+    let range_dots_rx = options.radii[0] * 0.8..options.radii[0] * 1.25;
+    let range_dots_ry = options.radii[1] * 0.8..options.radii[1] * 1.25;
 
     let distr_x = Uniform::from(range_x);
     let distr_dots_rot = Uniform::from(range_dots_rot);
     let distr_dots_rx = Uniform::from(range_dots_rx);
     let distr_dots_ry = Uniform::from(range_dots_ry);
 
-    let n_dots = (area * 0.1 * config.density).round() as i32;
+    let n_dots = (area * 0.1 * options.density).round() as i32;
     let vec = line.end - line.start;
-
-    let mut rng = if let Some(seed) = config.seed {
-        rand_pcg::Pcg64::seed_from_u64(seed)
-    } else {
-        rand_pcg::Pcg64::from_entropy()
-    };
 
     let mut group = element::Group::new();
 
     for _ in 0..n_dots {
         let x_pos = distr_x.sample(&mut rng);
-        let y_pos = config
+        let y_pos = options
             .distribution
             .sample_for_range_symmetrical_clipped(&mut rng, range_y.clone());
 
@@ -241,7 +234,7 @@ pub fn compose_line(line: curves::Line, width: f64, config: &mut TexturedConfig)
             .set("cy", pos[1])
             .set("rx", radii[0])
             .set("ry", radii[1])
-            .set("fill", config.color.to_css_color());
+            .set("fill", options.color.to_css_color());
 
         group = group.add(ellipse);
     }

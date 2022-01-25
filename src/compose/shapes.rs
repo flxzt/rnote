@@ -1,7 +1,7 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use crate::strokes::strokebehaviour::{self, StrokeBehaviour};
+use super::transformable::{Transform, Transformable};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "rectangle")]
@@ -9,14 +9,14 @@ pub struct Rectangle {
     #[serde(rename = "cuboid")]
     pub cuboid: p2d::shape::Cuboid,
     #[serde(rename = "transform")]
-    pub transform: strokebehaviour::StrokeTransform,
+    pub transform: Transform,
 }
 
 impl Default for Rectangle {
     fn default() -> Self {
         Self {
             cuboid: p2d::shape::Cuboid::new(na::Vector2::zeros()),
-            transform: strokebehaviour::StrokeTransform::default(),
+            transform: Transform::default(),
         }
     }
 }
@@ -34,7 +34,7 @@ impl Rectangle {
     }
 }
 
-impl StrokeBehaviour for Rectangle {
+impl Transformable for Rectangle {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }
@@ -56,19 +56,19 @@ pub struct Ellipse {
     pub radii: na::Vector2<f64>,
     /// The transform
     #[serde(rename = "transform")]
-    pub transform: strokebehaviour::StrokeTransform,
+    pub transform: Transform,
 }
 
 impl Default for Ellipse {
     fn default() -> Self {
         Self {
             radii: na::Vector2::zeros(),
-            transform: strokebehaviour::StrokeTransform::default(),
+            transform: Transform::default(),
         }
     }
 }
 
-impl StrokeBehaviour for Ellipse {
+impl Transformable for Ellipse {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.transform.append_translation_mut(offset);
     }

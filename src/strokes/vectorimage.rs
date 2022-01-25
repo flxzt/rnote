@@ -9,7 +9,7 @@ use rand::Rng;
 use serde::{Deserialize, Serialize};
 use svg::node::{self, element};
 
-use super::strokebehaviour::{self, StrokeBehaviour};
+use crate::compose::transformable::{Transform, Transformable};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -73,7 +73,7 @@ impl DrawBehaviour for VectorImage {
             .set("transform", transform_string)
             .add(svg_root);
 
-        let svg_data = compose::node_to_string(&group)?;
+        let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg {
             bounds: geometry::aabb_translate(self.bounds, offset),
             svg_data,
@@ -83,7 +83,7 @@ impl DrawBehaviour for VectorImage {
     }
 }
 
-impl StrokeBehaviour for VectorImage {
+impl Transformable for VectorImage {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.rectangle.translate(offset);
         self.update_geometry();
@@ -127,22 +127,20 @@ impl VectorImage {
         let svg_node = rtree.svg_node();
         let intrinsic_size = na::vector![svg_node.size.width(), svg_node.size.height()];
 
-        let rectangle =
-            if let Some(size) = size {
-                shapes::Rectangle {
-                    cuboid: p2d::shape::Cuboid::new(size / 2.0),
-                    transform: strokebehaviour::StrokeTransform::new_w_isometry(
-                        na::Isometry2::new(pos + size / 2.0, 0.0),
-                    ),
-                }
-            } else {
-                shapes::Rectangle {
-                    cuboid: p2d::shape::Cuboid::new(intrinsic_size / 2.0),
-                    transform: strokebehaviour::StrokeTransform::new_w_isometry(
-                        na::Isometry2::new(pos + intrinsic_size / 2.0, 0.0),
-                    ),
-                }
-            };
+        let rectangle = if let Some(size) = size {
+            shapes::Rectangle {
+                cuboid: p2d::shape::Cuboid::new(size / 2.0),
+                transform: Transform::new_w_isometry(na::Isometry2::new(pos + size / 2.0, 0.0)),
+            }
+        } else {
+            shapes::Rectangle {
+                cuboid: p2d::shape::Cuboid::new(intrinsic_size / 2.0),
+                transform: Transform::new_w_isometry(na::Isometry2::new(
+                    pos + intrinsic_size / 2.0,
+                    0.0,
+                )),
+            }
+        };
 
         let mut vector_image = Self {
             svg_data,

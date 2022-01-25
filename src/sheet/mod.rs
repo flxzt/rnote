@@ -723,6 +723,7 @@ impl Sheet {
 
         // Only one background for all pages
         let background = xoppformat::XoppBackground {
+            name: None,
             bg_type: xoppformat::XoppBackgroundType::Solid {
                 color: self.background().borrow().color().into(),
                 style: xoppformat::XoppBackgroundSolidStyle::Plain,
@@ -793,6 +794,7 @@ impl Sheet {
                     .collect::<Vec<xoppformat::XoppImage>>();
 
                 let layer = xoppformat::XoppLayer {
+                    name: None,
                     strokes: xopp_strokes,
                     texts: xopp_texts,
                     images: xopp_images,

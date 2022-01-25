@@ -289,12 +289,16 @@ impl Default for XoppBackgroundPixmapDomain {
 /// The Xopp Background
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppBackground {
+    /// Optional background name
+    pub name: Option<String>,
     /// The background type
     pub bg_type: XoppBackgroundType,
 }
 
 impl XmlLoadable for XoppBackground {
     fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+        self.name = node.attribute("name").map(|name| name.to_string());
+
         match node.attribute("type").ok_or_else(|| {
             anyhow::anyhow!(
                 "failed to parse `type` attribute of XoppBackground with id {:?}",
@@ -358,6 +362,9 @@ impl XmlLoadable for XoppBackground {
 impl XmlWritable for XoppBackground {
     fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("background");
+        if let Some(name) = self.name.as_ref() {
+            w.write_attribute("name", name.as_str());
+        }
         self.bg_type.write_xml(w);
         w.end_element()
     }
@@ -366,6 +373,8 @@ impl XmlWritable for XoppBackground {
 /// A Xopp Layer
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct XoppLayer {
+    /// Optional layer name
+    pub name: Option<String>,
     /// Strokes on this layer
     pub strokes: Vec<XoppStroke>,
     /// Texts on this layer
@@ -376,6 +385,8 @@ pub struct XoppLayer {
 
 impl XmlLoadable for XoppLayer {
     fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+        self.name = node.attribute("name").map(|name| name.to_string());
+
         for child in node.children() {
             match child.node_type() {
                 NodeType::Element => match child.tag_name().name() {
@@ -406,6 +417,11 @@ impl XmlLoadable for XoppLayer {
 impl XmlWritable for XoppLayer {
     fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("layer");
+
+        if let Some(name) = self.name.as_ref() {
+            w.write_attribute("name", name.as_str());
+        }
+
         for stroke in self.strokes.iter() {
             stroke.write_xml(w);
         }
@@ -593,11 +609,17 @@ pub struct XoppStroke {
     pub tool: XoppTool,
     /// The stroke color
     pub color: XoppColor,
+    /// Stroke fill. None if is not filled, 255 if fully opaque filled
+    pub fill: Option<i32>,
     /// The stroke width.
     /// The first element is the absolute width of the stroke in points, and every following is the relative width (between 0.0 and 1.0)
     pub width: Vec<f64>,
     /// The stroke coordinates ( as points where a vec (1.0, 0.0) has length of 1 / 72inch )
     pub coords: Vec<na::Vector2<f64>>,
+    /// Optional timestamp
+    pub timestamp: Option<u64>,
+    /// Optional audio filename
+    pub audio_filename: Option<String>,
 }
 
 impl XmlLoadable for XoppStroke {
@@ -623,10 +645,16 @@ impl XmlLoadable for XoppStroke {
         self.color =
             XoppColor::from_strokecolor_attr_value(node.attribute("color").ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `color` attribute in XoppText with id {:?}",
+                    "failed to parse `color` attribute in XoppStroke with id {:?}",
                     node.id()
                 )
             })?)?;
+
+        self.fill = if let Some(fill) = node.attribute("fill") {
+            Some(fill.parse::<i32>()?)
+        } else {
+            None
+        };
 
         self.width = node
             .attribute("width")
@@ -639,6 +667,17 @@ impl XmlLoadable for XoppStroke {
             .split(" ")
             .filter_map(|splitted| splitted.parse::<f64>().ok())
             .collect::<Vec<f64>>();
+
+        self.timestamp = if let Some(ts) = node.attribute("ts") {
+            // the timestamp parsing is fallible
+            ts.parse::<u64>().ok()
+        } else {
+            None
+        };
+
+        self.audio_filename = node
+            .attribute("fn")
+            .map(|audio_filename| audio_filename.to_string());
 
         if let Some(coords) = node.text() {
             let coords = coords
@@ -662,6 +701,9 @@ impl XmlWritable for XoppStroke {
         w.start_element("stroke");
         w.write_attribute("tool", &self.tool.as_xml_attr_value());
         w.write_attribute("color", &self.color.as_xml_attr_value());
+        if let Some(fill) = self.fill {
+            w.write_attribute("fill", format!("{}", fill).as_str());
+        }
         w.write_attribute(
             "width",
             &self

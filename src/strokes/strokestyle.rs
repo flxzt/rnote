@@ -169,6 +169,9 @@ impl StrokeStyle {
                         color,
                         width,
                         coords,
+                        fill: None,
+                        timestamp: None,
+                        audio_filename: None,
                     },
                 ))
             }
@@ -216,6 +219,9 @@ impl StrokeStyle {
                         color,
                         width: width_vec,
                         coords,
+                        fill: None,
+                        timestamp: None,
+                        audio_filename: None,
                     },
                 ))
             }

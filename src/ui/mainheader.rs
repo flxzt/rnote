@@ -157,7 +157,9 @@ impl MainHeader {
     }
 
     pub fn pens_toggles_clamp(&self) -> adw::Clamp {
-        imp::MainHeader::from_instance(self).pens_toggles_clamp.get()
+        imp::MainHeader::from_instance(self)
+            .pens_toggles_clamp
+            .get()
     }
 
     pub fn marker_toggle(&self) -> ToggleButton {

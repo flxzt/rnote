@@ -91,9 +91,7 @@ impl MarkerPage {
         let width_adj = self.width_adj();
 
         self.width_adj().set_lower(Marker::WIDTH_MIN);
-
         self.width_adj().set_upper(Marker::WIDTH_MAX);
-
         self.width_adj().set_value(Marker::WIDTH_DEFAULT);
 
         self.colorpicker().connect_notify_local(

@@ -73,19 +73,6 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-            /*             self.general_sheet_margin_unitentry
-                .get()
-                .value_adj()
-                .set_lower(0.0);
-            self.general_sheet_margin_unitentry
-                .get()
-                .value_spinner()
-                .set_increments(1.0, 10.0);
-            self.general_sheet_margin_unitentry
-                .get()
-                .value_spinner()
-                .set_digits(1); */
-
             self.format_predefined_formats_row
                 .connect_selected_item_notify(
                     clone!(@weak obj => move |_format_predefined_formats_row| {

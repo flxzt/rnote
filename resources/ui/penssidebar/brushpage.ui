@@ -157,14 +157,17 @@
                         <property name="subtitle" translatable="yes">The density is the amount of dots per 10x10 area</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="texturedstyle_density_adj">
-                            <property name="step-increment">0.05</property>
+                            <property name="step-increment">0.1</property>
+                            <property name="page-increment">2</property>
                           </object>
                           <object class="GtkSpinButton" id="texturedstyle_density_spinbutton">
                             <property name="valign">center</property>
                             <property name="margin_start">12</property>
                             <property name="adjustment">texturedstyle_density_adj</property>
                             <property name="orientation">horizontal</property>
-                            <property name="digits">2</property>
+                            <property name="numeric">true</property>
+                            <property name="digits">1</property>
+                            <property name="climb-rate">0.5</property>
                           </object>
                         </child>
                       </object>
@@ -178,26 +181,32 @@
                             <property name="orientation">horizontal</property>
                             <child>
                               <object class="GtkAdjustment" id="texturedstyle_radius_x_adj">
-                                <property name="step-increment">0.05</property>
+                                <property name="step-increment">0.1</property>
+                                <property name="page-increment">2</property>
                               </object>
                               <object class="GtkSpinButton" id="texturedstyle_radius_x_spinbutton">
                                 <property name="valign">center</property>
                                 <property name="margin_start">12</property>
                                 <property name="adjustment">texturedstyle_radius_x_adj</property>
                                 <property name="orientation">horizontal</property>
-                                <property name="digits">2</property>
+                                <property name="numeric">true</property>
+                                <property name="digits">1</property>
+                                <property name="climb-rate">0.5</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkAdjustment" id="texturedstyle_radius_y_adj">
-                                <property name="step-increment">0.05</property>
+                                <property name="step-increment">0.1</property>
+                                <property name="page-increment">2</property>
                               </object>
                               <object class="GtkSpinButton" id="texturedstyle_radius_y_spinbutton">
                                 <property name="valign">center</property>
                                 <property name="margin_start">12</property>
                                 <property name="adjustment">texturedstyle_radius_y_adj</property>
                                 <property name="orientation">horizontal</property>
-                                <property name="digits">2</property>
+                                <property name="numeric">true</property>
+                                <property name="digits">1</property>
+                                <property name="climb-rate">0.5</property>
                               </object>
                             </child>
                           </object>
@@ -241,11 +250,15 @@
     </child>
     <child>
       <object class="GtkAdjustment" id="width_adj">
-        <property name="step-increment">1</property>
+        <property name="step-increment">0.1</property>
+        <property name="page-increment">2</property>
       </object>
       <object class="GtkSpinButton" id="width_spinbutton">
         <property name="adjustment">width_adj</property>
         <property name="orientation">vertical</property>
+        <property name="numeric">true</property>
+        <property name="digits">1</property>
+        <property name="climb-rate">0.5</property>
       </object>
     </child>
     <child>

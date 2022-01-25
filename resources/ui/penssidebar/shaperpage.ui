@@ -105,14 +105,17 @@
                         <property name="subtitle" translatable="yes">Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="roughconfig_roughness_adj">
-                            <property name="step-increment">0.05</property>
+                            <property name="step-increment">0.1</property>
+                            <property name="page-increment">2</property>
                           </object>
                           <object class="GtkSpinButton" id="roughconfig_roughness_spinbutton">
                             <property name="valign">center</property>
                             <property name="margin_start">12</property>
                             <property name="adjustment">roughconfig_roughness_adj</property>
                             <property name="orientation">horizontal</property>
-                            <property name="digits">2</property>
+                            <property name="numeric">true</property>
+                            <property name="digits">1</property>
+                            <property name="climb-rate">0.5</property>
                           </object>
                         </child>
                       </object>
@@ -123,14 +126,17 @@
                         <property name="subtitle" translatable="yes">How curvy the lines are when drawing a rough shape. 0.0 is a straight line. Defaults to 1.0</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="roughconfig_bowing_adj">
-                            <property name="step-increment">0.05</property>
+                            <property name="step-increment">0.1</property>
+                            <property name="page-increment">2</property>
                           </object>
                           <object class="GtkSpinButton" id="roughconfig_bowing_spinbutton">
                             <property name="valign">center</property>
                             <property name="margin_start">12</property>
                             <property name="adjustment">roughconfig_bowing_adj</property>
                             <property name="orientation">horizontal</property>
-                            <property name="digits">2</property>
+                            <property name="numeric">true</property>
+                            <property name="digits">1</property>
+                            <property name="climb-rate">0.5</property>
                           </object>
                         </child>
                       </object>
@@ -148,6 +154,7 @@
                             <property name="margin_start">12</property>
                             <property name="adjustment">roughconfig_curvestepcount_adj</property>
                             <property name="orientation">horizontal</property>
+                            <property name="numeric">true</property>
                             <property name="digits">0</property>
                           </object>
                         </child>
@@ -245,11 +252,15 @@
     </child>
     <child>
       <object class="GtkAdjustment" id="width_adj">
-        <property name="step-increment">1</property>
+        <property name="step-increment">0.1</property>
+        <property name="page-increment">2</property>
       </object>
       <object class="GtkSpinButton" id="width_spinbutton">
         <property name="adjustment">width_adj</property>
         <property name="orientation">vertical</property>
+        <property name="numeric">true</property>
+        <property name="digits">1</property>
+        <property name="climb-rate">0.5</property>
       </object>
     </child>
     <child>

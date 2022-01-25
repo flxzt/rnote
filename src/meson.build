@@ -33,6 +33,7 @@ rust_sources = files(
     'app.rs',
     'utils.rs',
     'compose/mod.rs',
+    'compose/color.rs',
     'compose/transformable.rs',
     'compose/geometry.rs',
     'compose/shapes.rs',

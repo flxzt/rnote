@@ -1,5 +1,4 @@
-use super::{curves, geometry, shapes};
-use crate::compose;
+use super::{color::Color, curves, geometry, shapes};
 
 use serde::{Deserialize, Serialize};
 use svg::node::element::{self, path};
@@ -13,9 +12,9 @@ pub struct SmoothOptions {
     #[serde(rename = "width")]
     width: f64,
     #[serde(rename = "color")]
-    color: Option<compose::Color>,
+    color: Option<Color>,
     #[serde(rename = "fill")]
-    fill: Option<compose::Color>,
+    fill: Option<Color>,
 }
 
 impl Default for SmoothOptions {
@@ -33,7 +32,7 @@ impl SmoothOptions {
     /// The default width
     pub const WIDTH_DEFAULT: f64 = 1.0;
     /// The default color
-    pub const COLOR_DEFAULT: compose::Color = compose::Color {
+    pub const COLOR_DEFAULT: Color = Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
@@ -56,19 +55,19 @@ impl SmoothOptions {
         self.width = width
     }
 
-    pub fn color(&self) -> Option<compose::Color> {
+    pub fn color(&self) -> Option<Color> {
         self.color
     }
 
-    pub fn set_color(&mut self, color: Option<compose::Color>) {
+    pub fn set_color(&mut self, color: Option<Color>) {
         self.color = color;
     }
 
-    pub fn fill(&self) -> Option<compose::Color> {
+    pub fn fill(&self) -> Option<Color> {
         self.fill
     }
 
-    pub fn set_fill(&mut self, fill: Option<compose::Color>) {
+    pub fn set_fill(&mut self, fill: Option<Color>) {
         self.fill = fill;
     }
 }

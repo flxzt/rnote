@@ -327,7 +327,7 @@ use gtk4::{Adjustment, ColorButton, ToggleButton};
 
 use super::appwindow::RnoteAppWindow;
 use super::canvas::Canvas;
-use crate::compose;
+use crate::compose::color::Color;
 use crate::sheet::background::PatternStyle;
 use crate::sheet::format::{self, Format};
 use crate::sheet::Sheet;
@@ -611,7 +611,7 @@ impl SettingsPanel {
 
         // Background
         self.imp().background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.canvas().sheet().background().borrow_mut().set_color(compose::Color::from(background_color_choosebutton.rgba()));
+            appwindow.canvas().sheet().background().borrow_mut().set_color(Color::from(background_color_choosebutton.rgba()));
             appwindow.canvas().regenerate_background(true);
         }));
 
@@ -656,7 +656,7 @@ impl SettingsPanel {
         }));
 
         self.imp().background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
-            appwindow.canvas().sheet().background().borrow_mut().set_pattern_color(compose::Color::from(background_pattern_color_choosebutton.rgba()));
+            appwindow.canvas().sheet().background().borrow_mut().set_pattern_color(Color::from(background_pattern_color_choosebutton.rgba()));
             appwindow.canvas().regenerate_background(true);
         }));
 

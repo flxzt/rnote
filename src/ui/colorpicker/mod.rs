@@ -326,7 +326,7 @@ mod imp {
 
 use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, Orientable, PositionType, Widget};
 
-use crate::compose;
+use crate::compose::color::Color;
 
 glib::wrapper! {
     pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>) @extends Widget, @implements Orientable;
@@ -334,12 +334,12 @@ glib::wrapper! {
 
 impl Default for ColorPicker {
     fn default() -> Self {
-        Self::new(compose::Color::BLACK.to_gdk())
+        Self::new(Color::BLACK.to_gdk())
     }
 }
 
 impl ColorPicker {
-    pub const COLOR_DEFAULT: compose::Color = compose::Color::BLACK;
+    pub const COLOR_DEFAULT: Color = Color::BLACK;
     pub const AMOUNT_COLORBUTTONS_MIN: u32 = 1;
     pub const AMOUNT_COLORBUTTONS_MAX: u32 = 1000;
     pub const AMOUNT_COLORBUTTONS_DEFAULT: u32 = 8;
@@ -375,19 +375,17 @@ impl ColorPicker {
         self.set_property("amount-colorbuttons", amount.to_value());
     }
 
-    pub fn fetch_all_colors(&self) -> Vec<compose::Color> {
+    pub fn fetch_all_colors(&self) -> Vec<Color> {
         let mut all_colors = Vec::with_capacity(8);
-        all_colors.push(compose::Color::from(
-            self.imp().currentcolor_setter1.get().color(),
-        ));
+        all_colors.push(Color::from(self.imp().currentcolor_setter1.get().color()));
         for colorsetter in self.imp().currentcolor_setters.borrow().iter() {
-            all_colors.push(compose::Color::from(colorsetter.color()));
+            all_colors.push(Color::from(colorsetter.color()));
         }
 
         all_colors
     }
 
-    pub fn load_all_colors(&self, all_colors: &[compose::Color]) {
+    pub fn load_all_colors(&self, all_colors: &[Color]) {
         let mut all_colors_iter = all_colors.iter();
         if let Some(first_color) = all_colors_iter.next() {
             self.imp()

@@ -117,6 +117,7 @@ mod imp {
 
 use std::{cell::RefCell, rc::Rc};
 
+use crate::compose::color::Color;
 use crate::compose::shapes;
 use crate::compose::transformable::{Transform, Transformable};
 use crate::pens::brush::Brush;
@@ -631,7 +632,7 @@ impl Sheet {
                 // import strokes
                 for stroke in layers.strokes.into_iter() {
                     let mut brush = Brush::default();
-                    brush.set_color(compose::Color::from(stroke.color));
+                    brush.set_color(Color::from(stroke.color));
 
                     let mut width_iter = stroke.width.iter();
 

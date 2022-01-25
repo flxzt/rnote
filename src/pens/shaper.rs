@@ -3,11 +3,12 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
+use crate::compose::color::Color;
 use crate::compose::rough::roughoptions;
+use crate::input;
 use crate::strokes::shapestroke::ShapeStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokesstate::StrokeKey;
-use crate::{compose, input};
 
 use super::penbehaviour::PenBehaviour;
 
@@ -57,9 +58,9 @@ pub struct Shaper {
     #[serde(rename = "width")]
     width: f64,
     #[serde(rename = "color")]
-    color: Option<compose::Color>,
+    color: Option<Color>,
     #[serde(rename = "fill")]
-    fill: Option<compose::Color>,
+    fill: Option<Color>,
     #[serde(rename = "rough_config")]
     pub rough_config: roughoptions::Options,
     #[serde(skip)]
@@ -171,13 +172,13 @@ impl Shaper {
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 2.0;
 
-    pub const COLOR_DEFAULT: Option<compose::Color> = Some(compose::Color {
+    pub const COLOR_DEFAULT: Option<Color> = Some(Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     });
-    pub const FILL_DEFAULT: Option<compose::Color> = None;
+    pub const FILL_DEFAULT: Option<Color> = None;
 
     pub fn width(&self) -> f64 {
         self.width
@@ -203,19 +204,19 @@ impl Shaper {
         self.drawstyle = drawstyle;
     }
 
-    pub fn color(&self) -> Option<compose::Color> {
+    pub fn color(&self) -> Option<Color> {
         self.color
     }
 
-    pub fn set_color(&mut self, color: Option<compose::Color>) {
+    pub fn set_color(&mut self, color: Option<Color>) {
         self.color = color;
     }
 
-    pub fn fill(&self) -> Option<compose::Color> {
+    pub fn fill(&self) -> Option<Color> {
         self.fill
     }
 
-    pub fn set_fill(&mut self, fill: Option<compose::Color>) {
+    pub fn set_fill(&mut self, fill: Option<Color>) {
         self.fill = fill;
     }
 }

@@ -155,7 +155,7 @@ use serde::de::{self, Deserializer, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 
-use crate::compose;
+use crate::compose::color::Color;
 use crate::compose::geometry;
 use crate::ui::appwindow::RnoteAppWindow;
 
@@ -331,7 +331,7 @@ impl Format {
     pub const DPI_MAX: f64 = 5000.0;
     pub const DPI_DEFAULT: f64 = 96.0;
 
-    pub const FORMAT_BORDER_COLOR: compose::Color = compose::Color {
+    pub const FORMAT_BORDER_COLOR: Color = Color {
         r: 0.6,
         g: 0.0,
         b: 0.0,

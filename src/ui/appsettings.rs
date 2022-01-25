@@ -1,7 +1,8 @@
 use std::path;
 
+use crate::compose::color::Color;
 use crate::ui::appwindow::RnoteAppWindow;
-use crate::{app::RnoteApp, compose, render, sheet::background::PatternStyle};
+use crate::{app::RnoteApp, render, sheet::background::PatternStyle};
 
 use gtk4::{gio, glib, glib::clone, prelude::*};
 use tuple_conv::RepeatedTuple;
@@ -164,7 +165,7 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         .app_settings()
         .set_uint(
             "background-color",
-            compose::Color::from(
+            Color::from(
                 appwindow
                     .canvas()
                     .sheet()
@@ -196,7 +197,7 @@ pub fn save_state_to_settings(appwindow: &RnoteAppWindow) -> Result<(), glib::Bo
         .app_settings()
         .set_uint(
             "background-pattern-color",
-            compose::Color::from(
+            Color::from(
                 appwindow
                     .settings_panel()
                     .background_pattern_color_choosebutton()
@@ -298,10 +299,10 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .value("marker-colors")
         .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>()
         .unwrap();
-    let marker_colors_vec: Vec<compose::Color> = marker_colors
+    let marker_colors_vec: Vec<Color> = marker_colors
         .to_vec()
         .iter()
-        .map(|color_value| compose::Color::from(*color_value))
+        .map(|color_value| Color::from(*color_value))
         .collect();
     appwindow
         .penssidebar()
@@ -328,10 +329,10 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .value("brush-colors")
         .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>()
         .unwrap();
-    let brush_colors_vec: Vec<compose::Color> = brush_colors
+    let brush_colors_vec: Vec<Color> = brush_colors
         .to_vec()
         .iter()
-        .map(|color_value| compose::Color::from(*color_value))
+        .map(|color_value| Color::from(*color_value))
         .collect();
     appwindow
         .penssidebar()
@@ -358,10 +359,10 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .value("shaper-stroke-colors")
         .get::<(u32, u32)>()
         .unwrap();
-    let shaper_colors_vec: Vec<compose::Color> = shaper_colors
+    let shaper_colors_vec: Vec<Color> = shaper_colors
         .to_vec()
         .iter()
-        .map(|color_value| compose::Color::from(*color_value))
+        .map(|color_value| Color::from(*color_value))
         .collect();
     appwindow
         .penssidebar()
@@ -374,10 +375,10 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .value("shaper-fill-colors")
         .get::<(u32, u32)>()
         .unwrap();
-    let shaper_fill_vec: Vec<compose::Color> = shaper_fill
+    let shaper_fill_vec: Vec<Color> = shaper_fill
         .to_vec()
         .iter()
-        .map(|color_value| compose::Color::from(*color_value))
+        .map(|color_value| Color::from(*color_value))
         .collect();
     appwindow
         .penssidebar()
@@ -424,7 +425,7 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
         .set_dpi(appwindow.app_settings().double("format-dpi"));
 
     // Background color
-    let background_color = compose::Color::from(appwindow.app_settings().uint("background-color"));
+    let background_color = Color::from(appwindow.app_settings().uint("background-color"));
     appwindow
         .canvas()
         .sheet()
@@ -471,7 +472,7 @@ pub fn load_settings(appwindow: &RnoteAppWindow) {
 
     // Background pattern color
     let background_pattern_color =
-        compose::Color::from(appwindow.app_settings().uint("background-pattern-color"));
+        Color::from(appwindow.app_settings().uint("background-pattern-color"));
     appwindow
         .canvas()
         .sheet()

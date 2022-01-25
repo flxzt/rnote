@@ -72,7 +72,7 @@ mod imp {
     impl WidgetImpl for BrushPage {}
 }
 
-use crate::compose;
+use crate::compose::color::Color;
 use crate::compose::textured::{TexturedDotsDistribution, TexturedOptions};
 use crate::pens::brush::Brush;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
@@ -193,7 +193,7 @@ impl BrushPage {
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color");
-                appwindow.canvas().pens().borrow_mut().brush.set_color(compose::Color::from(color));
+                appwindow.canvas().pens().borrow_mut().brush.set_color(Color::from(color));
             }),
         );
 

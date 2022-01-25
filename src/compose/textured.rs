@@ -1,7 +1,7 @@
 use std::ops::Range;
 
+use super::{color::Color, curves};
 use crate::compose;
-use super::curves;
 
 use gtk4::glib;
 use rand_distr::{Distribution, Uniform};
@@ -94,7 +94,7 @@ pub struct TexturedOptions {
     seed: Option<u64>,
     /// The color of the dots
     #[serde(rename = "color")]
-    color: compose::Color,
+    color: Color,
     /// Amount dots per 10x10 area
     #[serde(rename = "density")]
     density: f64,
@@ -120,7 +120,7 @@ impl Default for TexturedOptions {
 
 impl TexturedOptions {
     /// The default color
-    pub const COLOR_DEFAULT: compose::Color = compose::Color {
+    pub const COLOR_DEFAULT: Color = Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
@@ -147,11 +147,11 @@ impl TexturedOptions {
         self.seed = seed
     }
 
-    pub fn color(&self) -> compose::Color {
+    pub fn color(&self) -> Color {
         self.color
     }
 
-    pub fn set_color(&mut self, color: compose::Color) {
+    pub fn set_color(&mut self, color: Color) {
         self.color = color;
     }
 
@@ -185,6 +185,7 @@ impl TexturedOptions {
 
 pub fn compose_line(line: curves::Line, width: f64, options: &mut TexturedOptions) -> Element {
     let mut rng = compose::new_rng_default_pcg64(options.seed);
+
     let rect = line.line_w_width_to_rect(width);
     let area = 4.0 * rect.cuboid.half_extents[0] * rect.cuboid.half_extents[1];
 

@@ -6,12 +6,13 @@ mod imp {
 
     use super::canvaslayout::CanvasLayout;
     use super::debug;
+    use crate::compose::color::Color;
     use crate::compose::geometry;
+    use crate::config;
     use crate::pens::penbehaviour::PenBehaviour;
     use crate::pens::{PenStyle, Pens};
     use crate::sheet::Sheet;
     use crate::ui::selectionmodifier::SelectionModifier;
-    use crate::{compose, config};
 
     use gtk4::{
         gdk, glib, graphene, gsk, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
@@ -483,7 +484,7 @@ mod imp {
 
     impl Canvas {
         pub const SHADOW_WIDTH: f64 = 30.0;
-        pub const SHADOW_COLOR: compose::Color = compose::Color {
+        pub const SHADOW_COLOR: Color = Color {
             r: 0.1,
             g: 0.1,
             b: 0.1,
@@ -1256,53 +1257,53 @@ pub mod debug {
     use gtk4::{graphene, gsk, Snapshot};
     use p2d::bounding_volume::AABB;
 
-    use crate::compose;
+    use crate::compose::color::Color;
     use crate::compose::geometry;
 
-    pub const COLOR_POS: compose::Color = compose::Color {
+    pub const COLOR_POS: Color = Color {
         r: 1.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     };
-    pub const COLOR_POS_ALT: compose::Color = compose::Color {
+    pub const COLOR_POS_ALT: Color = Color {
         r: 1.0,
         g: 1.0,
         b: 0.0,
         a: 1.0,
     };
-    pub const COLOR_STROKE_HITBOX: compose::Color = compose::Color {
+    pub const COLOR_STROKE_HITBOX: Color = Color {
         r: 0.0,
         g: 0.8,
         b: 0.2,
         a: 0.5,
     };
-    pub const COLOR_STROKE_BOUNDS: compose::Color = compose::Color {
+    pub const COLOR_STROKE_BOUNDS: Color = Color {
         r: 0.0,
         g: 0.8,
         b: 0.8,
         a: 1.0,
     };
-    pub const COLOR_STROKE_REGENERATE_FLAG: compose::Color = compose::Color {
+    pub const COLOR_STROKE_REGENERATE_FLAG: Color = Color {
         r: 0.9,
         g: 0.0,
         b: 0.8,
         a: 0.3,
     };
-    pub const COLOR_SELECTOR_BOUNDS: compose::Color = compose::Color {
+    pub const COLOR_SELECTOR_BOUNDS: Color = Color {
         r: 1.0,
         g: 0.0,
         b: 0.8,
         a: 1.0,
     };
-    pub const COLOR_SHEET_BOUNDS: compose::Color = compose::Color {
+    pub const COLOR_SHEET_BOUNDS: Color = Color {
         r: 0.8,
         g: 0.0,
         b: 0.8,
         a: 1.0,
     };
 
-    pub fn draw_bounds(bounds: AABB, color: compose::Color, zoom: f64, snapshot: &Snapshot) {
+    pub fn draw_bounds(bounds: AABB, color: Color, zoom: f64, snapshot: &Snapshot) {
         let bounds = graphene::Rect::new(
             bounds.mins[0] as f32,
             bounds.mins[1] as f32,
@@ -1331,7 +1332,7 @@ pub mod debug {
         )
     }
 
-    pub fn draw_pos(pos: na::Vector2<f64>, color: compose::Color, zoom: f64, snapshot: &Snapshot) {
+    pub fn draw_pos(pos: na::Vector2<f64>, color: Color, zoom: f64, snapshot: &Snapshot) {
         snapshot.append_color(
             &color.to_gdk(),
             &graphene::Rect::new(
@@ -1343,7 +1344,7 @@ pub mod debug {
         );
     }
 
-    pub fn draw_fill(rect: AABB, color: compose::Color, zoom: f64, snapshot: &Snapshot) {
+    pub fn draw_fill(rect: AABB, color: Color, zoom: f64, snapshot: &Snapshot) {
         snapshot.append_color(
             &color.to_gdk(),
             &geometry::aabb_to_graphene_rect(geometry::aabb_scale(rect, zoom)),

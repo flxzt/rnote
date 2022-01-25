@@ -3,6 +3,7 @@ pub mod modifiernode;
 pub mod imp {
     use std::cell::Cell;
 
+    use crate::compose::color::Color;
     use crate::ui::canvas::Canvas;
     use crate::{compose, render, utils};
 
@@ -212,13 +213,13 @@ pub mod imp {
             _widget_bounds: AABB,
             canvas: &Canvas,
         ) {
-            const SELECTION_BOUNDS_COLOR: compose::Color = compose::Color {
+            const SELECTION_BOUNDS_COLOR: Color = Color {
                 r: 0.5,
                 g: 0.5,
                 b: 0.5,
                 a: 0.7,
             };
-            const SELECTION_BOUNDS_FILL: compose::Color = compose::Color {
+            const SELECTION_BOUNDS_FILL: Color = Color {
                 r: 0.49,
                 g: 0.56,
                 b: 0.63,
@@ -312,7 +313,7 @@ pub mod imp {
             _widget_bounds: AABB,
             canvas: &Canvas,
         ) {
-            const ROTATION_LINESTART_COLOR: compose::Color = compose::Color {
+            const ROTATION_LINESTART_COLOR: Color = Color {
                 r: 0.7,
                 g: 0.3,
                 b: 0.3,

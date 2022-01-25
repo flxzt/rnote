@@ -1,7 +1,6 @@
+use crate::compose::color::Color;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
-
-use crate::compose;
 
 /// The options
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -17,11 +16,11 @@ pub struct Options {
     /// When using the same seed the generator produces the same shape.
     pub seed: Option<u64>,
     /// An optional stroke color. When set to None, no stroke outline is produced
-    pub stroke: Option<compose::Color>,
+    pub stroke: Option<Color>,
     /// the stroke width
     pub stroke_width: f64,
     /// an optional fill color. When set to None no fill is produced.
-    pub fill: Option<compose::Color>,
+    pub fill: Option<Color>,
     /// the fill style
     pub fill_style: FillStyle,
     /// the fill weight. When the fill style produces lines, this is the width.
@@ -71,7 +70,7 @@ impl Default for Options {
             roughness: Self::ROUGHNESS_DEFAULT,
             bowing: Self::BOWING_DEFAULT,
             seed: None,
-            stroke: Some(compose::Color::BLACK),
+            stroke: Some(Color::BLACK),
             stroke_width: 1.0,
             fill: None,
             fill_style: FillStyle::Hachure,

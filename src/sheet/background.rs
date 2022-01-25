@@ -4,6 +4,7 @@ use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
+use crate::compose::color::Color;
 use crate::compose::geometry;
 use crate::render::Renderer;
 use crate::{compose, render};
@@ -33,7 +34,7 @@ impl Default for PatternStyle {
 pub fn gen_horizontal_line_pattern(
     bounds: AABB,
     spacing: f64,
-    color: compose::Color,
+    color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
     let mut group = element::Group::new();
@@ -63,7 +64,7 @@ pub fn gen_grid_pattern(
     bounds: AABB,
     row_spacing: f64,
     column_spacing: f64,
-    color: compose::Color,
+    color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
     let mut group = element::Group::new();
@@ -108,7 +109,7 @@ pub fn gen_dots_pattern(
     bounds: AABB,
     row_spacing: f64,
     column_spacing: f64,
-    color: compose::Color,
+    color: Color,
     dots_width: f64,
 ) -> svg::node::element::Element {
     let mut group = element::Group::new();
@@ -144,13 +145,13 @@ pub fn gen_dots_pattern(
 #[serde(default, rename = "background")]
 pub struct Background {
     #[serde(rename = "color")]
-    color: compose::Color,
+    color: Color,
     #[serde(rename = "pattern")]
     pattern: PatternStyle,
     #[serde(rename = "pattern_size")]
     pattern_size: na::Vector2<f64>,
     #[serde(rename = "pattern_color")]
-    pattern_color: compose::Color,
+    pattern_color: Color,
     #[serde(skip)]
     image: Option<render::Image>,
     #[serde(skip)]
@@ -160,7 +161,7 @@ pub struct Background {
 impl Default for Background {
     fn default() -> Self {
         Self {
-            color: compose::Color {
+            color: Color {
                 r: 1.0,
                 g: 1.0,
                 b: 1.0,
@@ -168,7 +169,7 @@ impl Default for Background {
             },
             pattern: PatternStyle::default(),
             pattern_size: na::Vector2::from_element(Self::PATTERN_SIZE_DEFAULT),
-            pattern_color: compose::Color {
+            pattern_color: Color {
                 r: 0.3,
                 g: 0.7,
                 b: 1.0,
@@ -192,11 +193,11 @@ impl Background {
         self.pattern_color = background.pattern_color;
     }
 
-    pub fn color(&self) -> compose::Color {
+    pub fn color(&self) -> Color {
         self.color
     }
 
-    pub fn set_color(&mut self, color: compose::Color) {
+    pub fn set_color(&mut self, color: Color) {
         self.color = color;
     }
 
@@ -208,11 +209,11 @@ impl Background {
         self.pattern = pattern;
     }
 
-    pub fn pattern_color(&self) -> compose::Color {
+    pub fn pattern_color(&self) -> Color {
         self.pattern_color
     }
 
-    pub fn set_pattern_color(&mut self, pattern_color: compose::Color) {
+    pub fn set_pattern_color(&mut self, pattern_color: Color) {
         self.pattern_color = pattern_color;
     }
 

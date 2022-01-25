@@ -1,8 +1,9 @@
 use super::StateTask;
 use super::{StrokeKey, StrokeStyle, StrokesState};
+use crate::compose::color::Color;
 use crate::drawbehaviour::DrawBehaviour;
+use crate::render;
 use crate::ui::canvas;
-use crate::{compose, render};
 
 use gtk4::{graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -560,7 +561,7 @@ impl StrokesState {
                 (bounds.extents()[1]) as f32,
             )
             .scale(zoom as f32, zoom as f32);
-            let border_color = compose::Color {
+            let border_color = Color {
                 r: 0.0,
                 g: 0.2,
                 b: 0.8,

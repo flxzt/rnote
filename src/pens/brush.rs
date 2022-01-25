@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::compose::{self, textured};
+use crate::compose::{color::Color, textured};
 use crate::input;
 use crate::strokes::brushstroke::BrushStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
@@ -37,7 +37,7 @@ pub struct Brush {
     #[serde(rename = "sensitivity")]
     sensitivity: f64,
     #[serde(rename = "color")]
-    color: compose::Color,
+    color: Color,
     #[serde(rename = "style")]
     style: BrushStyle,
     #[serde(rename = "textured_config")]
@@ -51,7 +51,7 @@ impl Default for Brush {
         Self {
             width: Self::WIDTH_DEFAULT,
             sensitivity: Self::SENSITIVITY_DEFAULT,
-            color: compose::Color::BLACK,
+            color: Color::BLACK,
             style: BrushStyle::default(),
             textured_config: textured::TexturedOptions::default(),
             current_stroke: None,
@@ -155,7 +155,7 @@ impl Brush {
 
     pub const TEMPLATE_BOUNDS_PADDING: f64 = 50.0;
 
-    pub const COLOR_DEFAULT: compose::Color = compose::Color {
+    pub const COLOR_DEFAULT: Color = Color {
         r: 0.0,
         g: 0.0,
         b: 0.0,
@@ -178,11 +178,11 @@ impl Brush {
         self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
     }
 
-    pub fn color(&self) -> compose::Color {
+    pub fn color(&self) -> Color {
         self.color
     }
 
-    pub fn set_color(&mut self, color: compose::Color) {
+    pub fn set_color(&mut self, color: Color) {
         self.color = color;
     }
 

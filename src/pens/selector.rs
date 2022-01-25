@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 
+use crate::compose::color::Color;
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, render};
@@ -149,13 +150,13 @@ impl PenBehaviour for Selector {
 impl Selector {
     pub const STROKE_DASHARRAY: &'static str = "4 6";
     pub const PATH_WIDTH: f64 = 3.0;
-    pub const PATH_COLOR: compose::Color = compose::Color {
+    pub const PATH_COLOR: Color = Color {
         r: 0.6,
         g: 0.6,
         b: 0.6,
         a: 0.7,
     };
-    pub const FILL_COLOR: compose::Color = compose::Color {
+    pub const FILL_COLOR: Color = Color {
         r: 0.9,
         g: 0.9,
         b: 0.9,

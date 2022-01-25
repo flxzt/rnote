@@ -3,6 +3,7 @@ use notetakingfileformats::xoppformat;
 use p2d::bounding_volume::AABB;
 use rand::SeedableRng;
 use serde::{Deserialize, Serialize};
+use svg::node::{self, element};
 
 pub mod curves;
 pub mod geometry;
@@ -47,23 +48,6 @@ pub fn wrap_svg_root(
     viewbox: Option<AABB>,
     preserve_aspectratio: bool,
 ) -> String {
-    const SVG_WRAP_TEMPL_STR: &str = r#"
-<svg
-  x="{{x}}"
-  y="{{y}}"
-  width="{{width}}"
-  height="{{height}}"
-  {{viewbox}}
-  preserveAspectRatio="{{preserve_aspectratio}}"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:svg="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  >
-  {{data}}
-</svg>
-"#;
-    let mut cx = tera::Context::new();
-
     let (x, y, width, height) = if let Some(bounds) = bounds {
         let x = format!("{:.3}", bounds.mins[0]);
         let y = format!("{:.3}", bounds.mins[1]);
@@ -82,7 +66,7 @@ pub fn wrap_svg_root(
 
     let viewbox = if let Some(viewbox) = viewbox {
         format!(
-            "viewBox=\"{:.3} {:.3} {:.3} {:.3}\"",
+            "{:.3} {:.3} {:.3} {:.3}",
             viewbox.mins[0],
             viewbox.mins[1],
             viewbox.extents()[0],
@@ -97,15 +81,20 @@ pub fn wrap_svg_root(
         String::from("none")
     };
 
-    cx.insert("data", data);
-    cx.insert("x", &x);
-    cx.insert("y", &y);
-    cx.insert("width", &width);
-    cx.insert("height", &height);
-    cx.insert("viewbox", &viewbox);
-    cx.insert("preserve_aspectratio", &preserve_aspectratio);
+    let svg_root = element::SVG::new()
+        .set("xmlns", "http://www.w3.org/2000/svg")
+        .set("xmlns:svg", "http://www.w3.org/2000/svg")
+        .set("xmlns:xlink", "http://www.w3.org/1999/xlink")
+        .set("x", x.as_str())
+        .set("y", y.as_str())
+        .set("width", width.as_str())
+        .set("height", height.as_str())
+        .set("viewBox", viewbox.as_str())
+        .set("preserveAspectRatio", preserve_aspectratio.as_str())
+        .add(node::Text::new(data));
 
-    tera::Tera::one_off(SVG_WRAP_TEMPL_STR, &cx, false).expect("failed to create svg from template")
+    // unwrapping because we know its a valid Svg
+    svg_node_to_string(&svg_root).unwrap()
 }
 
 pub fn strip_svg_root(svg: &str) -> String {

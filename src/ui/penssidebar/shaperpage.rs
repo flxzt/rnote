@@ -166,7 +166,6 @@ impl ShaperPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::ShaperPage::from_instance(self);
         let width_adj = self.width_adj();
 
         // Shape stroke width
@@ -200,67 +199,67 @@ impl ShaperPage {
         }));
 
         // Roughness
-        priv_
+        self.imp()
             .roughconfig_roughness_adj
             .get()
             .set_lower(roughoptions::Options::ROUGHNESS_MIN);
-        priv_
+        self.imp()
             .roughconfig_roughness_adj
             .get()
             .set_upper(roughoptions::Options::ROUGHNESS_MAX);
-        priv_
+        self.imp()
             .roughconfig_roughness_adj
             .get()
             .set_value(roughoptions::Options::ROUGHNESS_DEFAULT);
 
-        priv_.roughconfig_roughness_adj.get().connect_value_changed(
+        self.imp().roughconfig_roughness_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_roughness_adj| {
                 appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_roughness(roughconfig_roughness_adj.value());
             }),
         );
 
         // Bowing
-        priv_
+        self.imp()
             .roughconfig_bowing_adj
             .get()
             .set_lower(roughoptions::Options::BOWING_MIN);
-        priv_
+        self.imp()
             .roughconfig_bowing_adj
             .get()
             .set_upper(roughoptions::Options::BOWING_MAX);
-        priv_
+        self.imp()
             .roughconfig_bowing_adj
             .get()
             .set_value(roughoptions::Options::BOWING_DEFAULT);
 
-        priv_.roughconfig_bowing_adj.get().connect_value_changed(
+        self.imp().roughconfig_bowing_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_bowing_adj| {
                 appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_bowing(roughconfig_bowing_adj.value());
             }),
         );
 
         // Curve stepcount
-        priv_
+        self.imp()
             .roughconfig_curvestepcount_adj
             .get()
             .set_lower(roughoptions::Options::CURVESTEPCOUNT_MIN);
-        priv_
+        self.imp()
             .roughconfig_curvestepcount_adj
             .get()
             .set_upper(roughoptions::Options::CURVESTEPCOUNT_MAX);
-        priv_
+        self.imp()
             .roughconfig_curvestepcount_adj
             .get()
             .set_value(roughoptions::Options::CURVESTEPCOUNT_DEFAULT);
 
-        priv_.roughconfig_curvestepcount_adj.get().connect_value_changed(
+        self.imp().roughconfig_curvestepcount_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_curvestepcount_adj| {
                 appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_curve_stepcount(roughconfig_curvestepcount_adj.value());
             }),
         );
 
         // Multistroke
-        priv_.roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
+        self.imp().roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
             appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_multistroke(roughconfig_multistroke_switch.state());
         }));
 

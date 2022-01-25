@@ -542,34 +542,32 @@ impl RnoteAppWindow {
 
     // Must be called after application is associated with it else it fails
     pub fn init(&self) {
-        let priv_ = imp::RnoteAppWindow::from_instance(self);
-
-        if let Err(e) = priv_.audio_player.borrow_mut().init(self) {
+        if let Err(e) = self.imp().audio_player.borrow_mut().init(self) {
             log::error!("failed to init audio_player with Err {}", e);
         }
-        priv_.workspacebrowser.get().init(self);
-        priv_.settings_panel.get().init(self);
-        priv_.devel_actions.get().init(self);
-        priv_.mainheader.get().init(self);
-        priv_.mainheader.get().canvasmenu().init(self);
-        priv_.mainheader.get().appmenu().init(self);
-        priv_.penssidebar.get().init(self);
-        priv_.penssidebar.get().marker_page().init(self);
-        priv_.penssidebar.get().brush_page().init(self);
-        priv_.penssidebar.get().shaper_page().init(self);
-        priv_.penssidebar.get().eraser_page().init(self);
-        priv_.penssidebar.get().selector_page().init(self);
-        priv_.penssidebar.get().tools_page().init(self);
-        priv_.canvas.get().init(self);
-        priv_.canvas.get().sheet().format().init(self);
-        priv_
+        self.imp().workspacebrowser.get().init(self);
+        self.imp().settings_panel.get().init(self);
+        self.imp().devel_actions.get().init(self);
+        self.imp().mainheader.get().init(self);
+        self.imp().mainheader.get().canvasmenu().init(self);
+        self.imp().mainheader.get().appmenu().init(self);
+        self.imp().penssidebar.get().init(self);
+        self.imp().penssidebar.get().marker_page().init(self);
+        self.imp().penssidebar.get().brush_page().init(self);
+        self.imp().penssidebar.get().shaper_page().init(self);
+        self.imp().penssidebar.get().eraser_page().init(self);
+        self.imp().penssidebar.get().selector_page().init(self);
+        self.imp().penssidebar.get().tools_page().init(self);
+        self.imp().canvas.get().init(self);
+        self.imp().canvas.get().sheet().format().init(self);
+        self.imp()
             .canvas
             .get()
             .sheet()
             .strokes_state()
             .borrow_mut()
             .init(self);
-        priv_.canvas.get().selection_modifier().init(self);
+        self.imp().canvas.get().selection_modifier().init(self);
 
         // zoom scrolling with <ctrl> + scroll
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()

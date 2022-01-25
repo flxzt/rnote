@@ -453,30 +453,25 @@ impl Sheet {
     }
 
     pub fn endless_sheet(&self) -> bool {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.endless_sheet.get()
+        self.imp().endless_sheet.get()
     }
 
     pub fn set_endless_sheet(&self, endless_sheet: bool) {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.endless_sheet.set(endless_sheet);
+        self.imp().endless_sheet.set(endless_sheet);
 
         self.resize_to_format();
     }
 
     pub fn format_borders(&self) -> bool {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.format_borders.get()
+        self.imp().format_borders.get()
     }
 
     pub fn set_format_borders(&self, format_borders: bool) {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.format_borders.set(format_borders);
+        self.imp().format_borders.set(format_borders);
     }
 
     pub fn format(&self) -> Format {
-        let priv_ = imp::Sheet::from_instance(self);
-        priv_.format.clone()
+        self.imp().format.clone()
     }
 
     pub fn background(&self) -> Rc<RefCell<Background>> {
@@ -507,15 +502,14 @@ impl Sheet {
 
     /// Called when sheet should resize to fit all strokes. Resizing needed after calling this
     pub fn resize_to_format(&self) {
-        let priv_ = imp::Sheet::from_instance(self);
         if self.endless_sheet() {
             self.resize_endless();
         } else {
             // +1 because then 'fraction'.ceil() is at least 1
             let new_height = self.strokes_state().borrow().calc_height() + 1;
             self.set_height(
-                (new_height as f64 / priv_.format.height() as f64).ceil() as i32
-                    * priv_.format.height(),
+                (new_height as f64 / self.imp().format.height() as f64).ceil() as i32
+                    * self.imp().format.height(),
             );
         }
     }
@@ -552,8 +546,6 @@ impl Sheet {
     }
 
     pub fn draw(&self, zoom: f64, snapshot: &Snapshot) {
-        let priv_ = imp::Sheet::from_instance(self);
-
         let sheet_bounds_scaled = graphene::Rect::new(
             0.0,
             0.0,
@@ -562,7 +554,7 @@ impl Sheet {
         );
 
         snapshot.push_clip(&sheet_bounds_scaled);
-        priv_.background.borrow().draw(snapshot);
+        self.imp().background.borrow().draw(snapshot);
 
         if self.format_borders() {
             self.format().draw(self.bounds(), snapshot, zoom);

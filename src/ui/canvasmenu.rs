@@ -129,32 +129,31 @@ impl CanvasMenu {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::CanvasMenu::from_instance(self);
-        let zoomreset_button = priv_.zoom_reset_button.get();
+        let zoomreset_button = self.imp().zoom_reset_button.get();
 
-        priv_.righthanded_toggle.connect_toggled(clone!(@weak appwindow => move |righthanded_toggle| {
+        self.imp().righthanded_toggle.connect_toggled(clone!(@weak appwindow => move |righthanded_toggle| {
             appwindow.application().unwrap().change_action_state("righthanded", &righthanded_toggle.is_active().to_variant());
         }));
 
-        priv_.zoom_fit_width_button.connect_clicked(
+        self.imp().zoom_fit_width_button.connect_clicked(
             clone!(@weak appwindow => move |_zoom_fit_width_button| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-fit-width", None);
             }),
         );
 
-        priv_.zoom_reset_button.connect_clicked(
+        self.imp().zoom_reset_button.connect_clicked(
             clone!(@weak appwindow => move |_zoomreset_button| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-reset", None);
             }),
         );
 
-        priv_.zoom_in_button.connect_clicked(
+        self.imp().zoom_in_button.connect_clicked(
             clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_in_button| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-in", None);
             }),
         );
 
-        priv_.zoom_out_button.connect_clicked(
+        self.imp().zoom_out_button.connect_clicked(
             clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_out_button| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-out", None);
             }),

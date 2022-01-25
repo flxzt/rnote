@@ -135,15 +135,13 @@ impl WorkspaceBrowser {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::WorkspaceBrowser::from_instance(self);
-
-        priv_.open_workspace_button.get().connect_clicked(
+        self.imp().open_workspace_button.get().connect_clicked(
             clone!(@weak appwindow => move |_open_workspace_button| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "open-workspace", None);
             }),
         );
 
-        priv_
+        self.imp()
             .primary_dirlist
             .bind_property("file", &self.workspace_pathentry(), "text")
             .transform_to(|_, value| {
@@ -262,7 +260,7 @@ impl WorkspaceBrowser {
         filefilter.add_mime_type("application/pdf");
         filefilter.add_mime_type("inode/directory");
         let filefilter_model =
-            FilterListModel::new(Some(&priv_.primary_dirlist), Some(&filefilter));
+            FilterListModel::new(Some(&self.imp().primary_dirlist), Some(&filefilter));
 
         let folder_sorter = CustomSorter::new(move |obj1, obj2| {
             let first_fileinfo = obj1
@@ -319,16 +317,16 @@ impl WorkspaceBrowser {
 
         let primary_selection_model = SingleSelection::new(Some(&multi_sort_model));
 
-        priv_
+        self.imp()
             .primary_listview
             .get()
             .set_factory(Some(&primary_list_factory));
-        priv_
+        self.imp()
             .primary_listview
             .get()
             .set_model(Some(&primary_selection_model));
 
-        priv_.primary_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |primary_listview, position| {
+        self.imp().primary_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |primary_listview, position| {
             let model = primary_listview.model().expect("model for primary_listview does not exist.");
             let fileinfo = model.item(position).expect("selected item in primary_listview does not exist.").downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
@@ -342,7 +340,7 @@ impl WorkspaceBrowser {
             filefilter.changed(FilterChange::Different);
         }));
 
-        priv_.primary_dirlist.connect_file_notify(
+        self.imp().primary_dirlist.connect_file_notify(
             clone!(@weak appwindow, @weak filefilter, @weak multisorter => move |primary_dirlist| {
                 if let Some(file) = primary_dirlist.file() {
                     if let Some(path) = file.path() {
@@ -355,16 +353,14 @@ impl WorkspaceBrowser {
             }),
         );
 
-        priv_.primary_dirlist.connect_items_changed(clone!(@weak filefilter, @weak multisorter => move |_primary_dirlist, _position, _removed, _added| {
+        self.imp().primary_dirlist.connect_items_changed(clone!(@weak filefilter, @weak multisorter => move |_primary_dirlist, _position, _removed, _added| {
             multisorter.changed(SorterChange::Different);
             filefilter.changed(FilterChange::Different);
         }));
     }
 
     pub fn primary_path(&self) -> Option<PathBuf> {
-        let priv_ = imp::WorkspaceBrowser::from_instance(self);
-
-        if let Some(file) = priv_.primary_dirlist.file() {
+        if let Some(file) = self.imp().primary_dirlist.file() {
             file.path()
         } else {
             None
@@ -372,9 +368,8 @@ impl WorkspaceBrowser {
     }
 
     pub fn set_primary_path(&self, path: Option<&Path>) {
-        let priv_ = imp::WorkspaceBrowser::from_instance(self);
         let path = path.map(|path| gio::File::for_path(path));
 
-        priv_.primary_dirlist.set_file(path.as_ref());
+        self.imp().primary_dirlist.set_file(path.as_ref());
     }
 }

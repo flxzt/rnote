@@ -376,12 +376,11 @@ impl ColorPicker {
     }
 
     pub fn fetch_all_colors(&self) -> Vec<compose::Color> {
-        let priv_ = imp::ColorPicker::from_instance(self);
         let mut all_colors = Vec::with_capacity(8);
         all_colors.push(compose::Color::from(
-            priv_.currentcolor_setter1.get().color(),
+            self.imp().currentcolor_setter1.get().color(),
         ));
-        for colorsetter in priv_.currentcolor_setters.borrow().iter() {
+        for colorsetter in self.imp().currentcolor_setters.borrow().iter() {
             all_colors.push(compose::Color::from(colorsetter.color()));
         }
 
@@ -389,13 +388,14 @@ impl ColorPicker {
     }
 
     pub fn load_all_colors(&self, all_colors: &[compose::Color]) {
-        let priv_ = imp::ColorPicker::from_instance(self);
-
         let mut all_colors_iter = all_colors.iter();
         if let Some(first_color) = all_colors_iter.next() {
-            priv_.currentcolor_setter1.set_color(first_color.to_gdk());
+            self.imp()
+                .currentcolor_setter1
+                .set_color(first_color.to_gdk());
         }
-        for (color, colorsetter) in all_colors_iter.zip(priv_.currentcolor_setters.borrow().iter())
+        for (color, colorsetter) in
+            all_colors_iter.zip(self.imp().currentcolor_setters.borrow().iter())
         {
             colorsetter.set_color(color.to_gdk());
         }

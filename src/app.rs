@@ -207,8 +207,7 @@ impl RnoteApp {
     }
 
     pub fn rng(&self) -> Rc<RefCell<rand::rngs::ThreadRng>> {
-        let priv_ = imp::RnoteApp::from_instance(self);
-        priv_.rng.clone()
+        self.imp().rng.clone()
     }
 
     pub fn unsaved_changes(&self) -> bool {

@@ -168,22 +168,21 @@ impl BrushPage {
     }
 
     pub fn set_texturedstyle_distribution_variant(&self, distribution: TexturedDotsDistribution) {
-        let priv_ = imp::BrushPage::from_instance(self);
-        let texturedstyle_distribution_listmodel = priv_
+        let texturedstyle_distribution_listmodel = self
+            .imp()
             .texturedstyle_distribution_row
             .get()
             .model()
             .unwrap()
             .downcast::<adw::EnumListModel>()
             .unwrap();
-        priv_
+        self.imp()
             .texturedstyle_distribution_row
             .get()
             .set_selected(texturedstyle_distribution_listmodel.find_position(distribution as i32));
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::BrushPage::from_instance(self);
         let width_adj = self.width_adj();
 
         self.width_adj().set_lower(Brush::WIDTH_MIN);
@@ -241,40 +240,40 @@ impl BrushPage {
 
         // Textured style
         // Density
-        priv_
+        self.imp()
             .texturedstyle_density_adj
             .get()
             .set_lower(TexturedConfig::DENSITY_MIN);
-        priv_
+        self.imp()
             .texturedstyle_density_adj
             .get()
             .set_upper(TexturedConfig::DENSITY_MAX);
-        priv_
+        self.imp()
             .texturedstyle_density_adj
             .get()
             .set_value(TexturedConfig::DENSITY_DEFAULT);
 
-        priv_.texturedstyle_density_adj.get().connect_value_changed(
+        self.imp().texturedstyle_density_adj.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
                 appwindow.canvas().pens().borrow_mut().brush.textured_config.set_density(texturedstyle_density_adj.value());
             }),
         );
 
         // Radius X
-        priv_
+        self.imp()
             .texturedstyle_radius_x_adj
             .get()
             .set_lower(TexturedConfig::RADII_MIN[0]);
-        priv_
+        self.imp()
             .texturedstyle_radius_x_adj
             .get()
             .set_upper(TexturedConfig::RADII_MAX[0]);
-        priv_
+        self.imp()
             .texturedstyle_radius_x_adj
             .get()
             .set_value(TexturedConfig::RADII_DEFAULT[0]);
 
-        priv_
+        self.imp()
             .texturedstyle_radius_x_adj
             .get()
             .connect_value_changed(
@@ -286,20 +285,20 @@ impl BrushPage {
             );
 
         // Radius Y
-        priv_
+        self.imp()
             .texturedstyle_radius_y_adj
             .get()
             .set_lower(TexturedConfig::RADII_MIN[1]);
-        priv_
+        self.imp()
             .texturedstyle_radius_y_adj
             .get()
             .set_upper(TexturedConfig::RADII_MAX[1]);
-        priv_
+        self.imp()
             .texturedstyle_radius_y_adj
             .get()
             .set_value(TexturedConfig::RADII_DEFAULT[1]);
 
-        priv_
+        self.imp()
             .texturedstyle_radius_y_adj
             .get()
             .connect_value_changed(
@@ -321,7 +320,7 @@ impl BrushPage {
                 .distribution(),
         );
 
-        priv_.texturedstyle_distribution_row.get().connect_selected_item_notify(clone!(@weak self as brushpage, @weak appwindow => move |texturedstyle_distribution_row| {
+        self.imp().texturedstyle_distribution_row.get().connect_selected_item_notify(clone!(@weak self as brushpage, @weak appwindow => move |texturedstyle_distribution_row| {
             if let Some(selected_item) = texturedstyle_distribution_row.selected_item() {
                 match selected_item
                     .downcast::<adw::EnumListItem>()

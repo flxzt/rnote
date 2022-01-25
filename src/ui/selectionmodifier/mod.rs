@@ -497,8 +497,6 @@ impl SelectionModifier {
 
     /// Updates the internal state for measuring the widgets size, allocation, etc.
     pub fn update_state(&self, canvas: &Canvas) {
-        let priv_ = self.imp();
-
         self.set_selection_bounds(
             canvas
                 .sheet()
@@ -510,11 +508,11 @@ impl SelectionModifier {
 
         if let Some(selection_bounds) = self.selection_bounds() {
             let total_zoom = canvas.total_zoom();
-            priv_
+            self.imp()
                 .translate_node
                 .get()
                 .set_width_request((selection_bounds.extents()[0] * total_zoom).round() as i32);
-            priv_
+            self.imp()
                 .translate_node
                 .get()
                 .set_height_request((selection_bounds.extents()[1] * total_zoom).round() as i32);
@@ -525,19 +523,20 @@ impl SelectionModifier {
     }
 
     pub fn update_translate_node_size_request(&self, canvas: &Canvas) {
-        let priv_ = self.imp();
-
         if let Some(selection_bounds) = self.selection_bounds() {
             let total_zoom = canvas.total_zoom();
-            priv_
+            self.imp()
                 .translate_node
                 .get()
                 .set_width_request((selection_bounds.extents()[0] * total_zoom).ceil() as i32);
-            priv_
+            self.imp()
                 .translate_node
                 .get()
                 .set_height_request((selection_bounds.extents()[1] * total_zoom).ceil() as i32);
         };
+
+        self.queue_resize();
+        self.queue_draw();
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -550,13 +549,13 @@ impl SelectionModifier {
     }
 
     pub fn init_resize_tl_node(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::SelectionModifier::from_instance(self);
-
         let resize_tl_drag_gesture = GestureDrag::builder()
             .name("resize_tl_drag_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        priv_.resize_tl_node.add_controller(&resize_tl_drag_gesture);
+        self.imp()
+            .resize_tl_node
+            .add_controller(&resize_tl_drag_gesture);
 
         let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
 
@@ -599,8 +598,6 @@ impl SelectionModifier {
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
-                    selection_modifier.queue_resize();
-                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             })
@@ -611,23 +608,21 @@ impl SelectionModifier {
 
                 appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
-                selection_modifier.update_state(&appwindow.canvas());
 
-                selection_modifier.queue_resize();
-                selection_modifier.queue_draw();
+                selection_modifier.update_state(&appwindow.canvas());
                 appwindow.canvas().queue_draw();
             }),
         );
     }
 
     pub fn init_resize_tr_node(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::SelectionModifier::from_instance(self);
-
         let resize_tr_drag_gesture = GestureDrag::builder()
             .name("resize_tr_drag_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        priv_.resize_tr_node.add_controller(&resize_tr_drag_gesture);
+        self.imp()
+            .resize_tr_node
+            .add_controller(&resize_tr_drag_gesture);
 
         let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
 
@@ -670,8 +665,6 @@ impl SelectionModifier {
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
-                    selection_modifier.queue_resize();
-                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             })
@@ -682,23 +675,21 @@ impl SelectionModifier {
 
                 appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
-                selection_modifier.update_state(&appwindow.canvas());
 
-                selection_modifier.queue_resize();
-                selection_modifier.queue_draw();
+                selection_modifier.update_state(&appwindow.canvas());
                 appwindow.canvas().queue_draw();
             }),
         );
     }
 
     pub fn init_resize_bl_node(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::SelectionModifier::from_instance(self);
-
         let resize_bl_drag_gesture = GestureDrag::builder()
             .name("resize_bl_drag_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        priv_.resize_bl_node.add_controller(&resize_bl_drag_gesture);
+        self.imp()
+            .resize_bl_node
+            .add_controller(&resize_bl_drag_gesture);
 
         let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
 
@@ -741,8 +732,6 @@ impl SelectionModifier {
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
-                    selection_modifier.queue_resize();
-                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             })
@@ -753,23 +742,21 @@ impl SelectionModifier {
 
                 appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
-                selection_modifier.update_state(&appwindow.canvas());
 
-                selection_modifier.queue_resize();
-                selection_modifier.queue_draw();
+                selection_modifier.update_state(&appwindow.canvas());
                 appwindow.canvas().queue_draw();
             }),
         );
     }
 
     pub fn init_resize_br_node(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::SelectionModifier::from_instance(self);
-
         let resize_br_drag_gesture = GestureDrag::builder()
             .name("resize_br_drag_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        priv_.resize_br_node.add_controller(&resize_br_drag_gesture);
+        self.imp()
+            .resize_br_node
+            .add_controller(&resize_br_drag_gesture);
 
         let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
 
@@ -812,8 +799,6 @@ impl SelectionModifier {
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
-                    selection_modifier.queue_resize();
-                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             })
@@ -824,23 +809,19 @@ impl SelectionModifier {
 
                 appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
-                selection_modifier.update_state(&appwindow.canvas());
 
-                selection_modifier.queue_resize();
-                selection_modifier.queue_draw();
+                selection_modifier.update_state(&appwindow.canvas());
                 appwindow.canvas().queue_draw();
             }),
         );
     }
 
     pub fn init_translate_node(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::SelectionModifier::from_instance(self);
-
         let translate_node_drag_gesture = GestureDrag::builder()
             .name("translate_drag")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        priv_
+        self.imp()
             .translate_node
             .add_controller(&translate_node_drag_gesture);
 
@@ -853,39 +834,33 @@ impl SelectionModifier {
         );
         translate_node_drag_gesture.connect_drag_update(
             clone!(@weak self as selection_modifier, @weak appwindow => move |_translate_node_drag_gesture, x, y| {
-                let priv_ = selection_modifier.imp();
                 let zoom = appwindow.canvas().zoom();
                 let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
                 let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                 appwindow.canvas().sheet().strokes_state().borrow_mut().translate_strokes(&selection_keys, offset);
-                selection_modifier.set_selection_bounds(priv_.selection_bounds.get().map(|selection_bounds| geometry::aabb_translate(selection_bounds, offset)));
+                selection_modifier.set_selection_bounds(selection_modifier.imp().selection_bounds.get().map(|selection_bounds| geometry::aabb_translate(selection_bounds, offset)));
 
                 selection_modifier.update_translate_node_size_request(&appwindow.canvas());
-                selection_modifier.queue_resize();
-                selection_modifier.queue_draw();
                 appwindow.canvas().queue_draw();
             }),
         );
         translate_node_drag_gesture.connect_drag_end(
             clone!(@weak self as selection_modifier, @weak appwindow => move |_translate_node_drag_gesture, _x, _y| {
                 selection_modifier.update_state(&appwindow.canvas());
-
-                selection_modifier.queue_resize();
-                selection_modifier.queue_draw();
                 appwindow.canvas().queue_draw();
             }),
         );
     }
 
     pub fn init_rotate_node(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::SelectionModifier::from_instance(self);
-
         let rotate_node_drag_gesture = GestureDrag::builder()
             .name("rotate_node_drag_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
-        priv_.rotate_node.add_controller(&rotate_node_drag_gesture);
+        self.imp()
+            .rotate_node
+            .add_controller(&rotate_node_drag_gesture);
 
         let start_bounds: Rc<Cell<Option<AABB>>> = Rc::new(Cell::new(None));
 
@@ -919,7 +894,6 @@ impl SelectionModifier {
         rotate_node_drag_gesture.connect_drag_update(
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(start_bounds), Some(start_point)) = (start_bounds.get(), drag_gesture.start_point()) {
-                    let priv_ = selection_modifier.imp();
                     let current_pos = {
                         let pos = selection_modifier.rotate_node().translate_coordinates(&appwindow.canvas(), start_point.0 + x, start_point.1 + y).unwrap();
                         appwindow.canvas().transform_canvas_coords_to_sheet_coords(na::vector![pos.0, pos.1])
@@ -935,17 +909,15 @@ impl SelectionModifier {
                     };
 
 
-                    let angle_delta = angle - priv_.current_rotation_angle.get();
+                    let angle_delta = angle - selection_modifier.imp().current_rotation_angle.get();
 
                     let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
                     appwindow.canvas().sheet().strokes_state().borrow_mut().rotate_strokes(&selection_keys, angle_delta, start_bounds.center());
                     selection_modifier.update_state(&appwindow.canvas());
 
-                    priv_.current_rotation_angle.set(angle);
+                    selection_modifier.imp().current_rotation_angle.set(angle);
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
-                    selection_modifier.queue_resize();
-                    selection_modifier.queue_draw();
                     appwindow.canvas().queue_draw();
                 }
             }),
@@ -957,8 +929,6 @@ impl SelectionModifier {
                 selection_modifier.imp().current_rotation_angle.set(0.0);
 
                 selection_modifier.update_state(&appwindow.canvas());
-                selection_modifier.queue_resize();
-                selection_modifier.queue_draw();
                 appwindow.canvas().queue_draw();
             }),
         );

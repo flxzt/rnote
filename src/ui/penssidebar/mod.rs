@@ -157,9 +157,7 @@ impl PensSideBar {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::PensSideBar::from_instance(self);
-
-        priv_.sidebar_stack.get().connect_visible_child_name_notify(
+        self.imp().sidebar_stack.get().connect_visible_child_name_notify(
             clone!(@weak appwindow => move |sidebar_stack| {
                 if let Some(child_name) = sidebar_stack.visible_child_name() {
                     match child_name.to_value().get::<String>().unwrap().as_str() {

@@ -193,9 +193,7 @@ impl MainHeader {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::MainHeader::from_instance(self);
-
-        priv_
+        self.imp()
             .headerbar
             .get()
             .bind_property(
@@ -210,7 +208,7 @@ impl MainHeader {
             )
             .build();
 
-        priv_
+        self.imp()
             .headerbar
             .get()
             .bind_property(
@@ -225,7 +223,7 @@ impl MainHeader {
             )
             .build();
 
-        priv_.add_page_button.get().connect_clicked(
+        self.imp().add_page_button.get().connect_clicked(
             clone!(@weak appwindow => move |_add_page_button| {
                 let format_height = appwindow.canvas().sheet().format().height();
                 appwindow.canvas().sheet().set_height(appwindow.canvas().sheet().height() + format_height);
@@ -233,57 +231,57 @@ impl MainHeader {
             }),
         );
 
-        priv_.resize_to_format_button.get().connect_clicked(
+        self.imp().resize_to_format_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
                 appwindow.canvas().sheet().resize_to_format();
                 appwindow.canvas().update_background_rendernode(true);
             }),
         );
 
-        priv_.marker_toggle.get().connect_active_notify(clone!(@weak appwindow => move |marker_toggle| {
+        self.imp().marker_toggle.get().connect_active_notify(clone!(@weak appwindow => move |marker_toggle| {
             if marker_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"marker".to_variant()));
             }
         }));
 
-        priv_.brush_toggle.get().connect_active_notify(clone!(@weak appwindow => move |brush_toggle| {
+        self.imp().brush_toggle.get().connect_active_notify(clone!(@weak appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush".to_variant()));
             }
         }));
 
-        priv_.shaper_toggle.get().connect_active_notify(clone!(@weak appwindow => move |shaper_toggle| {
+        self.imp().shaper_toggle.get().connect_active_notify(clone!(@weak appwindow => move |shaper_toggle| {
             if shaper_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper".to_variant()));
             }
         }));
 
-        priv_.eraser_toggle.get().connect_active_notify(clone!(@weak appwindow => move |eraser_toggle| {
+        self.imp().eraser_toggle.get().connect_active_notify(clone!(@weak appwindow => move |eraser_toggle| {
             if eraser_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser".to_variant()));
             }
         }));
 
-        priv_.selector_toggle.get().connect_active_notify(clone!(@weak appwindow => move |selector_toggle| {
+        self.imp().selector_toggle.get().connect_active_notify(clone!(@weak appwindow => move |selector_toggle| {
             if selector_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector".to_variant()));
             }
         }));
 
-        priv_.tools_toggle.get().connect_active_notify(clone!(@weak appwindow => move |tools_toggle| {
+        self.imp().tools_toggle.get().connect_active_notify(clone!(@weak appwindow => move |tools_toggle| {
             if tools_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools".to_variant()));
             }
         }));
 
-        priv_
+        self.imp()
             .undo_button
             .get()
             .connect_clicked(clone!(@weak appwindow => move |_| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "undo-stroke", None);
             }));
 
-        priv_
+        self.imp()
             .redo_button
             .get()
             .connect_clicked(clone!(@weak appwindow => move |_| {

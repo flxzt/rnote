@@ -612,18 +612,15 @@ impl Canvas {
     }
 
     pub fn pens(&self) -> Rc<RefCell<Pens>> {
-        let priv_ = imp::Canvas::from_instance(self);
-        priv_.pens.clone()
+        self.imp().pens.clone()
     }
 
     pub fn cursor(&self) -> gdk::Cursor {
-        let priv_ = imp::Canvas::from_instance(self);
-        priv_.cursor.clone()
+        self.imp().cursor.clone()
     }
 
     pub fn motion_cursor(&self) -> gdk::Cursor {
-        let priv_ = imp::Canvas::from_instance(self);
-        priv_.motion_cursor.clone()
+        self.imp().motion_cursor.clone()
     }
 
     pub fn sheet(&self) -> Sheet {
@@ -731,8 +728,6 @@ impl Canvas {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let priv_ = imp::Canvas::from_instance(self);
-
         self.bind_property(
             "unsaved-changes",
             &appwindow
@@ -767,7 +762,7 @@ impl Canvas {
         .build();
 
         // Stylus Drawing
-        priv_.stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+        self.imp().stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
                 stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
 
@@ -789,14 +784,14 @@ impl Canvas {
             }
         }));
 
-        priv_.stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
+        self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
             // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
             let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
             input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
             canvas.process_peninput_motion(&appwindow, data_entries);
         }));
 
-        priv_.stylus_drawing_gesture.connect_up(
+        self.imp().stylus_drawing_gesture.connect_up(
             clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
                 let mut data_entries = input::retreive_stylus_inputdata(gesture_stylus, false, x, y);
 
@@ -806,7 +801,7 @@ impl Canvas {
         );
 
         // Mouse drawing
-        priv_.mouse_drawing_gesture.connect_drag_begin(
+        self.imp().mouse_drawing_gesture.connect_drag_begin(
             clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
                 if let Some(event) = mouse_drawing_gesture.current_event() {
                     // Guard not to handle touch events that emulate a pointer
@@ -823,7 +818,7 @@ impl Canvas {
             }),
         );
 
-        priv_.mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+        self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
             if let Some(event) = mouse_drawing_gesture.current_event() {
                 // Guard not to handle touch events that emulate a pointer
                 if event.is_pointer_emulated() {
@@ -838,7 +833,7 @@ impl Canvas {
             }
         }));
 
-        priv_.mouse_drawing_gesture.connect_drag_end(
+        self.imp().mouse_drawing_gesture.connect_drag_end(
             clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
 
                 if let Some(event) = mouse_drawing_gesture.current_event() {
@@ -857,7 +852,7 @@ impl Canvas {
         );
 
         // Touch drawing
-        priv_.touch_drawing_gesture.connect_drag_begin(
+        self.imp().touch_drawing_gesture.connect_drag_begin(
             clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
                 touch_drawing_gesture.set_state(EventSequenceState::Claimed);
 
@@ -868,7 +863,7 @@ impl Canvas {
             }),
         );
 
-        priv_.touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
+        self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
@@ -876,7 +871,7 @@ impl Canvas {
             }
         }));
 
-        priv_.touch_drawing_gesture.connect_drag_end(
+        self.imp().touch_drawing_gesture.connect_drag_end(
             clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
@@ -1050,10 +1045,8 @@ impl Canvas {
 
     /// zooms and regenerates the canvas and its contents to a new zoom
     pub fn zoom_to(&self, zoom: f64) {
-        let priv_ = imp::Canvas::from_instance(self);
-
         // Remove the timeout if existss
-        if let Some(zoom_timeout_id) = priv_.zoom_timeout_id.take() {
+        if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
             zoom_timeout_id.remove();
         }
         self.set_temporary_zoom(1.0);
@@ -1078,26 +1071,23 @@ impl Canvas {
         zoom: f64,
         timeout_time: time::Duration,
     ) {
-        let priv_ = imp::Canvas::from_instance(self);
-
-        if let Some(zoom_timeout_id) = priv_.zoom_timeout_id.take() {
+        if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
             zoom_timeout_id.remove();
         }
 
         self.zoom_temporarily_to(zoom);
 
-        priv_
+        self.imp()
             .zoom_timeout_id
             .borrow_mut()
             .replace(glib::source::timeout_add_local_once(
                 timeout_time,
                 clone!(@weak self as canvas => move || {
-                    let priv_ = imp::Canvas::from_instance(&canvas);
 
                     canvas.zoom_to(zoom);
 
                     // Removing the timeout id
-                    let mut zoom_timeout_id = priv_.zoom_timeout_id.borrow_mut();
+                    let mut zoom_timeout_id = canvas.imp().zoom_timeout_id.borrow_mut();
                     if let Some(zoom_timeout_id) = zoom_timeout_id.take() {
                         zoom_timeout_id.remove();
                     }
@@ -1179,12 +1169,11 @@ impl Canvas {
 
     /// Captures the current view of the canvas as a gdk::Texture
     pub fn current_view_as_texture(&self) -> Option<gdk::Texture> {
-        let priv_ = imp::Canvas::from_instance(self);
         let snapshot = Snapshot::new();
 
         self.selection_modifier().set_visible(false);
 
-        priv_.snapshot(self, &snapshot);
+        self.imp().snapshot(self, &snapshot);
 
         let rendernode = snapshot.to_node()?;
         let texture = render::rendernode_to_texture(self.upcast_ref::<Widget>(), &rendernode, None)

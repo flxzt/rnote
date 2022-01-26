@@ -1,24 +1,25 @@
+pub mod appactions;
+
 mod imp {
     use std::{
         cell::{Cell, RefCell},
         path,
-        rc::Rc,
     };
 
     use adw::subclass::prelude::AdwApplicationImpl;
-    use gtk4::{gio, glib, prelude::*, subclass::prelude::*, IconTheme};
+    use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
     use once_cell::sync::Lazy;
 
     use crate::{
         compose::textured::TexturedDotsDistribution,
         config,
+        pens::PenStyle,
         sheet::format::MeasureUnit,
-        sheet::Sheet,
         sheet::{background::PatternStyle, format::PredefinedFormat},
         ui::{
             appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvasmenu::CanvasMenu,
             colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
-            develactions::DevelActions, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
+            mainheader::MainHeader, penssidebar::brushpage::BrushPage,
             penssidebar::eraserpage::EraserPage, penssidebar::markerpage::MarkerPage,
             penssidebar::selectorpage::SelectorPage, penssidebar::shaperpage::ShaperPage,
             penssidebar::toolspage::ToolsPage, penssidebar::PensSideBar,
@@ -29,12 +30,21 @@ mod imp {
         utils,
     };
 
-    #[derive(Debug, Default)]
+    #[derive(Debug)]
     pub struct RnoteApp {
         pub input_file: RefCell<Option<gio::File>>,
         pub output_file: RefCell<Option<gio::File>>,
         pub unsaved_changes: Cell<bool>,
-        pub rng: Rc<RefCell<rand::rngs::ThreadRng>>,
+    }
+
+    impl Default for RnoteApp {
+        fn default() -> Self {
+            Self {
+                input_file: RefCell::new(None),
+                output_file: RefCell::new(None),
+                unsaved_changes: Cell::new(false),
+            }
+        }
     }
 
     #[glib::object_subclass]
@@ -85,11 +95,9 @@ mod imp {
     }
 
     impl ApplicationImpl for RnoteApp {
-        fn activate(&self, application: &Self::Type) {
+        fn activate(&self, app: &Self::Type) {
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
-            DevelActions::static_type();
-            Sheet::static_type();
             Canvas::static_type();
             ColorPicker::static_type();
             ColorSetter::static_type();
@@ -106,6 +114,7 @@ mod imp {
             EraserPage::static_type();
             SelectorPage::static_type();
             ToolsPage::static_type();
+            PenStyle::static_type();
             WorkspaceBrowser::static_type();
             FileRow::static_type();
             PredefinedFormat::static_type();
@@ -114,25 +123,26 @@ mod imp {
             UnitEntry::static_type();
             TexturedDotsDistribution::static_type();
 
-            // Load the resource
-            application.set_resource_base_path(Some(config::APP_IDPATH));
+            // Load the resources
+            app.set_resource_base_path(Some(config::APP_IDPATH));
             let res = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
                 .expect("Could not load gresource file");
             gio::resources_register(&res);
 
+            // init gstreamer
             if let Err(e) = gst::init() {
                 log::error!("failed to initialize gstreamer. Err `{}`. Aborting.", e);
                 return;
             }
 
-            let appwindow = RnoteAppWindow::new(application.upcast_ref::<gtk4::Application>());
+            let appwindow = RnoteAppWindow::new(app.upcast_ref::<gtk4::Application>());
             appwindow.init();
 
-            // add icon theme resource path because automatic lookup does not work in Devel build.
-            let app_icon_theme = IconTheme::for_display(&appwindow.display());
-            app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
+            // setup the app
+            app.setup_actions();
+            app.setup_action_accels();
+            app.setup_app(&appwindow);
 
-            application.setup_app(&appwindow);
             appwindow.show();
         }
 
@@ -154,8 +164,6 @@ mod imp {
     impl GtkApplicationImpl for RnoteApp {}
     impl AdwApplicationImpl for RnoteApp {}
 }
-
-use std::{cell::RefCell, rc::Rc};
 
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 
@@ -204,10 +212,6 @@ impl RnoteApp {
     pub fn set_output_file(&self, output_file: Option<&gio::File>, appwindow: &RnoteAppWindow) {
         appwindow.mainheader().set_title_for_file(output_file);
         *imp::RnoteApp::from_instance(self).output_file.borrow_mut() = output_file.cloned();
-    }
-
-    pub fn rng(&self) -> Rc<RefCell<rand::rngs::ThreadRng>> {
-        self.imp().rng.clone()
     }
 
     pub fn unsaved_changes(&self) -> bool {

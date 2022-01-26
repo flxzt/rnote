@@ -1,33 +1,38 @@
+pub mod appsettings;
+pub mod appwindowactions;
+
 mod imp {
     use std::cell::RefCell;
     use std::{cell::Cell, rc::Rc};
 
     use adw::{prelude::*, subclass::prelude::*};
     use gtk4::{
-        gdk, gio, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
+        gdk, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
         FileChooserNative, Grid, Inhibit, PackType, ScrolledWindow, StyleContext, ToggleButton,
     };
-    use gtk4::{GestureDrag, PropagationPhase, Revealer, Separator};
+    use gtk4::{gio, GestureDrag, PropagationPhase, Separator};
+    use once_cell::sync::Lazy;
 
     use crate::audioplayer::RnoteAudioPlayer;
     use crate::{
-        app::RnoteApp, config, ui::canvas::Canvas, ui::develactions::DevelActions, ui::dialogs,
-        ui::mainheader::MainHeader, ui::penssidebar::PensSideBar, ui::settingspanel::SettingsPanel,
+        app::RnoteApp, config, ui::canvas::Canvas, ui::dialogs, ui::mainheader::MainHeader,
+        ui::penssidebar::PensSideBar, ui::settingspanel::SettingsPanel,
         ui::workspacebrowser::WorkspaceBrowser,
     };
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
     pub struct RnoteAppWindow {
-        pub settings: gio::Settings,
-        pub audio_player: Rc<RefCell<RnoteAudioPlayer>>,
+        pub app_settings: gio::Settings,
+        pub audioplayer: Rc<RefCell<RnoteAudioPlayer>>,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
+
+        pub pen_sounds: Cell<bool>,
+
+        #[template_child]
+        pub toast_overlay: TemplateChild<adw::ToastOverlay>,
         #[template_child]
         pub main_grid: TemplateChild<Grid>,
-        #[template_child]
-        pub devel_actions_revealer: TemplateChild<Revealer>,
-        #[template_child]
-        pub devel_actions: TemplateChild<DevelActions>,
         #[template_child]
         pub canvas_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
@@ -65,12 +70,14 @@ mod imp {
     impl Default for RnoteAppWindow {
         fn default() -> Self {
             Self {
-                settings: gio::Settings::new(config::APP_ID),
-                audio_player: Rc::new(RefCell::new(RnoteAudioPlayer::default())),
+                app_settings: gio::Settings::new(config::APP_ID),
+                audioplayer: Rc::new(RefCell::new(RnoteAudioPlayer::default())),
                 filechoosernative: Rc::new(RefCell::new(None)),
+
+                pen_sounds: Cell::new(true),
+
+                toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 main_grid: TemplateChild::<Grid>::default(),
-                devel_actions_revealer: TemplateChild::<Revealer>::default(),
-                devel_actions: TemplateChild::<DevelActions>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
@@ -124,9 +131,49 @@ mod imp {
             );
 
             self.setup_flap(obj);
+        }
 
-            // Load latest window state
-            obj.load_window_size();
+        fn properties() -> &'static [glib::ParamSpec] {
+            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
+                vec![
+                    // Pen sounds
+                    glib::ParamSpecBoolean::new(
+                        "pen-sounds",
+                        "pen-sounds",
+                        "pen-sounds",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                ]
+            });
+            PROPERTIES.as_ref()
+        }
+
+        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
+            match pspec.name() {
+                "pen-sounds" => self.pen_sounds.get().to_value(),
+                _ => unimplemented!(),
+            }
+        }
+
+        fn set_property(
+            &self,
+            _obj: &Self::Type,
+            _id: usize,
+            value: &glib::Value,
+            pspec: &glib::ParamSpec,
+        ) {
+            match pspec.name() {
+                "pen-sounds" => {
+                    let pen_sounds = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.pen_sounds.replace(pen_sounds);
+                    self.audioplayer.borrow_mut().set_enabled(pen_sounds);
+                }
+                _ => unimplemented!(),
+            }
         }
     }
 
@@ -303,22 +350,24 @@ use adw::prelude::*;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
     EventControllerScrollFlags, EventSequenceState, FileChooserNative, GestureDrag, GestureZoom,
-    Grid, Inhibit, PropagationPhase, Revealer, ScrolledWindow, Separator, ToggleButton,
+    Grid, IconTheme, Inhibit, PropagationPhase, ScrolledWindow, Separator, ToggleButton,
 };
 
 use crate::{
     app::RnoteApp,
     audioplayer::RnoteAudioPlayer,
+    config,
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
-    strokesstate::StateTask,
+    strokesstate::{StateTask, StrokesState},
     ui::canvas::Canvas,
-    ui::develactions::DevelActions,
+    ui::penssidebar::PensSideBar,
     ui::settingspanel::SettingsPanel,
-    ui::{actions, workspacebrowser::WorkspaceBrowser},
-    ui::{appsettings, penssidebar::PensSideBar},
+    ui::workspacebrowser::WorkspaceBrowser,
     ui::{dialogs, mainheader::MainHeader},
     utils,
 };
+
+// The renderer as a global singleton
 
 glib::wrapper! {
     pub struct RnoteAppWindow(ObjectSubclass<imp::RnoteAppWindow>)
@@ -336,14 +385,9 @@ impl RnoteAppWindow {
 
     /// Called to close the window
     pub fn close(&self) {
-        // Saving the window size
-        if let Err(err) = self.save_window_size() {
-            log::error!("Failed to save window state, {}", &err);
-        }
-
         // Saving all state
-        if let Err(err) = appsettings::save_state_to_settings(self) {
-            log::error!("Failed to save app state, {}", &err);
+        if let Err(err) = self.save_to_settings() {
+            log::error!("Failed to save appwindow to settings, with Err `{}`", &err);
         }
 
         // Setting all gstreamer pipelines state to Null
@@ -353,8 +397,8 @@ impl RnoteAppWindow {
         if let Some(tasks_tx) = self
             .canvas()
             .sheet()
-            .strokes_state()
             .borrow()
+            .strokes_state
             .tasks_tx
             .as_ref()
         {
@@ -364,8 +408,8 @@ impl RnoteAppWindow {
         if let Some(source) = self
             .canvas()
             .sheet()
-            .strokes_state()
             .borrow_mut()
+            .strokes_state
             .channel_source
             .take()
         {
@@ -375,8 +419,8 @@ impl RnoteAppWindow {
         self.destroy();
     }
 
-    pub fn app_settings(&self) -> &gio::Settings {
-        &imp::RnoteAppWindow::from_instance(self).settings
+    pub fn app_settings(&self) -> gio::Settings {
+        self.imp().app_settings.clone()
     }
 
     pub fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
@@ -385,18 +429,12 @@ impl RnoteAppWindow {
             .clone()
     }
 
+    pub fn toast_overlay(&self) -> adw::ToastOverlay {
+        imp::RnoteAppWindow::from_instance(self).toast_overlay.get()
+    }
+
     pub fn main_grid(&self) -> Grid {
         imp::RnoteAppWindow::from_instance(self).main_grid.get()
-    }
-
-    pub fn devel_actions_revealer(&self) -> Revealer {
-        imp::RnoteAppWindow::from_instance(self)
-            .devel_actions_revealer
-            .get()
-    }
-
-    pub fn devel_actions(&self) -> DevelActions {
-        imp::RnoteAppWindow::from_instance(self).devel_actions.get()
     }
 
     pub fn canvas_scroller(&self) -> ScrolledWindow {
@@ -464,56 +502,10 @@ impl RnoteAppWindow {
     }
 
     pub fn audioplayer(&self) -> Rc<RefCell<RnoteAudioPlayer>> {
-        imp::RnoteAppWindow::from_instance(self)
-            .audio_player
-            .clone()
+        imp::RnoteAppWindow::from_instance(self).audioplayer.clone()
     }
 
-    pub fn set_color_scheme(&self, color_scheme: adw::ColorScheme) {
-        self.application()
-            .unwrap()
-            .downcast::<RnoteApp>()
-            .unwrap()
-            .style_manager()
-            .set_color_scheme(color_scheme);
-
-        match color_scheme {
-            adw::ColorScheme::Default => {
-                self.app_settings()
-                    .set_string("color-scheme", "default")
-                    .unwrap();
-                self.mainheader()
-                    .appmenu()
-                    .default_theme_toggle()
-                    .set_active(true);
-            }
-            adw::ColorScheme::ForceLight => {
-                self.app_settings()
-                    .set_string("color-scheme", "force-light")
-                    .unwrap();
-                self.mainheader()
-                    .appmenu()
-                    .light_theme_toggle()
-                    .set_active(true);
-            }
-            adw::ColorScheme::ForceDark => {
-                self.app_settings()
-                    .set_string("color-scheme", "force-dark")
-                    .unwrap();
-                self.mainheader()
-                    .appmenu()
-                    .dark_theme_toggle()
-                    .set_active(true);
-            }
-            _ => {
-                log::error!("unsupported color_scheme in set_color_scheme()");
-            }
-        }
-    }
-
-    pub fn save_window_size(&self) -> Result<(), glib::BoolError> {
-        let settings = &imp::RnoteAppWindow::from_instance(self).settings;
-
+    pub fn save_window_size(&self) -> Result<(), anyhow::Error> {
         let mut width = self.width();
         let mut height = self.height();
 
@@ -521,14 +513,15 @@ impl RnoteAppWindow {
         width -= 122;
         height -= 122;
 
-        settings.set_int("window-width", width)?;
-        settings.set_int("window-height", height)?;
-        settings.set_boolean("is-maximized", self.is_maximized())?;
+        self.app_settings().set_int("window-width", width)?;
+        self.app_settings().set_int("window-height", height)?;
+        self.app_settings()
+            .set_boolean("is-maximized", self.is_maximized())?;
 
         Ok(())
     }
 
-    fn load_window_size(&self) {
+    pub fn load_window_size(&self) {
         let width = self.app_settings().int("window-width");
         let height = self.app_settings().int("window-height");
         let is_maximized = self.app_settings().boolean("is-maximized");
@@ -542,12 +535,11 @@ impl RnoteAppWindow {
 
     // Must be called after application is associated with it else it fails
     pub fn init(&self) {
-        if let Err(e) = self.imp().audio_player.borrow_mut().init(self) {
+        if let Err(e) = self.imp().audioplayer.borrow_mut().init(self) {
             log::error!("failed to init audio_player with Err {}", e);
         }
         self.imp().workspacebrowser.get().init(self);
         self.imp().settings_panel.get().init(self);
-        self.imp().devel_actions.get().init(self);
         self.imp().mainheader.get().init(self);
         self.imp().mainheader.get().canvasmenu().init(self);
         self.imp().mainheader.get().appmenu().init(self);
@@ -559,15 +551,12 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get().selector_page().init(self);
         self.imp().penssidebar.get().tools_page().init(self);
         self.imp().canvas.get().init(self);
-        self.imp().canvas.get().sheet().format().init(self);
-        self.imp()
-            .canvas
-            .get()
-            .sheet()
-            .strokes_state()
-            .borrow_mut()
-            .init(self);
+        StrokesState::init(self);
         self.imp().canvas.get().selection_modifier().init(self);
+
+        // add icon theme resource path because automatic lookup does not work in the devel build.
+        let app_icon_theme = IconTheme::for_display(&self.display());
+        app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
         // zoom scrolling with <ctrl> + scroll
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()
@@ -741,9 +730,13 @@ impl RnoteAppWindow {
         canvas_zoom_gesture.group_with(&canvas_touch_drag_gesture);
 
         // actions and settings AFTER widget callback declarations
-        actions::setup_actions(self);
-        actions::setup_accels(self);
-        appsettings::load_settings(self);
+        self.setup_actions();
+        self.setup_action_accels();
+        self.setup_settings();
+
+        if let Err(e) = self.load_settings() {
+            log::debug!("failed to load appwindow settings with Err `{}`", e);
+        }
 
         // Loading in input file, if Some
         if let Some(input_file) = self
@@ -898,7 +891,10 @@ impl RnoteAppWindow {
         P: AsRef<Path>,
     {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
-        self.canvas().sheet().open_sheet_from_rnote_bytes(bytes)?;
+        self.canvas()
+            .sheet()
+            .borrow_mut()
+            .open_sheet_from_rnote_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
         self.settings_panel().load_all(self);
@@ -919,6 +915,8 @@ impl RnoteAppWindow {
             .selection_modifier()
             .update_state(&self.canvas());
 
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
+
         Ok(())
     }
 
@@ -931,7 +929,10 @@ impl RnoteAppWindow {
         P: AsRef<Path>,
     {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
-        self.canvas().sheet().open_from_xopp_bytes(bytes)?;
+        self.canvas()
+            .sheet()
+            .borrow_mut()
+            .open_from_xopp_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
         self.settings_panel().load_all(self);
@@ -949,6 +950,8 @@ impl RnoteAppWindow {
             .selection_modifier()
             .update_state(&self.canvas());
 
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
+
         Ok(())
     }
 
@@ -962,21 +965,21 @@ impl RnoteAppWindow {
         let pos = target_pos.unwrap_or_else(|| {
             self.canvas()
                 .transform_canvas_coords_to_sheet_coords(na::vector![
-                    self.canvas().sheet_margin() + VectorImage::OFFSET_X_DEFAULT,
-                    self.canvas().sheet_margin() + VectorImage::OFFSET_Y_DEFAULT
+                    f64::from(self.canvas().sheet_margin() + VectorImage::OFFSET_X_DEFAULT),
+                    f64::from(self.canvas().sheet_margin() + VectorImage::OFFSET_Y_DEFAULT)
                 ])
         });
         self.canvas()
             .sheet()
-            .strokes_state()
             .borrow_mut()
+            .strokes_state
             .deselect_all_strokes();
 
         self.canvas()
             .sheet()
-            .strokes_state()
             .borrow_mut()
-            .insert_vectorimage_bytes_threaded(pos, bytes);
+            .strokes_state
+            .insert_vectorimage_bytes_threaded(pos, bytes, self.canvas().renderer());
 
         app.set_input_file(None);
         self.canvas().set_unsaved_changes(true);
@@ -1001,20 +1004,20 @@ impl RnoteAppWindow {
         let pos = target_pos.unwrap_or_else(|| {
             self.canvas()
                 .transform_canvas_coords_to_sheet_coords(na::vector![
-                    self.canvas().sheet_margin() + BitmapImage::OFFSET_X_DEFAULT,
-                    self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT
+                    f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_X_DEFAULT),
+                    f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT)
                 ])
         });
         self.canvas()
             .sheet()
-            .strokes_state()
             .borrow_mut()
+            .strokes_state
             .deselect_all_strokes();
 
         self.canvas()
             .sheet()
-            .strokes_state()
             .borrow_mut()
+            .strokes_state
             .insert_bitmapimage_bytes_threaded(pos, bytes);
 
         app.set_input_file(None);
@@ -1036,31 +1039,36 @@ impl RnoteAppWindow {
         let pos = target_pos.unwrap_or_else(|| {
             self.canvas()
                 .transform_canvas_coords_to_sheet_coords(na::vector![
-                    self.canvas().sheet_margin() + BitmapImage::OFFSET_X_DEFAULT,
-                    self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT
+                    f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_X_DEFAULT),
+                    f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT)
                 ])
         });
-        let page_width = (f64::from(self.canvas().sheet().width())
+        let page_width = (f64::from(self.canvas().sheet().borrow().width)
             * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
 
         self.canvas()
             .sheet()
-            .strokes_state()
             .borrow_mut()
+            .strokes_state
             .deselect_all_strokes();
 
         if self.canvas().pdf_import_as_vector() {
             self.canvas()
                 .sheet()
-                .strokes_state()
                 .borrow_mut()
-                .insert_pdf_bytes_as_vector_threaded(pos, Some(page_width), bytes);
+                .strokes_state
+                .insert_pdf_bytes_as_vector_threaded(
+                    pos,
+                    Some(page_width),
+                    bytes,
+                    self.canvas().renderer(),
+                );
         } else {
             self.canvas()
                 .sheet()
-                .strokes_state()
                 .borrow_mut()
+                .strokes_state
                 .insert_pdf_bytes_as_bitmap_threaded(pos, Some(page_width), bytes);
         }
 

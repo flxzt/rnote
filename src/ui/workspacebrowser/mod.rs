@@ -341,13 +341,7 @@ impl WorkspaceBrowser {
         }));
 
         self.imp().primary_dirlist.connect_file_notify(
-            clone!(@weak appwindow, @weak filefilter, @weak multisorter => move |primary_dirlist| {
-                if let Some(file) = primary_dirlist.file() {
-                    if let Some(path) = file.path() {
-                        appwindow.app_settings().set_string("workspace-dir", &path.to_string_lossy()).unwrap();
-                    }
-                }
-
+            clone!(@weak appwindow, @weak filefilter, @weak multisorter => move |_primary_dirlist| {
                 multisorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }),

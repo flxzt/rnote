@@ -1,9 +1,7 @@
 mod imp {
     use crate::ui::colorpicker::ColorPicker;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{
-        Adjustment, Button, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton,
-    };
+    use gtk4::{MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
@@ -19,21 +17,13 @@ mod imp {
         #[template_child]
         pub roughconfig_roughness_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub roughconfig_roughness_adj: TemplateChild<Adjustment>,
-        #[template_child]
         pub roughconfig_bowing_spinbutton: TemplateChild<SpinButton>,
-        #[template_child]
-        pub roughconfig_bowing_adj: TemplateChild<Adjustment>,
         #[template_child]
         pub roughconfig_curvestepcount_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub roughconfig_curvestepcount_adj: TemplateChild<Adjustment>,
-        #[template_child]
         pub roughconfig_multistroke_switch: TemplateChild<Switch>,
         #[template_child]
-        pub width_resetbutton: TemplateChild<Button>,
-        #[template_child]
-        pub width_adj: TemplateChild<Adjustment>,
+        pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub stroke_colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
@@ -81,10 +71,10 @@ mod imp {
 }
 
 use crate::compose::color::Color;
-use crate::compose::rough::roughoptions;
-use crate::pens::shaper::Shaper;
+use crate::compose::rough::roughoptions::{self, RoughOptions};
+use crate::pens::shaper::{Shaper};
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use gtk4::{gdk, Adjustment, Button, MenuButton, Popover, Revealer, ToggleButton};
+use gtk4::{gdk, MenuButton, Popover, Revealer, SpinButton, ToggleButton};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, Widget};
 
 glib::wrapper! {
@@ -127,12 +117,8 @@ impl ShaperPage {
             .get()
     }
 
-    pub fn width_resetbutton(&self) -> Button {
-        imp::ShaperPage::from_instance(self).width_resetbutton.get()
-    }
-
-    pub fn width_adj(&self) -> Adjustment {
-        imp::ShaperPage::from_instance(self).width_adj.get()
+    pub fn width_spinbutton(&self) -> SpinButton {
+        imp::ShaperPage::from_instance(self).width_spinbutton.get()
     }
 
     pub fn stroke_colorpicker(&self) -> ColorPicker {
@@ -166,25 +152,17 @@ impl ShaperPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let width_adj = self.width_adj();
+        // Width
+        self.width_spinbutton().set_increments(0.1, 2.0);
+        self.width_spinbutton()
+            .set_range(Shaper::WIDTH_MIN, Shaper::WIDTH_MAX);
+        self.width_spinbutton().set_value(Shaper::WIDTH_DEFAULT);
 
-        // Shape stroke width
-        self.width_resetbutton().connect_clicked(
-            clone!(@weak width_adj, @weak appwindow => move |_| {
-                appwindow.canvas().pens().borrow_mut().shaper.set_width(Shaper::WIDTH_DEFAULT);
-                width_adj.set_value(Shaper::WIDTH_DEFAULT);
+        self.width_spinbutton().connect_value_changed(
+            clone!(@weak appwindow => move |width_spinbutton| {
+                appwindow.canvas().pens().borrow_mut().shaper.set_width(width_spinbutton.value());
             }),
         );
-
-        self.width_adj().set_lower(Shaper::WIDTH_MIN);
-
-        self.width_adj().set_upper(Shaper::WIDTH_MAX);
-
-        self.width_adj().set_value(Shaper::WIDTH_DEFAULT);
-        self.width_adj()
-            .connect_value_changed(clone!(@weak appwindow => move |width_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.set_width(width_adj.value());
-            }));
 
         // Stroke color
         self.stroke_colorpicker().connect_notify_local(
@@ -206,67 +184,70 @@ impl ShaperPage {
 
         // Roughness
         self.imp()
-            .roughconfig_roughness_adj
+            .roughconfig_roughness_spinbutton
             .get()
-            .set_lower(roughoptions::Options::ROUGHNESS_MIN);
+            .set_increments(0.1, 2.0);
         self.imp()
-            .roughconfig_roughness_adj
+            .roughconfig_roughness_spinbutton
             .get()
-            .set_upper(roughoptions::Options::ROUGHNESS_MAX);
+            .set_range(RoughOptions::ROUGHNESS_MIN, RoughOptions::ROUGHNESS_MAX);
         self.imp()
-            .roughconfig_roughness_adj
+            .roughconfig_roughness_spinbutton
             .get()
-            .set_value(roughoptions::Options::ROUGHNESS_DEFAULT);
+            .set_value(RoughOptions::ROUGHNESS_DEFAULT);
 
-        self.imp().roughconfig_roughness_adj.get().connect_value_changed(
-            clone!(@weak appwindow => move |roughconfig_roughness_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_roughness(roughconfig_roughness_adj.value());
+        self.imp().roughconfig_roughness_spinbutton.get().connect_value_changed(
+            clone!(@weak appwindow => move |roughconfig_roughness_spinbutton| {
+                appwindow.canvas().pens().borrow_mut().shaper.rough_options.set_roughness(roughconfig_roughness_spinbutton.value());
             }),
         );
 
         // Bowing
         self.imp()
-            .roughconfig_bowing_adj
+            .roughconfig_bowing_spinbutton
             .get()
-            .set_lower(roughoptions::Options::BOWING_MIN);
+            .set_increments(0.1, 2.0);
         self.imp()
-            .roughconfig_bowing_adj
+            .roughconfig_bowing_spinbutton
             .get()
-            .set_upper(roughoptions::Options::BOWING_MAX);
+            .set_range(RoughOptions::BOWING_MIN, RoughOptions::BOWING_MAX);
         self.imp()
-            .roughconfig_bowing_adj
+            .roughconfig_bowing_spinbutton
             .get()
-            .set_value(roughoptions::Options::BOWING_DEFAULT);
+            .set_value(roughoptions::RoughOptions::BOWING_DEFAULT);
 
-        self.imp().roughconfig_bowing_adj.get().connect_value_changed(
-            clone!(@weak appwindow => move |roughconfig_bowing_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_bowing(roughconfig_bowing_adj.value());
+        self.imp().roughconfig_bowing_spinbutton.get().connect_value_changed(
+            clone!(@weak appwindow => move |roughconfig_bowing_spinbutton| {
+                appwindow.canvas().pens().borrow_mut().shaper.rough_options.set_bowing(roughconfig_bowing_spinbutton.value());
             }),
         );
 
         // Curve stepcount
         self.imp()
-            .roughconfig_curvestepcount_adj
+            .roughconfig_curvestepcount_spinbutton
             .get()
-            .set_lower(roughoptions::Options::CURVESTEPCOUNT_MIN);
+            .set_increments(1.0, 2.0);
         self.imp()
-            .roughconfig_curvestepcount_adj
+            .roughconfig_curvestepcount_spinbutton
             .get()
-            .set_upper(roughoptions::Options::CURVESTEPCOUNT_MAX);
+            .set_range(
+                RoughOptions::CURVESTEPCOUNT_MIN,
+                RoughOptions::CURVESTEPCOUNT_MAX,
+            );
         self.imp()
-            .roughconfig_curvestepcount_adj
+            .roughconfig_curvestepcount_spinbutton
             .get()
-            .set_value(roughoptions::Options::CURVESTEPCOUNT_DEFAULT);
+            .set_value(roughoptions::RoughOptions::CURVESTEPCOUNT_DEFAULT);
 
-        self.imp().roughconfig_curvestepcount_adj.get().connect_value_changed(
-            clone!(@weak appwindow => move |roughconfig_curvestepcount_adj| {
-                appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_curve_stepcount(roughconfig_curvestepcount_adj.value());
+        self.imp().roughconfig_curvestepcount_spinbutton.get().connect_value_changed(
+            clone!(@weak appwindow => move |roughconfig_curvestepcount_spinbutton| {
+                appwindow.canvas().pens().borrow_mut().shaper.rough_options.set_curve_stepcount(roughconfig_curvestepcount_spinbutton.value());
             }),
         );
 
         // Multistroke
         self.imp().roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
-            appwindow.canvas().pens().borrow_mut().shaper.rough_config.set_multistroke(roughconfig_multistroke_switch.state());
+            appwindow.canvas().pens().borrow_mut().shaper.rough_options.set_multistroke(roughconfig_multistroke_switch.state());
         }));
 
         // Smooth / Rough shape toggle
@@ -287,7 +268,7 @@ impl ShaperPage {
         // Shape toggles
         self.line_toggle().connect_active_notify(clone!(@weak self as shaperpage, @weak appwindow => move |line_toggle| {
             if line_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-shape", Some(&"line".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"line".to_variant()));
             } else {
                 shaperpage.fill_revealer().set_reveal_child(true);
             }
@@ -295,14 +276,34 @@ impl ShaperPage {
 
         self.rectangle_toggle().connect_active_notify(clone!(@weak appwindow => move |rectangle_toggle| {
             if rectangle_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-shape", Some(&"rectangle".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"rectangle".to_variant()));
             }
         }));
 
         self.ellipse_toggle().connect_active_notify(clone!(@weak appwindow => move |ellipse_toggle| {
             if ellipse_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-shape", Some(&"ellipse".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"ellipse".to_variant()));
             }
         }));
+    }
+
+    pub fn load_from_shaper(&self, shaper: Shaper) {
+        self.imp()
+            .roughconfig_roughness_spinbutton
+            .get()
+            .set_value(shaper.rough_options.roughness);
+        self.imp()
+            .roughconfig_bowing_spinbutton
+            .get()
+            .set_value(shaper.rough_options.bowing);
+        self.imp()
+            .roughconfig_curvestepcount_spinbutton
+            .get()
+            .set_value(shaper.rough_options.curve_stepcount);
+        self.imp()
+            .roughconfig_multistroke_switch
+            .get()
+            .set_active(!shaper.rough_options.disable_multistroke);
+        self.width_spinbutton().set_value(shaper.width());
     }
 }

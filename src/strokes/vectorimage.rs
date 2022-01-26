@@ -1,3 +1,5 @@
+use std::sync::{Arc, RwLock};
+
 use crate::compose::{geometry, shapes};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
@@ -101,16 +103,16 @@ impl Transformable for VectorImage {
 }
 
 impl VectorImage {
-    pub const SIZE_X_DEFAULT: f64 = 500.0;
-    pub const SIZE_Y_DEFAULT: f64 = 500.0;
-    pub const OFFSET_X_DEFAULT: f64 = 32.0;
-    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
+    pub const SIZE_X_DEFAULT: i32 = 500;
+    pub const SIZE_Y_DEFAULT: i32 = 500;
+    pub const OFFSET_X_DEFAULT: i32 = 32;
+    pub const OFFSET_Y_DEFAULT: i32 = 32;
 
     pub fn import_from_svg_data(
         svg_data: &str,
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
-        renderer: &Renderer,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Self, anyhow::Error> {
         // Random prefix to ensure uniqueness
         let rand_prefix = rand::thread_rng()
@@ -118,10 +120,11 @@ impl VectorImage {
             .take(8)
             .map(char::from)
             .collect::<String>();
-        let mut xml_options = renderer.usvg_xml_options.clone();
+        let mut xml_options = renderer.read().unwrap().usvg_xml_options.clone();
         xml_options.id_prefix = Some(rand_prefix);
 
-        let rtree = usvg::Tree::from_str(svg_data, &renderer.usvg_options.to_ref())?;
+        let rtree =
+            usvg::Tree::from_str(svg_data, &renderer.read().unwrap().usvg_options.to_ref())?;
         let svg_data = rtree.to_string(&xml_options);
 
         let svg_node = rtree.svg_node();
@@ -157,7 +160,7 @@ impl VectorImage {
         to_be_read: &[u8],
         pos: na::Vector2<f64>,
         page_width: Option<i32>,
-        renderer: &Renderer,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let doc = poppler::Document::from_data(to_be_read, None)?;
 
@@ -176,7 +179,7 @@ impl VectorImage {
                 };
 
                 let x = pos[0];
-                let y = pos[1] + f64::from(i) * (height + Self::OFFSET_Y_DEFAULT / 2.0);
+                let y = pos[1] + f64::from(i) * (height + f64::from(Self::OFFSET_Y_DEFAULT) / 2.0);
 
                 let svg_stream: Vec<u8> = vec![];
 
@@ -237,7 +240,7 @@ impl VectorImage {
                     svg_data.as_str(),
                     na::vector![x, y],
                     Some(na::vector![width, height]),
-                    renderer,
+                    Arc::clone(&renderer),
                 )?);
             }
         }
@@ -273,8 +276,8 @@ impl VectorImage {
     pub fn export_as_image_bytes(
         &self,
         zoom: f64,
-        renderer: &Renderer,
         format: image::ImageOutputFormat,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Vec<u8>, anyhow::Error> {
         let export_bounds = geometry::aabb_translate(self.bounds, -self.bounds().mins.coords);
         let mut export_svg_data = self
@@ -295,7 +298,7 @@ impl VectorImage {
             svg_data: export_svg_data,
         };
 
-        let image_raw = renderer
+        let image_raw = renderer.read().unwrap()
             .gen_image(zoom, &[export_svg], export_bounds)?
             .ok_or(anyhow::Error::msg(
             "gen_image() returned None in VectorImage export_to_bytes(), even though it has gotten a SVG",

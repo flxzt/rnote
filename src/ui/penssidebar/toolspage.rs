@@ -40,6 +40,7 @@ mod imp {
     impl WidgetImpl for ToolsPage {}
 }
 
+use crate::pens::tools::Tools;
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, ToggleButton, Widget};
 
@@ -84,4 +85,6 @@ impl ToolsPage {
             }
         }));
     }
+
+    pub fn load_from_tools(&self, _tools: Tools) {}
 }

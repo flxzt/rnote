@@ -59,7 +59,6 @@ impl StrokesState {
         let last_stroke_key = self.last_stroke_key();
         if let Some(last_stroke_key) = last_stroke_key {
             self.set_trashed(last_stroke_key, true);
-            self.regenerate_rendering_for_stroke_threaded(last_stroke_key);
 
             Some(last_stroke_key)
         } else {
@@ -72,7 +71,6 @@ impl StrokesState {
         let last_trashed_key = self.last_trashed_key();
         if let Some(last_trashed_key) = last_trashed_key {
             self.set_trashed(last_trashed_key, false);
-            self.regenerate_rendering_for_stroke_threaded(last_trashed_key);
 
             Some(last_trashed_key)
         } else {

@@ -9,9 +9,7 @@ use serde::{Deserialize, Serialize};
 use svg::node::element::{self, Element};
 
 /// The distribution for the spread of dots across the width of the textured stroke
-#[derive(
-    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
-)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
 #[enum_type(name = "TexturedDotsDistribution")]
 pub enum TexturedDotsDistribution {
@@ -92,9 +90,12 @@ pub struct TexturedOptions {
     /// An optional seed to generate reproducable strokes
     #[serde(rename = "seed")]
     seed: Option<u64>,
+    /// The width
+    #[serde(rename = "width")]
+    width: f64,
     /// The color of the dots
     #[serde(rename = "color")]
-    color: Color,
+    color: Option<Color>,
     /// Amount dots per 10x10 area
     #[serde(rename = "density")]
     density: f64,
@@ -110,8 +111,9 @@ impl Default for TexturedOptions {
     fn default() -> Self {
         Self {
             seed: None,
+            width: Self::WIDTH_DEFAULT,
             density: Self::DENSITY_DEFAULT,
-            color: Self::COLOR_DEFAULT,
+            color: Some(Self::COLOR_DEFAULT),
             radii: Self::RADII_DEFAULT,
             distribution: TexturedDotsDistribution::default(),
         }
@@ -119,6 +121,12 @@ impl Default for TexturedOptions {
 }
 
 impl TexturedOptions {
+    /// The default width
+    pub const WIDTH_DEFAULT: f64 = 1.0;
+    /// The min width
+    pub const WIDTH_MIN: f64 = 0.1;
+    /// The min width
+    pub const WIDTH_MAX: f64 = 1000.0;
     /// The default color
     pub const COLOR_DEFAULT: Color = Color {
         r: 0.0,
@@ -147,11 +155,19 @@ impl TexturedOptions {
         self.seed = seed
     }
 
-    pub fn color(&self) -> Color {
+    pub fn width(&self) -> f64 {
+        self.width
+    }
+
+    pub fn set_width(&mut self, width: f64) {
+        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
+    }
+
+    pub fn color(&self) -> Option<Color> {
         self.color
     }
 
-    pub fn set_color(&mut self, color: Color) {
+    pub fn set_color(&mut self, color: Option<Color>) {
         self.color = color;
     }
 
@@ -183,7 +199,7 @@ impl TexturedOptions {
     }
 }
 
-pub fn compose_line(line: curves::Line, width: f64, options: &mut TexturedOptions) -> Element {
+pub fn compose_line(line: curves::Line, width: f64, options: &TexturedOptions) -> Element {
     let mut rng = compose::new_rng_default_pcg64(options.seed);
 
     let rect = line.line_w_width_to_rect(width);
@@ -221,6 +237,10 @@ pub fn compose_line(line: curves::Line, width: f64, options: &mut TexturedOption
             distr_dots_ry.sample(&mut rng)
         ];
 
+        let fill = options
+            .color()
+            .map_or(String::from(""), |color| color.to_css_color());
+
         let ellipse = element::Ellipse::new()
             .set(
                 "transform",
@@ -235,7 +255,7 @@ pub fn compose_line(line: curves::Line, width: f64, options: &mut TexturedOption
             .set("cy", pos[1])
             .set("rx", radii[0])
             .set("ry", radii[1])
-            .set("fill", options.color.to_css_color());
+            .set("fill", fill);
 
         group = group.add(ellipse);
     }

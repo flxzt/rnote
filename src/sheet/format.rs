@@ -1,466 +1,38 @@
-mod imp {
-    use std::cell::Cell;
-
-    use gtk4::{glib, prelude::*, subclass::prelude::*};
-    use once_cell::sync::Lazy;
-
-    #[derive(Debug, Clone)]
-    pub struct Format {
-        width: Cell<i32>,
-        height: Cell<i32>,
-        dpi: Cell<f64>,
-        orientation: Cell<super::Orientation>,
-    }
-
-    impl Default for Format {
-        fn default() -> Self {
-            Self {
-                width: Cell::new(super::Format::WIDTH_DEFAULT),
-                height: Cell::new(super::Format::HEIGHT_DEFAULT),
-                dpi: Cell::new(super::Format::DPI_DEFAULT),
-                orientation: Cell::new(super::Orientation::Portrait),
-            }
-        }
-    }
-
-    #[glib::object_subclass]
-    impl ObjectSubclass for Format {
-        const NAME: &'static str = "Format";
-        type Type = super::Format;
-        type ParentType = glib::Object;
-    }
-
-    impl ObjectImpl for Format {
-        fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                vec![
-                    glib::ParamSpecInt::new(
-                        // Name
-                        "width",
-                        // Nickname
-                        "width",
-                        // Short description
-                        "width",
-                        // Minimum
-                        super::Format::WIDTH_MIN,
-                        // Maximum
-                        super::Format::WIDTH_MAX,
-                        // Default value
-                        super::Format::WIDTH_DEFAULT,
-                        // The property can be read and written to
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecInt::new(
-                        // Name
-                        "height",
-                        // Nickname
-                        "height",
-                        // Short description
-                        "height",
-                        // Minimum
-                        super::Format::HEIGHT_MIN,
-                        // Maximum
-                        super::Format::HEIGHT_MAX,
-                        // Default value
-                        super::Format::HEIGHT_DEFAULT,
-                        // The property can be read and written to
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecDouble::new(
-                        // Name
-                        "dpi",
-                        // Nickname
-                        "dpi",
-                        // Short description
-                        "dpi",
-                        // Minimum
-                        super::Format::DPI_MIN,
-                        // Maximum
-                        super::Format::DPI_MAX,
-                        // Default value
-                        super::Format::DPI_DEFAULT,
-                        // The property can be read and written to
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    glib::ParamSpecEnum::new(
-                        // Name
-                        "orientation",
-                        // Nickname
-                        "orientation",
-                        // Short description
-                        "orientation",
-                        // Type
-                        super::Orientation::static_type(),
-                        // Default value
-                        super::Orientation::Portrait as i32,
-                        // The property can be read and written to
-                        glib::ParamFlags::READWRITE,
-                    ),
-                ]
-            });
-            PROPERTIES.as_ref()
-        }
-
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-            match pspec.name() {
-                "width" => self.width.get().to_value(),
-                "height" => self.height.get().to_value(),
-                "dpi" => self.dpi.get().to_value(),
-                "orientation" => self.orientation.get().to_value(),
-                _ => unimplemented!(),
-            }
-        }
-
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
-            match pspec.name() {
-                "width" => {
-                    let width: i32 = value
-                        .get::<i32>()
-                        .expect("The value needs to be of type `i32`.");
-                    self.width.replace(width);
-                }
-                "height" => {
-                    let height: i32 = value
-                        .get::<i32>()
-                        .expect("The value needs to be of type `i32`.");
-                    self.height.replace(height);
-                }
-                "dpi" => {
-                    let dpi: f64 = value
-                        .get::<f64>()
-                        .expect("The value needs to be of type `f64`.");
-                    self.dpi.replace(dpi);
-                }
-                "orientation" => {
-                    let orientation: super::Orientation = value
-                        .get::<super::Orientation>()
-                        .expect("The value needs to be of type `Orientation`.");
-                    self.orientation.replace(orientation);
-                }
-                _ => unimplemented!(),
-            }
-        }
-    }
-}
-
-use gtk4::{glib, glib::clone, graphene, gsk, prelude::*, Snapshot};
+use gtk4::{glib, graphene, gsk, Snapshot};
 use p2d::bounding_volume::AABB;
-use serde::de::{self, Deserializer, Visitor};
-use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 
 use crate::compose::color::Color;
 use crate::compose::geometry;
-use crate::ui::appwindow::RnoteAppWindow;
 
-glib::wrapper! {
-    pub struct Format(ObjectSubclass<imp::Format>);
-}
-
-impl Serialize for Format {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        let mut state = serializer.serialize_struct("format", 4)?;
-        state.serialize_field("width", &self.width())?;
-        state.serialize_field("height", &self.height())?;
-        state.serialize_field("dpi", &self.dpi())?;
-        state.serialize_field("orientation", &self.orientation())?;
-        state.end()
-    }
-}
-
-impl<'de> Deserialize<'de> for Format {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        #[derive(Deserialize)]
-        #[serde(field_identifier, rename_all = "lowercase")]
-        #[allow(non_camel_case_types)]
-        enum Field {
-            width,
-            height,
-            dpi,
-            orientation,
-            unknown,
-        }
-
-        struct FormatVisitor;
-        impl<'de> Visitor<'de> for FormatVisitor {
-            type Value = Format;
-
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                formatter.write_str("the Format struct")
-            }
-
-            fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
-            where
-                A: de::SeqAccess<'de>,
-            {
-                let width = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                let height = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(1, &self))?;
-                let dpi = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(2, &self))?;
-                let orientation = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(3, &self))?;
-
-                let format = Format::new();
-                format.set_width(width);
-                format.set_height(height);
-                format.set_dpi(dpi);
-                format.set_orientation(orientation);
-
-                Ok(format)
-            }
-
-            fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
-            where
-                A: de::MapAccess<'de>,
-            {
-                let mut width = None;
-                let mut height = None;
-                let mut dpi = None;
-                let mut orientation = None;
-
-                while let Some(key) = match map.next_key() {
-                    Ok(key) => key,
-                    Err(e) => {
-                        log::warn!("{}", e);
-                        Some(Field::unknown)
-                    }
-                } {
-                    match key {
-                        Field::width => {
-                            if width.is_some() {
-                                return Err(de::Error::duplicate_field("width"));
-                            }
-                            width = Some(map.next_value()?);
-                        }
-                        Field::height => {
-                            if height.is_some() {
-                                return Err(de::Error::duplicate_field("height"));
-                            }
-                            height = Some(map.next_value()?);
-                        }
-                        Field::dpi => {
-                            if dpi.is_some() {
-                                return Err(de::Error::duplicate_field("dpi"));
-                            }
-                            dpi = Some(map.next_value()?);
-                        }
-                        Field::orientation => {
-                            if orientation.is_some() {
-                                return Err(de::Error::duplicate_field("orientation"));
-                            }
-                            orientation = Some(map.next_value()?);
-                        }
-                        Field::unknown => {
-                            // throw away the value
-                            map.next_value::<serde::de::IgnoredAny>()?;
-                        }
-                    }
-                }
-                let format_default = Format::default();
-
-                let width = width.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("width");
-                    log::error!("{}", err);
-                    format_default.width()
-                });
-                let height = height.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("height");
-                    log::error!("{}", err);
-                    format_default.height()
-                });
-                let dpi = dpi.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("dpi");
-                    log::error!("{}", err);
-                    format_default.dpi()
-                });
-                let orientation = orientation.unwrap_or_else(|| {
-                    let err: A::Error = de::Error::missing_field("orientation");
-                    log::error!("{}", err);
-                    format_default.orientation()
-                });
-
-                let format = Format::new();
-                format.set_width(width);
-                format.set_height(height);
-                format.set_dpi(dpi);
-                format.set_orientation(orientation);
-
-                Ok(format)
-            }
-        }
-
-        const FIELDS: &[&str] = &["width", "height", "dpi", "orientation"];
-        deserializer.deserialize_struct("format", FIELDS, FormatVisitor)
-    }
-}
-
-impl Default for Format {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl Format {
-    pub const WIDTH_MIN: i32 = 0;
-    pub const WIDTH_MAX: i32 = 30000;
-    pub const WIDTH_DEFAULT: i32 = 1240;
-
-    pub const HEIGHT_MIN: i32 = 0;
-    pub const HEIGHT_MAX: i32 = 30000;
-    pub const HEIGHT_DEFAULT: i32 = 1754;
-
-    pub const DPI_MIN: f64 = 1.0;
-    pub const DPI_MAX: f64 = 5000.0;
-    pub const DPI_DEFAULT: f64 = 96.0;
-
-    pub const FORMAT_BORDER_COLOR: Color = Color {
-        r: 0.6,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    };
-
-    pub fn new() -> Self {
-        glib::Object::new(&[
-            ("width", &Self::WIDTH_DEFAULT),
-            ("height", &Self::HEIGHT_DEFAULT),
-            ("dpi", &Self::DPI_DEFAULT),
-            ("orientation", &Orientation::Portrait.to_value()),
-        ])
-        .expect("Failed to create Format")
-    }
-
-    pub fn width(&self) -> i32 {
-        self.property::<i32>("width")
-    }
-
-    pub fn set_width(&self, width: i32) {
-        self.set_property("width", width.to_value());
-    }
-
-    pub fn height(&self) -> i32 {
-        self.property::<i32>("height")
-    }
-
-    pub fn set_height(&self, height: i32) {
-        self.set_property("height", height.to_value());
-    }
-
-    pub fn dpi(&self) -> f64 {
-        self.property::<f64>("dpi")
-    }
-
-    pub fn set_dpi(&self, dpi: f64) {
-        self.set_property("dpi", dpi.to_value());
-    }
-
-    /// Width and height are independent of the orientation and should be updated when the orientation changes. Its use is mainly for printing and selecting predefined formats
-    pub fn orientation(&self) -> Orientation {
-        self.property::<Orientation>("orientation")
-    }
-
-    /// Width and height are independent of the orientation and should be updated when the orientation changes. Its use is mainly for printing and selecting predefined formats
-    pub fn set_orientation(&self, orientation: Orientation) {
-        self.set_property("orientation", orientation.to_value());
-    }
-
-    pub fn import_format(&self, format: &Self) {
-        self.set_width(format.width());
-        self.set_height(format.height());
-        self.set_dpi(format.dpi());
-        self.set_orientation(format.orientation());
-    }
-
-    pub fn draw(&self, sheet_bounds: AABB, snapshot: &Snapshot, zoom: f64) {
-        let border_radius = graphene::Size::new(0.0, 0.0);
-        let border_width = 2.0;
-
-        let mut offset_y = sheet_bounds.mins[1];
-
-        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-            sheet_bounds,
-            zoom,
-        )));
-
-        while offset_y < sheet_bounds.maxs[1] {
-            let border_bounds = graphene::Rect::new(
-                (sheet_bounds.mins[0] * zoom) as f32,
-                (offset_y * zoom) as f32 - border_width / 2.0,
-                (f64::from(self.width()) * zoom) as f32,
-                ((offset_y + f64::from(self.height())) * zoom) as f32 + border_width / 2.0,
-            );
-
-            let rounded_rect = gsk::RoundedRect::new(
-                border_bounds.clone(),
-                border_radius.clone(),
-                border_radius.clone(),
-                border_radius.clone(),
-                border_radius.clone(),
-            );
-            snapshot.append_border(
-                &rounded_rect,
-                &[border_width, border_width, border_width, border_width],
-                &[
-                    Self::FORMAT_BORDER_COLOR.to_gdk(),
-                    Self::FORMAT_BORDER_COLOR.to_gdk(),
-                    Self::FORMAT_BORDER_COLOR.to_gdk(),
-                    Self::FORMAT_BORDER_COLOR.to_gdk(),
-                ],
-            );
-            offset_y += f64::from(self.height());
-        }
-
-        snapshot.pop();
-    }
-
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.connect_notify_local(Some("dpi"), clone!(@weak appwindow => move |format, _pspec| {
-            appwindow.settings_panel().general_sheet_margin_unitentry().set_dpi(format.dpi());
-            appwindow.settings_panel().background_pattern_width_unitentry().set_dpi(format.dpi());
-            appwindow.settings_panel().background_pattern_height_unitentry().set_dpi(format.dpi());
-        }));
-    }
-}
-
-#[derive(
-    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
-)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
-#[enum_type(name = "PredefinedFormats")]
+#[enum_type(name = "PredefinedFormat")]
+#[serde(rename = "predefined_format")]
 pub enum PredefinedFormat {
     #[enum_value(name = "A6", nick = "a6")]
+    #[serde(rename = "a6")]
     A6 = 0,
     #[enum_value(name = "A5", nick = "a5")]
+    #[serde(rename = "a5")]
     A5,
     #[enum_value(name = "A4", nick = "a4")]
+    #[serde(rename = "a4")]
     A4,
     #[enum_value(name = "A3", nick = "a3")]
+    #[serde(rename = "a3")]
     A3,
     #[enum_value(name = "A2", nick = "a2")]
+    #[serde(rename = "a2")]
     A2,
     #[enum_value(name = "US Letter", nick = "us-letter")]
+    #[serde(rename = "us_letter")]
     UsLetter,
     #[enum_value(name = "US Legal", nick = "us-legal")]
+    #[serde(rename = "us_legal")]
     UsLegal,
     #[enum_value(name = "Custom", nick = "custom")]
+    #[serde(rename = "custom")]
     Custom,
 }
 
@@ -470,17 +42,19 @@ impl Default for PredefinedFormat {
     }
 }
 
-#[derive(
-    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
-)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
-#[enum_type(name = "MeasureUnits")]
+#[enum_type(name = "MeasureUnit")]
+#[serde(rename = "measure_unit")]
 pub enum MeasureUnit {
     #[enum_value(name = "Pixel", nick = "px")]
+    #[serde(rename = "px")]
     Px = 0,
     #[enum_value(name = "Millimeter", nick = "mm")]
+    #[serde(rename = "mm")]
     Mm,
     #[enum_value(name = "Centimeter", nick = "cm")]
+    #[serde(rename = "cm")]
     Cm,
 }
 
@@ -514,15 +88,16 @@ impl MeasureUnit {
     }
 }
 
-#[derive(
-    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
-)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
 #[enum_type(name = "FormatOrientation")]
+#[serde(rename = "orientation")]
 pub enum Orientation {
     #[enum_value(name = "Portrait", nick = "portrait")]
+    #[serde(rename = "portrait")]
     Portrait = 0,
     #[enum_value(name = "Landscape", nick = "landscape")]
+    #[serde(rename = "landscape")]
     Landscape,
 }
 
@@ -530,4 +105,99 @@ impl Default for Orientation {
     fn default() -> Self {
         Self::Portrait
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default, rename = "width")]
+pub struct Format {
+    #[serde(rename = "width")]
+    pub width: u32,
+    #[serde(rename = "height")]
+    pub height: u32,
+    #[serde(rename = "dpi")]
+    pub dpi: f64,
+    #[serde(rename = "orientation")]
+    pub orientation: Orientation,
+}
+
+impl Default for Format {
+    fn default() -> Self {
+        Self {
+            width: Self::WIDTH_DEFAULT,
+            height: Self::HEIGHT_DEFAULT,
+            dpi: Self::DPI_DEFAULT,
+            orientation: Orientation::default(),
+        }
+    }
+}
+
+impl Format {
+    pub const WIDTH_MIN: u32 = 1;
+    pub const WIDTH_MAX: u32 = 30000;
+    pub const WIDTH_DEFAULT: u32 = 1240;
+
+    pub const HEIGHT_MIN: u32 = 1;
+    pub const HEIGHT_MAX: u32 = 30000;
+    pub const HEIGHT_DEFAULT: u32 = 1754;
+
+    pub const DPI_MIN: f64 = 1.0;
+    pub const DPI_MAX: f64 = 5000.0;
+    pub const DPI_DEFAULT: f64 = 96.0;
+
+    pub const FORMAT_BORDER_COLOR: Color = Color {
+        r: 0.6,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
+    };
+
+    pub fn draw(&self, sheet_bounds: AABB, snapshot: &Snapshot, zoom: f64) {
+        let border_radius = graphene::Size::new(0.0, 0.0);
+        let border_width = 2.0;
+
+        let mut offset_y = sheet_bounds.mins[1];
+
+        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
+            sheet_bounds,
+            zoom,
+        )));
+
+        while offset_y < sheet_bounds.maxs[1] {
+            let border_bounds = graphene::Rect::new(
+                (sheet_bounds.mins[0] * zoom) as f32,
+                (offset_y * zoom) as f32 - border_width / 2.0,
+                (f64::from(self.width) * zoom) as f32,
+                ((offset_y + f64::from(self.height)) * zoom) as f32 + border_width / 2.0,
+            );
+
+            let rounded_rect = gsk::RoundedRect::new(
+                border_bounds.clone(),
+                border_radius.clone(),
+                border_radius.clone(),
+                border_radius.clone(),
+                border_radius.clone(),
+            );
+            snapshot.append_border(
+                &rounded_rect,
+                &[border_width, border_width, border_width, border_width],
+                &[
+                    Self::FORMAT_BORDER_COLOR.to_gdk(),
+                    Self::FORMAT_BORDER_COLOR.to_gdk(),
+                    Self::FORMAT_BORDER_COLOR.to_gdk(),
+                    Self::FORMAT_BORDER_COLOR.to_gdk(),
+                ],
+            );
+            offset_y += f64::from(self.height);
+        }
+
+        snapshot.pop();
+    }
+    /*
+    pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.connect_notify_local(Some("dpi"), clone!(@weak appwindow => move |format, _pspec| {
+            appwindow.settings_panel().general_sheet_margin_unitentry().set_dpi(format.dpi());
+            appwindow.settings_panel().background_pattern_width_unitentry().set_dpi(format.dpi());
+            appwindow.settings_panel().background_pattern_height_unitentry().set_dpi(format.dpi());
+        }));
+    } */
 }

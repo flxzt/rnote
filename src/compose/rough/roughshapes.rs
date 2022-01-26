@@ -1,8 +1,14 @@
-use super::roughoptions::Options;
+use super::roughoptions::RoughOptions;
 use rand::Rng;
 use svg::node::element::path;
 
-fn offset<R>(min: f64, max: f64, options: &Options, rng: &mut R, roughness_gain: Option<f64>) -> f64
+fn offset<R>(
+    min: f64,
+    max: f64,
+    options: &RoughOptions,
+    rng: &mut R,
+    roughness_gain: Option<f64>,
+) -> f64
 where
     R: Rng + ?Sized,
 {
@@ -10,7 +16,7 @@ where
     options.roughness * roughness_gain * (rng.gen_range(0.0..1.0) * (max - min) + min)
 }
 
-fn offset_opt<R>(x: f64, options: &Options, rng: &mut R, roughness_gain: Option<f64>) -> f64
+fn offset_opt<R>(x: f64, options: &RoughOptions, rng: &mut R, roughness_gain: Option<f64>) -> f64
 where
     R: Rng + ?Sized,
 {
@@ -20,10 +26,10 @@ where
 pub(super) fn line<R>(
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,
-    options: &Options,
-    rng: &mut R,
     move_to: bool,
     overlay: bool,
+    options: &RoughOptions,
+    rng: &mut R,
 ) -> Vec<path::Command>
 where
     R: Rng + ?Sized,
@@ -181,18 +187,18 @@ where
 pub(super) fn doubleline<R>(
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,
-    options: &Options,
+    options: &RoughOptions,
     rng: &mut R,
 ) -> Vec<path::Command>
 where
     R: Rng + ?Sized,
 {
-    let mut commands = line(start, end, options, rng, true, false);
+    let mut commands = line(start, end, true, false, options, rng);
 
     let mut second_options = options.clone();
     second_options.seed = Some(rng.gen::<u64>());
 
-    commands.append(&mut line(start, end, &mut second_options, rng, true, true));
+    commands.append(&mut line(start, end, true, true, &second_options, rng));
 
     commands
 }
@@ -202,7 +208,7 @@ pub(super) fn cubic_bezier<R>(
     first: na::Vector2<f64>,
     second: na::Vector2<f64>,
     end: na::Vector2<f64>,
-    options: &Options,
+    options: &RoughOptions,
     rng: &mut R,
 ) -> Vec<path::Command>
 where
@@ -272,7 +278,7 @@ where
 
 pub(super) fn fill_polygon<R>(
     points: Vec<na::Vector2<f64>>,
-    _options: &Options,
+    _options: &RoughOptions,
     _rng: &mut R,
 ) -> Vec<path::Command>
 where
@@ -302,7 +308,7 @@ pub(super) fn ellipse<R>(
     center: na::Vector2<f64>,
     radius_x: f64,
     radius_y: f64,
-    options: &Options,
+    options: &RoughOptions,
     rng: &mut R,
 ) -> EllipseResult
 where
@@ -356,7 +362,7 @@ where
 pub(super) fn curve<R>(
     points: Vec<na::Vector2<f64>>,
     close_point: Option<na::Vector2<f64>>,
-    options: &Options,
+    options: &RoughOptions,
     rng: &mut R,
 ) -> Vec<path::Command>
 where
@@ -445,7 +451,7 @@ pub(super) fn compute_ellipse_points<R>(
     radius_y: f64,
     offset: f64,
     overlap: f64,
-    options: &Options,
+    options: &RoughOptions,
     rng: &mut R,
 ) -> (Vec<na::Vector2<f64>>, Vec<na::Vector2<f64>>)
 where

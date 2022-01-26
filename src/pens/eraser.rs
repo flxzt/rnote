@@ -1,17 +1,23 @@
 use std::collections::VecDeque;
+use std::sync::{Arc, RwLock};
 
 use crate::compose::{color::Color, geometry};
+use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
 
 use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::AABB;
+use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default, rename = "eraser")]
 pub struct Eraser {
+    #[serde(rename = "width")]
     width: f64,
+    #[serde(skip)]
     current_input: Option<InputData>,
 }
 
@@ -25,43 +31,50 @@ impl Default for Eraser {
 }
 
 impl PenBehaviour for Eraser {
-    fn begin(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    fn begin(mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .set_cursor(gdk::Cursor::from_name("none", None).as_ref());
 
-        self.current_input = data_entries.pop_back();
+        appwindow.canvas().pens().borrow_mut().eraser.current_input = data_entries.pop_back();
     }
 
-    fn motion(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
-        self.current_input = data_entries.pop_back();
+    fn motion(mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+        appwindow.canvas().pens().borrow_mut().eraser.current_input = data_entries.pop_back();
 
         appwindow
             .canvas()
             .sheet()
-            .strokes_state()
             .borrow_mut()
-            .trash_colliding_strokes(self, Some(appwindow.canvas().viewport_in_sheet_coords()));
-
-        if appwindow.canvas().sheet().resize_endless() {
-            appwindow.canvas().update_background_rendernode(false);
-        }
+            .strokes_state
+            .trash_colliding_strokes(
+                &appwindow.canvas().pens().borrow().eraser,
+                Some(appwindow.canvas().viewport_in_sheet_coords()),
+            );
     }
 
-    fn end(&mut self, _data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    fn end(_data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .set_cursor(Some(&appwindow.canvas().cursor()));
 
-        self.current_input = None;
+        // Reset to previous if tmperaser was enabled
+        gtk4::prelude::ActionGroupExt::activate_action(
+            appwindow,
+            "tmperaser",
+            Some(&false.to_variant()),
+        );
+
+        appwindow.canvas().pens().borrow_mut().eraser.current_input = None;
+        appwindow.canvas().resize_endless();
     }
 
     fn draw(
         &self,
         _sheet_bounds: AABB,
-        _renderer: &crate::render::Renderer,
         zoom: f64,
         snapshot: &Snapshot,
+        _renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         if let Some(bounds) = self.gen_bounds(zoom) {
             let border_color = Self::OUTLINE_COLOR.to_gdk();

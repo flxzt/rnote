@@ -1,14 +1,18 @@
 use std::ops::Deref;
 
 use anyhow::Context;
-use gtk4::{gdk, glib, gsk, prelude::*, Native, Snapshot, Widget};
+use gtk4::{gdk, gio, glib, gsk, prelude::*, Native, Snapshot, Widget};
 use p2d::bounding_volume::AABB;
 
 use crate::compose::{self, geometry};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy, glib::Enum)]
+#[repr(u32)]
+#[enum_type(name = "RendererBackend")]
 pub enum RendererBackend {
+    #[enum_value(name = "Librsvg", nick = "librsvg")]
     Librsvg,
+    #[enum_value(name = "Resvg", nick = "resvg")]
     Resvg,
 }
 
@@ -134,32 +138,34 @@ impl Renderer {
 
         assert_bounds(bounds)?;
 
-        /*         match self.backend {
+        match self.backend {
             RendererBackend::Librsvg => self.gen_image_librsvg(zoom, svgs, bounds),
             RendererBackend::Resvg => self.gen_image_resvg(zoom, svgs, bounds),
-        } */
-        self.gen_image_resvg(zoom, svgs, bounds)
+        }
     }
-    /*
+
     fn gen_image_librsvg(
         &self,
         zoom: f64,
         svgs: &[Svg],
         bounds: AABB,
     ) -> Result<Option<Image>, anyhow::Error> {
-        let width_scaled = ((bounds.extents()[0]) * zoom).round() as i32;
-        let height_scaled = ((bounds.extents()[1]) * zoom).round() as i32;
+        let width_scaled = ((bounds.extents()[0]) * zoom).round() as u32;
+        let height_scaled = ((bounds.extents()[1]) * zoom).round() as u32;
 
-        let mut surface =
-            cairo::ImageSurface::create(cairo::Format::ARgb32, width_scaled, height_scaled)
-                .map_err(|e| {
-                    anyhow::anyhow!(
-                        "create ImageSurface with dimensions ({}, {}) failed, {}",
-                        width_scaled,
-                        height_scaled,
-                        e
-                    )
-                })?;
+        let mut surface = cairo::ImageSurface::create(
+            cairo::Format::ARgb32,
+            width_scaled as i32,
+            height_scaled as i32,
+        )
+        .map_err(|e| {
+            anyhow::anyhow!(
+                "create ImageSurface with dimensions ({}, {}) failed, {}",
+                width_scaled,
+                height_scaled,
+                e
+            )
+        })?;
 
         let mut svg_data = svgs
             .iter()
@@ -214,11 +220,11 @@ impl Renderer {
         Ok(Some(Image {
             data,
             bounds,
-            data_width: width_scaled,
-            data_height: height_scaled,
+            pixel_width: width_scaled,
+            pixel_height: height_scaled,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
         }))
-    } */
+    }
 
     fn gen_image_resvg(
         &self,
@@ -367,7 +373,6 @@ pub fn rendernode_to_texture(
     Ok(None)
 }
 
-/*
 pub fn draw_svgs_to_cairo_context(
     zoom: f64,
     svgs: &[Svg],
@@ -410,15 +415,12 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
     let caironode_bounds = geometry::aabb_scale(geometry::aabb_ceil(svg.bounds), zoom);
 
     let new_caironode = gsk::CairoNode::new(&geometry::aabb_to_graphene_rect(caironode_bounds));
-    let cx = new_caironode
-        .draw_context()
-        .context("failed to get cairo draw_context() from new_caironode")?;
+    let cx = new_caironode.draw_context();
 
     draw_svgs_to_cairo_context(zoom, &[svg.to_owned()], caironode_bounds, &cx)?;
 
     Ok(new_caironode)
 }
- */
 
 pub fn assert_bounds(bounds: AABB) -> Result<(), anyhow::Error> {
     if bounds.extents()[0] < 0.0

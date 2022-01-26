@@ -15,7 +15,7 @@ use crate::compose::geometry;
 use crate::compose::transformable::Transformable;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::tools::DragProximityTool;
-use crate::render;
+use crate::render::{self, Renderer};
 use crate::strokes::bitmapimage::BitmapImage;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokes::vectorimage::VectorImage;
@@ -26,6 +26,21 @@ use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
+
+/*
+StrokesState implements a Entity - Component - System pattern.
+The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
+    * 'strokes': Hold geometric data. These components are special in that they are the primary map. A new stroke must have this component. (could also be called geometric components)
+    * 'trash_components': Hold state wether the strokes are trashed
+    * 'selection_components': Hold state wether the strokes are selected
+    * 'chrono_components': Hold state about the time, chronological ordering
+    * 'render_components': Hold state about the current rendering of the strokes.
+
+The systems are implemented as methods on StrokesState, loosely categorized to the different components (but often modify others as well).
+Most systems take a key or a slice of keys, and iterate with them over the different components.
+There also is a different category of methods which return filtered keys, e.g. `.keys_sorted_chrono` returns the keys in chronological ordering,
+    `.stoke_keys_in_order_rendering` returns keys in the order which they should be rendered.
+*/
 
 #[derive(Debug, Clone)]
 pub enum StateTask {
@@ -59,8 +74,8 @@ slotmap::new_key_type! {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "strokes_state")]
 pub struct StrokesState {
-    #[serde(rename = "strokes")]
     // Components
+    #[serde(rename = "strokes")]
     strokes: HopSlotMap<StrokeKey, StrokeStyle>,
     #[serde(rename = "trash_components")]
     trash_components: SecondaryMap<StrokeKey, TrashComponent>,
@@ -76,10 +91,6 @@ pub struct StrokesState {
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
 
-    #[serde(skip)]
-    pub zoom: f64, // changes with the canvas zoom
-    #[serde(skip)]
-    pub renderer: Arc<RwLock<render::Renderer>>,
     #[serde(skip)]
     pub tasks_tx: Option<glib::Sender<StateTask>>,
     #[serde(skip)]
@@ -105,8 +116,6 @@ impl Default for StrokesState {
 
             chrono_counter: 0,
 
-            zoom: 1.0,
-            renderer: Arc::new(RwLock::new(render::Renderer::default())),
             tasks_tx: Some(render_tx),
             tasks_rx: Some(render_rx),
             channel_source: None,
@@ -120,10 +129,11 @@ impl StrokesState {
         Self::default()
     }
 
-    pub fn init(&mut self, appwindow: &RnoteAppWindow) {
+    /// No self as parameter to avoid already borrowed errors!
+    pub fn init(appwindow: &RnoteAppWindow) {
         let main_cx = glib::MainContext::default();
 
-        let source_id = self.tasks_rx.take().unwrap().attach(
+        let source_id = appwindow.canvas().sheet().borrow_mut().strokes_state.tasks_rx.take().unwrap().attach(
             Some(&main_cx),
             clone!(@weak appwindow => @default-return glib::Continue(false), move |render_task| {
                 match render_task {
@@ -131,9 +141,9 @@ impl StrokesState {
                         appwindow
                             .canvas()
                             .sheet()
-                            .strokes_state()
                             .borrow_mut()
-                            .regenerate_rendering_with_images(key, images);
+                            .strokes_state
+                            .regenerate_rendering_with_images(key, images, appwindow.canvas().zoom());
 
                         appwindow.canvas().queue_draw();
                         appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
@@ -142,9 +152,9 @@ impl StrokesState {
                         appwindow
                             .canvas()
                             .sheet()
-                            .strokes_state()
                             .borrow_mut()
-                            .append_images_to_rendering(key, images);
+                            .strokes_state
+                            .append_images_to_rendering(key, images, appwindow.canvas().zoom());
 
                         appwindow.canvas().queue_draw();
                         appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
@@ -152,65 +162,90 @@ impl StrokesState {
                     StateTask::InsertStroke { stroke } => {
                         match stroke {
                             StrokeStyle::MarkerStroke(markerstroke) => {
-                                appwindow.canvas().sheet()
-                                    .strokes_state()
+                                let inserted = appwindow.canvas().sheet()
                                     .borrow_mut()
-                                    .insert_stroke_threaded(StrokeStyle::MarkerStroke(markerstroke));
+                                    .strokes_state
+                                    .insert_stroke(StrokeStyle::MarkerStroke(markerstroke));
+
+                                appwindow.canvas().sheet()
+                                    .borrow_mut()
+                                    .strokes_state
+                                    .regenerate_rendering_for_stroke_threaded(inserted, appwindow.canvas().renderer(), appwindow.canvas().zoom());
                             }
                             StrokeStyle::BrushStroke(brushstroke) => {
-                                appwindow.canvas().sheet()
-                                    .strokes_state()
+                                let inserted = appwindow.canvas().sheet()
                                     .borrow_mut()
-                                    .insert_stroke_threaded(StrokeStyle::BrushStroke(brushstroke));
+                                    .strokes_state
+                                    .insert_stroke(StrokeStyle::BrushStroke(brushstroke));
+
+                                appwindow.canvas().sheet()
+                                    .borrow_mut()
+                                    .strokes_state
+                                    .regenerate_rendering_for_stroke_threaded(inserted, appwindow.canvas().renderer(), appwindow.canvas().zoom());
                             }
                             StrokeStyle::ShapeStroke(shapestroke) => {
-                                appwindow.canvas().sheet()
-                                    .strokes_state()
+                                let inserted = appwindow.canvas().sheet()
                                     .borrow_mut()
-                                    .insert_stroke_threaded(StrokeStyle::ShapeStroke(shapestroke));
+                                    .strokes_state
+                                    .insert_stroke(StrokeStyle::ShapeStroke(shapestroke));
+
+                                appwindow.canvas().sheet()
+                                    .borrow_mut()
+                                    .strokes_state
+                                    .regenerate_rendering_for_stroke_threaded(inserted, appwindow.canvas().renderer(), appwindow.canvas().zoom());
                             }
                             StrokeStyle::VectorImage(vectorimage) => {
                                 let inserted = appwindow.canvas().sheet()
-                                    .strokes_state()
                                     .borrow_mut()
-                                    .insert_stroke_threaded(StrokeStyle::VectorImage(vectorimage));
+                                    .strokes_state
+                                    .insert_stroke(StrokeStyle::VectorImage(vectorimage));
                                 appwindow.canvas().sheet()
-                                    .strokes_state()
                                     .borrow_mut()
+                                    .strokes_state
                                     .set_selected(inserted, true);
+
+                                appwindow.canvas().sheet()
+                                    .borrow_mut()
+                                    .strokes_state
+                                    .regenerate_rendering_for_stroke_threaded(inserted, appwindow.canvas().renderer(), appwindow.canvas().zoom());
 
                                 appwindow.mainheader().selector_toggle().set_active(true);
 
-                                appwindow.canvas().sheet().resize_to_format();
-                                appwindow.canvas().update_background_rendernode(true);
+                                appwindow.canvas().resize_to_format();
                                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                             }
                             StrokeStyle::BitmapImage(bitmapimage) => {
                                 let inserted = appwindow
                                     .canvas()
                                     .sheet()
-                                    .strokes_state()
                                     .borrow_mut()
-                                    .insert_stroke_threaded(StrokeStyle::BitmapImage(bitmapimage));
+                                    .strokes_state
+                                    .insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
 
                                 appwindow.canvas().sheet()
-                                    .strokes_state()
                                     .borrow_mut()
+                                    .strokes_state
                                     .set_selected(inserted, true);
+
+                                appwindow.canvas().sheet()
+                                    .borrow_mut()
+                                    .strokes_state
+                                    .regenerate_rendering_for_stroke_threaded(inserted, appwindow.canvas().renderer(), appwindow.canvas().zoom());
 
                                 appwindow.mainheader().selector_toggle().set_active(true);
 
-                                appwindow.canvas().sheet().resize_to_format();
-                                appwindow.canvas().update_background_rendernode(false);
+                                appwindow.canvas().resize_to_format();
                                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                             }
                         }
-
                     }
                     StateTask::Quit => {
                         return glib::Continue(false);
                     }
                 }
+
+                appwindow.canvas().queue_resize();
+                appwindow.canvas().queue_draw();
 
                 glib::Continue(true)
             }),
@@ -220,7 +255,13 @@ impl StrokesState {
             log::error!("find_source_by_id() in StrokeState init() failed.");
             panic!();
         });
-        self.channel_source.replace(source);
+        appwindow
+            .canvas()
+            .sheet()
+            .borrow_mut()
+            .strokes_state
+            .channel_source
+            .replace(source);
     }
 
     pub fn insert_stroke(&mut self, stroke: StrokeStyle) -> StrokeKey {
@@ -235,23 +276,10 @@ impl StrokesState {
         self.chrono_components
             .insert(key, ChronoComponent::new(self.chrono_counter));
 
-        self.regenerate_rendering_for_stroke(key);
-        key
-    }
-
-    pub fn insert_stroke_threaded(&mut self, stroke: StrokeStyle) -> StrokeKey {
-        let key = self.strokes.insert(stroke);
-        self.chrono_counter += 1;
-
-        self.trash_components.insert(key, TrashComponent::default());
-        self.selection_components
-            .insert(key, SelectionComponent::default());
-        self.render_components
-            .insert(key, RenderComponent::default());
-        self.chrono_components
-            .insert(key, ChronoComponent::new(self.chrono_counter));
-
-        self.regenerate_rendering_for_stroke_threaded(key);
+        // set flag for rendering regeneration
+        if let Some(render_comp) = self.render_components.get_mut(key) {
+            render_comp.regenerate_flag = true;
+        }
         key
     }
 
@@ -265,7 +293,13 @@ impl StrokesState {
     }
 
     /// returns key to last stroke
-    pub fn add_to_stroke(&mut self, key: StrokeKey, element: Element) -> Option<StrokeKey> {
+    pub fn add_to_stroke(
+        &mut self,
+        key: StrokeKey,
+        element: Element,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) -> Option<StrokeKey> {
         match self.strokes.get_mut(key).unwrap() {
             StrokeStyle::MarkerStroke(ref mut markerstroke) => {
                 markerstroke.push_elem(element);
@@ -280,7 +314,7 @@ impl StrokesState {
             StrokeStyle::BitmapImage(_bitmapimage) => {}
         }
 
-        self.append_rendering_new_elem_threaded_fifo(key);
+        self.append_rendering_new_elem_threaded_fifo(key, renderer, zoom);
         Some(key)
     }
 
@@ -334,14 +368,17 @@ impl StrokesState {
             .collect::<Vec<StrokeStyle>>()
     }
 
-    pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: glib::Bytes) {
-        let renderer = self.renderer.clone();
-
+    pub fn insert_vectorimage_bytes_threaded(
+        &mut self,
+        pos: na::Vector2<f64>,
+        bytes: glib::Bytes,
+        renderer: Arc<RwLock<Renderer>>,
+    ) {
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {
                 match String::from_utf8(bytes.to_vec()) {
                     Ok(svg) => {
-                        match VectorImage::import_from_svg_data(svg.as_str(), pos, None, &renderer.read().unwrap()) {
+                        match VectorImage::import_from_svg_data(svg.as_str(), pos, None, renderer) {
                             Ok(vectorimage) => {
                                 let vectorimage = StrokeStyle::VectorImage(vectorimage);
 
@@ -390,12 +427,11 @@ impl StrokesState {
         pos: na::Vector2<f64>,
         page_width: Option<i32>,
         bytes: glib::Bytes,
+        renderer: Arc<RwLock<Renderer>>,
     ) {
-        let renderer = self.renderer.clone();
-
         if let Some(tasks_tx) = self.tasks_tx.clone() {
             self.threadpool.spawn(move || {
-                match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width, &renderer.read().unwrap()) {
+                match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width, renderer) {
                     Ok(images) => {
                         for image in images {
                             let image = StrokeStyle::VectorImage(image);
@@ -452,8 +488,6 @@ impl StrokesState {
         self.selection_components = strokes_state.selection_components.clone();
         self.chrono_components = strokes_state.chrono_components.clone();
         self.render_components = strokes_state.render_components.clone();
-
-        self.regenerate_strokes_current_view_threaded(None, true);
     }
 
     pub fn update_geometry_for_stroke(&mut self, key: StrokeKey) {
@@ -474,6 +508,11 @@ impl StrokesState {
                 StrokeStyle::BitmapImage(ref mut bitmapimage) => {
                     bitmapimage.update_geometry();
                 }
+            }
+
+            // set flag for rendering regeneration
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                render_comp.regenerate_flag = true;
             }
         } else {
             log::debug!(
@@ -499,95 +538,8 @@ impl StrokesState {
         });
     }
 
-    pub fn regenerate_strokes_current_view(
-        &mut self,
-        viewport: Option<AABB>,
-        force_regenerate: bool,
-    ) {
-        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
-
-        keys.iter().for_each(|&key| {
-            self.update_geometry_for_stroke(key);
-
-            if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(key), self.render_components.get_mut(key))
-            {
-                // skip if stroke is not in viewport or does not need regeneration
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return;
-                    }
-                }
-                if !force_regenerate && !render_comp.regenerate_flag {
-                    return;
-                }
-
-                match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
-                    Ok(Some(image)) => {
-                        let images = vec![image];
-
-                        match render::images_to_rendernode(&images, self.zoom) {
-                            Ok(Some(rendernode)) => {
-                                render_comp.rendernode = Some(rendernode);
-                                render_comp.regenerate_flag = false;
-                                render_comp.images = images;
-                            }
-                            Ok(None) => {}
-                            Err(e) => log::error!("stroke.gen_images() failed in regenerate_stroke_current_view() with Err {}", e),
-                        }
-                    }
-                    Ok(None) => {}
-                    Err(e) => {
-                        log::debug!(
-                            "gen_image() failed in regenerate_rendering_current_view() for stroke with key: {:?}, with Err {}",
-                            key,
-                            e
-                        )
-                    }
-                }
-            } else {
-                log::debug!(
-                    "get stroke, render_comp returned None in regenerate_rendering_current_view() for stroke with key {:?}",
-                    key
-                );
-            }
-        })
-    }
-
-    pub fn regenerate_strokes_current_view_threaded(
-        &mut self,
-        viewport: Option<AABB>,
-        force_regenerate: bool,
-    ) {
-        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
-
-        keys.iter().for_each(|&key| {
-            if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(key), self.render_components.get_mut(key))
-            {
-                // skip if stroke is not in viewport or does not need regeneration
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return;
-                    }
-                }
-                if !force_regenerate && !render_comp.regenerate_flag {
-                    return;
-                }
-
-                self.update_geometry_for_stroke(key);
-                self.regenerate_rendering_for_stroke_threaded(key);
-            } else {
-                log::debug!(
-                    "get stroke, render_comp returned None in regenerate_rendering_current_view_threaded() for stroke with key {:?}",
-                    key
-                );
-            }
-        })
-    }
-
     /// Calculates the height needed to fit all strokes
-    pub fn calc_height(&self) -> i32 {
+    pub fn calc_height(&self) -> u32 {
         let new_height = if let Some(stroke) = self
             .strokes
             .iter()
@@ -599,10 +551,10 @@ impl StrokesState {
                 }
                 None
             })
-            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
+            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as u32)
         {
             // max_by_key() returns the element, so we need to extract the height again
-            stroke.bounds().maxs[1].round() as i32
+            stroke.bounds().maxs[1].round() as u32
         } else {
             0
         };
@@ -663,7 +615,12 @@ impl StrokesState {
     }
 
     /// Translate the strokes with the offset
-    pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {
+    pub fn translate_strokes(
+        &mut self,
+        strokes: &[StrokeKey],
+        offset: na::Vector2<f64>,
+        zoom: f64,
+    ) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 stroke.translate(offset);
@@ -673,7 +630,7 @@ impl StrokesState {
                         image.bounds = geometry::aabb_translate(image.bounds, offset);
                     }
 
-                    match render::images_to_rendernode(&render_comp.images, self.zoom) {
+                    match render::images_to_rendernode(&render_comp.images, zoom) {
                         Ok(Some(rendernode)) => {
                             render_comp.rendernode = Some(rendernode);
                         }
@@ -689,17 +646,32 @@ impl StrokesState {
     }
 
     /// Rotates the stroke with angle (rad) around the center
-    pub fn rotate_strokes(&mut self, strokes: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
+    pub fn rotate_strokes(
+        &mut self,
+        strokes: &[StrokeKey],
+        angle: f64,
+        center: na::Point2<f64>,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 stroke.rotate(angle, center);
-                self.regenerate_rendering_for_stroke(key)
+
+                self.regenerate_rendering_for_stroke(key, Arc::clone(&renderer), zoom);
             }
         });
     }
 
     // Resizes the strokes to new bounds
-    pub fn resize_strokes(&mut self, strokes: &[StrokeKey], old_bounds: AABB, new_bounds: AABB) {
+    pub fn resize_strokes(
+        &mut self,
+        strokes: &[StrokeKey],
+        old_bounds: AABB,
+        new_bounds: AABB,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 let old_stroke_bounds = stroke.bounds();
@@ -717,7 +689,7 @@ impl StrokesState {
                 stroke.translate(offset);
                 stroke.scale(scale);
 
-                self.regenerate_rendering_for_stroke(key);
+                self.regenerate_rendering_for_stroke(key, Arc::clone(&renderer), zoom);
             }
         });
     }
@@ -736,7 +708,12 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn drag_strokes_proximity(&mut self, drag_proximity_tool: &DragProximityTool) {
+    pub fn drag_strokes_proximity(
+        &mut self,
+        drag_proximity_tool: &DragProximityTool,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
         let sphere = BoundingSphere {
             center: na::Point2::from(drag_proximity_tool.pos),
             radius: drag_proximity_tool.radius,
@@ -810,7 +787,7 @@ impl StrokesState {
             .iter()
             .for_each(|&key| {
                 self.update_geometry_for_stroke(key);
-                self.regenerate_rendering_for_stroke_threaded(key);
-            })
+                self.regenerate_rendering_for_stroke(key, Arc::clone(&renderer), zoom);
+            });
     }
 }

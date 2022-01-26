@@ -1,15 +1,9 @@
 mod imp {
-    use gtk4::{
-        glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
-    };
+    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, SpinButton};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
     pub struct EraserPage {
-        #[template_child]
-        pub width_resetbutton: TemplateChild<Button>,
-        #[template_child]
-        pub width_adj: TemplateChild<Adjustment>,
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
     }
@@ -47,8 +41,7 @@ mod imp {
 use crate::pens::eraser::Eraser;
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{
-    glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
-    SpinButton, Widget,
+    glib, glib::clone, subclass::prelude::*,  Orientable, SpinButton, Widget,
 };
 
 glib::wrapper! {
@@ -67,37 +60,24 @@ impl EraserPage {
         glib::Object::new(&[]).expect("Failed to create EraserPage")
     }
 
-    pub fn width_resetbutton(&self) -> Button {
-        imp::EraserPage::from_instance(self).width_resetbutton.get()
-    }
-
-    pub fn width_adj(&self) -> Adjustment {
-        imp::EraserPage::from_instance(self).width_adj.get()
-    }
-
     pub fn width_spinbutton(&self) -> SpinButton {
         imp::EraserPage::from_instance(self).width_spinbutton.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let width_adj = self.width_adj();
+        self.width_spinbutton().set_increments(1.0, 5.0);
+        self.width_spinbutton()
+            .set_range(Eraser::WIDTH_MIN, Eraser::WIDTH_MAX);
+        self.width_spinbutton().set_value(Eraser::WIDTH_DEFAULT);
 
-        self.width_adj().set_lower(Eraser::WIDTH_MIN);
-
-        self.width_adj().set_upper(Eraser::WIDTH_MAX);
-
-        self.width_adj().set_value(Eraser::WIDTH_DEFAULT);
-
-        self.width_resetbutton().connect_clicked(
-            clone!(@weak width_adj, @weak appwindow => move |_| {
-                appwindow.canvas().pens().borrow_mut().eraser.set_width(Eraser::WIDTH_DEFAULT);
-                width_adj.set_value(Eraser::WIDTH_DEFAULT);
+        self.width_spinbutton().connect_value_changed(
+            clone!(@weak appwindow => move |width_spinbutton| {
+                appwindow.canvas().pens().borrow_mut().eraser.set_width(width_spinbutton.value());
             }),
         );
+    }
 
-        self.width_adj()
-            .connect_value_changed(clone!(@weak appwindow => move |width_adj| {
-                appwindow.canvas().pens().borrow_mut().eraser.set_width(width_adj.value());
-            }));
+    pub fn load_from_eraser(&self, eraser: Eraser) {
+        self.width_spinbutton().set_value(eraser.width());
     }
 }

@@ -1,17 +1,11 @@
 mod imp {
     use crate::ui::colorpicker::ColorPicker;
-    use gtk4::{
-        glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
-    };
+    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, SpinButton};
     use gtk4::{Image, ListBox, MenuButton, Popover};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
     pub struct BrushPage {
-        #[template_child]
-        pub width_resetbutton: TemplateChild<Button>,
-        #[template_child]
-        pub width_adj: TemplateChild<Adjustment>,
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -27,17 +21,15 @@ mod imp {
         #[template_child]
         pub brushstyle_textured_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub brushstyle_experimental_row: TemplateChild<adw::ActionRow>,
-        #[template_child]
         pub styleconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub styleconfig_popover: TemplateChild<Popover>,
         #[template_child]
-        pub texturedstyle_density_adj: TemplateChild<Adjustment>,
+        pub texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub texturedstyle_radius_x_adj: TemplateChild<Adjustment>,
+        pub texturedstyle_radius_x_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub texturedstyle_radius_y_adj: TemplateChild<Adjustment>,
+        pub texturedstyle_radius_y_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub texturedstyle_distribution_row: TemplateChild<adw::ComboRow>,
     }
@@ -74,15 +66,13 @@ mod imp {
 
 use crate::compose::color::Color;
 use crate::compose::textured::{TexturedDotsDistribution, TexturedOptions};
-use crate::pens::brush::Brush;
+use crate::pens::brush::{Brush};
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use adw::prelude::*;
 use gtk4::{
     gdk, Accessible, Actionable, Buildable, ConstraintTarget, Image, ListBox, MenuButton, Popover,
 };
-use gtk4::{
-    glib, glib::clone, subclass::prelude::*, Adjustment, Button, Orientable, SpinButton, Widget,
-};
+use gtk4::{glib, glib::clone, subclass::prelude::*, Orientable, SpinButton, Widget};
 
 glib::wrapper! {
     pub struct BrushPage(ObjectSubclass<imp::BrushPage>)
@@ -99,14 +89,6 @@ impl Default for BrushPage {
 impl BrushPage {
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("Failed to create BrushPage")
-    }
-
-    pub fn width_resetbutton(&self) -> Button {
-        imp::BrushPage::from_instance(self).width_resetbutton.get()
-    }
-
-    pub fn width_adj(&self) -> Adjustment {
-        imp::BrushPage::from_instance(self).width_adj.get()
     }
 
     pub fn width_spinbutton(&self) -> SpinButton {
@@ -140,12 +122,6 @@ impl BrushPage {
     pub fn brushstyle_textured_row(&self) -> adw::ActionRow {
         imp::BrushPage::from_instance(self)
             .brushstyle_textured_row
-            .get()
-    }
-
-    pub fn brushstyle_experimental_row(&self) -> adw::ActionRow {
-        imp::BrushPage::from_instance(self)
-            .brushstyle_experimental_row
             .get()
     }
 
@@ -183,30 +159,23 @@ impl BrushPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let width_adj = self.width_adj();
-
-        self.width_adj().set_lower(Brush::WIDTH_MIN);
-        self.width_adj().set_upper(Brush::WIDTH_MAX);
-        self.width_adj().set_value(Brush::WIDTH_DEFAULT);
+        self.width_spinbutton().set_increments(0.1, 2.0);
+        self.width_spinbutton()
+            .set_range(Brush::WIDTH_MIN, Brush::WIDTH_MAX);
+        // Must be after set_range() !
+        self.width_spinbutton().set_value(Brush::WIDTH_DEFAULT);
 
         self.colorpicker().connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color");
-                appwindow.canvas().pens().borrow_mut().brush.set_color(Color::from(color));
+                appwindow.canvas().pens().borrow_mut().brush.set_color(Some(Color::from(color)));
             }),
         );
 
-        self.width_resetbutton().connect_clicked(
-            clone!(@weak width_adj, @weak appwindow => move |_| {
-                appwindow.canvas().pens().borrow_mut().brush.set_width(Brush::WIDTH_DEFAULT);
-                width_adj.set_value(Brush::WIDTH_DEFAULT);
-            }),
-        );
-
-        self.width_adj().connect_value_changed(
-            clone!(@weak appwindow => move |brush_widthscale_adj| {
-                appwindow.canvas().pens().borrow_mut().brush.set_width(brush_widthscale_adj.value());
+        self.width_spinbutton().connect_value_changed(
+            clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
+                appwindow.canvas().pens().borrow_mut().brush.set_width(brush_widthscale_spinbutton.value());
             }),
         );
 
@@ -226,12 +195,6 @@ impl BrushPage {
                             brushpage.brushstyle_image().set_icon_name(Some("pen-brush-style-textured-symbolic"));
                             brushpage.styleconfig_menubutton().set_sensitive(true);
                         }
-                        // Experimental
-                        2 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "brush-style", Some(&"experimental".to_variant()));
-                            brushpage.brushstyle_image().set_icon_name(Some("pen-brush-style-experimental-symbolic"));
-                            brushpage.styleconfig_menubutton().set_sensitive(false);
-                        }
                         _ => {}
                     }
                 }
@@ -241,71 +204,71 @@ impl BrushPage {
         // Textured style
         // Density
         self.imp()
-            .texturedstyle_density_adj
+            .texturedstyle_density_spinbutton
             .get()
-            .set_lower(TexturedOptions::DENSITY_MIN);
+            .set_increments(0.1, 2.0);
         self.imp()
-            .texturedstyle_density_adj
+            .texturedstyle_density_spinbutton
             .get()
-            .set_upper(TexturedOptions::DENSITY_MAX);
+            .set_range(TexturedOptions::DENSITY_MIN, TexturedOptions::DENSITY_MAX);
         self.imp()
-            .texturedstyle_density_adj
+            .texturedstyle_density_spinbutton
             .get()
             .set_value(TexturedOptions::DENSITY_DEFAULT);
 
-        self.imp().texturedstyle_density_adj.get().connect_value_changed(
+        self.imp().texturedstyle_density_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
-                appwindow.canvas().pens().borrow_mut().brush.textured_config.set_density(texturedstyle_density_adj.value());
+                appwindow.canvas().pens().borrow_mut().brush.textured_options.set_density(texturedstyle_density_adj.value());
             }),
         );
 
         // Radius X
         self.imp()
-            .texturedstyle_radius_x_adj
+            .texturedstyle_radius_x_spinbutton
             .get()
-            .set_lower(TexturedOptions::RADII_MIN[0]);
+            .set_increments(0.1, 2.0);
         self.imp()
-            .texturedstyle_radius_x_adj
+            .texturedstyle_radius_x_spinbutton
             .get()
-            .set_upper(TexturedOptions::RADII_MAX[0]);
+            .set_range(TexturedOptions::RADII_MIN[0], TexturedOptions::RADII_MAX[0]);
         self.imp()
-            .texturedstyle_radius_x_adj
+            .texturedstyle_radius_x_spinbutton
             .get()
             .set_value(TexturedOptions::RADII_DEFAULT[0]);
 
         self.imp()
-            .texturedstyle_radius_x_adj
+            .texturedstyle_radius_x_spinbutton
             .get()
             .connect_value_changed(
                 clone!(@weak appwindow => move |texturedstyle_radius_x_adj| {
-                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_config.radii();
+                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_options.radii();
                     radii[0] = texturedstyle_radius_x_adj.value();
-                    appwindow.canvas().pens().borrow_mut().brush.textured_config.set_radii(radii);
+                    appwindow.canvas().pens().borrow_mut().brush.textured_options.set_radii(radii);
                 }),
             );
 
         // Radius Y
         self.imp()
-            .texturedstyle_radius_y_adj
+            .texturedstyle_radius_y_spinbutton
             .get()
-            .set_lower(TexturedOptions::RADII_MIN[1]);
+            .set_increments(0.1, 2.0);
         self.imp()
-            .texturedstyle_radius_y_adj
+            .texturedstyle_radius_y_spinbutton
             .get()
-            .set_upper(TexturedOptions::RADII_MAX[1]);
+            .set_range(TexturedOptions::RADII_MIN[1], TexturedOptions::RADII_MAX[1]);
         self.imp()
-            .texturedstyle_radius_y_adj
+            .texturedstyle_radius_y_spinbutton
             .get()
             .set_value(TexturedOptions::RADII_DEFAULT[1]);
 
         self.imp()
-            .texturedstyle_radius_y_adj
+            .texturedstyle_radius_y_spinbutton
             .get()
             .connect_value_changed(
                 clone!(@weak appwindow => move |texturedstyle_radius_y_adj| {
-                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_config.radii();
+                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_options.radii();
                     radii[1] = texturedstyle_radius_y_adj.value();
-                    appwindow.canvas().pens().borrow_mut().brush.textured_config.set_radii(radii);
+                    appwindow.canvas().pens().borrow_mut().brush.textured_options.set_radii(radii);
                 }),
             );
 
@@ -316,7 +279,7 @@ impl BrushPage {
                 .pens()
                 .borrow()
                 .brush
-                .textured_config
+                .textured_options
                 .distribution(),
         );
 
@@ -329,16 +292,16 @@ impl BrushPage {
                     .as_str()
                 {
                     "uniform" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_config.set_distribution(TexturedDotsDistribution::Uniform);
+                        appwindow.canvas().pens().borrow_mut().brush.textured_options.set_distribution(TexturedDotsDistribution::Uniform);
                     },
                     "normal" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_config.set_distribution(TexturedDotsDistribution::Normal);
+                        appwindow.canvas().pens().borrow_mut().brush.textured_options.set_distribution(TexturedDotsDistribution::Normal);
                     },
                     "exponential" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_config.set_distribution(TexturedDotsDistribution::Exponential);
+                        appwindow.canvas().pens().borrow_mut().brush.textured_options.set_distribution(TexturedDotsDistribution::Exponential);
                     },
                     "reverse-exponential" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_config.set_distribution(TexturedDotsDistribution::ReverseExponential);
+                        appwindow.canvas().pens().borrow_mut().brush.textured_options.set_distribution(TexturedDotsDistribution::ReverseExponential);
                     },
                     _ => {
                         log::error!(
@@ -350,5 +313,23 @@ impl BrushPage {
                 appwindow.canvas().regenerate_background(true);
             }
         }));
+    }
+
+    pub fn load_from_brush(&self, brush: Brush) {
+        self.imp()
+            .texturedstyle_density_spinbutton
+            .get()
+            .set_value(brush.textured_options.density());
+        self.imp()
+            .texturedstyle_radius_x_spinbutton
+            .get()
+            .set_value(brush.textured_options.radii()[0]);
+        self.imp()
+            .texturedstyle_radius_y_spinbutton
+            .get()
+            .set_value(brush.textured_options.radii()[1]);
+        self.set_texturedstyle_distribution_variant(brush.textured_options.distribution());
+
+        self.imp().width_spinbutton.get().set_value(brush.width());
     }
 }

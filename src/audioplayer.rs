@@ -299,10 +299,10 @@ impl RnoteAudioPlayer {
     pub fn play_pen_sound_begin(&self, timeout_time: time::Duration, current_pen: PenStyle) {
         if self.enabled {
             match current_pen {
-                PenStyle::Marker => {
+                PenStyle::MarkerStyle => {
                     self.play_marker_sound();
                 }
-                PenStyle::Brush => {
+                PenStyle::BrushStyle => {
                     self.play_brush_sound_w_timeout(timeout_time);
                 }
                 _ => {}
@@ -313,7 +313,7 @@ impl RnoteAudioPlayer {
     pub fn play_pen_sound_motion(&self, timeout_time: time::Duration, current_pen: PenStyle) {
         if self.enabled {
             match current_pen {
-                PenStyle::Brush => {
+                PenStyle::BrushStyle => {
                     self.play_brush_sound_w_timeout(timeout_time);
                 }
                 _ => {}

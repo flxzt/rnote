@@ -3,41 +3,42 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
+use crate::compose::smooth::SmoothOptions;
+use crate::input;
 use crate::strokes::markerstroke::MarkerStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokesstate::StrokeKey;
-use crate::{compose::color::Color, input};
 
 use super::penbehaviour::PenBehaviour;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "marker")]
 pub struct Marker {
-    #[serde(rename = "width")]
-    width: f64,
-    #[serde(rename = "color")]
-    pub color: Color,
+    #[serde(rename = "options")]
+    pub options: SmoothOptions,
+
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,
 }
 
 impl Default for Marker {
     fn default() -> Self {
-        Self {
-            width: Self::WIDTH_DEFAULT,
-            color: Self::COLOR_DEFAULT,
+        let mut marker = Self {
+            options: SmoothOptions::default(),
             current_stroke: None,
-        }
+        };
+        marker.set_width(Self::WIDTH_DEFAULT);
+
+        marker
     }
 }
 
 impl PenBehaviour for Marker {
     fn begin(
-        &mut self,
         mut data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
-        self.current_stroke = None;
+        appwindow.canvas().pens().borrow_mut().marker.current_stroke = None;
         appwindow
             .canvas()
             .set_cursor(Some(&appwindow.canvas().motion_cursor()));
@@ -45,35 +46,43 @@ impl PenBehaviour for Marker {
         let filter_bounds = appwindow
             .canvas()
             .sheet()
+            .borrow()
             .bounds()
             .loosened(input::INPUT_OVERSHOOT);
 
         input::filter_mapped_inputdata(filter_bounds, &mut data_entries);
 
-        if let Some(inputdata) = data_entries.pop_back() {
-            let element = Element::new(inputdata);
-            let markerstroke = StrokeStyle::MarkerStroke(MarkerStroke::new(element, self.clone()));
+        let elements_iter = data_entries
+            .into_iter()
+            .map(|inputdata| Element::new(inputdata));
 
-            self.current_stroke = Some(
+        let markerstroke =
+            MarkerStroke::new_w_elements(elements_iter, &appwindow.canvas().pens().borrow().marker);
+
+        if let Some(markerstroke) = markerstroke {
+            let markerstroke = StrokeStyle::MarkerStroke(markerstroke);
+
+            let current_stroke_key = Some(
                 appwindow
                     .canvas()
                     .sheet()
-                    .strokes_state()
                     .borrow_mut()
+                    .strokes_state
                     .insert_stroke(markerstroke),
             );
+            appwindow.canvas().pens().borrow_mut().marker.current_stroke = current_stroke_key;
         }
     }
 
     fn motion(
-        &mut self,
         mut data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
-        if let Some(current_stroke_key) = self.current_stroke {
+        if let Some(current_stroke_key) = appwindow.canvas().pens().borrow().marker.current_stroke {
             let filter_bounds = appwindow
                 .canvas()
                 .sheet()
+                .borrow()
                 .bounds()
                 .loosened(input::INPUT_OVERSHOOT);
 
@@ -83,15 +92,19 @@ impl PenBehaviour for Marker {
                 appwindow
                     .canvas()
                     .sheet()
-                    .strokes_state()
                     .borrow_mut()
-                    .add_to_stroke(current_stroke_key, Element::new(inputdata));
+                    .strokes_state
+                    .add_to_stroke(
+                        current_stroke_key,
+                        Element::new(inputdata),
+                        appwindow.canvas().renderer(),
+                        appwindow.canvas().zoom(),
+                    );
             }
         }
     }
 
     fn end(
-        &mut self,
         _data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
@@ -99,41 +112,51 @@ impl PenBehaviour for Marker {
             .canvas()
             .set_cursor(Some(&appwindow.canvas().cursor()));
 
-        if let Some(current_stroke) = self.current_stroke.take() {
+        if let Some(current_stroke_key) = appwindow
+            .canvas()
+            .pens()
+            .borrow_mut()
+            .marker
+            .current_stroke
+            .take()
+        {
             appwindow
                 .canvas()
                 .sheet()
-                .strokes_state()
                 .borrow_mut()
-                .update_geometry_for_stroke(current_stroke);
+                .strokes_state
+                .update_geometry_for_stroke(current_stroke_key);
 
             appwindow
                 .canvas()
                 .sheet()
-                .strokes_state()
                 .borrow_mut()
-                .regenerate_rendering_for_stroke_threaded(current_stroke);
+                .strokes_state
+                .regenerate_rendering_for_stroke_threaded(
+                    current_stroke_key,
+                    appwindow.canvas().renderer(),
+                    appwindow.canvas().zoom(),
+                );
+
+            appwindow.canvas().resize_endless();
         }
     }
 }
 
 impl Marker {
+    /// The default width
+    pub const WIDTH_DEFAULT: f64 = 6.0;
+    /// The min width
     pub const WIDTH_MIN: f64 = 0.1;
-    pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 20.0;
-
-    pub const COLOR_DEFAULT: Color = Color {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    };
+    /// The max width
+    pub const WIDTH_MAX: f64 = 1000.0;
 
     pub fn width(&self) -> f64 {
-        self.width
+        self.options.width()
     }
 
     pub fn set_width(&mut self, width: f64) {
-        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
+        self.options
+            .set_width(width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX));
     }
 }

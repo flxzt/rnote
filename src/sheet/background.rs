@@ -1,3 +1,5 @@
+use std::sync::{Arc, RwLock};
+
 use anyhow::Context;
 use gtk4::{glib, gsk, Snapshot};
 use p2d::bounding_volume::AABB;
@@ -9,19 +11,22 @@ use crate::compose::geometry;
 use crate::render::Renderer;
 use crate::{compose, render};
 
-#[derive(
-    Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize, num_derive::FromPrimitive,
-)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
 #[enum_type(name = "PatternStyle")]
+#[serde(rename = "pattern_style")]
 pub enum PatternStyle {
     #[enum_value(name = "None", nick = "none")]
+    #[serde(rename = "none")]
     None = 0,
     #[enum_value(name = "Lines", nick = "lines")]
+    #[serde(rename = "lines")]
     Lines,
     #[enum_value(name = "Grid", nick = "grid")]
+    #[serde(rename = "grid")]
     Grid,
     #[enum_value(name = "Dots", nick = "dots")]
+    #[serde(rename = "dots")]
     Dots,
 }
 
@@ -145,15 +150,15 @@ pub fn gen_dots_pattern(
 #[serde(default, rename = "background")]
 pub struct Background {
     #[serde(rename = "color")]
-    color: Color,
+    pub color: Color,
     #[serde(rename = "pattern")]
-    pattern: PatternStyle,
+    pub pattern: PatternStyle,
     #[serde(rename = "pattern_size")]
-    pattern_size: na::Vector2<f64>,
+    pub pattern_size: na::Vector2<f64>,
     #[serde(rename = "pattern_color")]
-    pattern_color: Color,
+    pub pattern_color: Color,
     #[serde(skip)]
-    image: Option<render::Image>,
+    pub image: Option<render::Image>,
     #[serde(skip)]
     rendernode: Option<gsk::RenderNode>,
 }
@@ -161,20 +166,10 @@ pub struct Background {
 impl Default for Background {
     fn default() -> Self {
         Self {
-            color: Color {
-                r: 1.0,
-                g: 1.0,
-                b: 1.0,
-                a: 1.0,
-            },
+            color: Self::COLOR_DEFAULT,
             pattern: PatternStyle::default(),
-            pattern_size: na::Vector2::from_element(Self::PATTERN_SIZE_DEFAULT),
-            pattern_color: Color {
-                r: 0.3,
-                g: 0.7,
-                b: 1.0,
-                a: 1.0,
-            },
+            pattern_size: Self::PATTERN_SIZE_DEFAULT,
+            pattern_color: Self::PATTERN_COLOR_DEFAULT,
             image: None,
             rendernode: None,
         }
@@ -182,48 +177,21 @@ impl Default for Background {
 }
 
 impl Background {
-    pub const PATTERN_SIZE_DEFAULT: f64 = 20.0;
     pub const TILE_MAX_SIZE: f64 = 256.0;
 
-    pub fn import_background(&mut self, background: &Self) {
-        self.color = background.color;
-        self.pattern = background.pattern;
-        self.pattern_size = background.pattern_size;
-        self.pattern_color = background.pattern_color;
-        self.pattern_color = background.pattern_color;
-    }
-
-    pub fn color(&self) -> Color {
-        self.color
-    }
-
-    pub fn set_color(&mut self, color: Color) {
-        self.color = color;
-    }
-
-    pub fn pattern(&self) -> PatternStyle {
-        self.pattern
-    }
-
-    pub fn set_pattern(&mut self, pattern: PatternStyle) {
-        self.pattern = pattern;
-    }
-
-    pub fn pattern_color(&self) -> Color {
-        self.pattern_color
-    }
-
-    pub fn set_pattern_color(&mut self, pattern_color: Color) {
-        self.pattern_color = pattern_color;
-    }
-
-    pub fn pattern_size(&self) -> na::Vector2<f64> {
-        self.pattern_size
-    }
-
-    pub fn set_pattern_size(&mut self, pattern_size: na::Vector2<f64>) {
-        self.pattern_size = pattern_size;
-    }
+    pub const COLOR_DEFAULT: Color = Color {
+        r: 1.0,
+        g: 1.0,
+        b: 1.0,
+        a: 1.0,
+    };
+    pub const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
+    pub const PATTERN_COLOR_DEFAULT: Color = Color {
+        r: 0.8,
+        g: 0.9,
+        b: 1.0,
+        a: 1.0,
+    };
 
     pub fn tile_size(&self) -> na::Vector2<f64> {
         // Calculate tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
@@ -295,27 +263,25 @@ impl Background {
 
     pub fn gen_image(
         &self,
-        renderer: &Renderer,
+        renderer: Arc<RwLock<Renderer>>,
         zoom: f64,
         bounds: AABB,
     ) -> Result<Option<render::Image>, anyhow::Error> {
-        let mut svg = self.gen_svg(bounds)?;
-        svg.svg_data = compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), None, true);
-
-        renderer.gen_image(zoom, &[svg], bounds)
+        let svg = self.gen_svg(bounds)?;
+        renderer.read().unwrap().gen_image(zoom, &[svg], bounds)
     }
 
     pub fn regenerate_background(
         &mut self,
-        renderer: &Renderer,
         zoom: f64,
-        sheet_bounds: AABB,
+        bounds: AABB,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 
         self.image = self.gen_image(renderer, zoom, tile_bounds)?;
-        self.update_rendernode(zoom, sheet_bounds)?;
+        self.update_rendernode(zoom, bounds)?;
         Ok(())
     }
 

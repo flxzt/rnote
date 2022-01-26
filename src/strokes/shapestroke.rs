@@ -1,11 +1,12 @@
+use crate::compose::rough::roughoptions::RoughOptions;
 use crate::compose::smooth::SmoothOptions;
 use crate::compose::transformable::{Transform, Transformable};
 use crate::compose::{curves, geometry, rough, shapes};
 use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::shaper::{self, DrawStyle};
+use crate::pens::shaper::ShaperDrawStyle;
 use crate::strokes::strokestyle::Element;
 use crate::{compose, render};
-use crate::{pens::shaper::ShapeStyle, pens::shaper::Shaper};
+use crate::{pens::shaper::Shaper, pens::shaper::ShaperStyle};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rand::{Rng, SeedableRng};
@@ -22,6 +23,12 @@ pub enum Shape {
     Rectangle(shapes::Rectangle),
     #[serde(rename = "ellipse")]
     Ellipse(shapes::Ellipse),
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum ShapeDrawStyle {
+    Smooth { options: SmoothOptions },
+    Rough { options: RoughOptions },
 }
 
 impl Transformable for Shape {
@@ -85,15 +92,15 @@ pub struct ShapeStroke {
     pub seed: Option<u64>,
     #[serde(rename = "shape")]
     pub shape: Shape,
-    #[serde(rename = "shaper")]
-    pub shaper: Shaper,
+    #[serde(rename = "drawstyle")]
+    pub drawstyle: ShapeDrawStyle,
     #[serde(rename = "bounds")]
     pub bounds: AABB,
 }
 
 impl Default for ShapeStroke {
     fn default() -> Self {
-        Self::new(Element::new(InputData::default()), Shaper::default())
+        Self::new(Element::new(InputData::default()), &Shaper::default())
     }
 }
 
@@ -107,17 +114,20 @@ impl DrawBehaviour for ShapeStroke {
     }
 
     fn gen_bounds(&self) -> Option<AABB> {
-        let new_bounds = match self.shaper.drawstyle() {
-            shaper::DrawStyle::Smooth => self.shape.bounds().loosened(self.shaper.width() * 0.5),
-            shaper::DrawStyle::Rough => {
-                self.shape
-                    .bounds()
-                    // TODO what are the actual bounds for the rough shapes?
-                    .loosened(self.shaper.width() * 0.5 + DrawStyle::ROUGH_MARGIN)
+        match &self.drawstyle {
+            ShapeDrawStyle::Smooth { options } => {
+                let width = options.width();
+                Some(self.shape.bounds().loosened(width * 0.5))
             }
-        };
-
-        Some(new_bounds)
+            ShapeDrawStyle::Rough { options } => {
+                let width = options.stroke_width();
+                Some(
+                    self.shape
+                        .bounds()
+                        .loosened(width * 0.5 + ShaperDrawStyle::ROUGH_MARGIN),
+                )
+            }
+        }
     }
 
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
@@ -128,15 +138,15 @@ impl DrawBehaviour for ShapeStroke {
                     end: line.end + offset,
                 };
 
-                match self.shaper.drawstyle() {
-                    shaper::DrawStyle::Smooth => {
-                        let color = if let Some(color) = self.shaper.color() {
+                match &self.drawstyle {
+                    ShapeDrawStyle::Smooth { options } => {
+                        let color = if let Some(color) = options.color() {
                             color.to_css_color()
                         } else {
                             String::from("none")
                         };
 
-                        let fill = if let Some(fill) = self.shaper.fill() {
+                        let fill = if let Some(fill) = options.fill() {
                             fill.to_css_color()
                         } else {
                             String::from("none")
@@ -148,44 +158,25 @@ impl DrawBehaviour for ShapeStroke {
                             .set("x2", line.end[0])
                             .set("y2", line.end[1])
                             .set("stroke", color)
-                            .set("stroke-width", self.shaper.width())
+                            .set("stroke-width", options.width())
                             .set("fill", fill)
                             .into()
                     }
-                    shaper::DrawStyle::Rough => {
-                        let mut rough_options = self.shaper.rough_config.clone();
-                        rough_options.seed = self.seed;
-                        rough_options.stroke = self.shaper.color();
-                        rough_options.fill = self.shaper.fill();
-                        rough_options.stroke_width = self.shaper.width();
-
-                        svg::node::element::Group::new()
-                            .add(rough::line(&mut rough_options, line))
-                            .into()
-                    }
+                    ShapeDrawStyle::Rough { options } => svg::node::element::Group::new()
+                        .add(rough::line(line, options))
+                        .into(),
                 }
             }
             Shape::Rectangle(ref rectangle) => {
                 let mut rectangle = rectangle.clone();
                 rectangle.transform.append_translation_mut(offset);
 
-                match self.shaper.drawstyle() {
-                    shaper::DrawStyle::Smooth => {
-                        let mut smooth_options = SmoothOptions::default();
-                        smooth_options.set_width(self.shaper.width());
-                        smooth_options.set_color(self.shaper.color());
-                        smooth_options.set_fill(self.shaper.fill());
-
-                        compose::smooth::compose_rectangle(rectangle, &smooth_options)
+                match &self.drawstyle {
+                    ShapeDrawStyle::Smooth { options } => {
+                        compose::smooth::compose_rectangle(rectangle, &options)
                     }
-                    shaper::DrawStyle::Rough => {
-                        let mut rough_options = self.shaper.rough_config.clone();
-                        rough_options.seed = self.seed;
-                        rough_options.stroke = self.shaper.color();
-                        rough_options.fill = self.shaper.fill();
-                        rough_options.stroke_width = self.shaper.width();
-
-                        rough::rectangle(&mut rough_options, rectangle).into()
+                    ShapeDrawStyle::Rough { options } => {
+                        rough::rectangle(rectangle, options).into()
                     }
                 }
             }
@@ -193,27 +184,11 @@ impl DrawBehaviour for ShapeStroke {
                 let mut ellipse = ellipse.clone();
                 ellipse.transform.append_translation_mut(offset);
 
-                match self.shaper.drawstyle() {
-                    shaper::DrawStyle::Smooth => {
-                        let mut smooth_options = SmoothOptions::default();
-                        smooth_options.set_width(self.shaper.width());
-                        smooth_options.set_color(self.shaper.color());
-                        smooth_options.set_fill(self.shaper.fill());
-
-                        compose::smooth::compose_ellipse(ellipse, &smooth_options)
+                match &self.drawstyle {
+                    ShapeDrawStyle::Smooth { options } => {
+                        compose::smooth::compose_ellipse(ellipse, &options)
                     }
-                    shaper::DrawStyle::Rough => {
-                        let mut rough_options = self.shaper.rough_config.clone();
-                        rough_options.seed = self.seed;
-                        rough_options.stroke = self.shaper.color();
-                        rough_options.fill = self.shaper.fill();
-                        rough_options.stroke_width = self.shaper.width();
-
-                        rough_options.stroke_width = self.shaper.width();
-                        rough_options.seed = self.seed;
-
-                        rough::ellipse(&mut rough_options, ellipse).into()
-                    }
+                    ShapeDrawStyle::Rough { options } => rough::ellipse(ellipse, options).into(),
                 }
             }
         };
@@ -249,22 +224,22 @@ impl Transformable for ShapeStroke {
 }
 
 impl ShapeStroke {
-    pub fn new(element: Element, shaper: Shaper) -> Self {
+    pub fn new(element: Element, shaper: &Shaper) -> Self {
         let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
 
-        let shape = match shaper.shapestyle() {
-            ShapeStyle::Line => Shape::Line(curves::Line {
+        let shape = match shaper.shaperstyle() {
+            ShaperStyle::Line => Shape::Line(curves::Line {
                 start: element.inputdata.pos(),
                 end: element.inputdata.pos(),
             }),
-            ShapeStyle::Rectangle => Shape::Rectangle(shapes::Rectangle {
+            ShaperStyle::Rectangle => Shape::Rectangle(shapes::Rectangle {
                 cuboid: p2d::shape::Cuboid::new(na::vector![0.0, 0.0]),
                 transform: Transform::new_w_isometry(na::Isometry2::new(
                     element.inputdata.pos(),
                     0.0,
                 )),
             }),
-            ShapeStyle::Ellipse => Shape::Ellipse(shapes::Ellipse {
+            ShaperStyle::Ellipse => Shape::Ellipse(shapes::Ellipse {
                 radii: na::vector![0.0, 0.0],
                 transform: Transform::new_w_isometry(na::Isometry2::<f64>::new(
                     element.inputdata.pos(),
@@ -273,10 +248,24 @@ impl ShapeStroke {
             }),
         };
         let bounds = shape.bounds();
+        let drawstyle = match shaper.drawstyle() {
+            ShaperDrawStyle::Smooth => {
+                let mut options = shaper.smooth_options;
+                options.set_seed(seed);
+
+                ShapeDrawStyle::Smooth { options }
+            }
+            ShaperDrawStyle::Rough => {
+                let mut options = shaper.rough_options.clone();
+                options.seed = seed;
+
+                ShapeDrawStyle::Rough { options }
+            }
+        };
 
         let mut shapestroke = Self {
             shape,
-            shaper,
+            drawstyle,
             bounds,
             seed,
         };

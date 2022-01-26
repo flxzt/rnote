@@ -1,16 +1,18 @@
+use std::sync::{Arc, RwLock};
+
 use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
 use crate::{render, utils};
 
 use chrono::{TimeZone, Utc};
-use notetakingfileformats::xoppformat;
+use notetakingfileformats::xoppformat::{self, XoppColor};
 use p2d::bounding_volume::AABB;
 use rand::distributions::Uniform;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 use super::bitmapimage::BitmapImage;
-use super::brushstroke::BrushStroke;
+use super::brushstroke::{BrushStroke, BrushStrokeStyle};
 use super::markerstroke::MarkerStroke;
 use super::shapestroke::ShapeStroke;
 use super::vectorimage::VectorImage;
@@ -135,7 +137,7 @@ impl StrokeStyle {
     pub fn to_xopp(
         self,
         current_dpi: f64,
-        renderer: &Renderer,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Option<xoppformat::XoppStrokeStyle> {
         match self {
             StrokeStyle::MarkerStroke(markerstroke) => {
@@ -144,10 +146,10 @@ impl StrokeStyle {
                     return None;
                 }
 
-                let color = markerstroke.marker.color.into();
+                let color = markerstroke.options.color().map(|color| color.into())?;
                 let tool = xoppformat::XoppTool::Pen;
                 let width = vec![utils::convert_value_dpi(
-                    markerstroke.marker.width(),
+                    markerstroke.options.width(),
                     current_dpi,
                     xoppformat::XoppFile::DPI,
                 )];
@@ -181,15 +183,21 @@ impl StrokeStyle {
                     return None;
                 }
 
-                let color = brushstroke.brush.color().into();
+                let (width, color): (f64, XoppColor) = match brushstroke.style {
+                    // Return early if color is None
+                    BrushStrokeStyle::Solid { options } => {
+                        (options.width(), options.color()?.into())
+                    }
+                    BrushStrokeStyle::Textured { options } => {
+                        (options.width(), options.color()?.into())
+                    }
+                };
+
                 let tool = xoppformat::XoppTool::Pen;
 
                 // The first width element is the absolute width of the stroke
-                let stroke_width = utils::convert_value_dpi(
-                    brushstroke.brush.width(),
-                    current_dpi,
-                    xoppformat::XoppFile::DPI,
-                );
+                let stroke_width =
+                    utils::convert_value_dpi(width, current_dpi, xoppformat::XoppFile::DPI);
 
                 let mut width_vec = vec![stroke_width];
 
@@ -228,8 +236,8 @@ impl StrokeStyle {
             StrokeStyle::VectorImage(vectorimage) => {
                 let png_data = match vectorimage.export_as_image_bytes(
                     1.0,
-                    renderer,
                     image::ImageOutputFormat::Png,
+                    renderer,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -267,8 +275,8 @@ impl StrokeStyle {
             StrokeStyle::BitmapImage(bitmapimage) => {
                 let png_data = match bitmapimage.export_as_image_bytes(
                     1.0,
-                    renderer,
                     image::ImageOutputFormat::Png,
+                    renderer,
                 ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {

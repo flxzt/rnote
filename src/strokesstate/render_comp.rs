@@ -1,8 +1,11 @@
+use std::sync::{Arc, RwLock};
+
 use super::StateTask;
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::compose::color::Color;
 use crate::drawbehaviour::DrawBehaviour;
-use crate::render;
+use crate::render::{self, Renderer};
+use crate::strokes::markerstroke::MarkerStroke;
 use crate::ui::canvas;
 
 use gtk4::{graphene, gsk, Snapshot};
@@ -94,13 +97,18 @@ impl StrokesState {
             });
     }
 
-    pub fn regenerate_rendering_for_stroke(&mut self, key: StrokeKey) {
+    pub fn regenerate_rendering_for_stroke(
+        &mut self,
+        key: StrokeKey,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
-            match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
+            match stroke.gen_image(zoom, renderer) {
                 Ok(Some(image)) => {
-                    match render::image_to_rendernode(&image, self.zoom) {
+                    match render::image_to_rendernode(&image, zoom) {
                         Ok(rendernode) => {
                             render_comp.rendernode = Some(rendernode);
                             render_comp.regenerate_flag = false;
@@ -121,21 +129,35 @@ impl StrokesState {
         }
     }
 
-    pub fn regenerate_rendering_for_stroke_threaded(&mut self, key: StrokeKey) {
-        let current_zoom = self.zoom;
+    pub fn regenerate_rendering_for_strokes(
+        &mut self,
+        keys: &[StrokeKey],
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
+        keys.iter().for_each(|&key| {
+            self.regenerate_rendering_for_stroke(key, Arc::clone(&renderer), zoom);
+        })
+    }
+
+    pub fn regenerate_rendering_for_stroke_threaded(
+        &mut self,
+        key: StrokeKey,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
         if let (Some(render_comp), Some(tasks_tx), Some(stroke)) = (
             self.render_components.get_mut(key),
             self.tasks_tx.clone(),
             self.strokes.get(key),
         ) {
             let stroke = stroke.clone();
-            let renderer = self.renderer.clone();
 
             render_comp.regenerate_flag = false;
 
             // Spawn a new thread for image rendering
             self.threadpool.spawn(move || {
-                match stroke.gen_image(current_zoom, &renderer.read().unwrap()) {
+                match stroke.gen_image(zoom, renderer) {
                     Ok(Some(image)) => {
                         tasks_tx.send(StateTask::UpdateStrokeWithImages {
                             key,
@@ -155,8 +177,115 @@ impl StrokesState {
         }
     }
 
+    pub fn regenerate_rendering_for_strokes_threaded(
+        &mut self,
+        keys: &[StrokeKey],
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
+        keys.iter().for_each(|&key| {
+            self.regenerate_rendering_for_stroke_threaded(key, Arc::clone(&renderer), zoom);
+        })
+    }
+
+    pub fn regenerate_rendering_current_view(
+        &mut self,
+        viewport: Option<AABB>,
+        force_regenerate: bool,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
+        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
+
+        keys.iter().for_each(|&key| {
+            self.update_geometry_for_stroke(key);
+
+            if let (Some(stroke), Some(render_comp)) =
+                (self.strokes.get(key), self.render_components.get_mut(key))
+            {
+                // skip if stroke is not in viewport or does not need regeneration
+                if let Some(viewport) = viewport {
+                    if !viewport.intersects(&stroke.bounds()) {
+                        return;
+                    }
+                }
+                if !force_regenerate && !render_comp.regenerate_flag {
+                    return;
+                }
+
+                match stroke.gen_image(zoom, Arc::clone(&renderer)) {
+                    Ok(Some(image)) => {
+                        let images = vec![image];
+
+                        match render::images_to_rendernode(&images, zoom) {
+                            Ok(Some(rendernode)) => {
+                                render_comp.rendernode = Some(rendernode);
+                                render_comp.regenerate_flag = false;
+                                render_comp.images = images;
+                            }
+                            Ok(None) => {}
+                            Err(e) => log::error!("stroke.gen_images() failed in regenerate_stroke_current_view() with Err {}", e),
+                        }
+                    }
+                    Ok(None) => {}
+                    Err(e) => {
+                        log::debug!(
+                            "gen_image() failed in regenerate_rendering_current_view() for stroke with key: {:?}, with Err {}",
+                            key,
+                            e
+                        )
+                    }
+                }
+            } else {
+                log::debug!(
+                    "get stroke, render_comp returned None in regenerate_rendering_current_view() for stroke with key {:?}",
+                    key
+                );
+            }
+        })
+    }
+
+    pub fn regenerate_rendering_current_view_threaded(
+        &mut self,
+        viewport: Option<AABB>,
+        force_regenerate: bool,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
+        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
+
+        keys.iter().for_each(|&key| {
+            if let (Some(stroke), Some(render_comp)) =
+                (self.strokes.get(key), self.render_components.get_mut(key))
+            {
+                // skip if stroke is not in viewport or does not need regeneration
+                if let Some(viewport) = viewport {
+                    if !viewport.intersects(&stroke.bounds()) {
+                        return;
+                    }
+                }
+                if !force_regenerate && !render_comp.regenerate_flag {
+                    return;
+                }
+
+                self.update_geometry_for_stroke(key);
+                self.regenerate_rendering_for_stroke_threaded(key, Arc::clone(&renderer), zoom)
+            } else {
+                log::debug!(
+                    "get stroke, render_comp returned None in regenerate_rendering_current_view_threaded() for stroke with key {:?}",
+                    key
+                );
+            }
+        })
+    }
+
     /// Append the last elements to the render_comp of the stroke. The rendering for strokes that don't support generating rendering for only the last elements are regenerated completely
-    pub fn append_rendering_new_elem(&mut self, key: StrokeKey) {
+    pub fn append_rendering_new_elem(
+        &mut self,
+        key: StrokeKey,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
@@ -181,8 +310,8 @@ impl StrokesState {
                             brushstroke.gen_svg_for_elems(elements, offset, true)
                         {
                             let bounds = last_elems_svg.bounds;
-                            match self.renderer.read().unwrap().gen_image(
-                                self.zoom,
+                            match renderer.read().unwrap().gen_image(
+                                zoom,
                                 &[last_elems_svg],
                                 bounds,
                             ) {
@@ -192,7 +321,7 @@ impl StrokesState {
                                     match render::append_images_to_rendernode(
                                         render_comp.rendernode.as_ref(),
                                         &images,
-                                        self.zoom,
+                                        zoom,
                                     ) {
                                         Ok(rendernode) => {
                                             render_comp.rendernode = rendernode;
@@ -226,12 +355,15 @@ impl StrokesState {
 
                     if let Some(elements) = elements {
                         let offset = na::vector![0.0, 0.0];
-                        if let Some(last_elems_svg) =
-                            markerstroke.gen_svg_elem(elements, offset, true)
-                        {
+                        if let Some(last_elems_svg) = MarkerStroke::gen_svg_elem(
+                            &markerstroke.options,
+                            elements,
+                            offset,
+                            true,
+                        ) {
                             let bounds = last_elems_svg.bounds;
-                            match self.renderer.read().unwrap().gen_image(
-                                self.zoom,
+                            match renderer.read().unwrap().gen_image(
+                                zoom,
                                 &[last_elems_svg],
                                 bounds,
                             ) {
@@ -241,7 +373,7 @@ impl StrokesState {
                                     match render::append_images_to_rendernode(
                                         render_comp.rendernode.as_ref(),
                                         &images,
-                                        self.zoom,
+                                        zoom,
                                     ) {
                                         Ok(rendernode) => {
                                             render_comp.rendernode = rendernode;
@@ -263,9 +395,9 @@ impl StrokesState {
                 StrokeStyle::ShapeStroke(_)
                 | StrokeStyle::VectorImage(_)
                 | StrokeStyle::BitmapImage(_) => {
-                    match stroke.gen_image(self.zoom, &self.renderer.read().unwrap()) {
+                    match stroke.gen_image(zoom, renderer) {
                         Ok(Some(image)) => {
-                            match render::image_to_rendernode(&image, self.zoom) {
+                            match render::image_to_rendernode(&image, zoom) {
                                 Ok(rendernode) => {
                                     render_comp.rendernode = Some(rendernode);
                                     render_comp.regenerate_flag = false;
@@ -294,15 +426,18 @@ impl StrokesState {
     }
 
     /// Append the last elements to the render_comp of the stroke threaded. The rendering for strokes that don't support generating rendering for only the last elements are regenerated completely
-    pub fn append_rendering_new_elem_threaded_fifo(&mut self, key: StrokeKey) {
+    pub fn append_rendering_new_elem_threaded_fifo(
+        &mut self,
+        key: StrokeKey,
+        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
+    ) {
         if let (Some(stroke), Some(render_comp), Some(tasks_tx)) = (
             self.strokes.get(key),
             self.render_components.get_mut(key),
             self.tasks_tx.clone(),
         ) {
             let stroke = stroke.clone();
-            let zoom = self.zoom;
-            let renderer = self.renderer.clone();
 
             render_comp.regenerate_flag = true;
 
@@ -325,7 +460,7 @@ impl StrokesState {
                         if let Some(elements) = elements {
                             let offset = na::vector![0.0, 0.0];
                             if let Some(last_elems_svg) =
-                                markerstroke.gen_svg_elem(elements, offset, true)
+                                MarkerStroke::gen_svg_elem(&markerstroke.options, elements, offset, true)
                             {
                             let bounds = last_elems_svg.bounds;
                                 match renderer.read().unwrap().gen_image(
@@ -398,7 +533,7 @@ impl StrokesState {
                     StrokeStyle::ShapeStroke(_)
                     | StrokeStyle::VectorImage(_)
                     | StrokeStyle::BitmapImage(_) => {
-                        match stroke.gen_image(zoom, &renderer.read().unwrap()) {
+                        match stroke.gen_image(zoom, renderer) {
                             Ok(Some(image)) => {
                                 tasks_tx.send(StateTask::UpdateStrokeWithImages {
                                     key,
@@ -427,55 +562,14 @@ impl StrokesState {
         }
     }
 
-    pub fn regenerate_rendering_for_selection(&mut self) {
-        let selection_keys = self.selection_keys_in_order_rendered();
-
-        selection_keys.iter().for_each(|&key| {
-            self.regenerate_rendering_for_stroke(key);
-        });
-    }
-
-    pub fn regenerate_rendering_for_selection_threaded(&mut self) {
-        let selection_keys = self.selection_keys_in_order_rendered();
-
-        selection_keys.iter().for_each(|&key| {
-            self.regenerate_rendering_for_stroke_threaded(key);
-        });
-    }
-
-    pub fn regenerate_rendering_newest_stroke(&mut self) {
-        let last_stroke_key = self.last_stroke_key();
-        if let Some(key) = last_stroke_key {
-            self.regenerate_rendering_for_stroke(key);
-        }
-    }
-
-    pub fn regenerate_rendering_newest_stroke_threaded(&mut self) {
-        let last_stroke_key = self.last_stroke_key();
-        if let Some(key) = last_stroke_key {
-            self.regenerate_rendering_for_stroke_threaded(key);
-        }
-    }
-
-    pub fn regenerate_rendering_newest_selected(&mut self) {
-        let last_selection_key = self.last_selection_key();
-
-        if let Some(last_selection_key) = last_selection_key {
-            self.regenerate_rendering_for_stroke(last_selection_key);
-        }
-    }
-
-    pub fn regenerate_rendering_newest_selected_threaded(&mut self) {
-        let last_selection_key = self.last_selection_key();
-
-        if let Some(last_selection_key) = last_selection_key {
-            self.regenerate_rendering_for_stroke_threaded(last_selection_key);
-        }
-    }
-
-    pub fn regenerate_rendering_with_images(&mut self, key: StrokeKey, images: Vec<render::Image>) {
+    pub fn regenerate_rendering_with_images(
+        &mut self,
+        key: StrokeKey,
+        images: Vec<render::Image>,
+        zoom: f64,
+    ) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            match render::images_to_rendernode(&images, self.zoom) {
+            match render::images_to_rendernode(&images, zoom) {
                 Ok(Some(rendernode)) => {
                     render_comp.rendernode = Some(rendernode);
                     render_comp.regenerate_flag = false;
@@ -495,9 +589,14 @@ impl StrokesState {
         }
     }
 
-    pub fn append_images_to_rendering(&mut self, key: StrokeKey, mut images: Vec<render::Image>) {
+    pub fn append_images_to_rendering(
+        &mut self,
+        key: StrokeKey,
+        mut images: Vec<render::Image>,
+        zoom: f64,
+    ) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            match render::append_images_to_rendernode(render_comp.rendernode.as_ref(), &images, self.zoom) {
+            match render::append_images_to_rendernode(render_comp.rendernode.as_ref(), &images, zoom) {
                 Ok(rendernode) => {
                     render_comp.rendernode = rendernode;
                     render_comp.regenerate_flag = false;

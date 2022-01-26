@@ -39,15 +39,15 @@ mod imp {
             let total_zoom = canvas.zoom() * canvas.temporary_zoom();
 
             if orientation == Orientation::Vertical {
-                let natural_height = ((2.0 * canvas.sheet_margin()
-                    + f64::from(canvas.sheet().height()))
+                let natural_height = ((2.0 * f64::from(canvas.sheet_margin())
+                    + f64::from(canvas.sheet().borrow().height))
                     * total_zoom)
                     .round() as i32;
 
                 (0, natural_height, -1, -1)
             } else {
-                let natural_width = ((2.0 * canvas.sheet_margin()
-                    + f64::from(canvas.sheet().width()))
+                let natural_width = ((2.0 * f64::from(canvas.sheet_margin())
+                    + f64::from(canvas.sheet().borrow().width))
                     * total_zoom)
                     .round() as i32;
 
@@ -68,20 +68,28 @@ mod imp {
             let total_zoom = canvas.total_zoom();
 
             let hadj = canvas.hadjustment().unwrap();
+            // Avoiding already borrow error
+            let h_upper = (2.0 * f64::from(canvas.sheet_margin())
+                + f64::from(canvas.sheet().borrow().width))
+                * total_zoom;
             hadj.configure(
                 hadj.value(),
                 0.0,
-                (2.0 * canvas.sheet_margin() + canvas.sheet().width() as f64) * total_zoom,
+                h_upper,
                 0.1 * width as f64,
                 0.9 * width as f64,
                 width as f64,
             );
 
             let vadj = canvas.vadjustment().unwrap();
+            // Avoiding already borrow error
+            let v_upper = (2.0 * f64::from(canvas.sheet_margin())
+                + f64::from(canvas.sheet().borrow().height))
+                * total_zoom;
             vadj.configure(
                 vadj.value(),
                 0.0,
-                (2.0 * canvas.sheet_margin() + canvas.sheet().height() as f64) * total_zoom,
+                v_upper,
                 0.1 * height as f64,
                 0.9 * height as f64,
                 height as f64,
@@ -103,7 +111,7 @@ mod imp {
                 let (selection_modifier_x, selection_modifier_y) = if let Some(selection_bounds) =
                     canvas_priv.selection_modifier.selection_bounds()
                 {
-                    let sheet_margin_zoomed = canvas.sheet_margin() * total_zoom;
+                    let sheet_margin_zoomed = f64::from(canvas.sheet_margin()) * total_zoom;
                     let selection_bounds_zoomed =
                         geometry::aabb_scale(selection_bounds, total_zoom);
 

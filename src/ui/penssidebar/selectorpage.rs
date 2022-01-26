@@ -47,6 +47,7 @@ mod imp {
     impl WidgetImpl for SelectorPage {}
 }
 
+use crate::pens::selector::Selector;
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::ToggleButton;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, Orientable, Widget};
@@ -127,4 +128,6 @@ impl SelectorPage {
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "duplicate-selection", None);
         }));
     }
+
+    pub fn load_from_selector(&self, _selector: Selector) {}
 }

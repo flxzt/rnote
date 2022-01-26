@@ -1,4 +1,5 @@
 use std::io;
+use std::sync::{Arc, RwLock};
 
 use crate::compose::{geometry, shapes};
 use crate::drawbehaviour::DrawBehaviour;
@@ -14,19 +15,19 @@ use svg::node::element;
 use crate::compose::transformable::{Transform, Transformable};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(rename = "format")]
-pub enum Format {
+#[serde(rename = "bitmapimage_format")]
+pub enum BitmapImageFormat {
     #[serde(rename = "png")]
     Png,
     #[serde(rename = "jpeg")]
     Jpeg,
 }
 
-impl Format {
+impl BitmapImageFormat {
     pub fn as_mime_type(&self) -> String {
         match self {
-            Format::Png => String::from("image/png"),
-            Format::Jpeg => String::from("image/jpeg"),
+            BitmapImageFormat::Png => String::from("image/png"),
+            BitmapImageFormat::Jpeg => String::from("image/jpeg"),
         }
     }
 }
@@ -37,7 +38,7 @@ pub struct BitmapImage {
     #[serde(rename = "data_base64")]
     pub data_base64: String,
     #[serde(rename = "format")]
-    pub format: Format,
+    pub format: BitmapImageFormat,
     #[serde(rename = "intrinsic_size")]
     pub intrinsic_size: na::Vector2<f64>,
     #[serde(rename = "rectangle")]
@@ -50,7 +51,7 @@ impl Default for BitmapImage {
     fn default() -> Self {
         Self {
             data_base64: String::default(),
-            format: Format::Png,
+            format: BitmapImageFormat::Png,
             intrinsic_size: na::vector![0.0, 0.0],
             rectangle: shapes::Rectangle::default(),
             bounds: geometry::aabb_new_zero(),
@@ -128,8 +129,8 @@ impl Transformable for BitmapImage {
 }
 
 impl BitmapImage {
-    pub const OFFSET_X_DEFAULT: f64 = 32.0;
-    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
+    pub const OFFSET_X_DEFAULT: i32 = 32;
+    pub const OFFSET_Y_DEFAULT: i32 = 32;
 
     pub fn import_from_image_bytes<P>(
         to_be_read: P,
@@ -142,8 +143,8 @@ impl BitmapImage {
         log::debug!("BitmapImage detected format: {:?}", reader.format());
 
         let format = match reader.format() {
-            Some(image::ImageFormat::Png) => Format::Png,
-            Some(image::ImageFormat::Jpeg) => Format::Jpeg,
+            Some(image::ImageFormat::Png) => BitmapImageFormat::Png,
+            Some(image::ImageFormat::Jpeg) => BitmapImageFormat::Jpeg,
             _ => {
                 return Err(anyhow::Error::msg("unsupported format."));
             }
@@ -199,7 +200,8 @@ impl BitmapImage {
                 };
 
                 let x = pos[0];
-                let y = pos[1] + f64::from(i) * (f64::from(height) + Self::OFFSET_Y_DEFAULT / 2.0);
+                let y = pos[1]
+                    + f64::from(i) * (f64::from(height) + f64::from(Self::OFFSET_Y_DEFAULT) / 2.0);
 
                 let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                     .map_err(|e| {
@@ -255,8 +257,8 @@ impl BitmapImage {
     pub fn export_as_image_bytes(
         &self,
         zoom: f64,
-        renderer: &Renderer,
         format: image::ImageOutputFormat,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Vec<u8>, anyhow::Error> {
         let export_bounds = geometry::aabb_translate(self.bounds, -self.bounds().mins.coords);
         let mut export_svg_data = self
@@ -277,7 +279,7 @@ impl BitmapImage {
             svg_data: export_svg_data,
         };
 
-        let image_raw = renderer
+        let image_raw = renderer.read().unwrap()
             .gen_image(zoom, &[export_svg], export_bounds)?
             .ok_or(anyhow::Error::msg(
             "gen_image() returned None in BitmapImage export_to_bytes(), even though it has gotten a SVG",

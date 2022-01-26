@@ -27,7 +27,7 @@
         <property name="width-request">80</property>
         <property name="model">
           <object class="AdwEnumListModel">
-            <property name="enum-type">MeasureUnits</property>
+            <property name="enum-type">MeasureUnit</property>
           </object>
         </property>
         <property name="expression">

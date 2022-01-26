@@ -11,7 +11,7 @@
       <class name="background" />
     </style>
     <child>
-      <object class="GtkScrolledWindow">
+      <object class="GtkScrolledWindow" id="settings_scroller">
         <property name="hscrollbar-policy">never</property>
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>
@@ -19,6 +19,7 @@
         <property name="valign">fill</property>
         <property name="propagate-natural-width">false</property>
         <property name="propagate-natural-height">false</property>
+        <property name="window-placement">top-left</property>
         <child>
           <object class="AdwClamp">
             <property name="margin-top">32</property>
@@ -85,11 +86,12 @@
                             <property name="vexpand">false</property>
                             <property name="valign">center</property>
                             <style>
-                              <class name="linked"/>
+                              <class name="linked" />
                             </style>
                             <child>
                               <object class="GtkToggleButton" id="general_pdf_import_as_vector_toggle">
                                 <property name="label" translatable="yes">Vector</property>
+                                <property name="active">true</property>
                               </object>
                             </child>
                             <child>
@@ -114,7 +116,7 @@
                         <property name="subtitle" translatable="yes">Choose a format</property>
                         <property name="model">
                           <object class="AdwEnumListModel">
-                            <property name="enum-type">PredefinedFormats</property>
+                            <property name="enum-type">PredefinedFormat</property>
                           </object>
                         </property>
                         <property name="expression">

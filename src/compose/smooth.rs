@@ -31,6 +31,10 @@ impl Default for SmoothOptions {
 impl SmoothOptions {
     /// The default width
     pub const WIDTH_DEFAULT: f64 = 1.0;
+    /// The min width
+    pub const WIDTH_MIN: f64 = 0.1;
+    /// The max width
+    pub const WIDTH_MAX: f64 = 1000.0;
     /// The default color
     pub const COLOR_DEFAULT: Color = Color {
         r: 0.0,
@@ -52,7 +56,7 @@ impl SmoothOptions {
     }
 
     pub fn set_width(&mut self, width: f64) {
-        self.width = width
+        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
     }
 
     pub fn color(&self) -> Option<Color> {
@@ -72,7 +76,11 @@ impl SmoothOptions {
     }
 }
 
-pub fn compose_line(line: curves::Line, move_start: bool) -> Vec<path::Command> {
+pub fn compose_line(
+    line: curves::Line,
+    move_start: bool,
+    _options: &SmoothOptions,
+) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
     if move_start {
@@ -94,6 +102,7 @@ pub fn compose_line_offsetted(
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
+    _options: &SmoothOptions,
 ) -> Vec<path::Command> {
     let direction_unit_norm = geometry::vector2_unit_norm(line.end - line.start);
     let start_offset = direction_unit_norm * start_offset_dist;
@@ -122,6 +131,7 @@ pub fn compose_line_variable_width(
     width_start: f64,
     width_end: f64,
     move_start: bool,
+    options: &SmoothOptions,
 ) -> Vec<path::Command> {
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
@@ -138,6 +148,7 @@ pub fn compose_line_variable_width(
         start_offset_dist,
         end_offset_dist,
         move_start,
+        options,
     ));
     commands.push(path::Command::EllipticalArc(
         path::Position::Absolute,
@@ -163,6 +174,7 @@ pub fn compose_line_variable_width(
         end_offset_dist,
         start_offset_dist,
         false,
+        options,
     ));
     commands.push(path::Command::EllipticalArc(
         path::Position::Absolute,
@@ -187,7 +199,11 @@ pub fn compose_line_variable_width(
     commands
 }
 
-pub fn compose_quadbez(quadbez: curves::QuadBezier, move_start: bool) -> Vec<path::Command> {
+pub fn compose_quadbez(
+    quadbez: curves::QuadBezier,
+    move_start: bool,
+    _options: &SmoothOptions,
+) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
     if move_start {
@@ -212,6 +228,7 @@ pub fn compose_quadbez_offsetted(
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
+    _options: &SmoothOptions,
 ) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
@@ -258,6 +275,7 @@ pub fn compose_quadbez_offsetted_w_subdivision(
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
+    options: &SmoothOptions,
 ) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
@@ -287,18 +305,21 @@ pub fn compose_quadbez_offsetted_w_subdivision(
                 start_offset_dist,
                 offset_dist_t1,
                 move_start,
+                options,
             ));
             commands.append(&mut compose_quadbez_offsetted(
                 splitted_quads[1],
                 offset_dist_t1,
                 offset_dist_t2,
                 false,
+                options,
             ));
             commands.append(&mut compose_quadbez_offsetted(
                 splitted_quads[2],
                 offset_dist_t2,
                 end_offset_dist,
                 false,
+                options,
             ));
         }
         (Some(split_t1), None) => {
@@ -313,12 +334,14 @@ pub fn compose_quadbez_offsetted_w_subdivision(
                 start_offset_dist,
                 offset_dist_t1,
                 move_start,
+                options,
             ));
             commands.append(&mut compose_quadbez_offsetted(
                 splitted_quads[1],
                 offset_dist_t1,
                 end_offset_dist,
                 false,
+                options,
             ));
         }
         (None, Some(split_t2)) => {
@@ -333,12 +356,14 @@ pub fn compose_quadbez_offsetted_w_subdivision(
                 start_offset_dist,
                 offset_dist_t2,
                 move_start,
+                options,
             ));
             commands.append(&mut compose_quadbez_offsetted(
                 splitted_quads[1],
                 offset_dist_t2,
                 end_offset_dist,
                 false,
+                options,
             ));
         }
         (None, None) => {
@@ -347,6 +372,7 @@ pub fn compose_quadbez_offsetted_w_subdivision(
                 start_offset_dist,
                 end_offset_dist,
                 move_start,
+                options,
             ));
         }
     }
@@ -359,6 +385,7 @@ pub fn compose_quadbez_variable_width(
     width_start: f64,
     width_end: f64,
     move_start: bool,
+    options: &SmoothOptions,
 ) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
@@ -382,6 +409,7 @@ pub fn compose_quadbez_variable_width(
         start_offset_dist,
         end_offset_dist,
         move_start,
+        options,
     ));
     commands.push(path::Command::Line(
         path::Position::Absolute,
@@ -393,6 +421,7 @@ pub fn compose_quadbez_variable_width(
         end_offset_dist,
         start_offset_dist,
         false,
+        options,
     ));
     commands.push(path::Command::Line(
         path::Position::Absolute,
@@ -405,7 +434,11 @@ pub fn compose_quadbez_variable_width(
     commands
 }
 
-pub fn compose_cubbez(cubbez: curves::CubicBezier, move_start: bool) -> Vec<path::Command> {
+pub fn compose_cubbez(
+    cubbez: curves::CubicBezier,
+    move_start: bool,
+    _options: &SmoothOptions,
+) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
     if move_start {
@@ -431,6 +464,7 @@ pub fn compose_cubbez_offsetted(
     start_offset_dist: f64,
     end_offset_dist: f64,
     move_start: bool,
+    options: &SmoothOptions,
 ) -> Vec<path::Command> {
     let t = 0.5;
     let mid_offset_dist = start_offset_dist + (end_offset_dist - start_offset_dist) * t;
@@ -446,6 +480,7 @@ pub fn compose_cubbez_offsetted(
         start_offset_dist,
         mid_offset_dist,
         move_start,
+        options,
     ));
 
     commands.append(&mut compose_quadbez_offsetted_w_subdivision(
@@ -453,6 +488,7 @@ pub fn compose_cubbez_offsetted(
         mid_offset_dist,
         end_offset_dist,
         false,
+        options,
     ));
 
     commands
@@ -463,6 +499,7 @@ pub fn compose_cubbez_variable_width(
     width_start: f64,
     width_end: f64,
     move_start: bool,
+    options: &SmoothOptions,
 ) -> Vec<path::Command> {
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
@@ -484,8 +521,13 @@ pub fn compose_cubbez_variable_width(
     let angle = start_offset.angle(&end_offset).to_degrees();
     let angle_greater_90 = angle < -90.0 && angle > 90.0;
 
-    let mut commands =
-        compose_cubbez_offsetted(cubbez, start_offset_dist, end_offset_dist, move_start);
+    let mut commands = compose_cubbez_offsetted(
+        cubbez,
+        start_offset_dist,
+        end_offset_dist,
+        move_start,
+        options,
+    );
 
     commands.push(path::Command::Line(
         path::Position::Absolute,
@@ -499,6 +541,7 @@ pub fn compose_cubbez_variable_width(
             -end_offset_dist,
             -start_offset_dist,
             false,
+            options,
         ));
     } else {
         commands.append(&mut compose_cubbez_offsetted(
@@ -506,6 +549,7 @@ pub fn compose_cubbez_variable_width(
             end_offset_dist,
             start_offset_dist,
             false,
+            options,
         ));
     }
     commands.push(path::Command::Line(

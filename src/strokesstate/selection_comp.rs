@@ -109,7 +109,7 @@ impl StrokesState {
         });
     }
 
-    pub fn duplicate_selection(&mut self) {
+    pub fn duplicate_selection(&mut self, zoom: f64) {
         let offset = na::vector![
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_X,
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
@@ -128,17 +128,11 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>();
 
         // Offsetting the new selected stroke to make the duplication apparent to the user
-        self.translate_strokes(&new_selected, offset);
+        self.translate_strokes(&new_selected, offset, zoom);
     }
 
     /// Returns true if selection has changed
-    pub fn update_selection_for_selector(
-        &mut self,
-        selector: &Selector,
-        viewport: Option<AABB>,
-    ) -> bool {
-        let selection_len_prev = self.selection_len();
-
+    pub fn update_selection_for_selector(&mut self, selector: &Selector, viewport: Option<AABB>) {
         let selector_polygon = match selector.style() {
             selector::SelectorStyle::Polygon => {
                 let selector_path_points = selector
@@ -164,7 +158,7 @@ impl StrokesState {
 
                     geo::Polygon::new(selector_path_points, vec![])
                 } else {
-                    return false;
+                    return;
                 }
             }
         };
@@ -276,14 +270,12 @@ impl StrokesState {
                     }
                 }
             }
-        });
 
-        if self.selection_len() != selection_len_prev {
-            self.regenerate_rendering_for_selection_threaded();
-            true
-        } else {
-            false
-        }
+            // set flag for rendering regeneration
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                render_comp.regenerate_flag = true;
+            }
+        });
     }
 
     /// the svgs of the current selection, without xml header or svg root

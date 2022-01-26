@@ -103,6 +103,23 @@ impl Color {
     }
 }
 
+impl From<(f64, f64, f64, f64)> for Color {
+    fn from(tuple: (f64, f64, f64, f64)) -> Self {
+        Self {
+            r: tuple.0,
+            g: tuple.1,
+            b: tuple.2,
+            a: tuple.3,
+        }
+    }
+}
+
+impl From<Color> for (f64, f64, f64, f64) {
+    fn from(color: Color) -> Self {
+        (color.r, color.g, color.b, color.a)
+    }
+}
+
 impl From<gdk::RGBA> for Color {
     fn from(gdk_color: gdk::RGBA) -> Self {
         Self {

@@ -1,4 +1,6 @@
-use crate::render;
+use std::sync::{Arc, RwLock};
+
+use crate::render::{self, Renderer};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 
@@ -32,11 +34,14 @@ pub trait DrawBehaviour {
     fn gen_image(
         &self,
         zoom: f64,
-        renderer: &render::Renderer,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let offset = na::vector![0.0, 0.0];
         let svgs = self.gen_svgs(offset)?;
 
-        renderer.gen_image(zoom, &svgs, self.bounds())
+        renderer
+            .read()
+            .unwrap()
+            .gen_image(zoom, &svgs, self.bounds())
     }
 }

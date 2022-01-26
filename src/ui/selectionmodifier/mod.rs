@@ -225,7 +225,7 @@ pub mod imp {
                 b: 0.63,
                 a: 0.15,
             };
-            const SELECTION_BOUNDS_WIDTH: f64 = 4.0;
+            const SELECTION_BOUNDS_WIDTH: f64 = 1.5;
 
             if let Some(selection_bounds) = self.selection_bounds.get() {
                 let transformed_selection_bounds = utils::translate_aabb_to_widget(
@@ -236,38 +236,23 @@ pub mod imp {
                 .unwrap();
 
                 let draw = || -> Result<(), anyhow::Error> {
-                    let mut data = element::path::Data::new();
-
-                    data = data.move_to((
-                        f64::from(super::SelectionModifier::RESIZE_NODE_SIZE),
-                        f64::from(super::SelectionModifier::RESIZE_NODE_SIZE),
-                    ));
-                    data = data.line_to((
-                        transformed_selection_bounds.extents()[0]
-                            + f64::from(super::SelectionModifier::RESIZE_NODE_SIZE),
-                        f64::from(super::SelectionModifier::RESIZE_NODE_SIZE),
-                    ));
-                    data = data.line_to((
-                        transformed_selection_bounds.extents()[0]
-                            + f64::from(super::SelectionModifier::RESIZE_NODE_SIZE),
-                        transformed_selection_bounds.extents()[1]
-                            + f64::from(super::SelectionModifier::RESIZE_NODE_SIZE),
-                    ));
-                    data = data.line_to((
-                        f64::from(super::SelectionModifier::RESIZE_NODE_SIZE),
-                        transformed_selection_bounds.extents()[1]
-                            + f64::from(super::SelectionModifier::RESIZE_NODE_SIZE),
-                    ));
-                    data = data.close();
-
-                    let svg_path = element::Path::new()
-                        .set("d", data)
+                    let rect = element::Rectangle::new()
+                        .set("x", f64::from(super::SelectionModifier::RESIZE_NODE_SIZE))
+                        .set("y", f64::from(super::SelectionModifier::RESIZE_NODE_SIZE))
+                        .set(
+                            "width",
+                            transformed_selection_bounds.extents()[0] - SELECTION_BOUNDS_WIDTH,
+                        )
+                        .set(
+                            "height",
+                            transformed_selection_bounds.extents()[1] - SELECTION_BOUNDS_WIDTH,
+                        )
                         .set("stroke", SELECTION_BOUNDS_COLOR.to_css_color())
                         .set("fill", SELECTION_BOUNDS_FILL.to_css_color())
                         .set("stroke-width", SELECTION_BOUNDS_WIDTH)
                         .set("stroke-dasharray", "6 10");
 
-                    let svg_data = compose::svg_node_to_string(&svg_path).map_err(|e| {
+                    let svg_data = compose::svg_node_to_string(&rect).map_err(|e| {
                         anyhow::anyhow!(
                             "node_to_string() failed in gen_svg_path() for selector, {}",
                             e
@@ -278,15 +263,11 @@ pub mod imp {
                         bounds: transformed_selection_bounds,
                         svg_data,
                     };
-                    if let Some(image) = canvas
-                        .sheet()
-                        .strokes_state()
-                        .borrow()
-                        .renderer
-                        .read()
-                        .unwrap()
-                        .gen_image(1.0, &[svg], transformed_selection_bounds)?
-                    {
+                    if let Some(image) = canvas.renderer().read().unwrap().gen_image(
+                        1.0,
+                        &[svg],
+                        transformed_selection_bounds,
+                    )? {
                         let rendernode = render::image_to_rendernode(&image, 1.0).context(
                             "image_to_rendernode() in draw_selection() in selection_modifier failed",
                         )?;
@@ -313,14 +294,21 @@ pub mod imp {
             _widget_bounds: AABB,
             canvas: &Canvas,
         ) {
-            const ROTATION_LINESTART_COLOR: Color = Color {
+            const ROTATION_OUTLINE_COLOR: Color = Color {
+                r: 1.0,
+                g: 1.0,
+                b: 1.0,
+                a: 1.0,
+            };
+            const ROTATION_OUTLINE_WIDTH: f64 = 4.0;
+            const ROTATION_LINE_COLOR: Color = Color {
                 r: 0.7,
                 g: 0.3,
                 b: 0.3,
-                a: 0.7,
+                a: 1.0,
             };
-            const ROTATION_LINESTART_WIDTH: f64 = 3.0;
-            const ROTATION_LINE_LEN: f64 = 150.0;
+            const ROTATION_LINE_WIDTH: f64 = 2.5;
+            const ROTATION_LINE_LEN: f64 = 30.0;
 
             if let (Some(current_rotation_center), Some(selection_bounds)) = (
                 self.start_rotation_center.get(),
@@ -342,13 +330,13 @@ pub mod imp {
                 };
 
                 let draw = || -> Result<(), anyhow::Error> {
-                    let mut data = element::path::Data::new();
+                    let mut line_data = element::path::Data::new();
 
                     let start_rotation_vec = na::Rotation2::new(self.start_rotation_angle.get())
                         .transform_vector(&(na::Vector2::x() * ROTATION_LINE_LEN));
 
-                    data = data.move_to((center[0], center[1]));
-                    data = data.line_to((
+                    line_data = line_data.move_to((center[0], center[1]));
+                    line_data = line_data.line_to((
                         center[0] + start_rotation_vec[0],
                         center[1] + start_rotation_vec[1],
                     ));
@@ -358,20 +346,28 @@ pub mod imp {
                     )
                     .transform_vector(&(na::Vector2::x() * ((2.0 * ROTATION_LINE_LEN) / 3.0)));
 
-                    data = data.move_to((center[0], center[1]));
-                    data = data.line_to((
+                    line_data = line_data.move_to((center[0], center[1]));
+                    line_data = line_data.line_to((
                         center[0] + current_rotation_vec[0],
                         center[1] + current_rotation_vec[1],
                     ));
-                    data = data.close();
 
-                    let svg_path = element::Path::new()
-                        .set("d", data)
-                        .set("stroke", ROTATION_LINESTART_COLOR.to_css_color())
-                        .set("stroke-width", ROTATION_LINESTART_WIDTH)
+                    let outline_svg_path = element::Path::new()
+                        .set("d", line_data.clone())
+                        .set("stroke", ROTATION_OUTLINE_COLOR.to_css_color())
+                        .set("stroke-width", ROTATION_OUTLINE_WIDTH)
+                        .set("stroke-dasharray", "5 5");
+                    let line_svg_path = element::Path::new()
+                        .set("d", line_data)
+                        .set("stroke", ROTATION_LINE_COLOR.to_css_color())
+                        .set("stroke-width", ROTATION_LINE_WIDTH)
                         .set("stroke-dasharray", "5 5");
 
-                    let svg_data = compose::svg_node_to_string(&svg_path).map_err(|e| {
+                    let group = element::Group::new()
+                        .add(outline_svg_path)
+                        .add(line_svg_path);
+
+                    let svg_data = compose::svg_node_to_string(&group).map_err(|e| {
                         anyhow::anyhow!(
                             "node_to_string() failed in gen_svg_path() for selector, {}",
                             e
@@ -382,15 +378,11 @@ pub mod imp {
                         bounds: transformed_selection_bounds,
                         svg_data,
                     };
-                    if let Some(image) = canvas
-                        .sheet()
-                        .strokes_state()
-                        .borrow()
-                        .renderer
-                        .read()
-                        .unwrap()
-                        .gen_image(1.0, &[svg], transformed_selection_bounds)?
-                    {
+                    if let Some(image) = canvas.renderer().read().unwrap().gen_image(
+                        1.0,
+                        &[svg],
+                        transformed_selection_bounds,
+                    )? {
                         let rendernode = render::image_to_rendernode(&image, 1.0)
                             .context("image_to_rendernode() in draw_rotation_indicator() in selection_modifier failed")?;
                         snapshot.append_node(&rendernode);
@@ -498,13 +490,7 @@ impl SelectionModifier {
 
     /// Updates the internal state for measuring the widgets size, allocation, etc.
     pub fn update_state(&self, canvas: &Canvas) {
-        self.set_selection_bounds(
-            canvas
-                .sheet()
-                .strokes_state()
-                .borrow()
-                .gen_selection_bounds(),
-        );
+        self.set_selection_bounds(canvas.sheet().borrow().strokes_state.gen_selection_bounds());
         self.set_visible(self.selection_bounds().is_some());
 
         if let Some(selection_bounds) = self.selection_bounds() {
@@ -594,8 +580,8 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    appwindow.canvas().sheet().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds, appwindow.canvas().renderer(), zoom);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -607,7 +593,7 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
                 start_bounds.set(None);
 
-                appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
+                appwindow.canvas().sheet().borrow_mut().strokes_state.update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
 
                 selection_modifier.update_state(&appwindow.canvas());
@@ -661,8 +647,8 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    appwindow.canvas().sheet().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds, appwindow.canvas().renderer(), zoom);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -674,7 +660,7 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
                 start_bounds.set(None);
 
-                appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
+                appwindow.canvas().sheet().borrow_mut().strokes_state.update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
 
                 selection_modifier.update_state(&appwindow.canvas());
@@ -728,8 +714,8 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    appwindow.canvas().sheet().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds, appwindow.canvas().renderer(), zoom);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -741,7 +727,7 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
                 start_bounds.set(None);
 
-                appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
+                appwindow.canvas().sheet().borrow_mut().strokes_state.update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
 
                 selection_modifier.update_state(&appwindow.canvas());
@@ -795,8 +781,8 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().resize_strokes(&selection_keys, selection_bounds, new_bounds);
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    appwindow.canvas().sheet().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds, appwindow.canvas().renderer(), zoom);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -808,7 +794,7 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
                 start_bounds.set(None);
 
-                appwindow.canvas().sheet().strokes_state().borrow_mut().update_geometry_selection_strokes();
+                appwindow.canvas().sheet().borrow_mut().strokes_state.update_geometry_selection_strokes();
                 appwindow.canvas().regenerate_content(false, true);
 
                 selection_modifier.update_state(&appwindow.canvas());
@@ -838,8 +824,8 @@ impl SelectionModifier {
                 let zoom = appwindow.canvas().zoom();
                 let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-                let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
-                appwindow.canvas().sheet().strokes_state().borrow_mut().translate_strokes(&selection_keys, offset);
+                let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                appwindow.canvas().sheet().borrow_mut().strokes_state.translate_strokes(&selection_keys, offset, zoom);
                 selection_modifier.set_selection_bounds(selection_modifier.imp().selection_bounds.get().map(|selection_bounds| geometry::aabb_translate(selection_bounds, offset)));
 
                 selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -894,6 +880,8 @@ impl SelectionModifier {
         );
         rotate_node_drag_gesture.connect_drag_update(
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
+                let zoom = appwindow.canvas().zoom();
+
                 if let (Some(start_bounds), Some(start_point)) = (start_bounds.get(), drag_gesture.start_point()) {
                     let current_pos = {
                         let pos = selection_modifier.rotate_node().translate_coordinates(&appwindow.canvas(), start_point.0 + x, start_point.1 + y).unwrap();
@@ -912,8 +900,8 @@ impl SelectionModifier {
 
                     let angle_delta = angle - selection_modifier.imp().current_rotation_angle.get();
 
-                    let selection_keys = appwindow.canvas().sheet().strokes_state().borrow().selection_keys_in_order_rendered();
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().rotate_strokes(&selection_keys, angle_delta, start_bounds.center());
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    appwindow.canvas().sheet().borrow_mut().strokes_state.rotate_strokes(&selection_keys, angle_delta, start_bounds.center(), appwindow.canvas().renderer(), zoom);
                     selection_modifier.update_state(&appwindow.canvas());
 
                     selection_modifier.imp().current_rotation_angle.set(angle);

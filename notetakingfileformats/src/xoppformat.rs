@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
 
 /// Represents a Xournal++ `.xopp` file.
-/// The original Xournal spec can be found here: http://xournal.sourceforge.net/manual.html#file-format
-/// The coordinates units saved to a .xopp are in 72dpi, meaning a vector of (1,0) = 1 / 72 inch.
+/// The original Xournal spec can be found here: <http://xournal.sourceforge.net/manual.html#file-format>
+/// The coordinates units saved to a .xopp are in 72dpi, meaning a vector of (1,0) has a length of 1 / 72 inch.
 #[derive(Debug)]
 pub struct XoppFile {
     /// The .xopp XML root element

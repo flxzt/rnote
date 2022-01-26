@@ -24,22 +24,22 @@
             <item>
               <attribute name="label" translatable="yes">Draw with touch input</attribute>
               <attribute name="toggle" />
-              <attribute name="action">app.touch-drawing</attribute>
+              <attribute name="action">win.touch-drawing</attribute>
             </item>
             <item>
               <attribute name="label" translatable="yes">Endless sheet</attribute>
               <attribute name="toggle" />
-              <attribute name="action">app.endless-sheet</attribute>
+              <attribute name="action">win.endless-sheet</attribute>
             </item>
             <item>
               <attribute name="label" translatable="yes">Show format borders</attribute>
               <attribute name="toggle" />
-              <attribute name="action">app.format-borders</attribute>
+              <attribute name="action">win.format-borders</attribute>
             </item>
             <item>
               <attribute name="label" translatable="yes">Pen sounds</attribute>
               <attribute name="toggle" />
-              <attribute name="action">app.pen-sounds</attribute>
+              <attribute name="action">win.pen-sounds</attribute>
             </item>
             <item>
               <attribute name="label" translatable="yes">Clear sheet</attribute>
@@ -143,7 +143,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkBox" id="handedtoggle_box">
+              <object class="GtkBox">
                 <property name="homogeneous">true</property>
                 <property name="hexpand">true</property>
                 <property name="halign">fill</property>
@@ -159,13 +159,18 @@
                   <object class="GtkToggleButton" id="righthanded_toggle">
                     <property name="icon_name">dock-left-symbolic</property>
                     <property name="hexpand">true</property>
+                    <property name="action-name">win.righthanded</property>
+                    <property name="action-target">true</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkToggleButton" id="lefthanded_toggle">
+                    <property name="group">righthanded_toggle</property>
+                    <property name="active">true</property>
                     <property name="icon_name">dock-right-symbolic</property>
                     <property name="hexpand">true</property>
-                    <property name="group">righthanded_toggle</property>
+                    <property name="action-name">win.righthanded</property>
+                    <property name="action-target">false</property>
                   </object>
                 </child>
               </object>

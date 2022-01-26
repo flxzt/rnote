@@ -34,6 +34,7 @@ mod imp {
         pub colorchooser_editor_selectbutton: TemplateChild<Button>,
 
         pub position: Cell<PositionType>,
+        pub selected: Cell<u32>,
         pub amount_colorbuttons: Cell<u32>,
         pub currentcolor_setters: Rc<RefCell<Vec<ColorSetter>>>,
         pub current_color: Cell<gdk::RGBA>,
@@ -49,7 +50,9 @@ mod imp {
                 colorchooser: TemplateChild::<ColorChooserWidget>::default(),
                 colorchooser_editor_gobackbutton: TemplateChild::<Button>::default(),
                 colorchooser_editor_selectbutton: TemplateChild::<Button>::default(),
+
                 position: Cell::new(PositionType::Right),
+                selected: Cell::new(0),
                 amount_colorbuttons: Cell::new(super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT),
                 current_color: Cell::new(super::ColorPicker::COLOR_DEFAULT.to_gdk()),
                 currentcolor_setters: Rc::new(RefCell::new(Vec::with_capacity(
@@ -87,6 +90,11 @@ mod imp {
                 clone!(@weak obj => move |currentcolor_setter1| {
                     let color = currentcolor_setter1.property::<gdk::RGBA>("color");
                     obj.set_property("current-color", &color.to_value());
+
+                    // Avoid loops
+                    if obj.selected() != 0_u32 {
+                        obj.set_selected(0_u32);
+                    }
                 }),
             );
 
@@ -123,11 +131,11 @@ mod imp {
 
                 // store color in the buttons
                 if currentcolor_setter1.is_active() {
-                    currentcolor_setter1.set_property("color", &current_color.to_value());
+                    currentcolor_setter1.set_property("color", &current_color.to_gdk().to_value());
                 } else {
                     for setter_button in &*currentcolor_setters.borrow() {
                         if setter_button.is_active() {
-                            setter_button.set_property("color", &current_color.to_value());
+                            setter_button.set_property("color", &current_color.to_gdk().to_value());
                         }
                     }
                 }
@@ -155,6 +163,15 @@ mod imp {
                         // Default value
                         PositionType::Right.into_glib(),
                         // The property can be read and written to
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    glib::ParamSpecUInt::new(
+                        "selected",
+                        "selected",
+                        "selected",
+                        u32::MIN,
+                        u32::MAX,
+                        0,
                         glib::ParamFlags::READWRITE,
                     ),
                     glib::ParamSpecUInt::new(
@@ -243,6 +260,30 @@ mod imp {
                         _ => {}
                     }
                 }
+                "selected" => {
+                    // Clamping to the current amoutn of colorbuttons
+                    let index = value
+                        .get::<u32>()
+                        .unwrap()
+                        .clamp(0, self.amount_colorbuttons.get());
+                    self.selected.set(index);
+
+                    // Deselect everything
+                    for currentcolor_setter in self.currentcolor_setters.borrow().iter() {
+                        currentcolor_setter.set_active(false);
+                    }
+
+                    if index == 0 {
+                        self.currentcolor_setter1.get().set_active(true);
+                    } else {
+                        // index - 1, because vec of colorsetters are not including the first
+                        if let Some(currentcolor_setter) =
+                            self.currentcolor_setters.borrow().get(index as usize - 1)
+                        {
+                            currentcolor_setter.set_active(true);
+                        }
+                    }
+                }
                 "amount-colorbuttons" => {
                     self.amount_colorbuttons
                         .set(value.get::<u32>().expect("value not of type `u32`"));
@@ -262,6 +303,7 @@ mod imp {
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "position" => self.position.get().to_value(),
+                "selected" => self.selected.get().to_value(),
                 "amount-colorbuttons" => self.amount_colorbuttons.get().to_value(),
                 "current-color" => self.current_color.get().to_value(),
                 _ => panic!("invalid property name"),
@@ -276,12 +318,14 @@ mod imp {
             let setterbox = &*self.setterbox;
             let currentcolor_setter1 = &*self.currentcolor_setter1;
 
+            // Clearing previous
             for setter_button in &*self.currentcolor_setters.borrow_mut() {
                 setter_button.unparent();
             }
             self.currentcolor_setters.borrow_mut().clear();
 
-            for _ in super::ColorPicker::AMOUNT_COLORBUTTONS_MIN..self.amount_colorbuttons.get() {
+            // init the colorsetters. Index starts at one to skip the first button
+            for i in super::ColorPicker::AMOUNT_COLORBUTTONS_MIN..self.amount_colorbuttons.get() {
                 let setter_button = ColorSetter::new();
 
                 setter_button.set_hexpand(true);
@@ -295,6 +339,11 @@ mod imp {
                 setter_button.connect_clicked(clone!(@weak obj => move |setter_button| {
                     let color = setter_button.property::<gdk::RGBA>("color");
                     obj.set_property("current-color", &color.to_value());
+
+                    // Avoid loops
+                    if obj.selected() != i {
+                        obj.set_selected(i);
+                    }
                 }));
 
                 self.currentcolor_setters.borrow_mut().push(setter_button);
@@ -359,12 +408,12 @@ impl ColorPicker {
         self.set_property("position", position.to_value());
     }
 
-    pub fn current_color(&self) -> gdk::RGBA {
-        self.property::<gdk::RGBA>("current-color")
+    pub fn current_color(&self) -> Color {
+        Color::from(self.property::<gdk::RGBA>("current-color"))
     }
 
-    pub fn set_current_color(&self, current_color: gdk::RGBA) {
-        self.set_property("current-color", current_color.to_value());
+    pub fn set_current_color(&self, color: Color) {
+        self.set_property("current-color", color.to_gdk().to_value());
     }
 
     pub fn amount_colorbuttons(&self) -> u32 {
@@ -375,6 +424,15 @@ impl ColorPicker {
         self.set_property("amount-colorbuttons", amount.to_value());
     }
 
+    pub fn selected(&self) -> u32 {
+        self.property::<u32>("selected")
+    }
+
+    pub fn set_selected(&self, selected: u32) {
+        self.set_property("selected", selected.to_value());
+    }
+
+    /// Returns a vector of the colors
     pub fn fetch_all_colors(&self) -> Vec<Color> {
         let mut all_colors = Vec::with_capacity(8);
         all_colors.push(Color::from(self.imp().currentcolor_setter1.get().color()));
@@ -385,7 +443,7 @@ impl ColorPicker {
         all_colors
     }
 
-    pub fn load_all_colors(&self, all_colors: &[Color]) {
+    pub fn load_colors(&self, all_colors: &[Color]) {
         let mut all_colors_iter = all_colors.iter();
         if let Some(first_color) = all_colors_iter.next() {
             self.imp()

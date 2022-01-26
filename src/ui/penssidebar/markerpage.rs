@@ -1,16 +1,10 @@
 mod imp {
     use crate::ui::colorpicker::ColorPicker;
-    use gtk4::{
-        glib, prelude::*, subclass::prelude::*, Adjustment, Button, CompositeTemplate, SpinButton,
-    };
+    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, SpinButton};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/markerpage.ui")]
     pub struct MarkerPage {
-        #[template_child]
-        pub width_resetbutton: TemplateChild<Button>,
-        #[template_child]
-        pub width_adj: TemplateChild<Adjustment>,
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -51,8 +45,8 @@ use crate::compose::color::Color;
 use crate::pens::marker::Marker;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, Button, Orientable,
-    SpinButton, Widget,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, SpinButton,
+    Widget,
 };
 
 glib::wrapper! {
@@ -71,14 +65,6 @@ impl MarkerPage {
         glib::Object::new(&[]).expect("Failed to create MarkerPage")
     }
 
-    pub fn width_resetbutton(&self) -> Button {
-        imp::MarkerPage::from_instance(self).width_resetbutton.get()
-    }
-
-    pub fn width_adj(&self) -> Adjustment {
-        imp::MarkerPage::from_instance(self).width_adj.get()
-    }
-
     pub fn width_spinbutton(&self) -> SpinButton {
         imp::MarkerPage::from_instance(self).width_spinbutton.get()
     }
@@ -88,30 +74,28 @@ impl MarkerPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let width_adj = self.width_adj();
-
-        self.width_adj().set_lower(Marker::WIDTH_MIN);
-        self.width_adj().set_upper(Marker::WIDTH_MAX);
-        self.width_adj().set_value(Marker::WIDTH_DEFAULT);
+        self.width_spinbutton().set_increments(0.1, 2.0);
+        self.width_spinbutton()
+            .set_range(Marker::WIDTH_MIN, Marker::WIDTH_MAX);
+        // Must be after set_range() !
+        self.width_spinbutton().set_value(Marker::WIDTH_DEFAULT);
 
         self.colorpicker().connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color");
-                appwindow.canvas().pens().borrow_mut().marker.color = Color::from(color);
+                appwindow.canvas().pens().borrow_mut().marker.options.set_color(Some(Color::from(color)));
             }),
         );
 
-        self.width_resetbutton().connect_clicked(
-            clone!(@weak width_adj, @weak appwindow => move |_| {
-                appwindow.canvas().pens().borrow_mut().marker.set_width(Marker::WIDTH_DEFAULT);
-                width_adj.set_value(Marker::WIDTH_DEFAULT);
+        self.width_spinbutton().connect_value_changed(
+            clone!(@weak appwindow => move |width_spinbutton| {
+                appwindow.canvas().pens().borrow_mut().marker.set_width(width_spinbutton.value());
             }),
         );
+    }
 
-        self.width_adj()
-            .connect_value_changed(clone!(@weak appwindow => move |width_adj| {
-                appwindow.canvas().pens().borrow_mut().marker.set_width(width_adj.value());
-            }));
+    pub fn load_from_marker(&self, marker: Marker) {
+        self.width_spinbutton().set_value(marker.width());
     }
 }

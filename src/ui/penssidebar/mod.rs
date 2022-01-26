@@ -162,22 +162,22 @@ impl PensSideBar {
                 if let Some(child_name) = sidebar_stack.visible_child_name() {
                     match child_name.to_value().get::<String>().unwrap().as_str() {
                         "marker_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"marker".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"marker_style".to_variant()));
                         },
                         "brush_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush_style".to_variant()));
                         },
                         "shaper_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper_style".to_variant()));
                         },
                         "eraser_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser_style".to_variant()));
                         }
                         "selector_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector_style".to_variant()));
                         }
                         "tools_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools_style".to_variant()));
                         }
                         _ => {}
                     };

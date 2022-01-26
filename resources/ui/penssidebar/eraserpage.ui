@@ -23,18 +23,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="width_resetbutton">
-        <property name="icon_name">reset-width-symbolic</property>
-        <property name="tooltip_text" translatable="yes">Reset eraser width</property>
-      </object>
-    </child>
-    <child>
-      <object class="GtkAdjustment" id="width_adj">
-        <property name="step-increment">1</property>
-        <property name="page-increment">10</property>
-      </object>
       <object class="GtkSpinButton" id="width_spinbutton">
-        <property name="adjustment">width_adj</property>
         <property name="orientation">vertical</property>
         <property name="numeric">true</property>
         <property name="digits">0</property>

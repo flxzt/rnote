@@ -3,7 +3,7 @@ mod roughshapes;
 
 use svg::node::element::{self, path};
 
-use roughoptions::Options;
+use roughoptions::RoughOptions;
 
 use super::{curves, shapes};
 use crate::compose;
@@ -15,20 +15,20 @@ The library defines primitives to draw lines, curves, arcs, polygons, circles, a
 */
 
 /// Generating a single line element
-pub fn line(options: &Options, line: curves::Line) -> element::Path {
+pub fn line(line: curves::Line, options: &RoughOptions) -> element::Path {
     let mut rng = compose::new_rng_default_pcg64(options.seed);
 
     let commands = if !options.disable_multistroke {
         roughshapes::doubleline(line.start, line.end, options, &mut rng)
     } else {
-        roughshapes::line(line.start, line.end, options, &mut rng, true, false)
+        roughshapes::line(line.start, line.end, true, false, options, &mut rng)
     };
 
     options.apply_to_line(element::Path::new().set("d", path::Data::from(commands)))
 }
 
 /// Generating a cubic bezier curve
-pub fn cubic_bezier(options: &Options, cubbez: curves::CubicBezier) -> element::Path {
+pub fn cubic_bezier(cubbez: curves::CubicBezier, options: &RoughOptions) -> element::Path {
     let mut rng = compose::new_rng_default_pcg64(options.seed);
 
     let commands = roughshapes::cubic_bezier(
@@ -44,7 +44,7 @@ pub fn cubic_bezier(options: &Options, cubbez: curves::CubicBezier) -> element::
 }
 
 /// Generating a rectangle
-pub fn rectangle(options: &Options, rectangle: shapes::Rectangle) -> element::Group {
+pub fn rectangle(rectangle: shapes::Rectangle, options: &RoughOptions) -> element::Group {
     let mut rng = compose::new_rng_default_pcg64(options.seed);
 
     let mut commands = Vec::new();
@@ -81,34 +81,34 @@ pub fn rectangle(options: &Options, rectangle: shapes::Rectangle) -> element::Gr
         commands.append(&mut roughshapes::line(
             top_left,
             na::vector![bottom_right[0], top_left[1]],
-            options,
-            &mut rng,
             true,
             false,
+            options,
+            &mut rng,
         ));
         commands.append(&mut roughshapes::line(
             na::vector![bottom_right[0], top_left[1]],
             bottom_right,
-            options,
-            &mut rng,
             true,
             false,
+            options,
+            &mut rng,
         ));
         commands.append(&mut roughshapes::line(
             bottom_right,
             na::vector![top_left[0], bottom_right[1]],
-            options,
-            &mut rng,
             true,
             false,
+            options,
+            &mut rng,
         ));
         commands.append(&mut roughshapes::line(
             na::vector![top_left[0], bottom_right[1]],
             top_left,
-            options,
-            &mut rng,
             true,
             false,
+            options,
+            &mut rng,
         ));
     }
 
@@ -120,7 +120,7 @@ pub fn rectangle(options: &Options, rectangle: shapes::Rectangle) -> element::Gr
         na::vector![bottom_right[0], bottom_right[1]],
         na::vector![top_left[0], bottom_right[1]],
     ];
-    let fill_polygon = fill_polygon(options, fill_points);
+    let fill_polygon = fill_polygon(fill_points, options);
 
     let transform_string = rectangle.transform.transform_as_svg_transform_attr();
 
@@ -131,7 +131,7 @@ pub fn rectangle(options: &Options, rectangle: shapes::Rectangle) -> element::Gr
 }
 
 /// Generating a fill polygon
-pub fn fill_polygon(options: &Options, coords: Vec<na::Vector2<f64>>) -> element::Path {
+pub fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> element::Path {
     let mut rng = compose::new_rng_default_pcg64(options.seed);
 
     let mut commands = Vec::new();
@@ -141,7 +141,7 @@ pub fn fill_polygon(options: &Options, coords: Vec<na::Vector2<f64>>) -> element
 }
 
 /// Generating a ellipse
-pub fn ellipse(options: &Options, ellipse: shapes::Ellipse) -> element::Group {
+pub fn ellipse(ellipse: shapes::Ellipse, options: &RoughOptions) -> element::Group {
     let mut rng = compose::new_rng_default_pcg64(options.seed);
 
     let ellipse_result = roughshapes::ellipse(
@@ -160,7 +160,7 @@ pub fn ellipse(options: &Options, ellipse: shapes::Ellipse) -> element::Group {
             .set("d", path::Data::from(ellipse_result.commands)),
     );
 
-    let fill_polygon = fill_polygon(options, ellipse_result.estimated_points);
+    let fill_polygon = fill_polygon(ellipse_result.estimated_points, options);
 
     element::Group::new().add(fill_polygon).add(ellipse)
 }

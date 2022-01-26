@@ -1,4 +1,5 @@
 use std::collections::VecDeque;
+use std::sync::{Arc, RwLock};
 
 use crate::compose::color::Color;
 use crate::strokes::strokestyle::InputData;
@@ -6,22 +7,31 @@ use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, render};
 
 use anyhow::Context;
-use gtk4::{gdk, prelude::*, Snapshot};
+use gtk4::{gdk, glib, prelude::*, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
 use super::penbehaviour::PenBehaviour;
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
+#[serde(rename = "selector_style")]
+#[enum_type(name = "SelectorStyle")]
 pub enum SelectorStyle {
+    #[serde(rename = "polygon")]
+    #[enum_value(name = "Polygon", nick = "polygon")]
     Polygon,
+    #[serde(rename = "rectangle")]
+    #[enum_value(name = "Rectangle", nick = "rectangle")]
     Rectangle,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default, rename = "selector")]
 pub struct Selector {
+    #[serde(rename = "style")]
     style: SelectorStyle,
+    #[serde(skip)]
     pub path: Vec<InputData>,
 }
 
@@ -35,35 +45,61 @@ impl Default for Selector {
 }
 
 impl PenBehaviour for Selector {
-    fn begin(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    fn begin(mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .set_cursor(gdk::Cursor::from_name("cell", None).as_ref());
 
-        self.path.clear();
+        appwindow.canvas().pens().borrow_mut().selector.path.clear();
 
         if let Some(inputdata) = data_entries.pop_back() {
-            self.path.push(inputdata);
+            appwindow
+                .canvas()
+                .pens()
+                .borrow_mut()
+                .selector
+                .path
+                .push(inputdata);
         }
     }
 
-    fn motion(&mut self, mut data_entries: VecDeque<InputData>, _appwindow: &RnoteAppWindow) {
+    fn motion(mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
         if let Some(inputdata) = data_entries.pop_back() {
-            match self.style {
+            let style = appwindow.canvas().pens().borrow().selector.style;
+
+            match style {
                 SelectorStyle::Polygon => {
-                    self.path.push(inputdata);
+                    appwindow
+                        .canvas()
+                        .pens()
+                        .borrow_mut()
+                        .selector
+                        .path
+                        .push(inputdata);
                 }
                 SelectorStyle::Rectangle => {
-                    if self.path.len() > 2 {
-                        self.path.resize(2, InputData::default());
+                    if appwindow.canvas().pens().borrow().selector.path.len() > 2 {
+                        appwindow
+                            .canvas()
+                            .pens()
+                            .borrow_mut()
+                            .selector
+                            .path
+                            .resize(2, InputData::default());
                     }
-                    self.path.insert(1, inputdata)
+                    appwindow
+                        .canvas()
+                        .pens()
+                        .borrow_mut()
+                        .selector
+                        .path
+                        .insert(1, inputdata)
                 }
             }
         }
     }
 
-    fn end(&mut self, _data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    fn end(_data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .set_cursor(Some(&appwindow.canvas().cursor()));
@@ -71,22 +107,38 @@ impl PenBehaviour for Selector {
         appwindow
             .canvas()
             .sheet()
-            .strokes_state()
             .borrow_mut()
+            .strokes_state
             .update_selection_for_selector(
-                self,
+                &appwindow.canvas().pens().borrow().selector,
                 Some(appwindow.canvas().viewport_in_sheet_coords()),
             );
+        let selection_keys = appwindow
+            .canvas()
+            .sheet()
+            .borrow()
+            .strokes_state
+            .selection_keys_in_order_rendered();
+        appwindow
+            .canvas()
+            .sheet()
+            .borrow_mut()
+            .strokes_state
+            .regenerate_rendering_for_strokes(
+                &selection_keys,
+                appwindow.canvas().renderer(),
+                appwindow.canvas().zoom(),
+            );
 
-        self.path.clear();
+        appwindow.canvas().pens().borrow_mut().selector.path.clear();
     }
 
     fn draw(
         &self,
         _sheet_bounds: AABB,
-        renderer: &render::Renderer,
         zoom: f64,
         snapshot: &Snapshot,
+        renderer: Arc<RwLock<render::Renderer>>,
     ) -> Result<(), anyhow::Error> {
         if let Some(bounds) = self.gen_bounds() {
             let mut data = element::path::Data::new();
@@ -137,7 +189,7 @@ impl PenBehaviour for Selector {
             })?;
 
             let svg = render::Svg { bounds, svg_data };
-            if let Some(image) = renderer.gen_image(zoom, &[svg], bounds)? {
+            if let Some(image) = renderer.read().unwrap().gen_image(zoom, &[svg], bounds)? {
                 let rendernode =
                     render::image_to_rendernode(&image, zoom).context("selector.draw() failed")?;
                 snapshot.append_node(&rendernode);
@@ -148,19 +200,18 @@ impl PenBehaviour for Selector {
 }
 
 impl Selector {
-    pub const STROKE_DASHARRAY: &'static str = "4 6";
-    pub const PATH_WIDTH: f64 = 3.0;
+    pub const PATH_WIDTH: f64 = 1.5;
     pub const PATH_COLOR: Color = Color {
-        r: 0.6,
-        g: 0.6,
-        b: 0.6,
+        r: 0.5,
+        g: 0.5,
+        b: 0.5,
         a: 0.7,
     };
     pub const FILL_COLOR: Color = Color {
-        r: 0.9,
-        g: 0.9,
-        b: 0.9,
-        a: 0.2,
+        r: 0.7,
+        g: 0.7,
+        b: 0.7,
+        a: 0.15,
     };
 
     pub fn new() -> Self {

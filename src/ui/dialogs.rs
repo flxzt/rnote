@@ -55,10 +55,11 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
         clone!(@weak appwindow => move |dialog_clear_sheet, responsetype| {
             match responsetype {
                 ResponseType::Ok => {
-                    appwindow.canvas().sheet().strokes_state().borrow_mut().clear();
-                    appwindow.canvas().selection_modifier().set_visible(false);
+                    appwindow.canvas().sheet().borrow_mut().strokes_state.clear();
+                    appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                     appwindow.canvas().set_unsaved_changes(false);
                     appwindow.canvas().set_empty(true);
+
                     appwindow.canvas().regenerate_background(false);
                     appwindow.canvas().regenerate_content(true, true);
 
@@ -86,10 +87,11 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
 
-                appwindow.canvas().sheet().strokes_state().borrow_mut().clear();
-                appwindow.canvas().selection_modifier().set_visible(false);
+                appwindow.canvas().sheet().borrow_mut().strokes_state.clear();
+                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().set_unsaved_changes(false);
                 appwindow.canvas().set_empty(true);
+
                 appwindow.canvas().update_background_rendernode(false);
                 appwindow.canvas().regenerate_content(true, true);
 
@@ -279,7 +281,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                         Some(file) => {
                             match file.basename() {
                                 Some(basename) => {
-                                    match appwindow.canvas().sheet().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {
+                                    match appwindow.canvas().sheet().borrow().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {
                                         Ok(bytes) => {
                                             if let Err(e) = utils::replace_file_async(bytes, &file) {
                                                 log::error!("saving sheet as .rnote failed, replace_file_async failed with Err {}", e);
@@ -382,7 +384,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     match dialog_export_selection.file() {
                         Some(file) => {
-                            if let Err(e) = appwindow.canvas().sheet().strokes_state().borrow().export_selection_as_svg(file) {
+                            if let Err(e) = appwindow.canvas().sheet().borrow().strokes_state.export_selection_as_svg(file) {
                                 log::error!("exporting selection failed with error `{}`", e);
                             }
                         },
@@ -424,7 +426,7 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     match dialog_export_sheet.file() {
                         Some(file) => {
-                            if let Err(e) = appwindow.canvas().sheet().export_sheet_as_svg(&file) {
+                            if let Err(e) = appwindow.canvas().sheet().borrow().export_sheet_as_svg(&file) {
                                 log::error!("exporting sheet failed with error `{}`", e);
                             }
                         },
@@ -469,7 +471,7 @@ pub fn dialog_export_sheet_as_xopp(appwindow: &RnoteAppWindow) {
                         Some(file) => {
                             match file.basename() {
                                 Some(basename) => {
-                                    match appwindow.canvas().sheet().export_sheet_as_xopp_bytes(&basename.to_string_lossy()) {
+                                    match appwindow.canvas().sheet().borrow().export_sheet_as_xopp_bytes(&basename.to_string_lossy(), appwindow.canvas().renderer()) {
                                         Ok(bytes) => {
                                             if let Err(e) = utils::replace_file_async(bytes, &file) {
                                                 log::error!("exporting sheet as .xopp failed, replace_file_async failed with Err {}", e);

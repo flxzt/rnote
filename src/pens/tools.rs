@@ -1,4 +1,5 @@
 use std::collections::VecDeque;
+use std::sync::{Arc, RwLock};
 
 use crate::compose::color::Color;
 use crate::compose::geometry;
@@ -9,14 +10,21 @@ use crate::ui::appwindow::RnoteAppWindow;
 use crate::{compose, render};
 
 use anyhow::Context;
-use gtk4::{prelude::*, Snapshot};
+use gtk4::{glib, prelude::*, Snapshot};
 use p2d::bounding_volume::AABB;
+use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, glib::Enum)]
+#[serde(rename = "tool_style")]
+#[enum_type(name = "ToolStyle")]
 pub enum ToolStyle {
+    #[serde(rename = "expandsheet")]
+    #[enum_value(name = "Expandsheet", nick = "expandsheet")]
     ExpandSheet,
+    #[serde(rename = "dragproximity")]
+    #[enum_value(name = "Dragproximity", nick = "dragproximity")]
     DragProximity,
 }
 
@@ -26,10 +34,14 @@ impl Default for ToolStyle {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default, rename = "expandsheet_tool")]
 pub struct ExpandSheetTool {
+    #[serde(skip)]
     y_start_pos: f64,
+    #[serde(skip)]
     y_current_pos: f64,
+    #[serde(skip)]
     strokes_below: Vec<StrokeKey>,
 }
 
@@ -69,9 +81,9 @@ impl ExpandSheetTool {
     pub fn draw(
         &self,
         sheet_bounds: AABB,
-        renderer: &Renderer,
         zoom: f64,
         snapshot: &Snapshot,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         let x = sheet_bounds.mins[0];
         let y = self.y_start_pos;
@@ -119,7 +131,7 @@ impl ExpandSheetTool {
         let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg { svg_data, bounds };
 
-        if let Some(image) = renderer.gen_image(zoom, &[svg], bounds)? {
+        if let Some(image) = renderer.read().unwrap().gen_image(zoom, &[svg], bounds)? {
             let rendernode = render::image_to_rendernode(&image, zoom)
                 .context("ExpandSheetTool draw() failed")?;
             snapshot.append_node(&rendernode);
@@ -129,10 +141,14 @@ impl ExpandSheetTool {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default, rename = "dragproximity_tool")]
 pub struct DragProximityTool {
+    #[serde(skip)]
     pub pos: na::Vector2<f64>,
+    #[serde(skip)]
     pub offset: na::Vector2<f64>,
+    #[serde(rename = "radius")]
     pub radius: f64,
 }
 
@@ -166,9 +182,9 @@ impl DragProximityTool {
     pub fn draw(
         &self,
         _sheet_bounds: AABB,
-        renderer: &Renderer,
         zoom: f64,
         snapshot: &Snapshot,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         let cx = self.pos[0] + self.offset[0];
         let cy = self.pos[1] + self.offset[1];
@@ -203,7 +219,11 @@ impl DragProximityTool {
             bounds: draw_bounds,
         };
 
-        if let Some(image) = renderer.gen_image(zoom, &[svg], draw_bounds)? {
+        if let Some(image) = renderer
+            .read()
+            .unwrap()
+            .gen_image(zoom, &[svg], draw_bounds)?
+        {
             let rendernode = render::image_to_rendernode(&image, zoom)
                 .context("DrawProximityTool draw() failed")?;
             snapshot.append_node(&rendernode);
@@ -213,101 +233,226 @@ impl DragProximityTool {
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[serde(default, rename = "tools")]
 pub struct Tools {
-    current_style: ToolStyle,
+    #[serde(rename = "style")]
+    style: ToolStyle,
+    #[serde(skip)]
     pub expand_sheet_tool: ExpandSheetTool,
+    #[serde(skip)]
     pub drag_proximity_tool: DragProximityTool,
 }
 
 impl PenBehaviour for Tools {
-    fn begin(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    fn begin(mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
         if let Some(inputdata) = data_entries.pop_back() {
-            match &mut self.current_style {
-                ToolStyle::ExpandSheet => {
-                    self.expand_sheet_tool.y_start_pos = inputdata.pos()[1];
-                    self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
+            let current_style = appwindow.canvas().pens().borrow().tools.style;
 
-                    self.expand_sheet_tool.strokes_below = appwindow
+            match current_style {
+                ToolStyle::ExpandSheet => {
+                    appwindow
+                        .canvas()
+                        .pens()
+                        .borrow_mut()
+                        .tools
+                        .expand_sheet_tool
+                        .y_start_pos = inputdata.pos()[1];
+                    appwindow
+                        .canvas()
+                        .pens()
+                        .borrow_mut()
+                        .tools
+                        .expand_sheet_tool
+                        .y_current_pos = inputdata.pos()[1];
+
+                    let y_current_pos = appwindow
+                        .canvas()
+                        .pens()
+                        .borrow()
+                        .tools
+                        .expand_sheet_tool
+                        .y_current_pos;
+
+                    appwindow
+                        .canvas()
+                        .pens()
+                        .borrow_mut()
+                        .tools
+                        .expand_sheet_tool
+                        .strokes_below = appwindow
                         .canvas()
                         .sheet()
-                        .strokes_state()
-                        .borrow_mut()
-                        .strokes_below_y_pos(self.expand_sheet_tool.y_current_pos);
+                        .borrow()
+                        .strokes_state
+                        .strokes_below_y_pos(y_current_pos);
                 }
                 ToolStyle::DragProximity => {
-                    self.drag_proximity_tool.pos = inputdata.pos();
-                    self.drag_proximity_tool.offset = na::Vector2::zeros();
+                    appwindow
+                        .canvas()
+                        .pens()
+                        .borrow_mut()
+                        .tools
+                        .drag_proximity_tool
+                        .pos = inputdata.pos();
+                    appwindow
+                        .canvas()
+                        .pens()
+                        .borrow_mut()
+                        .tools
+                        .drag_proximity_tool
+                        .offset = na::Vector2::zeros();
                 }
             }
         }
     }
 
-    fn motion(&mut self, mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    fn motion(mut data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
         if let Some(inputdata) = data_entries.pop_back() {
-            match &mut self.current_style {
+            let current_style = appwindow.canvas().pens().borrow().tools.style;
+
+            match current_style {
                 ToolStyle::ExpandSheet => {
-                    let y_offset = inputdata.pos()[1] - self.expand_sheet_tool.y_current_pos;
+                    let y_offset = inputdata.pos()[1]
+                        - appwindow
+                            .canvas()
+                            .pens()
+                            .borrow()
+                            .tools
+                            .expand_sheet_tool
+                            .y_current_pos;
 
                     if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
                         appwindow
                             .canvas()
                             .sheet()
-                            .strokes_state()
                             .borrow_mut()
+                            .strokes_state
                             .translate_strokes(
-                                &self.expand_sheet_tool.strokes_below,
+                                &appwindow
+                                    .canvas()
+                                    .pens()
+                                    .borrow()
+                                    .tools
+                                    .expand_sheet_tool
+                                    .strokes_below,
                                 na::vector![0.0, y_offset],
+                                appwindow.canvas().zoom(),
                             );
 
-                        self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
+                        appwindow
+                            .canvas()
+                            .pens()
+                            .borrow_mut()
+                            .tools
+                            .expand_sheet_tool
+                            .y_current_pos = inputdata.pos()[1];
                     }
                 }
                 ToolStyle::DragProximity => {
-                    self.drag_proximity_tool.offset =
-                        inputdata.pos() - self.drag_proximity_tool.pos;
+                    let offset = inputdata.pos()
+                        - appwindow
+                            .canvas()
+                            .pens()
+                            .borrow()
+                            .tools
+                            .drag_proximity_tool
+                            .pos;
+                    appwindow
+                        .canvas()
+                        .pens()
+                        .borrow_mut()
+                        .tools
+                        .drag_proximity_tool
+                        .offset = offset;
 
-                    if self.drag_proximity_tool.offset.magnitude()
+                    if appwindow
+                        .canvas()
+                        .pens()
+                        .borrow()
+                        .tools
+                        .drag_proximity_tool
+                        .offset
+                        .magnitude()
                         > DragProximityTool::OFFSET_MAGN_THRESHOLD
                     {
                         appwindow
                             .canvas()
                             .sheet()
-                            .strokes_state()
                             .borrow_mut()
-                            .drag_strokes_proximity(&self.drag_proximity_tool);
+                            .strokes_state
+                            .drag_strokes_proximity(
+                                &appwindow.canvas().pens().borrow().tools.drag_proximity_tool,
+                                appwindow.canvas().renderer(),
+                                appwindow.canvas().zoom(),
+                            );
 
-                        self.drag_proximity_tool.pos = inputdata.pos();
-                        self.drag_proximity_tool.offset = na::Vector2::zeros();
+                        appwindow
+                            .canvas()
+                            .pens()
+                            .borrow_mut()
+                            .tools
+                            .drag_proximity_tool
+                            .pos = inputdata.pos();
+                        appwindow
+                            .canvas()
+                            .pens()
+                            .borrow_mut()
+                            .tools
+                            .drag_proximity_tool
+                            .offset = na::Vector2::zeros();
                     }
                 }
             }
         }
     }
 
-    fn end(&mut self, _data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    fn end(_data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
         appwindow
             .canvas()
             .set_cursor(Some(&appwindow.canvas().cursor()));
+        let current_style = appwindow.canvas().pens().borrow().tools.style;
 
-        match &mut self.current_style {
+        match current_style {
             ToolStyle::ExpandSheet => {
-                self.expand_sheet_tool.y_start_pos = 0.0;
-                self.expand_sheet_tool.y_current_pos = 0.0;
+                appwindow
+                    .canvas()
+                    .pens()
+                    .borrow_mut()
+                    .tools
+                    .expand_sheet_tool
+                    .y_start_pos = 0.0;
+                appwindow
+                    .canvas()
+                    .pens()
+                    .borrow_mut()
+                    .tools
+                    .expand_sheet_tool
+                    .y_current_pos = 0.0;
             }
             ToolStyle::DragProximity => {
-                self.drag_proximity_tool.pos = na::Vector2::zeros();
-                self.drag_proximity_tool.offset = na::Vector2::zeros();
+                appwindow
+                    .canvas()
+                    .pens()
+                    .borrow_mut()
+                    .tools
+                    .drag_proximity_tool
+                    .pos = na::Vector2::zeros();
+                appwindow
+                    .canvas()
+                    .pens()
+                    .borrow_mut()
+                    .tools
+                    .drag_proximity_tool
+                    .offset = na::Vector2::zeros();
             }
         }
 
-        if appwindow.canvas().sheet().resize_endless() {
-            appwindow.canvas().update_background_rendernode(false);
-        }
+        appwindow.canvas().resize_endless();
 
         appwindow.canvas().queue_resize();
         appwindow.canvas().queue_draw();
@@ -316,18 +461,18 @@ impl PenBehaviour for Tools {
     fn draw(
         &self,
         sheet_bounds: AABB,
-        renderer: &Renderer,
         zoom: f64,
         snapshot: &Snapshot,
+        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
-        match &self.current_style {
+        match &self.style {
             ToolStyle::ExpandSheet => {
                 self.expand_sheet_tool
-                    .draw(sheet_bounds, renderer, zoom, snapshot)?;
+                    .draw(sheet_bounds, zoom, snapshot, renderer)?;
             }
             ToolStyle::DragProximity => {
                 self.drag_proximity_tool
-                    .draw(sheet_bounds, renderer, zoom, snapshot)?;
+                    .draw(sheet_bounds, zoom, snapshot, renderer)?;
             }
         }
 
@@ -341,10 +486,10 @@ impl Tools {
     }
 
     pub fn style(&self) -> ToolStyle {
-        self.current_style.clone()
+        self.style.clone()
     }
 
     pub fn set_style(&mut self, style: ToolStyle) {
-        self.current_style = style;
+        self.style = style;
     }
 }

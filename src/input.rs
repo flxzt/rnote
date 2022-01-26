@@ -1,8 +1,10 @@
-use gtk4::{gdk, GestureStylus};
+use gtk4::{gdk, prelude::*, GestureStylus};
 use p2d::bounding_volume::AABB;
 use std::collections::VecDeque;
 
+use crate::audioplayer::RnoteAudioPlayer;
 use crate::strokes::strokestyle::InputData;
+use crate::ui::appwindow::RnoteAppWindow;
 
 pub const INPUT_OVERSHOOT: f64 = 30.0;
 
@@ -70,4 +72,61 @@ pub fn retreive_stylus_inputdata(
     data_entries.push_back(InputData::new(na::vector![x, y], pressure));
 
     data_entries
+}
+
+/// Process pen input start
+pub fn process_peninput_start(appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
+    appwindow.audioplayer().borrow().play_pen_sound_begin(
+        RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
+        appwindow.canvas().pens().borrow().current_pen,
+    );
+
+    appwindow.canvas().set_pen_shown(true);
+    appwindow.canvas().set_unsaved_changes(true);
+    appwindow.canvas().set_empty(false);
+    appwindow
+        .canvas()
+        .sheet()
+        .borrow_mut()
+        .strokes_state
+        .deselect_all_strokes();
+
+    let current_pen = appwindow.canvas().pens().borrow().current_pen;
+
+    current_pen.begin(data_entries, appwindow);
+
+    appwindow
+        .canvas()
+        .selection_modifier()
+        .update_state(&appwindow.canvas());
+
+    appwindow.canvas().queue_resize();
+    appwindow.canvas().queue_draw();
+}
+
+/// Process pen input motion
+pub fn process_peninput_motion(appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
+    appwindow.audioplayer().borrow().play_pen_sound_motion(
+        RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
+        appwindow.canvas().pens().borrow().current_pen,
+    );
+
+    let current_pen = appwindow.canvas().pens().borrow().current_pen;
+    current_pen.motion(data_entries, appwindow);
+
+    appwindow.canvas().queue_resize();
+    appwindow.canvas().queue_draw();
+}
+
+/// Process pen input end
+pub fn process_peninput_end(appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
+    let current_pen = appwindow.canvas().pens().borrow().current_pen;
+    current_pen.end(data_entries, appwindow);
+
+    appwindow.canvas().set_pen_shown(false);
+    appwindow
+        .canvas()
+        .selection_modifier()
+        .update_state(&appwindow.canvas());
+    appwindow.canvas().queue_draw();
 }

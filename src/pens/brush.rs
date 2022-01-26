@@ -1,26 +1,30 @@
 use std::collections::VecDeque;
 
-use crate::compose::{color::Color, textured};
+use crate::compose::color::Color;
+use crate::compose::smooth::SmoothOptions;
+use crate::compose::textured::TexturedOptions;
 use crate::input;
 use crate::strokes::brushstroke::BrushStroke;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
 use crate::strokesstate::StrokeKey;
 
-use gtk4::prelude::*;
+use gtk4::{glib, prelude::*};
 use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, glib::Enum)]
+#[repr(u32)]
+#[enum_type(name = "BrushStyle")]
 #[serde(rename = "brushstyle")]
 pub enum BrushStyle {
+    #[enum_value(name = "Solid", nick = "solid")]
     #[serde(rename = "solid")]
     Solid,
+    #[enum_value(name = "Textured", nick = "textured")]
     #[serde(rename = "textured")]
     Textured,
-    #[serde(rename = "experimental")]
-    Experimental,
 }
 
 impl Default for BrushStyle {
@@ -32,40 +36,37 @@ impl Default for BrushStyle {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "brush")]
 pub struct Brush {
-    #[serde(rename = "width")]
-    width: f64,
-    #[serde(rename = "sensitivity")]
-    sensitivity: f64,
-    #[serde(rename = "color")]
-    color: Color,
     #[serde(rename = "style")]
-    style: BrushStyle,
-    #[serde(rename = "textured_config")]
-    pub textured_config: textured::TexturedOptions,
+    pub style: BrushStyle,
+    #[serde(rename = "smooth_options")]
+    pub smooth_options: SmoothOptions,
+    #[serde(rename = "textured_options")]
+    pub textured_options: TexturedOptions,
+
     #[serde(skip)]
     pub current_stroke: Option<StrokeKey>,
 }
 
 impl Default for Brush {
     fn default() -> Self {
-        Self {
-            width: Self::WIDTH_DEFAULT,
-            sensitivity: Self::SENSITIVITY_DEFAULT,
-            color: Color::BLACK,
+        let mut brush = Self {
             style: BrushStyle::default(),
-            textured_config: textured::TexturedOptions::default(),
+            smooth_options: SmoothOptions::default(),
+            textured_options: TexturedOptions::default(),
             current_stroke: None,
-        }
+        };
+        brush.set_width(Self::WIDTH_DEFAULT);
+
+        brush
     }
 }
 
 impl PenBehaviour for Brush {
     fn begin(
-        &mut self,
         mut data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
-        self.current_stroke = None;
+        appwindow.canvas().pens().borrow_mut().brush.current_stroke = None;
         appwindow
             .canvas()
             .set_cursor(Some(&appwindow.canvas().motion_cursor()));
@@ -73,35 +74,43 @@ impl PenBehaviour for Brush {
         let filter_bounds = appwindow
             .canvas()
             .sheet()
+            .borrow()
             .bounds()
             .loosened(input::INPUT_OVERSHOOT);
 
         input::filter_mapped_inputdata(filter_bounds, &mut data_entries);
 
-        if let Some(inputdata) = data_entries.pop_back() {
-            let element = Element::new(inputdata);
-            let brushstroke = StrokeStyle::BrushStroke(BrushStroke::new(element, self.clone()));
+        let elements_iter = data_entries
+            .into_iter()
+            .map(|inputdata| Element::new(inputdata));
 
-            self.current_stroke = Some(
+        let brushstroke =
+            BrushStroke::new_w_elements(elements_iter, &appwindow.canvas().pens().borrow().brush);
+
+        if let Some(brushstroke) = brushstroke {
+            let brushstroke = StrokeStyle::BrushStroke(brushstroke);
+
+            let current_stroke_key = Some(
                 appwindow
                     .canvas()
                     .sheet()
-                    .strokes_state()
                     .borrow_mut()
+                    .strokes_state
                     .insert_stroke(brushstroke),
             );
+            appwindow.canvas().pens().borrow_mut().brush.current_stroke = current_stroke_key;
         }
     }
 
     fn motion(
-        &mut self,
         mut data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
-        if let Some(current_stroke_key) = self.current_stroke {
+        if let Some(current_stroke_key) = appwindow.canvas().pens().borrow().brush.current_stroke {
             let filter_bounds = appwindow
                 .canvas()
                 .sheet()
+                .borrow()
                 .bounds()
                 .loosened(input::INPUT_OVERSHOOT);
 
@@ -111,15 +120,19 @@ impl PenBehaviour for Brush {
                 appwindow
                     .canvas()
                     .sheet()
-                    .strokes_state()
                     .borrow_mut()
-                    .add_to_stroke(current_stroke_key, Element::new(inputdata));
+                    .strokes_state
+                    .add_to_stroke(
+                        current_stroke_key,
+                        Element::new(inputdata),
+                        appwindow.canvas().renderer(),
+                        appwindow.canvas().zoom(),
+                    );
             }
         }
     }
 
     fn end(
-        &mut self,
         _data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
@@ -127,70 +140,77 @@ impl PenBehaviour for Brush {
             .canvas()
             .set_cursor(Some(&appwindow.canvas().cursor()));
 
-        if let Some(current_stroke) = self.current_stroke.take() {
+        if let Some(current_stroke_key) = appwindow
+            .canvas()
+            .pens()
+            .borrow_mut()
+            .brush
+            .current_stroke
+            .take()
+        {
             appwindow
                 .canvas()
                 .sheet()
-                .strokes_state()
                 .borrow_mut()
-                .update_geometry_for_stroke(current_stroke);
+                .strokes_state
+                .update_geometry_for_stroke(current_stroke_key);
 
             appwindow
                 .canvas()
                 .sheet()
-                .strokes_state()
                 .borrow_mut()
-                .regenerate_rendering_for_stroke_threaded(current_stroke);
+                .strokes_state
+                .regenerate_rendering_for_stroke_threaded(
+                    current_stroke_key,
+                    appwindow.canvas().renderer(),
+                    appwindow.canvas().zoom(),
+                );
+
+            appwindow.canvas().resize_endless();
         }
     }
 }
 
+// specifying shared behaviour of all options
 impl Brush {
+    /// The default width
+    pub const WIDTH_DEFAULT: f64 = 3.6;
+    /// The min width
     pub const WIDTH_MIN: f64 = 0.1;
-    pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 6.0;
-    pub const SENSITIVITY_MIN: f64 = 0.0;
-    pub const SENSITIVITY_MAX: f64 = 1.0;
-    pub const SENSITIVITY_DEFAULT: f64 = 0.5;
+    /// The max width
+    pub const WIDTH_MAX: f64 = 1000.0;
 
-    pub const TEMPLATE_BOUNDS_PADDING: f64 = 50.0;
-
-    pub const COLOR_DEFAULT: Color = Color {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    };
-
+    /// Gets the width for the current brush style
     pub fn width(&self) -> f64 {
-        self.width
+        match self.style {
+            BrushStyle::Solid => self.smooth_options.width(),
+            BrushStyle::Textured => self.textured_options.width(),
+        }
     }
 
+    /// Sets the width for the current brush style
     pub fn set_width(&mut self, width: f64) {
-        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
+        let width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
+
+        match self.style {
+            BrushStyle::Solid => self.smooth_options.set_width(width),
+            BrushStyle::Textured => self.textured_options.set_width(width),
+        }
     }
 
-    pub fn sensitivity(&self) -> f64 {
-        self.sensitivity
+    /// Gets the color for the current brush style
+    pub fn color(&self) -> Option<Color> {
+        match self.style {
+            BrushStyle::Solid => self.smooth_options.color(),
+            BrushStyle::Textured => self.textured_options.color(),
+        }
     }
 
-    pub fn set_sensitivity(&mut self, sensitivity: f64) {
-        self.sensitivity = sensitivity.clamp(Self::SENSITIVITY_MIN, Self::SENSITIVITY_MAX);
-    }
-
-    pub fn color(&self) -> Color {
-        self.color
-    }
-
-    pub fn set_color(&mut self, color: Color) {
-        self.color = color;
-    }
-
-    pub fn style(&self) -> BrushStyle {
-        self.style
-    }
-
-    pub fn set_style(&mut self, style: BrushStyle) {
-        self.style = style;
+    /// Sets the color for the current brush style
+    pub fn set_color(&mut self, color: Option<Color>) {
+        match self.style {
+            BrushStyle::Solid => self.smooth_options.set_color(color),
+            BrushStyle::Textured => self.textured_options.set_color(color),
+        }
     }
 }

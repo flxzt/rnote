@@ -227,52 +227,54 @@ impl MainHeader {
 
         self.imp().add_page_button.get().connect_clicked(
             clone!(@weak appwindow => move |_add_page_button| {
-                let format_height = appwindow.canvas().sheet().format().height();
-                appwindow.canvas().sheet().set_height(appwindow.canvas().sheet().height() + format_height);
+                let format_height = appwindow.canvas().sheet().borrow().format.height;
+                let new_sheet_height = appwindow.canvas().sheet().borrow().height + format_height;
+                appwindow.canvas().sheet().borrow_mut().height = new_sheet_height;
+
                 appwindow.canvas().update_background_rendernode(true);
             }),
         );
 
         self.imp().resize_to_format_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
-                appwindow.canvas().sheet().resize_to_format();
+                appwindow.canvas().resize_to_format();
                 appwindow.canvas().update_background_rendernode(true);
             }),
         );
 
         self.imp().marker_toggle.get().connect_active_notify(clone!(@weak appwindow => move |marker_toggle| {
             if marker_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"marker".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"marker_style".to_variant()));
             }
         }));
 
         self.imp().brush_toggle.get().connect_active_notify(clone!(@weak appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush_style".to_variant()));
             }
         }));
 
         self.imp().shaper_toggle.get().connect_active_notify(clone!(@weak appwindow => move |shaper_toggle| {
             if shaper_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper_style".to_variant()));
             }
         }));
 
         self.imp().eraser_toggle.get().connect_active_notify(clone!(@weak appwindow => move |eraser_toggle| {
             if eraser_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser_style".to_variant()));
             }
         }));
 
         self.imp().selector_toggle.get().connect_active_notify(clone!(@weak appwindow => move |selector_toggle| {
             if selector_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector_style".to_variant()));
             }
         }));
 
         self.imp().tools_toggle.get().connect_active_notify(clone!(@weak appwindow => move |tools_toggle| {
             if tools_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools_style".to_variant()));
             }
         }));
 

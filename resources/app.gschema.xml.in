@@ -13,63 +13,67 @@
       <default>false</default>
       <summary>Default window maximized behaviour</summary>
     </key>
-    <key name="devel" type="b">
+    <key name='color-scheme' type='s'>
+      <choices>
+        <choice value="default" />
+        <choice value="light" />
+        <choice value="dark" />
+      </choices>
+      <default>"light"</default>
+      <summary>Color scheme</summary>
+      <description>
+        Use the color scheme in the application's UI and in the text area.
+      </description>
+    </key>
+    <key name="workspace-dir" type="s">
+      <default>"./"</default>
+      <summary>the current workspace directory</summary>
+    </key>
+    <key name="pen-sounds" type="b">
       <default>false</default>
-      <summary>Enable the developer mode in the application</summary>
-    </key>
-    <key name="visual-debug" type="b">
-      <default>false</default>
-      <summary>Enable visual debugging</summary>
-    </key>
-    <key name="renderer-backend" type="s">
-      <default>"librsvg"</default>
-      <summary>the renderer backend</summary>
-    </key>
-    <key name="color-scheme" type="s">
-      <default>"default"</default>
-      <summary>Color scheme preference</summary>
+      <summary>play sounds when drawing with pens</summary>
     </key>
     <key name="touch-drawing" type="b">
       <default>false</default>
-      <summary>Enable touch input for drawing</summary>
-    </key>
-    <key name="righthanded" type="b">
-      <default>true</default>
-      <summary>user is right or left handed</summary>
+      <summary>enable drawing with touch input</summary>
     </key>
     <key name="endless-sheet" type="b">
       <default>false</default>
       <summary>endless sheet</summary>
     </key>
-    <key name="pen-sounds" type="b">
+    <key name="format-borders" type="b">
       <default>false</default>
-      <summary>stroke sounds</summary>
+      <summary>show format borders</summary>
     </key>
-    <key name="sheet-margin" type="d">
+    <key name="sheet-margin" type="i">
       <default>32</default>
-      <summary>Margin around the sheet</summary>
+      <summary>the margins around the sheet</summary>
     </key>
     <key name="pdf-import-width" type="d">
-      <default>50</default>
-      <summary>Width of imported PDFs in percentage to the sheet width</summary>
+      <default>50.0</default>
+      <summary>the pdf import width as percentage to the sheet width</summary>
     </key>
     <key name="pdf-import-as-vector" type="b">
       <default>true</default>
-      <summary>If PDFs should be imported as vector images, else as bitmap images</summary>
+      <summary>enable pdf import as vector image</summary>
     </key>
-    <key name="format-borders" type="b">
-      <default>false</default>
-      <summary>Show sheet format borders</summary>
+    <key name="sheet-format" type="s">
+      <default>''</default>
+      <summary>the sheet format</summary>
     </key>
-    <key name="workspace-dir" type="s">
-      <default>"./"</default>
-      <summary>Workspace directory</summary>
+    <key name="sheet-background" type="s">
+      <default>''</default>
+      <summary>the sheet background</summary>
     </key>
-    <key name="marker-width" type="d">
-      <default>20</default>
-      <summary>Marker width in px</summary>
+    <key name="pens" type="s">
+      <default>''</default>
+      <summary>pen settings</summary>
     </key>
-    <key name="marker-colors" type="(uuuuuuuu)">
+    <key name="markerpage-selected-color" type="u">
+      <default>0</default>
+      <summary>the default selected color row on the marker page</summary>
+    </key>
+    <key name="markerpage-colors" type="(uuuuuuuu)">
       <default>(
         0x000000ff,
         0xffffffff,
@@ -80,13 +84,12 @@
         0xFF00EE44,
         0x3FBF7044
       )</default>
-      <summary>Marker colors in decima encoded as RGBA values (8-bit per color)</summary>
     </key>
-    <key name="brush-width" type="d">
-      <default>6</default>
-      <summary>Brush width in px</summary>
+    <key name="brushpage-selected-color" type="u">
+      <default>0</default>
+      <summary>the default selected color row on the brush page</summary>
     </key>
-    <key name="brush-colors" type="(uuuuuuuu)">
+    <key name="brushpage-colors" type="(uuuuuuuu)">
       <default>(
         0x000000ff,
         0xffffffff,
@@ -97,53 +100,27 @@
         0xff7800ff,
         0xe01b24ff
       )</default>
-      <summary>Brush colors encoded as RGBA values (8-bit)</summary>
     </key>
-    <key name="shaper-width" type="d">
-      <default>2</default>
-      <summary>Brush width in px</summary>
+    <key name="shaperpage-selected-color" type="u">
+      <default>0</default>
+      <summary>the default selected color row on the shaper page</summary>
     </key>
-    <key name="shaper-stroke-colors" type="(uu)">
+    <key name="shaperpage-colors" type="(uu)">
       <default>(
         0x000000ff,
         0x1a5fb4ff
       )</default>
-      <summary>Shape stroke colors encoded as RGBA values (8-bit)</summary>
     </key>
-    <key name="shaper-fill-colors" type="(uu)">
+    <key name="shaperpage-selected-fill" type="u">
+      <default>0</default>
+      <summary>the default selected fill color row on the shaper page</summary>
+    </key>
+    <key name="shaperpage-fills" type="(uu)">
       <default>(
-        0x00000000,
-        0x62a0ea99
+        0x000000ff,
+        0x00000000
       )</default>
-      <summary>Shape fill colors encoded as RGBA values (8-bit)</summary>
-    </key>
-    <key name="eraser-width" type="d">
-      <default>30</default>
-      <summary>Eraser width in px</summary>
-    </key>
-    <key name="format-size" type="(uu)">
-      <default>(1123, 1587)</default>
-      <summary>format size in (width, height)</summary>
-    </key>
-    <key name="format-dpi" type="d">
-      <default>96</default>
-      <summary>Format DPI</summary>
-    </key>
-    <key name="background-color" type="u">
-      <default>0xffffffff</default>
-      <summary>Background color encoded as RGBA value (8-bit)</summary>
-    </key>
-    <key name="background-pattern" type="s">
-      <default>"None"</default>
-      <summary>Background pattern</summary>
-    </key>
-    <key name="background-pattern-color" type="u">
-      <default>0x99c1f1ff</default>
-      <summary>Background pattern color encoded as RGBA value (8-bit)</summary>
-    </key>
-    <key name="background-pattern-size" type="(uu)">
-      <default>(32, 32)</default>
-      <summary>Background pattern size</summary>
     </key>
   </schema>
+
 </schemalist>

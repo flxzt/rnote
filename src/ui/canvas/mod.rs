@@ -3,14 +3,15 @@ pub mod canvaslayout;
 mod imp {
     use std::cell::{Cell, RefCell};
     use std::rc::Rc;
+    use std::sync::{Arc, RwLock};
 
     use super::canvaslayout::CanvasLayout;
     use super::debug;
     use crate::compose::color::Color;
     use crate::compose::geometry;
     use crate::config;
-    use crate::pens::penbehaviour::PenBehaviour;
     use crate::pens::{PenStyle, Pens};
+    use crate::render::Renderer;
     use crate::sheet::Sheet;
     use crate::ui::selectionmodifier::SelectionModifier;
 
@@ -25,23 +26,7 @@ mod imp {
 
     #[derive(Debug)]
     pub struct Canvas {
-        pub pens: Rc<RefCell<Pens>>,
-        pub sheet: Sheet,
-        pub sheet_margin: Cell<f64>,
-        pub zoom: Cell<f64>,
-        pub temporary_zoom: Cell<f64>,
-        pub pdf_import_width: Cell<f64>,
-        pub pdf_import_as_vector: Cell<bool>,
-        pub visual_debug: Cell<bool>,
-        pub touch_drawing: Cell<bool>,
-        pub unsaved_changes: Cell<bool>,
-        pub empty: Cell<bool>,
-        pub cursor: gdk::Cursor,
-        pub motion_cursor: gdk::Cursor,
-        pub stylus_drawing_gesture: GestureStylus,
-        pub mouse_drawing_gesture: GestureDrag,
-        pub touch_drawing_gesture: GestureDrag,
-        pub zoom_timeout_id: RefCell<Option<glib::SourceId>>,
+        pub renderer: Arc<RwLock<Renderer>>,
 
         pub hadjustment: RefCell<Option<Adjustment>>,
         pub hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
@@ -49,8 +34,30 @@ mod imp {
         pub vadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,
         pub hscroll_policy: Cell<ScrollablePolicy>,
         pub vscroll_policy: Cell<ScrollablePolicy>,
-
+        pub zoom_timeout_id: RefCell<Option<glib::SourceId>>,
+        pub cursor: gdk::Cursor,
+        pub motion_cursor: gdk::Cursor,
+        pub stylus_drawing_gesture: GestureStylus,
+        pub mouse_drawing_gesture: GestureDrag,
+        pub touch_drawing_gesture: GestureDrag,
         pub selection_modifier: SelectionModifier,
+
+        pub pens: Rc<RefCell<Pens>>,
+        pub pen_shown: Cell<bool>,
+        pub sheet: Rc<RefCell<Sheet>>,
+        pub zoom: Cell<f64>,
+        pub temporary_zoom: Cell<f64>,
+        pub visual_debug: Cell<bool>,
+        pub unsaved_changes: Cell<bool>,
+        pub empty: Cell<bool>,
+
+        // State that is saved in settings
+        pub sheet_margin: Cell<i32>,
+        pub touch_drawing: Cell<bool>,
+        pub endless_sheet: Cell<bool>,
+        pub format_borders: Cell<bool>,
+        pub pdf_import_width: Cell<f64>,
+        pub pdf_import_as_vector: Cell<bool>,
     }
 
     impl Default for Canvas {
@@ -78,51 +85,59 @@ mod imp {
             mouse_drawing_gesture.group_with(&stylus_drawing_gesture);
             touch_drawing_gesture.group_with(&stylus_drawing_gesture);
 
-            Self {
-                pens: Rc::new(RefCell::new(Pens::default())),
-                sheet: Sheet::default(),
-                sheet_margin: Cell::new(super::Canvas::SHEET_MARGIN_DEFAULT),
-                zoom: Cell::new(super::Canvas::ZOOM_DEFAULT),
-                temporary_zoom: Cell::new(1.0),
-                pdf_import_width: Cell::new(super::Canvas::PDF_IMPORT_WIDTH_DEFAULT),
-                pdf_import_as_vector: Cell::new(true),
-                visual_debug: Cell::new(false),
-                touch_drawing: Cell::new(false),
-                unsaved_changes: Cell::new(false),
-                empty: Cell::new(true),
-                cursor: gdk::Cursor::from_texture(
-                    &gdk::Texture::from_resource(
-                        (String::from(config::APP_IDPATH)
-                            + "icons/scalable/actions/canvas-cursor.svg")
-                            .as_str(),
-                    ),
-                    8,
-                    8,
-                    gdk::Cursor::from_name("default", None).as_ref(),
+            let cursor = gdk::Cursor::from_texture(
+                &gdk::Texture::from_resource(
+                    (String::from(config::APP_IDPATH) + "icons/scalable/actions/canvas-cursor.svg")
+                        .as_str(),
                 ),
-                motion_cursor: gdk::Cursor::from_texture(
-                    &gdk::Texture::from_resource(
-                        (String::from(config::APP_IDPATH)
-                            + "icons/scalable/actions/canvas-motion-cursor.svg")
-                            .as_str(),
-                    ),
-                    8,
-                    8,
-                    gdk::Cursor::from_name("default", None).as_ref(),
+                8,
+                8,
+                gdk::Cursor::from_name("default", None).as_ref(),
+            );
+            let motion_cursor = gdk::Cursor::from_texture(
+                &gdk::Texture::from_resource(
+                    (String::from(config::APP_IDPATH)
+                        + "icons/scalable/actions/canvas-motion-cursor.svg")
+                        .as_str(),
                 ),
-                stylus_drawing_gesture,
-                mouse_drawing_gesture,
-                touch_drawing_gesture,
-                zoom_timeout_id: RefCell::new(None),
+                8,
+                8,
+                gdk::Cursor::from_name("default", None).as_ref(),
+            );
 
+            Self {
+                renderer: Arc::new(RwLock::new(Renderer::default())),
                 hadjustment: RefCell::new(None),
                 hadjustment_signal: RefCell::new(None),
                 vadjustment: RefCell::new(None),
                 vadjustment_signal: RefCell::new(None),
                 hscroll_policy: Cell::new(ScrollablePolicy::Minimum),
                 vscroll_policy: Cell::new(ScrollablePolicy::Minimum),
+                cursor,
+                motion_cursor,
+                stylus_drawing_gesture,
+                mouse_drawing_gesture,
+                touch_drawing_gesture,
+                zoom_timeout_id: RefCell::new(None),
 
                 selection_modifier: SelectionModifier::default(),
+
+                pens: Rc::new(RefCell::new(Pens::default())),
+                pen_shown: Cell::new(false),
+                sheet: Rc::new(RefCell::new(Sheet::default())),
+
+                zoom: Cell::new(super::Canvas::ZOOM_DEFAULT),
+                temporary_zoom: Cell::new(1.0),
+                visual_debug: Cell::new(false),
+                unsaved_changes: Cell::new(false),
+                empty: Cell::new(true),
+
+                sheet_margin: Cell::new(super::Canvas::SHEET_MARGIN_DEFAULT),
+                touch_drawing: Cell::new(false),
+                endless_sheet: Cell::new(true),
+                format_borders: Cell::new(true),
+                pdf_import_width: Cell::new(super::Canvas::PDF_IMPORT_WIDTH_DEFAULT),
+                pdf_import_as_vector: Cell::new(true),
             }
         }
     }
@@ -170,14 +185,11 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    // The margin of the sheet in px when zoom = 1.0
-                    glib::ParamSpecDouble::new(
-                        "sheet-margin",
-                        "sheet-margin",
-                        "sheet-margin",
-                        f64::MIN,
-                        f64::MAX,
-                        super::Canvas::SHEET_MARGIN_DEFAULT,
+                    glib::ParamSpecBoolean::new(
+                        "pen-shown",
+                        "pen-shown",
+                        "pen-shown",
+                        false,
                         glib::ParamFlags::READWRITE,
                     ),
                     // The zoom of the canvas in relation to the sheet
@@ -200,37 +212,11 @@ mod imp {
                         1.0,
                         glib::ParamFlags::READWRITE,
                     ),
-                    // import PDFs with with in percentage to sheet width
-                    glib::ParamSpecDouble::new(
-                        "pdf-import-width",
-                        "pdf-import-width",
-                        "pdf-import-width",
-                        1.0,
-                        100.0,
-                        super::Canvas::PDF_IMPORT_WIDTH_DEFAULT,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    // import PDFs as vector images ( if false = as bitmap images )
-                    glib::ParamSpecBoolean::new(
-                        "pdf-import-as-vector",
-                        "pdf-import-as-vector",
-                        "pdf-import-as-vector",
-                        true,
-                        glib::ParamFlags::READWRITE,
-                    ),
                     // Visual debugging, which shows bounding boxes, hitboxes, ... (enable in developer action menu)
                     glib::ParamSpecBoolean::new(
                         "visual-debug",
                         "visual-debug",
                         "visual-debug",
-                        false,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    // Wether to enable touch drawing
-                    glib::ParamSpecBoolean::new(
-                        "touch-drawing",
-                        "touch-drawing",
-                        "touch-drawing",
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
@@ -250,6 +236,58 @@ mod imp {
                         true,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // The margin of the sheet in px when zoom = 1.0
+                    glib::ParamSpecInt::new(
+                        "sheet-margin",
+                        "sheet-margin",
+                        "sheet-margin",
+                        i32::MIN,
+                        i32::MAX,
+                        super::Canvas::SHEET_MARGIN_DEFAULT,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // endless sheet
+                    glib::ParamSpecBoolean::new(
+                        "endless-sheet",
+                        "endless-sheet",
+                        "endless-sheet",
+                        true,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // format borders
+                    glib::ParamSpecBoolean::new(
+                        "format-borders",
+                        "format-borders",
+                        "format-borders",
+                        true,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // Wether to enable touch drawing
+                    glib::ParamSpecBoolean::new(
+                        "touch-drawing",
+                        "touch-drawing",
+                        "touch-drawing",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // import PDFs with with in percentage to sheet width
+                    glib::ParamSpecDouble::new(
+                        "pdf-import-width",
+                        "pdf-import-width",
+                        "pdf-import-width",
+                        1.0,
+                        100.0,
+                        super::Canvas::PDF_IMPORT_WIDTH_DEFAULT,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // import PDFs as vector images ( if false = as bitmap images )
+                    glib::ParamSpecBoolean::new(
+                        "pdf-import-as-vector",
+                        "pdf-import-as-vector",
+                        "pdf-import-as-vector",
+                        true,
+                        glib::ParamFlags::READWRITE,
+                    ),
                     // Scrollable properties
                     glib::ParamSpecOverride::for_interface::<Scrollable>("hscroll-policy"),
                     glib::ParamSpecOverride::for_interface::<Scrollable>("vscroll-policy"),
@@ -262,19 +300,22 @@ mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
-                "sheet-margin" => self.sheet_margin.get().to_value(),
+                "pen-shown" => self.sheet_margin.get().to_value(),
                 "zoom" => self.zoom.get().to_value(),
                 "temporary-zoom" => self.temporary_zoom.get().to_value(),
-                "pdf-import-width" => self.pdf_import_width.get().to_value(),
-                "pdf-import-as-vector" => self.pdf_import_as_vector.get().to_value(),
                 "visual-debug" => self.visual_debug.get().to_value(),
-                "touch-drawing" => self.touch_drawing.get().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 "empty" => self.empty.get().to_value(),
                 "hadjustment" => self.hadjustment.borrow().to_value(),
                 "vadjustment" => self.vadjustment.borrow().to_value(),
                 "hscroll-policy" => self.hscroll_policy.get().to_value(),
                 "vscroll-policy" => self.vscroll_policy.get().to_value(),
+                "sheet-margin" => self.sheet_margin.get().to_value(),
+                "endless-sheet" => self.endless_sheet.get().to_value(),
+                "format-borders" => self.format_borders.get().to_value(),
+                "touch-drawing" => self.touch_drawing.get().to_value(),
+                "pdf-import-width" => self.pdf_import_width.get().to_value(),
+                "pdf-import-as-vector" => self.pdf_import_as_vector.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -287,12 +328,12 @@ mod imp {
             pspec: &glib::ParamSpec,
         ) {
             match pspec.name() {
-                "sheet-margin" => {
-                    let sheet_margin = value
-                        .get::<f64>()
-                        .expect("The value needs to be of type `f64`.");
+                "pen-shown" => {
+                    let pen_shown = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
 
-                    self.sheet_margin.replace(sheet_margin);
+                    self.pen_shown.replace(pen_shown);
                 }
                 "zoom" => {
                     let zoom: f64 = value
@@ -300,8 +341,6 @@ mod imp {
                         .expect("The value needs to be of type `f64`.")
                         .clamp(super::Canvas::ZOOM_MIN, super::Canvas::ZOOM_MAX);
                     self.zoom.replace(zoom);
-
-                    self.sheet.strokes_state().borrow_mut().zoom = zoom;
 
                     obj.queue_resize();
                     obj.queue_draw();
@@ -320,39 +359,12 @@ mod imp {
                     obj.queue_resize();
                     obj.queue_draw();
                 }
-                "pdf-import-width" => {
-                    let pdf_import_width = value
-                        .get::<f64>()
-                        .expect("The value needs to be of type `f64`.")
-                        .clamp(1.0, 100.0);
-
-                    self.pdf_import_width.replace(pdf_import_width);
-                }
-                "pdf-import-as-vector" => {
-                    let pdf_import_as_vector = value
-                        .get::<bool>()
-                        .expect("The value needs to be of type `bool`.");
-
-                    self.pdf_import_as_vector.replace(pdf_import_as_vector);
-                }
                 "visual-debug" => {
                     let visual_debug: bool =
                         value.get().expect("The value needs to be of type `bool`.");
                     self.visual_debug.replace(visual_debug);
 
                     obj.queue_draw();
-                }
-                "touch-drawing" => {
-                    let touch_drawing: bool =
-                        value.get().expect("The value needs to be of type `bool`.");
-                    self.touch_drawing.replace(touch_drawing);
-                    if touch_drawing {
-                        self.touch_drawing_gesture
-                            .set_propagation_phase(PropagationPhase::Target);
-                    } else {
-                        self.touch_drawing_gesture
-                            .set_propagation_phase(PropagationPhase::None);
-                    }
                 }
                 "unsaved-changes" => {
                     let unsaved_changes: bool =
@@ -381,6 +393,59 @@ mod imp {
                 "vscroll-policy" => {
                     let vscroll_policy = value.get().unwrap();
                     self.vscroll_policy.replace(vscroll_policy);
+                }
+                "sheet-margin" => {
+                    let sheet_margin = value
+                        .get::<i32>()
+                        .expect("The value needs to be of type `i32`.");
+
+                    self.sheet_margin.replace(sheet_margin);
+
+                    obj.regenerate_background(true);
+                }
+                "endless-sheet" => {
+                    let endless_sheet = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.endless_sheet.replace(endless_sheet);
+
+                    obj.resize_to_format();
+                }
+                "format-borders" => {
+                    let format_borders = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.format_borders.replace(format_borders);
+                    obj.queue_draw();
+                }
+                "touch-drawing" => {
+                    let touch_drawing: bool =
+                        value.get().expect("The value needs to be of type `bool`.");
+                    self.touch_drawing.replace(touch_drawing);
+                    if touch_drawing {
+                        self.touch_drawing_gesture
+                            .set_propagation_phase(PropagationPhase::Target);
+                    } else {
+                        self.touch_drawing_gesture
+                            .set_propagation_phase(PropagationPhase::None);
+                    }
+                }
+                "pdf-import-width" => {
+                    let pdf_import_width = value
+                        .get::<f64>()
+                        .expect("The value needs to be of type `f64`.")
+                        .clamp(1.0, 100.0);
+
+                    self.pdf_import_width.replace(pdf_import_width);
+                }
+                "pdf-import-as-vector" => {
+                    let pdf_import_as_vector = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.pdf_import_as_vector.replace(pdf_import_as_vector);
                 }
                 _ => unimplemented!(),
             }
@@ -428,44 +493,43 @@ mod imp {
 
             // From here in scaled sheet coordinate space
             snapshot.translate(&graphene::Point::new(
-                (sheet_margin * zoom) as f32,
-                (sheet_margin * zoom) as f32,
+                (f64::from(sheet_margin) * zoom) as f32,
+                (f64::from(sheet_margin) * zoom) as f32,
             ));
 
             self.draw_shadow(
-                geometry::aabb_scale(widget.sheet().bounds(), zoom),
-                sheet_margin * zoom,
+                geometry::aabb_scale(widget.sheet().borrow().bounds(), zoom),
+                f64::from(sheet_margin) * zoom,
                 snapshot,
             );
 
             // Clip sheet and stroke drawing to sheet bounds
             snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-                widget.sheet().bounds(),
+                widget.sheet().borrow().bounds(),
                 zoom,
             )));
 
-            self.sheet.draw(zoom, snapshot);
+            self.sheet
+                .borrow()
+                .draw(zoom, snapshot, widget.format_borders());
 
             self.sheet
-                .strokes_state()
                 .borrow()
+                .strokes_state
                 .draw_strokes(snapshot, Some(widget.viewport_in_sheet_coords()));
 
             snapshot.pop();
 
             self.sheet
-                .strokes_state()
                 .borrow()
+                .strokes_state
                 .draw_selection(zoom, snapshot);
 
-            if let Err(e) = self.pens.borrow().draw(
-                self.sheet.bounds(),
-                &self.sheet.strokes_state().borrow().renderer.read().unwrap(),
-                zoom,
-                snapshot,
-            ) {
-                log::debug!("pens draw() failed in canvas snapshot() with Err {}", e);
-            };
+            if self.pen_shown.get() {
+                if let Err(e) = self.pens.borrow().current_pen.draw(widget, snapshot) {
+                    log::debug!("pens draw() failed in canvas snapshot() with Err {}", e);
+                };
+            }
 
             if self.visual_debug.get() {
                 self.draw_debug(widget, snapshot, zoom);
@@ -514,9 +578,11 @@ mod imp {
 
         // Draw bounds, positions, .. for visual debugging purposes
         fn draw_debug(&self, widget: &super::Canvas, snapshot: &Snapshot, zoom: f64) {
-            if self.pens.borrow().shown() {
-                match self.pens.borrow().current_pen() {
-                    PenStyle::Eraser => {
+            if self.pen_shown.get() {
+                let current_pen = self.pens.borrow().current_pen;
+
+                match current_pen {
+                    PenStyle::EraserStyle => {
                         if let Some(current_input) = self.pens.borrow().eraser.current_input() {
                             debug::draw_pos(
                                 current_input.pos(),
@@ -526,7 +592,7 @@ mod imp {
                             );
                         }
                     }
-                    PenStyle::Selector => {
+                    PenStyle::SelectorStyle => {
                         if let Some(bounds) = self.pens.borrow().selector.gen_bounds() {
                             debug::draw_bounds(
                                 bounds,
@@ -536,16 +602,15 @@ mod imp {
                             );
                         }
                     }
-                    PenStyle::Marker
-                    | PenStyle::Brush
-                    | PenStyle::Shaper
-                    | PenStyle::Tools
-                    | PenStyle::Unknown => {}
+                    PenStyle::MarkerStyle
+                    | PenStyle::BrushStyle
+                    | PenStyle::ShaperStyle
+                    | PenStyle::ToolsStyle => {}
                 }
             }
 
             debug::draw_bounds(
-                self.sheet.bounds(),
+                self.sheet.borrow().bounds(),
                 debug::COLOR_SHEET_BOUNDS,
                 zoom,
                 snapshot,
@@ -554,39 +619,34 @@ mod imp {
             let viewport = widget.viewport_in_sheet_coords().tightened(1.0);
             debug::draw_bounds(viewport, debug::COLOR_STROKE_BOUNDS, zoom, snapshot);
 
-            self.sheet
-                .strokes_state()
-                .borrow()
-                .draw_debug(zoom, snapshot);
+            self.sheet.borrow().strokes_state.draw_debug(zoom, snapshot);
         }
     }
 }
 
-use crate::audioplayer::RnoteAudioPlayer;
 use crate::compose::geometry;
 use crate::input;
-use crate::pens::penbehaviour::PenBehaviour;
+use crate::render::Renderer;
+use crate::sheet::background::Background;
+use crate::sheet::format::Format;
 use crate::strokes::strokestyle::InputData;
 use crate::ui::selectionmodifier::SelectionModifier;
-use crate::{
-    app::RnoteApp, pens::PenStyle, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow,
-};
+use crate::{app::RnoteApp, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow};
 
 use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
+use std::sync::{Arc, RwLock};
 use std::time;
 
 use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*};
-use gtk4::{
-    gio, Adjustment, DropTarget, EventSequenceState, PropagationPhase, Scrollable, Snapshot, Widget,
-};
+use gtk4::{gio, Adjustment, DropTarget, EventSequenceState, PropagationPhase, Snapshot, Widget};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 
 glib::wrapper! {
     pub struct Canvas(ObjectSubclass<imp::Canvas>)
         @extends gtk4::Widget,
-        @implements Scrollable;
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget, gtk4::Scrollable;
 }
 
 impl Default for Canvas {
@@ -602,7 +662,7 @@ impl Canvas {
     /// The zoom amount when activating the zoom-in / zoom-out action
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
-    pub const SHEET_MARGIN_DEFAULT: f64 = 30.0;
+    pub const SHEET_MARGIN_DEFAULT: i32 = 32;
     // The default width of imported PDF's in percentage to the sheet width
     pub const PDF_IMPORT_WIDTH_DEFAULT: f64 = 50.0;
 
@@ -612,8 +672,8 @@ impl Canvas {
         canvas
     }
 
-    pub fn pens(&self) -> Rc<RefCell<Pens>> {
-        self.imp().pens.clone()
+    pub fn renderer(&self) -> Arc<RwLock<Renderer>> {
+        Arc::clone(&self.imp().renderer)
     }
 
     pub fn cursor(&self) -> gdk::Cursor {
@@ -624,16 +684,46 @@ impl Canvas {
         self.imp().motion_cursor.clone()
     }
 
-    pub fn sheet(&self) -> Sheet {
-        imp::Canvas::from_instance(self).sheet.clone()
+    /// Only change the pens state in actions to avoid nested mutable borrows!
+    pub fn pens(&self) -> Rc<RefCell<Pens>> {
+        self.imp().pens.clone()
     }
 
-    pub fn sheet_margin(&self) -> f64 {
-        self.property::<f64>("sheet-margin")
+    pub fn pen_shown(&self) -> bool {
+        self.property::<bool>("pen-shown")
     }
 
-    pub fn set_sheet_margin(&self, sheet_margin: f64) {
+    pub fn set_pen_shown(&self, pen_shown: bool) {
+        self.set_property("pen-shown", pen_shown);
+    }
+
+    /// Only change the sheet state in actions to avoid nested mutable borrows!
+    pub fn sheet(&self) -> Rc<RefCell<Sheet>> {
+        Rc::clone(&imp::Canvas::from_instance(self).sheet)
+    }
+
+    pub fn sheet_margin(&self) -> i32 {
+        self.property::<i32>("sheet-margin")
+    }
+
+    pub fn set_sheet_margin(&self, sheet_margin: i32) {
         self.set_property("sheet-margin", sheet_margin.to_value());
+    }
+
+    pub fn endless_sheet(&self) -> bool {
+        self.property::<bool>("endless-sheet")
+    }
+
+    pub fn set_endless_sheet(&self, endless_sheet: bool) {
+        self.set_property("endless-sheet", endless_sheet.to_value());
+    }
+
+    pub fn format_borders(&self) -> bool {
+        self.property::<bool>("format-borders")
+    }
+
+    pub fn set_format_borders(&self, format_borders: bool) {
+        self.set_property("format-borders", format_borders.to_value());
     }
 
     pub fn zoom(&self) -> f64 {
@@ -684,6 +774,22 @@ impl Canvas {
         self.set_property("empty", empty.to_value());
     }
 
+    pub fn touch_drawing(&self) -> bool {
+        self.property::<bool>("touch-drawing")
+    }
+
+    pub fn set_touch_drawing(&self, touch_drawing: bool) {
+        self.set_property("touch-drawing", touch_drawing.to_value());
+    }
+
+    pub fn visual_debug(&self) -> bool {
+        self.property::<bool>("visual-debug")
+    }
+
+    pub fn set_visual_debug(&self, visual_debug: bool) {
+        self.set_property("visual-debug", visual_debug.to_value());
+    }
+
     fn set_hadjustment(&self, adj: Option<Adjustment>) {
         let self_ = imp::Canvas::from_instance(self);
         if let Some(signal_id) = self_.hadjustment_signal.borrow_mut().take() {
@@ -694,10 +800,7 @@ impl Canvas {
         if let Some(ref adjustment) = adj {
             let signal_id =
                 adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
-                    canvas.regenerate_content(false, false);
-
-                    canvas.queue_allocate();
-                    canvas.queue_draw();
+                    canvas.regenerate_content(false, true);
                 }));
             self_.hadjustment_signal.replace(Some(signal_id));
         }
@@ -714,10 +817,7 @@ impl Canvas {
         if let Some(ref adjustment) = adj {
             let signal_id =
                 adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
-                    canvas.regenerate_content(false, false);
-
-                    canvas.queue_allocate();
-                    canvas.queue_draw();
+                    canvas.regenerate_content(false, true);
                 }));
             self_.vadjustment_signal.replace(Some(signal_id));
         }
@@ -762,6 +862,18 @@ impl Canvas {
         .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::SYNC_CREATE)
         .build();
 
+        self.bind_property(
+            "endless-sheet",
+            &appwindow.mainheader().pageedit_revealer(),
+            "reveal-child",
+        )
+        .flags(
+            glib::BindingFlags::DEFAULT
+                | glib::BindingFlags::SYNC_CREATE
+                | glib::BindingFlags::INVERT_BOOLEAN,
+        )
+        .build();
+
         // Stylus Drawing
         self.imp().stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
@@ -775,13 +887,17 @@ impl Canvas {
                 match device_tool.tool_type() {
                     gdk::DeviceToolType::Pen => { },
                     gdk::DeviceToolType::Eraser => {
-                    appwindow.downcast_ref::<RnoteAppWindow>().unwrap()
-                        .change_action_state("tmperaser", &true.to_variant());
+
+                    gtk4::prelude::ActionGroupExt::activate_action(
+                        &appwindow,
+                        "tmperaser",
+                        Some(&true.to_variant())
+                    );
                     }
-                    _ => { canvas.pens().borrow_mut().set_current_pen(PenStyle::Unknown) },
+                    _ => { return; },
                 }
 
-                canvas.process_peninput_start(&appwindow, data_entries);
+                input::process_peninput_start(&appwindow, data_entries);
             }
         }));
 
@@ -789,7 +905,7 @@ impl Canvas {
             // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
             let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
             input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
-            canvas.process_peninput_motion(&appwindow, data_entries);
+            input::process_peninput_motion(&appwindow, data_entries);
         }));
 
         self.imp().stylus_drawing_gesture.connect_up(
@@ -797,7 +913,7 @@ impl Canvas {
                 let mut data_entries = input::retreive_stylus_inputdata(gesture_stylus, false, x, y);
 
                 input::map_inputdata(canvas.zoom(), &mut data_entries, na::vector![0.0, 0.0]);
-                canvas.process_peninput_end(&appwindow, data_entries);
+                input::process_peninput_end(&appwindow, data_entries);
             }),
         );
 
@@ -814,7 +930,7 @@ impl Canvas {
 
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
-                    canvas.process_peninput_start(&appwindow, data_entries);
+                    input::process_peninput_start(&appwindow, data_entries);
                 }
             }),
         );
@@ -829,7 +945,7 @@ impl Canvas {
                 if let Some(start_point) = mouse_drawing_gesture.start_point() {
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                    canvas.process_peninput_motion(&appwindow, data_entries);
+                    input::process_peninput_motion(&appwindow, data_entries);
                 }
             }
         }));
@@ -846,7 +962,7 @@ impl Canvas {
                     if let Some(start_point) = mouse_drawing_gesture.start_point() {
                         let mut data_entries = input::retreive_pointer_inputdata(x, y);
                         input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                        canvas.process_peninput_end(&appwindow, data_entries);
+                        input::process_peninput_end(&appwindow, data_entries);
                     }
                 }
             }),
@@ -860,7 +976,7 @@ impl Canvas {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
-                canvas.process_peninput_start(&appwindow, data_entries);
+                input::process_peninput_start(&appwindow, data_entries);
             }),
         );
 
@@ -868,7 +984,7 @@ impl Canvas {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 let mut data_entries = input::retreive_pointer_inputdata(x, y);
                 input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                canvas.process_peninput_motion(&appwindow, data_entries);
+                input::process_peninput_motion(&appwindow, data_entries);
             }
         }));
 
@@ -877,7 +993,7 @@ impl Canvas {
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
                     let mut data_entries = input::retreive_pointer_inputdata(x, y);
                     input::map_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]));
-                    canvas.process_peninput_end(&appwindow, data_entries);
+                    input::process_peninput_end(&appwindow, data_entries);
                 }
             }),
         );
@@ -918,19 +1034,19 @@ impl Canvas {
         let zoom = self.zoom();
 
         self.sheet_bounds_in_canvas_coords()
-            .loosened(self.sheet_margin() * zoom)
+            .loosened(f64::from(self.sheet_margin()) * zoom)
     }
 
     /// The bounds of the sheet in the coordinate space of the canvas
     pub fn sheet_bounds_in_canvas_coords(&self) -> AABB {
-        let zoom = self.zoom();
-        let sheet_margin = self.sheet_margin();
+        let total_zoom = self.total_zoom();
+        let sheet_margin = f64::from(self.sheet_margin());
 
         AABB::new(
-            na::point![sheet_margin * zoom, sheet_margin * zoom],
+            na::point![sheet_margin * total_zoom, sheet_margin * total_zoom],
             na::point![
-                (sheet_margin + f64::from(self.sheet().width())) * zoom,
-                (sheet_margin + f64::from(self.sheet().height())) * zoom
+                (sheet_margin + f64::from(self.sheet().borrow().width)) * total_zoom,
+                (sheet_margin + f64::from(self.sheet().borrow().height)) * total_zoom
             ],
         )
     }
@@ -955,7 +1071,7 @@ impl Canvas {
                 self.vadjustment().unwrap().value()
             ])
             / total_zoom
-            - na::vector![self.sheet_margin(), self.sheet_margin()]
+            - na::Vector2::from_element(f64::from(self.sheet_margin()))
     }
 
     /// transforming a AABB in sheet coordinate space into canvas coordinate space
@@ -972,7 +1088,7 @@ impl Canvas {
     ) -> na::Vector2<f64> {
         let total_zoom = self.total_zoom();
 
-        (sheet_coords + na::vector![self.sheet_margin(), self.sheet_margin()]) * total_zoom
+        (sheet_coords + na::Vector2::from_element(f64::from(self.sheet_margin()))) * total_zoom
             - na::vector![
                 self.hadjustment().unwrap().value(),
                 self.vadjustment().unwrap().value()
@@ -1002,14 +1118,49 @@ impl Canvas {
     pub fn viewport_in_sheet_coords(&self) -> AABB {
         let mut viewport = self.viewport();
         let total_zoom = self.total_zoom();
-        let sheet_margin = self.sheet_margin();
+        let sheet_margin = f64::from(self.sheet_margin());
 
         viewport = geometry::aabb_translate(
             geometry::aabb_scale(viewport, 1.0 / total_zoom),
-            -na::vector![sheet_margin, sheet_margin],
+            -na::Vector2::from_element(sheet_margin),
         );
 
         viewport
+    }
+
+    /// Called when any stroke could change the sheet size when "endless-sheet" is set
+    pub fn resize_endless(&self) {
+        if self.endless_sheet() {
+            let padding_bottom = self.sheet().borrow().format.height;
+            let new_height = self.sheet().borrow().strokes_state.calc_height() + padding_bottom;
+            let new_width = self.sheet().borrow().format.width;
+
+            self.sheet().borrow_mut().width = new_width;
+            self.sheet().borrow_mut().height = new_height;
+
+            self.update_background_rendernode(true);
+        }
+    }
+
+    /// Called when sheet should resize to the format
+    pub fn resize_to_format(&self) {
+        if self.endless_sheet() {
+            self.resize_endless();
+        } else {
+            let format_height = self.sheet().borrow().format.height;
+
+            let new_width = self.sheet().borrow().format.width;
+            // +1 because then 'fraction'.ceil() is at least 1
+            let new_height = (f64::from(self.sheet().borrow().strokes_state.calc_height() + 1)
+                / f64::from(format_height))
+            .ceil() as u32
+                * format_height;
+
+            self.sheet().borrow_mut().width = new_width;
+            self.sheet().borrow_mut().height = new_height;
+
+            self.update_background_rendernode(true);
+        }
     }
 
     /// The point parameter has the coordinate space of the sheet!
@@ -1019,11 +1170,11 @@ impl Canvas {
             f64::from(self.parent().unwrap().height()),
         );
         let total_zoom = self.total_zoom();
-        let sheet_margin = self.sheet_margin();
+        let sheet_margin = f64::from(self.sheet_margin());
 
         let (canvas_width, canvas_height) = (
-            f64::from(self.sheet().width()) * total_zoom,
-            f64::from(self.sheet().height()) * total_zoom,
+            f64::from(self.sheet().borrow().width) * total_zoom,
+            f64::from(self.sheet().borrow().height) * total_zoom,
         );
 
         if canvas_width > parent_width {
@@ -1054,8 +1205,8 @@ impl Canvas {
         self.set_zoom(zoom);
 
         self.sheet()
-            .strokes_state()
             .borrow_mut()
+            .strokes_state
             .reset_regenerate_flag_all_strokes();
 
         // update rendernodes to new zoom until threaded regeneration is finished
@@ -1096,12 +1247,14 @@ impl Canvas {
             ));
     }
 
-    /// Update rendernodes of the background. Used when sheet size, but not zoom changed
+    /// Update rendernodes of the background. Used when the background itself did not change, but for example the format
     pub fn update_background_rendernode(&self, redraw: bool) {
+        let sheet_bounds = self.sheet().borrow().bounds();
+
         self.sheet()
-        .background()
         .borrow_mut()
-        .update_rendernode(self.zoom(), self.sheet().bounds()).unwrap_or_else(|e| {
+        .background
+        .update_rendernode(self.zoom(), sheet_bounds ).unwrap_or_else(|e| {
             log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
         });
 
@@ -1114,8 +1267,8 @@ impl Canvas {
     /// Update rendernodes of the background. Used when sheet size, but not zoom changed
     pub fn update_content_rendernodes(&self, redraw: bool) {
         self.sheet()
-            .strokes_state()
             .borrow_mut()
+            .strokes_state
             .update_rendernodes_current_zoom(self.zoom());
 
         if redraw {
@@ -1127,22 +1280,14 @@ impl Canvas {
     /// regenerating the background image and rendernode.
     /// use for example when changing the background pattern or zoom
     pub fn regenerate_background(&self, redraw: bool) {
-        if let Err(e) = self
-            .sheet()
-            .background()
-            .borrow_mut()
-            .regenerate_background(
-                &self
-                    .sheet()
-                    .strokes_state()
-                    .borrow()
-                    .renderer
-                    .read()
-                    .unwrap(),
-                self.zoom(),
-                self.sheet().bounds(),
-            )
-        {
+        let background_bounds = self.sheet().borrow().bounds();
+        let total_zoom = self.total_zoom();
+
+        if let Err(e) = self.sheet().borrow_mut().background.regenerate_background(
+            total_zoom,
+            background_bounds,
+            self.renderer(),
+        ) {
             log::error!("failed to regenerate background, {}", e)
         };
 
@@ -1154,12 +1299,16 @@ impl Canvas {
 
     /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch. redraw: queue canvas redrawing
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
+        let viewport = self.viewport_in_sheet_coords();
+
         self.sheet()
-            .strokes_state()
             .borrow_mut()
-            .regenerate_strokes_current_view_threaded(
-                Some(self.viewport_in_sheet_coords()),
+            .strokes_state
+            .regenerate_rendering_current_view_threaded(
+                Some(viewport),
                 force_regenerate,
+                self.renderer(),
+                self.zoom(),
             );
 
         if redraw {
@@ -1191,64 +1340,42 @@ impl Canvas {
         Some(texture)
     }
 
-    /// Process pen input start
-    fn process_peninput_start(
-        &self,
-        appwindow: &RnoteAppWindow,
-        data_entries: VecDeque<InputData>,
-    ) {
-        appwindow.audioplayer().borrow().play_pen_sound_begin(
-            RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-            self.pens().borrow().current_pen(),
-        );
+    // load sheet state from settings
+    pub fn load_sheet_settings(&self, settings: &gio::Settings) -> Result<(), anyhow::Error> {
+        // loading Json settings is fallible so on first startup, app defaults are used
 
-        self.set_unsaved_changes(true);
-        self.set_empty(false);
-        self.sheet()
-            .strokes_state()
-            .borrow_mut()
-            .deselect_all_strokes();
-
-        self.pens().borrow_mut().begin(data_entries, appwindow);
-
-        self.selection_modifier().update_state(self);
-        self.queue_resize();
-        self.queue_draw();
-    }
-
-    /// Process pen input motion
-    fn process_peninput_motion(
-        &self,
-        appwindow: &RnoteAppWindow,
-        data_entries: VecDeque<InputData>,
-    ) {
-        appwindow.audioplayer().borrow().play_pen_sound_motion(
-            RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-            self.pens().borrow().current_pen(),
-        );
-
-        self.pens().borrow_mut().motion(data_entries, appwindow);
-
-        self.queue_resize();
-        self.queue_draw();
-    }
-
-    /// Process pen input end
-    fn process_peninput_end(&self, appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
-        self.pens().borrow_mut().end(data_entries, appwindow);
-
-        appwindow
-            .downcast_ref::<RnoteAppWindow>()
-            .unwrap()
-            .change_action_state("tmperaser", &false.to_variant());
-
-        if self.sheet().resize_endless() {
-            self.update_background_rendernode(false);
+        if let Ok(loaded_format) =
+            serde_json::from_str::<Format>(settings.string("sheet-format").as_str())
+        {
+            self.sheet().borrow_mut().format = loaded_format;
         }
 
-        self.selection_modifier().update_state(self);
-        self.queue_resize();
-        self.queue_draw();
+        if let Ok(loaded_background) =
+            serde_json::from_str::<Background>(settings.string("sheet-background").as_str())
+        {
+            self.sheet().borrow_mut().background = loaded_background;
+        }
+
+        if let Ok(loaded_pens) = serde_json::from_str::<Pens>(settings.string("pens").as_str()) {
+            *self.pens().borrow_mut() = loaded_pens;
+        }
+
+        self.resize_to_format();
+        Ok(())
+    }
+
+    // save sheet state to settings
+    pub fn save_sheet_settings(&self, settings: &gio::Settings) -> Result<(), anyhow::Error> {
+        let format_string = serde_json::to_string(&self.sheet().borrow().format)?;
+        settings.set_string("sheet-format", format_string.as_str())?;
+
+        let background_string = serde_json::to_string(&self.sheet().borrow().background)?;
+        settings.set_string("sheet-background", background_string.as_str())?;
+
+        let pens_string = serde_json::to_string(&*self.pens().borrow())?;
+        settings.set_string("pens", pens_string.as_str())?;
+
+        Ok(())
     }
 }
 

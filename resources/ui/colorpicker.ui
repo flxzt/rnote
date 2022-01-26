@@ -26,11 +26,13 @@
     </child>
     <child>
       <object class="GtkMenuButton" id="colorpicker_button">
+        <property name="direction">left</property>
         <property name="icon-name">preferences-color-symbolic</property>
+        <property name="margin-top">6</property>
       </object>
     </child>
     <object class="GtkPopover" id="colorpicker_popover">
-      <property name="position">left</property>
+      <property name="position">right</property>
       <property name="child">
         <object class="GtkGrid">
           <property name="row_spacing">12</property>

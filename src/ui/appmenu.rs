@@ -60,11 +60,10 @@ mod imp {
     }
 }
 
+use crate::app::RnoteApp;
 use crate::ui::appwindow::RnoteAppWindow;
-use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, MenuButton, PopoverMenu,
-    ToggleButton, Widget,
-};
+use adw::{prelude::*, subclass::prelude::*};
+use gtk4::{gio, glib, MenuButton, PopoverMenu, ToggleButton, Widget};
 
 glib::wrapper! {
     pub struct AppMenu(ObjectSubclass<imp::AppMenu>)
@@ -108,28 +107,67 @@ impl AppMenu {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.default_theme_toggle().connect_toggled(
-            clone!(@weak appwindow => move |default_theme_toggle| {
-                if default_theme_toggle.is_active() {
-                    appwindow.set_color_scheme(adw::ColorScheme::Default);
-                }
-            }),
-        );
+        let app = appwindow
+            .application()
+            .unwrap()
+            .downcast::<RnoteApp>()
+            .unwrap();
 
-        self.light_theme_toggle().connect_toggled(
-            clone!(@weak appwindow => move |light_theme_toggle| {
-                if light_theme_toggle.is_active() {
-                    appwindow.set_color_scheme(adw::ColorScheme::ForceLight);
+        self.default_theme_toggle()
+            .bind_property("active", &app.style_manager(), "color-scheme")
+            .transform_to(|_, value| {
+                if value.get::<bool>().unwrap() {
+                    Some(adw::ColorScheme::Default.to_value())
+                } else {
+                    None
                 }
-            }),
-        );
+            })
+            .transform_from(|_, value| {
+                if value.get::<adw::ColorScheme>().unwrap() == adw::ColorScheme::Default {
+                    Some(true.to_value())
+                } else {
+                    None
+                }
+            })
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
 
-        self.dark_theme_toggle().connect_active_notify(
-            clone!(@weak appwindow => move |dark_theme_toggle| {
-                if dark_theme_toggle.is_active() {
-                    appwindow.set_color_scheme(adw::ColorScheme::ForceDark);
+        self.light_theme_toggle()
+            .bind_property("active", &app.style_manager(), "color-scheme")
+            .transform_to(|_, value| {
+                if value.get::<bool>().unwrap() {
+                    Some(adw::ColorScheme::ForceLight.to_value())
+                } else {
+                    None
                 }
-            }),
-        );
+            })
+            .transform_from(|_, value| {
+                if value.get::<adw::ColorScheme>().unwrap() == adw::ColorScheme::ForceLight {
+                    Some(true.to_value())
+                } else {
+                    None
+                }
+            })
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
+
+        self.dark_theme_toggle()
+            .bind_property("active", &app.style_manager(), "color-scheme")
+            .transform_to(|_, value| {
+                if value.get::<bool>().unwrap() {
+                    Some(adw::ColorScheme::ForceDark.to_value())
+                } else {
+                    None
+                }
+            })
+            .transform_from(|_, value| {
+                if value.get::<adw::ColorScheme>().unwrap() == adw::ColorScheme::ForceDark {
+                    Some(true.to_value())
+                } else {
+                    None
+                }
+            })
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
     }
 }

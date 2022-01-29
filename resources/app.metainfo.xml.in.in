@@ -6,16 +6,22 @@
   <project_license>GPL-3.0</project_license>
   <name translatable="no">@APP_NAME@</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
-  <summary>An easy and simple vector-based note taking app</summary>
+  <summary>A simple drawing application to create handwritten notes</summary>
 
   <categories>
-    <category>Gnome</category>
-    <category>GTK</category>
     <category>Graphics</category>
+    <category>Education</category>
+    <category>Office</category>
+    <category>VectorGraphics</category>
+    <category>GNOME</category>
+    <category>GTK</category>
   </categories>
 
   <description>
-    <p>Rnote is a simple vector based note taking application for handwritten notes or to annotate documents and pictures.</p>
+    <p>
+      Rnote is a simple vector based drawing application for handwritten notes and to annotate documents and pictures.
+      Disclaimer: The file format is still unstable. It might change between versions.
+    </p>
   </description>
 
   <screenshots>
@@ -34,10 +40,6 @@
     <screenshot>
       <image>https://raw.githubusercontent.com/flxzt/rnote/main/resources/screenshots/selection.png</image>
       <caption>A selection</caption>
-    </screenshot>
-    <screenshot>
-      <image>https://raw.githubusercontent.com/flxzt/rnote/main/resources/screenshots/multiple_pages.png</image>
-      <caption>Multiple pages</caption>
     </screenshot>
   </screenshots>
 
@@ -59,6 +61,19 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.3.0" date="2022-01-29">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>file format changes. Breaking to older versions!</li>
+          <li>Stroke and image rotation</li>
+          <li>rudimentary import and export to Xournal++ files</li>
+          <li>more persistent UI state</li>
+          <li>UI improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.2.5" date="2022-01-13">
       <description>
         <p>this release changes:</p>

@@ -89,22 +89,22 @@ impl TexturedDotsDistribution {
 pub struct TexturedOptions {
     /// An optional seed to generate reproducable strokes
     #[serde(rename = "seed")]
-    seed: Option<u64>,
+    pub seed: Option<u64>,
     /// The width
     #[serde(rename = "width")]
-    width: f64,
-    /// The color of the dots
-    #[serde(rename = "color")]
-    color: Option<Color>,
+    pub width: f64,
+    /// The color of the stroke
+    #[serde(rename = "stroke_color")]
+    pub stroke_color: Option<Color>,
     /// Amount dots per 10x10 area
     #[serde(rename = "density")]
-    density: f64,
+    pub density: f64,
     /// the radii of the dots
     #[serde(rename = "radii")]
-    radii: na::Vector2<f64>,
+    pub radii: na::Vector2<f64>,
     /// the distribution type
     #[serde(rename = "distribution")]
-    distribution: TexturedDotsDistribution,
+    pub distribution: TexturedDotsDistribution,
 }
 
 impl Default for TexturedOptions {
@@ -113,7 +113,7 @@ impl Default for TexturedOptions {
             seed: None,
             width: Self::WIDTH_DEFAULT,
             density: Self::DENSITY_DEFAULT,
-            color: Some(Self::COLOR_DEFAULT),
+            stroke_color: Some(Self::COLOR_DEFAULT),
             radii: Self::RADII_DEFAULT,
             distribution: TexturedDotsDistribution::default(),
         }
@@ -123,10 +123,6 @@ impl Default for TexturedOptions {
 impl TexturedOptions {
     /// The default width
     pub const WIDTH_DEFAULT: f64 = 1.0;
-    /// The min width
-    pub const WIDTH_MIN: f64 = 0.1;
-    /// The min width
-    pub const WIDTH_MAX: f64 = 1000.0;
     /// The default color
     pub const COLOR_DEFAULT: Color = Color {
         r: 0.0,
@@ -134,69 +130,10 @@ impl TexturedOptions {
         b: 0.0,
         a: 1.0,
     };
-    /// Density min
-    pub const DENSITY_MIN: f64 = 0.0;
-    /// Density max
-    pub const DENSITY_MAX: f64 = 10.0;
     /// Density default
     pub const DENSITY_DEFAULT: f64 = 5.0;
-    /// Radii min
-    pub const RADII_MIN: na::Vector2<f64> = na::vector![0.0, 0.0];
-    /// Radii max
-    pub const RADII_MAX: na::Vector2<f64> = na::vector![100.0, 100.0];
     /// Radii default
     pub const RADII_DEFAULT: na::Vector2<f64> = na::vector![2.0, 0.3];
-
-    pub fn seed(&self) -> Option<u64> {
-        self.seed
-    }
-
-    pub fn set_seed(&mut self, seed: Option<u64>) {
-        self.seed = seed
-    }
-
-    pub fn width(&self) -> f64 {
-        self.width
-    }
-
-    pub fn set_width(&mut self, width: f64) {
-        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
-    }
-
-    pub fn color(&self) -> Option<Color> {
-        self.color
-    }
-
-    pub fn set_color(&mut self, color: Option<Color>) {
-        self.color = color;
-    }
-
-    pub fn density(&self) -> f64 {
-        self.density
-    }
-
-    pub fn set_density(&mut self, density: f64) {
-        self.density = density.clamp(Self::DENSITY_MIN, Self::DENSITY_MAX);
-    }
-
-    pub fn radii(&self) -> na::Vector2<f64> {
-        self.radii
-    }
-
-    pub fn set_radii(&mut self, radii: na::Vector2<f64>) {
-        self.radii = na::vector![
-            radii[0].clamp(Self::RADII_MIN[0], Self::RADII_MAX[0]),
-            radii[1].clamp(Self::RADII_MIN[0], Self::RADII_MAX[1])
-        ];
-    }
-
-    pub fn distribution(&self) -> TexturedDotsDistribution {
-        self.distribution
-    }
-
-    pub fn set_distribution(&mut self, distribution: TexturedDotsDistribution) {
-        self.distribution = distribution;
-    }
 }
 
 pub fn compose_line(line: curves::Line, width: f64, options: &TexturedOptions) -> Element {
@@ -238,7 +175,7 @@ pub fn compose_line(line: curves::Line, width: f64, options: &TexturedOptions) -
         ];
 
         let fill = options
-            .color()
+            .stroke_color
             .map_or(String::from(""), |color| color.to_css_color());
 
         let ellipse = element::Ellipse::new()

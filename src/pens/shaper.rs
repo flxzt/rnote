@@ -3,7 +3,6 @@ use p2d::bounding_volume::BoundingVolume;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
-use crate::compose::color::Color;
 use crate::compose::rough::roughoptions::RoughOptions;
 use crate::compose::smooth::SmoothOptions;
 use crate::input;
@@ -30,7 +29,7 @@ pub enum ShaperStyle {
 
 impl Default for ShaperStyle {
     fn default() -> Self {
-        Self::Rectangle
+        Self::Line
     }
 }
 
@@ -53,16 +52,17 @@ impl Default for ShaperDrawStyle {
 }
 
 impl ShaperDrawStyle {
+    pub const SMOOTH_MARGIN: f64 = 1.0;
     pub const ROUGH_MARGIN: f64 = 20.0;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "shaper")]
 pub struct Shaper {
-    #[serde(rename = "shapestyle")]
-    shaperstyle: ShaperStyle,
+    #[serde(rename = "style")]
+    pub style: ShaperStyle,
     #[serde(rename = "drawstyle")]
-    drawstyle: ShaperDrawStyle,
+    pub drawstyle: ShaperDrawStyle,
     #[serde(rename = "smooth_options")]
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
@@ -74,16 +74,13 @@ pub struct Shaper {
 
 impl Default for Shaper {
     fn default() -> Self {
-        let mut shaper = Self {
-            shaperstyle: ShaperStyle::default(),
+        Self {
+            style: ShaperStyle::default(),
             drawstyle: ShaperDrawStyle::default(),
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
             current_stroke: None,
-        };
-        shaper.set_width(Self::WIDTH_DEFAULT);
-
-        shaper
+        }
     }
 }
 
@@ -191,79 +188,6 @@ impl PenBehaviour for Shaper {
                 );
 
             appwindow.canvas().resize_endless();
-        }
-    }
-}
-
-impl Shaper {
-    /// The default width
-    pub const WIDTH_DEFAULT: f64 = 2.0;
-    /// The min width
-    pub const WIDTH_MIN: f64 = 0.1;
-    /// The max width
-    pub const WIDTH_MAX: f64 = 1000.0;
-
-    pub fn shaperstyle(&self) -> ShaperStyle {
-        self.shaperstyle
-    }
-
-    pub fn set_shaperstyle(&mut self, shapestyle: ShaperStyle) {
-        self.shaperstyle = shapestyle;
-    }
-
-    pub fn drawstyle(&self) -> ShaperDrawStyle {
-        self.drawstyle
-    }
-
-    pub fn set_drawstyle(&mut self, drawstyle: ShaperDrawStyle) {
-        self.drawstyle = drawstyle;
-    }
-
-    /// Gets the width for the current shaper drawstyle
-    pub fn width(&self) -> f64 {
-        match self.drawstyle {
-            ShaperDrawStyle::Smooth => self.smooth_options.width(),
-            ShaperDrawStyle::Rough => self.rough_options.stroke_width(),
-        }
-    }
-
-    /// Sets the width for the current shaper drawstyle
-    pub fn set_width(&mut self, width: f64) {
-        match self.drawstyle {
-            ShaperDrawStyle::Smooth => self.smooth_options.set_width(width),
-            ShaperDrawStyle::Rough => self.rough_options.set_stroke_width(width),
-        }
-    }
-
-    /// Gets the color for the current shaper drawstyle
-    pub fn color(&self) -> Option<Color> {
-        match self.drawstyle {
-            ShaperDrawStyle::Smooth => self.smooth_options.color(),
-            ShaperDrawStyle::Rough => self.rough_options.stroke,
-        }
-    }
-
-    /// Sets the color for the current shaper drawstyle
-    pub fn set_color(&mut self, color: Option<Color>) {
-        match self.drawstyle {
-            ShaperDrawStyle::Smooth => self.smooth_options.set_color(color),
-            ShaperDrawStyle::Rough => self.rough_options.stroke = color,
-        }
-    }
-
-    /// Gets the fill color for the current shaper drawstyle
-    pub fn fill(&self) -> Option<Color> {
-        match self.drawstyle {
-            ShaperDrawStyle::Smooth => self.smooth_options.fill(),
-            ShaperDrawStyle::Rough => self.rough_options.fill,
-        }
-    }
-
-    /// Sets the fill color for the current shaper drawstyle
-    pub fn set_fill(&mut self, fill: Option<Color>) {
-        match self.drawstyle {
-            ShaperDrawStyle::Smooth => self.smooth_options.set_fill(fill),
-            ShaperDrawStyle::Rough => self.rough_options.stroke = fill,
         }
     }
 }

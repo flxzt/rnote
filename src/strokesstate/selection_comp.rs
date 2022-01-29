@@ -68,6 +68,12 @@ impl StrokesState {
         }
     }
 
+    pub fn set_selected_keys(&mut self, keys: &[StrokeKey], selected: bool) {
+        keys.iter().for_each(|&key| {
+            self.set_selected(key, selected);
+        })
+    }
+
     /// Returns the selection keys in the order that they should be rendered. Does not return the stroke keys!
     pub fn selection_keys_in_order_rendered(&self) -> Vec<StrokeKey> {
         let keys_sorted_chrono = self.keys_sorted_chrono();
@@ -95,20 +101,6 @@ impl StrokesState {
         self.gen_bounds(&self.selection_keys_in_order_rendered())
     }
 
-    pub fn deselect_all_strokes(&mut self) {
-        self.keys_sorted_chrono().iter().for_each(|&key| {
-            if let Some(selection_comp) = self.selection_components.get_mut(key) {
-                if selection_comp.selected {
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                        self.chrono_counter += 1;
-                        chrono_comp.t = self.chrono_counter;
-                    }
-                    selection_comp.selected = false;
-                }
-            }
-        });
-    }
-
     pub fn duplicate_selection(&mut self, zoom: f64) {
         let offset = na::vector![
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_X,
@@ -116,7 +108,7 @@ impl StrokesState {
         ];
 
         let old_selected = self.selection_keys_in_order_rendered();
-        self.deselect_all_strokes();
+        self.set_selected_keys(&old_selected, false);
 
         let new_selected = old_selected
             .iter()
@@ -133,7 +125,7 @@ impl StrokesState {
 
     /// Returns true if selection has changed
     pub fn update_selection_for_selector(&mut self, selector: &Selector, viewport: Option<AABB>) {
-        let selector_polygon = match selector.style() {
+        let selector_polygon = match selector.style {
             selector::SelectorStyle::Polygon => {
                 let selector_path_points = selector
                     .path

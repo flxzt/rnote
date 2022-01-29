@@ -613,22 +613,43 @@ impl RnoteAppWindow {
             .add_controller(&canvas_touch_drag_gesture);
 
         // Move Canvas with middle mouse button
-        let canvas_mouse_drag_gesture = GestureDrag::builder()
+        let canvas_mouse_middle_gesture = GestureDrag::builder()
             .name("canvas_mouse_drag_gesture")
             .button(gdk::BUTTON_MIDDLE)
             .propagation_phase(PropagationPhase::Capture)
             .build();
         self.canvas_scroller()
-            .add_controller(&canvas_mouse_drag_gesture);
+            .add_controller(&canvas_mouse_middle_gesture);
 
         let mouse_drag_start_x = Rc::new(Cell::new(0.0));
         let mouse_drag_start_y = Rc::new(Cell::new(0.0));
 
-        canvas_mouse_drag_gesture.connect_drag_begin(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
+        canvas_mouse_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
             mouse_drag_start_x.set(appwindow.canvas().hadjustment().unwrap().value());
             mouse_drag_start_y.set(appwindow.canvas().vadjustment().unwrap().value());
         }));
-        canvas_mouse_drag_gesture.connect_drag_update(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+        canvas_mouse_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+            appwindow.canvas().hadjustment().unwrap().set_value(mouse_drag_start_x.get() - x);
+            appwindow.canvas().vadjustment().unwrap().set_value(mouse_drag_start_y.get() - y);
+        }));
+
+        // Move Canvas by dragging in empty area
+        let canvas_mouse_drag_empty_area_gesture = GestureDrag::builder()
+            .name("canvas_mouse_drag_gesture")
+            .button(gdk::BUTTON_PRIMARY)
+            .propagation_phase(PropagationPhase::Bubble)
+            .build();
+        self.canvas_scroller()
+            .add_controller(&canvas_mouse_drag_empty_area_gesture);
+
+        let mouse_drag_start_x = Rc::new(Cell::new(0.0));
+        let mouse_drag_start_y = Rc::new(Cell::new(0.0));
+
+        canvas_mouse_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
+            mouse_drag_start_x.set(appwindow.canvas().hadjustment().unwrap().value());
+            mouse_drag_start_y.set(appwindow.canvas().vadjustment().unwrap().value());
+        }));
+        canvas_mouse_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
             appwindow.canvas().hadjustment().unwrap().set_value(mouse_drag_start_x.get() - x);
             appwindow.canvas().vadjustment().unwrap().set_value(mouse_drag_start_y.get() - y);
         }));
@@ -726,7 +747,8 @@ impl RnoteAppWindow {
         );
 
         // Gesture Grouping
-        canvas_mouse_drag_gesture.group_with(&canvas_touch_drag_gesture);
+        canvas_mouse_middle_gesture.group_with(&canvas_touch_drag_gesture);
+        canvas_mouse_drag_empty_area_gesture.group_with(&canvas_touch_drag_gesture);
         canvas_zoom_gesture.group_with(&canvas_touch_drag_gesture);
 
         // actions and settings AFTER widget callback declarations
@@ -897,7 +919,7 @@ impl RnoteAppWindow {
             .open_sheet_from_rnote_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
-        self.settings_panel().load_all(self);
+        self.settings_panel().refresh_for_sheet(self);
 
         self.canvas().set_unsaved_changes(false);
         app.set_input_file(None);
@@ -935,9 +957,8 @@ impl RnoteAppWindow {
             .open_from_xopp_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
-        self.settings_panel().load_all(self);
+        self.settings_panel().refresh_for_sheet(self);
 
-        self.canvas().set_unsaved_changes(true);
         app.set_input_file(None);
         app.set_output_file(None, self);
 
@@ -969,11 +990,17 @@ impl RnoteAppWindow {
                     f64::from(self.canvas().sheet_margin() + VectorImage::OFFSET_Y_DEFAULT)
                 ])
         });
+        let all_strokes = self
+            .canvas()
+            .sheet()
+            .borrow()
+            .strokes_state
+            .keys_sorted_chrono();
         self.canvas()
             .sheet()
             .borrow_mut()
             .strokes_state
-            .deselect_all_strokes();
+            .set_selected_keys(&all_strokes, false);
 
         self.canvas()
             .sheet()
@@ -1008,11 +1035,17 @@ impl RnoteAppWindow {
                     f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT)
                 ])
         });
+        let all_strokes = self
+            .canvas()
+            .sheet()
+            .borrow()
+            .strokes_state
+            .keys_sorted_chrono();
         self.canvas()
             .sheet()
             .borrow_mut()
             .strokes_state
-            .deselect_all_strokes();
+            .set_selected_keys(&all_strokes, false);
 
         self.canvas()
             .sheet()
@@ -1047,11 +1080,17 @@ impl RnoteAppWindow {
             * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
 
+        let all_strokes = self
+            .canvas()
+            .sheet()
+            .borrow()
+            .strokes_state
+            .keys_sorted_chrono();
         self.canvas()
             .sheet()
             .borrow_mut()
             .strokes_state
-            .deselect_all_strokes();
+            .set_selected_keys(&all_strokes, false);
 
         if self.canvas().pdf_import_as_vector() {
             self.canvas()

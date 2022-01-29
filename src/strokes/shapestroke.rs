@@ -96,6 +96,11 @@ pub struct ShapeStroke {
     pub drawstyle: ShapeDrawStyle,
     #[serde(rename = "bounds")]
     pub bounds: AABB,
+
+    #[serde(skip)]
+    pub rect_start: na::Vector2<f64>,
+    #[serde(skip)]
+    pub rect_current: na::Vector2<f64>,
 }
 
 impl Default for ShapeStroke {
@@ -116,8 +121,12 @@ impl DrawBehaviour for ShapeStroke {
     fn gen_bounds(&self) -> Option<AABB> {
         match &self.drawstyle {
             ShapeDrawStyle::Smooth { options } => {
-                let width = options.width();
-                Some(self.shape.bounds().loosened(width * 0.5))
+                let width = options.width;
+                Some(
+                    self.shape
+                        .bounds()
+                        .loosened(width * 0.5 + ShaperDrawStyle::SMOOTH_MARGIN),
+                )
             }
             ShapeDrawStyle::Rough { options } => {
                 let width = options.stroke_width();
@@ -140,13 +149,13 @@ impl DrawBehaviour for ShapeStroke {
 
                 match &self.drawstyle {
                     ShapeDrawStyle::Smooth { options } => {
-                        let color = if let Some(color) = options.color() {
+                        let color = if let Some(color) = options.stroke_color {
                             color.to_css_color()
                         } else {
                             String::from("none")
                         };
 
-                        let fill = if let Some(fill) = options.fill() {
+                        let fill = if let Some(fill) = options.fill_color {
                             fill.to_css_color()
                         } else {
                             String::from("none")
@@ -158,7 +167,7 @@ impl DrawBehaviour for ShapeStroke {
                             .set("x2", line.end[0])
                             .set("y2", line.end[1])
                             .set("stroke", color)
-                            .set("stroke-width", options.width())
+                            .set("stroke-width", options.width)
                             .set("fill", fill)
                             .into()
                     }
@@ -227,7 +236,7 @@ impl ShapeStroke {
     pub fn new(element: Element, shaper: &Shaper) -> Self {
         let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
 
-        let shape = match shaper.shaperstyle() {
+        let shape = match shaper.style {
             ShaperStyle::Line => Shape::Line(curves::Line {
                 start: element.inputdata.pos(),
                 end: element.inputdata.pos(),
@@ -248,10 +257,10 @@ impl ShapeStroke {
             }),
         };
         let bounds = shape.bounds();
-        let drawstyle = match shaper.drawstyle() {
+        let drawstyle = match shaper.drawstyle {
             ShaperDrawStyle::Smooth => {
                 let mut options = shaper.smooth_options;
-                options.set_seed(seed);
+                options.seed = seed;
 
                 ShapeDrawStyle::Smooth { options }
             }
@@ -268,6 +277,8 @@ impl ShapeStroke {
             drawstyle,
             bounds,
             seed,
+            rect_start: element.inputdata.pos(),
+            rect_current: element.inputdata.pos(),
         };
 
         if let Some(new_bounds) = shapestroke.gen_bounds() {
@@ -283,32 +294,24 @@ impl ShapeStroke {
                 line.end = element.inputdata.pos();
             }
             Shape::Rectangle(ref mut rectangle) => {
-                let offset = element.inputdata.pos()
-                    - rectangle
-                        .transform
-                        .transform_point(na::point![0.0, 0.0])
-                        .coords;
+                let diff = element.inputdata.pos() - self.rect_current;
 
-                if offset[0] > 0.0 {
-                    rectangle.cuboid.half_extents[0] = offset[0];
-                }
-                if offset[1] > 0.0 {
-                    rectangle.cuboid.half_extents[1] = offset[1];
-                }
+                rectangle.cuboid.half_extents =
+                    ((element.inputdata.pos() - self.rect_start) / 2.0).abs();
+                rectangle.transform.transform =
+                    na::Translation2::from(diff / 2.0) * rectangle.transform.transform;
+
+                self.rect_current = element.inputdata.pos();
             }
             Shape::Ellipse(ref mut ellipse) => {
-                let offset = element.inputdata.pos()
-                    - ellipse
-                        .transform
-                        .transform_point(na::point![0.0, 0.0])
-                        .coords;
+                let center = ellipse
+                    .transform
+                    .transform
+                    .transform_point(&na::point![0.0, 0.0]);
 
-                if offset[0] > 0.0 {
-                    ellipse.radii[0] = offset[0];
-                }
-                if offset[1] > 0.0 {
-                    ellipse.radii[1] = offset[1];
-                }
+                let diff = element.inputdata.pos() - center.coords;
+
+                ellipse.radii = diff.abs();
             }
         }
 

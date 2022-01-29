@@ -583,7 +583,7 @@ mod imp {
 
                 match current_pen {
                     PenStyle::EraserStyle => {
-                        if let Some(current_input) = self.pens.borrow().eraser.current_input() {
+                        if let Some(current_input) = self.pens.borrow().eraser.current_input {
                             debug::draw_pos(
                                 current_input.pos(),
                                 debug::COLOR_POS_ALT,
@@ -627,8 +627,6 @@ mod imp {
 use crate::compose::geometry;
 use crate::input;
 use crate::render::Renderer;
-use crate::sheet::background::Background;
-use crate::sheet::format::Format;
 use crate::strokes::strokestyle::InputData;
 use crate::ui::selectionmodifier::SelectionModifier;
 use crate::{app::RnoteApp, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow};
@@ -1338,44 +1336,6 @@ impl Canvas {
         self.selection_modifier().update_state(self);
 
         Some(texture)
-    }
-
-    // load sheet state from settings
-    pub fn load_sheet_settings(&self, settings: &gio::Settings) -> Result<(), anyhow::Error> {
-        // loading Json settings is fallible so on first startup, app defaults are used
-
-        if let Ok(loaded_format) =
-            serde_json::from_str::<Format>(settings.string("sheet-format").as_str())
-        {
-            self.sheet().borrow_mut().format = loaded_format;
-        }
-
-        if let Ok(loaded_background) =
-            serde_json::from_str::<Background>(settings.string("sheet-background").as_str())
-        {
-            self.sheet().borrow_mut().background = loaded_background;
-        }
-
-        if let Ok(loaded_pens) = serde_json::from_str::<Pens>(settings.string("pens").as_str()) {
-            *self.pens().borrow_mut() = loaded_pens;
-        }
-
-        self.resize_to_format();
-        Ok(())
-    }
-
-    // save sheet state to settings
-    pub fn save_sheet_settings(&self, settings: &gio::Settings) -> Result<(), anyhow::Error> {
-        let format_string = serde_json::to_string(&self.sheet().borrow().format)?;
-        settings.set_string("sheet-format", format_string.as_str())?;
-
-        let background_string = serde_json::to_string(&self.sheet().borrow().background)?;
-        settings.set_string("sheet-background", background_string.as_str())?;
-
-        let pens_string = serde_json::to_string(&*self.pens().borrow())?;
-        settings.set_string("pens", pens_string.as_str())?;
-
-        Ok(())
     }
 }
 

@@ -76,8 +76,8 @@ impl DrawBehaviour for BrushStroke {
                         let mut bounds = AABB::new_invalid();
 
                         let width = match &self.style {
-                            BrushStrokeStyle::Solid { options } => options.width(),
-                            BrushStrokeStyle::Textured { options } => options.width(),
+                            BrushStrokeStyle::Solid { options } => options.width,
+                            BrushStrokeStyle::Textured { options } => options.width,
                         };
 
                         if let Some(cubbez) = curves::gen_cubbez_w_catmull_rom(
@@ -165,13 +165,13 @@ impl BrushStroke {
         let style = match brush.style {
             BrushStyle::Solid => {
                 let mut options = brush.smooth_options;
-                options.set_seed(seed);
+                options.seed = seed;
 
                 BrushStrokeStyle::Solid { options }
             }
             BrushStyle::Textured => {
                 let mut options = brush.textured_options;
-                options.set_seed(seed);
+                options.seed = seed;
 
                 BrushStrokeStyle::Textured { options }
             }
@@ -238,8 +238,8 @@ impl BrushStroke {
     fn update_bounds_to_last_elem(&mut self) {
         if let Some(last) = self.elements.last() {
             let width = match self.style {
-                BrushStrokeStyle::Solid { options } => options.width(),
-                BrushStrokeStyle::Textured { options } => options.width(),
+                BrushStrokeStyle::Solid { options } => options.width,
+                BrushStrokeStyle::Textured { options } => options.width,
             };
 
             self.bounds.merge(&AABB::new(
@@ -266,8 +266,8 @@ impl BrushStroke {
 
     fn gen_hitbox_for_elems(&self, first: &Element, second: Option<&Element>) -> AABB {
         let width = match self.style {
-            BrushStrokeStyle::Solid { options } => options.width(),
-            BrushStrokeStyle::Textured { options } => options.width(),
+            BrushStrokeStyle::Solid { options } => options.width,
+            BrushStrokeStyle::Textured { options } => options.width,
         };
 
         let first = first.inputdata.pos();
@@ -306,24 +306,24 @@ impl BrushStroke {
     ) -> Result<Option<render::Svg>, anyhow::Error> {
         match self.style {
             BrushStrokeStyle::Solid { mut options } => {
-                let mut seed = options.seed();
+                let mut seed = options.seed;
                 // Advance the seed (skip first three elements) so that stroke keeps generating the same patterns
                 for _ in 3..self.elements.len() {
                     seed = seed.map(|seed| utils::seed_advance(seed));
                 }
-                options.set_seed(seed);
+                options.seed = seed;
 
                 Ok(Self::gen_svg_elem_solid(
                     &options, elements, offset, svg_root,
                 ))
             }
             BrushStrokeStyle::Textured { mut options } => {
-                let mut seed = options.seed();
+                let mut seed = options.seed;
                 // Advance the seed (skip first three elements) so that stroke keeps generating the same patterns
                 for _ in 3..self.elements.len() {
                     seed = seed.map(|seed| utils::seed_advance(seed));
                 }
-                options.set_seed(seed);
+                options.seed = seed;
 
                 Ok(Self::gen_svg_elem_textured(
                     &options, elements, offset, svg_root,
@@ -340,8 +340,8 @@ impl BrushStroke {
     ) -> Option<render::Svg> {
         let mut commands = Vec::new();
 
-        let start_width = elements.1.inputdata.pressure() * options.width();
-        let end_width = elements.2.inputdata.pressure() * options.width();
+        let start_width = elements.1.inputdata.pressure() * options.width;
+        let end_width = elements.2.inputdata.pressure() * options.width;
 
         let mut bounds = AABB::new_invalid();
 
@@ -406,7 +406,7 @@ impl BrushStroke {
         bounds.loosen(start_width.max(end_width));
 
         let fill = options
-            .color()
+            .stroke_color
             .map_or(String::from(""), |color| color.to_css_color());
 
         let path = svg::node::element::Path::new()
@@ -457,8 +457,8 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Option<render::Svg> {
-        let start_width = elements.1.inputdata.pressure() * options.width();
-        let end_width = elements.2.inputdata.pressure() * options.width();
+        let start_width = elements.1.inputdata.pressure() * options.width;
+        let end_width = elements.2.inputdata.pressure() * options.width;
         let mid_width = (start_width + end_width) * 0.5;
 
         let mut bounds = AABB::new_invalid();
@@ -478,7 +478,7 @@ impl BrushStroke {
             return None;
         };
 
-        bounds.loosen(options.width());
+        bounds.loosen(options.width);
 
         let mut svg_data = compose::svg_node_to_string(&element)
             .map_err(|e| {
@@ -502,7 +502,7 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let mut seed = options.seed();
+        let mut seed = options.seed;
 
         let svgs: Vec<render::Svg> = self
             .elements
@@ -512,7 +512,7 @@ impl BrushStroke {
             .zip(self.elements.iter().skip(3))
             .filter_map(|(((first, second), third), forth)| {
                 seed = seed.map(|seed| utils::seed_advance(seed));
-                options.set_seed(seed);
+                options.seed = seed;
 
                 Self::gen_svg_elem_textured(
                     &options,

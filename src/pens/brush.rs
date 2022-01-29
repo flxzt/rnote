@@ -1,6 +1,5 @@
 use std::collections::VecDeque;
 
-use crate::compose::color::Color;
 use crate::compose::smooth::SmoothOptions;
 use crate::compose::textured::TexturedOptions;
 use crate::input;
@@ -49,15 +48,12 @@ pub struct Brush {
 
 impl Default for Brush {
     fn default() -> Self {
-        let mut brush = Self {
+        Self {
             style: BrushStyle::default(),
             smooth_options: SmoothOptions::default(),
             textured_options: TexturedOptions::default(),
             current_stroke: None,
-        };
-        brush.set_width(Self::WIDTH_DEFAULT);
-
-        brush
+        }
     }
 }
 
@@ -167,50 +163,6 @@ impl PenBehaviour for Brush {
                 );
 
             appwindow.canvas().resize_endless();
-        }
-    }
-}
-
-// specifying shared behaviour of all options
-impl Brush {
-    /// The default width
-    pub const WIDTH_DEFAULT: f64 = 3.6;
-    /// The min width
-    pub const WIDTH_MIN: f64 = 0.1;
-    /// The max width
-    pub const WIDTH_MAX: f64 = 1000.0;
-
-    /// Gets the width for the current brush style
-    pub fn width(&self) -> f64 {
-        match self.style {
-            BrushStyle::Solid => self.smooth_options.width(),
-            BrushStyle::Textured => self.textured_options.width(),
-        }
-    }
-
-    /// Sets the width for the current brush style
-    pub fn set_width(&mut self, width: f64) {
-        let width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
-
-        match self.style {
-            BrushStyle::Solid => self.smooth_options.set_width(width),
-            BrushStyle::Textured => self.textured_options.set_width(width),
-        }
-    }
-
-    /// Gets the color for the current brush style
-    pub fn color(&self) -> Option<Color> {
-        match self.style {
-            BrushStyle::Solid => self.smooth_options.color(),
-            BrushStyle::Textured => self.textured_options.color(),
-        }
-    }
-
-    /// Sets the color for the current brush style
-    pub fn set_color(&mut self, color: Option<Color>) {
-        match self.style {
-            BrushStyle::Solid => self.smooth_options.set_color(color),
-            BrushStyle::Textured => self.textured_options.set_color(color),
         }
     }
 }

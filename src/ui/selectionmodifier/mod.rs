@@ -426,7 +426,8 @@ impl Default for SelectionModifier {
 
 impl SelectionModifier {
     pub const RESIZE_NODE_SIZE: i32 = 18;
-    pub const SELECTION_BOUNDS_MIN: f64 = 50.0;
+    // must not be < 2 * RESIZE_NODE_SIZE + its margins
+    pub const SELECTION_BOUNDS_MIN: f64 = 60.0;
 
     pub fn new() -> Self {
         let selection_modifier: Self =

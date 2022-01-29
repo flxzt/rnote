@@ -38,7 +38,7 @@ pub enum PredefinedFormat {
 
 impl Default for PredefinedFormat {
     fn default() -> Self {
-        Self::A4
+        Self::A3
     }
 }
 
@@ -134,11 +134,11 @@ impl Default for Format {
 impl Format {
     pub const WIDTH_MIN: u32 = 1;
     pub const WIDTH_MAX: u32 = 30000;
-    pub const WIDTH_DEFAULT: u32 = 1240;
+    pub const WIDTH_DEFAULT: u32 = 1123;
 
     pub const HEIGHT_MIN: u32 = 1;
     pub const HEIGHT_MAX: u32 = 30000;
-    pub const HEIGHT_DEFAULT: u32 = 1754;
+    pub const HEIGHT_DEFAULT: u32 = 1587;
 
     pub const DPI_MIN: f64 = 1.0;
     pub const DPI_MAX: f64 = 5000.0;

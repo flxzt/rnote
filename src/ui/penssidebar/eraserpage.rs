@@ -40,9 +40,7 @@ mod imp {
 
 use crate::pens::eraser::Eraser;
 use crate::ui::appwindow::RnoteAppWindow;
-use gtk4::{
-    glib, glib::clone, subclass::prelude::*,  Orientable, SpinButton, Widget,
-};
+use gtk4::{glib, glib::clone, subclass::prelude::*, Orientable, SpinButton, Widget};
 
 glib::wrapper! {
     pub struct EraserPage(ObjectSubclass<imp::EraserPage>)
@@ -72,12 +70,8 @@ impl EraserPage {
 
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                appwindow.canvas().pens().borrow_mut().eraser.set_width(width_spinbutton.value());
+                appwindow.canvas().pens().borrow_mut().eraser.width = width_spinbutton.value();
             }),
         );
-    }
-
-    pub fn load_from_eraser(&self, eraser: Eraser) {
-        self.width_spinbutton().set_value(eraser.width());
     }
 }

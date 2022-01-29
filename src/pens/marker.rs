@@ -23,13 +23,10 @@ pub struct Marker {
 
 impl Default for Marker {
     fn default() -> Self {
-        let mut marker = Self {
+        Self {
             options: SmoothOptions::default(),
             current_stroke: None,
-        };
-        marker.set_width(Self::WIDTH_DEFAULT);
-
-        marker
+        }
     }
 }
 
@@ -140,23 +137,5 @@ impl PenBehaviour for Marker {
 
             appwindow.canvas().resize_endless();
         }
-    }
-}
-
-impl Marker {
-    /// The default width
-    pub const WIDTH_DEFAULT: f64 = 6.0;
-    /// The min width
-    pub const WIDTH_MIN: f64 = 0.1;
-    /// The max width
-    pub const WIDTH_MAX: f64 = 1000.0;
-
-    pub fn width(&self) -> f64 {
-        self.options.width()
-    }
-
-    pub fn set_width(&mut self, width: f64) {
-        self.options
-            .set_width(width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX));
     }
 }

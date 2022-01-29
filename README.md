@@ -45,15 +45,14 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 
 ## Screenshots
 
-If you have drawn something cool in Rnote and want to share it, let me know so I can include it as a screenshot. :)
-
 ![main_window_dark](./resources/screenshots/main_window_dark.png)
 ![main_window_light](./resources/screenshots/main_window_light.png)
 ![pdf_annotation](./resources/screenshots/pdf_annotation.png)
-![multiple_pages](./resources/screenshots/multiple_pages.png)
 ![selection](./resources/screenshots/selection.png)
 
 # Images drawn with Rnote
+
+If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
 ![tree](./resources/images/tree.svg)
 
@@ -70,14 +69,15 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
     [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
 - [x] Textured brush strokes with tweakable parameters
 - [x] Stroke elements drag tool: drag along parts of the selected strokes based on the proximity of a round pen tool
+- [x] strokes rotation
 - [x] parallelizing rendering and actions which affect many strokes.
 - [x] asychronous rendering
+- [ ] (partial) Xournal++ .xopp file import and export
+- [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust
 - [ ] cancellable rendering
-- [ ] strokes rotation
-- [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust (see `./src/rough-rs`)
 - [ ] export as bitmap picture
-- [ ] implement text fields (Plain, Markdown)
-- [ ] implement optional stroke smoothing
+- [ ] text fields (Plain, Markdown)
+- [ ] optional stroke smoothing
 
 ## Feature Ideas:
 * Stroke Layers
@@ -93,7 +93,10 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 ## File Format
 The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
 
-So far the first breaking change in the format happened between `v0.1.6` and `v0.2.0`.
+So far breaking changes in the format happened in versions:  
+- `v0.2.0`
+- `v0.3.0`
+
 
 To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
 

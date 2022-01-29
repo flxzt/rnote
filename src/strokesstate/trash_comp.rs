@@ -101,15 +101,15 @@ impl StrokesState {
 
     /// trash strokes that collide with the eraser
     pub fn trash_colliding_strokes(&mut self, eraser: &Eraser, viewport: Option<AABB>) {
-        if let Some(eraser_current_input) = eraser.current_input() {
+        if let Some(eraser_current_input) = eraser.current_input {
             let eraser_bounds = AABB::new(
                 na::Point2::from(
                     eraser_current_input.pos()
-                        - na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
+                        - na::vector![eraser.width / 2.0, eraser.width / 2.0],
                 ),
                 na::Point2::from(
                     eraser_current_input.pos()
-                        + na::vector![eraser.width() / 2.0, eraser.width() / 2.0],
+                        + na::vector![eraser.width / 2.0, eraser.width / 2.0],
                 ),
             );
 

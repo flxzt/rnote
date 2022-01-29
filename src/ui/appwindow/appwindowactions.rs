@@ -1,4 +1,8 @@
 use super::RnoteAppWindow;
+use crate::pens::brush::BrushStyle;
+use crate::pens::selector::SelectorStyle;
+use crate::pens::shaper::{ShaperDrawStyle, ShaperStyle};
+use crate::pens::tools::ToolStyle;
 use crate::render::{self, RendererBackend};
 use crate::{
     app::RnoteApp,
@@ -62,8 +66,6 @@ impl RnoteAppWindow {
             gio::PropertyAction::new("format-borders", &self.canvas(), "format-borders");
         self.add_action(&action_format_borders);
 
-        let action_clear_sheet = gio::SimpleAction::new("clear-sheet", None);
-        self.add_action(&action_clear_sheet);
         let action_undo_stroke = gio::SimpleAction::new("undo-stroke", None);
         self.add_action(&action_undo_stroke);
         let action_redo_stroke = gio::SimpleAction::new("redo-stroke", None);
@@ -80,6 +82,10 @@ impl RnoteAppWindow {
         self.add_action(&action_delete_selection);
         let action_duplicate_selection = gio::SimpleAction::new("duplicate-selection", None);
         self.add_action(&action_duplicate_selection);
+        let action_select_all = gio::SimpleAction::new("select-all", None);
+        self.add_action(&action_select_all);
+        let action_clear_sheet = gio::SimpleAction::new("clear-sheet", None);
+        self.add_action(&action_clear_sheet);
         let action_new_sheet = gio::SimpleAction::new("new-sheet", None);
         self.add_action(&action_new_sheet);
         let action_save_sheet = gio::SimpleAction::new("save-sheet", None);
@@ -119,41 +125,27 @@ impl RnoteAppWindow {
             &false.to_variant(),
         );
         self.add_action(&action_tmperaser);
-        let action_current_pen = gio::SimpleAction::new_stateful(
-            "current-pen",
-            Some(&glib::VariantType::new("s").unwrap()),
-            &"marker".to_variant(),
-        );
+        let action_current_pen =
+            gio::SimpleAction::new("current-pen", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_current_pen);
-        let action_shaper_style = gio::SimpleAction::new_stateful(
-            "shaper-style",
-            Some(&glib::VariantType::new("s").unwrap()),
-            &"rectangle".to_variant(),
-        );
+        let action_shaper_style =
+            gio::SimpleAction::new("shaper-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_shaper_style);
-        let action_brush_style = gio::SimpleAction::new_stateful(
-            "brush-style",
-            Some(&glib::VariantType::new("s").unwrap()),
-            &"solid".to_variant(),
-        );
+        let action_brush_style =
+            gio::SimpleAction::new("brush-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_brush_style);
-        let action_shaper_drawstyle = gio::SimpleAction::new_stateful(
+        let action_shaper_drawstyle = gio::SimpleAction::new(
             "shaper-drawstyle",
             Some(&glib::VariantType::new("s").unwrap()),
-            &"smooth".to_variant(),
         );
         self.add_action(&action_shaper_drawstyle);
-        let action_selector_style = gio::SimpleAction::new_stateful(
+        let action_selector_style = gio::SimpleAction::new(
             "selector-style",
             Some(&glib::VariantType::new("s").unwrap()),
-            &"polygon".to_variant(),
         );
         self.add_action(&action_selector_style);
-        let action_tool_style = gio::SimpleAction::new_stateful(
-            "tool-style",
-            Some(&glib::VariantType::new("s").unwrap()),
-            &"expandsheet".to_variant(),
-        );
+        let action_tool_style =
+            gio::SimpleAction::new("tool-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_tool_style);
         let action_refresh_ui_for_sheet = gio::SimpleAction::new("refresh-ui-for-sheet", None);
         self.add_action(&action_refresh_ui_for_sheet);
@@ -245,296 +237,266 @@ impl RnoteAppWindow {
         }));
 
         // Current Pen
-        action_current_pen.connect_activate(move |action_current_pen, target| {
-            if action_current_pen.state().unwrap().str().unwrap() != target.unwrap().str().unwrap()
-            {
-                action_current_pen.change_state(target.unwrap());
-            }
-        });
-        action_current_pen.connect_change_state(
-            clone!(@weak self as appwindow => move |action_current_pen, target| {
-                let state = target.unwrap();
-                action_current_pen.set_state(state);
-
-                let current_pen = state.str().unwrap();
+        action_current_pen.connect_activate(
+            clone!(@weak self as appwindow => move |_action_current_pen, target| {
+                let current_pen = target.unwrap().str().unwrap();
 
                 match current_pen {
                     "marker_style" => {
-                        appwindow.mainheader().marker_toggle().set_active(true);
                         appwindow.canvas().pens().borrow_mut().current_pen = PenStyle::MarkerStyle;
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("marker_page");
+                        appwindow.canvas().pens().borrow_mut().marker.options.width = appwindow.penssidebar().marker_page().width_spinbutton().value();
                     },
                     "brush_style" => {
-                        appwindow.mainheader().brush_toggle().set_active(true);
                         appwindow.canvas().pens().borrow_mut().current_pen = PenStyle::BrushStyle;
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
                     },
                     "shaper_style" => {
-                        appwindow.mainheader().shaper_toggle().set_active(true);
                         appwindow.canvas().pens().borrow_mut().current_pen = PenStyle::ShaperStyle;
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
                     },
                     "eraser_style" => {
-                        appwindow.mainheader().eraser_toggle().set_active(true);
                         appwindow.canvas().pens().borrow_mut().current_pen = PenStyle::EraserStyle;
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                     },
                     "selector_style" => {
-                        appwindow.mainheader().selector_toggle().set_active(true);
                         appwindow.canvas().pens().borrow_mut().current_pen = PenStyle::SelectorStyle;
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                     },
                     "tools_style" => {
-                        appwindow.mainheader().tools_toggle().set_active(true);
                         appwindow.canvas().pens().borrow_mut().current_pen = PenStyle::ToolsStyle;
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
                     },
                     _ => { log::error!("set invalid state of action `current-pen`")}
                 }
+
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
             }),
         );
 
         // Brush Style
-        action_brush_style.connect_activate(move |action_brush_style, parameter| {
-            if action_brush_style.state().unwrap().str().unwrap()
-                != parameter.unwrap().str().unwrap()
-            {
-                action_brush_style.change_state(parameter.unwrap());
-            }
-        });
-        action_brush_style.connect_change_state(
-        clone!(@weak self as appwindow => move |action_brush_style, value| {
-            action_brush_style.set_state(value.unwrap());
+        action_brush_style.connect_activate(
+        clone!(@weak self as appwindow => move |_action_brush_style, target| {
+            let brush_style = target.unwrap().str().unwrap();
 
-            match action_brush_style.state().unwrap().str().unwrap() {
+            match brush_style {
                 "solid" => {
                     appwindow.canvas().pens().borrow_mut().brush.style = brush::BrushStyle::Solid;
-                    appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
-                    let brush_width = appwindow.canvas().pens().borrow().brush.width();
-                    appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush_width);
+                    appwindow.canvas().pens().borrow_mut().brush.smooth_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                    appwindow.canvas().pens().borrow_mut().brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
                 },
                 "textured" => {
                     appwindow.canvas().pens().borrow_mut().brush.style = brush::BrushStyle::Textured;
-                    appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
-                    let brush_width = appwindow.canvas().pens().borrow().brush.width();
-                    appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush_width);
+                    appwindow.canvas().pens().borrow_mut().brush.textured_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                    appwindow.canvas().pens().borrow_mut().brush.textured_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
                 },
                 _ => { log::error!("set invalid state of action `brush-style`")}
             }
+
+
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
         }),
         );
 
         // Shaper style
-        action_shaper_style.connect_activate(move |action_current_shape, parameter| {
-            if action_current_shape.state().unwrap().str().unwrap()
-                != parameter.unwrap().str().unwrap()
-            {
-                action_current_shape.change_state(parameter.unwrap());
-            }
-        });
-        action_shaper_style.connect_change_state(
-        clone!(@weak self as appwindow => move |action_current_shape, value| {
-            action_current_shape.set_state(value.unwrap());
+        action_shaper_style.connect_activate(
+        clone!(@weak self as appwindow => move |_action_shaper_style, target| {
+            let shaper_style = target.unwrap().str().unwrap();
 
-            match action_current_shape.state().unwrap().str().unwrap() {
+            match shaper_style {
                 "line" => {
-                    appwindow.penssidebar().shaper_page().line_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().shaper.set_shaperstyle(shaper::ShaperStyle::Line);
-                    appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(false);
+                    appwindow.canvas().pens().borrow_mut().shaper.style = shaper::ShaperStyle::Line;
                 },
                 "rectangle" => {
-                    appwindow.penssidebar().shaper_page().rectangle_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().shaper.set_shaperstyle(shaper::ShaperStyle::Rectangle);
-                    appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
+                    appwindow.canvas().pens().borrow_mut().shaper.style = shaper::ShaperStyle::Rectangle;
                 },
                 "ellipse" => {
-                    appwindow.penssidebar().shaper_page().ellipse_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().shaper.set_shaperstyle(shaper::ShaperStyle::Ellipse);
-                    appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
+                    appwindow.canvas().pens().borrow_mut().shaper.style = shaper::ShaperStyle::Ellipse;
                 },
                 _ => { log::error!("set invalid state of action `shaper-style`")}
             }
+
+
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
         }),
         );
 
         // Shaper drawstyle
-        action_shaper_drawstyle.connect_activate(move |action_shaper_drawstyle, parameter| {
-            if action_shaper_drawstyle.state().unwrap().str().unwrap()
-                != parameter.unwrap().str().unwrap()
-            {
-                action_shaper_drawstyle.change_state(parameter.unwrap());
-            }
-        });
-        action_shaper_drawstyle.connect_change_state(
-        clone!(@weak self as appwindow => move |action_shaper_drawstyle, value| {
-            action_shaper_drawstyle.set_state(value.unwrap());
+        action_shaper_drawstyle.connect_activate(
+        clone!(@weak self as appwindow => move |_action_shaper_drawstyle, target| {
+            let shaper_drawstyle = target.unwrap().str().unwrap();
 
-            match action_shaper_drawstyle.state().unwrap().str().unwrap() {
+            match shaper_drawstyle {
                 "smooth" => {
-                    appwindow.canvas().pens().borrow_mut().shaper.set_drawstyle(shaper::ShaperDrawStyle::Smooth);
-                    appwindow.penssidebar().shaper_page().drawstyle_smooth_toggle().set_active(true);
-                    let shaper_width = appwindow.canvas().pens().borrow().shaper.width();
-                    appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper_width);
+                    appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::ShaperDrawStyle::Smooth;
+                    appwindow.canvas().pens().borrow_mut().shaper.smooth_options.width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
+                    appwindow.canvas().pens().borrow_mut().shaper.smooth_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
+                    appwindow.canvas().pens().borrow_mut().shaper.smooth_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
                 },
                 "rough" => {
-                    appwindow.canvas().pens().borrow_mut().shaper.set_drawstyle(shaper::ShaperDrawStyle::Rough);
-                    appwindow.penssidebar().shaper_page().drawstyle_rough_toggle().set_active(true);
-                    let shaper_width = appwindow.canvas().pens().borrow().shaper.width();
-                    appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper_width);
+                    appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::ShaperDrawStyle::Rough;
+                    appwindow.canvas().pens().borrow_mut().shaper.rough_options.stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
+                    appwindow.canvas().pens().borrow_mut().shaper.rough_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
+                    appwindow.canvas().pens().borrow_mut().shaper.rough_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
                 },
                 _ => { log::error!("set invalid state of action `shaper-drawstyle`")}
             }
+
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
         }));
 
         // Selector Style
-        action_selector_style.connect_activate(move |action_selector_style, parameter| {
-            if action_selector_style.state().unwrap().str().unwrap()
-                != parameter.unwrap().str().unwrap()
-            {
-                action_selector_style.change_state(parameter.unwrap());
-            }
-        });
-        action_selector_style.connect_change_state(
-        clone!(@weak self as appwindow => move |action_selector_style, value| {
-            action_selector_style.set_state(value.unwrap());
+        action_selector_style.connect_activate(
+        clone!(@weak self as appwindow => move |_action_selector_style, target| {
+            let selector_style = target.unwrap().str().unwrap();
 
-            match action_selector_style.state().unwrap().str().unwrap() {
+            match selector_style {
                 "polygon" => {
-                    appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().selector.set_style(selector::SelectorStyle::Polygon);
+                    appwindow.canvas().pens().borrow_mut().selector.style = selector::SelectorStyle::Polygon;
                 },
                 "rectangle" => {
-                    appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().selector.set_style(selector::SelectorStyle::Rectangle);
+                    appwindow.canvas().pens().borrow_mut().selector.style = selector::SelectorStyle::Rectangle;
                 },
                 _ => { log::error!("set invalid state of action `selector-style`")}
             }
+
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
         }),
         );
 
         // Tool Style
-        action_tool_style.connect_activate(move |action_tool_style, target| {
-            if action_tool_style.state().unwrap().str().unwrap() != target.unwrap().str().unwrap() {
-                action_tool_style.change_state(target.unwrap());
-            }
-        });
-        action_tool_style.connect_change_state(
-        clone!(@weak self as appwindow => move |action_tool_style, target| {
-            action_tool_style.set_state(target.unwrap());
+        action_tool_style.connect_activate(
+        clone!(@weak self as appwindow => move |_action_tool_style, target| {
+            let tool_style = target.unwrap().str().unwrap();
 
-            match action_tool_style.state().unwrap().str().unwrap() {
+            match tool_style {
                 "expandsheet" => {
-                    appwindow.penssidebar().tools_page().toolstyle_expandsheet_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().tools.set_style(tools::ToolStyle::ExpandSheet);
+                    appwindow.canvas().pens().borrow_mut().tools.style = tools::ToolStyle::ExpandSheet;
                 },
                 "dragproximity" => {
-                    appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true);
-                    appwindow.canvas().pens().borrow_mut().tools.set_style(tools::ToolStyle::DragProximity);
+                    appwindow.canvas().pens().borrow_mut().tools.style = tools::ToolStyle::DragProximity;
                 },
                 _ => { log::error!("set invalid state of action `tool-style`")}
             }
+
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
         }),
         );
 
         // Refresh UI state
-        action_refresh_ui_for_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            // Current pen
-            let current_pen = appwindow.canvas().pens().borrow().current_pen.to_value();
-            let current_pen = glib::EnumValue::from_value(&current_pen)
-                .unwrap()
-                .1
-                .nick();
+        action_refresh_ui_for_sheet.connect_activate(
+            clone!(@weak self as appwindow => move |_action_refresh_ui_for_sheet, _| {
+                // Avoids borrow errors
+                let pens = appwindow.canvas().pens().borrow().clone();
 
-            adw::prelude::ActionGroupExt::activate_action(
-                &appwindow,
-                "current-pen",
-                Some(&current_pen.to_variant()),
-            );
+                // Current pen
+                match pens.current_pen {
+                    PenStyle::MarkerStyle => {
+                        appwindow.mainheader().marker_toggle().set_active(true);
+                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("marker_page");
+                    }
+                    PenStyle::BrushStyle => {
+                        appwindow.mainheader().brush_toggle().set_active(true);
+                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
+                    }
+                    PenStyle::ShaperStyle => {
+                        // Avoids borrow errors
+                        appwindow.mainheader().shaper_toggle().set_active(true);
+                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
+                    }
+                    PenStyle::EraserStyle => {
+                        appwindow.mainheader().eraser_toggle().set_active(true);
+                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
+                    }
+                    PenStyle::SelectorStyle => {
+                        appwindow.mainheader().selector_toggle().set_active(true);
+                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
+                    }
+                    PenStyle::ToolsStyle => {
+                        appwindow.mainheader().tools_toggle().set_active(true);
+                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
+                    }
+                }
 
-            // Marker
-            let marker = appwindow.canvas().pens().borrow().marker.clone();
-            appwindow.penssidebar().marker_page().load_from_marker(marker);
+                // Marker
+                appwindow.penssidebar().marker_page().width_spinbutton().set_value(pens.marker.options.width);
+                appwindow.penssidebar().marker_page().colorpicker().set_current_color(pens.marker.options.stroke_color);
 
-            // Brush
-            let brush = appwindow.canvas().pens().borrow().brush.clone();
-            let brush_style = appwindow.canvas().pens().borrow().brush.style.to_value();
-            let brush_style = glib::EnumValue::from_value(&brush_style)
-                .unwrap()
-                .1
-                .nick();
+                // Brush
+                appwindow.penssidebar().brush_page().texturedstyle_density_spinbutton()
+                    .set_value(pens.brush.textured_options.density);
+                appwindow.penssidebar().brush_page().texturedstyle_radius_x_spinbutton()
+                    .set_value(pens.brush.textured_options.radii[0]);
+                appwindow.penssidebar().brush_page().texturedstyle_radius_y_spinbutton()
+                    .set_value(pens.brush.textured_options.radii[1]);
+                appwindow.penssidebar().brush_page().set_texturedstyle_distribution_variant(pens.brush.textured_options.distribution);
+                match pens.brush.style {
+                    BrushStyle::Solid => {
+                        appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.smooth_options.width);
+                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.smooth_options.stroke_color);
+                    },
+                    BrushStyle::Textured => {
+                        appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.textured_options.width);
+                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.textured_options.stroke_color);
+                    },
+                }
 
-            adw::prelude::ActionGroupExt::activate_action(
-                &appwindow,
-                "brush-style",
-                Some(&brush_style.to_variant()),
-            );
-            // After setting the brush style!
-            appwindow.penssidebar().brush_page().load_from_brush(brush);
+                // Shaper
+                appwindow.penssidebar().shaper_page()
+                    .roughconfig_roughness_spinbutton()
+                    .set_value(pens.shaper.rough_options.roughness);
+                appwindow.penssidebar().shaper_page()
+                    .roughconfig_bowing_spinbutton()
+                    .set_value(pens.shaper.rough_options.bowing);
+                appwindow.penssidebar().shaper_page()
+                    .roughconfig_curvestepcount_spinbutton()
+                    .set_value(pens.shaper.rough_options.curve_stepcount);
+                appwindow.penssidebar().shaper_page()
+                    .roughconfig_multistroke_switch()
+                    .set_active(!pens.shaper.rough_options.disable_multistroke);
 
-            // Shaper
-            let shaper = appwindow.canvas().pens().borrow().shaper.clone();
-            let shaperstyle = appwindow.canvas().pens().borrow().shaper.shaperstyle().to_value();
-            let shaperstyle = glib::EnumValue::from_value(&shaperstyle)
-                .unwrap()
-                .1
-                .nick();
+                match pens.shaper.style {
+                    ShaperStyle::Line => {
+                        appwindow.penssidebar().shaper_page().line_toggle().set_active(true);
+                    }
+                    ShaperStyle::Rectangle => {
+                        appwindow.penssidebar().shaper_page().rectangle_toggle().set_active(true);
+                    }
+                    ShaperStyle::Ellipse => {
+                        appwindow.penssidebar().shaper_page().ellipse_toggle().set_active(true);
+                    }
+                }
+                match pens.shaper.drawstyle {
+                    ShaperDrawStyle::Smooth => {
+                        appwindow.penssidebar().shaper_page().drawstyle_smooth_toggle().set_active(true);
+                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(pens.shaper.smooth_options.width);
+                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(pens.shaper.smooth_options.stroke_color);
+                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(pens.shaper.smooth_options.fill_color);
+                    },
+                    ShaperDrawStyle::Rough => {
+                        appwindow.penssidebar().shaper_page().drawstyle_rough_toggle().set_active(true);
+                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(pens.shaper.rough_options.stroke_width);
+                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(pens.shaper.rough_options.stroke_color);
+                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(pens.shaper.rough_options.fill_color);
+                    },
+                }
+                // Eraser
+                appwindow.penssidebar().eraser_page().width_spinbutton().set_value(pens.eraser.width);
 
-            adw::prelude::ActionGroupExt::activate_action(
-                &appwindow,
-                "shaper-style",
-                Some(&shaperstyle.to_variant()),
-            );
-            let shaper_drawstyle = appwindow.canvas().pens().borrow().shaper.drawstyle().to_value();
-            let shaper_drawstyle = glib::EnumValue::from_value(&shaper_drawstyle)
-                .unwrap()
-                .1
-                .nick();
+                // Selector
+                let selector_style = appwindow.canvas().pens().borrow().selector.style;
+                match selector_style {
+                    SelectorStyle::Polygon => appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true),
+                    SelectorStyle::Rectangle => appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true),
+                }
 
-            adw::prelude::ActionGroupExt::activate_action(
-                &appwindow,
-                "shaper-drawstyle",
-                Some(&shaper_drawstyle.to_variant()),
-            );
-            // after setting the shaper style!
-            appwindow.penssidebar().shaper_page().load_from_shaper(shaper);
+                // Tools
+                let tool_style = appwindow.canvas().pens().borrow().tools.style;
+                match tool_style {
+                    ToolStyle::ExpandSheet => appwindow.penssidebar().tools_page().toolstyle_expandsheet_toggle().set_active(true),
+                    ToolStyle::DragProximity => appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true),
+                }
 
-            // Eraser
-            let eraser = appwindow.canvas().pens().borrow().eraser.clone();
-            appwindow.penssidebar().eraser_page().load_from_eraser(eraser);
-
-            // Selector
-            let selector = appwindow.canvas().pens().borrow().selector.clone();
-            let selector_style = selector.style().to_value();
-            let selector_style = glib::EnumValue::from_value(&selector_style)
-                .unwrap()
-                .1
-                .nick();
-
-            adw::prelude::ActionGroupExt::activate_action(
-                &appwindow,
-                "selector-style",
-                Some(&selector_style.to_variant()),
-            );
-            appwindow.penssidebar().selector_page().load_from_selector(selector);
-
-            // Tools
-            let tools = appwindow.canvas().pens().borrow().tools.clone();
-            let tool_style = tools.style().to_value();
-            let tool_style = glib::EnumValue::from_value(&tool_style)
-                .unwrap()
-                .1
-                .nick();
-            appwindow.penssidebar().tools_page().load_from_tools(tools);
-
-            adw::prelude::ActionGroupExt::activate_action(
-                &appwindow,
-                "tool-style",
-                Some(&tool_style.to_variant()),
-            );
-
-            // Settings panel
-            appwindow.settings_panel().load_all(&appwindow);
-        }));
+                // Settings panel
+                appwindow.settings_panel().refresh_for_sheet(&appwindow);
+            }),
+        );
 
         // Trash Selection
         action_delete_selection.connect_activate(
@@ -552,6 +514,17 @@ impl RnoteAppWindow {
                 appwindow.canvas().sheet().borrow_mut().strokes_state.duplicate_selection(
                                     appwindow.canvas().zoom()
                 );
+
+                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
+                appwindow.canvas().regenerate_content(false, true);
+            }),
+        );
+
+        // select all
+        action_select_all.connect_activate(
+            clone!(@weak self as appwindow => move |_action_select_all, _| {
+                let all_strokes = appwindow.canvas().sheet().borrow().strokes_state.keys_sorted_chrono();
+                appwindow.canvas().sheet().borrow_mut().strokes_state.set_selected_keys(&all_strokes, true);
 
                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().regenerate_content(false, true);
@@ -1041,6 +1014,7 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.zoomout", &["minus"]);
         app.set_accels_for_action("win.delete-selection", &["Delete"]);
         app.set_accels_for_action("win.duplicate-selection", &["<Ctrl>d"]);
+        app.set_accels_for_action("win.select-all", &["<Ctrl>a"]);
         app.set_accels_for_action("win.tmperaser(true)", &["d"]);
         app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste-selection", &["<Ctrl>v"]);

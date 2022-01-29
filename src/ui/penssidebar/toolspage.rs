@@ -40,7 +40,6 @@ mod imp {
     impl WidgetImpl for ToolsPage {}
 }
 
-use crate::pens::tools::Tools;
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, ToggleButton, Widget};
 
@@ -73,18 +72,16 @@ impl ToolsPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.toolstyle_expandsheet_toggle().connect_active_notify(clone!(@weak appwindow => move |toolstyle_expandsheet_toggle| {
+        self.toolstyle_expandsheet_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_expandsheet_toggle| {
             if toolstyle_expandsheet_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"expandsheet".to_variant()));
             }
         }));
 
-        self.toolstyle_dragproximity_toggle().connect_active_notify(clone!(@weak appwindow => move |toolstyle_dragproximity_toggle| {
+        self.toolstyle_dragproximity_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_dragproximity_toggle| {
             if toolstyle_dragproximity_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"dragproximity".to_variant()));
             }
         }));
     }
-
-    pub fn load_from_tools(&self, _tools: Tools) {}
 }

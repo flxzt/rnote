@@ -129,6 +129,16 @@ impl StrokesState {
         Self::default()
     }
 
+    // A new strokes state should always be imported with this method, to not replace the threadpool, channel handlers..
+    pub fn import_strokes_state(&mut self, strokes_state: Self) {
+        self.strokes = strokes_state.strokes;
+        self.trash_components = strokes_state.trash_components;
+        self.selection_components = strokes_state.selection_components;
+        self.chrono_components = strokes_state.chrono_components;
+        self.render_components = strokes_state.render_components;
+        self.chrono_counter = strokes_state.chrono_counter;
+    }
+
     /// No self as parameter to avoid already borrowed errors!
     pub fn init(appwindow: &RnoteAppWindow) {
         let main_cx = glib::MainContext::default();

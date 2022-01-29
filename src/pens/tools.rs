@@ -237,7 +237,7 @@ impl DragProximityTool {
 #[serde(default, rename = "tools")]
 pub struct Tools {
     #[serde(rename = "style")]
-    style: ToolStyle,
+    pub style: ToolStyle,
     #[serde(skip)]
     pub expand_sheet_tool: ExpandSheetTool,
     #[serde(skip)]
@@ -477,19 +477,5 @@ impl PenBehaviour for Tools {
         }
 
         Ok(())
-    }
-}
-
-impl Tools {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn style(&self) -> ToolStyle {
-        self.style.clone()
-    }
-
-    pub fn set_style(&mut self, style: ToolStyle) {
-        self.style = style;
     }
 }

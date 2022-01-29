@@ -8,13 +8,13 @@ use svg::node::element::{self, path};
 pub struct SmoothOptions {
     /// An optional seed to generate reproducable strokes
     #[serde(rename = "seed")]
-    seed: Option<u64>,
+    pub seed: Option<u64>,
     #[serde(rename = "width")]
-    width: f64,
-    #[serde(rename = "color")]
-    color: Option<Color>,
-    #[serde(rename = "fill")]
-    fill: Option<Color>,
+    pub width: f64,
+    #[serde(rename = "stroke_color")]
+    pub stroke_color: Option<Color>,
+    #[serde(rename = "fill_color")]
+    pub fill_color: Option<Color>,
 }
 
 impl Default for SmoothOptions {
@@ -22,8 +22,8 @@ impl Default for SmoothOptions {
         Self {
             seed: None,
             width: Self::WIDTH_DEFAULT,
-            color: Some(Self::COLOR_DEFAULT),
-            fill: None,
+            stroke_color: Some(Self::COLOR_DEFAULT),
+            fill_color: None,
         }
     }
 }
@@ -42,38 +42,6 @@ impl SmoothOptions {
         b: 0.0,
         a: 1.0,
     };
-
-    pub fn seed(&self) -> Option<u64> {
-        self.seed
-    }
-
-    pub fn set_seed(&mut self, seed: Option<u64>) {
-        self.seed = seed
-    }
-
-    pub fn width(&self) -> f64 {
-        self.width
-    }
-
-    pub fn set_width(&mut self, width: f64) {
-        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
-    }
-
-    pub fn color(&self) -> Option<Color> {
-        self.color
-    }
-
-    pub fn set_color(&mut self, color: Option<Color>) {
-        self.color = color;
-    }
-
-    pub fn fill(&self) -> Option<Color> {
-        self.fill
-    }
-
-    pub fn set_fill(&mut self, fill: Option<Color>) {
-        self.fill = fill;
-    }
 }
 
 pub fn compose_line(
@@ -567,12 +535,12 @@ pub fn compose_rectangle(
     rectangle: shapes::Rectangle,
     options: &SmoothOptions,
 ) -> element::Element {
-    let color = if let Some(color) = options.color() {
+    let color = if let Some(color) = options.stroke_color {
         color.to_css_color()
     } else {
         String::from("none")
     };
-    let fill = if let Some(fill) = options.fill() {
+    let fill = if let Some(fill) = options.fill_color {
         fill.to_css_color()
     } else {
         String::from("none")
@@ -592,18 +560,18 @@ pub fn compose_rectangle(
         .set("width", maxs[0] - mins[0])
         .set("height", maxs[1] - mins[1])
         .set("stroke", color)
-        .set("stroke-width", options.width())
+        .set("stroke-width", options.width)
         .set("fill", fill)
         .into()
 }
 
 pub fn compose_ellipse(ellipse: shapes::Ellipse, options: &SmoothOptions) -> element::Element {
-    let color = if let Some(color) = options.color() {
+    let color = if let Some(color) = options.stroke_color {
         color.to_css_color()
     } else {
         String::from("none")
     };
-    let fill = if let Some(fill) = options.fill() {
+    let fill = if let Some(fill) = options.fill_color {
         fill.to_css_color()
     } else {
         String::from("none")
@@ -618,7 +586,7 @@ pub fn compose_ellipse(ellipse: shapes::Ellipse, options: &SmoothOptions) -> ele
         .set("rx", ellipse.radii[0])
         .set("ry", ellipse.radii[1])
         .set("stroke", color)
-        .set("stroke-width", options.width())
+        .set("stroke-width", options.width)
         .set("fill", fill)
         .into()
 }

@@ -16,9 +16,9 @@ use super::penbehaviour::PenBehaviour;
 #[serde(default, rename = "eraser")]
 pub struct Eraser {
     #[serde(rename = "width")]
-    width: f64,
+    pub width: f64,
     #[serde(skip)]
-    current_input: Option<InputData>,
+    pub current_input: Option<InputData>,
 }
 
 impl Default for Eraser {
@@ -77,11 +77,11 @@ impl PenBehaviour for Eraser {
         _renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         if let Some(bounds) = self.gen_bounds(zoom) {
-            let border_color = Self::OUTLINE_COLOR.to_gdk();
+            let border_color = Self::OUTLINE_COLOR_DEFAULT.to_gdk();
             let border_width = 2.0;
 
             snapshot.append_color(
-                &Self::FILL_COLOR.to_gdk(),
+                &Self::FILL_COLOR_DEFAULT.to_gdk(),
                 &geometry::aabb_to_graphene_rect(bounds),
             );
 
@@ -102,13 +102,13 @@ impl PenBehaviour for Eraser {
 }
 
 impl Eraser {
-    pub const OUTLINE_COLOR: Color = Color {
+    pub const OUTLINE_COLOR_DEFAULT: Color = Color {
         r: 0.8,
         g: 0.1,
         b: 0.0,
         a: 0.5,
     };
-    pub const FILL_COLOR: Color = Color {
+    pub const FILL_COLOR_DEFAULT: Color = Color {
         r: 0.7,
         g: 0.2,
         b: 0.1,
@@ -123,18 +123,6 @@ impl Eraser {
             width,
             current_input: None,
         }
-    }
-
-    pub fn current_input(&self) -> Option<InputData> {
-        self.current_input
-    }
-
-    pub fn width(&self) -> f64 {
-        self.width
-    }
-
-    pub fn set_width(&mut self, width: f64) {
-        self.width = width.clamp(Self::WIDTH_MIN, Self::WIDTH_MAX);
     }
 
     pub fn gen_bounds(&self, zoom: f64) -> Option<AABB> {

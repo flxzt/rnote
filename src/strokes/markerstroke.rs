@@ -57,7 +57,7 @@ impl DrawBehaviour for MarkerStroke {
                     .zip(self.elements.par_iter().skip(2))
                     .zip(self.elements.par_iter().skip(3))
                     .filter_map(|(((first, second), third), forth)| {
-                        let width = self.options.width();
+                        let width = self.options.width;
 
                         let mut bounds = AABB::new_invalid();
 
@@ -164,7 +164,7 @@ impl MarkerStroke {
         let hitbox: Vec<AABB> = Vec::new();
 
         let mut options = marker.options;
-        options.set_seed(seed);
+        options.seed = seed;
 
         let mut markerstroke = Self {
             elements,
@@ -222,10 +222,10 @@ impl MarkerStroke {
         if let Some(last) = self.elements.last() {
             self.bounds.merge(&AABB::new(
                 na::Point2::from(
-                    last.inputdata.pos() - na::vector![self.options.width(), self.options.width()],
+                    last.inputdata.pos() - na::vector![self.options.width, self.options.width],
                 ),
                 na::Point2::from(
-                    last.inputdata.pos() + na::vector![self.options.width(), self.options.width()],
+                    last.inputdata.pos() + na::vector![self.options.width, self.options.width],
                 ),
             ));
         }
@@ -248,7 +248,7 @@ impl MarkerStroke {
     }
 
     fn gen_hitbox_for_elems(&self, first: &Element, second: Option<&Element>) -> AABB {
-        let width = self.options.width();
+        let width = self.options.width;
 
         let first = first.inputdata.pos();
         if let Some(second) = second {
@@ -285,7 +285,7 @@ impl MarkerStroke {
         svg_root: bool,
     ) -> Option<render::Svg> {
         let mut commands = Vec::new();
-        let width = options.width();
+        let width = options.width;
 
         let mut bounds = AABB::new_invalid();
 
@@ -324,7 +324,7 @@ impl MarkerStroke {
         bounds.loosen(width);
 
         let color = options
-            .color()
+            .stroke_color
             .map_or(String::from(""), |color| color.to_css_color());
 
         let path = svg::node::element::Path::new()

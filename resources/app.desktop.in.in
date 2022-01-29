@@ -1,7 +1,7 @@
 [Desktop Entry]
 # Translators: This is the App name, don't translate this.
 Name=@APP_NAME_CAPITALIZED@
-Comment=An easy and simple vector-based note taking app
+Comment=A simple drawing application to create handwritten notes
 # Translators: Do NOT translate or transliterate this text, this is an icon file name!
 Icon=@APP_ID@
 #DBusActivatable=true

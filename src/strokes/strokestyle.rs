@@ -146,10 +146,10 @@ impl StrokeStyle {
                     return None;
                 }
 
-                let color = markerstroke.options.color().map(|color| color.into())?;
+                let color = markerstroke.options.stroke_color.map(|color| color.into())?;
                 let tool = xoppformat::XoppTool::Pen;
                 let width = vec![utils::convert_value_dpi(
-                    markerstroke.options.width(),
+                    markerstroke.options.width,
                     current_dpi,
                     xoppformat::XoppFile::DPI,
                 )];
@@ -185,11 +185,9 @@ impl StrokeStyle {
 
                 let (width, color): (f64, XoppColor) = match brushstroke.style {
                     // Return early if color is None
-                    BrushStrokeStyle::Solid { options } => {
-                        (options.width(), options.color()?.into())
-                    }
+                    BrushStrokeStyle::Solid { options } => (options.width, options.stroke_color?.into()),
                     BrushStrokeStyle::Textured { options } => {
-                        (options.width(), options.color()?.into())
+                        (options.width, options.stroke_color?.into())
                     }
                 };
 

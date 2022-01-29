@@ -42,11 +42,9 @@ mod imp {
 }
 
 use crate::compose::color::Color;
-use crate::pens::marker::Marker;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, SpinButton,
-    Widget,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, SpinButton, Widget,
 };
 
 glib::wrapper! {
@@ -61,6 +59,13 @@ impl Default for MarkerPage {
 }
 
 impl MarkerPage {
+    /// The default width
+    pub const WIDTH_DEFAULT: f64 = 6.0;
+    /// The min width
+    pub const WIDTH_MIN: f64 = 0.1;
+    /// The max width
+    pub const WIDTH_MAX: f64 = 1000.0;
+
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("Failed to create MarkerPage")
     }
@@ -76,26 +81,22 @@ impl MarkerPage {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.width_spinbutton().set_increments(0.1, 2.0);
         self.width_spinbutton()
-            .set_range(Marker::WIDTH_MIN, Marker::WIDTH_MAX);
+            .set_range(Self::WIDTH_MIN, Self::WIDTH_MAX);
         // Must be after set_range() !
-        self.width_spinbutton().set_value(Marker::WIDTH_DEFAULT);
+        self.width_spinbutton().set_value(Self::WIDTH_DEFAULT);
 
         self.colorpicker().connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color");
-                appwindow.canvas().pens().borrow_mut().marker.options.set_color(Some(Color::from(color)));
+                appwindow.canvas().pens().borrow_mut().marker.options.stroke_color = Some(Color::from(color));
             }),
         );
 
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                appwindow.canvas().pens().borrow_mut().marker.set_width(width_spinbutton.value());
+                appwindow.canvas().pens().borrow_mut().marker.options.width = width_spinbutton.value();
             }),
         );
-    }
-
-    pub fn load_from_marker(&self, marker: Marker) {
-        self.width_spinbutton().set_value(marker.width());
     }
 }

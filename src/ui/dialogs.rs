@@ -2,7 +2,7 @@ use gettextrs::gettext;
 use gtk4::{glib, glib::clone, prelude::*, Builder};
 use gtk4::{
     AboutDialog, FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType,
-    ShortcutsWindow,
+    ShortcutsWindow, gio,
 };
 
 use crate::ui::appwindow::RnoteAppWindow;
@@ -15,7 +15,9 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         .modal(true)
         .transient_for(appwindow)
         .program_name(config::APP_NAME_CAPITALIZED)
-        .comments(&gettext("An easy and simple vector-based note taking app"))
+        .comments(&gettext(
+            "A simple drawing application to create handwritten notes",
+        ))
         .logo_icon_name(config::APP_ID)
         .website(config::APP_WEBSITE)
         .authors(
@@ -57,7 +59,6 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
                 ResponseType::Ok => {
                     appwindow.canvas().sheet().borrow_mut().strokes_state.clear();
                     appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
-                    appwindow.canvas().set_unsaved_changes(false);
                     appwindow.canvas().set_empty(true);
 
                     appwindow.canvas().regenerate_background(false);
@@ -283,12 +284,30 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                                 Some(basename) => {
                                     match appwindow.canvas().sheet().borrow().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {
                                         Ok(bytes) => {
-                                            if let Err(e) = utils::replace_file_async(bytes, &file) {
-                                                log::error!("saving sheet as .rnote failed, replace_file_async failed with Err {}", e);
-                                            } else {
-                                                appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
-                                                appwindow.canvas().set_unsaved_changes(false);
-                                            }
+                                            let main_cx = glib::MainContext::default();
+
+                                            main_cx.spawn_local(clone!(@weak appwindow => async move {
+                                                let result = file.replace_future(None, false, gio::FileCreateFlags::REPLACE_DESTINATION, glib::PRIORITY_HIGH_IDLE).await;
+                                                match result {
+                                                    Ok(output_stream) => {
+                                                        if let Err(e) = output_stream.write(&bytes, None::<&gio::Cancellable>) {
+                                                            log::error!("output_stream().write() failed in save_sheet_as() with Err {}",e);
+                                                            return;
+                                                        };
+                                                        if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
+                                                            log::error!("output_stream().close() failed in save_sheet_as() with Err {}",e);
+                                                            return;
+                                                        };
+
+                                                        appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
+                                                        appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
+                                                        appwindow.canvas().set_unsaved_changes(false);
+                                                    }
+                                                    Err(e) => {
+                                                        log::error!("file.replace_future() in save_sheet_as() returned Err {}",e);
+                                                    }
+                                                }
+                                            }));
                                         },
                                         Err(e) => log::error!("saving sheet as .rnote failed with error `{}`", e),
                                     }

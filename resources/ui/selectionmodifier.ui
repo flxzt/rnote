@@ -52,8 +52,8 @@
         <property name="vexpand">false</property>
         <property name="halign">end</property>
         <property name="valign">start</property>
-        <property name="margin-top">24</property>
-        <property name="margin-bottom">24</property>
+        <property name="margin-top">12</property>
+        <property name="margin-bottom">12</property>
         <layout>
           <property name="column">2</property>
           <property name="row">1</property>

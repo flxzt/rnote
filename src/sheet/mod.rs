@@ -94,6 +94,15 @@ impl Sheet {
             .collect::<Vec<AABB>>()
     }
 
+    // a new sheet should always be imported with this method, as to not replace the threadpool, channel handlers, ..
+    pub fn import_sheet(&mut self, sheet: Self) {
+        self.width = sheet.width;
+        self.height = sheet.height;
+        self.strokes_state.import_strokes_state(sheet.strokes_state);
+        self.format = sheet.format;
+        self.background = sheet.background;
+    }
+
     pub fn draw(&self, zoom: f64, snapshot: &Snapshot, with_borders: bool) {
         let sheet_bounds_scaled = graphene::Rect::new(
             0.0,
@@ -116,7 +125,7 @@ impl Sheet {
         let decompressed_bytes = utils::decompress_from_gzip(&bytes)?;
         let sheet: Sheet = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
 
-        *self = sheet;
+        self.import_sheet(sheet);
 
         Ok(())
     }
@@ -169,11 +178,11 @@ impl Sheet {
                     let mut width_iter = stroke.width.iter();
 
                     let mut smooth_options = SmoothOptions::default();
-                    smooth_options.set_color(Some(Color::from(stroke.color)));
+                    smooth_options.stroke_color = Some(Color::from(stroke.color));
 
                     // The first element is the absolute width, every following is the relative width (between 0.0 and 1.0)
                     if let Some(&width) = width_iter.next() {
-                        smooth_options.set_width(width);
+                        smooth_options.width = width;
                     }
 
                     let brush = Brush {
@@ -187,7 +196,7 @@ impl Sheet {
                         // Defaulting to PRESSURE_DEFAULT if width iterator is shorter than the coords vec
                         let pressure = width_iter
                             .next()
-                            .map(|&width| width / smooth_options.width())
+                            .map(|&width| width / smooth_options.width)
                             .unwrap_or(InputData::PRESSURE_DEFAULT);
 
                         Element::new(InputData::new(coords, pressure))
@@ -240,7 +249,7 @@ impl Sheet {
         sheet.background = background;
         sheet.format = format;
 
-        *self = sheet;
+        self.import_sheet(sheet);
 
         Ok(())
     }

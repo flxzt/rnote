@@ -21,13 +21,13 @@ pub struct RoughOptions {
     pub seed: Option<u64>,
     /// An optional stroke color. When set to None, no stroke outline is produced
     #[serde(rename = "stroke")]
-    pub stroke: Option<Color>,
+    pub stroke_color: Option<Color>,
     /// the stroke width
     #[serde(rename = "stroke_width")]
     pub stroke_width: f64,
     /// an optional fill color. When set to None no fill is produced.
-    #[serde(rename = "fill")]
-    pub fill: Option<Color>,
+    #[serde(rename = "fill_color")]
+    pub fill_color: Option<Color>,
     /// the fill style
     #[serde(rename = "fill_style")]
     pub fill_style: FillStyle,
@@ -95,9 +95,9 @@ impl Default for RoughOptions {
             roughness: Self::ROUGHNESS_DEFAULT,
             bowing: Self::BOWING_DEFAULT,
             seed: None,
-            stroke: Some(Color::BLACK),
+            stroke_color: Some(Color::BLACK),
             stroke_width: Self::STROKE_WIDTH_DEFAULT,
-            fill: None,
+            fill_color: None,
             fill_style: FillStyle::Hachure,
             fill_weight: 0.5,
             hachure_angle: -41.0,
@@ -147,7 +147,7 @@ impl RoughOptions {
     pub const CURVESTEPCOUNT_DEFAULT: f64 = 9.0;
 
     pub(super) fn apply_to_line(&self, mut path: element::Path) -> element::Path {
-        path = if let Some(stroke) = self.stroke {
+        path = if let Some(stroke) = self.stroke_color {
             path.set("stroke", stroke.to_css_color())
         } else {
             path.set("stroke", "none")
@@ -175,7 +175,7 @@ impl RoughOptions {
     pub(super) fn apply_to_fill_polygon_solid(&self, mut path: element::Path) -> element::Path {
         path = path.set("stroke", "none");
 
-        path = if let Some(fill) = self.fill {
+        path = if let Some(fill) = self.fill_color {
             path.set("fill", fill.to_css_color())
         } else {
             path.set("fill", "none")
@@ -185,7 +185,7 @@ impl RoughOptions {
     }
 
     pub(super) fn apply_to_rect(&self, mut rect: element::Path) -> element::Path {
-        rect = if let Some(stroke) = self.stroke {
+        rect = if let Some(stroke) = self.stroke_color {
             rect.set("stroke", stroke.to_css_color())
         } else {
             rect.set("stroke", "none")
@@ -211,7 +211,7 @@ impl RoughOptions {
     }
 
     pub(super) fn apply_to_ellipse(&self, mut ellipse_path: element::Path) -> element::Path {
-        ellipse_path = if let Some(stroke) = self.stroke {
+        ellipse_path = if let Some(stroke) = self.stroke_color {
             ellipse_path.set("stroke", stroke.to_css_color())
         } else {
             ellipse_path.set("stroke", "none")

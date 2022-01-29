@@ -30,7 +30,7 @@ pub enum SelectorStyle {
 #[serde(default, rename = "selector")]
 pub struct Selector {
     #[serde(rename = "style")]
-    style: SelectorStyle,
+    pub style: SelectorStyle,
     #[serde(skip)]
     pub path: Vec<InputData>,
 }
@@ -213,18 +213,6 @@ impl Selector {
         b: 0.7,
         a: 0.15,
     };
-
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn style(&self) -> SelectorStyle {
-        self.style
-    }
-
-    pub fn set_style(&mut self, style: SelectorStyle) {
-        self.style = style;
-    }
 
     pub fn gen_bounds(&self) -> Option<AABB> {
         // Making sure bounds are always outside of coord + width

@@ -268,11 +268,6 @@ mod imp {
                         .clamp(0, self.amount_colorbuttons.get());
                     self.selected.set(index);
 
-                    // Deselect everything
-                    for currentcolor_setter in self.currentcolor_setters.borrow().iter() {
-                        currentcolor_setter.set_active(false);
-                    }
-
                     if index == 0 {
                         self.currentcolor_setter1.get().set_active(true);
                     } else {
@@ -412,7 +407,8 @@ impl ColorPicker {
         Color::from(self.property::<gdk::RGBA>("current-color"))
     }
 
-    pub fn set_current_color(&self, color: Color) {
+    pub fn set_current_color(&self, color: Option<Color>) {
+        let color = color.unwrap_or(Color::TRANSPARENT);
         self.set_property("current-color", color.to_gdk().to_value());
     }
 

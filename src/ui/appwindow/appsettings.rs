@@ -2,6 +2,9 @@ use std::path::PathBuf;
 
 use crate::app::RnoteApp;
 use crate::compose::color::Color;
+use crate::pens::Pens;
+use crate::sheet::background::Background;
+use crate::sheet::format::Format;
 use crate::ui::appwindow::RnoteAppWindow;
 
 use adw::prelude::*;
@@ -80,7 +83,11 @@ impl RnoteAppWindow {
 
         // pdf import as vector image
         self.app_settings()
-            .bind("pdf-import-as-vector", &self.canvas(), "pdf-import-as-vector")
+            .bind(
+                "pdf-import-as-vector",
+                &self.canvas(),
+                "pdf-import-as-vector",
+            )
             .build();
 
         // Marker page
@@ -122,65 +129,99 @@ impl RnoteAppWindow {
     pub fn load_settings(&self) -> Result<(), anyhow::Error> {
         let _app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
-        // Load latest window state
+        // appwindow
         self.load_window_size();
 
-        // Load sheet state
-        self.canvas().load_sheet_settings(&self.app_settings())?;
-
-        // Marker page
-        let colors = self
-            .app_settings()
-            .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>("markerpage-colors");
-        let colors = [
-            colors.0, colors.1, colors.2, colors.3, colors.4, colors.5, colors.6, colors.7,
-        ]
-        .into_iter()
-        .map(|color| Color::from(color))
-        .collect::<Vec<Color>>();
-        self.penssidebar()
-            .marker_page()
-            .colorpicker()
-            .load_colors(&colors);
-
-        // Brush page
-        let colors = self
-            .app_settings()
-            .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>("brushpage-colors");
-        let colors = [
-            colors.0, colors.1, colors.2, colors.3, colors.4, colors.5, colors.6, colors.7,
-        ]
-        .into_iter()
-        .map(|color| Color::from(color))
-        .collect::<Vec<Color>>();
-        self.penssidebar()
-            .brush_page()
-            .colorpicker()
-            .load_colors(&colors);
-
-        // Shaper page colors
-        let colors = self.app_settings().get::<(u32, u32)>("shaperpage-colors");
-        let colors = [colors.0, colors.1]
+        {
+            // Marker page
+            let colors = self
+                .app_settings()
+                .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>("markerpage-colors");
+            let colors = [
+                colors.0, colors.1, colors.2, colors.3, colors.4, colors.5, colors.6, colors.7,
+            ]
             .into_iter()
             .map(|color| Color::from(color))
             .collect::<Vec<Color>>();
-        self.penssidebar()
-            .shaper_page()
-            .stroke_colorpicker()
-            .load_colors(&colors);
+            self.penssidebar()
+                .marker_page()
+                .colorpicker()
+                .load_colors(&colors);
+        }
 
-        // Shaper page fills
-        let colors = self.app_settings().get::<(u32, u32)>("shaperpage-fills");
-        let colors = [colors.0, colors.1]
+        {
+            // Brush page
+            let colors = self
+                .app_settings()
+                .get::<(u32, u32, u32, u32, u32, u32, u32, u32)>("brushpage-colors");
+            let colors = [
+                colors.0, colors.1, colors.2, colors.3, colors.4, colors.5, colors.6, colors.7,
+            ]
             .into_iter()
             .map(|color| Color::from(color))
             .collect::<Vec<Color>>();
-        self.penssidebar()
-            .shaper_page()
-            .fill_colorpicker()
-            .load_colors(&colors);
+            self.penssidebar()
+                .brush_page()
+                .colorpicker()
+                .load_colors(&colors);
+        }
 
-        // Loading all state into the UI
+        {
+            // Shaper page
+            let colors = self.app_settings().get::<(u32, u32)>("shaperpage-colors");
+            let colors = [colors.0, colors.1]
+                .into_iter()
+                .map(|color| Color::from(color))
+                .collect::<Vec<Color>>();
+            self.penssidebar()
+                .shaper_page()
+                .stroke_colorpicker()
+                .load_colors(&colors);
+
+            // Shaper page fills
+
+            let fill_colors = self.app_settings().get::<(u32, u32)>("shaperpage-fills");
+            let fill_colors = [fill_colors.0, fill_colors.1]
+                .into_iter()
+                .map(|color| Color::from(color))
+                .collect::<Vec<Color>>();
+            self.penssidebar()
+                .shaper_page()
+                .fill_colorpicker()
+                .load_colors(&fill_colors);
+        }
+
+        {
+            // Load format
+            if let Ok(loaded_format) =
+                serde_json::from_str::<Format>(self.app_settings().string("sheet-format").as_str())
+            {
+                self.canvas().sheet().borrow_mut().format = loaded_format;
+            }
+        }
+
+        {
+            // Load background
+            if let Ok(loaded_background) = serde_json::from_str::<Background>(
+                self.app_settings().string("sheet-background").as_str(),
+            ) {
+                self.canvas().sheet().borrow_mut().background = loaded_background;
+            }
+        }
+
+        {
+            // Load pens
+            if let Ok(loaded_pens) =
+                serde_json::from_str::<Pens>(self.app_settings().string("pens").as_str())
+            {
+                *self.canvas().pens().borrow_mut() = loaded_pens;
+            }
+        }
+
+        // Refresh the canvas
+        self.canvas().resize_to_format();
+
+        // refresh the UI
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
         Ok(())
     }
@@ -252,7 +293,27 @@ impl RnoteAppWindow {
             self.app_settings()
                 .set_value("shaperpage-fills", &fills.to_variant())?;
 
-            self.canvas().save_sheet_settings(&self.app_settings())?;
+            // Save format
+            let format_string = serde_json::to_string(&self.canvas().sheet().borrow().format)?;
+            self.app_settings()
+                .set_string("sheet-format", format_string.as_str())?;
+
+            //println!("format:\n{}", format_string);
+
+            // Save background
+            let background_string =
+                serde_json::to_string(&self.canvas().sheet().borrow().background)?;
+            self.app_settings()
+                .set_string("sheet-background", background_string.as_str())?;
+
+            //println!("background:\n{}", background_string);
+
+            // Save pens
+            let pens_string = serde_json::to_string(&*self.canvas().pens().borrow())?;
+            self.app_settings()
+                .set_string("pens", pens_string.as_str())?;
+
+            //println!("pens:\n{}", pens_string);
         }
 
         Ok(())

@@ -84,12 +84,18 @@ pub fn process_peninput_start(appwindow: &RnoteAppWindow, data_entries: VecDeque
     appwindow.canvas().set_pen_shown(true);
     appwindow.canvas().set_unsaved_changes(true);
     appwindow.canvas().set_empty(false);
+    let all_strokes = appwindow
+        .canvas()
+        .sheet()
+        .borrow()
+        .strokes_state
+        .keys_sorted_chrono();
     appwindow
         .canvas()
         .sheet()
         .borrow_mut()
         .strokes_state
-        .deselect_all_strokes();
+        .set_selected_keys(&all_strokes, false);
 
     let current_pen = appwindow.canvas().pens().borrow().current_pen;
 

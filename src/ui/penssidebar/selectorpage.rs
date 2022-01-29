@@ -47,7 +47,6 @@ mod imp {
     impl WidgetImpl for SelectorPage {}
 }
 
-use crate::pens::selector::Selector;
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::ToggleButton;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, Orientable, Widget};
@@ -98,13 +97,13 @@ impl SelectorPage {
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         // selecting with Polygon / Rect toggles
-        self.selectorstyle_polygon_toggle().connect_active_notify(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
+        self.selectorstyle_polygon_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
             if selectorstyle_polygon_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "selector-style", Some(&"polygon".to_variant()));
             }
         }));
 
-        self.selectorstyle_rect_toggle().connect_active_notify(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
+        self.selectorstyle_rect_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
             if selectorstyle_rect_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "selector-style", Some(&"rectangle".to_variant()));
             }
@@ -128,6 +127,4 @@ impl SelectorPage {
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "duplicate-selection", None);
         }));
     }
-
-    pub fn load_from_selector(&self, _selector: Selector) {}
 }

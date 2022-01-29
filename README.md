@@ -56,6 +56,7 @@ If you have drawn something cool in Rnote and want to share it, let me know so I
 # Images drawn with Rnote
 
 ![tree](./resources/images/tree.svg)
+![pikachu](./resources/images/pikachu.png)
 
 ## Pitfalls
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)

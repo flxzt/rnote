@@ -56,8 +56,10 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
 
 ![tree](./resources/images/tree.svg)
 
-## Pitfalls
+## Pitfalls & known issues
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+* Xournal++ export does not export images: in v0.3.0, it is broken with the default renderer backend. To fix it, enable the `developer options` toggle in the app menu. Then the entry `developer settings` will appear there.
+    Then change the settings `renderer backend` to `resvg`. Image export should work again.
 
 ## To-Do
 - [x] switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.

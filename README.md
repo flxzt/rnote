@@ -7,7 +7,7 @@
         <img alt="Donate using Liberapay" src="https://liberapay.com/assets/widgets/donate.svg" width="75" height="25">
     </a>
     <a href="https://www.paypal.com/donate?hosted_button_id=LQ9Q4868GKQGG">
-        <img src="https://raw.githubusercontent.com/flxzt/rnote/main/misc/media/paypal-donate-button.png" alt="Donate with PayPal" width="75" height="25"/>
+        <img src="https://github.com/flxzt/rnote/blob/main/misc/media/paypal-donate-button.png" alt="Donate with PayPal" width="75" height="25"/>
     </a>
 </div><br>
 
@@ -50,17 +50,19 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 ![pdf_annotation](./resources/screenshots/pdf_annotation.png)
 ![selection](./resources/screenshots/selection.png)
 
-# Images drawn with Rnote
-
-If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
-
-![tree](./resources/images/tree.svg)
-![pikachu](./resources/images/pikachu.png)
-
 ## Pitfalls & known issues
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
 * Xournal++ export does not export images: in v0.3.0, it is broken with the default renderer backend. To fix it, enable the `developer options` toggle in the app menu. Then the entry `developer settings` will appear there.
     Then change the settings `renderer backend` to `resvg`. Image export should work again.
+
+## File Format
+The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
+
+So far breaking changes in the format happened in versions:  
+- `v0.2.0`
+- `v0.3.0`
+
+To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
 
 ## To-Do
 - [x] switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
@@ -93,15 +95,14 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
 * Multiple sheet tabs
 * Share and synchronize sheets with others ( via e.g. the peer-2-peer protocol libp2p ).
 
-## File Format
-The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
+# Drawings created with Rnote
 
-So far breaking changes in the format happened in versions:  
-- `v0.2.0`
-- `v0.3.0`
+If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
-
-To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
+<div align="start">
+        <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" width="300">
+        <img alt="Pikachu" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/pikachu.png" width="300">
+</div><br>
 
 # Building, contributing
 Build instructions and guidelines how to contribute are outlined in [CONTRIBUTING.md](./CONTRIBUTING.md)

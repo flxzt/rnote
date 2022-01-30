@@ -55,6 +55,7 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
 ![tree](./resources/images/tree.svg)
+![pikachu](./resources/images/pikachu.png)
 
 ## Pitfalls & known issues
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)

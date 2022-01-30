@@ -5,11 +5,13 @@ resources/ui/appmenu.ui
 resources/ui/appwindow.ui
 resources/ui/canvasmenu.ui
 resources/ui/colorpicker.ui
-resources/ui/develactions.ui
 resources/ui/dialogs.ui
+resources/ui/filerow.ui
 resources/ui/mainheader.ui
+resources/ui/selectionmodifier.ui
 resources/ui/settingspanel.ui
 resources/ui/shortcuts.ui
+resources/ui/unitentry.ui
 resources/ui/workspacebrowser.ui
 resources/ui/penssidebar/brushpage.ui
 resources/ui/penssidebar/eraserpage.ui

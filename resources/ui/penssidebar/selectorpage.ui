@@ -119,11 +119,11 @@
     <child>
       <object class="GtkButton" id="selection_delete_button">
         <property name="tooltip_text" translatable="yes">Delete selection</property>
-        <property name="action-name">win.selection-delete</property>
+        <property name="action-name">win.selection-trash</property>
         <property name="margin-bottom">6</property>
         <child>
           <object class="GtkImage">
-            <property name="icon_name">selection-delete-symbolic</property>
+            <property name="icon_name">selection-trash-symbolic</property>
             <property name="icon-size">large</property>
           </object>
         </child>

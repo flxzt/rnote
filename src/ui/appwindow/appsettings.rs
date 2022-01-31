@@ -51,6 +51,11 @@ impl RnoteAppWindow {
             })
             .build();
 
+        // righthanded
+        self.app_settings()
+            .bind("righthanded", self, "righthanded")
+            .build();
+
         // pen sounds
         self.app_settings()
             .bind("pen-sounds", self, "pen-sounds")
@@ -123,6 +128,12 @@ impl RnoteAppWindow {
                 "selected",
             )
             .build();
+
+        // lock resize aspectratio
+        self.app_settings()
+            .bind("resize-lock-aspectratio", &self.canvas().selection_modifier(), "resize-lock-aspectratio")
+            .build();
+
     }
 
     /// load settings that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts

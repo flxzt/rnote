@@ -27,6 +27,7 @@ mod imp {
         pub audioplayer: Rc<RefCell<RnoteAudioPlayer>>,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
 
+        pub righthanded: Cell<bool>,
         pub pen_sounds: Cell<bool>,
 
         #[template_child]
@@ -74,6 +75,7 @@ mod imp {
                 audioplayer: Rc::new(RefCell::new(RnoteAudioPlayer::default())),
                 filechoosernative: Rc::new(RefCell::new(None)),
 
+                righthanded: Cell::new(true),
                 pen_sounds: Cell::new(true),
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
@@ -138,6 +140,14 @@ mod imp {
                 vec![
                     // Pen sounds
                     glib::ParamSpecBoolean::new(
+                        "righthanded",
+                        "righthanded",
+                        "righthanded",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // Pen sounds
+                    glib::ParamSpecBoolean::new(
                         "pen-sounds",
                         "pen-sounds",
                         "pen-sounds",
@@ -151,6 +161,7 @@ mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
+                "righthanded" => self.righthanded.get().to_value(),
                 "pen-sounds" => self.pen_sounds.get().to_value(),
                 _ => unimplemented!(),
             }
@@ -164,6 +175,13 @@ mod imp {
             pspec: &glib::ParamSpec,
         ) {
             match pspec.name() {
+                "righthanded" => {
+                    let righthanded = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.righthanded.replace(righthanded);
+                }
                 "pen-sounds" => {
                     let pen_sounds = value
                         .get::<bool>()

@@ -91,20 +91,18 @@ impl DrawBehaviour for BrushStroke {
                             bounds.take_point(na::Point2::from(cubbez.cp1));
                             bounds.take_point(na::Point2::from(cubbez.cp2));
                             bounds.take_point(na::Point2::from(cubbez.end));
-                            bounds.loosen(width);
-
-                            Some(bounds)
                         } else if let Some(line) =
                             curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
                         {
                             bounds.take_point(na::Point2::from(line.start));
                             bounds.take_point(na::Point2::from(line.end));
-                            bounds.loosen(width);
-
-                            Some(bounds)
                         } else {
-                            None
+                            return None;
                         }
+
+                        bounds.loosen(width + 1.0);
+
+                        Some(bounds)
                     })
                     .reduce(AABB::new_invalid, |i, next| i.merged(&next)),
             );
@@ -340,6 +338,7 @@ impl BrushStroke {
     ) -> Option<render::Svg> {
         let mut commands = Vec::new();
 
+        let width = options.width;
         let start_width = elements.1.inputdata.pressure() * options.width;
         let end_width = elements.2.inputdata.pressure() * options.width;
 
@@ -403,7 +402,7 @@ impl BrushStroke {
             return None;
         }
 
-        bounds.loosen(start_width.max(end_width));
+        bounds.loosen(width + 1.0);
 
         let fill = options
             .stroke_color
@@ -457,6 +456,7 @@ impl BrushStroke {
         offset: na::Vector2<f64>,
         svg_root: bool,
     ) -> Option<render::Svg> {
+        let width = options.width;
         let start_width = elements.1.inputdata.pressure() * options.width;
         let end_width = elements.2.inputdata.pressure() * options.width;
         let mid_width = (start_width + end_width) * 0.5;
@@ -478,7 +478,7 @@ impl BrushStroke {
             return None;
         };
 
-        bounds.loosen(options.width);
+        bounds.loosen(width + 1.0);
 
         let mut svg_data = compose::svg_node_to_string(&element)
             .map_err(|e| {

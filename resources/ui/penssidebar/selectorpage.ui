@@ -78,8 +78,48 @@
       </object>
     </child>
     <child>
-      <object class="GtkButton" id="delete_button">
+      <object class="GtkButton" id="selection_select_all_button">
+        <property name="tooltip_text" translatable="yes">Select all strokes</property>
+        <property name="action-name">win.selection-select-all</property>
+        <property name="margin-bottom">6</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon_name">selection-select-all-symbolic</property>
+            <property name="icon-size">large</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="selection_deselect_all_button">
+        <property name="tooltip_text" translatable="yes">Deselect all strokes</property>
+        <property name="action-name">win.selection-deselect-all</property>
+        <property name="margin-bottom">6</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon_name">selection-deselect-all-symbolic</property>
+            <property name="icon-size">large</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="selection_duplicate_button">
+        <property name="tooltip_text" translatable="yes">Duplicate selection</property>
+        <property name="action-name">win.selection-duplicate</property>
+        <property name="margin-bottom">6</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon_name">selection-duplicate-symbolic</property>
+            <property name="icon-size">large</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="selection_delete_button">
         <property name="tooltip_text" translatable="yes">Delete selection</property>
+        <property name="action-name">win.selection-delete</property>
         <property name="margin-bottom">6</property>
         <child>
           <object class="GtkImage">
@@ -90,17 +130,6 @@
         <style>
           <class name="destructive-action" />
         </style>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="duplicate_button">
-        <property name="tooltip_text" translatable="yes">Duplicate selection</property>
-        <child>
-          <object class="GtkImage">
-            <property name="icon_name">selection-duplicate-symbolic</property>
-            <property name="icon-size">large</property>
-          </object>
-        </child>
       </object>
     </child>
   </template>

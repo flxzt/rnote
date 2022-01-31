@@ -72,22 +72,18 @@ impl DrawBehaviour for MarkerStroke {
                             bounds.take_point(na::Point2::from(cubbez.cp1));
                             bounds.take_point(na::Point2::from(cubbez.cp2));
                             bounds.take_point(na::Point2::from(cubbez.end));
-
-                            bounds.loosen(width);
-
-                            Some(bounds)
                         } else if let Some(line) =
                             curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
                         {
                             bounds.take_point(na::Point2::from(line.start));
                             bounds.take_point(na::Point2::from(line.end));
-
-                            bounds.loosen(width);
-
-                            Some(bounds)
                         } else {
-                            None
+                            return None;
                         }
+
+                        bounds.loosen(width + 1.0);
+
+                        Some(bounds)
                     })
                     .reduce(AABB::new_invalid, |i, next| i.merged(&next)),
             );
@@ -321,7 +317,7 @@ impl MarkerStroke {
             return None;
         }
 
-        bounds.loosen(width);
+        bounds.loosen(width + 1.0);
 
         let color = options
             .stroke_color

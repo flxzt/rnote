@@ -54,6 +54,12 @@ impl RnoteAppWindow {
         );
         self.add_action(&action_renderer_backend);
 
+        let action_righthanded = gio::PropertyAction::new(
+            "righthanded",
+            self,
+            "righthanded",
+        );
+        self.add_action(&action_righthanded);
         let action_pen_sounds = gio::PropertyAction::new("pen-sounds", self, "pen-sounds");
         self.add_action(&action_pen_sounds);
         let action_touch_drawing =
@@ -78,12 +84,14 @@ impl RnoteAppWindow {
         self.add_action(&action_zoomin);
         let action_zoomout = gio::SimpleAction::new("zoom-out", None);
         self.add_action(&action_zoomout);
-        let action_delete_selection = gio::SimpleAction::new("delete-selection", None);
-        self.add_action(&action_delete_selection);
-        let action_duplicate_selection = gio::SimpleAction::new("duplicate-selection", None);
-        self.add_action(&action_duplicate_selection);
-        let action_select_all = gio::SimpleAction::new("select-all", None);
-        self.add_action(&action_select_all);
+        let action_selection_trash = gio::SimpleAction::new("selection-trash", None);
+        self.add_action(&action_selection_trash);
+        let action_selection_duplicate = gio::SimpleAction::new("selection-duplicate", None);
+        self.add_action(&action_selection_duplicate);
+        let action_selection_select_all = gio::SimpleAction::new("selection-select-all", None);
+        self.add_action(&action_selection_select_all);
+        let action_selection_deselect_all = gio::SimpleAction::new("selection-deselect-all", None);
+        self.add_action(&action_selection_deselect_all);
         let action_clear_sheet = gio::SimpleAction::new("clear-sheet", None);
         self.add_action(&action_clear_sheet);
         let action_new_sheet = gio::SimpleAction::new("new-sheet", None);
@@ -113,12 +121,6 @@ impl RnoteAppWindow {
         let action_clipboard_paste_selection =
             gio::SimpleAction::new("clipboard-paste-selection", None);
         self.add_action(&action_clipboard_paste_selection);
-        let action_righthanded = gio::SimpleAction::new_stateful(
-            "righthanded",
-            Some(&glib::VariantType::new("b").unwrap()),
-            &false.to_variant(),
-        );
-        self.add_action(&action_righthanded);
         let action_tmperaser = gio::SimpleAction::new_stateful(
             "tmperaser",
             Some(&glib::VariantType::new("b").unwrap()),
@@ -235,6 +237,171 @@ impl RnoteAppWindow {
 
             action_renderer_backend.change_state(&target.to_variant());
         }));
+
+        // Righthanded
+        action_righthanded.connect_state_notify(
+            clone!(@weak self as appwindow => move |action_righthanded| {
+                let current_state = action_righthanded.state().unwrap().get::<bool>().unwrap();
+
+                if current_state {
+                    appwindow.main_grid().remove(&appwindow.sidebar_grid());
+                    appwindow.main_grid().remove(&appwindow.sidebar_sep());
+                    appwindow.main_grid().remove(&appwindow.canvas_scroller());
+                    appwindow
+                        .main_grid()
+                        .attach(&appwindow.sidebar_grid(), 0, 1, 1, 2);
+                    appwindow
+                        .main_grid()
+                        .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
+                    appwindow
+                        .main_grid()
+                        .attach(&appwindow.canvas_scroller(), 2, 1, 1, 1);
+
+                    appwindow
+                        .mainheader()
+                        .canvasmenu()
+                        .righthanded_toggle()
+                        .set_active(true);
+                    appwindow
+                        .mainheader()
+                        .headerbar()
+                        .remove(&appwindow.mainheader().pens_toggles_clamp());
+                    appwindow
+                        .mainheader()
+                        .headerbar()
+                        .remove(&appwindow.mainheader().quickactions_box());
+                    appwindow
+                        .mainheader()
+                        .headerbar()
+                        .pack_end(&appwindow.mainheader().quickactions_box());
+                    appwindow
+                        .mainheader()
+                        .headerbar()
+                        .pack_start(&appwindow.mainheader().pens_toggles_clamp());
+
+                    appwindow
+                        .canvas_scroller()
+                        .set_window_placement(CornerType::BottomRight);
+                    appwindow
+                        .sidebar_scroller()
+                        .set_window_placement(CornerType::TopRight);
+
+                    appwindow
+                        .settings_panel()
+                        .settings_scroller()
+                        .set_window_placement(CornerType::TopRight);
+                    appwindow
+                        .penssidebar()
+                        .marker_page()
+                        .colorpicker()
+                        .set_property("position", PositionType::Left.to_value());
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .colorpicker()
+                        .set_property("position", PositionType::Left.to_value());
+                    appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .stroke_colorpicker()
+                        .set_property("position", PositionType::Left.to_value());
+                    appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .fill_colorpicker()
+                        .set_property("position", PositionType::Left.to_value());
+                    appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .roughconfig_menubutton()
+                        .set_direction(ArrowType::Right);
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .brushstyle_menubutton()
+                        .set_direction(ArrowType::Right);
+                    appwindow.flap().set_flap_position(PackType::Start);
+                } else {
+                    appwindow.main_grid().remove(&appwindow.canvas_scroller());
+                    appwindow.main_grid().remove(&appwindow.sidebar_sep());
+                    appwindow.main_grid().remove(&appwindow.sidebar_grid());
+                    appwindow
+                        .main_grid()
+                        .attach(&appwindow.canvas_scroller(), 0, 1, 1, 1);
+                    appwindow
+                        .main_grid()
+                        .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
+                    appwindow
+                        .main_grid()
+                        .attach(&appwindow.sidebar_grid(), 2, 1, 1, 2);
+                    appwindow
+                        .mainheader()
+                        .headerbar()
+                        .remove(&appwindow.mainheader().pens_toggles_clamp());
+
+                    appwindow
+                        .mainheader()
+                        .canvasmenu()
+                        .lefthanded_toggle()
+                        .set_active(true);
+                    appwindow
+                        .mainheader()
+                        .headerbar()
+                        .remove(&appwindow.mainheader().quickactions_box());
+                    appwindow
+                        .mainheader()
+                        .headerbar()
+                        .pack_start(&appwindow.mainheader().quickactions_box());
+                    appwindow
+                        .mainheader()
+                        .headerbar()
+                        .pack_end(&appwindow.mainheader().pens_toggles_clamp());
+
+                    appwindow
+                        .canvas_scroller()
+                        .set_window_placement(CornerType::BottomLeft);
+                    appwindow
+                        .sidebar_scroller()
+                        .set_window_placement(CornerType::TopLeft);
+
+                    appwindow
+                        .settings_panel()
+                        .settings_scroller()
+                        .set_window_placement(CornerType::TopLeft);
+                    appwindow
+                        .penssidebar()
+                        .marker_page()
+                        .colorpicker()
+                        .set_property("position", PositionType::Right.to_value());
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .colorpicker()
+                        .set_property("position", PositionType::Right.to_value());
+                    appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .stroke_colorpicker()
+                        .set_property("position", PositionType::Right.to_value());
+                    appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .fill_colorpicker()
+                        .set_property("position", PositionType::Right.to_value());
+                    appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .roughconfig_menubutton()
+                        .set_direction(ArrowType::Left);
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .brushstyle_menubutton()
+                        .set_direction(ArrowType::Left);
+                    appwindow.flap().set_flap_position(PackType::End);
+                }
+            }),
+        );
 
         // Current Pen
         action_current_pen.connect_activate(
@@ -499,8 +666,8 @@ impl RnoteAppWindow {
         );
 
         // Trash Selection
-        action_delete_selection.connect_activate(
-            clone!(@weak self as appwindow => move |_action_delete_selection, _| {
+        action_selection_trash.connect_activate(
+            clone!(@weak self as appwindow => move |_action_selection_trash, _| {
                 appwindow.canvas().sheet().borrow_mut().strokes_state.trash_selection();
                 appwindow.canvas().selection_modifier().set_visible(false);
 
@@ -509,8 +676,8 @@ impl RnoteAppWindow {
         );
 
         // Duplicate Selection
-        action_duplicate_selection.connect_activate(
-            clone!(@weak self as appwindow => move |_action_duplicate_selection, _| {
+        action_selection_duplicate.connect_activate(
+            clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
                 appwindow.canvas().sheet().borrow_mut().strokes_state.duplicate_selection(
                                     appwindow.canvas().zoom()
                 );
@@ -520,11 +687,22 @@ impl RnoteAppWindow {
             }),
         );
 
-        // select all
-        action_select_all.connect_activate(
-            clone!(@weak self as appwindow => move |_action_select_all, _| {
+        // select all strokes
+        action_selection_select_all.connect_activate(
+            clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
                 let all_strokes = appwindow.canvas().sheet().borrow().strokes_state.keys_sorted_chrono();
                 appwindow.canvas().sheet().borrow_mut().strokes_state.set_selected_keys(&all_strokes, true);
+
+                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
+                appwindow.canvas().regenerate_content(false, true);
+            }),
+        );
+
+        // deselect all strokes
+        action_selection_deselect_all.connect_activate(
+            clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
+                let all_strokes = appwindow.canvas().sheet().borrow().strokes_state.keys_sorted_chrono();
+                appwindow.canvas().sheet().borrow_mut().strokes_state.set_selected_keys(&all_strokes, false);
 
                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().regenerate_content(false, true);
@@ -576,179 +754,6 @@ impl RnoteAppWindow {
             let new_zoom = ((appwindow.canvas().total_zoom() - Canvas::ZOOM_ACTION_DELTA) * 10.0).ceil() / 10.0;
             appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
         }));
-
-        // Righthanded
-        action_righthanded.connect_activate(
-            clone!(@weak self as appwindow => move |action_righthanded, target| {
-                let current_state = action_righthanded.state().unwrap().get::<bool>().unwrap();
-                let target = target.unwrap().get::<bool>().unwrap();
-
-                if current_state == target {
-                    return;
-                } else {
-                    // The default impl of change_state sets the change request to the internal state
-                    action_righthanded.change_state(&target.to_variant());
-                }
-
-                if target {
-                    appwindow.main_grid().remove(&appwindow.sidebar_grid());
-                    appwindow.main_grid().remove(&appwindow.sidebar_sep());
-                    appwindow.main_grid().remove(&appwindow.canvas_scroller());
-                    appwindow
-                        .main_grid()
-                        .attach(&appwindow.sidebar_grid(), 0, 1, 1, 2);
-                    appwindow
-                        .main_grid()
-                        .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
-                    appwindow
-                        .main_grid()
-                        .attach(&appwindow.canvas_scroller(), 2, 1, 1, 1);
-
-                    appwindow
-                        .mainheader()
-                        .canvasmenu()
-                        .righthanded_toggle()
-                        .set_active(true);
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .remove(&appwindow.mainheader().pens_toggles_clamp());
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .remove(&appwindow.mainheader().quickactions_box());
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .pack_end(&appwindow.mainheader().quickactions_box());
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .pack_start(&appwindow.mainheader().pens_toggles_clamp());
-
-                    appwindow
-                        .canvas_scroller()
-                        .set_window_placement(CornerType::BottomRight);
-                    appwindow
-                        .sidebar_scroller()
-                        .set_window_placement(CornerType::TopRight);
-
-                    appwindow
-                        .settings_panel()
-                        .settings_scroller()
-                        .set_window_placement(CornerType::TopRight);
-                    appwindow
-                        .penssidebar()
-                        .marker_page()
-                        .colorpicker()
-                        .set_property("position", PositionType::Left.to_value());
-                    appwindow
-                        .penssidebar()
-                        .brush_page()
-                        .colorpicker()
-                        .set_property("position", PositionType::Left.to_value());
-                    appwindow
-                        .penssidebar()
-                        .shaper_page()
-                        .stroke_colorpicker()
-                        .set_property("position", PositionType::Left.to_value());
-                    appwindow
-                        .penssidebar()
-                        .shaper_page()
-                        .fill_colorpicker()
-                        .set_property("position", PositionType::Left.to_value());
-                    appwindow
-                        .penssidebar()
-                        .shaper_page()
-                        .roughconfig_menubutton()
-                        .set_direction(ArrowType::Right);
-                    appwindow
-                        .penssidebar()
-                        .brush_page()
-                        .brushstyle_menubutton()
-                        .set_direction(ArrowType::Right);
-                    appwindow.flap().set_flap_position(PackType::Start);
-                } else {
-                    appwindow.main_grid().remove(&appwindow.canvas_scroller());
-                    appwindow.main_grid().remove(&appwindow.sidebar_sep());
-                    appwindow.main_grid().remove(&appwindow.sidebar_grid());
-                    appwindow
-                        .main_grid()
-                        .attach(&appwindow.canvas_scroller(), 0, 1, 1, 1);
-                    appwindow
-                        .main_grid()
-                        .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
-                    appwindow
-                        .main_grid()
-                        .attach(&appwindow.sidebar_grid(), 2, 1, 1, 2);
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .remove(&appwindow.mainheader().pens_toggles_clamp());
-
-                    appwindow
-                        .mainheader()
-                        .canvasmenu()
-                        .lefthanded_toggle()
-                        .set_active(true);
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .remove(&appwindow.mainheader().quickactions_box());
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .pack_start(&appwindow.mainheader().quickactions_box());
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .pack_end(&appwindow.mainheader().pens_toggles_clamp());
-
-                    appwindow
-                        .canvas_scroller()
-                        .set_window_placement(CornerType::BottomLeft);
-                    appwindow
-                        .sidebar_scroller()
-                        .set_window_placement(CornerType::TopLeft);
-
-                    appwindow
-                        .settings_panel()
-                        .settings_scroller()
-                        .set_window_placement(CornerType::TopLeft);
-                    appwindow
-                        .penssidebar()
-                        .marker_page()
-                        .colorpicker()
-                        .set_property("position", PositionType::Right.to_value());
-                    appwindow
-                        .penssidebar()
-                        .brush_page()
-                        .colorpicker()
-                        .set_property("position", PositionType::Right.to_value());
-                    appwindow
-                        .penssidebar()
-                        .shaper_page()
-                        .stroke_colorpicker()
-                        .set_property("position", PositionType::Right.to_value());
-                    appwindow
-                        .penssidebar()
-                        .shaper_page()
-                        .fill_colorpicker()
-                        .set_property("position", PositionType::Right.to_value());
-                    appwindow
-                        .penssidebar()
-                        .shaper_page()
-                        .roughconfig_menubutton()
-                        .set_direction(ArrowType::Left);
-                    appwindow
-                        .penssidebar()
-                        .brush_page()
-                        .brushstyle_menubutton()
-                        .set_direction(ArrowType::Left);
-                    appwindow.flap().set_flap_position(PackType::End);
-                }
-            }),
-        );
 
         // Temporary Eraser
         let pen_tmp = Rc::new(Cell::new(PenStyle::default()));
@@ -1012,9 +1017,10 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.redo-stroke", &["<Ctrl><Shift>z"]);
         app.set_accels_for_action("win.zoomin", &["plus"]);
         app.set_accels_for_action("win.zoomout", &["minus"]);
-        app.set_accels_for_action("win.delete-selection", &["Delete"]);
-        app.set_accels_for_action("win.duplicate-selection", &["<Ctrl>d"]);
-        app.set_accels_for_action("win.select-all", &["<Ctrl>a"]);
+        app.set_accels_for_action("win.selection-trash", &["Delete"]);
+        app.set_accels_for_action("win.selection-duplicate", &["<Ctrl>d"]);
+        app.set_accels_for_action("win.selection-select-all", &["<Ctrl>a"]);
+        app.set_accels_for_action("win.selection-deselect-all", &["Escape"]);
         app.set_accels_for_action("win.tmperaser(true)", &["d"]);
         app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste-selection", &["<Ctrl>v"]);

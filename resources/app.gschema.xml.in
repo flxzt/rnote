@@ -29,6 +29,10 @@
       <default>"./"</default>
       <summary>the current workspace directory</summary>
     </key>
+    <key name="righthanded" type="b">
+      <default>true</default>
+      <summary>Wether the user is righthanded (or lefthanded)</summary>
+    </key>
     <key name="pen-sounds" type="b">
       <default>false</default>
       <summary>play sounds when drawing with pens</summary>
@@ -112,6 +116,10 @@
         0x00000000
       )</default>
       <summary>the shaper page fill colors</summary>
+    </key>
+    <key name="resize-lock-aspectratio" type="b">
+      <default>false</default>
+      <summary>if the aspect ratio while resizing is locked</summary>
     </key>
     <key name="sheet-format" type="s">
       <default>'

@@ -29,6 +29,8 @@
         <file compressed="true">icons/scalable/actions/canvasmenu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-delete-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-select-all-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/selection-deselect-all-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-resize-lock-aspectratio-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/modifiernode-default-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/modifiernode-resize-northeast-symbolic.svg</file>

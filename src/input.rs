@@ -76,14 +76,37 @@ pub fn retreive_stylus_inputdata(
 
 /// Process pen input start
 pub fn process_peninput_start(appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
+    appwindow.canvas().set_pen_shown(true);
     appwindow.audioplayer().borrow().play_pen_sound_begin(
         RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
         appwindow.canvas().pens().borrow().current_pen,
     );
 
-    appwindow.canvas().set_pen_shown(true);
-    appwindow.canvas().set_unsaved_changes(true);
-    appwindow.canvas().set_empty(false);
+    // We hide the selection modifier here already, but actually only deselect all strokes when ending the stroke (for responsiveness reasons)
+    appwindow.canvas().selection_modifier().set_visible(false);
+
+    let current_pen = appwindow.canvas().pens().borrow().current_pen;
+    current_pen.begin(data_entries, appwindow);
+
+    appwindow.canvas().queue_draw();
+}
+
+/// Process pen input motion
+pub fn process_peninput_motion(appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
+    appwindow.audioplayer().borrow().play_pen_sound_motion(
+        RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
+        appwindow.canvas().pens().borrow().current_pen,
+    );
+
+    let current_pen = appwindow.canvas().pens().borrow().current_pen;
+    current_pen.motion(data_entries, appwindow);
+
+    appwindow.canvas().queue_draw();
+}
+
+/// Process pen input end
+pub fn process_peninput_end(appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
+    // We deselect the selection here. (before current_pen.end()!)
     let all_strokes = appwindow
         .canvas()
         .sheet()
@@ -98,41 +121,17 @@ pub fn process_peninput_start(appwindow: &RnoteAppWindow, data_entries: VecDeque
         .set_selected_keys(&all_strokes, false);
 
     let current_pen = appwindow.canvas().pens().borrow().current_pen;
-
-    current_pen.begin(data_entries, appwindow);
-
-    appwindow
-        .canvas()
-        .selection_modifier()
-        .update_state(&appwindow.canvas());
-
-    appwindow.canvas().queue_resize();
-    appwindow.canvas().queue_draw();
-}
-
-/// Process pen input motion
-pub fn process_peninput_motion(appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
-    appwindow.audioplayer().borrow().play_pen_sound_motion(
-        RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-        appwindow.canvas().pens().borrow().current_pen,
-    );
-
-    let current_pen = appwindow.canvas().pens().borrow().current_pen;
-    current_pen.motion(data_entries, appwindow);
-
-    appwindow.canvas().queue_resize();
-    appwindow.canvas().queue_draw();
-}
-
-/// Process pen input end
-pub fn process_peninput_end(appwindow: &RnoteAppWindow, data_entries: VecDeque<InputData>) {
-    let current_pen = appwindow.canvas().pens().borrow().current_pen;
     current_pen.end(data_entries, appwindow);
 
-    appwindow.canvas().set_pen_shown(false);
     appwindow
         .canvas()
         .selection_modifier()
         .update_state(&appwindow.canvas());
+
+    appwindow.canvas().set_pen_shown(false);
+    appwindow.canvas().set_unsaved_changes(true);
+    appwindow.canvas().set_empty(false);
+
+    appwindow.canvas().queue_resize();
     appwindow.canvas().queue_draw();
 }

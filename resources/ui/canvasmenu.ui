@@ -159,8 +159,6 @@
                   <object class="GtkToggleButton" id="righthanded_toggle">
                     <property name="icon_name">dock-left-symbolic</property>
                     <property name="hexpand">true</property>
-                    <property name="action-name">win.righthanded</property>
-                    <property name="action-target">true</property>
                   </object>
                 </child>
                 <child>
@@ -169,8 +167,6 @@
                     <property name="active">true</property>
                     <property name="icon_name">dock-right-symbolic</property>
                     <property name="hexpand">true</property>
-                    <property name="action-name">win.righthanded</property>
-                    <property name="action-target">false</property>
                   </object>
                 </child>
               </object>

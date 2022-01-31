@@ -1,6 +1,6 @@
 mod imp {
     use gtk4::ToggleButton;
-    use gtk4::{glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate};
+    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/selectorpage.ui")]
@@ -11,10 +11,6 @@ mod imp {
         pub selectorstyle_rect_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub resize_lock_aspectratio_togglebutton: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub delete_button: TemplateChild<Button>,
-        #[template_child]
-        pub duplicate_button: TemplateChild<Button>,
     }
 
     #[glib::object_subclass]
@@ -49,7 +45,7 @@ mod imp {
 
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::ToggleButton;
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, Orientable, Widget};
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, Widget};
 
 glib::wrapper! {
     pub struct SelectorPage(ObjectSubclass<imp::SelectorPage>)
@@ -85,16 +81,6 @@ impl SelectorPage {
             .get()
     }
 
-    pub fn delete_button(&self) -> Button {
-        imp::SelectorPage::from_instance(self).delete_button.get()
-    }
-
-    pub fn duplicate_button(&self) -> Button {
-        imp::SelectorPage::from_instance(self)
-            .duplicate_button
-            .get()
-    }
-
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         // selecting with Polygon / Rect toggles
         self.selectorstyle_polygon_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_polygon_toggle| {
@@ -117,14 +103,5 @@ impl SelectorPage {
             )
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
             .build();
-
-        self.delete_button()
-            .connect_clicked(clone!(@weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "delete-selection", None);
-            }));
-
-        self.duplicate_button().connect_clicked(clone!(@weak appwindow => move |_| {
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "duplicate-selection", None);
-        }));
     }
 }

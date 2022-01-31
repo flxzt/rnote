@@ -131,14 +131,24 @@ impl CanvasMenu {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let zoomreset_button = self.imp().zoom_reset_button.get();
 
-        /*         self.imp().lefthanded_toggle.connect_toggled(clone!(@weak appwindow => move |righthanded_toggle| {
-                   adw::prelude::ActionGroupExt::activate_action(&appwindow, "righthanded", Some(&(!righthanded_toggle.is_active()).to_variant()));
-               }));
+        self.imp()
+            .lefthanded_toggle
+            .bind_property("active", appwindow, "righthanded")
+            .flags(
+                glib::BindingFlags::SYNC_CREATE
+                    | glib::BindingFlags::BIDIRECTIONAL
+                    | glib::BindingFlags::INVERT_BOOLEAN,
+            )
+            .build();
+        self.imp()
+            .righthanded_toggle
+            .bind_property("active", appwindow, "righthanded")
+            .flags(
+                glib::BindingFlags::SYNC_CREATE
+                    | glib::BindingFlags::BIDIRECTIONAL,
+            )
+            .build();
 
-               self.imp().righthanded_toggle.connect_toggled(clone!(@weak appwindow => move |righthanded_toggle| {
-                   adw::prelude::ActionGroupExt::activate_action(&appwindow, "righthanded", Some(&righthanded_toggle.is_active().to_variant()));
-               }));
-        */
         self.imp().zoom_fit_width_button.connect_clicked(
             clone!(@weak appwindow => move |_zoom_fit_width_button| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-fit-width", None);

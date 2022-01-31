@@ -4,7 +4,7 @@ use gtk4::gdk;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(default, rename="Color")]
+#[serde(default, rename="color")]
 pub struct Color {
     #[serde(rename="r")]
     pub r: f64, // between 0.0 and 1.0

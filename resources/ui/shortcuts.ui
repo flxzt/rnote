@@ -132,8 +132,14 @@
                 </child>
                 <child>
                   <object class="GtkShortcutsShortcut">
-                    <property name="title" context="shortcut window" translatable="yes">Select all stroks</property>
+                    <property name="title" context="shortcut window" translatable="yes">Select all strokes</property>
                     <property name="accelerator">&lt;ctrl&gt;a</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkShortcutsShortcut">
+                    <property name="title" context="shortcut window" translatable="yes">Deselect all strokes</property>
+                    <property name="accelerator">Escape</property>
                   </object>
                 </child>
                 <child>

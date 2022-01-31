@@ -70,19 +70,17 @@ impl Image {
                 )
             }
             ImageMemoryFormat::B8g8r8a8Premultiplied => {
-                let data = self
-                    .data
-                    .windows(4)
-                    .map(|w| [w[2], w[1], w[0], w[3]])
-                    .flatten()
-                    .collect::<Vec<u8>>();
-
-                image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, data).ok_or(
-                    anyhow::anyhow!(
+                let imgbuf_bgra8 = image::ImageBuffer::<image::Bgra<u8>, Vec<u8>>::from_vec(
+                    self.pixel_width,
+                    self.pixel_height,
+                    self.data,
+                )
+                .ok_or(anyhow::anyhow!(
                     "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
                     self.memory_format
-                ),
-                )
+                ))?;
+
+                Ok(image::DynamicImage::ImageBgra8(imgbuf_bgra8).into_rgba8())
             }
         }
     }

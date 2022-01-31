@@ -304,6 +304,6 @@ impl VectorImage {
             "gen_image() returned None in VectorImage export_to_bytes(), even though it has gotten a SVG",
         ))?;
 
-        Ok(render::image_to_bytes(image_raw, format)?)
+        Ok(render::image_into_bytes(image_raw, format)?)
     }
 }

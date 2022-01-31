@@ -36,11 +36,12 @@ impl TryFrom<gdk::MemoryFormat> for ImageMemoryFormat {
     }
 }
 
-impl Into<gdk::MemoryFormat> for ImageMemoryFormat {
-    fn into(self) -> gdk::MemoryFormat {
-        match self {
-            Self::R8g8b8a8Premultiplied => gdk::MemoryFormat::R8g8b8a8Premultiplied,
-            Self::B8g8r8a8Premultiplied => gdk::MemoryFormat::B8g8r8a8Premultiplied,
+/// From impl ImageMemoryFormat into gdk::MemoryFormat
+impl From<ImageMemoryFormat> for gdk::MemoryFormat {
+    fn from(format: ImageMemoryFormat) -> Self {
+        match format {
+            ImageMemoryFormat::R8g8b8a8Premultiplied => gdk::MemoryFormat::R8g8b8a8Premultiplied,
+            ImageMemoryFormat::B8g8r8a8Premultiplied => gdk::MemoryFormat::B8g8r8a8Premultiplied,
         }
     }
 }
@@ -266,7 +267,7 @@ impl Renderer {
     }
 }
 
-pub fn image_to_bytes(
+pub fn image_into_bytes(
     image: Image,
     format: image::ImageOutputFormat,
 ) -> Result<Vec<u8>, anyhow::Error> {
@@ -277,8 +278,9 @@ pub fn image_to_bytes(
             .to_imgbuf()
             .context("image.to_imgbuf() failed in image_to_bytes()")?,
     );
-    dynamic_image.write_to(&mut bytes_buf, format)?;
-    //.context("dynamic_image.write_to() failed in image_to_bytes()")?;
+    dynamic_image
+        .write_to(&mut bytes_buf, format)
+        .context("dynamic_image.write_to() failed in image_to_bytes()")?;
 
     Ok(bytes_buf)
 }

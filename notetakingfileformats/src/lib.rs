@@ -43,13 +43,13 @@ pub trait FileFormatSaver {
 /// Implemented on types that are loadable from a XML. Using roxmltree as parser
 pub trait XmlLoadable {
     /// load from an XML node
-    fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error>;
+    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error>;
 }
 
 /// Implemented on types that can write to a XML. Using xmlwriter as writer
 pub trait XmlWritable {
     /// Write to the xml writer
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter);
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter);
 }
 
 /// Implemented on types that are represented as a XML attribute value

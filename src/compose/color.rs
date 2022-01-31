@@ -147,7 +147,7 @@ impl From<u32> for Color {
     }
 }
 
-/// From XoppColor
+/// From XoppColor into Color
 impl From<xoppformat::XoppColor> for Color {
     fn from(xopp_color: xoppformat::XoppColor) -> Self {
         Self {
@@ -159,14 +159,14 @@ impl From<xoppformat::XoppColor> for Color {
     }
 }
 
-/// Into XoppColor
-impl Into<xoppformat::XoppColor> for Color {
-    fn into(self) -> xoppformat::XoppColor {
+// From Color into xoppcolor
+impl From<Color> for xoppformat::XoppColor {
+    fn from(color: Color) -> Self {
         xoppformat::XoppColor {
-            red: (self.r * 255.0).floor() as u8,
-            green: (self.g * 255.0).floor() as u8,
-            blue: (self.b * 255.0).floor() as u8,
-            alpha: (self.a * 255.0).floor() as u8,
+            red: (color.r * 255.0).floor() as u8,
+            green: (color.g * 255.0).floor() as u8,
+            blue: (color.b * 255.0).floor() as u8,
+            alpha: (color.a * 255.0).floor() as u8,
         }
     }
 }

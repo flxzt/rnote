@@ -20,7 +20,7 @@ impl FileFormatLoader for XoppFile {
         let parsed_doc = roxmltree::Document::parse_with_options(decompressed.as_str(), options)?;
         let mut xopp_root = XoppRoot::default();
 
-        xopp_root.load_xml(parsed_doc.root_element())?;
+        xopp_root.load_from_xml(parsed_doc.root_element())?;
 
         Ok(Self { xopp_root })
     }
@@ -30,7 +30,7 @@ impl FileFormatSaver for XoppFile {
     fn save_as_bytes(&self, file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
         let options = xmlwriter::Options::default();
         let mut xml_writer = xmlwriter::XmlWriter::new(options);
-        self.xopp_root.write_xml(&mut xml_writer);
+        self.xopp_root.write_to_xml(&mut xml_writer);
         let output = xml_writer.end_document();
 
         let compressed = super::compress_to_gzip(output.as_bytes(), file_name)?;
@@ -58,7 +58,7 @@ pub struct XoppRoot {
 }
 
 impl XmlLoadable for XoppRoot {
-    fn load_xml(&mut self, root_node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, root_node: Node) -> Result<(), anyhow::Error> {
         if let Some(fileversion) = root_node.attribute("fileversion") {
             self.fileversion = fileversion.to_string();
         }
@@ -78,7 +78,7 @@ impl XmlLoadable for XoppRoot {
                     }
                     "page" => {
                         let mut new_page = XoppPage::default();
-                        new_page.load_xml(child)?;
+                        new_page.load_from_xml(child)?;
                         self.pages.push(new_page);
                     }
                     _ => {}
@@ -91,14 +91,14 @@ impl XmlLoadable for XoppRoot {
 }
 
 impl XmlWritable for XoppRoot {
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("xournal");
         w.write_attribute("fileversion", &self.fileversion);
         w.start_element("title");
         w.write_text(&self.title);
         w.end_element();
         for page in self.pages.iter() {
-            page.write_xml(w);
+            page.write_to_xml(w);
         }
         w.end_element();
     }
@@ -118,7 +118,7 @@ pub struct XoppPage {
 }
 
 impl XmlLoadable for XoppPage {
-    fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
         self.width = node
             .attribute("width")
             .ok_or_else(|| {
@@ -143,11 +143,11 @@ impl XmlLoadable for XoppPage {
             match child.node_type() {
                 NodeType::Element => match child.tag_name().name() {
                     "background" => {
-                        self.background.load_xml(child)?;
+                        self.background.load_from_xml(child)?;
                     }
                     "layer" => {
                         let mut new_layer = XoppLayer::default();
-                        new_layer.load_xml(child)?;
+                        new_layer.load_from_xml(child)?;
                         self.layers.push(new_layer);
                     }
                     _ => {}
@@ -161,13 +161,13 @@ impl XmlLoadable for XoppPage {
 }
 
 impl XmlWritable for XoppPage {
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("page");
         w.write_attribute("width", &format!("{}", self.width));
         w.write_attribute("height", &format!("{}", self.height));
-        self.background.write_xml(w);
+        self.background.write_to_xml(w);
         for layer in self.layers.iter() {
-            layer.write_xml(w);
+            layer.write_to_xml(w);
         }
         w.end_element()
     }
@@ -195,7 +195,7 @@ pub enum XoppBackgroundType {
 }
 
 impl XmlWritable for XoppBackgroundType {
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         match self {
             Self::Solid { color, style } => {
                 w.write_attribute("type", "solid");
@@ -296,7 +296,7 @@ pub struct XoppBackground {
 }
 
 impl XmlLoadable for XoppBackground {
-    fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
         self.name = node.attribute("name").map(|name| name.to_string());
 
         match node.attribute("type").ok_or_else(|| {
@@ -360,12 +360,12 @@ impl XmlLoadable for XoppBackground {
 }
 
 impl XmlWritable for XoppBackground {
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("background");
         if let Some(name) = self.name.as_ref() {
             w.write_attribute("name", name.as_str());
         }
-        self.bg_type.write_xml(w);
+        self.bg_type.write_to_xml(w);
         w.end_element()
     }
 }
@@ -384,7 +384,7 @@ pub struct XoppLayer {
 }
 
 impl XmlLoadable for XoppLayer {
-    fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
         self.name = node.attribute("name").map(|name| name.to_string());
 
         for child in node.children() {
@@ -392,17 +392,17 @@ impl XmlLoadable for XoppLayer {
                 NodeType::Element => match child.tag_name().name() {
                     "stroke" => {
                         let mut new_stroke = XoppStroke::default();
-                        new_stroke.load_xml(child)?;
+                        new_stroke.load_from_xml(child)?;
                         self.strokes.push(new_stroke);
                     }
                     "text" => {
                         let mut new_text = XoppText::default();
-                        new_text.load_xml(child)?;
+                        new_text.load_from_xml(child)?;
                         self.texts.push(new_text);
                     }
                     "image" => {
                         let mut new_image = XoppImage::default();
-                        new_image.load_xml(child)?;
+                        new_image.load_from_xml(child)?;
                         self.images.push(new_image);
                     }
                     _ => {}
@@ -415,7 +415,7 @@ impl XmlLoadable for XoppLayer {
 }
 
 impl XmlWritable for XoppLayer {
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("layer");
 
         if let Some(name) = self.name.as_ref() {
@@ -423,13 +423,13 @@ impl XmlWritable for XoppLayer {
         }
 
         for stroke in self.strokes.iter() {
-            stroke.write_xml(w);
+            stroke.write_to_xml(w);
         }
         for text in self.texts.iter() {
-            text.write_xml(w);
+            text.write_to_xml(w);
         }
         for image in self.images.iter() {
-            image.write_xml(w);
+            image.write_to_xml(w);
         }
         w.end_element();
     }
@@ -623,7 +623,7 @@ pub struct XoppStroke {
 }
 
 impl XmlLoadable for XoppStroke {
-    fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
         match node.attribute("tool").ok_or_else(|| {
             anyhow::anyhow!(
                 "failed to parse `tool` attribute in XoppStroke with id {:?}",
@@ -697,7 +697,7 @@ impl XmlLoadable for XoppStroke {
 }
 
 impl XmlWritable for XoppStroke {
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("stroke");
         w.write_attribute("tool", &self.tool.as_xml_attr_value());
         w.write_attribute("color", &self.color.as_xml_attr_value());
@@ -770,7 +770,7 @@ pub struct XoppText {
 }
 
 impl XmlLoadable for XoppText {
-    fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
         self.font = node
             .attribute("font")
             .ok_or_else(|| {
@@ -828,7 +828,7 @@ impl XmlLoadable for XoppText {
 }
 
 impl XmlWritable for XoppText {
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("text");
         w.write_attribute("font", &self.font);
         w.write_attribute("x", &self.x);
@@ -855,7 +855,7 @@ pub struct XoppImage {
 }
 
 impl XmlLoadable for XoppImage {
-    fn load_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
         // Left
         self.left = node
             .attribute("left")
@@ -910,7 +910,7 @@ impl XmlLoadable for XoppImage {
 }
 
 impl XmlWritable for XoppImage {
-    fn write_xml(&self, w: &mut xmlwriter::XmlWriter) {
+    fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
         w.start_element("image");
         w.write_attribute("left", &self.left);
         w.write_attribute("top", &self.top);

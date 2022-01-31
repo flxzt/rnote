@@ -292,6 +292,7 @@ impl Sheet {
                     .into_iter()
                     .filter_map(|mut stroke| {
                         stroke.translate(-page_bounds.mins.coords);
+
                         stroke.to_xopp(current_dpi, Arc::clone(&renderer))
                     })
                     .collect::<Vec<xoppformat::XoppStrokeStyle>>();

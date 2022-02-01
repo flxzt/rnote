@@ -184,7 +184,7 @@ impl StrokesState {
                         {
                             selection_comp.selected = true;
                         } else if selector_polygon
-                            .contains(&geometry::p2d_aabb_to_geo_polygon(markerstroke.bounds))
+                            .intersects(&geometry::p2d_aabb_to_geo_polygon(markerstroke.bounds))
                         {
                             for &hitbox_elem in markerstroke.hitbox.iter() {
                                 if !selector_polygon
@@ -207,7 +207,7 @@ impl StrokesState {
                         {
                             selection_comp.selected = true;
                         } else if selector_polygon
-                            .contains(&geometry::p2d_aabb_to_geo_polygon(brushstroke.bounds))
+                            .intersects(&geometry::p2d_aabb_to_geo_polygon(brushstroke.bounds))
                         {
                             for &hitbox_elem in brushstroke.hitboxes.iter() {
                                 if !selector_polygon
@@ -261,11 +261,6 @@ impl StrokesState {
                         }
                     }
                 }
-            }
-
-            // set flag for rendering regeneration
-            if let Some(render_comp) = self.render_components.get_mut(key) {
-                render_comp.regenerate_flag = true;
             }
         });
     }

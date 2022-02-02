@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-02 09:58+1\n"
-"PO-Revision-Date: 2022-02-02 09:58+1\n"
+"PO-Revision-Date: 2022-02-02 11:36+1\n"
 "Last-Translator: Simon Svensson Thunman <simon.svenssonthunman@gmail.com>\n"
 "Language-Team: Swedish <sastofficial.github.io>\n"
 "Language: sv\n"
@@ -24,12 +24,12 @@ msgstr ""
 #: resources/app.desktop.in.in:5 resources/app.metainfo.xml.in.in:9
 #: src/ui/dialogs.rs:19
 msgid "A simple drawing application to create handwritten notes"
-msgstr ""
+msgstr "Ett enkelt ritprogram för att skapa handskrivna anteckningar"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: resources/app.desktop.in.in:15
 msgid "Gnome;GTK;Office;Graphics;Notes;"
-msgstr ""
+msgstr "Gnome;Anteckningar;Rita;Målningsprogram"
 
 #: resources/app.metainfo.xml.in.in:21
 msgid ""
@@ -37,485 +37,488 @@ msgid ""
 "to annotate documents and pictures. Disclaimer: The file format is still "
 "unstable. It might change between versions."
 msgstr ""
+"Rnote är ett enkelt vektorbaserat ritningsprogram för handskrivna anteckningar och "
+"för att kommentera dokument och bilder. Ansvarsfriskrivning: Filformatet är fortfarande "
+"instabilt. Det kan ändras mellan versioner."
 
 #: resources/app.metainfo.xml.in.in:30
 msgid "Main window in light colors"
-msgstr ""
+msgstr "Huvudfönster i ljusa färger"
 
 #: resources/app.metainfo.xml.in.in:34
 msgid "Main window in dark colors"
-msgstr ""
+msgstr "Huvudfönster i mörka färger"
 
 #: resources/app.metainfo.xml.in.in:38
 msgid "A PDF annotation"
-msgstr ""
+msgstr "En PDF-anteckning"
 
 #: resources/app.metainfo.xml.in.in:42
 msgid "A selection"
-msgstr ""
+msgstr "En markering"
 
 #: resources/ui/appmenu.ui:25
 msgid "Developer mode"
-msgstr ""
+msgstr "Utvecklarläge"
 
 #: resources/ui/appmenu.ui:30
 msgid "Developer settings"
-msgstr ""
+msgstr "Inställningar för utvecklare"
 
 #: resources/ui/appmenu.ui:35
 msgid "Visual debugging"
-msgstr ""
+msgstr "Visuell felsökning"
 
 #: resources/ui/appmenu.ui:40
 msgid "Renderer backend"
-msgstr ""
+msgstr "Renderer-backend"
 
 #: resources/ui/appmenu.ui:56
 msgid "Keyboard shortcuts"
-msgstr ""
+msgstr "Kortkommandon"
 
 #: resources/ui/appmenu.ui:60
 msgid "About Rnote"
-msgstr ""
+msgstr "Om Rnote"
 
 #: resources/ui/appmenu.ui:78
 msgid "Use system colors preference"
-msgstr ""
+msgstr "Använd inställningar för systemfärger"
 
 #: resources/ui/appmenu.ui:91
 msgid "Use light colors"
-msgstr ""
+msgstr "Använd ljusa färger"
 
 #: resources/ui/appmenu.ui:105
 msgid "Use dark colors"
-msgstr ""
+msgstr "Använd mörka färger"
 
 #: resources/ui/appwindow.ui:210
 msgid "Workspace"
-msgstr ""
+msgstr "Arbetsyta"
 
 #: resources/ui/appwindow.ui:221
 msgid "Settings"
-msgstr ""
+msgstr "Inställningar"
 
 #: resources/ui/canvasmenu.ui:25
 msgid "Draw with touch input"
-msgstr ""
+msgstr "Rita med tryckinmatning"
 
 #: resources/ui/canvasmenu.ui:30
 msgid "Endless sheet"
-msgstr ""
+msgstr "Oändligt blad"
 
 #: resources/ui/canvasmenu.ui:35
 msgid "Show format borders"
-msgstr ""
+msgstr "Show format borders"
 
 #: resources/ui/canvasmenu.ui:40
 msgid "Pen sounds"
-msgstr ""
+msgstr "Pennljud"
 
 #: resources/ui/canvasmenu.ui:45
 msgid "Clear sheet"
-msgstr ""
+msgstr "Rensa blad"
 
 #: resources/ui/canvasmenu.ui:51 resources/ui/dialogs.ui:24
 msgid "New"
-msgstr ""
+msgstr "Ny"
 
 #: resources/ui/canvasmenu.ui:55 resources/ui/dialogs.ui:88
 #: src/ui/dialogs.rs:187 src/ui/dialogs.rs:224
 msgid "Open"
-msgstr ""
+msgstr "Öppna"
 
 #: resources/ui/canvasmenu.ui:59
 msgid "Save"
-msgstr ""
+msgstr "Spara"
 
 #: resources/ui/canvasmenu.ui:63 src/ui/dialogs.rs:267
 msgid "Save as"
-msgstr ""
+msgstr "Spara som"
 
 #: resources/ui/canvasmenu.ui:67
 msgid "Print"
-msgstr ""
+msgstr "Skriv Ut"
 
 #: resources/ui/canvasmenu.ui:71 src/ui/dialogs.rs:347
 msgid "Import file"
-msgstr ""
+msgstr "Importera Fil"
 
 #: resources/ui/canvasmenu.ui:75
 msgid "Export .."
-msgstr ""
+msgstr "Exportera .."
 
 #: resources/ui/canvasmenu.ui:77
 msgid "Export selection as SVG"
-msgstr ""
+msgstr "Exportera val som SVG"
 
 #: resources/ui/canvasmenu.ui:81
 msgid "Export sheet as SVG"
-msgstr ""
+msgstr "Exportera blad som SVG"
 
 #: resources/ui/canvasmenu.ui:85
 msgid "Export sheet as Xournal++ .xopp"
-msgstr ""
+msgstr "Exportera blad som Xournal++ .xopp"
 
 #: resources/ui/canvasmenu.ui:142
 msgid "Zoom to fit sheet width"
-msgstr ""
+msgstr "Zooma för att passa bladbredden"
 
 #: resources/ui/colorpicker.ui:60
 msgid "Select"
-msgstr ""
+msgstr "Välj"
 
 #: resources/ui/dialogs.ui:7
 msgid "New Sheet"
-msgstr ""
+msgstr "Nytt Blad"
 
 #: resources/ui/dialogs.ui:8
 msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
-msgstr ""
+msgstr "Om du skapar ett nytt blad raderas alla ändringar som inte har sparats. Är du säker?"
 
 #: resources/ui/dialogs.ui:11 resources/ui/dialogs.ui:43
 #: resources/ui/dialogs.ui:75 resources/ui/dialogs.ui:107 src/ui/dialogs.rs:188
 #: src/ui/dialogs.rs:225 src/ui/dialogs.rs:268 src/ui/dialogs.rs:351
 #: src/ui/dialogs.rs:393 src/ui/dialogs.rs:434 src/ui/dialogs.rs:477
 msgid "Cancel"
-msgstr ""
+msgstr "Avbryt"
 
 #: resources/ui/dialogs.ui:16 resources/ui/dialogs.ui:48
 #: resources/ui/dialogs.ui:80
 msgid "Save current sheet as"
-msgstr ""
+msgstr "Spara aktuellt blad som"
 
 #: resources/ui/dialogs.ui:39
 msgid "Quit Application"
-msgstr ""
+msgstr "Avsluta program"
 
 #: resources/ui/dialogs.ui:40
 msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
-msgstr ""
+msgstr "Alla ändringar som inte har sparats kommer att gå förlorade. Vill du sluta ändå?"
 
 #: resources/ui/dialogs.ui:56
 msgid "Quit"
-msgstr ""
+msgstr "Avsluta"
 
 #: resources/ui/dialogs.ui:71
 msgid "Open File"
-msgstr ""
+msgstr "Öppna Fil"
 
 #: resources/ui/dialogs.ui:72
 msgid "Opening this file overwrites any unsaved changes."
-msgstr ""
+msgstr "Om du öppnar denna fil skrivs osparade ändringar över"
 
 #: resources/ui/dialogs.ui:103
 msgid "Clear Sheet"
-msgstr ""
+msgstr "Rensa Blad"
 
 #: resources/ui/dialogs.ui:104
 msgid "This clears the entire sheet. Please confirm."
-msgstr ""
+msgstr "Detta rensar hela bladet. Var snäll och bekräfta."
 
 #: resources/ui/dialogs.ui:112
 msgid "Clear"
-msgstr ""
+msgstr "Rensa"
 
 #: resources/ui/mainheader.ui:20
 msgid "New document"
-msgstr ""
+msgstr "Nytt document"
 
 #: resources/ui/mainheader.ui:21
 msgid "Draft"
-msgstr ""
+msgstr "Utkast"
 
 #: resources/ui/mainheader.ui:77
 msgid "Add page"
-msgstr ""
+msgstr "Lägg till sida"
 
 #: resources/ui/mainheader.ui:83
 msgid "Resize to fit sheet format"
-msgstr ""
+msgstr "Ändra storlek så att det passar bladformat"
 
 #: resources/ui/mainheader.ui:93
 msgid "Undo last stroke"
-msgstr ""
+msgstr "Ångra sista linjen"
 
 #: resources/ui/mainheader.ui:99
 msgid "Redo last stroke"
-msgstr ""
+msgstr "Redo last stroke"
 
 #: resources/ui/mainheader.ui:139 resources/ui/penssidebar/penssidebar.ui:17
 msgid "Marker"
-msgstr ""
+msgstr "Markör"
 
 #: resources/ui/mainheader.ui:147 resources/ui/penssidebar/penssidebar.ui:34
 msgid "Brush"
-msgstr ""
+msgstr "Pensel"
 
 #: resources/ui/mainheader.ui:155 resources/ui/penssidebar/penssidebar.ui:51
 msgid "Shaper"
-msgstr ""
+msgstr "Form"
 
 #: resources/ui/mainheader.ui:163 resources/ui/penssidebar/penssidebar.ui:68
 msgid "Eraser"
-msgstr ""
+msgstr "Suddigummi"
 
 #: resources/ui/mainheader.ui:171 resources/ui/penssidebar/penssidebar.ui:85
 msgid "Selector"
-msgstr ""
+msgstr "Väljare"
 
 #: resources/ui/mainheader.ui:179 resources/ui/penssidebar/penssidebar.ui:102
 msgid "Tools"
-msgstr ""
+msgstr "Verktyg"
 
 #: resources/ui/settingspanel.ui:42
 msgid "General"
-msgstr ""
+msgstr "Allmänt"
 
 #: resources/ui/settingspanel.ui:45
 msgid "Sheet margin"
-msgstr ""
+msgstr "Bladmarginal"
 
 #: resources/ui/settingspanel.ui:46
 msgid "Set the margins around the sheet"
-msgstr ""
+msgstr "Set the margins around the sheet"
 
 #: resources/ui/settingspanel.ui:59
 msgid "PDF import width (%)"
-msgstr ""
+msgstr "PDF-importbredd (%)"
 
 #: resources/ui/settingspanel.ui:60
 msgid "Set the width of imported PDF's in percentage to the sheet width"
-msgstr ""
+msgstr "Ange bredden på importerade PDF-filer i procent till bladbredden"
 
 #: resources/ui/settingspanel.ui:80
 msgid "PDF import image type"
-msgstr ""
+msgstr "Bildtyp för PDF-import"
 
 #: resources/ui/settingspanel.ui:81
 msgid "Set wether PDFs should be imported as vector or bitmap images"
-msgstr ""
+msgstr "Ange wether PDF-filer ska importeras som vektor- eller bitmappsbilder"
 
 #: resources/ui/settingspanel.ui:93
 msgid "Vector"
-msgstr ""
+msgstr "Vektor"
 
 #: resources/ui/settingspanel.ui:100
 msgid "Bitmap"
-msgstr ""
+msgstr "Bitmap"
 
 #: resources/ui/settingspanel.ui:112
 msgid "Sheet Format"
-msgstr ""
+msgstr "Bladformat"
 
 #: resources/ui/settingspanel.ui:115
 msgid "Format"
-msgstr ""
+msgstr "Format"
 
 #: resources/ui/settingspanel.ui:116
 msgid "Choose a format"
-msgstr ""
+msgstr "Välj ett format"
 
 #: resources/ui/settingspanel.ui:129
 msgid "Orientation"
-msgstr ""
+msgstr "Orientering"
 
 #: resources/ui/settingspanel.ui:130
 msgid "Set the format orientation"
-msgstr ""
+msgstr "Sätt formatets orientering"
 
 #: resources/ui/settingspanel.ui:142
 msgid "Portrait"
-msgstr ""
+msgstr "Porträtt"
 
 #: resources/ui/settingspanel.ui:148
 msgid "Landscape"
-msgstr ""
+msgstr "Landscape"
 
 #: resources/ui/settingspanel.ui:158
 msgid "Width"
-msgstr ""
+msgstr "Bredd"
 
 #: resources/ui/settingspanel.ui:159
 msgid "Set the format width"
-msgstr ""
+msgstr "Ange formatbredd"
 
 #: resources/ui/settingspanel.ui:172
 msgid "Height"
-msgstr ""
+msgstr "Höjd"
 
 #: resources/ui/settingspanel.ui:173
 msgid "Set the format height"
-msgstr ""
+msgstr "Ange formathöjd"
 
 #: resources/ui/settingspanel.ui:186
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: resources/ui/settingspanel.ui:187
 msgid "Set the DPI (dots per inch). Defaults to 96"
-msgstr ""
+msgstr "Ställ in DPI (prickar per tum). Standardvärdet är 96"
 
 #: resources/ui/settingspanel.ui:210
 msgid "Revert"
-msgstr ""
+msgstr "Återgå"
 
 #: resources/ui/settingspanel.ui:219
 msgid "Apply"
-msgstr ""
+msgstr "Använd"
 
 #: resources/ui/settingspanel.ui:232
 msgid "Sheet Background"
-msgstr ""
+msgstr "Bakgrund till blad"
 
 #: resources/ui/settingspanel.ui:235
 msgid "Color"
-msgstr ""
+msgstr "Färg"
 
 #: resources/ui/settingspanel.ui:236
 msgid "Set the background color"
-msgstr ""
+msgstr "Välj bakrundsfärgen"
 
 #: resources/ui/settingspanel.ui:253
 msgid "Pattern"
-msgstr ""
+msgstr "Mönster"
 
 #: resources/ui/settingspanel.ui:254
 msgid "Choose a background pattern"
-msgstr ""
+msgstr "Välj bakrundsmönstret"
 
 #: resources/ui/settingspanel.ui:267
 msgid "Pattern Color"
-msgstr ""
+msgstr "Mönsterfärg"
 
 #: resources/ui/settingspanel.ui:268
 msgid "Set the background pattern color"
-msgstr ""
+msgstr "Ange bakgrundsmönsterfärg"
 
 #: resources/ui/settingspanel.ui:285
 msgid "Pattern Width"
-msgstr ""
+msgstr "Mönsterbredd"
 
 #: resources/ui/settingspanel.ui:286
 msgid "Set the background pattern width"
-msgstr ""
+msgstr "Ange bakgrundsmönsterbredd"
 
 #: resources/ui/settingspanel.ui:299
 msgid "Pattern Height"
-msgstr ""
+msgstr "Mönsterhöjd"
 
 #: resources/ui/settingspanel.ui:300
 msgid "Set the background pattern height"
-msgstr ""
+msgstr "Ange bakrundsmönsterhöjd"
 
 #: resources/ui/shortcuts.ui:11
 msgctxt "shortcut window"
 msgid "General"
-msgstr ""
+msgstr "Allmänt"
 
 #: resources/ui/shortcuts.ui:14
 msgctxt "shortcut window"
 msgid "Show keyboard shortcuts"
-msgstr ""
+msgstr "Visa Kortkommandon"
 
 #: resources/ui/shortcuts.ui:20
 msgctxt "shortcut window"
 msgid "Close the active window"
-msgstr ""
+msgstr "Stäng active fönstret"
 
 #: resources/ui/shortcuts.ui:26
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr ""
+msgstr "Stäng Programmet"
 
 #: resources/ui/shortcuts.ui:32
 msgctxt "shortcut window"
 msgid "Open the canvas menu"
-msgstr ""
+msgstr "Öppna arbetsytans meny"
 
 #: resources/ui/shortcuts.ui:38
 msgctxt "shortcut window"
 msgid "Open the app menu"
-msgstr ""
+msgstr "Öppna appens meny"
 
 #: resources/ui/shortcuts.ui:46
 msgctxt "shortcut window"
 msgid "Navigation"
-msgstr ""
+msgstr "Öppna arbetsytans meny"
 
 #: resources/ui/shortcuts.ui:49 resources/ui/shortcuts.ui:55
 msgctxt "shortcut window"
 msgid "Zoom in"
-msgstr ""
+msgstr "Zooma in"
 
 #: resources/ui/shortcuts.ui:61 resources/ui/shortcuts.ui:67
 msgctxt "shortcut window"
 msgid "Zoom out"
-msgstr ""
+msgstr "Zooma ut"
 
 #: resources/ui/shortcuts.ui:75
 msgctxt "shortcut window"
 msgid "Sheet"
-msgstr ""
+msgstr "Blad"
 
 #: resources/ui/shortcuts.ui:78
 msgctxt "shortcut window"
 msgid "New sheet"
-msgstr ""
+msgstr "Nytt blad"
 
 #: resources/ui/shortcuts.ui:84
 msgctxt "shortcut window"
 msgid "Open sheet"
-msgstr ""
+msgstr "Öppna blad"
 
 #: resources/ui/shortcuts.ui:90
 msgctxt "shortcut window"
 msgid "Save sheet"
-msgstr ""
+msgstr "Spara blad"
 
 #: resources/ui/shortcuts.ui:96
 msgctxt "shortcut window"
 msgid "Save sheet as"
-msgstr ""
+msgstr "Spara blad som"
 
 #: resources/ui/shortcuts.ui:102
 msgctxt "shortcut window"
 msgid "Clear sheet"
-msgstr ""
+msgstr "Rensa blad"
 
 #: resources/ui/shortcuts.ui:108
 msgctxt "shortcut window"
 msgid "Print sheet"
-msgstr ""
+msgstr "Skriv ut blad"
 
 #: resources/ui/shortcuts.ui:114
 msgctxt "shortcut window"
 msgid "Import file"
-msgstr ""
+msgstr "Importera fil"
 
 #: resources/ui/shortcuts.ui:120
 msgctxt "shortcut window"
 msgid "Drawing"
-msgstr ""
+msgstr "Teckning"
 
 #: resources/ui/shortcuts.ui:123
 msgctxt "shortcut window"
 msgid "Delete current selection"
-msgstr ""
+msgstr "Ta bort aktuell markering"
 
 #: resources/ui/shortcuts.ui:129
 msgctxt "shortcut window"
 msgid "Duplicate current selection"
-msgstr ""
+msgstr "Duplicera aktuell markering"
 
 #: resources/ui/shortcuts.ui:135
 msgctxt "shortcut window"
 msgid "Select all stroks"
-msgstr ""
+msgstr "Markera alla linjer"
 
 #: resources/ui/shortcuts.ui:141
 msgctxt "shortcut window"
 msgid "Copy selection into clipboard"
-msgstr ""
+msgstr "Kopiera markerning till urklipp"
 
 #: resources/ui/shortcuts.ui:147
 msgctxt "shortcut window"

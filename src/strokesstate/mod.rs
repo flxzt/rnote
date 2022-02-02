@@ -156,7 +156,6 @@ impl StrokesState {
                             .regenerate_rendering_with_images(key, images, appwindow.canvas().zoom());
 
                         appwindow.canvas().queue_draw();
-                        appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                     }
                     StateTask::AppendImagesToStroke { key, images } => {
                         appwindow
@@ -167,7 +166,6 @@ impl StrokesState {
                             .append_images_to_rendering(key, images, appwindow.canvas().zoom());
 
                         appwindow.canvas().queue_draw();
-                        appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                     }
                     StateTask::InsertStroke { stroke } => {
                         match stroke {
@@ -309,7 +307,7 @@ impl StrokesState {
         element: Element,
         renderer: Arc<RwLock<Renderer>>,
         zoom: f64,
-    ) -> Option<StrokeKey> {
+    ) {
         match self.strokes.get_mut(key).unwrap() {
             StrokeStyle::MarkerStroke(ref mut markerstroke) => {
                 markerstroke.push_elem(element);
@@ -325,7 +323,6 @@ impl StrokesState {
         }
 
         self.append_rendering_new_elem_threaded_fifo(key, renderer, zoom);
-        Some(key)
     }
 
     /// Clears every stroke and every component

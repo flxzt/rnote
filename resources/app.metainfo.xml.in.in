@@ -4,7 +4,7 @@
   <id>@APP_ID@</id>
   <metadata_license>CC0</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <name translatable="no">@APP_NAME@</name>
+  <name translatable="no">@APP_NAME_CAPITALIZED@</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   <summary>A simple drawing application to create handwritten notes</summary>
 

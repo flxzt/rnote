@@ -84,7 +84,7 @@ endif
 # Appdata
 appdata_conf = configuration_data()
 appdata_conf.set('APP_ID', app_id)
-appdata_conf.set('APP_NAME', app_name)
+appdata_conf.set('APP_NAME_CAPITALIZED', app_name_capitalized)
 appdata_file_in = configure_file(
   input: 'app.metainfo.xml.in.in',
   output: '@BASENAME@',

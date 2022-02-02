@@ -236,12 +236,11 @@ impl StrokeStyle {
                     },
                 ))
             }
-            StrokeStyle::ShapeStroke(_shapestroke) => {
-                /*                 let shape_image = match shapestroke.gen_image(xoppformat::XoppFile::DPI, renderer) {
+            StrokeStyle::ShapeStroke(shapestroke) => {
+                let shape_image = match shapestroke.gen_image(1.0, renderer) {
                     Ok(image) => image?,
                     Err(_e) => return None,
                 };
-                dbg!("is image");
                 let image_bytes =
                     render::image_into_bytes(shape_image, image::ImageOutputFormat::Png)
                         .map_err(|e| {
@@ -252,7 +251,6 @@ impl StrokeStyle {
                         })
                         .ok()?;
 
-                    dbg!("are byrtes");
                 Some(xoppformat::XoppStrokeStyle::XoppImage(
                     xoppformat::XoppImage {
                         left: utils::convert_value_dpi(
@@ -277,9 +275,9 @@ impl StrokeStyle {
                         ),
                         data: base64::encode(&image_bytes),
                     },
-                )) */
+                ))
                 // FIXME: The above is unacceptably slow, needs investigation
-                None
+                //None
             }
             StrokeStyle::VectorImage(vectorimage) => {
                 let png_data = match vectorimage.export_as_image_bytes(

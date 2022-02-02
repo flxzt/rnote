@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-02 09:58+1\n"
-"PO-Revision-Date: 2022-02-02 11:36+1\n"
+"PO-Revision-Date: 2022-02-02 12:15+1\n"
 "Last-Translator: Simon Svensson Thunman <simon.svenssonthunman@gmail.com>\n"
 "Language-Team: Swedish <sastofficial.github.io>\n"
 "Language: sv\n"
@@ -523,126 +523,129 @@ msgstr "Kopiera markerning till urklipp"
 #: resources/ui/shortcuts.ui:147
 msgctxt "shortcut window"
 msgid "Paste clipboard as selection"
-msgstr ""
+msgstr "Klistra in markering från urklipp"
 
 #: resources/ui/shortcuts.ui:153
 msgctxt "shortcut window"
 msgid "Enable temporary Eraser"
-msgstr ""
+msgstr "Aktivera tillfälligt radergummi"
 
 #: resources/ui/shortcuts.ui:159
 msgctxt "shortcut window"
 msgid "Undo last stroke"
-msgstr ""
+msgstr "Ångra sista linjen"
 
 #: resources/ui/shortcuts.ui:165
 msgctxt "shortcut window"
 msgid "Redo last stroke"
-msgstr ""
+msgstr "Gör om sista linjen"
 
 #: resources/ui/workspacebrowser.ui:112
 msgid "Change workspace directory"
-msgstr ""
+msgstr "Ändra arbetsplats mappen"
 
 #: resources/ui/penssidebar/brushpage.ui:34
 msgid "Brush style"
-msgstr ""
+msgstr "Penselformat"
 
 #: resources/ui/penssidebar/brushpage.ui:54
 msgid "Brush styles"
-msgstr ""
+msgstr "Penselformat"
 
 #: resources/ui/penssidebar/brushpage.ui:72
 msgid "Solid"
-msgstr ""
+msgstr "Solid"
 
 #: resources/ui/penssidebar/brushpage.ui:83
 msgid "Textured"
-msgstr ""
+msgstr "Texturerat"
 
 #: resources/ui/penssidebar/brushpage.ui:111
 msgid "Brush styles configuration"
-msgstr ""
+msgstr "Konfiguration av penselformat"
 
 #: resources/ui/penssidebar/brushpage.ui:125
 msgid "Brush configuration"
-msgstr ""
+msgstr "Penselkonfiguration"
 
 #: resources/ui/penssidebar/brushpage.ui:145
 msgid "Density"
-msgstr ""
+msgstr "Täthet"
 
 #: resources/ui/penssidebar/brushpage.ui:146
 msgid "The density is the amount of dots per 10x10 area"
-msgstr ""
+msgstr "Densiteten är mängden prickar per 10x10-område"
 
 #: resources/ui/penssidebar/brushpage.ui:161
 msgid "Dot Radii"
-msgstr ""
+msgstr "Prick Radier"
 
 #: resources/ui/penssidebar/brushpage.ui:162
 msgid "The radii of the dots"
-msgstr ""
+msgstr "Prickarnas radier"
 
 #: resources/ui/penssidebar/brushpage.ui:192
 msgid "Distribution"
-msgstr ""
+msgstr "Fördelning"
 
 #: resources/ui/penssidebar/brushpage.ui:193
 msgid "Choose a dots position probability distribution"
-msgstr ""
+msgstr "Välj en dots position sannolikhetsfördelning"
 
 #: resources/ui/penssidebar/selectorpage.ui:35
 msgid "Selecting with a polygon"
-msgstr ""
+msgstr "Välja med en polygon"
 
 #: resources/ui/penssidebar/selectorpage.ui:49
 msgid "Selecting with a rectangle"
-msgstr ""
+msgstr "Markera med en rektangel"
 
 #: resources/ui/penssidebar/selectorpage.ui:70
 msgid "Lock aspectratio while resizing the selection"
-msgstr ""
+msgstr "Lås bildförhållandet när du växling av markeringen"
 
 #: resources/ui/penssidebar/selectorpage.ui:82
 msgid "Delete selection"
-msgstr ""
+msgstr "Ta bort markering"
 
 #: resources/ui/penssidebar/selectorpage.ui:97
 msgid "Duplicate selection"
-msgstr ""
+msgstr "Duplicera markering"
 
 #: resources/ui/penssidebar/shaperpage.ui:35
 msgid "Smooth shapes"
-msgstr ""
+msgstr "Jämna former"
 
 #: resources/ui/penssidebar/shaperpage.ui:48
 msgid "Rough shapes"
-msgstr ""
+msgstr "Grova former"
 
 #: resources/ui/penssidebar/shaperpage.ui:71
 #: resources/ui/penssidebar/shaperpage.ui:85
 msgid "Rough shapes configuration"
-msgstr ""
+msgstr "Konfiguration av grova former"
 
 #: resources/ui/penssidebar/shaperpage.ui:104
 msgid "Roughness"
-msgstr ""
+msgstr "Grovhet"
 
 #: resources/ui/penssidebar/shaperpage.ui:105
 msgid ""
 "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
 msgstr ""
+"Anger hur grov ritningen är. 0.0 är en slät linje. Standardvärdet är 1,0"
 
 #: resources/ui/penssidebar/shaperpage.ui:120
 msgid "Bowing"
-msgstr ""
+msgstr "Bugande"
 
 #: resources/ui/penssidebar/shaperpage.ui:121
 msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
 msgstr ""
+"Hur kurviga linjerna är när man ritar en grov form. 0,0 är en rak linje."
+"Standardvärdet är 1.0"
 
 #: resources/ui/penssidebar/shaperpage.ui:136
 msgid "Curve step count"

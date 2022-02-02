@@ -1,6 +1,6 @@
 [package]
 name = "rnote"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -35,7 +35,7 @@ slotmap = { version = "1.0", features = ["serde"] }
 nalgebra = { version = "0.30", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.8", features = ["serde-serialize"] }
 geo = "0.18"
-gtk4 = {version = "0.4", features = ["v4_4"]}
+gtk4 = {version = "0.4", features = ["v4_6"]}
 gstreamer = "0.18"
 adw = {version = "0.1.0", package="libadwaita"}
 cairo-rs = {version = "0.15", features = ["png", "svg", "pdf"]}

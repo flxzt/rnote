@@ -61,6 +61,15 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.3.2" date="2022-02-02">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>new feature: Export as PDF</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.3.1" date="2022-01-31">
       <description>
         <p>this release changes:</p>

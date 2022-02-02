@@ -455,11 +455,12 @@ impl Sheet {
         {
             let cx = cairo::Context::new(&surface)?;
 
-            for i in 0..n_pages {
-                let offset = f64::from(i) * format_size[1];
-                cx.translate(0.0, -offset);
-
+            for _ in 0..n_pages {
                 render::draw_svgs_to_cairo_context(1.0, &sheet_svgs, sheet_bounds, &cx)?;
+
+                // translations stack on top of each other in every iteration
+                cx.translate(0.0, -format_size[1]);
+
                 cx.show_page()?;
             }
         }

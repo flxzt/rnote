@@ -113,6 +113,8 @@ impl RnoteAppWindow {
         self.add_action(&action_export_selection_as_svg);
         let action_export_sheet_as_svg = gio::SimpleAction::new("export-sheet-as-svg", None);
         self.add_action(&action_export_sheet_as_svg);
+        let action_export_sheet_as_pdf = gio::SimpleAction::new("export-sheet-as-pdf", None);
+        self.add_action(&action_export_sheet_as_pdf);
         let action_export_sheet_as_xopp = gio::SimpleAction::new("export-sheet-as-xopp", None);
         self.add_action(&action_export_sheet_as_xopp);
         let action_clipboard_copy_selection =
@@ -900,6 +902,11 @@ impl RnoteAppWindow {
         // Export sheet as SVG
         action_export_sheet_as_svg.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             dialogs::dialog_export_sheet_as_svg(&appwindow);
+        }));
+
+        // Export sheet as PDF
+        action_export_sheet_as_pdf.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::dialog_export_sheet_as_pdf(&appwindow);
         }));
 
         // Export sheet as Xopp

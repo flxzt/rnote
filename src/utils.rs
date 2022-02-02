@@ -9,7 +9,7 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
-pub fn now() -> String {
+pub fn now_formatted_string() -> String {
     match glib::DateTime::now_local() {
         Ok(datetime) => match datetime.format("%F_%T") {
             Ok(s) => s.to_string(),

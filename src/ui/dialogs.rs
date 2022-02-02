@@ -272,7 +272,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
 
     dialog_save_sheet_as.add_filter(&filter);
 
-    dialog_save_sheet_as.set_current_name(format!("{}_sheet.rnote", utils::now()).as_str());
+    dialog_save_sheet_as.set_current_name(format!("{}_sheet.rnote", utils::now_formatted_string()).as_str());
 
     dialog_save_sheet_as.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {
@@ -396,7 +396,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_selection.add_filter(&filter);
 
-    dialog_export_selection.set_current_name(format!("{}_selection.svg", utils::now()).as_str());
+    dialog_export_selection.set_current_name(format!("{}_selection.svg", utils::now_formatted_string()).as_str());
 
     dialog_export_selection.connect_response(clone!(@weak appwindow => move |dialog_export_selection, responsetype| {
             match responsetype {
@@ -437,7 +437,7 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_sheet.add_filter(&filter);
 
-    dialog_export_sheet.set_current_name(format!("{}_sheet.svg", utils::now()).as_str());
+    dialog_export_sheet.set_current_name(format!("{}_sheet.svg", utils::now_formatted_string()).as_str());
 
     dialog_export_sheet.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {
@@ -450,6 +450,49 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
                             }
                         },
                         None => { log::error!("Can't export sheet. No file selected.")},
+                    }
+                }
+                _ => {
+                }
+            }
+        }),
+    );
+
+    dialog_export_sheet.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_sheet);
+}
+
+pub fn dialog_export_sheet_as_pdf(appwindow: &RnoteAppWindow) {
+    let filter = FileFilter::new();
+    filter.add_mime_type("application/pdf");
+    filter.add_pattern("*.pdf");
+    filter.set_name(Some(&gettext("PDF file")));
+
+    let dialog_export_sheet: FileChooserNative = FileChooserNative::builder()
+        .title(&gettext("Export Sheet"))
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label(&gettext("Export"))
+        .cancel_label(&gettext("Cancel"))
+        .action(FileChooserAction::Save)
+        .select_multiple(false)
+        .build();
+    dialog_export_sheet.add_filter(&filter);
+
+    dialog_export_sheet.set_current_name(format!("{}_sheet.pdf", utils::now_formatted_string()).as_str());
+
+    dialog_export_sheet.connect_response(
+        clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {
+            match responsetype {
+                ResponseType::Accept => {
+                    match dialog_export_sheet.file() {
+                        Some(file) => {
+                            if let Err(e) = appwindow.canvas().sheet().borrow().export_sheet_as_pdf(&file) {
+                                log::error!("exporting sheet s pdf failed with error `{}`", e);
+                            }
+                        },
+                        None => { log::error!("Can't export sheet as pdf. No file selected.")},
                     }
                 }
                 _ => {
@@ -480,7 +523,7 @@ pub fn dialog_export_sheet_as_xopp(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_sheet.add_filter(&filter);
 
-    dialog_export_sheet.set_current_name(format!("{}_sheet.xopp", utils::now()).as_str());
+    dialog_export_sheet.set_current_name(format!("{}_sheet.xopp", utils::now_formatted_string()).as_str());
 
     dialog_export_sheet.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {

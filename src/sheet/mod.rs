@@ -435,4 +435,91 @@ impl Sheet {
 
         Ok(())
     }
+
+    pub fn export_sheet_in_pdf_bytes(&self, title: &str) -> Result<Vec<u8>, anyhow::Error> {
+        let sheet_svgs = self.gen_svgs()?;
+        let sheet_bounds = self.bounds();
+        let n_pages = self.calc_n_pages();
+        let format_size = na::vector![f64::from(self.format.width), f64::from(self.format.height)];
+
+        let surface =
+            cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())?;
+
+        surface.set_metadata(cairo::PdfMetadata::Title, title)?;
+        surface.set_metadata(
+            cairo::PdfMetadata::CreateDate,
+            utils::now_formatted_string().as_str(),
+        )?;
+
+        // New scope to avoid errors when flushing
+        {
+            let cx = cairo::Context::new(&surface)?;
+
+            for i in 0..n_pages {
+                let offset = f64::from(i) * format_size[1];
+                cx.translate(0.0, -offset);
+
+                render::draw_svgs_to_cairo_context(1.0, &sheet_svgs, sheet_bounds, &cx)?;
+                cx.show_page()?;
+            }
+        }
+        let data = *surface
+            .finish_output_stream()
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "finish_outputstream() failed in export_sheet_as_pdf_bytes with Err {:?}",
+                    e
+                )
+            })?
+            .downcast::<Vec<u8>>()
+            .map_err(|e| {
+                anyhow::anyhow!(
+                    "downcast() finished output stream failed in export_sheet_as_pdf_bytes with Err {:?}",
+                    e
+                )
+            })?;
+
+        Ok(data)
+    }
+
+    pub fn export_sheet_as_pdf(&self, file: &gio::File) -> Result<(), anyhow::Error> {
+        if let Some(basename) = file.basename() {
+            let pdf_data = self.export_sheet_in_pdf_bytes(&basename.to_string_lossy())?;
+
+            file.replace_async(
+                None,
+                false,
+                gio::FileCreateFlags::REPLACE_DESTINATION,
+                glib::PRIORITY_HIGH_IDLE,
+                None::<&gio::Cancellable>,
+                move |result| {
+                    let output_stream = match result {
+                        Ok(output_stream) => output_stream,
+                        Err(e) => {
+                            log::error!(
+                                "replace_async() failed in export_sheet_as_pdf() with Err {}",
+                                e
+                            );
+                            return;
+                        }
+                    };
+
+                    if let Err(e) = output_stream.write(&pdf_data, None::<&gio::Cancellable>) {
+                        log::error!(
+                            "output_stream().write() failed in export_sheet_as_pdf() with Err {}",
+                            e
+                        );
+                    };
+                    if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
+                        log::error!(
+                            "output_stream().close() failed in export_sheet_as_pdf() with Err {}",
+                            e
+                        );
+                    };
+                },
+            );
+        }
+
+        Ok(())
+    }
 }

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-02-02 09:58+1\n"
-"PO-Revision-Date: 2022-02-02 12:15+1\n"
+"PO-Revision-Date: 2022-02-03 09:56+1\n"
 "Last-Translator: Simon Svensson Thunman <simon.svenssonthunman@gmail.com>\n"
 "Language-Team: Swedish <sastofficial.github.io>\n"
 "Language: sv\n"
@@ -649,89 +649,89 @@ msgstr ""
 
 #: resources/ui/penssidebar/shaperpage.ui:136
 msgid "Curve step count"
-msgstr ""
+msgstr "Antal steg i kurva"
 
 #: resources/ui/penssidebar/shaperpage.ui:137
 msgid "How many steps make up a curve. Defaults to 9"
-msgstr ""
+msgstr "Hur många steg utgör en kurva. Standardvärdet är 9"
 
 #: resources/ui/penssidebar/shaperpage.ui:152
 msgid "Multistroke"
-msgstr ""
+msgstr "Multistroke"
 
 #: resources/ui/penssidebar/shaperpage.ui:153
 msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr ""
+msgstr "Flera slaggenerering för ett skissat utseende. Standardvärdet är true"
 
 #: resources/ui/penssidebar/shaperpage.ui:189
 msgid "Line"
-msgstr ""
+msgstr "Linje"
 
 #: resources/ui/penssidebar/shaperpage.ui:201
 msgid "Rectangle"
-msgstr ""
+msgstr "Rektangel"
 
 #: resources/ui/penssidebar/shaperpage.ui:214
 msgid "Ellipse"
-msgstr ""
+msgstr "Ellips"
 
 #: resources/ui/penssidebar/toolspage.ui:39
 msgid "Expand the sheet vertically"
-msgstr ""
+msgstr "Expandera bladet lodrätt"
 
 #: resources/ui/penssidebar/toolspage.ui:52
 msgid "Drag stroke elements based on proximity"
-msgstr ""
+msgstr "Dra linjeelement baserat på närhet"
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
 #: src/ui/dialogs.rs:30
 msgid "translator-credits"
-msgstr ""
+msgstr "Simon Svensson Thunman https://sastofficial.github.io"
 
 #: src/ui/dialogs.rs:181
 msgid ".rnote / .xopp File"
-msgstr ""
+msgstr ".rnote / .xopp fil"
 
 #: src/ui/dialogs.rs:184
 msgid "Open file"
-msgstr ""
+msgstr "Öppna fil"
 
 #: src/ui/dialogs.rs:221
 msgid "Open workspace"
-msgstr ""
+msgstr "Öppna arbetsyta"
 
 #: src/ui/dialogs.rs:261
 msgid ".rnote file"
-msgstr ""
+msgstr ".rnote fil"
 
 #: src/ui/dialogs.rs:264
 msgid "Save sheet as"
-msgstr ""
+msgstr "Spara blad som"
 
 #: src/ui/dialogs.rs:344
 msgid "PNG / SVG / JPG / PDF file"
-msgstr ""
+msgstr "PNG / SVG / JPG / PDF fil"
 
 #: src/ui/dialogs.rs:350
 msgid "Import"
-msgstr ""
+msgstr "Importera"
 
 #: src/ui/dialogs.rs:386 src/ui/dialogs.rs:427
 msgid "SVG file"
-msgstr ""
+msgstr "SVG fil"
 
 #: src/ui/dialogs.rs:389
 msgid "Export Selection"
-msgstr ""
+msgstr "Exportera markering"
 
 #: src/ui/dialogs.rs:392 src/ui/dialogs.rs:433 src/ui/dialogs.rs:476
 msgid "Export"
-msgstr ""
+msgstr "Exportera"
 
 #: src/ui/dialogs.rs:430 src/ui/dialogs.rs:473
 msgid "Export Sheet"
-msgstr ""
+msgstr "Exportera blad"
 
 #: src/ui/dialogs.rs:470
 msgid ".xopp file"
-msgstr ""
+msgstr ".xopp fil"

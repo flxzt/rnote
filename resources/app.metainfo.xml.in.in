@@ -20,6 +20,8 @@
   <description>
     <p>
       Rnote is a simple vector based drawing application for handwritten notes and to annotate documents and pictures.
+    </p>
+    <p>
       Disclaimer: The file format is still unstable. It might change between versions.
     </p>
   </description>

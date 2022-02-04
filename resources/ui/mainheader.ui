@@ -105,7 +105,7 @@
             <property name="spacing">6</property>
             <property name="margin-top">0</property>
             <property name="margin-bottom">0</property>
-            <property name="margin-start">6</property>
+            <property name="margin-start">12</property>
             <property name="margin-end">6</property>
             <child>
               <object class="CanvasMenu" id="canvasmenu"></object>

@@ -86,7 +86,6 @@ use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*,
     ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, ListItem,
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
-    Widget,
 };
 use gtk4::{DirectoryList, Entry, ListView, MultiSorter};
 
@@ -94,7 +93,7 @@ use self::filerow::FileRow;
 
 glib::wrapper! {
     pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
-        @extends Widget;
+        @extends gtk4::Widget;
 }
 
 impl Default for WorkspaceBrowser {

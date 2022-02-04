@@ -289,14 +289,13 @@ mod imp {
                         appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
                     }
 
-                    //if !flap.is_folded() {
-                        if flap.flap_position() == PackType::Start {
-                            workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
-                            workspace_headerbar.set_show_end_title_buttons(false);
-                        } else if flap.flap_position() == PackType::End {
-                            workspace_headerbar.set_show_start_title_buttons(false);
-                            workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
-                        }
+                    if flap.flap_position() == PackType::Start {
+                        workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
+                        workspace_headerbar.set_show_end_title_buttons(false);
+                    } else if flap.flap_position() == PackType::End {
+                        workspace_headerbar.set_show_start_title_buttons(false);
+                        workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
+                    }
                 }));
 
             self.flap.connect_flap_position_notify(

@@ -45,11 +45,11 @@ mod imp {
 
 use crate::ui::appwindow::RnoteAppWindow;
 use gtk4::ToggleButton;
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, Widget};
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 
 glib::wrapper! {
     pub struct SelectorPage(ObjectSubclass<imp::SelectorPage>)
-        @extends Widget, @implements Orientable;
+        @extends gtk4::Widget;
 }
 
 impl Default for SelectorPage {

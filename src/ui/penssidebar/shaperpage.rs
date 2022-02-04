@@ -75,11 +75,11 @@ use crate::compose::rough::roughoptions::{self, RoughOptions};
 use crate::pens::shaper::ShaperDrawStyle;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use gtk4::{gdk, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, Widget};
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 
 glib::wrapper! {
     pub struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
-        @extends Widget, @implements Orientable;
+        @extends gtk4::Widget;
 }
 
 impl Default for ShaperPage {

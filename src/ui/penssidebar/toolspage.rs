@@ -41,11 +41,11 @@ mod imp {
 }
 
 use crate::ui::appwindow::RnoteAppWindow;
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, ToggleButton, Widget};
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, ToggleButton};
 
 glib::wrapper! {
     pub struct ToolsPage(ObjectSubclass<imp::ToolsPage>)
-        @extends Widget, @implements Orientable;
+        @extends gtk4::Widget;
 }
 
 impl Default for ToolsPage {

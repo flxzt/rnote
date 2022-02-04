@@ -84,13 +84,13 @@ use markerpage::MarkerPage;
 use selectorpage::SelectorPage;
 use shaperpage::ShaperPage;
 
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Stack, StackPage, Widget};
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Stack, StackPage};
 
 use self::toolspage::ToolsPage;
 
 glib::wrapper! {
     pub struct PensSideBar(ObjectSubclass<imp::PensSideBar>)
-        @extends Widget;
+        @extends gtk4::Widget;
 }
 
 impl Default for PensSideBar {

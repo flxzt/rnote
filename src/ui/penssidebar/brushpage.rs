@@ -70,14 +70,13 @@ use crate::pens::brush::BrushStyle;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use adw::prelude::*;
 use gtk4::{
-    gdk, Accessible, Actionable, Buildable, ConstraintTarget, Image, ListBox, MenuButton, Popover,
+    gdk, Image, ListBox, MenuButton, Popover,
 };
-use gtk4::{glib, glib::clone, subclass::prelude::*, Orientable, SpinButton, Widget};
+use gtk4::{glib, glib::clone, subclass::prelude::*, SpinButton};
 
 glib::wrapper! {
     pub struct BrushPage(ObjectSubclass<imp::BrushPage>)
-        @extends Widget,
-        @implements Orientable, Accessible, Actionable, Buildable, ConstraintTarget;
+        @extends gtk4::Widget;
 }
 
 impl Default for BrushPage {

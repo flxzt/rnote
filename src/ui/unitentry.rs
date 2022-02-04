@@ -213,13 +213,14 @@ mod imp {
 }
 
 use gtk4::Adjustment;
-use gtk4::{glib, prelude::*, subclass::prelude::*, DropDown, SpinButton, Widget};
+use gtk4::{glib, prelude::*, subclass::prelude::*, DropDown, SpinButton};
 
 use crate::sheet::format;
 
 glib::wrapper! {
     pub struct UnitEntry(ObjectSubclass<imp::UnitEntry>)
-        @extends Widget;
+        @extends gtk4::Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for UnitEntry {

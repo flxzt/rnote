@@ -45,11 +45,12 @@ mod imp {
     }
     impl WidgetImpl for ModifierNode {}
 }
-use gtk4::{glib, subclass::prelude::*, Image, Widget};
+use gtk4::{glib, subclass::prelude::*, Image};
 
 glib::wrapper! {
     pub struct ModifierNode(ObjectSubclass<imp::ModifierNode>)
-        @extends Widget;
+        @extends gtk4::Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for ModifierNode {

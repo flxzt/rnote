@@ -214,7 +214,8 @@ use crate::compose::color::Color;
 
 glib::wrapper! {
     pub struct ColorSetter(ObjectSubclass<imp::ColorSetter>)
-        @extends ToggleButton, Button, Widget;
+        @extends ToggleButton, Button, Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for ColorSetter {

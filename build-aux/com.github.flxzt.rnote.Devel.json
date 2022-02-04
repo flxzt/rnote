@@ -24,7 +24,6 @@
         "--env=RUST_BACKTRACE=full",
         "--env=RUST_LOG=rnote=trace",
         "--env=G_MESSAGES_DEBUG=all",
-        "--env=GTK_DEBUG=all",
         "--env=GTK_PATH=/app/lib/gtk-4.0",
         "--env=GST_DEBUG=3"
     ],

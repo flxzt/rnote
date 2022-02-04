@@ -12,7 +12,8 @@
     <child>
       <object class="GtkImage">
         <property name="icon_name">pen-shaper-symbolic</property>
-        <property name="margin_top">6</property>
+        <property name="margin-top">9</property>
+        <property name="margin-bottom">3</property>
       </object>
     </child>
     <child>
@@ -254,7 +255,7 @@
     </child>
     <child>
       <object class="ColorPicker" id="stroke_colorpicker">
-        <property name="height_request">134</property>
+        <property name="height_request">127</property>
         <property name="amount-colorbuttons">2</property>
       </object>
     </child>
@@ -282,7 +283,7 @@
             </child>
             <child>
               <object class="ColorPicker" id="fill_colorpicker">
-                <property name="height_request">134</property>
+                <property name="height_request">127</property>
                 <property name="amount-colorbuttons">2</property>
               </object>
             </child>

@@ -10,7 +10,7 @@ mod imp {
         gdk, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
         FileChooserNative, Grid, Inhibit, PackType, ScrolledWindow, StyleContext, ToggleButton,
     };
-    use gtk4::{gio, GestureDrag, PropagationPhase, Separator};
+    use gtk4::{gio, GestureDrag, PropagationPhase, Separator, Revealer};
     use once_cell::sync::Lazy;
 
     use crate::audioplayer::RnoteAudioPlayer;
@@ -65,6 +65,20 @@ mod imp {
         #[template_child]
         pub mainheader: TemplateChild<MainHeader>,
         #[template_child]
+        pub narrow_pens_toggles_revealer: TemplateChild<Revealer>,
+        #[template_child]
+        pub narrow_marker_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub narrow_brush_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub narrow_shaper_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub narrow_eraser_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub narrow_selector_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub narrow_tools_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub penssidebar: TemplateChild<PensSideBar>,
     }
 
@@ -95,6 +109,13 @@ mod imp {
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
                 flap_menus_box: TemplateChild::<Box>::default(),
                 mainheader: TemplateChild::<MainHeader>::default(),
+                narrow_pens_toggles_revealer: TemplateChild::<Revealer>::default(),
+                narrow_marker_toggle: TemplateChild::<ToggleButton>::default(),
+                narrow_brush_toggle: TemplateChild::<ToggleButton>::default(),
+                narrow_shaper_toggle: TemplateChild::<ToggleButton>::default(),
+                narrow_eraser_toggle: TemplateChild::<ToggleButton>::default(),
+                narrow_selector_toggle: TemplateChild::<ToggleButton>::default(),
+                narrow_tools_toggle: TemplateChild::<ToggleButton>::default(),
                 penssidebar: TemplateChild::<PensSideBar>::default(),
             }
         }
@@ -133,6 +154,43 @@ mod imp {
             );
 
             self.setup_flap(obj);
+
+            // pens narrow toggles
+            self.narrow_marker_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_marker_toggle| {
+                if narrow_marker_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"marker_style".to_variant()));
+                }
+            }));
+
+            self.narrow_brush_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_brush_toggle| {
+                if narrow_brush_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush_style".to_variant()));
+                }
+            }));
+
+            self.narrow_shaper_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_shaper_toggle| {
+                if narrow_shaper_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper_style".to_variant()));
+                }
+            }));
+
+            self.narrow_eraser_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_eraser_toggle| {
+                if narrow_eraser_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser_style".to_variant()));
+                }
+            }));
+
+            self.narrow_selector_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_selector_toggle| {
+                if narrow_selector_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector_style".to_variant()));
+                }
+            }));
+
+            self.narrow_tools_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_tools_toggle| {
+                if narrow_tools_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools_style".to_variant()));
+                }
+            }));
         }
 
         fn properties() -> &'static [glib::ParamSpec] {
@@ -364,6 +422,7 @@ use std::{
 };
 
 use adw::prelude::*;
+use gtk4::Revealer;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
     EventControllerScrollFlags, EventSequenceState, FileChooserNative, GestureDrag, GestureZoom,
@@ -512,6 +571,36 @@ impl RnoteAppWindow {
 
     pub fn mainheader(&self) -> MainHeader {
         imp::RnoteAppWindow::from_instance(self).mainheader.get()
+    }
+
+    pub fn narrow_pens_toggles_revealer(&self) -> Revealer {
+        imp::RnoteAppWindow::from_instance(self)
+            .narrow_pens_toggles_revealer
+            .get()
+    }
+
+    pub fn narrow_marker_toggle(&self) -> ToggleButton {
+        imp::RnoteAppWindow::from_instance(self).narrow_marker_toggle.get()
+    }
+
+    pub fn narrow_brush_toggle(&self) -> ToggleButton {
+        imp::RnoteAppWindow::from_instance(self).narrow_brush_toggle.get()
+    }
+
+    pub fn narrow_shaper_toggle(&self) -> ToggleButton {
+        imp::RnoteAppWindow::from_instance(self).narrow_shaper_toggle.get()
+    }
+
+    pub fn narrow_eraser_toggle(&self) -> ToggleButton {
+        imp::RnoteAppWindow::from_instance(self).narrow_eraser_toggle.get()
+    }
+
+    pub fn narrow_selector_toggle(&self) -> ToggleButton {
+        imp::RnoteAppWindow::from_instance(self).narrow_selector_toggle.get()
+    }
+
+    pub fn narrow_tools_toggle(&self) -> ToggleButton {
+        imp::RnoteAppWindow::from_instance(self).narrow_tools_toggle.get()
     }
 
     pub fn penssidebar(&self) -> PensSideBar {

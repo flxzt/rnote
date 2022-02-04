@@ -12,7 +12,8 @@
     <child>
       <object class="GtkImage">
         <property name="icon_name">pen-selector-symbolic</property>
-        <property name="margin_top">6</property>
+        <property name="margin-top">9</property>
+        <property name="margin-bottom">3</property>
       </object>
     </child>
     <child>

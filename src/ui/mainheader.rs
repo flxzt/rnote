@@ -32,7 +32,11 @@ mod imp {
         #[template_child]
         pub redo_button: TemplateChild<Button>,
         #[template_child]
+        pub pens_toggles_squeezer: TemplateChild<adw::Squeezer>,
+        #[template_child]
         pub pens_toggles_clamp: TemplateChild<adw::Clamp>,
+        #[template_child]
+        pub pens_toggles_placeholderbox: TemplateChild<gtk4::Box>,
         #[template_child]
         pub marker_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -156,9 +160,15 @@ impl MainHeader {
         imp::MainHeader::from_instance(self).redo_button.get()
     }
 
-    pub fn pens_toggles_clamp(&self) -> adw::Clamp {
+    pub fn pens_toggles_placeholderbox(&self) -> gtk4::Box {
         imp::MainHeader::from_instance(self)
-            .pens_toggles_clamp
+            .pens_toggles_placeholderbox
+            .get()
+    }
+
+    pub fn pens_toggles_squeezer(&self) -> adw::Squeezer {
+        imp::MainHeader::from_instance(self)
+            .pens_toggles_squeezer
             .get()
     }
 
@@ -224,6 +234,18 @@ impl MainHeader {
                     | glib::BindingFlags::INVERT_BOOLEAN,
             )
             .build();
+
+        self.pens_toggles_squeezer().connect_visible_child_notify(
+            clone!(@weak self as mainheader, @weak appwindow => move |pens_toggles_squeezer| {
+                if let Some(visible_child) = pens_toggles_squeezer.visible_child() {
+                    if visible_child == mainheader.imp().pens_toggles_placeholderbox.get() {
+                        appwindow.narrow_pens_toggles_revealer().set_reveal_child(true);
+                    } else if visible_child == mainheader.imp().pens_toggles_clamp.get() {
+                        appwindow.narrow_pens_toggles_revealer().set_reveal_child(false);
+                    }
+                }
+            }),
+        );
 
         self.imp().add_page_button.get().connect_clicked(
             clone!(@weak appwindow => move |_add_page_button| {

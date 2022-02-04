@@ -54,11 +54,7 @@ impl RnoteAppWindow {
         );
         self.add_action(&action_renderer_backend);
 
-        let action_righthanded = gio::PropertyAction::new(
-            "righthanded",
-            self,
-            "righthanded",
-        );
+        let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
         let action_pen_sounds = gio::PropertyAction::new("pen-sounds", self, "pen-sounds");
         self.add_action(&action_pen_sounds);
@@ -248,6 +244,7 @@ impl RnoteAppWindow {
                 if current_state {
                     appwindow.main_grid().remove(&appwindow.sidebar_grid());
                     appwindow.main_grid().remove(&appwindow.sidebar_sep());
+                    appwindow.main_grid().remove(&appwindow.narrow_pens_toggles_revealer());
                     appwindow.main_grid().remove(&appwindow.canvas_scroller());
                     appwindow
                         .main_grid()
@@ -257,7 +254,10 @@ impl RnoteAppWindow {
                         .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
                     appwindow
                         .main_grid()
-                        .attach(&appwindow.canvas_scroller(), 2, 1, 1, 1);
+                        .attach(&appwindow.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
+                    appwindow
+                        .main_grid()
+                        .attach(&appwindow.canvas_scroller(), 2, 2, 1, 1);
 
                     appwindow
                         .mainheader()
@@ -267,7 +267,7 @@ impl RnoteAppWindow {
                     appwindow
                         .mainheader()
                         .headerbar()
-                        .remove(&appwindow.mainheader().pens_toggles_clamp());
+                        .remove(&appwindow.mainheader().pens_toggles_squeezer());
                     appwindow
                         .mainheader()
                         .headerbar()
@@ -279,7 +279,7 @@ impl RnoteAppWindow {
                     appwindow
                         .mainheader()
                         .headerbar()
-                        .pack_start(&appwindow.mainheader().pens_toggles_clamp());
+                        .pack_start(&appwindow.mainheader().pens_toggles_squeezer());
 
                     appwindow
                         .canvas_scroller()
@@ -325,11 +325,15 @@ impl RnoteAppWindow {
                     appwindow.flap().set_flap_position(PackType::Start);
                 } else {
                     appwindow.main_grid().remove(&appwindow.canvas_scroller());
+                    appwindow.main_grid().remove(&appwindow.narrow_pens_toggles_revealer());
                     appwindow.main_grid().remove(&appwindow.sidebar_sep());
                     appwindow.main_grid().remove(&appwindow.sidebar_grid());
                     appwindow
                         .main_grid()
-                        .attach(&appwindow.canvas_scroller(), 0, 1, 1, 1);
+                        .attach(&appwindow.canvas_scroller(), 0, 2, 1, 1);
+                    appwindow
+                        .main_grid()
+                        .attach(&appwindow.narrow_pens_toggles_revealer(), 0, 1, 1, 1);
                     appwindow
                         .main_grid()
                         .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
@@ -339,7 +343,7 @@ impl RnoteAppWindow {
                     appwindow
                         .mainheader()
                         .headerbar()
-                        .remove(&appwindow.mainheader().pens_toggles_clamp());
+                        .remove(&appwindow.mainheader().pens_toggles_squeezer());
 
                     appwindow
                         .mainheader()
@@ -357,7 +361,7 @@ impl RnoteAppWindow {
                     appwindow
                         .mainheader()
                         .headerbar()
-                        .pack_end(&appwindow.mainheader().pens_toggles_clamp());
+                        .pack_end(&appwindow.mainheader().pens_toggles_squeezer());
 
                     appwindow
                         .canvas_scroller()
@@ -556,27 +560,32 @@ impl RnoteAppWindow {
                 match pens.current_pen {
                     PenStyle::MarkerStyle => {
                         appwindow.mainheader().marker_toggle().set_active(true);
+                        appwindow.narrow_marker_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("marker_page");
                     }
                     PenStyle::BrushStyle => {
                         appwindow.mainheader().brush_toggle().set_active(true);
+                        appwindow.narrow_brush_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
                     }
                     PenStyle::ShaperStyle => {
-                        // Avoids borrow errors
                         appwindow.mainheader().shaper_toggle().set_active(true);
+                        appwindow.narrow_shaper_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
                     }
                     PenStyle::EraserStyle => {
                         appwindow.mainheader().eraser_toggle().set_active(true);
+                        appwindow.narrow_eraser_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                     }
                     PenStyle::SelectorStyle => {
                         appwindow.mainheader().selector_toggle().set_active(true);
+                        appwindow.narrow_selector_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                     }
                     PenStyle::ToolsStyle => {
                         appwindow.mainheader().tools_toggle().set_active(true);
+                        appwindow.narrow_tools_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
                     }
                 }

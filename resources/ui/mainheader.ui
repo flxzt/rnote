@@ -31,9 +31,9 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
-            <property name="width_request">40</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
+            <property name="width_request">42</property>
+            <property name="margin-start">6</property>
+            <property name="margin-end">6</property>
             <child>
               <object class="GtkImage" id="header_icon_image">
                 <property name="visible">false</property>

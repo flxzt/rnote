@@ -100,6 +100,7 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
 <div align="start">
         <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" width="300">
         <img alt="Pikachu" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/pikachu.png" width="300">
+        <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" width="300">
 </div><br>
 
 # Building, contributing

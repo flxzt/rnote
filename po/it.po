@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-20 13:00+0100\n"
-"PO-Revision-Date: 2022-01-23 15:00+0100\n"
+"PO-Revision-Date: 2022-02-05 08:00+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: it\n"
@@ -22,9 +22,9 @@ msgid "@APP_NAME_CAPITALIZED@"
 msgstr ""
 
 #: resources/app.desktop.in.in:5 resources/app.metainfo.xml.in.in:9
-#: src/ui/dialogs.rs:18
-msgid "An easy and simple vector-based note taking app"
-msgstr "Un'app per prendere appunti facile e semplice basata su vettori"
+#: src/ui/dialogs.rs:19
+msgid "A simple drawing application to create handwritten notes"
+msgstr "Una semplice applicazione di disegno per creare note scritte a mano"
 
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: resources/app.desktop.in.in:15

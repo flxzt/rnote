@@ -63,6 +63,14 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.3.3" date="2022-02-05">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>UX: Adaptive pen selection buttons (support smaller screens)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.3.2" date="2022-02-02">
       <description>
         <p>this release changes:</p>

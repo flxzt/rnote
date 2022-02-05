@@ -257,6 +257,7 @@ impl WorkspaceBrowser {
         filefilter.add_mime_type("image/svg+xml");
         filefilter.add_mime_type("image/png");
         filefilter.add_mime_type("image/jpeg");
+        filefilter.add_mime_type("application/x-xopp");
         filefilter.add_mime_type("application/pdf");
         filefilter.add_mime_type("inode/directory");
         let filefilter_model =

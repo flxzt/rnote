@@ -314,6 +314,11 @@ impl RnoteAppWindow {
                         .set_property("position", PositionType::Left.to_value());
                     appwindow
                         .penssidebar()
+                        .brush_page()
+                        .styleconfig_menubutton()
+                        .set_direction(ArrowType::Right);
+                    appwindow
+                        .penssidebar()
                         .shaper_page()
                         .roughconfig_menubutton()
                         .set_direction(ArrowType::Right);
@@ -394,6 +399,11 @@ impl RnoteAppWindow {
                         .shaper_page()
                         .fill_colorpicker()
                         .set_property("position", PositionType::Right.to_value());
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .styleconfig_menubutton()
+                        .set_direction(ArrowType::Left);
                     appwindow
                         .penssidebar()
                         .shaper_page()

@@ -52,6 +52,8 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 
 ## Pitfalls & known issues
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+* odd location for current file: when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
+    Again, granting them in Flatseal fixes this issue.
 
 ## File Format
 The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.

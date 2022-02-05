@@ -91,7 +91,7 @@ mod imp {
 use crate::{ui::appmenu::AppMenu, ui::appwindow::RnoteAppWindow, ui::canvasmenu::CanvasMenu};
 
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, Image, Label, Revealer,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, Label, Revealer,
     ToggleButton, Widget,
 };
 
@@ -124,10 +124,6 @@ impl MainHeader {
         imp::MainHeader::from_instance(self)
             .main_title_unsaved_indicator
             .get()
-    }
-
-    pub fn header_icon_image(&self) -> Image {
-        imp::MainHeader::from_instance(self).header_icon_image.get()
     }
 
     pub fn menus_box(&self) -> gtk4::Box {

@@ -37,11 +37,12 @@
                     </layout>
                     <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
                     <property name="transition_duration">300</property>
+                    <property name="reveal-child">false</property>
                     <child>
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="AdwClamp" id="pens_toggles_clamp">
+                          <object class="AdwClamp" id="narrow_pens_toggles_clamp">
                             <property name="margin-start">6</property>
                             <property name="margin-end">6</property>
                             <property name="maximum-size">600</property>
@@ -234,7 +235,6 @@
                         <property name="halign">start</property>
                         <property name="vexpand">true</property>
                         <property name="valign">fill</property>
-                        <property name="margin-start">0</property>
                         <property name="margin-end">2</property>
                       </object>
                     </child>
@@ -246,7 +246,6 @@
                         <property name="vexpand">true</property>
                         <property name="valign">fill</property>
                         <property name="margin-start">2</property>
-                        <property name="margin-end">0</property>
                       </object>
                     </child>
                   </object>
@@ -267,8 +266,6 @@
                           <object class="GtkBox">
                             <property name="hexpand">true</property>
                             <property name="halign">fill</property>
-                            <property name="margin-start">24</property>
-                            <property name="margin-end">24</property>
                             <child>
                               <object class="AdwViewSwitcherTitle" id="flap_switcher_title">
                                 <property name="stack">flap_stack</property>
@@ -282,7 +279,6 @@
                           <object class="GtkBox" id="flap_menus_box">
                             <property name="spacing">6</property>
                             <property name="halign">end</property>
-                            <property name="margin-end">12</property>
                           </object>
                         </child>
                       </object>

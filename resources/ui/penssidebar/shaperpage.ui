@@ -13,14 +13,12 @@
       <object class="GtkImage">
         <property name="icon_name">pen-shaper-symbolic</property>
         <property name="margin-top">9</property>
-        <property name="margin-bottom">3</property>
+        <property name="margin-bottom">9</property>
       </object>
     </child>
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
       </object>
     </child>
     <child>
@@ -172,8 +170,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
       </object>
     </child>
     <child>
@@ -228,8 +224,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
       </object>
     </child>
     <child>
@@ -243,14 +237,13 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
       </object>
     </child>
     <child>
       <object class="GtkImage">
         <property name="icon_name">stroke-color-symbolic</property>
-        <property name="margin_bottom">6</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
       </object>
     </child>
     <child>
@@ -262,8 +255,6 @@
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
       </object>
     </child>
     <child>
@@ -277,8 +268,9 @@
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkImage">
-                <property name="margin_bottom">6</property>
                 <property name="icon_name">fill-color-symbolic</property>
+                <property name="margin-top">6</property>
+                <property name="margin-bottom">6</property>
               </object>
             </child>
             <child>

@@ -7,8 +7,6 @@
     </property>
     <child>
       <object class="GtkBox" id="main_titlebox">
-        <property name="margin-start">6</property>
-        <property name="margin-end">6</property>
         <child>
           <object class="GtkLabel" id="main_title_unsaved_indicator">
             <property name="label">•</property>
@@ -31,7 +29,7 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
-            <property name="width_request">42</property>
+            <property name="width_request">46</property>
             <property name="margin-start">6</property>
             <property name="margin-end">6</property>
             <child>
@@ -59,8 +57,6 @@
         </child>
         <child type="start">
           <object class="GtkBox" id="quickactions_box">
-            <property name="margin-start">0</property>
-            <property name="margin-end">24</property>
             <child>
               <object class="GtkRevealer" id="pageedit_revealer">
                 <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>
@@ -69,7 +65,7 @@
                   <object class="GtkBox">
                     <property name="homogeneous">true</property>
                     <property name="spacing">6</property>
-                    <property name="margin-end">24</property>
+                    <property name="margin-end">12</property>
                     <child>
                       <object class="GtkButton" id="add_page_button">
                         <property name="icon_name">add-page-symbolic</property>
@@ -103,10 +99,6 @@
         <child type="end">
           <object class="GtkBox" id="menus_box">
             <property name="spacing">6</property>
-            <property name="margin-top">0</property>
-            <property name="margin-bottom">0</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">6</property>
             <child>
               <object class="CanvasMenu" id="canvasmenu"></object>
             </child>
@@ -121,10 +113,9 @@
             <property name="switch-threshold-policy">minimum</property>
             <child>
               <object class="AdwClamp" id="pens_toggles_clamp">
-                <property name="margin-start">6</property>
-                <property name="margin-end">6</property>
                 <property name="maximum-size">500</property>
                 <property name="tightening-threshold">450</property>
+                <property name="margin-end">24</property>
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
                 <property name="valign">fill</property>

@@ -4,7 +4,7 @@ pub mod format;
 use std::sync::{Arc, RwLock};
 
 use crate::compose::color::Color;
-use crate::compose::shapes;
+use crate::compose::{shapes, geometry};
 use crate::compose::smooth::SmoothOptions;
 use crate::compose::transformable::{Transform, Transformable};
 use crate::pens::brush::{Brush, BrushStyle};
@@ -211,9 +211,12 @@ impl Sheet {
 
                 // import images
                 for image in layers.images.into_iter() {
-                    let bounds = AABB::new(
-                        na::point![image.left, image.top],
-                        na::point![image.right, image.bottom],
+                    let bounds = geometry::aabb_translate(
+                        AABB::new(
+                            na::point![image.left, image.top],
+                            na::point![image.right, image.bottom],
+                        ),
+                        na::vector![0.0, y_offset],
                     );
 
                     let intrinsic_size =

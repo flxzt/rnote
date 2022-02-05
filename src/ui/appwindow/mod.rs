@@ -142,6 +142,10 @@ mod imp {
 
             let _windowsettings = obj.settings();
 
+            if config::PROFILE == "devel" {
+                obj.add_css_class("devel");
+            }
+
             // Load the application css
             let css = CssProvider::new();
             css.load_from_resource((String::from(config::APP_IDPATH) + "ui/custom.css").as_str());

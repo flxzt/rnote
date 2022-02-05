@@ -32,6 +32,10 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         .version((String::from(config::APP_VERSION) + config::APP_VERSION_SUFFIX).as_str())
         .build();
 
+        if config::PROFILE == "devel" {
+            aboutdialog.add_css_class("devel");
+        }
+
     aboutdialog.show();
 }
 
@@ -41,6 +45,10 @@ pub fn dialog_keyboard_shortcuts(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/shortcuts.ui").as_str());
     let dialog_shortcuts: ShortcutsWindow = builder.object("shortcuts_window").unwrap();
+
+    if config::PROFILE == "devel" {
+        dialog_shortcuts.add_css_class("devel");
+    }
 
     dialog_shortcuts.set_transient_for(Some(appwindow));
     dialog_shortcuts.show();

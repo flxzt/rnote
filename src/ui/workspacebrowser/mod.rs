@@ -252,6 +252,7 @@ impl WorkspaceBrowser {
         });
         let filefilter = FileFilter::new();
         filefilter.add_pattern("*.rnote");
+        filefilter.add_pattern("*.xopp");
         filefilter.add_pattern("*.svg");
         filefilter.add_mime_type("image/svg+xml");
         filefilter.add_mime_type("image/png");

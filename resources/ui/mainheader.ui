@@ -57,6 +57,7 @@
         </child>
         <child type="start">
           <object class="GtkBox" id="quickactions_box">
+            <property name="margin-end">12</property>
             <child>
               <object class="GtkRevealer" id="pageedit_revealer">
                 <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>

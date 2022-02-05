@@ -99,10 +99,10 @@ To be able to open and export older files that are incompatible with the newest 
 
 If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
-<div align="start">
-        <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" width="300">
-        <img alt="Pikachu" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/pikachu.png" width="300">
-        <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" width="300">
+<div align="center" spacing="20px">
+        <img alt="Pikachu" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/pikachu.png" height="400">
+        <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" height="400">
+        <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" height="400">
 </div><br>
 
 # Building, contributing

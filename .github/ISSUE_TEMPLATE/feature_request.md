@@ -9,6 +9,8 @@ assignees: ''
 
 **Please submit only one feature request in one issue!**
 
+If it is UX / UI related, don't post how a single aspect of the UI should be changed, but rather in which use case you felt the UI is lacking or should be improved.
+
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 

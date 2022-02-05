@@ -5,7 +5,7 @@
     <property name="layout-manager">
       <object class="GtkBinLayout"></object>
     </property>
-    <property name="width-request">500</property>
+    <property name="width-request">400</property>
     <style>
       <class name="settings_panel" />
       <class name="background" />
@@ -27,7 +27,7 @@
             <property name="margin-start">24</property>
             <property name="margin-end">24</property>
             <property name="maximum-size">800</property>
-            <property name="tightening-threshold">700</property>
+            <property name="tightening-threshold">600</property>
             <property name="hexpand">false</property>
             <property name="vexpand">true</property>
             <property name="valign">fill</property>

@@ -26,6 +26,7 @@
         <file compressed="true">icons/scalable/actions/settings-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-undo-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-redo-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/sheet-save-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvasmenu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-trash-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>

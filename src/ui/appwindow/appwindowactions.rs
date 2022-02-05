@@ -24,6 +24,8 @@ impl RnoteAppWindow {
     pub fn setup_actions(&self) {
         let action_close_active = gio::SimpleAction::new("close-active", None);
         self.add_action(&action_close_active);
+        let action_fullscreen = gio::PropertyAction::new("fullscreen", self, "fullscreened");
+        self.add_action(&action_fullscreen);
         let action_about = gio::SimpleAction::new("about", None);
         self.add_action(&action_about);
         let action_keyboard_shortcuts_dialog = gio::SimpleAction::new("keyboard-shortcuts", None);
@@ -1029,6 +1031,7 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         app.set_accels_for_action("win.close-active", &["<Ctrl>w"]);
+        app.set_accels_for_action("win.fullscreen", &["F11"]);
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
         app.set_accels_for_action("win.open-appmenu", &["F10"]);

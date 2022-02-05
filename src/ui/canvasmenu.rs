@@ -69,7 +69,7 @@ mod imp {
 use crate::ui::appwindow::RnoteAppWindow;
 
 use gtk4::{gio, MenuButton, PopoverMenu, Widget};
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, ToggleButton};
+use gtk4::{glib, prelude::*, subclass::prelude::*, Button, ToggleButton};
 
 glib::wrapper! {
     pub struct CanvasMenu(ObjectSubclass<imp::CanvasMenu>)
@@ -129,8 +129,6 @@ impl CanvasMenu {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let zoomreset_button = self.imp().zoom_reset_button.get();
-
         self.imp()
             .lefthanded_toggle
             .bind_property("active", appwindow, "righthanded")
@@ -148,29 +146,5 @@ impl CanvasMenu {
                     | glib::BindingFlags::BIDIRECTIONAL,
             )
             .build();
-
-        self.imp().zoom_fit_width_button.connect_clicked(
-            clone!(@weak appwindow => move |_zoom_fit_width_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-fit-width", None);
-            }),
-        );
-
-        self.imp().zoom_reset_button.connect_clicked(
-            clone!(@weak appwindow => move |_zoomreset_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-reset", None);
-            }),
-        );
-
-        self.imp().zoom_in_button.connect_clicked(
-            clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_in_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-in", None);
-            }),
-        );
-
-        self.imp().zoom_out_button.connect_clicked(
-            clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_out_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-out", None);
-            }),
-        );
     }
 }

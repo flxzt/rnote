@@ -24,6 +24,7 @@
         <file compressed="true">icons/scalable/apps/rnote.svg</file>
         <file compressed="true">icons/scalable/apps/rnote-devel.svg</file>
         <file compressed="true">icons/scalable/actions/settings-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/appwindow-fullscreen-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-undo-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-redo-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/sheet-save-symbolic.svg</file>

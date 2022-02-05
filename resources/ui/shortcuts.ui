@@ -39,6 +39,12 @@
                 <property name="accelerator">F10</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" context="shortcut window" translatable="yes">Toggle fullscreen</property>
+                <property name="accelerator">F11</property>
+              </object>
+            </child>
           </object>
         </child>
         <child>

@@ -119,11 +119,13 @@
                     <property name="icon_name">zoom-out-symbolic</property>
                     <property name="width_request">50</property>
                     <property name="hexpand">false</property>
+                    <property name="action-name">win.zoom-out</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="zoom_reset_button">
                     <property name="hexpand">true</property>
+                    <property name="action-name">win.zoom-reset</property>
                   </object>
                 </child>
                 <child>
@@ -131,6 +133,7 @@
                     <property name="icon_name">zoom-in-symbolic</property>
                     <property name="width_request">50</property>
                     <property name="hexpand">false</property>
+                    <property name="action-name">win.zoom-in</property>
                   </object>
                 </child>
               </object>
@@ -144,6 +147,7 @@
                 <property name="hexpand">false</property>
                 <property name="icon_name">zoom-fit-width-symbolic</property>
                 <property name="tooltip_text" translatable="yes">Zoom to fit sheet width</property>
+                <property name="action-name">win.zoom-fit-width</property>
               </object>
             </child>
             <child>
@@ -154,7 +158,6 @@
                 <layout>
                   <property name="column">0</property>
                   <property name="row">1</property>
-                  <property name="column-span">2</property>
                 </layout>
                 <style>
                   <class name="linked" />
@@ -173,6 +176,18 @@
                     <property name="hexpand">true</property>
                   </object>
                 </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="fullscreen_toggle">
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">1</property>
+                </layout>
+                <property name="hexpand">false</property>
+                <property name="icon_name">appwindow-fullscreen-symbolic</property>
+                <property name="tooltip_text" translatable="yes">Toggle fullscreen</property>
+                <property name="action-name">win.fullscreen</property>
               </object>
             </child>
           </object>

@@ -79,3 +79,7 @@
 .dark_theme_toggle:checked {
     border-color: steelblue;
 }
+
+.narrow_pens_toggles_box {
+    background: linear-gradient(to right, #00000008 0%, #00000000 10%, #00000000 90%, #00000008 100%);
+}

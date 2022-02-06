@@ -41,6 +41,9 @@
                     <child>
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
+                        <style>
+                          <class name="narrow_pens_toggles_box"/>
+                        </style>
                         <child>
                           <object class="AdwClamp" id="narrow_pens_toggles_clamp">
                             <property name="margin-start">6</property>

@@ -60,32 +60,38 @@
           <property name="row">2</property>
         </layout>
         <property name="orientation">horizontal</property>
+        <property name="spacing">6</property>
         <property name="margin_start">6</property>
         <property name="margin_end">6</property>
-        <property name="margin_top">6</property>
-        <property name="margin_bottom">6</property>
         <property name="hexpand">true</property>
         <property name="vexpand">false</property>
         <property name="halign">fill</property>
         <property name="valign">center</property>
         <property name="height-request">35</property>
         <child>
+          <object class="GtkButton" id="open_workspace_button">
+            <property name="margin_top">6</property>
+            <property name="margin_bottom">6</property>
+            <property name="icon_name">folder-open-symbolic</property>
+            <property name="width_request">52</property>
+            <property name="tooltip_text" translatable="yes">Change workspace directory</property>
+          </object>
+        </child>
+        <child>
           <object class="GtkBox">
             <style>
-              <class name="linked"/>
+              <class name="linked" />
             </style>
+            <property name="margin_top">6</property>
+            <property name="margin_bottom">6</property>
             <child>
               <object class="GtkButton" id="workspace_pathup_button">
                 <property name="icon_name">arrow1-up-symbolic</property>
-                <property name="hexpand">false</property>
-                <property name="halign">fill</property>
                 <property name="width-request">20</property>
               </object>
             </child>
             <child>
               <object class="GtkEntry" id="workspace_pathentry">
-                <property name="margin_start">0</property>
-                <property name="margin_end">6</property>
                 <property name="vexpand">false</property>
                 <property name="valign">center</property>
                 <property name="hexpand">true</property>
@@ -101,15 +107,26 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="open_workspace_button">
-            <property name="icon_name">folder-open-symbolic</property>
-            <property name="margin_start">0</property>
-            <property name="margin_end">0</property>
-            <property name="halign">fill</property>
-            <property name="width_request">48</property>
-            <property name="vexpand">false</property>
-            <property name="valign">center</property>
-            <property name="tooltip_text" translatable="yes">Change workspace directory</property>
+          <object class="GtkBox" id="flap_close_buttonbox">
+            <property name="orientation">horizontal</property>
+            <property name="spacing">6</property>
+            <property name="visible">false</property>
+            <child>
+              <object class="GtkSeparator" id="flap_close_buttonseparator">
+                <property name="orientation">vertical</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="flap_close_button">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin-start">3</property>
+                <property name="margin-end">3</property>
+                <property name="icon_name">arrow1-right-symbolic</property>
+                <property name="width_request">52</property>
+                <property name="tooltip_text" translatable="yes">Close the folded flap</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

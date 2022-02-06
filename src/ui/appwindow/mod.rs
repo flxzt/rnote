@@ -10,7 +10,7 @@ mod imp {
         gdk, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
         FileChooserNative, Grid, Inhibit, PackType, ScrolledWindow, StyleContext, ToggleButton,
     };
-    use gtk4::{gio, GestureDrag, PropagationPhase, Separator, Revealer};
+    use gtk4::{gio, GestureDrag, PropagationPhase, Revealer, Separator};
     use once_cell::sync::Lazy;
 
     use crate::audioplayer::RnoteAudioPlayer;
@@ -318,10 +318,13 @@ mod imp {
                     if appwindow.mainheader().appmenu().parent().is_some() {
                         appwindow.mainheader().appmenu().unparent();
                     }
+
                     if flap.reveals_flap() && !flap.is_folded() {
                         appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
+                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(false);
                     } else {
                         appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
+                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(true);
                     }
 
                     if flap.is_folded() {
@@ -345,10 +348,13 @@ mod imp {
                     if appwindow.mainheader().appmenu().parent().is_some() {
                         appwindow.mainheader().appmenu().unparent();
                     }
+
                     if flap.reveals_flap() && !flap.is_folded() {
                         appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
+                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(false);
                     } else {
                         appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
+                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(true);
                     }
 
                     if flap.flap_position() == PackType::Start {
@@ -361,17 +367,29 @@ mod imp {
                 }));
 
             self.flap.connect_flap_position_notify(
-                clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box, @weak workspace_headerbar, @strong expanded_revealed => move |flap| {
+                clone!(@weak flap_resizer_box, @weak flap_resizer, @weak flap_box, @weak workspace_headerbar, @strong expanded_revealed, @weak obj as appwindow => move |flap| {
                     if flap.flap_position() == PackType::Start {
                         workspace_headerbar.set_show_start_title_buttons(flap.reveals_flap());
                         workspace_headerbar.set_show_end_title_buttons(false);
 
                         flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
+
+                        appwindow.workspacebrowser().workspace_controlbox().remove(&appwindow.workspacebrowser().flap_close_buttonbox());
+                        appwindow.workspacebrowser().workspace_controlbox().prepend(&appwindow.workspacebrowser().flap_close_buttonbox());
+                        appwindow.workspacebrowser().flap_close_buttonbox().remove(&appwindow.workspacebrowser().flap_close_buttonseparator());
+                        appwindow.workspacebrowser().flap_close_buttonbox().append(&appwindow.workspacebrowser().flap_close_buttonseparator());
+                        appwindow.workspacebrowser().flap_close_button().set_icon_name("arrow1-left-symbolic");
                     } else if flap.flap_position() == PackType::End {
                         workspace_headerbar.set_show_start_title_buttons(false);
                         workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
 
                         flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
+
+                        appwindow.workspacebrowser().workspace_controlbox().remove(&appwindow.workspacebrowser().flap_close_buttonbox());
+                        appwindow.workspacebrowser().workspace_controlbox().append(&appwindow.workspacebrowser().flap_close_buttonbox());
+                        appwindow.workspacebrowser().flap_close_buttonbox().remove(&appwindow.workspacebrowser().flap_close_buttonseparator());
+                        appwindow.workspacebrowser().flap_close_buttonbox().prepend(&appwindow.workspacebrowser().flap_close_buttonseparator());
+                        appwindow.workspacebrowser().flap_close_button().set_icon_name("arrow1-right-symbolic");
                     }
                 }),
             );
@@ -584,27 +602,39 @@ impl RnoteAppWindow {
     }
 
     pub fn narrow_marker_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self).narrow_marker_toggle.get()
+        imp::RnoteAppWindow::from_instance(self)
+            .narrow_marker_toggle
+            .get()
     }
 
     pub fn narrow_brush_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self).narrow_brush_toggle.get()
+        imp::RnoteAppWindow::from_instance(self)
+            .narrow_brush_toggle
+            .get()
     }
 
     pub fn narrow_shaper_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self).narrow_shaper_toggle.get()
+        imp::RnoteAppWindow::from_instance(self)
+            .narrow_shaper_toggle
+            .get()
     }
 
     pub fn narrow_eraser_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self).narrow_eraser_toggle.get()
+        imp::RnoteAppWindow::from_instance(self)
+            .narrow_eraser_toggle
+            .get()
     }
 
     pub fn narrow_selector_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self).narrow_selector_toggle.get()
+        imp::RnoteAppWindow::from_instance(self)
+            .narrow_selector_toggle
+            .get()
     }
 
     pub fn narrow_tools_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self).narrow_tools_toggle.get()
+        imp::RnoteAppWindow::from_instance(self)
+            .narrow_tools_toggle
+            .get()
     }
 
     pub fn penssidebar(&self) -> PensSideBar {

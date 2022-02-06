@@ -285,7 +285,7 @@ impl RnoteAppWindow {
 
                     appwindow
                         .canvas_scroller()
-                        .set_window_placement(CornerType::BottomRight);
+                        .set_window_placement(CornerType::BottomLeft);
                     appwindow
                         .sidebar_scroller()
                         .set_window_placement(CornerType::TopRight);
@@ -372,7 +372,7 @@ impl RnoteAppWindow {
 
                     appwindow
                         .canvas_scroller()
-                        .set_window_placement(CornerType::BottomLeft);
+                        .set_window_placement(CornerType::BottomRight);
                     appwindow
                         .sidebar_scroller()
                         .set_window_placement(CornerType::TopLeft);

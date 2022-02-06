@@ -263,7 +263,7 @@ impl RnoteAppWindow {
 
                     appwindow
                         .mainheader()
-                        .canvasmenu()
+                        .appmenu()
                         .righthanded_toggle()
                         .set_active(true);
                     appwindow
@@ -354,7 +354,7 @@ impl RnoteAppWindow {
 
                     appwindow
                         .mainheader()
-                        .canvasmenu()
+                        .appmenu()
                         .lefthanded_toggle()
                         .set_active(true);
                     appwindow

@@ -1,7 +1,7 @@
 mod imp {
     use gtk4::{
         gio::MenuModel, glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
-        MenuButton, PopoverMenu, ToggleButton,
+        MenuButton, PopoverMenu,
     };
 
     #[derive(Default, Debug, CompositeTemplate)]
@@ -21,10 +21,6 @@ mod imp {
         pub zoom_reset_button: TemplateChild<Button>,
         #[template_child]
         pub zoom_fit_width_button: TemplateChild<Button>,
-        #[template_child]
-        pub lefthanded_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub righthanded_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -69,7 +65,7 @@ mod imp {
 use crate::ui::appwindow::RnoteAppWindow;
 
 use gtk4::{gio, MenuButton, PopoverMenu, Widget};
-use gtk4::{glib, prelude::*, subclass::prelude::*, Button, ToggleButton};
+use gtk4::{glib, subclass::prelude::*, Button};
 
 glib::wrapper! {
     pub struct CanvasMenu(ObjectSubclass<imp::CanvasMenu>)
@@ -118,33 +114,5 @@ impl CanvasMenu {
             .get()
     }
 
-    pub fn lefthanded_toggle(&self) -> ToggleButton {
-        imp::CanvasMenu::from_instance(self).lefthanded_toggle.get()
-    }
-
-    pub fn righthanded_toggle(&self) -> ToggleButton {
-        imp::CanvasMenu::from_instance(self)
-            .righthanded_toggle
-            .get()
-    }
-
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.imp()
-            .lefthanded_toggle
-            .bind_property("active", appwindow, "righthanded")
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
-            .build();
-        self.imp()
-            .righthanded_toggle
-            .bind_property("active", appwindow, "righthanded")
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL,
-            )
-            .build();
-    }
+    pub fn init(&self, _appwindow: &RnoteAppWindow) {}
 }

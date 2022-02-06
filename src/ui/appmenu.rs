@@ -19,6 +19,10 @@ mod imp {
         pub light_theme_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub dark_theme_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub lefthanded_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub righthanded_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -106,6 +110,16 @@ impl AppMenu {
         imp::AppMenu::from_instance(self).dark_theme_toggle.get()
     }
 
+    pub fn lefthanded_toggle(&self) -> ToggleButton {
+        imp::AppMenu::from_instance(self).lefthanded_toggle.get()
+    }
+
+    pub fn righthanded_toggle(&self) -> ToggleButton {
+        imp::AppMenu::from_instance(self)
+            .righthanded_toggle
+            .get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let app = appwindow
             .application()
@@ -167,6 +181,21 @@ impl AppMenu {
                     None
                 }
             })
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
+
+        self.imp()
+            .lefthanded_toggle
+            .bind_property("active", appwindow, "righthanded")
+            .flags(
+                glib::BindingFlags::SYNC_CREATE
+                    | glib::BindingFlags::BIDIRECTIONAL
+                    | glib::BindingFlags::INVERT_BOOLEAN,
+            )
+            .build();
+        self.imp()
+            .righthanded_toggle
+            .bind_property("active", appwindow, "righthanded")
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
             .build();
     }

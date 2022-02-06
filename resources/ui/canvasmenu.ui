@@ -94,7 +94,7 @@
         </menu>
 
         <child type="canvas_quickcontrols_attr">
-          <object class="GtkGrid" id="zoomcontrols">
+          <object class="GtkGrid">
             <property name="hexpand">false</property>
             <property name="vexpand">false</property>
             <property name="margin-top">6</property>
@@ -105,10 +105,6 @@
             <property name="column-spacing">6</property>
             <child>
               <object class="GtkBox">
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">0</property>
-                </layout>
                 <style>
                   <class name="linked" />
                 </style>
@@ -140,54 +136,10 @@
             </child>
             <child>
               <object class="GtkButton" id="zoom_fit_width_button">
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">0</property>
-                </layout>
                 <property name="hexpand">false</property>
                 <property name="icon_name">zoom-fit-width-symbolic</property>
                 <property name="tooltip_text" translatable="yes">Zoom to fit sheet width</property>
                 <property name="action-name">win.zoom-fit-width</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="homogeneous">true</property>
-                <property name="hexpand">true</property>
-                <property name="halign">fill</property>
-                <layout>
-                  <property name="column">0</property>
-                  <property name="row">1</property>
-                </layout>
-                <style>
-                  <class name="linked" />
-                </style>
-                <child>
-                  <object class="GtkToggleButton" id="righthanded_toggle">
-                    <property name="icon_name">dock-left-symbolic</property>
-                    <property name="hexpand">true</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="lefthanded_toggle">
-                    <property name="group">righthanded_toggle</property>
-                    <property name="active">true</property>
-                    <property name="icon_name">dock-right-symbolic</property>
-                    <property name="hexpand">true</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="fullscreen_toggle">
-                <layout>
-                  <property name="column">1</property>
-                  <property name="row">1</property>
-                </layout>
-                <property name="hexpand">false</property>
-                <property name="icon_name">appwindow-fullscreen-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Toggle fullscreen</property>
-                <property name="action-name">win.fullscreen</property>
               </object>
             </child>
           </object>

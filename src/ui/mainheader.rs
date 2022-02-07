@@ -312,8 +312,10 @@ impl MainHeader {
                 None::<&gio::Cancellable>,
             ) {
                 Ok(fileinfo) => {
-                    self.main_title()
-                        .set_title(fileinfo.display_name().as_str());
+                    let title = fileinfo.name().with_extension("");
+
+                    self.main_title().set_title(&title.to_string_lossy());
+
                     if let Some(mut path) = file.path() {
                         if path.pop() {
                             self.main_title()

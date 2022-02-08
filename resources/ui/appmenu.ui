@@ -125,7 +125,8 @@
                     <property name="halign">center</property>
                     <property name="valign">start</property>
                     <style>
-                      <class name="default_theme_toggle" />
+                      <class name="theme_selector"/>
+                      <class name="default_theme" />
                       <class name="circular" />
                     </style>
                   </object>
@@ -139,7 +140,8 @@
                     <property name="valign">start</property>
                     <property name="group">default_theme_toggle</property>
                     <style>
-                      <class name="light_theme_toggle" />
+                      <class name="theme_selector"/>
+                      <class name="light_theme" />
                       <class name="circular" />
                     </style>
                   </object>
@@ -153,7 +155,8 @@
                     <property name="valign">start</property>
                     <property name="group">default_theme_toggle</property>
                     <style>
-                      <class name="dark_theme_toggle" />
+                      <class name="theme_selector"/>
+                      <class name="dark_theme" />
                       <class name="circular" />
                     </style>
                   </object>

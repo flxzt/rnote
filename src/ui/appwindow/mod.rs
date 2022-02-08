@@ -148,7 +148,7 @@ mod imp {
 
             // Load the application css
             let css = CssProvider::new();
-            css.load_from_resource((String::from(config::APP_IDPATH) + "ui/custom.css").as_str());
+            css.load_from_resource((String::from(config::APP_IDPATH) + "ui/style.css").as_str());
 
             let display = gdk::Display::default().unwrap();
             StyleContext::add_provider_for_display(

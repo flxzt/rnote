@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
     <gresource prefix="@APP_IDPATH@">
-        <file>ui/custom.css</file>
+        <file>ui/style.css</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appwindow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/shortcuts.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/appmenu.ui</file>

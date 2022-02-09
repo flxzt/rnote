@@ -55,6 +55,10 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 * odd location for current file: when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
     Again, granting them in Flatseal fixes this issue.
 
+## Community
+If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  
+There is also the [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org) chat room.  
+
 ## File Format
 The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
 

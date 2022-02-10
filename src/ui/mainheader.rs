@@ -248,7 +248,7 @@ impl MainHeader {
 
         self.imp().resize_to_format_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
-                appwindow.canvas().resize_to_format();
+                appwindow.canvas().resize_sheet_to_fit_strokes();
                 appwindow.canvas().update_background_rendernode(true);
             }),
         );

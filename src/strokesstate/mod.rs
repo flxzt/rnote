@@ -219,7 +219,7 @@ impl StrokesState {
 
                                 appwindow.mainheader().selector_toggle().set_active(true);
 
-                                appwindow.canvas().resize_to_format();
+                                appwindow.canvas().resize_sheet_to_fit_strokes();
                                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                             }
                             StrokeStyle::BitmapImage(bitmapimage) => {
@@ -242,18 +242,18 @@ impl StrokesState {
 
                                 appwindow.mainheader().selector_toggle().set_active(true);
 
-                                appwindow.canvas().resize_to_format();
+                                appwindow.canvas().resize_sheet_to_fit_strokes();
                                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                             }
                         }
+
+                        appwindow.canvas().queue_resize();
+                        appwindow.canvas().queue_draw();
                     }
                     StateTask::Quit => {
                         return glib::Continue(false);
                     }
                 }
-
-                appwindow.canvas().queue_resize();
-                appwindow.canvas().queue_draw();
 
                 glib::Continue(true)
             }),
@@ -545,8 +545,32 @@ impl StrokesState {
         });
     }
 
+    /// Calculates the width needed to fit all strokes
+    pub fn calc_width(&self) -> f64 {
+        let new_width = if let Some(stroke) = self
+            .strokes
+            .iter()
+            .filter_map(|(key, stroke)| {
+                if let Some(trash_comp) = self.trash_components.get(key) {
+                    if !trash_comp.trashed {
+                        return Some(stroke);
+                    }
+                }
+                None
+            })
+            .max_by_key(|&stroke| stroke.bounds().maxs[0].round() as i32)
+        {
+            // max_by_key() returns the element, so we need to extract the width again
+            stroke.bounds().maxs[0]
+        } else {
+            0.0
+        };
+
+        new_width
+    }
+
     /// Calculates the height needed to fit all strokes
-    pub fn calc_height(&self) -> u32 {
+    pub fn calc_height(&self) -> f64 {
         let new_height = if let Some(stroke) = self
             .strokes
             .iter()
@@ -558,12 +582,12 @@ impl StrokesState {
                 }
                 None
             })
-            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as u32)
+            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
         {
             // max_by_key() returns the element, so we need to extract the height again
-            stroke.bounds().maxs[1].round() as u32
+            stroke.bounds().maxs[1]
         } else {
-            0
+            0.0
         };
 
         new_height
@@ -587,6 +611,12 @@ impl StrokesState {
         }
 
         None
+    }
+
+    pub fn strokes_bounds(&self, keys: &[StrokeKey]) -> Vec<AABB> {
+        keys.iter()
+            .filter_map(|&key| Some(self.strokes.get(key)?.bounds()))
+            .collect::<Vec<AABB>>()
     }
 
     /// Generates a Svg for all strokes as drawn onto the canvas without xml headers or svg roots. Does not include the selection.

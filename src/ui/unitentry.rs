@@ -271,7 +271,7 @@ impl UnitEntry {
         self.set_property("dpi", dpi.to_value());
     }
 
-    pub fn value_in_px(&self) -> i32 {
+    pub fn value_in_px(&self) -> f64 {
         format::MeasureUnit::convert_measurement(
             self.value(),
             self.unit(),
@@ -279,7 +279,6 @@ impl UnitEntry {
             format::MeasureUnit::Px,
             self.dpi(),
         )
-        .round() as i32
     }
 
     pub fn convert_current_value(&self, desired_unit: format::MeasureUnit) {

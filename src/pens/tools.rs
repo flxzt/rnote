@@ -452,7 +452,7 @@ impl PenBehaviour for Tools {
             }
         }
 
-        appwindow.canvas().resize_endless();
+        appwindow.canvas().update_size_autoexpand();
 
         appwindow.canvas().queue_resize();
         appwindow.canvas().queue_draw();

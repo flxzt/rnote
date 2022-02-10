@@ -135,7 +135,7 @@ impl PenBehaviour for Marker {
                     appwindow.canvas().zoom(),
                 );
 
-            appwindow.canvas().resize_endless();
+            appwindow.canvas().update_size_autoexpand();
         }
     }
 }

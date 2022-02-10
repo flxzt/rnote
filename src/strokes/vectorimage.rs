@@ -103,10 +103,10 @@ impl Transformable for VectorImage {
 }
 
 impl VectorImage {
-    pub const SIZE_X_DEFAULT: i32 = 500;
-    pub const SIZE_Y_DEFAULT: i32 = 500;
-    pub const OFFSET_X_DEFAULT: i32 = 32;
-    pub const OFFSET_Y_DEFAULT: i32 = 32;
+    pub const SIZE_X_DEFAULT: f64 = 500.0;
+    pub const SIZE_Y_DEFAULT: f64 = 500.0;
+    pub const OFFSET_X_DEFAULT: f64 = 32.0;
+    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
 
     pub fn import_from_svg_data(
         svg_data: &str,

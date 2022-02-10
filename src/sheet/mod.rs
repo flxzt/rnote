@@ -4,9 +4,9 @@ pub mod format;
 use std::sync::{Arc, RwLock};
 
 use crate::compose::color::Color;
-use crate::compose::{shapes, geometry};
 use crate::compose::smooth::SmoothOptions;
 use crate::compose::transformable::{Transform, Transformable};
+use crate::compose::{geometry, shapes};
 use crate::pens::brush::{Brush, BrushStyle};
 use crate::render::Renderer;
 use crate::strokes::bitmapimage::{self, BitmapImage};
@@ -20,7 +20,7 @@ use notetakingfileformats::FileFormatSaver;
 
 use self::{background::Background, format::Format};
 
-use gtk4::{gio, glib, graphene, prelude::*, Snapshot};
+use gtk4::{gio, glib, prelude::*, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -29,10 +29,14 @@ use serde::{Deserialize, Serialize};
 pub struct Sheet {
     #[serde(rename = "version")]
     pub version: String,
+    #[serde(rename = "x")]
+    pub x: f64,
+    #[serde(rename = "y")]
+    pub y: f64,
     #[serde(rename = "width")]
-    pub width: u32,
+    pub width: f64,
     #[serde(rename = "height")]
-    pub height: u32,
+    pub height: f64,
     #[serde(rename = "strokes_state")]
     pub strokes_state: StrokesState,
     #[serde(rename = "format")]
@@ -45,6 +49,8 @@ impl Default for Sheet {
     fn default() -> Self {
         Self {
             version: String::from(config::APP_VERSION),
+            x: 0.0,
+            y: 0.0,
             width: Format::default().width,
             height: Format::default().height,
             strokes_state: StrokesState::default(),
@@ -57,45 +63,60 @@ impl Default for Sheet {
 impl Sheet {
     pub fn bounds(&self) -> AABB {
         AABB::new(
-            na::point![0.0, 0.0],
-            na::point![f64::from(self.width), f64::from(self.height)],
+            na::point![self.x, self.y],
+            na::point![self.x + self.width, self.y + self.height],
         )
     }
 
     pub fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
-        if self.format.height > 0 {
-            self.height / self.format.height
+        if self.format.height > 0.0 && self.format.width > 0.0 {
+            (self.width / self.format.width).round() as u32
+                * (self.height / self.format.height).round() as u32
         } else {
             0
         }
     }
 
     pub fn gen_pages_bounds(&self) -> Vec<AABB> {
-        let n_pages = self.calc_n_pages();
         let sheet_bounds = self.bounds();
 
-        let page_width = f64::from(self.format.width);
-        let page_height = f64::from(self.format.height);
+        if self.format.height > 0.0 && self.format.width > 0.0 {
+            geometry::split_aabb_extended_origin_aligned(
+                sheet_bounds,
+                na::vector![self.format.width, self.format.height],
+            )
+        } else {
+            vec![]
+        }
+    }
 
-        (0..n_pages)
-            .map(|i| {
-                AABB::new(
-                    na::point![
-                        sheet_bounds.mins[0],
-                        sheet_bounds.mins[1] + page_height * f64::from(i)
-                    ],
-                    na::point![
-                        sheet_bounds.mins[0] + page_width,
-                        sheet_bounds.mins[1] + page_height * f64::from(i + 1)
-                    ],
-                )
+    pub fn gen_pages_bounds_containing_content(&self) -> Vec<AABB> {
+        let sheet_bounds = self.bounds();
+        let keys = self.strokes_state.keys_sorted_chrono();
+        let strokes_bounds = &self.strokes_state.strokes_bounds(&keys);
+
+        if self.format.height > 0.0 && self.format.width > 0.0 {
+            geometry::split_aabb_extended_origin_aligned(
+                sheet_bounds,
+                na::vector![self.format.width, self.format.height],
+            )
+            .into_iter()
+            .filter(|current_page_bounds| {
+                strokes_bounds
+                    .iter()
+                    .any(|stroke_bounds| stroke_bounds.intersects(&current_page_bounds))
             })
             .collect::<Vec<AABB>>()
+        } else {
+            vec![]
+        }
     }
 
     // a new sheet should always be imported with this method, as to not replace the threadpool, channel handlers, ..
     pub fn import_sheet(&mut self, sheet: Self) {
+        self.x = sheet.x;
+        self.y = sheet.y;
         self.width = sheet.width;
         self.height = sheet.height;
         self.strokes_state.import_strokes_state(sheet.strokes_state);
@@ -104,14 +125,11 @@ impl Sheet {
     }
 
     pub fn draw(&self, zoom: f64, snapshot: &Snapshot, with_borders: bool) {
-        let sheet_bounds_scaled = graphene::Rect::new(
-            0.0,
-            0.0,
-            self.width as f32 * zoom as f32,
-            self.height as f32 * zoom as f32,
-        );
+        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
+            self.bounds(),
+            zoom,
+        )));
 
-        snapshot.push_clip(&sheet_bounds_scaled);
         self.background.draw(snapshot);
 
         if with_borders {
@@ -143,6 +161,7 @@ impl Sheet {
             .iter()
             .map(|page| (page.width, page.height))
             .fold((0_f64, 0_f64), |prev, next| {
+                // Max of width, sum heights
                 (prev.0.max(next.0), prev.1 + next.1)
             });
         let no_pages = xopp_file.xopp_root.pages.len() as u32;
@@ -151,11 +170,13 @@ impl Sheet {
         let mut format = Format::default();
         let mut background = Background::default();
 
-        sheet.width = sheet_width.round() as u32;
-        sheet.height = sheet_height.round() as u32;
+        sheet.x = 0.0;
+        sheet.y = 0.0;
+        sheet.width = sheet_width;
+        sheet.height = sheet_height;
 
-        format.width = sheet_width.round() as u32;
-        format.height = (sheet_height / f64::from(no_pages)).round() as u32;
+        format.width = sheet_width;
+        format.height = sheet_height / f64::from(no_pages);
 
         if let Some(first_page) = xopp_file.xopp_root.pages.get(0) {
             if let xoppformat::XoppBackgroundType::Solid {
@@ -169,6 +190,7 @@ impl Sheet {
         }
 
         // Offsetting as rnote has one global coordinate space
+        let x_offset = 0.0;
         let mut y_offset = 0.0;
 
         for (_page_i, page) in xopp_file.xopp_root.pages.into_iter().enumerate() {
@@ -192,6 +214,7 @@ impl Sheet {
                     };
 
                     let elements = stroke.coords.into_iter().map(|mut coords| {
+                        coords[0] += x_offset;
                         coords[1] += y_offset;
                         // Defaulting to PRESSURE_DEFAULT if width iterator is shorter than the coords vec
                         let pressure = width_iter
@@ -216,7 +239,7 @@ impl Sheet {
                             na::point![image.left, image.top],
                             na::point![image.right, image.bottom],
                         ),
-                        na::vector![0.0, y_offset],
+                        na::vector![x_offset, y_offset],
                     );
 
                     let intrinsic_size =
@@ -246,6 +269,7 @@ impl Sheet {
                 }
             }
 
+            // Only add to y offset, results in vertical pages
             y_offset += page.height;
         }
 
@@ -283,7 +307,7 @@ impl Sheet {
 
         // xopp spec needs at least one page in vec, but its fine since pages_bounds() always produces at least one
         let pages = self
-            .gen_pages_bounds()
+            .gen_pages_bounds_containing_content()
             .iter()
             .map(|&page_bounds| {
                 let page_keys = self.strokes_state.stroke_keys_intersect_bounds(page_bounds);
@@ -442,9 +466,9 @@ impl Sheet {
     pub fn export_sheet_in_pdf_bytes(&self, title: &str) -> Result<Vec<u8>, anyhow::Error> {
         let sheet_svgs = self.gen_svgs()?;
         let sheet_bounds = self.bounds();
-        let n_pages = self.calc_n_pages();
         let format_size = na::vector![f64::from(self.format.width), f64::from(self.format.height)];
 
+        let pages_bounds = self.gen_pages_bounds_containing_content();
         let surface =
             cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())?;
 
@@ -458,13 +482,11 @@ impl Sheet {
         {
             let cx = cairo::Context::new(&surface)?;
 
-            for _ in 0..n_pages {
+            for page_bounds in pages_bounds {
+                cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
                 render::draw_svgs_to_cairo_context(1.0, &sheet_svgs, sheet_bounds, &cx)?;
-
-                // translations stack on top of each other in every iteration
-                cx.translate(0.0, -format_size[1]);
-
                 cx.show_page()?;
+                cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
             }
         }
         let data = *surface

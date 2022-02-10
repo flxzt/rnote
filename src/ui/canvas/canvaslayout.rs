@@ -9,7 +9,7 @@ mod imp {
     use gtk4::Widget;
 
     use crate::compose::geometry;
-    use crate::ui::canvas::Canvas;
+    use crate::ui::canvas::{Canvas, ExpandMode};
     use crate::ui::selectionmodifier::SelectionModifier;
 
     #[derive(Debug, Default)]
@@ -39,17 +39,15 @@ mod imp {
             let total_zoom = canvas.zoom() * canvas.temporary_zoom();
 
             if orientation == Orientation::Vertical {
-                let natural_height = ((2.0 * f64::from(canvas.sheet_margin())
-                    + f64::from(canvas.sheet().borrow().height))
+                let natural_height = ((canvas.sheet().borrow().height + 2.0 * Canvas::SHADOW_WIDTH)
                     * total_zoom)
-                    .round() as i32;
+                    .ceil() as i32;
 
                 (0, natural_height, -1, -1)
             } else {
-                let natural_width = ((2.0 * f64::from(canvas.sheet_margin())
-                    + f64::from(canvas.sheet().borrow().width))
+                let natural_width = ((canvas.sheet().borrow().width + 2.0 * Canvas::SHADOW_WIDTH)
                     * total_zoom)
-                    .round() as i32;
+                    .ceil() as i32;
 
                 (0, natural_width, -1, -1)
             }
@@ -63,37 +61,77 @@ mod imp {
             height: i32,
             _baseline: i32,
         ) {
+            let width = f64::from(width);
+            let height = f64::from(height);
             let canvas = widget.downcast_ref::<Canvas>().unwrap();
             let canvas_priv = canvas.imp();
             let total_zoom = canvas.total_zoom();
 
             let hadj = canvas.hadjustment().unwrap();
-            // Avoiding already borrow error
-            let h_upper = (2.0 * f64::from(canvas.sheet_margin())
-                + f64::from(canvas.sheet().borrow().width))
-                * total_zoom;
-            hadj.configure(
-                hadj.value(),
-                0.0,
-                h_upper,
-                0.1 * width as f64,
-                0.9 * width as f64,
-                width as f64,
-            );
+
+            let (h_lower, h_upper) = match canvas.expand_mode() {
+                ExpandMode::FixedSize => (
+                    (canvas.sheet().borrow().x - Canvas::SHADOW_WIDTH) * total_zoom,
+                    (canvas.sheet().borrow().x
+                        + canvas.sheet().borrow().width
+                        + Canvas::SHADOW_WIDTH)
+                        * total_zoom,
+                ),
+                ExpandMode::EndlessVertical => (
+                    (canvas.sheet().borrow().x - Canvas::SHADOW_WIDTH) * total_zoom,
+                    (canvas.sheet().borrow().x
+                        + canvas.sheet().borrow().width
+                        + Canvas::SHADOW_WIDTH)
+                        * total_zoom,
+                ),
+                ExpandMode::Infinite => (
+                    canvas.sheet().borrow().x * total_zoom,
+                    (canvas.sheet().borrow().x + canvas.sheet().borrow().width) * total_zoom,
+                ),
+            };
 
             let vadj = canvas.vadjustment().unwrap();
-            // Avoiding already borrow error
-            let v_upper = (2.0 * f64::from(canvas.sheet_margin())
-                + f64::from(canvas.sheet().borrow().height))
-                * total_zoom;
+
+            let (v_lower, v_upper) = match canvas.expand_mode() {
+                ExpandMode::FixedSize => (
+                    (canvas.sheet().borrow().y - Canvas::SHADOW_WIDTH) * total_zoom,
+                    (canvas.sheet().borrow().y
+                        + canvas.sheet().borrow().height
+                        + Canvas::SHADOW_WIDTH)
+                        * total_zoom,
+                ),
+                ExpandMode::EndlessVertical => (
+                    (canvas.sheet().borrow().y - Canvas::SHADOW_WIDTH) * total_zoom,
+                    (canvas.sheet().borrow().y
+                        + canvas.sheet().borrow().height
+                        + Canvas::SHADOW_WIDTH)
+                        * total_zoom,
+                ),
+                ExpandMode::Infinite => (
+                    canvas.sheet().borrow().y * total_zoom,
+                    (canvas.sheet().borrow().y + canvas.sheet().borrow().height) * total_zoom,
+                ),
+            };
+
+            hadj.configure(
+                hadj.value(),
+                h_lower,
+                h_upper,
+                0.1 * width,
+                0.9 * width,
+                width,
+            );
+
             vadj.configure(
                 vadj.value(),
-                0.0,
+                v_lower,
                 v_upper,
-                0.1 * height as f64,
-                0.9 * height as f64,
-                height as f64,
+                0.1 * height,
+                0.9 * height,
+                height,
             );
+
+            canvas.update_size_autoexpand();
 
             // Allocate the selection_modifier child
             {
@@ -111,16 +149,13 @@ mod imp {
                 let (selection_modifier_x, selection_modifier_y) = if let Some(selection_bounds) =
                     canvas_priv.selection_modifier.selection_bounds()
                 {
-                    let sheet_margin_zoomed = f64::from(canvas.sheet_margin()) * total_zoom;
                     let selection_bounds_zoomed =
                         geometry::aabb_scale(selection_bounds, total_zoom);
 
                     (
-                        (sheet_margin_zoomed + selection_bounds_zoomed.mins[0] - hadj.value())
-                            .ceil() as i32
+                        (selection_bounds_zoomed.mins[0] - hadj.value()).ceil() as i32
                             - SelectionModifier::RESIZE_NODE_SIZE,
-                        (sheet_margin_zoomed + selection_bounds_zoomed.mins[1] - vadj.value())
-                            .ceil() as i32
+                        (selection_bounds_zoomed.mins[1] - vadj.value()).ceil() as i32
                             - SelectionModifier::RESIZE_NODE_SIZE,
                     )
                 } else {

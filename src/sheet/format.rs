@@ -107,13 +107,13 @@ impl Default for Orientation {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "width")]
 pub struct Format {
     #[serde(rename = "width")]
-    pub width: u32,
+    pub width: f64,
     #[serde(rename = "height")]
-    pub height: u32,
+    pub height: f64,
     #[serde(rename = "dpi")]
     pub dpi: f64,
     #[serde(rename = "orientation")]
@@ -132,13 +132,13 @@ impl Default for Format {
 }
 
 impl Format {
-    pub const WIDTH_MIN: u32 = 1;
-    pub const WIDTH_MAX: u32 = 30000;
-    pub const WIDTH_DEFAULT: u32 = 1123;
+    pub const WIDTH_MIN: f64 = 1.0;
+    pub const WIDTH_MAX: f64 = 30000.0;
+    pub const WIDTH_DEFAULT: f64 = 1123.0;
 
-    pub const HEIGHT_MIN: u32 = 1;
-    pub const HEIGHT_MAX: u32 = 30000;
-    pub const HEIGHT_DEFAULT: u32 = 1587;
+    pub const HEIGHT_MIN: f64 = 1.0;
+    pub const HEIGHT_MAX: f64 = 30000.0;
+    pub const HEIGHT_DEFAULT: f64 = 1587.0;
 
     pub const DPI_MIN: f64 = 1.0;
     pub const DPI_MAX: f64 = 5000.0;
@@ -153,25 +153,21 @@ impl Format {
 
     pub fn draw(&self, sheet_bounds: AABB, snapshot: &Snapshot, zoom: f64) {
         let border_radius = graphene::Size::new(0.0, 0.0);
-        let border_width = 2.0;
-
-        let mut offset_y = sheet_bounds.mins[1];
+        let border_width = 1_f32;
 
         snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
             sheet_bounds,
             zoom,
         )));
 
-        while offset_y < sheet_bounds.maxs[1] {
-            let border_bounds = graphene::Rect::new(
-                (sheet_bounds.mins[0] * zoom) as f32,
-                (offset_y * zoom) as f32 - border_width / 2.0,
-                (f64::from(self.width) * zoom) as f32,
-                ((offset_y + f64::from(self.height)) * zoom) as f32 + border_width / 2.0,
-            );
+        let pages_bounds = geometry::split_aabb_extended_origin_aligned(
+            sheet_bounds,
+            na::vector![self.width, self.height],
+        );
 
+        for page_bounds in pages_bounds {
             let rounded_rect = gsk::RoundedRect::new(
-                border_bounds.clone(),
+                geometry::aabb_to_graphene_rect(geometry::aabb_scale(page_bounds, zoom)),
                 border_radius.clone(),
                 border_radius.clone(),
                 border_radius.clone(),
@@ -187,17 +183,8 @@ impl Format {
                     Self::FORMAT_BORDER_COLOR.to_gdk(),
                 ],
             );
-            offset_y += f64::from(self.height);
         }
 
         snapshot.pop();
     }
-    /*
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.connect_notify_local(Some("dpi"), clone!(@weak appwindow => move |format, _pspec| {
-            appwindow.settings_panel().general_sheet_margin_unitentry().set_dpi(format.dpi());
-            appwindow.settings_panel().background_pattern_width_unitentry().set_dpi(format.dpi());
-            appwindow.settings_panel().background_pattern_height_unitentry().set_dpi(format.dpi());
-        }));
-    } */
 }

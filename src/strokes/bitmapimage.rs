@@ -129,8 +129,8 @@ impl Transformable for BitmapImage {
 }
 
 impl BitmapImage {
-    pub const OFFSET_X_DEFAULT: i32 = 32;
-    pub const OFFSET_Y_DEFAULT: i32 = 32;
+    pub const OFFSET_X_DEFAULT: f64 = 32.0;
+    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
 
     pub fn import_from_image_bytes<P>(
         to_be_read: P,

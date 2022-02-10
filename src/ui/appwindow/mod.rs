@@ -698,143 +698,176 @@ impl RnoteAppWindow {
         let app_icon_theme = IconTheme::for_display(&self.display());
         app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
-        // zoom scrolling with <ctrl> + scroll
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()
             .name("canvas_zoom_scroll_controller")
             .propagation_phase(PropagationPhase::Capture)
             .flags(EventControllerScrollFlags::VERTICAL)
             .build();
-
-        canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
-            let total_zoom = appwindow.canvas().total_zoom();
-            if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * total_zoom;
-                let new_zoom = total_zoom - delta;
-
-                // the sheet position BEFORE zooming
-                let sheet_center_pos = appwindow.canvas().transform_canvas_coords_to_sheet_coords(
-                    na::vector![
-                        f64::from(appwindow.canvas_scroller().width()) * 0.5,
-                        f64::from(appwindow.canvas_scroller().height()) * 0.5
-                    ]);
-
-                appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
-
-                // Reposition scroller center to the previous sheet position
-                appwindow.canvas().center_around_coord_on_sheet(sheet_center_pos);
-                // Stop event propagation
-                Inhibit(true)
-            } else {
-                Inhibit(false)
-            }
-        }));
         self.canvas_scroller()
             .add_controller(&canvas_zoom_scroll_controller);
 
-        // Move Canvas with touch gesture
         let canvas_touch_drag_gesture = GestureDrag::builder()
             .name("canvas_touch_drag_gesture")
             .touch_only(true)
             .propagation_phase(PropagationPhase::Bubble)
             .build();
-
-        let touch_drag_start_x = Rc::new(Cell::new(0.0));
-        let touch_drag_start_y = Rc::new(Cell::new(0.0));
-
-        canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong touch_drag_start_x, @strong touch_drag_start_y, @weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
-            touch_drag_start_x.set(appwindow.canvas().hadjustment().unwrap().value());
-            touch_drag_start_y.set(appwindow.canvas().vadjustment().unwrap().value());
-        }));
-        canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start_x, @strong touch_drag_start_y, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
-            appwindow.canvas().hadjustment().unwrap().set_value(touch_drag_start_x.get() - x);
-            appwindow.canvas().vadjustment().unwrap().set_value(touch_drag_start_y.get() - y);
-        }));
         self.canvas_scroller()
             .add_controller(&canvas_touch_drag_gesture);
 
-        // Move Canvas with middle mouse button
-        let canvas_mouse_middle_gesture = GestureDrag::builder()
-            .name("canvas_mouse_drag_gesture")
+        let canvas_mouse_drag_middle_gesture = GestureDrag::builder()
+            .name("canvas_mouse_drag_middle_gesture")
             .button(gdk::BUTTON_MIDDLE)
             .propagation_phase(PropagationPhase::Capture)
             .build();
         self.canvas_scroller()
-            .add_controller(&canvas_mouse_middle_gesture);
+            .add_controller(&canvas_mouse_drag_middle_gesture);
 
-        let mouse_drag_start_x = Rc::new(Cell::new(0.0));
-        let mouse_drag_start_y = Rc::new(Cell::new(0.0));
-
-        canvas_mouse_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
-            mouse_drag_start_x.set(appwindow.canvas().hadjustment().unwrap().value());
-            mouse_drag_start_y.set(appwindow.canvas().vadjustment().unwrap().value());
-        }));
-        canvas_mouse_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
-            appwindow.canvas().hadjustment().unwrap().set_value(mouse_drag_start_x.get() - x);
-            appwindow.canvas().vadjustment().unwrap().set_value(mouse_drag_start_y.get() - y);
-        }));
-
-        // Move Canvas by dragging in empty area
         let canvas_mouse_drag_empty_area_gesture = GestureDrag::builder()
-            .name("canvas_mouse_drag_gesture")
+            .name("canvas_mouse_drag_empty_area_gesture")
             .button(gdk::BUTTON_PRIMARY)
             .propagation_phase(PropagationPhase::Bubble)
             .build();
         self.canvas_scroller()
             .add_controller(&canvas_mouse_drag_empty_area_gesture);
 
-        let mouse_drag_start_x = Rc::new(Cell::new(0.0));
-        let mouse_drag_start_y = Rc::new(Cell::new(0.0));
-
-        canvas_mouse_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
-            mouse_drag_start_x.set(appwindow.canvas().hadjustment().unwrap().value());
-            mouse_drag_start_y.set(appwindow.canvas().vadjustment().unwrap().value());
-        }));
-        canvas_mouse_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_start_x, @strong mouse_drag_start_y, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
-            appwindow.canvas().hadjustment().unwrap().set_value(mouse_drag_start_x.get() - x);
-            appwindow.canvas().vadjustment().unwrap().set_value(mouse_drag_start_y.get() - y);
-        }));
-
-        // Canvas gesture zooming with preview and dragging
         let canvas_zoom_gesture = GestureZoom::builder()
             .name("canvas_zoom_gesture")
             .propagation_phase(PropagationPhase::Capture)
             .build();
         self.canvas_scroller().add_controller(&canvas_zoom_gesture);
 
-        let prev_zoom = Rc::new(Cell::new(1_f64));
-        let zoom_begin = Rc::new(Cell::new(1_f64));
-        let new_zoom = Rc::new(Cell::new(self.canvas().zoom()));
-        let zoomgesture_canvasscroller_start_pos = Rc::new(Cell::new((0.0, 0.0)));
-        let zoomgesture_bbcenter_start: Rc<Cell<Option<(f64, f64)>>> = Rc::new(Cell::new(None));
+        // Gesture Grouping
+        canvas_mouse_drag_middle_gesture.group_with(&canvas_touch_drag_gesture);
+        canvas_mouse_drag_empty_area_gesture.group_with(&canvas_touch_drag_gesture);
+        canvas_zoom_gesture.group_with(&canvas_touch_drag_gesture);
 
-        canvas_zoom_gesture.connect_begin(clone!(
-            @strong zoom_begin,
-            @strong prev_zoom,
-            @strong new_zoom,
-            @strong zoomgesture_canvasscroller_start_pos,
-            @strong zoomgesture_bbcenter_start,
-            @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
-                canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
+        // zoom scrolling with <ctrl> + scroll
+        {
+            canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
+                let total_zoom = appwindow.canvas().total_zoom();
+                if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
+                    let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * total_zoom;
+                    let new_zoom = total_zoom - delta;
 
-                zoom_begin.set(appwindow.canvas().zoom());
-                new_zoom.set(appwindow.canvas().zoom());
-                prev_zoom.set(1.0);
+                    // the sheet position BEFORE zooming
+                    let sheet_center_pos = appwindow.canvas().transform_canvas_coords_to_sheet_coords(
+                        na::vector![
+                            f64::from(appwindow.canvas_scroller().width()) * 0.5,
+                            f64::from(appwindow.canvas_scroller().height()) * 0.5
+                        ]);
 
-                zoomgesture_canvasscroller_start_pos.set(
-                    (
-                        appwindow.canvas().hadjustment().unwrap().value(),
-                        appwindow.canvas().vadjustment().unwrap().value()
-                    )
-                );
-                if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
-                    zoomgesture_bbcenter_start.set(Some(
-                        bbcenter
-                    ));
+                    appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
+
+                    // Reposition scroller center to the previous sheet position
+                    appwindow.canvas().center_around_coord_on_sheet(sheet_center_pos);
+                    // Stop event propagation
+                    Inhibit(true)
+                } else {
+                    Inhibit(false)
                 }
-        }));
+            }));
+        }
 
-        canvas_zoom_gesture.connect_scale_changed(
-            clone!(@strong zoom_begin, @strong new_zoom, @strong prev_zoom, @strong zoomgesture_canvasscroller_start_pos, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, zoom| {
+        // Drag canvas with touch gesture
+        {
+            let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+
+            canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
+                touch_drag_start.set(na::vector![
+                    appwindow.canvas().hadjustment().unwrap().value(),
+                    appwindow.canvas().vadjustment().unwrap().value()
+                ]);
+            }));
+            canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
+                let new_adjs = touch_drag_start.get() - na::vector![x,y];
+
+                appwindow.canvas().resize_sheet_infinite_mode_new_adjs(new_adjs);
+
+                appwindow.canvas().hadjustment().unwrap().set_value(new_adjs[0]);
+                appwindow.canvas().vadjustment().unwrap().set_value(new_adjs[1]);
+            }));
+        }
+
+        // Move Canvas with middle mouse button
+        {
+            let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+
+            canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
+                mouse_drag_start.set(na::vector![
+                    appwindow.canvas().hadjustment().unwrap().value(),
+                    appwindow.canvas().vadjustment().unwrap().value()
+                ]);
+            }));
+            canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+                let new_adjs = mouse_drag_start.get() - na::vector![x,y];
+
+                appwindow.canvas().resize_sheet_infinite_mode_new_adjs(new_adjs);
+
+                appwindow.canvas().hadjustment().unwrap().set_value(new_adjs[0]);
+                appwindow.canvas().vadjustment().unwrap().set_value(new_adjs[1]);
+            }));
+        }
+
+        // Move Canvas by dragging in empty area
+        {
+            let mouse_drag_empty_area_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+
+            canvas_mouse_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
+                mouse_drag_empty_area_start.set(na::vector![
+                    appwindow.canvas().hadjustment().unwrap().value(),
+                    appwindow.canvas().vadjustment().unwrap().value()
+                ]);
+            }));
+            canvas_mouse_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+                let new_adjs = mouse_drag_empty_area_start.get() - na::vector![x,y];
+
+                appwindow.canvas().resize_sheet_infinite_mode_new_adjs(new_adjs);
+
+                appwindow.canvas().hadjustment().unwrap().set_value(new_adjs[0]);
+                appwindow.canvas().vadjustment().unwrap().set_value(new_adjs[1]);
+            }));
+        }
+
+        // Canvas gesture zooming with preview and dragging
+        {
+            let prev_zoom = Rc::new(Cell::new(1_f64));
+            let zoom_begin = Rc::new(Cell::new(1_f64));
+            let new_zoom = Rc::new(Cell::new(self.canvas().zoom()));
+            let zoomgesture_canvasscroller_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
+            let zoomgesture_bbcenter_start: Rc<Cell<Option<na::Vector2<f64>>>> =
+                Rc::new(Cell::new(None));
+
+            canvas_zoom_gesture.connect_begin(clone!(
+                @strong zoom_begin,
+                @strong prev_zoom,
+                @strong new_zoom,
+                @strong zoomgesture_canvasscroller_start,
+                @strong zoomgesture_bbcenter_start,
+                @weak self as appwindow => move |canvas_zoom_gesture, event_sequence| {
+                    if let Some(event_sequence) = event_sequence {
+                        canvas_zoom_gesture.set_sequence_state(event_sequence, EventSequenceState::Claimed);
+                    }
+                    canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
+
+                    zoom_begin.set(appwindow.canvas().zoom());
+                    new_zoom.set(appwindow.canvas().zoom());
+                    prev_zoom.set(1.0);
+
+                    zoomgesture_canvasscroller_start.set(
+                        na::vector![
+                            appwindow.canvas().hadjustment().unwrap().value(),
+                            appwindow.canvas().vadjustment().unwrap().value()
+                        ]
+                    );
+                    if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center().map(|bbcenter| na::vector![bbcenter.0, bbcenter.1]) {
+                        zoomgesture_bbcenter_start.set(Some(
+                            bbcenter
+                        ));
+                    }
+            }));
+
+            canvas_zoom_gesture.connect_scale_changed(
+            clone!(@strong zoom_begin, @strong new_zoom, @strong prev_zoom, @strong zoomgesture_canvasscroller_start, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, zoom| {
                 let new_zoom = if zoom_begin.get() * zoom > Canvas::ZOOM_MAX || zoom_begin.get() * zoom < Canvas::ZOOM_MIN {
                     prev_zoom.get()
                 } else {
@@ -846,50 +879,45 @@ impl RnoteAppWindow {
                     zoom
                 };
 
-                if let Some(bbcenter) = canvas_zoom_gesture.bounding_box_center() {
+                if let Some(bbcenter_current) = canvas_zoom_gesture.bounding_box_center().map(|bbcenter| na::vector![bbcenter.0, bbcenter.1]) {
                     if let Some(bbcenter_start) = zoomgesture_bbcenter_start.get() {
-                        let bbcenter_delta = (
-                            bbcenter.0 - bbcenter_start.0 * new_zoom,
-                            bbcenter.1 - bbcenter_start.1 * new_zoom
-                        );
+                        let bbcenter_delta = bbcenter_current - bbcenter_start * new_zoom;
+                        let new_adjs = zoomgesture_canvasscroller_start.get() * new_zoom - bbcenter_delta;
 
-                        appwindow.canvas().hadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().0 * new_zoom - bbcenter_delta.0
-                        );
-                        appwindow.canvas().vadjustment().unwrap().set_value(
-                            zoomgesture_canvasscroller_start_pos.get().1 * new_zoom - bbcenter_delta.1
-                        );
+                        appwindow.canvas().resize_sheet_infinite_mode_new_adjs(new_adjs);
+
+                        appwindow.canvas().hadjustment().unwrap().set_value(new_adjs[0]);
+                        appwindow.canvas().vadjustment().unwrap().set_value(new_adjs[1]);
                     } else {
                         // Setting the start position if connect_scale_start didn't set it
                         zoomgesture_bbcenter_start.set(Some(
-                            bbcenter
+                            bbcenter_current
                         ));
                     }
                 }
-            }),
-        );
+            }));
 
-        canvas_zoom_gesture.connect_cancel(
-            clone!(@strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
-                zoomgesture_bbcenter_start.set(None);
+            canvas_zoom_gesture.connect_cancel(
+                clone!(@strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, event_sequence| {
+                    zoomgesture_bbcenter_start.set(None);
 
-                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
-            }),
-        );
+                    if let Some(event_sequence) = event_sequence {
+                        canvas_zoom_gesture.set_sequence_state(event_sequence, EventSequenceState::Denied);
+                    }
+                }),
+            );
 
-        canvas_zoom_gesture.connect_end(
-            clone!(@strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, _eventsequence| {
-                zoomgesture_bbcenter_start.set(None);
-                appwindow.canvas().zoom_to(new_zoom.get());
+            canvas_zoom_gesture.connect_end(
+                clone!(@strong new_zoom, @strong zoomgesture_bbcenter_start, @weak self as appwindow => move |canvas_zoom_gesture, event_sequence| {
+                    zoomgesture_bbcenter_start.set(None);
+                    appwindow.canvas().zoom_to(new_zoom.get());
 
-                canvas_zoom_gesture.set_state(EventSequenceState::Denied);
-            }),
-        );
-
-        // Gesture Grouping
-        canvas_mouse_middle_gesture.group_with(&canvas_touch_drag_gesture);
-        canvas_mouse_drag_empty_area_gesture.group_with(&canvas_touch_drag_gesture);
-        canvas_zoom_gesture.group_with(&canvas_touch_drag_gesture);
+                    if let Some(event_sequence) = event_sequence {
+                        canvas_zoom_gesture.set_sequence_state(event_sequence, EventSequenceState::Denied);
+                    }
+                }),
+            );
+        }
 
         // actions and settings AFTER widget callback declarations
         self.setup_actions();
@@ -1126,8 +1154,8 @@ impl RnoteAppWindow {
         let pos = target_pos.unwrap_or_else(|| {
             self.canvas()
                 .transform_canvas_coords_to_sheet_coords(na::vector![
-                    f64::from(self.canvas().sheet_margin() + VectorImage::OFFSET_X_DEFAULT),
-                    f64::from(self.canvas().sheet_margin() + VectorImage::OFFSET_Y_DEFAULT)
+                    VectorImage::OFFSET_X_DEFAULT,
+                    VectorImage::OFFSET_Y_DEFAULT
                 ])
         });
         let all_strokes = self
@@ -1171,8 +1199,8 @@ impl RnoteAppWindow {
         let pos = target_pos.unwrap_or_else(|| {
             self.canvas()
                 .transform_canvas_coords_to_sheet_coords(na::vector![
-                    f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_X_DEFAULT),
-                    f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT)
+                    BitmapImage::OFFSET_X_DEFAULT,
+                    BitmapImage::OFFSET_Y_DEFAULT
                 ])
         });
         let all_strokes = self
@@ -1212,11 +1240,11 @@ impl RnoteAppWindow {
         let pos = target_pos.unwrap_or_else(|| {
             self.canvas()
                 .transform_canvas_coords_to_sheet_coords(na::vector![
-                    f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_X_DEFAULT),
-                    f64::from(self.canvas().sheet_margin() + BitmapImage::OFFSET_Y_DEFAULT)
+                    VectorImage::OFFSET_X_DEFAULT,
+                    VectorImage::OFFSET_Y_DEFAULT
                 ])
         });
-        let page_width = (f64::from(self.canvas().sheet().borrow().width)
+        let page_width = (f64::from(self.canvas().sheet().borrow().format.width)
             * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
 

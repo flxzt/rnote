@@ -2,7 +2,7 @@ use std::sync::{Arc, RwLock};
 
 use anyhow::Context;
 use gtk4::{glib, gsk, Snapshot};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -274,39 +274,48 @@ impl Background {
     pub fn regenerate_background(
         &mut self,
         zoom: f64,
-        bounds: AABB,
+        sheet_bounds: AABB,
+        viewport: Option<AABB>,
         renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 
         self.image = self.gen_image(renderer, zoom, tile_bounds)?;
-        self.update_rendernode(zoom, bounds)?;
+
+        self.update_rendernode(zoom, sheet_bounds, viewport)?;
         Ok(())
     }
 
     pub fn gen_rendernode(
         &mut self,
         zoom: f64,
-        bounds: AABB,
+        sheet_bounds: AABB,
+        viewport: Option<AABB>,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let snapshot = Snapshot::new();
         let tile_size = self.tile_size();
 
         snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-            bounds, zoom,
+            sheet_bounds,
+            zoom,
         )));
 
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_color(
             &self.color.to_gdk(),
-            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(bounds, zoom)),
+            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(sheet_bounds, zoom)),
         );
 
         if let Some(image) = &self.image {
             let new_texture = render::image_to_memtexture(image)
                 .context("image_to_memtexture() failed in gen_rendernode().")?;
-            for aabb in geometry::split_aabb_extended(bounds, tile_size) {
+            for aabb in geometry::split_aabb_extended_origin_aligned(sheet_bounds, tile_size) {
+                if let Some(viewport) = viewport {
+                    if !aabb.intersects(&viewport) {
+                        continue;
+                    }
+                }
                 snapshot.append_texture(
                     &new_texture,
                     &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, zoom)),
@@ -323,8 +332,9 @@ impl Background {
         &mut self,
         zoom: f64,
         sheet_bounds: AABB,
+        viewport: Option<AABB>,
     ) -> Result<(), anyhow::Error> {
-        match self.gen_rendernode(zoom, sheet_bounds) {
+        match self.gen_rendernode(zoom, sheet_bounds, viewport) {
             Ok(new_rendernode) => {
                 self.rendernode = new_rendernode;
             }
@@ -340,8 +350,8 @@ impl Background {
     }
 
     pub fn draw(&self, snapshot: &Snapshot) {
-        if let Some(rendernode) = self.rendernode.as_ref() {
+        self.rendernode.iter().for_each(|rendernode| {
             snapshot.append_node(rendernode);
-        }
+        });
     }
 }

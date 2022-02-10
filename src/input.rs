@@ -9,7 +9,7 @@ use crate::ui::appwindow::RnoteAppWindow;
 pub const INPUT_OVERSHOOT: f64 = 30.0;
 
 /// Map pen input to the position on a sheet
-pub fn map_inputdata(
+pub fn transform_inputdata(
     zoom: f64,
     data_entries: &mut VecDeque<InputData>,
     mapped_offset: na::Vector2<f64>,

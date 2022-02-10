@@ -115,9 +115,7 @@ impl AppMenu {
     }
 
     pub fn righthanded_toggle(&self) -> ToggleButton {
-        imp::AppMenu::from_instance(self)
-            .righthanded_toggle
-            .get()
+        imp::AppMenu::from_instance(self).righthanded_toggle.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

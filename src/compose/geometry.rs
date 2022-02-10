@@ -1,7 +1,6 @@
 use geo::line_string;
 use gtk4::graphene;
 use p2d::bounding_volume::AABB;
-use p2d::query::PointQuery;
 
 pub fn vector2_unit_tang(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     if vec.magnitude() > 0.0 {
@@ -41,9 +40,8 @@ pub fn aabb_to_graphene_rect(aabb: AABB) -> graphene::Rect {
     )
 }
 
-/// splits a aabb into multiple which have the given size. Their union contains the given aabb.
-/// The boxes on the edges might extend the given aabb, so clipping these AABB probably is needed.
-/// Used when generating the background
+/// splits a aabb into multiple of the given size. Their union contains the given aabb.
+/// The boxes on the edges most likely extend beyond the given aabb.
 pub fn split_aabb_extended(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> Vec<AABB> {
     let mut splitted_aabbs = Vec::new();
 
@@ -76,7 +74,50 @@ pub fn split_aabb_extended(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> V
     splitted_aabbs
 }
 
-/// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb. The boxes on the edges are clipped to fit into the given aabb
+/// splits a aabb into multiple of the given size. Their union contains the given aabb.
+/// It is also guaranteed that bounding boxes are aligned to the origin, meaning (0.0,0.0) is the corner of four boxes.
+/// The boxes on the edges most likely extend beyond the given aabb.
+pub fn split_aabb_extended_origin_aligned(
+    aabb: AABB,
+    mut splitted_size: na::Vector2<f64>,
+) -> Vec<AABB> {
+    let mut splitted_aabbs = Vec::new();
+
+    let width = aabb.extents()[0];
+    let height = aabb.extents()[1];
+
+    if width <= splitted_size[0] {
+        splitted_size[0] = width;
+    }
+    if height <= splitted_size[1] {
+        splitted_size[1] = height;
+    }
+
+    let n_columns = (aabb.extents()[0] / splitted_size[0]).ceil() as u32;
+    let n_rows = (aabb.extents()[1] / splitted_size[1]).ceil() as u32;
+
+    let offset = na::vector![
+        (aabb.mins[0] / splitted_size[0]).floor() * splitted_size[0],
+        (aabb.mins[1] / splitted_size[1]).floor() * splitted_size[1]
+    ];
+
+    for current_row in 0..=n_rows {
+        for current_column in 0..=n_columns {
+            let mins = na::point![
+                offset[0] + f64::from(current_column) * splitted_size[0],
+                offset[1] + f64::from(current_row) * splitted_size[1]
+            ];
+            let maxs = na::Point2::from(mins.coords + splitted_size);
+
+            splitted_aabbs.push(AABB::new(mins, maxs));
+        }
+    }
+
+    splitted_aabbs
+}
+
+/// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
+/// The boxes on the edges are clipped to fit into the given aabb
 pub fn split_aabb(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> Vec<AABB> {
     let mut splitted_aabbs = Vec::new();
 
@@ -226,6 +267,13 @@ pub fn aabb_ceil(aabb: AABB) -> AABB {
     )
 }
 
+pub fn aabb_expand(aabb: AABB, expand_by: na::Vector2<f64>) -> AABB {
+    AABB::new(
+        na::Point2::from(aabb.mins.coords - expand_by),
+        na::Point2::from(aabb.maxs.coords + expand_by),
+    )
+}
+
 /// Scale the source size with a specified max size, while keeping its aspect ratio
 pub fn scale_with_locked_aspectratio(
     src_size: na::Vector2<f64>,
@@ -234,33 +282,6 @@ pub fn scale_with_locked_aspectratio(
     let ratio = (max_size[0] / src_size[0]).min(max_size[1] / src_size[1]);
 
     src_size * ratio
-}
-
-pub fn convexpolygon_contains_aabb(convexpolygon: &p2d::shape::ConvexPolygon, aabb: &AABB) -> bool {
-    let tl = aabb.mins;
-    let tr = na::point![aabb.maxs[0], aabb.mins[1]];
-    let bl = na::point![aabb.mins[0], aabb.maxs[1]];
-    let br = aabb.maxs;
-
-    convexpolygon.contains_local_point(&tl)
-        && convexpolygon.contains_local_point(&tr)
-        && convexpolygon.contains_local_point(&bl)
-        && convexpolygon.contains_local_point(&br)
-}
-
-pub fn convexpolygon_intersects_aabb(
-    convexpolygon: &p2d::shape::ConvexPolygon,
-    aabb: &AABB,
-) -> bool {
-    let tl = aabb.mins;
-    let tr = na::point![aabb.maxs[0], aabb.mins[1]];
-    let bl = na::point![aabb.mins[0], aabb.maxs[1]];
-    let br = aabb.maxs;
-
-    convexpolygon.contains_local_point(&tl)
-        || convexpolygon.contains_local_point(&tr)
-        || convexpolygon.contains_local_point(&bl)
-        || convexpolygon.contains_local_point(&br)
 }
 
 pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {

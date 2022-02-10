@@ -10,6 +10,7 @@ mod imp {
     use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
     use once_cell::sync::Lazy;
 
+    use crate::ui::canvas::ExpandMode;
     use crate::{
         compose::textured::TexturedDotsDistribution,
         config,
@@ -99,6 +100,7 @@ mod imp {
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
             Canvas::static_type();
+            ExpandMode::static_type();
             ColorPicker::static_type();
             ColorSetter::static_type();
             SelectionModifier::static_type();
@@ -141,7 +143,9 @@ mod imp {
             // setup the app
             app.setup_actions();
             app.setup_action_accels();
-            app.setup_app(&appwindow);
+
+            // Everything else before showing
+            app.init_misc(&appwindow);
 
             appwindow.show();
         }
@@ -223,8 +227,5 @@ impl RnoteApp {
     }
 
     // Anything that needs to be done right before showing the appwindow
-    pub fn setup_app(&self, appwindow: &RnoteAppWindow) {
-        appwindow.canvas().regenerate_background(false);
-        appwindow.canvas().regenerate_content(true, true);
-    }
+    pub fn init_misc(&self, _appwindow: &RnoteAppWindow) {}
 }

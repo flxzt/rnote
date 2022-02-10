@@ -69,9 +69,7 @@ use crate::compose::textured::{TexturedDotsDistribution, TexturedOptions};
 use crate::pens::brush::BrushStyle;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use adw::prelude::*;
-use gtk4::{
-    gdk, Image, ListBox, MenuButton, Popover,
-};
+use gtk4::{gdk, Image, ListBox, MenuButton, Popover};
 use gtk4::{glib, glib::clone, subclass::prelude::*, SpinButton};
 
 glib::wrapper! {

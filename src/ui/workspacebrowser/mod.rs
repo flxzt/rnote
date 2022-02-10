@@ -96,7 +96,7 @@ use gtk4::{
     ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, ListItem,
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
 };
-use gtk4::{DirectoryList, Entry, ListView, MultiSorter, Button, Separator};
+use gtk4::{Button, DirectoryList, Entry, ListView, MultiSorter, Separator};
 
 use self::filerow::FileRow;
 
@@ -161,11 +161,13 @@ impl WorkspaceBrowser {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.imp().flap_close_button.get().connect_clicked(clone!(@weak appwindow => move |_flap_close_button| {
-            if appwindow.flap().reveals_flap() && appwindow.flap().is_folded() {
-                appwindow.flap().set_reveal_flap(false);
-            }
-        }));
+        self.imp().flap_close_button.get().connect_clicked(
+            clone!(@weak appwindow => move |_flap_close_button| {
+                if appwindow.flap().reveals_flap() && appwindow.flap().is_folded() {
+                    appwindow.flap().set_reveal_flap(false);
+                }
+            }),
+        );
 
         self.imp().open_workspace_button.get().connect_clicked(
             clone!(@weak appwindow => move |_open_workspace_button| {

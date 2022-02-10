@@ -41,23 +41,9 @@
                   <object class="AdwPreferencesGroup">
                     <property name="title" translatable="yes">General</property>
                     <child>
-                      <object class="AdwActionRow" id="general_sheet_margin_row">
-                        <property name="title" translatable="yes">Sheet margin</property>
-                        <property name="subtitle" translatable="yes">Set the margins around the sheet</property>
-                        <child type="suffix">
-                          <object class="UnitEntry" id="general_sheet_margin_unitentry">
-                            <property name="vexpand">false</property>
-                            <property name="hexpand">false</property>
-                            <property name="halign">end</property>
-                            <property name="valign">center</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
                       <object class="AdwActionRow" id="general_pdf_import_width_row">
                         <property name="title" translatable="yes">PDF import width (%)</property>
-                        <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the sheet width</property>
+                        <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the sheet format width</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="general_pdf_import_width_adj">
                             <property name="step-increment">1</property>

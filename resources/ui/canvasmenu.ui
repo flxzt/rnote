@@ -26,11 +26,26 @@
               <attribute name="toggle" />
               <attribute name="action">win.touch-drawing</attribute>
             </item>
-            <item>
-              <attribute name="label" translatable="yes">Endless sheet</attribute>
-              <attribute name="toggle" />
-              <attribute name="action">win.endless-sheet</attribute>
-            </item>
+            <submenu>
+              <attribute name="label" translatable="yes">Expand mode</attribute>
+              <section>
+                <item>
+                  <attribute name="label" translatable="yes">fixed size</attribute>
+                  <attribute name="action">win.expand-mode</attribute>
+                  <attribute name="target">fixed-size</attribute>
+                </item>
+                <item>
+                  <attribute name="label" translatable="yes">endless vertical</attribute>
+                  <attribute name="action">win.expand-mode</attribute>
+                  <attribute name="target">endless-vertical</attribute>
+                </item>
+                <item>
+                  <attribute name="label" translatable="yes">infinite</attribute>
+                  <attribute name="action">win.expand-mode</attribute>
+                  <attribute name="target">infinite</attribute>
+                </item>
+              </section>
+            </submenu>
             <item>
               <attribute name="label" translatable="yes">Show format borders</attribute>
               <attribute name="toggle" />

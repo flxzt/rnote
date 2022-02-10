@@ -1,9 +1,9 @@
 use gettextrs::gettext;
-use gtk4::{glib, glib::clone, prelude::*, Builder};
 use gtk4::{
-    AboutDialog, FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType,
-    ShortcutsWindow, gio,
+    gio, AboutDialog, FileChooserAction, FileChooserNative, FileFilter, MessageDialog,
+    ResponseType, ShortcutsWindow,
 };
+use gtk4::{glib, glib::clone, prelude::*, Builder};
 
 use crate::ui::appwindow::RnoteAppWindow;
 use crate::utils;
@@ -32,9 +32,9 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         .version((String::from(config::APP_VERSION) + config::APP_VERSION_SUFFIX).as_str())
         .build();
 
-        if config::PROFILE == "devel" {
-            aboutdialog.add_css_class("devel");
-        }
+    if config::PROFILE == "devel" {
+        aboutdialog.add_css_class("devel");
+    }
 
     aboutdialog.show();
 }
@@ -280,7 +280,8 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
 
     dialog_save_sheet_as.add_filter(&filter);
 
-    dialog_save_sheet_as.set_current_name(format!("{}_sheet.rnote", utils::now_formatted_string()).as_str());
+    dialog_save_sheet_as
+        .set_current_name(format!("{}_sheet.rnote", utils::now_formatted_string()).as_str());
 
     dialog_save_sheet_as.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {
@@ -404,7 +405,8 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_selection.add_filter(&filter);
 
-    dialog_export_selection.set_current_name(format!("{}_selection.svg", utils::now_formatted_string()).as_str());
+    dialog_export_selection
+        .set_current_name(format!("{}_selection.svg", utils::now_formatted_string()).as_str());
 
     dialog_export_selection.connect_response(clone!(@weak appwindow => move |dialog_export_selection, responsetype| {
             match responsetype {
@@ -445,7 +447,8 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_sheet.add_filter(&filter);
 
-    dialog_export_sheet.set_current_name(format!("{}_sheet.svg", utils::now_formatted_string()).as_str());
+    dialog_export_sheet
+        .set_current_name(format!("{}_sheet.svg", utils::now_formatted_string()).as_str());
 
     dialog_export_sheet.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {
@@ -488,7 +491,8 @@ pub fn dialog_export_sheet_as_pdf(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_sheet.add_filter(&filter);
 
-    dialog_export_sheet.set_current_name(format!("{}_sheet.pdf", utils::now_formatted_string()).as_str());
+    dialog_export_sheet
+        .set_current_name(format!("{}_sheet.pdf", utils::now_formatted_string()).as_str());
 
     dialog_export_sheet.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {
@@ -531,7 +535,8 @@ pub fn dialog_export_sheet_as_xopp(appwindow: &RnoteAppWindow) {
         .build();
     dialog_export_sheet.add_filter(&filter);
 
-    dialog_export_sheet.set_current_name(format!("{}_sheet.xopp", utils::now_formatted_string()).as_str());
+    dialog_export_sheet
+        .set_current_name(format!("{}_sheet.xopp", utils::now_formatted_string()).as_str());
 
     dialog_export_sheet.connect_response(
         clone!(@weak appwindow => move |dialog_export_sheet, responsetype| {

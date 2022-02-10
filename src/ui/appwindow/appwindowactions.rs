@@ -16,7 +16,6 @@ use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
     PrintOperation, PrintOperationAction, Unit,
 };
-use p2d::bounding_volume::AABB;
 use std::{cell::Cell, rc::Rc};
 
 impl RnoteAppWindow {
@@ -63,9 +62,9 @@ impl RnoteAppWindow {
         let action_touch_drawing =
             gio::PropertyAction::new("touch-drawing", &self.canvas(), "touch-drawing");
         self.add_action(&action_touch_drawing);
-        let action_endless_sheet =
-            gio::PropertyAction::new("endless-sheet", &self.canvas(), "endless-sheet");
-        self.add_action(&action_endless_sheet);
+        let action_expand_mode =
+            gio::PropertyAction::new("expand-mode", &self.canvas(), "expand-mode");
+        self.add_action(&action_expand_mode);
         let action_format_borders =
             gio::PropertyAction::new("format-borders", &self.canvas(), "format-borders");
         self.add_action(&action_format_borders);
@@ -82,6 +81,9 @@ impl RnoteAppWindow {
         self.add_action(&action_zoomin);
         let action_zoomout = gio::SimpleAction::new("zoom-out", None);
         self.add_action(&action_zoomout);
+        let action_return_origin_page = gio::SimpleAction::new("return-origin-page", None);
+        self.add_action(&action_return_origin_page);
+
         let action_selection_trash = gio::SimpleAction::new("selection-trash", None);
         self.add_action(&action_selection_trash);
         let action_selection_duplicate = gio::SimpleAction::new("selection-duplicate", None);
@@ -740,14 +742,14 @@ impl RnoteAppWindow {
         // Undo stroke
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().sheet().borrow_mut().strokes_state.undo_last_stroke();
-            appwindow.canvas().resize_endless();
+            appwindow.canvas().update_size_autoexpand();
             appwindow.canvas().update_background_rendernode(true);
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().sheet().borrow_mut().strokes_state.redo_last_stroke();
-            appwindow.canvas().resize_endless();
+            appwindow.canvas().update_size_autoexpand();
             appwindow.canvas().update_background_rendernode(true);
         }));
 
@@ -761,7 +763,7 @@ impl RnoteAppWindow {
             let mut new_zoom = appwindow.canvas().zoom();
 
             for _ in 0..2 {
-                new_zoom = (f64::from(appwindow.canvas_scroller().width()) - 2.0 * f64::from(appwindow.canvas().sheet_margin()) * new_zoom) / appwindow.canvas().sheet().borrow().format.width as f64;
+                new_zoom = f64::from(appwindow.canvas_scroller().width()) / appwindow.canvas().sheet().borrow().format.width as f64;
             }
             appwindow.canvas().zoom_to(new_zoom);
         }));
@@ -776,6 +778,11 @@ impl RnoteAppWindow {
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let new_zoom = ((appwindow.canvas().total_zoom() - Canvas::ZOOM_ACTION_DELTA) * 10.0).ceil() / 10.0;
             appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
+        }));
+
+        // Return to center
+        action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            appwindow.canvas().return_to_origin_page();
         }));
 
         // Temporary Eraser
@@ -861,8 +868,11 @@ impl RnoteAppWindow {
                 .unit(Unit::Points)
                 .build();
 
+                let pages_bounds = appwindow.canvas().sheet().borrow().gen_pages_bounds_containing_content();
+                let n_pages = pages_bounds.len();
+
             print_op.connect_begin_print(clone!(@weak appwindow => move |print_op, _print_cx| {
-                print_op.set_n_pages(appwindow.canvas().sheet().borrow().calc_n_pages() as i32);
+                print_op.set_n_pages(n_pages as i32);
             }));
 
             let sheet_svgs = match appwindow.canvas().sheet().borrow().gen_svgs() {
@@ -877,27 +887,27 @@ impl RnoteAppWindow {
             print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
                 let cx = print_cx.cairo_context();
 
-                let width_scale = print_cx.width() / f64::from(appwindow.canvas().sheet().borrow().format.width);
-                let height_scale = print_cx.height() / f64::from(appwindow.canvas().sheet().borrow().format.height);
-                let print_zoom = width_scale.min(height_scale);
-                let y_offset = f64::from(page_nr * appwindow.canvas().sheet().borrow().format.height as i32) * print_zoom;
+                let print_zoom = {
+                    let width_scale = print_cx.width() / appwindow.canvas().sheet().borrow().format.width;
+                    let height_scale = print_cx.height() / appwindow.canvas().sheet().borrow().format.height;
+                    width_scale.min(height_scale)
+                };
 
-                let format_bounds_scaled = AABB::new(
-                    na::point![0.0, y_offset],
-                    na::point![f64::from(appwindow.canvas().sheet().borrow().format.width) * print_zoom, y_offset + f64::from(appwindow.canvas().sheet().borrow().format.height) * print_zoom]
-                );
+                let page_bounds = pages_bounds[page_nr as usize];
 
-                // Start drawing
-                cx.translate(0.0, -y_offset);
+                cx.scale(print_zoom, print_zoom);
+                cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
+
                 cx.rectangle(
-                    format_bounds_scaled.mins[0],
-                    format_bounds_scaled.mins[1],
-                    format_bounds_scaled.extents()[0],
-                    format_bounds_scaled.extents()[1]
+                    page_bounds.mins[0],
+                    page_bounds.mins[1],
+                    page_bounds.extents()[0],
+                    page_bounds.extents()[1]
                 );
                 cx.clip();
 
-                if let Err(e) = render::draw_svgs_to_cairo_context(print_zoom, &sheet_svgs, sheet_bounds, &cx) {
+                // We zoom on the context, so 1.0 here
+                if let Err(e) = render::draw_svgs_to_cairo_context(1.0, &sheet_svgs, sheet_bounds, &cx) {
                     log::error!("render::draw_svgs_to_cairo_context() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
                 }
             }));

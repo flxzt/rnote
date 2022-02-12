@@ -252,8 +252,13 @@ impl Renderer {
 
         let rtree = usvg::Tree::from_data(svg_data.as_bytes(), &self.usvg_options.to_ref())?;
 
-        resvg::render(&rtree, usvg::FitTo::Zoom(zoom as f32), pixmap.as_mut())
-            .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
+        resvg::render(
+            &rtree,
+            usvg::FitTo::Zoom(zoom as f32),
+            tiny_skia::Transform::identity(),
+            pixmap.as_mut(),
+        )
+        .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
 
         let data = pixmap.data().to_vec();
 

@@ -13,38 +13,38 @@ members = [
 [dependencies]
 notetakingfileformats = {path = "./notetakingfileformats", version="0.1"}
 
-num-derive = "0.3"
-num-traits = "0.2"
+num-derive = "0.3.3"
+num-traits = "0.2.14"
 flate2 = "1.0"
-rand = "0.8"
-rand_pcg = "0.3"
-rand_distr = "0.4"
-log = "0.4"
-pretty_env_logger = "0.3"
+rand = "0.8.4"
+rand_pcg = "0.3.1"
+rand_distr = "0.4.3"
+log = "0.4.14"
+pretty_env_logger = "0.4.0"
 anyhow = "1.0"
 serde = {version = "1.0", features = ["derive", "rc"]}
 serde_json = { version="1.0" }
-chrono = {version ="0.4", features = ["serde"] }
+chrono = {version ="0.4.19", features = ["serde"] }
 regex = "1.5"
 rayon = "1.5"
 once_cell = "1.8"
-base64 = "0.13"
+base64 = "0.13.0"
 tuple-conv = "1.0"
-image = "0.23"
+image = "0.23.14"
 slotmap = { version = "1.0", features = ["serde"] }
-nalgebra = { version = "0.30", features = ["serde-serialize"] }
-parry2d-f64 = { version = "0.8", features = ["serde-serialize"] }
-geo = "0.18"
-gtk4 = {version = "0.4", features = ["v4_4"]}
-gstreamer = "0.18"
+nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.8.0", features = ["serde-serialize"] }
+geo = "0.18.0"
+gtk4 = {version = "0.4.6", features = ["v4_4"]}
+gstreamer = "0.18.3"
 adw = {version = "0.1.0", package="libadwaita"}
-cairo-rs = {version = "0.15", features = ["png", "svg", "pdf"]}
+cairo-rs = {version = "0.15.1", features = ["png", "svg", "pdf"]}
 librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
-svg = "0.10"
-resvg = "0.18"
-usvg = "0.18"
-tiny-skia = "0.6"
-xmlwriter = "0.1"
-roxmltree = "0.14"
-poppler-rs = "0.19"
+svg = "0.10.0"
+resvg = "0.20"
+usvg = "0.20"
+tiny-skia = "0.6.3"
+xmlwriter = "0.1.0"
+roxmltree = "0.14.1"
+poppler-rs = "0.19.0"
 gettext-rs = { version = "0.7.0", features = ["gettext-system"] }

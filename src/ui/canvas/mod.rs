@@ -603,6 +603,7 @@ use crate::strokes::strokestyle::InputData;
 use crate::ui::selectionmodifier::SelectionModifier;
 use crate::{app::RnoteApp, pens::Pens, render, sheet::Sheet, ui::appwindow::RnoteAppWindow};
 
+use gettextrs::gettext;
 use num_derive::{FromPrimitive, ToPrimitive};
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
@@ -1493,9 +1494,9 @@ impl Canvas {
 
         if !return_to_center_toast_is_some {
             let return_to_center_toast = adw::Toast::builder()
-                .title("Return to origin")
+                .title(&gettext("Return to origin"))
                 .timeout(0)
-                .button_label("Return")
+                .button_label(&gettext("Return"))
                 .priority(adw::ToastPriority::High)
                 .action_name("win.return-origin-page")
                 .build();

@@ -249,7 +249,7 @@ impl RnoteAppWindow {
                     appwindow.main_grid().remove(&appwindow.sidebar_grid());
                     appwindow.main_grid().remove(&appwindow.sidebar_sep());
                     appwindow.main_grid().remove(&appwindow.narrow_pens_toggles_revealer());
-                    appwindow.main_grid().remove(&appwindow.canvas_scroller());
+                    appwindow.main_grid().remove(&appwindow.canvas_box());
                     appwindow
                         .main_grid()
                         .attach(&appwindow.sidebar_grid(), 0, 1, 1, 2);
@@ -261,7 +261,7 @@ impl RnoteAppWindow {
                         .attach(&appwindow.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
                     appwindow
                         .main_grid()
-                        .attach(&appwindow.canvas_scroller(), 2, 2, 1, 1);
+                        .attach(&appwindow.canvas_box(), 2, 2, 1, 1);
 
                     appwindow
                         .mainheader()
@@ -333,13 +333,13 @@ impl RnoteAppWindow {
                         .set_direction(ArrowType::Right);
                     appwindow.flap().set_flap_position(PackType::Start);
                 } else {
-                    appwindow.main_grid().remove(&appwindow.canvas_scroller());
+                    appwindow.main_grid().remove(&appwindow.canvas_box());
                     appwindow.main_grid().remove(&appwindow.narrow_pens_toggles_revealer());
                     appwindow.main_grid().remove(&appwindow.sidebar_sep());
                     appwindow.main_grid().remove(&appwindow.sidebar_grid());
                     appwindow
                         .main_grid()
-                        .attach(&appwindow.canvas_scroller(), 0, 2, 1, 1);
+                        .attach(&appwindow.canvas_box(), 0, 2, 1, 1);
                     appwindow
                         .main_grid()
                         .attach(&appwindow.narrow_pens_toggles_revealer(), 0, 1, 1, 1);

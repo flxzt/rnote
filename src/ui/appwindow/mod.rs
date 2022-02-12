@@ -35,6 +35,8 @@ mod imp {
         #[template_child]
         pub main_grid: TemplateChild<Grid>,
         #[template_child]
+        pub canvas_box: TemplateChild<gtk4::Box>,
+        #[template_child]
         pub canvas_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
         pub canvas: TemplateChild<Canvas>,
@@ -94,6 +96,7 @@ mod imp {
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 main_grid: TemplateChild::<Grid>::default(),
+                canvas_box: TemplateChild::<gtk4::Box>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<Canvas>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
@@ -533,6 +536,12 @@ impl RnoteAppWindow {
 
     pub fn main_grid(&self) -> Grid {
         imp::RnoteAppWindow::from_instance(self).main_grid.get()
+    }
+
+    pub fn canvas_box(&self) -> gtk4::Box {
+        imp::RnoteAppWindow::from_instance(self)
+            .canvas_box
+            .get()
     }
 
     pub fn canvas_scroller(&self) -> ScrolledWindow {

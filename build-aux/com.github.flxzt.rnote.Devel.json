@@ -60,6 +60,20 @@
             ]
         },
         {
+            "name": "poppler-data",
+            "buildsystem": "cmake-ninja",
+            "config-opts": [
+                "-DCMAKE_BUILD_TYPE=RelWithDebInfo"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://poppler.freedesktop.org/poppler-data-0.4.11.tar.gz",
+                    "sha256": "2cec05cd1bb03af98a8b06a1e22f6e6e1a65b1e2f3816cb3069bb0874825f08c"
+                }
+            ]
+        },
+        {
             "name": "libsass",
             "buildsystem": "meson",
             "cleanup": [

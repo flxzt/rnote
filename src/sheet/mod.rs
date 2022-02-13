@@ -68,6 +68,20 @@ impl Sheet {
         )
     }
 
+    /// Generates bounds which contain all pages with content, and are extended to fit the format size.
+    pub fn bounds_w_content_extended(&self) -> Option<AABB> {
+        let bounds = self.gen_pages_bounds_containing_content();
+        if bounds.is_empty() {
+            return None;
+        }
+
+        Some(
+            bounds
+                .into_iter()
+                .fold(AABB::new_invalid(), |prev, next| prev.merged(&next)),
+        )
+    }
+
     pub fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
         if self.format.height > 0.0 && self.format.width > 0.0 {
@@ -78,6 +92,7 @@ impl Sheet {
         }
     }
 
+    // Generates bounds for each page for the sheet size, extended to fit the sheet format. May contain many empty pages (in infinite mode)
     pub fn gen_pages_bounds(&self) -> Vec<AABB> {
         let sheet_bounds = self.bounds();
 
@@ -91,6 +106,7 @@ impl Sheet {
         }
     }
 
+    // Generates bounds for each page which is containing content, extended to fit the sheet format
     pub fn gen_pages_bounds_containing_content(&self) -> Vec<AABB> {
         let sheet_bounds = self.bounds();
         let keys = self.strokes_state.keys_sorted_chrono();
@@ -410,7 +426,14 @@ impl Sheet {
     }
 
     pub fn export_sheet_as_svg(&self, file: &gio::File) -> Result<(), anyhow::Error> {
-        let sheet_bounds = self.bounds();
+        let bounds = if let Some(bounds) = self.bounds_w_content_extended() {
+            bounds
+        } else {
+            return Err(anyhow::anyhow!(
+                "export_sheet_as_svg() failed, bounds_with_content() returned None"
+            ));
+        };
+
         let svgs = self.gen_svgs()?;
 
         let mut svg_data = svgs
@@ -419,12 +442,7 @@ impl Sheet {
             .collect::<Vec<&str>>()
             .join("\n");
 
-        svg_data = compose::wrap_svg_root(
-            svg_data.as_str(),
-            Some(sheet_bounds),
-            Some(sheet_bounds),
-            true,
-        );
+        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
 
         file.replace_async(
             None,

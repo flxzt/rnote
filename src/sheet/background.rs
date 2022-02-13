@@ -177,14 +177,8 @@ impl Default for Background {
 }
 
 impl Background {
-    pub const TILE_MAX_SIZE: f64 = 256.0;
-
-    pub const COLOR_DEFAULT: Color = Color {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0,
-        a: 1.0,
-    };
+    pub const TILE_MAX_SIZE: f64 = 192.0;
+    pub const COLOR_DEFAULT: Color = Color::WHITE;
     pub const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
     pub const PATTERN_COLOR_DEFAULT: Color = Color {
         r: 0.8,

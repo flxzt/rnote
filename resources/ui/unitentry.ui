@@ -11,8 +11,8 @@
     <child>
       <object class="GtkAdjustment" id="value_adj">
         <property name="step-increment">1</property>
-        <property name="upper">999999</property>
-        <property name="lower">-999999</property>
+        <property name="upper">99999</property>
+        <property name="lower">-99999</property>
         <property name="value">32</property>
       </object>
       <object class="GtkSpinButton" id="value_spinner">
@@ -24,7 +24,7 @@
     </child>
     <child>
       <object class="GtkDropDown" id="unit_dropdown">
-        <property name="width-request">80</property>
+        <property name="width-request">70</property>
         <property name="model">
           <object class="AdwEnumListModel">
             <property name="enum-type">MeasureUnit</property>

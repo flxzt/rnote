@@ -1326,11 +1326,17 @@ impl Canvas {
     /// Centering the view to the first page
     pub fn return_to_origin_page(&self) {
         let total_zoom = self.total_zoom();
-        let center = na::vector![
-            self.sheet().borrow().format.width / 2.0,
-            (f64::from(self.parent().unwrap().height()) / 2.0 - Self::SHADOW_WIDTH) / total_zoom
+        let parent_width = f64::from(self.parent().unwrap().width());
+
+        let new_adjs = na::vector![
+            ((self.sheet().borrow().format.width / 2.0) * total_zoom) - parent_width * 0.5,
+            -2.0 * Self::SHADOW_WIDTH * total_zoom
         ];
-        self.center_around_coord_on_sheet(center);
+        self.resize_sheet_infinite_mode_new_adjs(new_adjs);
+
+        self.hadjustment().unwrap().set_value(new_adjs[0]);
+        self.vadjustment().unwrap().set_value(new_adjs[1]);
+        self.queue_resize();
     }
 
     /// Zoom temporarily to a new zoom, not regenerating the contents while doing it.

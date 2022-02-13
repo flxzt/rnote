@@ -74,10 +74,10 @@ impl RnoteAppWindow {
                 let value = settings_value.get::<String>().unwrap();
                 match value.as_str() {
                     "fixed-size" => Some(ExpandMode::FixedSize.to_value()),
-                    "expand-vertical" => Some(ExpandMode::EndlessVertical.to_value()),
+                    "endless-vertical" => Some(ExpandMode::EndlessVertical.to_value()),
                     "infinite" => Some(ExpandMode::Infinite.to_value()),
                     _ => {
-                        log::error!("mapping expand-mode to setting failed, invalid str");
+                        log::error!("mapping expand-mode to setting failed, invalid str {}", value.as_str());
                         None
                     }
                 }

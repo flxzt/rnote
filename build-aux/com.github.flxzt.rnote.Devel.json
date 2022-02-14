@@ -123,9 +123,9 @@
             ],
             "sources": [
                 {
-                    "type": "git",
-                    "url": "https://gitlab.gnome.org/GNOME/gtk.git",
-                    "commit": "c12f085530ba11072ae38ec8712db183bf6569a5"
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/gtk/4.6/gtk-4.6.1.tar.xz",
+                    "sha256": "d85508d21cbbcd63d568a7862af5ecd63b978d7d5799cbe404c91d2389d0ec5f"
                 }
             ]
         },

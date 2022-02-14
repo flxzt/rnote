@@ -1330,7 +1330,7 @@ impl Canvas {
 
         let new_adjs = na::vector![
             ((self.sheet().borrow().format.width / 2.0) * total_zoom) - parent_width * 0.5,
-            -2.0 * Self::SHADOW_WIDTH * total_zoom
+            -Self::SHADOW_WIDTH * total_zoom
         ];
         self.resize_sheet_infinite_mode_new_adjs(new_adjs);
 

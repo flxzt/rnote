@@ -63,6 +63,14 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.3.5" date="2022-02-14">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>A new feature: infinite mode for exandable sheets in every direction</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.3.4" date="2022-02-06">
       <description>
         <p>this release changes:</p>

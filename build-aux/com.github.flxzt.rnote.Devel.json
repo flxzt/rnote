@@ -20,7 +20,6 @@
         "--filesystem=xdg-documents",
         "--filesystem=xdg-pictures",
         "--filesystem=xdg-desktop",
-        "--filesystem=xdg-download",
         "--filesystem=xdg-run/gvfs",
         "--filesystem=xdg-run/gvfsd",
         "--env=RUST_BACKTRACE=full",

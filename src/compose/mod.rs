@@ -1,4 +1,5 @@
 use p2d::bounding_volume::AABB;
+use rand::Rng;
 use rand::SeedableRng;
 use svg::node::{self, element};
 
@@ -116,4 +117,12 @@ pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     } else {
         rand_pcg::Pcg64::from_entropy()
     }
+}
+
+pub fn random_id_prefix() -> String {
+    rand::thread_rng()
+        .sample_iter(&rand::distributions::Alphanumeric)
+        .take(8)
+        .map(char::from)
+        .collect::<String>()
 }

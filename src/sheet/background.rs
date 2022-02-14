@@ -36,32 +36,42 @@ impl Default for PatternStyle {
     }
 }
 
-pub fn gen_horizontal_line_pattern(
+pub fn gen_hline_pattern(
     bounds: AABB,
     spacing: f64,
     color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
-    let mut group = element::Group::new();
+    let pattern_id = compose::random_id_prefix() + "_bg_hline_pattern";
 
-    let mut y_offset = bounds.mins[1] + spacing;
-
-    if spacing > 1.0 {
-        while y_offset <= bounds.maxs[1] {
-            group = group.add(
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", bounds.extents()[0])
+            .set("height", spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color())
-                    .set("x1", bounds.mins[0])
-                    .set("y1", y_offset - line_width)
-                    .set("x2", bounds.maxs[0])
-                    .set("y2", y_offset - line_width),
-            );
+                    .set("x1", 0_f64)
+                    .set("y1", 0_f64)
+                    .set("x2", bounds.extents()[0])
+                    .set("y2", 0_f64),
+            ),
+    );
 
-            y_offset += spacing
-        }
-    }
+    let rect = element::Rectangle::new()
+        .set("x", bounds.mins[0])
+        .set("y", bounds.mins[1])
+        .set("width", bounds.extents()[0])
+        .set("height", bounds.extents()[1])
+        .set("fill", format!("url(#{})", pattern_id));
 
+    let group = element::Group::new().add(pattern).add(rect);
     group.into()
 }
 
@@ -72,41 +82,45 @@ pub fn gen_grid_pattern(
     color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
-    let mut group = element::Group::new();
+    let pattern_id = compose::random_id_prefix() + "_bg_grid_pattern";
 
-    if column_spacing > 1.0 && row_spacing > 1.0 {
-        let mut x_offset = bounds.mins[0] + column_spacing;
-        while x_offset <= bounds.maxs[0] {
-            // vertical lines
-            group = group.add(
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", column_spacing)
+            .set("height", row_spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color())
-                    .set("x1", x_offset - line_width)
-                    .set("y1", bounds.mins[1])
-                    .set("x2", x_offset - line_width)
-                    .set("y2", bounds.maxs[1]),
-            );
-
-            x_offset += column_spacing
-        }
-
-        let mut y_offset = bounds.mins[1] + row_spacing;
-        while y_offset <= bounds.maxs[1] {
-            // horizontal lines
-            group = group.add(
+                    .set("x1", 0_f64)
+                    .set("y1", 0_f64)
+                    .set("x2", column_spacing)
+                    .set("y2", 0_f64),
+            )
+            .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color())
-                    .set("x1", bounds.mins[0])
-                    .set("y1", y_offset - line_width)
-                    .set("x2", bounds.maxs[0])
-                    .set("y2", y_offset - line_width),
-            );
+                    .set("x1", 0_f64)
+                    .set("y1", 0_f64)
+                    .set("x2", 0_f64)
+                    .set("y2", row_spacing),
+            ),
+    );
 
-            y_offset += row_spacing
-        }
-    }
+    let rect = element::Rectangle::new()
+        .set("x", bounds.mins[0])
+        .set("y", bounds.mins[1])
+        .set("width", bounds.extents()[0])
+        .set("height", bounds.extents()[1])
+        .set("fill", format!("url(#{})", pattern_id));
+
+    let group = element::Group::new().add(pattern).add(rect);
     group.into()
 }
 
@@ -117,32 +131,36 @@ pub fn gen_dots_pattern(
     color: Color,
     dots_width: f64,
 ) -> svg::node::element::Element {
-    let mut group = element::Group::new();
+    let pattern_id = compose::random_id_prefix() + "_bg_dots_pattern";
 
-    // Only generate pattern if spacings are sufficiently large
-    if column_spacing > 1.0 && row_spacing > 1.0 {
-        let mut x_offset = bounds.mins[0] + column_spacing;
-        while x_offset <= bounds.maxs[0] {
-            let mut y_offset = bounds.mins[1] + row_spacing;
-            while y_offset <= bounds.maxs[1] {
-                // row by row
-                group = group.add(
-                    element::Rectangle::new()
-                        .set("stroke", "none")
-                        .set("fill", color.to_css_color())
-                        .set("x", x_offset - dots_width)
-                        .set("y", y_offset - dots_width)
-                        .set("width", dots_width)
-                        .set("height", dots_width),
-                );
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", column_spacing)
+            .set("height", row_spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
+                element::Rectangle::new()
+                    .set("stroke", "none")
+                    .set("fill", color.to_css_color())
+                    .set("x", 0_f64)
+                    .set("y", 0_f64)
+                    .set("width", dots_width)
+                    .set("height", dots_width),
+            ),
+    );
 
-                y_offset += row_spacing;
-            }
+    let rect = element::Rectangle::new()
+        .set("x", bounds.mins[0])
+        .set("y", bounds.mins[1])
+        .set("width", bounds.extents()[0])
+        .set("height", bounds.extents()[1])
+        .set("fill", format!("url(#{})", pattern_id));
 
-            x_offset += column_spacing;
-        }
-    }
-
+    let group = element::Group::new().add(pattern).add(rect);
     group.into()
 }
 
@@ -223,7 +241,7 @@ impl Background {
         match self.pattern {
             PatternStyle::None => {}
             PatternStyle::Lines => {
-                group = group.add(gen_horizontal_line_pattern(
+                group = group.add(gen_hline_pattern(
                     bounds,
                     self.pattern_size[1],
                     self.pattern_color,
@@ -265,7 +283,7 @@ impl Background {
         Ok(Some(render::concat_images(
             renderer.read().unwrap().gen_images(zoom, &[svg], bounds)?,
             bounds,
-            zoom
+            zoom,
         )?))
     }
 

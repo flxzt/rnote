@@ -96,11 +96,6 @@ pub struct ShapeStroke {
     pub drawstyle: ShapeDrawStyle,
     #[serde(rename = "bounds")]
     pub bounds: AABB,
-
-    #[serde(skip)]
-    pub rect_start: na::Vector2<f64>,
-    #[serde(skip)]
-    pub rect_current: na::Vector2<f64>,
 }
 
 impl Default for ShapeStroke {
@@ -277,8 +272,6 @@ impl ShapeStroke {
             drawstyle,
             bounds,
             seed,
-            rect_start: element.inputdata.pos(),
-            rect_current: element.inputdata.pos(),
         };
 
         if let Some(new_bounds) = shapestroke.gen_bounds() {
@@ -288,20 +281,20 @@ impl ShapeStroke {
         shapestroke
     }
 
-    pub fn update_shape(&mut self, element: Element) {
+    pub fn update_shape(&mut self, shaper: &mut Shaper, element: Element) {
         match self.shape {
             Shape::Line(ref mut line) => {
                 line.end = element.inputdata.pos();
             }
             Shape::Rectangle(ref mut rectangle) => {
-                let diff = element.inputdata.pos() - self.rect_current;
+                let diff = element.inputdata.pos() - shaper.rect_current;
 
                 rectangle.cuboid.half_extents =
-                    ((element.inputdata.pos() - self.rect_start) / 2.0).abs();
+                    ((element.inputdata.pos() - shaper.rect_start) / 2.0).abs();
                 rectangle.transform.transform =
                     na::Translation2::from(diff / 2.0) * rectangle.transform.transform;
 
-                self.rect_current = element.inputdata.pos();
+                shaper.rect_current = element.inputdata.pos();
             }
             Shape::Ellipse(ref mut ellipse) => {
                 let center = ellipse

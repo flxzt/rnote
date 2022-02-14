@@ -539,9 +539,7 @@ impl RnoteAppWindow {
     }
 
     pub fn canvas_box(&self) -> gtk4::Box {
-        imp::RnoteAppWindow::from_instance(self)
-            .canvas_box
-            .get()
+        imp::RnoteAppWindow::from_instance(self).canvas_box.get()
     }
 
     pub fn canvas_scroller(&self) -> ScrolledWindow {

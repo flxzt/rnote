@@ -15,6 +15,7 @@ use crate::compose::geometry;
 use crate::compose::transformable::Transformable;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::tools::DragProximityTool;
+use crate::pens::Pens;
 use crate::render::{self, Renderer};
 use crate::strokes::bitmapimage::BitmapImage;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
@@ -300,10 +301,10 @@ impl StrokesState {
         self.strokes.remove(key)
     }
 
-    /// returns key to last stroke
     pub fn add_to_stroke(
         &mut self,
         key: StrokeKey,
+        pens: &mut Pens,
         element: Element,
         renderer: Arc<RwLock<Renderer>>,
         zoom: f64,
@@ -316,7 +317,7 @@ impl StrokesState {
                 brushstroke.push_elem(element);
             }
             StrokeStyle::ShapeStroke(ref mut shapestroke) => {
-                shapestroke.update_shape(element);
+                shapestroke.update_shape(&mut pens.shaper, element);
             }
             StrokeStyle::VectorImage(_vectorimage) => {}
             StrokeStyle::BitmapImage(_bitmapimage) => {}

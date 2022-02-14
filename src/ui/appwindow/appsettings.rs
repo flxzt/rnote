@@ -77,7 +77,10 @@ impl RnoteAppWindow {
                     "endless-vertical" => Some(ExpandMode::EndlessVertical.to_value()),
                     "infinite" => Some(ExpandMode::Infinite.to_value()),
                     _ => {
-                        log::error!("mapping expand-mode to setting failed, invalid str {}", value.as_str());
+                        log::error!(
+                            "mapping expand-mode to setting failed, invalid str {}",
+                            value.as_str()
+                        );
                         None
                     }
                 }

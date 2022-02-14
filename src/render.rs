@@ -100,6 +100,8 @@ pub struct Renderer {
     pub usvg_xml_options: usvg::XmlOptions,
     /// The maximum tile size (unzoomed)
     pub max_tile_size: na::Vector2<f64>,
+    // the maximum size for svgs are joined together for rendering
+    pub max_join_size: na::Vector2<f64>,
 }
 
 impl Default for Renderer {
@@ -121,6 +123,7 @@ impl Default for Renderer {
             usvg_options,
             usvg_xml_options,
             max_tile_size: na::vector![1024.0, 1024.0],
+            max_join_size: na::vector![1024.0, 1024.0],
         }
     }
 }
@@ -131,7 +134,7 @@ impl Renderer {
     pub fn gen_images(
         &self,
         zoom: f64,
-        svgs: &[Svg],
+        svgs: Vec<Svg>,
         bounds: AABB,
     ) -> Result<Vec<Image>, anyhow::Error> {
         if svgs.is_empty() {
@@ -147,11 +150,24 @@ impl Renderer {
     fn gen_images_librsvg(
         &self,
         zoom: f64,
-        svgs: &[Svg],
+        mut svgs: Vec<Svg>,
         mut bounds: AABB,
     ) -> Result<Vec<Image>, anyhow::Error> {
         geometry::aabb_ensure_valid(&mut bounds);
         assert_bounds(bounds)?;
+
+        // joining svgs for sizes that are not worth
+        if bounds.extents()[0] < self.max_join_size[0]
+            && bounds.extents()[0] < self.max_join_size[1]
+        {
+            let svg_data = svgs
+                .into_iter()
+                .map(|svg| svg.svg_data)
+                .collect::<Vec<String>>()
+                .join("\n");
+
+            svgs = vec![Svg { svg_data, bounds }];
+        }
 
         let mut images = vec![];
 
@@ -251,11 +267,24 @@ impl Renderer {
     fn gen_images_resvg(
         &self,
         zoom: f64,
-        svgs: &[Svg],
+        mut svgs: Vec<Svg>,
         mut bounds: AABB,
     ) -> Result<Vec<Image>, anyhow::Error> {
         geometry::aabb_ensure_valid(&mut bounds);
         assert_bounds(bounds)?;
+
+        // joining svgs for sizes that are not worth
+        if bounds.extents()[0] < self.max_join_size[0]
+            && bounds.extents()[0] < self.max_join_size[1]
+        {
+            let svg_data = svgs
+                .into_iter()
+                .map(|svg| svg.svg_data)
+                .collect::<Vec<String>>()
+                .join("\n");
+
+            svgs = vec![Svg { svg_data, bounds }];
+        }
 
         let mut images = vec![];
 

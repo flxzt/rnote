@@ -131,7 +131,7 @@ impl ExpandSheetTool {
         let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg { svg_data, bounds };
 
-        let images = renderer.read().unwrap().gen_images(zoom, &[svg], bounds)?;
+        let images = renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?;
         if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
             .context("images_to_rendernode() failed in expandsheet .draw()")?
         {
@@ -220,7 +220,7 @@ impl DragProximityTool {
             bounds,
         };
 
-        let images = renderer.read().unwrap().gen_images(zoom, &[svg], bounds)?;
+        let images = renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?;
         if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
             .context("images_to_rendernode() failed in proximitytool .draw()")?
         {

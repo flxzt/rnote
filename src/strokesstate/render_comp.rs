@@ -322,7 +322,7 @@ impl StrokesState {
                             let bounds = last_elems_svg.bounds;
                             match renderer.read().unwrap().gen_images(
                                 zoom,
-                                &[last_elems_svg],
+                                vec![last_elems_svg],
                                 bounds,
                             ) {
                                 Ok(mut images) => {
@@ -371,7 +371,7 @@ impl StrokesState {
                             let bounds = last_elems_svg.bounds;
                             match renderer.read().unwrap().gen_images(
                                 zoom,
-                                &[last_elems_svg],
+                                vec![last_elems_svg],
                                 bounds,
                             ) {
                                 Ok(mut images) => {
@@ -469,7 +469,7 @@ impl StrokesState {
                             let bounds = last_elems_svg.bounds;
                                 match renderer.read().unwrap().gen_images(
                                     zoom,
-                                    &[last_elems_svg],
+                                    vec![last_elems_svg],
                                     bounds,
                                 ) {
                                     Ok(images) => {
@@ -509,7 +509,7 @@ impl StrokesState {
                                 let bounds = last_elems_svg.bounds;
                                 match renderer.read().unwrap().gen_images(
                                     zoom,
-                                    &[last_elems_svg],
+                                    vec![last_elems_svg],
                                     bounds,
                                 ) {
                                     Ok(images) => {

@@ -42,6 +42,6 @@ pub trait DrawBehaviour {
         renderer
             .read()
             .unwrap()
-            .gen_images(zoom, &svgs, self.bounds())
+            .gen_images(zoom, svgs, self.bounds())
     }
 }

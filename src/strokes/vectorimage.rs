@@ -299,7 +299,7 @@ impl VectorImage {
         };
 
         let image_raw = render::concat_images(renderer.read().unwrap()
-            .gen_images(zoom, &[export_svg], export_bounds)?, export_bounds, zoom)?;
+            .gen_images(zoom, vec![export_svg], export_bounds)?, export_bounds, zoom)?;
 
         Ok(render::image_into_encoded_bytes(image_raw, format)?)
     }

@@ -281,7 +281,7 @@ impl Background {
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let svg = self.gen_svg(bounds)?;
         Ok(Some(render::concat_images(
-            renderer.read().unwrap().gen_images(zoom, &[svg], bounds)?,
+            renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?,
             bounds,
             zoom,
         )?))

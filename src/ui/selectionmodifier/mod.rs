@@ -265,7 +265,7 @@ pub mod imp {
                     };
                     let images = canvas.renderer().read().unwrap().gen_images(
                         1.0,
-                        &[svg],
+                        vec![svg],
                         transformed_selection_bounds,
                     )?;
                     if let Some(rendernode) = render::images_to_rendernode(&images, 1.0).context(
@@ -380,7 +380,7 @@ pub mod imp {
                     };
                     let images = canvas.renderer().read().unwrap().gen_images(
                         1.0,
-                        &[svg],
+                        vec![svg],
                         transformed_selection_bounds,
                     )?;
                     if let Some(rendernode) = render::images_to_rendernode(&images, 1.0)

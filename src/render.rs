@@ -164,6 +164,8 @@ impl Renderer {
                 if assert_bounds(splitted_bounds).is_err() {
                     continue;
                 }
+                let splitted_bounds = geometry::aabb_ceil(splitted_bounds);
+
                 let splitted_width_scaled = ((splitted_bounds.extents()[0]) * zoom).round() as u32;
                 let splitted_height_scaled = ((splitted_bounds.extents()[1]) * zoom).round() as u32;
 
@@ -254,7 +256,6 @@ impl Renderer {
     ) -> Result<Vec<Image>, anyhow::Error> {
         geometry::aabb_ensure_valid(&mut bounds);
         assert_bounds(bounds)?;
-        let bounds = geometry::aabb_ceil(bounds);
 
         let mut images = vec![];
 
@@ -268,6 +269,7 @@ impl Renderer {
                 if assert_bounds(splitted_bounds).is_err() {
                     continue;
                 }
+                let splitted_bounds = geometry::aabb_ceil(splitted_bounds);
 
                 let splitted_width_scaled = ((splitted_bounds.extents()[0]) * zoom).round() as u32;
                 let splitted_height_scaled = ((splitted_bounds.extents()[1]) * zoom).round() as u32;

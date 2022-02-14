@@ -120,7 +120,7 @@ impl Default for Renderer {
             backend: RendererBackend::Librsvg,
             usvg_options,
             usvg_xml_options,
-            max_tile_size: na::vector![256.0, 256.0],
+            max_tile_size: na::vector![1024.0, 1024.0],
         }
     }
 }
@@ -159,7 +159,7 @@ impl Renderer {
             let svg_data =
                 compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), Some(bounds), false);
 
-            for mut splitted_bounds in geometry::split_aabb(svg.bounds, self.max_tile_size) {
+            for mut splitted_bounds in geometry::split_aabb(svg.bounds, self.max_tile_size / zoom) {
                 geometry::aabb_ensure_valid(&mut splitted_bounds);
                 if assert_bounds(splitted_bounds).is_err() {
                     continue;
@@ -263,7 +263,7 @@ impl Renderer {
                 compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), Some(bounds), false);
             let svg_tree = usvg::Tree::from_data(svg_data.as_bytes(), &self.usvg_options.to_ref())?;
 
-            for mut splitted_bounds in geometry::split_aabb(bounds, self.max_tile_size) {
+            for mut splitted_bounds in geometry::split_aabb(bounds, self.max_tile_size / zoom) {
                 geometry::aabb_ensure_valid(&mut splitted_bounds);
                 if assert_bounds(splitted_bounds).is_err() {
                     continue;

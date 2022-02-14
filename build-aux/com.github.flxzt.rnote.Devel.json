@@ -13,8 +13,6 @@
     "finish-args": [
         "--socket=wayland",
         "--socket=fallback-x11",
-        "--own-name=com.github.flxzt.rnote",
-        "--own-name=com.github.flxzt.rnote.*",
         "--device=dri",
         "--share=ipc",
         "--socket=pulseaudio",

@@ -17,7 +17,7 @@ app_authors = 'Felix Zwettler'
 if get_option('profile') == 'devel'
   profile = 'devel'
   version_suffix = '-devel'
-  app_id = base_id + '.' + profile
+  app_id = base_id + '.' + 'Devel'
 else
   profile = 'default'
   version_suffix = ''

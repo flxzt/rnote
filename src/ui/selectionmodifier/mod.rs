@@ -263,14 +263,14 @@ pub mod imp {
                         bounds: transformed_selection_bounds,
                         svg_data,
                     };
-                    if let Some(image) = canvas.renderer().read().unwrap().gen_image(
+                    let images = canvas.renderer().read().unwrap().gen_images(
                         1.0,
                         &[svg],
                         transformed_selection_bounds,
+                    )?;
+                    if let Some(rendernode) = render::images_to_rendernode(&images, 1.0).context(
+                        "image_to_rendernode() in draw_selection() in selection_modifier failed",
                     )? {
-                        let rendernode = render::image_to_rendernode(&image, 1.0).context(
-                            "image_to_rendernode() in draw_selection() in selection_modifier failed",
-                        )?;
                         snapshot.append_node(&rendernode);
                     }
                     Ok(())
@@ -378,15 +378,15 @@ pub mod imp {
                         bounds: transformed_selection_bounds,
                         svg_data,
                     };
-                    if let Some(image) = canvas.renderer().read().unwrap().gen_image(
+                    let images = canvas.renderer().read().unwrap().gen_images(
                         1.0,
                         &[svg],
                         transformed_selection_bounds,
-                    )? {
-                        let rendernode = render::image_to_rendernode(&image, 1.0)
-                            .context("image_to_rendernode() in draw_rotation_indicator() in selection_modifier failed")?;
-                        snapshot.append_node(&rendernode);
-                    }
+                    )?;
+                    if let Some(rendernode) = render::images_to_rendernode(&images, 1.0)
+                        .context("image_to_rendernode() in draw_rotation_indicator() in selection_modifier failed")? {
+                            snapshot.append_node(&rendernode);
+                        }
                     Ok(())
                 };
 

@@ -323,7 +323,7 @@ impl StrokesState {
             StrokeStyle::BitmapImage(_bitmapimage) => {}
         }
 
-        self.append_rendering_new_elem_threaded_fifo(key, renderer, zoom);
+        self.append_rendering_new_elem_threaded(key, renderer, zoom);
     }
 
     /// Clears every stroke and every component

@@ -262,7 +262,11 @@ impl Background {
         bounds: AABB,
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let svg = self.gen_svg(bounds)?;
-        renderer.read().unwrap().gen_image(zoom, &[svg], bounds)
+        Ok(Some(render::concat_images(
+            renderer.read().unwrap().gen_images(zoom, &[svg], bounds)?,
+            bounds,
+            zoom
+        )?))
     }
 
     pub fn regenerate_background(

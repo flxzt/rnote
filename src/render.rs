@@ -98,6 +98,8 @@ pub struct Renderer {
     pub backend: RendererBackend,
     pub usvg_options: usvg::Options,
     pub usvg_xml_options: usvg::XmlOptions,
+    /// The maximum tile size (unzoomed)
+    pub max_tile_size: na::Vector2<f64>,
 }
 
 impl Default for Renderer {
@@ -118,6 +120,7 @@ impl Default for Renderer {
             backend: RendererBackend::Librsvg,
             usvg_options,
             usvg_xml_options,
+            max_tile_size: na::vector![256.0, 256.0],
         }
     }
 }
@@ -125,154 +128,211 @@ impl Default for Renderer {
 impl Renderer {
     /// generates images from SVGs. bounds are in coordinate space of the sheet, (not zoomed)
     /// expects the svgs to be raw svg tags, no svg root or xml header needed
-    pub fn gen_image(
+    pub fn gen_images(
         &self,
         zoom: f64,
         svgs: &[Svg],
         bounds: AABB,
-    ) -> Result<Option<Image>, anyhow::Error> {
+    ) -> Result<Vec<Image>, anyhow::Error> {
         if svgs.is_empty() {
-            return Ok(None);
+            return Ok(vec![]);
         }
-
-        assert_bounds(bounds)?;
 
         match self.backend {
-            RendererBackend::Librsvg => self.gen_image_librsvg(zoom, svgs, bounds),
-            RendererBackend::Resvg => self.gen_image_resvg(zoom, svgs, bounds),
+            RendererBackend::Librsvg => self.gen_images_librsvg(zoom, svgs, bounds),
+            RendererBackend::Resvg => self.gen_images_resvg(zoom, svgs, bounds),
         }
     }
 
-    fn gen_image_librsvg(
+    fn gen_images_librsvg(
         &self,
         zoom: f64,
         svgs: &[Svg],
-        bounds: AABB,
-    ) -> Result<Option<Image>, anyhow::Error> {
-        let width_scaled = ((bounds.extents()[0]) * zoom).round() as u32;
-        let height_scaled = ((bounds.extents()[1]) * zoom).round() as u32;
+        mut bounds: AABB,
+    ) -> Result<Vec<Image>, anyhow::Error> {
+        geometry::aabb_ensure_valid(&mut bounds);
+        assert_bounds(bounds)?;
 
-        let mut surface = cairo::ImageSurface::create(
-            cairo::Format::ARgb32,
-            width_scaled as i32,
-            height_scaled as i32,
-        )
-        .map_err(|e| {
-            anyhow::anyhow!(
-                "create ImageSurface with dimensions ({}, {}) failed, {}",
-                width_scaled,
-                height_scaled,
-                e
-            )
-        })?;
+        let mut images = vec![];
 
-        let mut svg_data = svgs
-            .iter()
-            .map(|svg| svg.svg_data.as_str())
-            .collect::<Vec<&str>>()
-            .join("\n");
-        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
+        for svg in svgs {
+            let svg_data =
+                compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), Some(bounds), false);
 
-        // Context in new scope, else accessing the surface data fails with a borrow error
-        {
-            let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+            for mut splitted_bounds in geometry::split_aabb(svg.bounds, self.max_tile_size) {
+                geometry::aabb_ensure_valid(&mut splitted_bounds);
+                if assert_bounds(splitted_bounds).is_err() {
+                    continue;
+                }
+                let splitted_width_scaled = ((splitted_bounds.extents()[0]) * zoom).round() as u32;
+                let splitted_height_scaled = ((splitted_bounds.extents()[1]) * zoom).round() as u32;
 
-            let stream =
-                gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
-
-            let handle = librsvg::Loader::new()
-                .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
-                    &stream, None, None,
-                )
-                .context("read stream to librsvg Loader failed")?;
-            let renderer = librsvg::CairoRenderer::new(&handle);
-            renderer
-                .render_document(
-                    &cx,
-                    &cairo::Rectangle {
-                        x: 0.0,
-                        y: 0.0,
-                        width: f64::from(width_scaled),
-                        height: f64::from(height_scaled),
-                    },
+                let mut surface = cairo::ImageSurface::create(
+                    cairo::Format::ARgb32,
+                    splitted_width_scaled as i32,
+                    splitted_height_scaled as i32,
                 )
                 .map_err(|e| {
-                    anyhow::Error::msg(format!(
-                        "librsvg render_document() failed in gen_image_librsvg() with Err {}",
+                    anyhow::anyhow!(
+                        "create ImageSurface with dimensions ({}, {}) failed, {}",
+                        splitted_width_scaled,
+                        splitted_height_scaled,
                         e
-                    ))
+                    )
                 })?;
+
+                // Context in new scope, else accessing the surface data fails with a borrow error
+                {
+                    let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+                    cx.scale(zoom, zoom);
+                    cx.translate(-splitted_bounds.mins[0], -splitted_bounds.mins[1]);
+
+                    /*                 // Debugging bounds
+                    cx.set_line_width(1.0);
+                    cx.set_source_rgba(1.0, 0.0, 0.0, 1.0);
+                    cx.rectangle(splitted_bounds.mins[0], splitted_bounds.mins[1], splitted_bounds.extents()[0], splitted_bounds.extents()[1]);
+                    cx.stroke()?;
+                    cx.set_source_rgba(0.0, 0.0, 0.0, 0.0); */
+
+                    let stream =
+                        gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
+
+                    let handle = librsvg::Loader::new()
+                        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
+                            &stream, None, None,
+                        )
+                        .context("read stream to librsvg Loader failed")?;
+                    let renderer = librsvg::CairoRenderer::new(&handle);
+                    renderer
+                        .render_document(
+                            &cx,
+                            &cairo::Rectangle {
+                                x: bounds.mins[0],
+                                y: bounds.mins[1],
+                                width: bounds.extents()[0],
+                                height: bounds.extents()[1],
+                            },
+                        )
+                        .map_err(|e| {
+                            anyhow::Error::msg(format!(
+                            "librsvg render_document() failed in gen_image_librsvg() with Err {}",
+                            e
+                        ))
+                        })?;
+                }
+                // Surface needs to be flushed before accessing its data
+                surface.flush();
+
+                let data = surface
+                    .data()
+                    .map_err(|e| {
+                        anyhow::Error::msg(format!(
+                            "accessing imagesurface data failed in gen_image_librsvg() with Err {}",
+                            e
+                        ))
+                    })?
+                    .to_vec();
+
+                images.push(Image {
+                    data,
+                    bounds: splitted_bounds,
+                    pixel_width: splitted_width_scaled,
+                    pixel_height: splitted_height_scaled,
+                    memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
+                })
+            }
         }
-        // Surface needs to be flushed before accessing its data
-        surface.flush();
 
-        let data = surface
-            .data()
-            .map_err(|e| {
-                anyhow::Error::msg(format!(
-                    "accessing imagesurface data failed in gen_image_librsvg() with Err {}",
-                    e
-                ))
-            })?
-            .to_vec();
-
-        Ok(Some(Image {
-            data,
-            bounds,
-            pixel_width: width_scaled,
-            pixel_height: height_scaled,
-            memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
-        }))
+        Ok(images)
     }
 
-    fn gen_image_resvg(
+    fn gen_images_resvg(
         &self,
         zoom: f64,
         svgs: &[Svg],
-        bounds: AABB,
-    ) -> Result<Option<Image>, anyhow::Error> {
+        mut bounds: AABB,
+    ) -> Result<Vec<Image>, anyhow::Error> {
+        geometry::aabb_ensure_valid(&mut bounds);
+        assert_bounds(bounds)?;
         let bounds = geometry::aabb_ceil(bounds);
-        let width_scaled = ((bounds.extents()[0]) * zoom).round() as u32;
-        let height_scaled = ((bounds.extents()[1]) * zoom).round() as u32;
 
-        if width_scaled == 0 || height_scaled == 0 {
-            return Ok(None);
+        let mut images = vec![];
+
+        for svg in svgs {
+            let svg_data =
+                compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), Some(bounds), false);
+            let svg_tree = usvg::Tree::from_data(svg_data.as_bytes(), &self.usvg_options.to_ref())?;
+
+            for mut splitted_bounds in geometry::split_aabb(bounds, self.max_tile_size) {
+                geometry::aabb_ensure_valid(&mut splitted_bounds);
+                if assert_bounds(splitted_bounds).is_err() {
+                    continue;
+                }
+
+                let splitted_width_scaled = ((splitted_bounds.extents()[0]) * zoom).round() as u32;
+                let splitted_height_scaled = ((splitted_bounds.extents()[1]) * zoom).round() as u32;
+                let offset = splitted_bounds.mins.coords - bounds.mins.coords;
+
+                let mut pixmap =
+                    tiny_skia::Pixmap::new(splitted_width_scaled, splitted_height_scaled)
+                        .ok_or_else(|| {
+                            anyhow::Error::msg(
+                                "tiny_skia::Pixmap::new() failed in gen_image_resvg()",
+                            )
+                        })?;
+
+                resvg::render(
+                    &svg_tree,
+                    usvg::FitTo::Original,
+                    tiny_skia::Transform::from_translate(-offset[0] as f32, -offset[1] as f32)
+                        .post_scale(zoom as f32, zoom as f32),
+                    pixmap.as_mut(),
+                )
+                .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
+
+                let data = pixmap.data().to_vec();
+
+                images.push(Image {
+                    data,
+                    bounds: splitted_bounds,
+                    pixel_width: splitted_width_scaled,
+                    pixel_height: splitted_height_scaled,
+                    memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
+                });
+            }
         }
-
-        let mut svg_data = svgs
-            .iter()
-            .map(|svg| svg.svg_data.as_str())
-            .collect::<Vec<&str>>()
-            .join("\n");
-        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
-
-        let mut pixmap = tiny_skia::Pixmap::new(width_scaled, height_scaled).ok_or_else(|| {
-            anyhow::Error::msg("tiny_skia::Pixmap::new() failed in gen_image_resvg()")
-        })?;
-
-        let rtree = usvg::Tree::from_data(svg_data.as_bytes(), &self.usvg_options.to_ref())?;
-
-        resvg::render(
-            &rtree,
-            usvg::FitTo::Zoom(zoom as f32),
-            tiny_skia::Transform::identity(),
-            pixmap.as_mut(),
-        )
-        .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
-
-        let data = pixmap.data().to_vec();
-
-        Ok(Some(Image {
-            data,
-            bounds,
-            pixel_width: width_scaled,
-            pixel_height: height_scaled,
-            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
-        }))
+        Ok(images)
     }
 }
 
-pub fn image_into_bytes(
+pub fn concat_images(images: Vec<Image>, bounds: AABB, zoom: f64) -> Result<Image, anyhow::Error> {
+    let mut target_image = image::RgbaImage::new(
+        (bounds.extents()[0] * zoom).round() as u32,
+        (bounds.extents()[1] * zoom).round() as u32,
+    );
+    for image in images.into_iter() {
+        let offset = (image.bounds.mins.coords - bounds.mins.coords) * zoom;
+
+        let mut image_buf = image.to_imgbuf()?;
+        image::imageops::overlay(
+            &mut target_image,
+            &mut image_buf,
+            offset[0].round() as u32,
+            offset[1].round() as u32,
+        );
+    }
+    let pixel_width = target_image.width();
+    let pixel_height = target_image.height();
+    Ok(Image {
+        data: target_image.into_vec(),
+        pixel_width,
+        pixel_height,
+        bounds,
+        memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
+    })
+}
+
+pub fn image_into_encoded_bytes(
     image: Image,
     format: image::ImageOutputFormat,
 ) -> Result<Vec<u8>, anyhow::Error> {

@@ -298,12 +298,9 @@ impl VectorImage {
             svg_data: export_svg_data,
         };
 
-        let image_raw = renderer.read().unwrap()
-            .gen_image(zoom, &[export_svg], export_bounds)?
-            .ok_or(anyhow::Error::msg(
-            "gen_image() returned None in VectorImage export_to_bytes(), even though it has gotten a SVG",
-        ))?;
+        let image_raw = render::concat_images(renderer.read().unwrap()
+            .gen_images(zoom, &[export_svg], export_bounds)?, export_bounds, zoom)?;
 
-        Ok(render::image_into_bytes(image_raw, format)?)
+        Ok(render::image_into_encoded_bytes(image_raw, format)?)
     }
 }

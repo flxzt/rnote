@@ -30,6 +30,28 @@ pub fn vector2_maxs(vec: na::Vector2<f64>, other: na::Vector2<f64>) -> na::Vecto
     na::vector![vec[0].max(other[0]), vec[1].max(other[1])]
 }
 
+/// Return mins, maxs
+pub fn vec2_mins_maxs(
+    first: na::Vector2<f64>,
+    second: na::Vector2<f64>,
+) -> (na::Vector2<f64>, na::Vector2<f64>) {
+    if first[0] < second[0] && first[1] < second[1] {
+        (first, second)
+    } else if first[0] > second[0] && first[1] < second[1] {
+        (
+            na::vector![second[0], first[1]],
+            na::vector![first[0], second[1]],
+        )
+    } else if first[0] < second[0] && first[1] > second[1] {
+        (
+            na::vector![first[0], second[1]],
+            na::vector![second[0], first[1]],
+        )
+    } else {
+        (second, first)
+    }
+}
+
 /// AABB to graphene Rect
 pub fn aabb_to_graphene_rect(aabb: AABB) -> graphene::Rect {
     graphene::Rect::new(
@@ -117,84 +139,47 @@ pub fn split_aabb_extended_origin_aligned(
 }
 
 /// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
-/// The boxes on the edges are clipped to fit into the given aabb
-pub fn split_aabb(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> Vec<AABB> {
-    let mut splitted_aabbs = Vec::new();
+/// the splitted bounds are exactly fitted to not overlap, or extend the given bounds
+pub fn split_aabb(aabb: AABB, splitted_size: na::Vector2<f64>) -> Vec<AABB> {
+    let mut splitted_aabbs = vec![aabb];
 
-    let mut offset_x = aabb.mins[0];
-    let mut offset_y = aabb.mins[1];
-    let width = aabb.extents()[0];
-    let height = aabb.extents()[1];
+    // Split them horizontally
+    while splitted_size[0] < splitted_aabbs[0].extents()[0] {
+        let old_splitted = splitted_aabbs.clone();
+        splitted_aabbs.clear();
 
-    if width <= splitted_size[0] {
-        splitted_size[0] = width;
-    }
-    if height <= splitted_size[1] {
-        splitted_size[1] = height;
+        for old in old_splitted.iter() {
+            splitted_aabbs.append(&mut aabb_hsplit(old).to_vec());
+        }
     }
 
-    while offset_y < height - splitted_size[0] {
-        while offset_x < width - splitted_size[1] {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![offset_x + splitted_size[0], offset_y + splitted_size[1]],
-            ));
+    // Split them vertically
+    while splitted_size[1] < splitted_aabbs[0].extents()[1] {
+        let old_splitted = splitted_aabbs.clone();
+        splitted_aabbs.clear();
 
-            offset_x += splitted_size[0];
-        }
-        // get the last and clipped rectangle for the current row
-        if offset_x < width {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![aabb.maxs[0], offset_y + splitted_size[1]],
-            ));
-        }
-
-        offset_x = aabb.mins[0];
-        offset_y += splitted_size[1];
-    }
-    // get the last and clipped rectangles for the last column
-    if offset_y < height {
-        while offset_x < width - splitted_size[1] {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![offset_x + splitted_size[0], aabb.maxs[1]],
-            ));
-
-            offset_x += splitted_size[0];
-        }
-        // get the last and clipped rectangle for the current row
-        if offset_x < width {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![aabb.maxs[0], aabb.maxs[1]],
-            ));
+        for old in old_splitted.iter() {
+            splitted_aabbs.append(&mut aabb_vsplit(old).to_vec());
         }
     }
 
     splitted_aabbs
 }
 
-/// Return mins, maxs
-pub fn vec2_mins_maxs(
-    first: na::Vector2<f64>,
-    second: na::Vector2<f64>,
-) -> (na::Vector2<f64>, na::Vector2<f64>) {
-    if first[0] < second[0] && first[1] < second[1] {
-        (first, second)
-    } else if first[0] > second[0] && first[1] < second[1] {
-        (
-            na::vector![second[0], first[1]],
-            na::vector![first[0], second[1]],
-        )
-    } else if first[0] < second[0] && first[1] > second[1] {
-        (
-            na::vector![first[0], second[1]],
-            na::vector![second[0], first[1]],
-        )
-    } else {
-        (second, first)
-    }
+// Splits the aab horizontally in the center
+pub fn aabb_hsplit(aabb: &AABB) -> [AABB; 2] {
+    [
+        AABB::new(aabb.mins, na::point![aabb.center()[0], aabb.maxs[1]]),
+        AABB::new(na::point![aabb.center()[0], aabb.mins[1]], aabb.maxs),
+    ]
+}
+
+// Splits the aab vertically in the center
+pub fn aabb_vsplit(aabb: &AABB) -> [AABB; 2] {
+    [
+        AABB::new(aabb.mins, na::point![aabb.maxs[0], aabb.center()[1]]),
+        AABB::new(na::point![aabb.mins[0], aabb.center()[1]], aabb.maxs),
+    ]
 }
 
 pub fn aabb_new_zero() -> AABB {
@@ -210,6 +195,15 @@ pub fn aabb_new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> AABB {
         AABB::new(na::point![start[0], end[1]], na::point![end[0], start[1]])
     } else {
         AABB::new(na::point![end[0], end[1]], na::point![start[0], start[1]])
+    }
+}
+
+pub fn aabb_ensure_valid(aabb: &mut AABB) {
+    if aabb.mins[0] > aabb.maxs[0] {
+        std::mem::swap(&mut aabb.mins[0], &mut aabb.maxs[0]);
+    }
+    if aabb.mins[1] > aabb.maxs[1] {
+        std::mem::swap(&mut aabb.mins[1], &mut aabb.maxs[1]);
     }
 }
 

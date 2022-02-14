@@ -237,12 +237,9 @@ impl StrokeStyle {
                 ))
             }
             StrokeStyle::ShapeStroke(shapestroke) => {
-                let shape_image = match shapestroke.gen_image(1.0, renderer) {
-                    Ok(image) => image?,
-                    Err(_e) => return None,
-                };
+                let shape_image = render::concat_images(shapestroke.gen_images(1.0, renderer).ok()?, shapestroke.bounds(), 1.0).ok()?;
                 let image_bytes =
-                    render::image_into_bytes(shape_image, image::ImageOutputFormat::Png)
+                    render::image_into_encoded_bytes(shape_image, image::ImageOutputFormat::Png)
                         .map_err(|e| {
                             log::error!(
                                 "image_to_bytes() failed in to_xopp() for shapestroke with Err {}",

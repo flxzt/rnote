@@ -75,9 +75,13 @@ impl Sheet {
             return None;
         }
 
+        let sheet_bounds = self.bounds();
+
         Some(
             bounds
                 .into_iter()
+                // Filter out the page bounds that are not intersecting with the sheet bounds.
+                .filter(|bounds| sheet_bounds.intersects(&bounds.tightened(2.0)))
                 .fold(AABB::new_invalid(), |prev, next| prev.merged(&next)),
         )
     }

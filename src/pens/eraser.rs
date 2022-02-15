@@ -66,7 +66,7 @@ impl PenBehaviour for Eraser {
         );
 
         appwindow.canvas().pens().borrow_mut().eraser.current_input = None;
-        appwindow.canvas().resize_endless();
+        appwindow.canvas().update_size_autoexpand();
     }
 
     fn draw(

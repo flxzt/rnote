@@ -11,4 +11,4 @@ pub const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
 pub const LOCALEDIR: &str = @LOCALEDIR@;
 
 pub const RESOURCES_FILE: &str = @RESOURCES_FILE@;
-//pub const PROFILE: &str = @PROFILE@;
+pub const PROFILE: &str = @PROFILE@;

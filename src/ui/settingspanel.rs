@@ -17,8 +17,6 @@ mod imp {
         #[template_child]
         pub settings_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub general_sheet_margin_unitentry: TemplateChild<UnitEntry>,
-        #[template_child]
         pub general_pdf_import_width_adj: TemplateChild<Adjustment>,
         #[template_child]
         pub general_pdf_import_as_vector_toggle: TemplateChild<ToggleButton>,
@@ -232,12 +230,14 @@ mod imp {
                 .clamp(Format::DPI_MIN, Format::DPI_MAX);
 
             // Width
-            self.temporary_format.borrow_mut().width = (self.format_width_unitentry.value_in_px()
-                as u32)
+            self.temporary_format.borrow_mut().width = self
+                .format_width_unitentry
+                .value_in_px()
                 .clamp(Format::WIDTH_MIN, Format::WIDTH_MAX);
             // Height
-            self.temporary_format.borrow_mut().height = (self.format_height_unitentry.value_in_px()
-                as u32)
+            self.temporary_format.borrow_mut().height = self
+                .format_height_unitentry
+                .value_in_px()
                 .clamp(Format::HEIGHT_MIN, Format::HEIGHT_MAX);
         }
         fn apply_predefined_format(&self) {
@@ -363,7 +363,7 @@ use gtk4::{Adjustment, ColorButton, ScrolledWindow, ToggleButton};
 use super::appwindow::RnoteAppWindow;
 use crate::compose::color::Color;
 use crate::sheet::background::PatternStyle;
-use crate::sheet::format::{self, Format, MeasureUnit};
+use crate::sheet::format::{self, Format};
 use crate::ui::unitentry::UnitEntry;
 
 glib::wrapper! {
@@ -431,12 +431,6 @@ impl SettingsPanel {
     pub fn settings_scroller(&self) -> ScrolledWindow {
         imp::SettingsPanel::from_instance(self)
             .settings_scroller
-            .clone()
-    }
-
-    pub fn general_sheet_margin_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .general_sheet_margin_unitentry
             .clone()
     }
 
@@ -513,14 +507,6 @@ impl SettingsPanel {
     }
 
     pub fn load_misc(&self, appwindow: &RnoteAppWindow) {
-        let format = appwindow.canvas().sheet().borrow().format.clone();
-
-        self.general_sheet_margin_unitentry().set_dpi(format.dpi);
-        self.general_sheet_margin_unitentry()
-            .set_unit(format::MeasureUnit::Px);
-        self.general_sheet_margin_unitentry()
-            .set_value(f64::from(appwindow.canvas().sheet_margin()));
-
         self.general_pdf_import_width_adj()
             .set_value(appwindow.canvas().pdf_import_width());
     }
@@ -572,54 +558,6 @@ impl SettingsPanel {
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let temporary_format = self.imp().temporary_format.clone();
-
-        // sheet margin
-        /*         self.imp().general_sheet_margin_unitentry.get().connect_local(
-                   "measurement-changed",
-                   false,
-                   clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                           let sheet_margin = settings_panel.general_sheet_margin_unitentry().value_in_px();
-
-                           appwindow.canvas().set_sheet_margin(sheet_margin);
-
-                           appwindow.canvas().queue_allocate();
-                           appwindow.canvas().queue_resize();
-                           appwindow.canvas().queue_draw();
-
-                           None
-                   }),
-               );
-        */
-        self.imp()
-            .general_sheet_margin_unitentry
-            .get()
-            .bind_property("value", &appwindow.canvas(), "sheet-margin")
-            .transform_to(move |binding, value| {
-                let unitentry = binding.source().unwrap().downcast::<UnitEntry>().unwrap();
-
-                let value = MeasureUnit::convert_measurement(
-                    value.get::<f64>().unwrap(),
-                    unitentry.unit(),
-                    unitentry.dpi(),
-                    MeasureUnit::Px,
-                    unitentry.dpi(),
-                );
-                Some((value.round() as i32).to_value())
-            })
-            .transform_from(move |binding, value| {
-                let unitentry = binding.source().unwrap().downcast::<UnitEntry>().unwrap();
-
-                let value = MeasureUnit::convert_measurement(
-                    f64::from(value.get::<i32>().unwrap()),
-                    MeasureUnit::Px,
-                    unitentry.dpi(),
-                    unitentry.unit(),
-                    unitentry.dpi(),
-                );
-                Some(value.to_value())
-            })
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
 
         // Pdf import width
         self.imp()
@@ -674,7 +612,7 @@ impl SettingsPanel {
                 let temporary_format = temporary_format.borrow().clone();
                 appwindow.canvas().sheet().borrow_mut().format = temporary_format;
 
-                appwindow.canvas().resize_to_format();
+                appwindow.canvas().resize_sheet_to_fit_strokes();
                 appwindow.canvas().regenerate_background(false);
                 appwindow.canvas().regenerate_content(true, true);
             }),

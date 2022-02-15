@@ -154,13 +154,13 @@ pub fn ellipse(ellipse: shapes::Ellipse, options: &RoughOptions) -> element::Gro
 
     let transform_string = ellipse.transform.transform_as_svg_transform_attr();
 
-    let ellipse = options.apply_to_ellipse(
-        element::Path::new()
-            .set("transform", transform_string)
-            .set("d", path::Data::from(ellipse_result.commands)),
-    );
+    let ellipse = options
+        .apply_to_ellipse(element::Path::new().set("d", path::Data::from(ellipse_result.commands)));
 
     let fill_polygon = fill_polygon(ellipse_result.estimated_points, options);
 
-    element::Group::new().add(fill_polygon).add(ellipse)
+    element::Group::new()
+        .set("transform", transform_string)
+        .add(fill_polygon)
+        .add(ellipse)
 }

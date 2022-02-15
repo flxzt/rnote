@@ -1,7 +1,7 @@
 project(
     'rnote',
     'rust',
-    version: '0.3.0',
+    version: '0.3.5',
     meson_version: '>= 0.56',
 )
 i18n = import('i18n')
@@ -17,7 +17,7 @@ app_authors = 'Felix Zwettler'
 if get_option('profile') == 'devel'
   profile = 'devel'
   version_suffix = '-devel'
-  app_id = base_id + '.' + profile
+  app_id = base_id + '.' + 'Devel'
 else
   profile = 'default'
   version_suffix = ''

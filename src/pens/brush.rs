@@ -102,7 +102,8 @@ impl PenBehaviour for Brush {
         mut data_entries: VecDeque<crate::strokes::strokestyle::InputData>,
         appwindow: &crate::ui::appwindow::RnoteAppWindow,
     ) {
-        if let Some(current_stroke_key) = appwindow.canvas().pens().borrow().brush.current_stroke {
+        let current_stroke_key = appwindow.canvas().pens().borrow().brush.current_stroke;
+        if let Some(current_stroke_key) = current_stroke_key {
             let filter_bounds = appwindow
                 .canvas()
                 .sheet()
@@ -120,6 +121,7 @@ impl PenBehaviour for Brush {
                     .strokes_state
                     .add_to_stroke(
                         current_stroke_key,
+                        &mut appwindow.canvas().pens().borrow_mut(),
                         Element::new(inputdata),
                         appwindow.canvas().renderer(),
                         appwindow.canvas().zoom(),
@@ -136,14 +138,14 @@ impl PenBehaviour for Brush {
             .canvas()
             .set_cursor(Some(&appwindow.canvas().cursor()));
 
-        if let Some(current_stroke_key) = appwindow
+        let current_stroke_key = appwindow
             .canvas()
             .pens()
             .borrow_mut()
             .brush
             .current_stroke
-            .take()
-        {
+            .take();
+        if let Some(current_stroke_key) = current_stroke_key {
             appwindow
                 .canvas()
                 .sheet()
@@ -162,7 +164,7 @@ impl PenBehaviour for Brush {
                     appwindow.canvas().zoom(),
                 );
 
-            appwindow.canvas().resize_endless();
+            appwindow.canvas().update_size_autoexpand();
         }
     }
 }

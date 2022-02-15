@@ -368,12 +368,13 @@ mod imp {
     }
 }
 
-use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, Orientable, PositionType, Widget};
+use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, PositionType, Widget};
 
 use crate::compose::color::Color;
 
 glib::wrapper! {
-    pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>) @extends Widget, @implements Orientable;
+    pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>)
+        @extends Widget;
 }
 
 impl Default for ColorPicker {

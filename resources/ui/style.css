@@ -1,0 +1,65 @@
+.main_title.unsaved_changes .title {
+    font-style: italic;
+    transition: font-style 0.2s;
+}
+
+.canvas_scroller {
+    background-color: rgba(120, 120, 130, 0.2);
+}
+
+.modifiernode {
+    color: rgba(0, 60, 240, 255);
+    transition: color 0.15s;
+}
+
+.modifiernode:hover {
+    color: rgba(0, 200, 20, 255);
+}
+
+.flap_resizer {
+    transition: all 0.2s ease-out;
+}
+
+.flap_resizer:hover {
+    background-color: @theme_selected_bg_color;
+    box-shadow: 0 0 6px darker(@theme_selected_bg_color);
+}
+
+.theme_selector {
+    transition: all 0.2s ease-out;
+    filter: brightness(100%);
+    background-clip: content-box;
+    border-radius: 9999px;
+    box-shadow: inset 0 0 0 1px @borders;
+}
+.theme_selector:checked {
+    box-shadow: inset 0 0 0 2px @theme_selected_bg_color;
+}
+
+.theme_selector.default_theme {
+    background-image: linear-gradient(to bottom right, #fff 49.99%, #202020 50.01%);
+}
+
+.theme_selector.default_theme:hover {
+    filter: brightness(90%);
+}
+
+.theme_selector.dark_theme {
+    background-color: #202020;
+}
+
+.theme_selector.dark_theme:hover {
+    filter: brightness(130%);
+}
+
+.theme_selector.light_theme {
+    background-color: #fff;
+}
+
+.theme_selector.light_theme:hover {
+    filter: brightness(90%);
+}
+
+.narrow_pens_toggles_box {
+    background: linear-gradient(to right, #00000010 0%, #00000000 8%, #00000000 92%, #00000010 100%);
+}

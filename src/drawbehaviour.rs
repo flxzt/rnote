@@ -31,17 +31,17 @@ pub trait DrawBehaviour {
     /// generates the svg elements, without the xml header or the svg root.
     fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error>;
     /// generates the image for this stroke
-    fn gen_image(
+    fn gen_images(
         &self,
         zoom: f64,
         renderer: Arc<RwLock<Renderer>>,
-    ) -> Result<Option<render::Image>, anyhow::Error> {
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
         let offset = na::vector![0.0, 0.0];
         let svgs = self.gen_svgs(offset)?;
 
         renderer
             .read()
             .unwrap()
-            .gen_image(zoom, &svgs, self.bounds())
+            .gen_images(zoom, svgs, self.bounds())
     }
 }

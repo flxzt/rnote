@@ -4,7 +4,7 @@ use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
 use crate::{render, utils};
 
-use chrono::{TimeZone, Utc};
+use chrono::Utc;
 use notetakingfileformats::xoppformat::{self, XoppColor};
 use p2d::bounding_volume::AABB;
 use rand::distributions::Uniform;
@@ -146,7 +146,10 @@ impl StrokeStyle {
                     return None;
                 }
 
-                let color = markerstroke.options.stroke_color.map(|color| color.into())?;
+                let color = markerstroke
+                    .options
+                    .stroke_color
+                    .map(|color| color.into())?;
                 let tool = xoppformat::XoppTool::Pen;
                 let width = vec![utils::convert_value_dpi(
                     markerstroke.options.width,
@@ -185,7 +188,9 @@ impl StrokeStyle {
 
                 let (width, color): (f64, XoppColor) = match brushstroke.style {
                     // Return early if color is None
-                    BrushStrokeStyle::Solid { options } => (options.width, options.stroke_color?.into()),
+                    BrushStrokeStyle::Solid { options } => {
+                        (options.width, options.stroke_color?.into())
+                    }
                     BrushStrokeStyle::Textured { options } => {
                         (options.width, options.stroke_color?.into())
                     }
@@ -230,6 +235,46 @@ impl StrokeStyle {
                         audio_filename: None,
                     },
                 ))
+            }
+            StrokeStyle::ShapeStroke(shapestroke) => {
+                let shape_image = render::concat_images(shapestroke.gen_images(1.0, renderer).ok()?, shapestroke.bounds(), 1.0).ok()?;
+                let image_bytes =
+                    render::image_into_encoded_bytes(shape_image, image::ImageOutputFormat::Png)
+                        .map_err(|e| {
+                            log::error!(
+                                "image_to_bytes() failed in to_xopp() for shapestroke with Err {}",
+                                e
+                            )
+                        })
+                        .ok()?;
+
+                Some(xoppformat::XoppStrokeStyle::XoppImage(
+                    xoppformat::XoppImage {
+                        left: utils::convert_value_dpi(
+                            shapestroke.bounds.mins[0],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        top: utils::convert_value_dpi(
+                            shapestroke.bounds.mins[1],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        right: utils::convert_value_dpi(
+                            shapestroke.bounds.maxs[0],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        bottom: utils::convert_value_dpi(
+                            shapestroke.bounds.maxs[1],
+                            current_dpi,
+                            xoppformat::XoppFile::DPI,
+                        ),
+                        data: base64::encode(&image_bytes),
+                    },
+                ))
+                // FIXME: The above is unacceptably slow, needs investigation
+                //None
             }
             StrokeStyle::VectorImage(vectorimage) => {
                 let png_data = match vectorimage.export_as_image_bytes(
@@ -309,7 +354,6 @@ impl StrokeStyle {
                     },
                 ))
             }
-            _ => None,
         }
     }
 }
@@ -364,12 +408,8 @@ impl InputData {
 pub struct Element {
     #[serde(rename = "inputdata")]
     pub inputdata: InputData,
-    #[serde(rename = "timestamp", default = "default_datetime")]
-    pub timestamp: chrono::DateTime<Utc>,
-}
-
-pub fn default_datetime() -> chrono::DateTime<Utc> {
-    Utc.ymd(2000, 1, 1).and_hms(12, 0, 0)
+    #[serde(rename = "timestamp")]
+    pub timestamp: Option<chrono::DateTime<Utc>>,
 }
 
 impl Element {
@@ -378,7 +418,7 @@ impl Element {
 
         Self {
             inputdata,
-            timestamp,
+            timestamp: Some(timestamp),
         }
     }
 

@@ -43,13 +43,11 @@ mod imp {
 
 use crate::compose::color::Color;
 use crate::ui::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Orientable, SpinButton, Widget,
-};
+use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*, SpinButton};
 
 glib::wrapper! {
     pub struct MarkerPage(ObjectSubclass<imp::MarkerPage>)
-        @extends Widget, @implements Orientable;
+        @extends gtk4::Widget;
 }
 
 impl Default for MarkerPage {

@@ -6,9 +6,10 @@ use crate::pens::Pens;
 use crate::sheet::background::Background;
 use crate::sheet::format::Format;
 use crate::ui::appwindow::RnoteAppWindow;
+use crate::ui::canvas::ExpandMode;
 
 use adw::prelude::*;
-use gtk4::gio;
+use gtk4::{gio, glib};
 
 impl RnoteAppWindow {
     /// Settings binds
@@ -51,6 +52,11 @@ impl RnoteAppWindow {
             })
             .build();
 
+        // righthanded
+        self.app_settings()
+            .bind("righthanded", self, "righthanded")
+            .build();
+
         // pen sounds
         self.app_settings()
             .bind("pen-sounds", self, "pen-sounds")
@@ -61,19 +67,38 @@ impl RnoteAppWindow {
             .bind("touch-drawing", &self.canvas(), "touch-drawing")
             .build();
 
-        // endless sheet
+        // expand mode
         self.app_settings()
-            .bind("endless-sheet", &self.canvas(), "endless-sheet")
+            .bind("expand-mode", &self.canvas(), "expand-mode")
+            .mapping(move |settings_value, _type_| {
+                let value = settings_value.get::<String>().unwrap();
+                match value.as_str() {
+                    "fixed-size" => Some(ExpandMode::FixedSize.to_value()),
+                    "endless-vertical" => Some(ExpandMode::EndlessVertical.to_value()),
+                    "infinite" => Some(ExpandMode::Infinite.to_value()),
+                    _ => {
+                        log::error!(
+                            "mapping expand-mode to setting failed, invalid str {}",
+                            value.as_str()
+                        );
+                        None
+                    }
+                }
+            })
+            .set_mapping(move |value, _type_| {
+                Some(
+                    glib::EnumValue::from_value(value)
+                        .unwrap()
+                        .1
+                        .nick()
+                        .to_variant(),
+                )
+            })
             .build();
 
         // format borders
         self.app_settings()
             .bind("format-borders", &self.canvas(), "format-borders")
-            .build();
-
-        // sheet margin
-        self.app_settings()
-            .bind("sheet-margin", &self.canvas(), "sheet-margin")
             .build();
 
         // pdf import width
@@ -121,6 +146,15 @@ impl RnoteAppWindow {
                 "shaperpage-selected-fill",
                 &self.penssidebar().shaper_page().fill_colorpicker(),
                 "selected",
+            )
+            .build();
+
+        // lock resize aspectratio
+        self.app_settings()
+            .bind(
+                "resize-lock-aspectratio",
+                &self.canvas().selection_modifier(),
+                "resize-lock-aspectratio",
             )
             .build();
     }
@@ -219,7 +253,7 @@ impl RnoteAppWindow {
         }
 
         // Refresh the canvas
-        self.canvas().resize_to_format();
+        self.canvas().resize_sheet_to_fit_strokes();
 
         // refresh the UI
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);

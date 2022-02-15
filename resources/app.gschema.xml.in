@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
+  <enum id="@APP_ID@.expandmode">
+    <value nick="fixed-size" value="0"/>
+    <value nick="endless-vertical" value="1"/>
+    <value nick="infinite" value="2"/>
+  </enum>
+
   <schema id="@APP_ID@" path="@APP_IDPATH@">
     <key name="window-width" type="i">
       <default>-1</default>
@@ -29,6 +35,10 @@
       <default>"./"</default>
       <summary>the current workspace directory</summary>
     </key>
+    <key name="righthanded" type="b">
+      <default>true</default>
+      <summary>Wether the user is righthanded (or lefthanded)</summary>
+    </key>
     <key name="pen-sounds" type="b">
       <default>false</default>
       <summary>play sounds when drawing with pens</summary>
@@ -37,17 +47,13 @@
       <default>false</default>
       <summary>enable drawing with touch input</summary>
     </key>
-    <key name="endless-sheet" type="b">
-      <default>false</default>
-      <summary>endless sheet</summary>
+    <key name="expand-mode" enum="@APP_ID@.expandmode">
+      <default>'fixed-size'</default>
+      <summary>Expand mode</summary>
     </key>
     <key name="format-borders" type="b">
       <default>false</default>
       <summary>show format borders</summary>
-    </key>
-    <key name="sheet-margin" type="i">
-      <default>32</default>
-      <summary>the margins around the sheet</summary>
     </key>
     <key name="pdf-import-width" type="d">
       <default>50.0</default>
@@ -112,6 +118,10 @@
         0x00000000
       )</default>
       <summary>the shaper page fill colors</summary>
+    </key>
+    <key name="resize-lock-aspectratio" type="b">
+      <default>false</default>
+      <summary>if the aspect ratio while resizing is locked</summary>
     </key>
     <key name="sheet-format" type="s">
       <default>'

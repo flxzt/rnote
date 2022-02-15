@@ -1,7 +1,6 @@
 use geo::line_string;
 use gtk4::graphene;
 use p2d::bounding_volume::AABB;
-use p2d::query::PointQuery;
 
 pub fn vector2_unit_tang(vec: na::Vector2<f64>) -> na::Vector2<f64> {
     if vec.magnitude() > 0.0 {
@@ -31,6 +30,28 @@ pub fn vector2_maxs(vec: na::Vector2<f64>, other: na::Vector2<f64>) -> na::Vecto
     na::vector![vec[0].max(other[0]), vec[1].max(other[1])]
 }
 
+/// Return mins, maxs
+pub fn vec2_mins_maxs(
+    first: na::Vector2<f64>,
+    second: na::Vector2<f64>,
+) -> (na::Vector2<f64>, na::Vector2<f64>) {
+    if first[0] < second[0] && first[1] < second[1] {
+        (first, second)
+    } else if first[0] > second[0] && first[1] < second[1] {
+        (
+            na::vector![second[0], first[1]],
+            na::vector![first[0], second[1]],
+        )
+    } else if first[0] < second[0] && first[1] > second[1] {
+        (
+            na::vector![first[0], second[1]],
+            na::vector![second[0], first[1]],
+        )
+    } else {
+        (second, first)
+    }
+}
+
 /// AABB to graphene Rect
 pub fn aabb_to_graphene_rect(aabb: AABB) -> graphene::Rect {
     graphene::Rect::new(
@@ -41,9 +62,8 @@ pub fn aabb_to_graphene_rect(aabb: AABB) -> graphene::Rect {
     )
 }
 
-/// splits a aabb into multiple which have the given size. Their union contains the given aabb.
-/// The boxes on the edges might extend the given aabb, so clipping these AABB probably is needed.
-/// Used when generating the background
+/// splits a aabb into multiple of the given size. Their union contains the given aabb.
+/// The boxes on the edges most likely extend beyond the given aabb.
 pub fn split_aabb_extended(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> Vec<AABB> {
     let mut splitted_aabbs = Vec::new();
 
@@ -76,12 +96,15 @@ pub fn split_aabb_extended(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> V
     splitted_aabbs
 }
 
-/// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb. The boxes on the edges are clipped to fit into the given aabb
-pub fn split_aabb(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> Vec<AABB> {
+/// splits a aabb into multiple of the given size. Their union contains the given aabb.
+/// It is also guaranteed that bounding boxes are aligned to the origin, meaning (0.0,0.0) is the corner of four boxes.
+/// The boxes on the edges most likely extend beyond the given aabb.
+pub fn split_aabb_extended_origin_aligned(
+    aabb: AABB,
+    mut splitted_size: na::Vector2<f64>,
+) -> Vec<AABB> {
     let mut splitted_aabbs = Vec::new();
 
-    let mut offset_x = aabb.mins[0];
-    let mut offset_y = aabb.mins[1];
     let width = aabb.extents()[0];
     let height = aabb.extents()[1];
 
@@ -92,68 +115,71 @@ pub fn split_aabb(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> Vec<AABB> 
         splitted_size[1] = height;
     }
 
-    while offset_y < height - splitted_size[0] {
-        while offset_x < width - splitted_size[1] {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![offset_x + splitted_size[0], offset_y + splitted_size[1]],
-            ));
+    let n_columns = (aabb.extents()[0] / splitted_size[0]).ceil() as u32;
+    let n_rows = (aabb.extents()[1] / splitted_size[1]).ceil() as u32;
 
-            offset_x += splitted_size[0];
-        }
-        // get the last and clipped rectangle for the current row
-        if offset_x < width {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![aabb.maxs[0], offset_y + splitted_size[1]],
-            ));
-        }
+    let offset = na::vector![
+        (aabb.mins[0] / splitted_size[0]).floor() * splitted_size[0],
+        (aabb.mins[1] / splitted_size[1]).floor() * splitted_size[1]
+    ];
 
-        offset_x = aabb.mins[0];
-        offset_y += splitted_size[1];
-    }
-    // get the last and clipped rectangles for the last column
-    if offset_y < height {
-        while offset_x < width - splitted_size[1] {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![offset_x + splitted_size[0], aabb.maxs[1]],
-            ));
+    for current_row in 0..=n_rows {
+        for current_column in 0..=n_columns {
+            let mins = na::point![
+                offset[0] + f64::from(current_column) * splitted_size[0],
+                offset[1] + f64::from(current_row) * splitted_size[1]
+            ];
+            let maxs = na::Point2::from(mins.coords + splitted_size);
 
-            offset_x += splitted_size[0];
-        }
-        // get the last and clipped rectangle for the current row
-        if offset_x < width {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![aabb.maxs[0], aabb.maxs[1]],
-            ));
+            splitted_aabbs.push(AABB::new(mins, maxs));
         }
     }
 
     splitted_aabbs
 }
 
-/// Return mins, maxs
-pub fn vec2_mins_maxs(
-    first: na::Vector2<f64>,
-    second: na::Vector2<f64>,
-) -> (na::Vector2<f64>, na::Vector2<f64>) {
-    if first[0] < second[0] && first[1] < second[1] {
-        (first, second)
-    } else if first[0] > second[0] && first[1] < second[1] {
-        (
-            na::vector![second[0], first[1]],
-            na::vector![first[0], second[1]],
-        )
-    } else if first[0] < second[0] && first[1] > second[1] {
-        (
-            na::vector![first[0], second[1]],
-            na::vector![second[0], first[1]],
-        )
-    } else {
-        (second, first)
+/// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
+/// the splitted bounds are exactly fitted to not overlap, or extend the given bounds
+pub fn split_aabb(aabb: AABB, splitted_size: na::Vector2<f64>) -> Vec<AABB> {
+    let mut splitted_aabbs = vec![aabb];
+
+    // Split them horizontally
+    while splitted_size[0] < splitted_aabbs[0].extents()[0] {
+        let old_splitted = splitted_aabbs.clone();
+        splitted_aabbs.clear();
+
+        for old in old_splitted.iter() {
+            splitted_aabbs.append(&mut aabb_hsplit(old).to_vec());
+        }
     }
+
+    // Split them vertically
+    while splitted_size[1] < splitted_aabbs[0].extents()[1] {
+        let old_splitted = splitted_aabbs.clone();
+        splitted_aabbs.clear();
+
+        for old in old_splitted.iter() {
+            splitted_aabbs.append(&mut aabb_vsplit(old).to_vec());
+        }
+    }
+
+    splitted_aabbs
+}
+
+// Splits the aab horizontally in the center
+pub fn aabb_hsplit(aabb: &AABB) -> [AABB; 2] {
+    [
+        AABB::new(aabb.mins, na::point![aabb.center()[0], aabb.maxs[1]]),
+        AABB::new(na::point![aabb.center()[0], aabb.mins[1]], aabb.maxs),
+    ]
+}
+
+// Splits the aab vertically in the center
+pub fn aabb_vsplit(aabb: &AABB) -> [AABB; 2] {
+    [
+        AABB::new(aabb.mins, na::point![aabb.maxs[0], aabb.center()[1]]),
+        AABB::new(na::point![aabb.mins[0], aabb.center()[1]], aabb.maxs),
+    ]
 }
 
 pub fn aabb_new_zero() -> AABB {
@@ -169,6 +195,15 @@ pub fn aabb_new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> AABB {
         AABB::new(na::point![start[0], end[1]], na::point![end[0], start[1]])
     } else {
         AABB::new(na::point![end[0], end[1]], na::point![start[0], start[1]])
+    }
+}
+
+pub fn aabb_ensure_valid(aabb: &mut AABB) {
+    if aabb.mins[0] > aabb.maxs[0] {
+        std::mem::swap(&mut aabb.mins[0], &mut aabb.maxs[0]);
+    }
+    if aabb.mins[1] > aabb.maxs[1] {
+        std::mem::swap(&mut aabb.mins[1], &mut aabb.maxs[1]);
     }
 }
 
@@ -226,6 +261,13 @@ pub fn aabb_ceil(aabb: AABB) -> AABB {
     )
 }
 
+pub fn aabb_expand(aabb: AABB, expand_by: na::Vector2<f64>) -> AABB {
+    AABB::new(
+        na::Point2::from(aabb.mins.coords - expand_by),
+        na::Point2::from(aabb.maxs.coords + expand_by),
+    )
+}
+
 /// Scale the source size with a specified max size, while keeping its aspect ratio
 pub fn scale_with_locked_aspectratio(
     src_size: na::Vector2<f64>,
@@ -234,33 +276,6 @@ pub fn scale_with_locked_aspectratio(
     let ratio = (max_size[0] / src_size[0]).min(max_size[1] / src_size[1]);
 
     src_size * ratio
-}
-
-pub fn convexpolygon_contains_aabb(convexpolygon: &p2d::shape::ConvexPolygon, aabb: &AABB) -> bool {
-    let tl = aabb.mins;
-    let tr = na::point![aabb.maxs[0], aabb.mins[1]];
-    let bl = na::point![aabb.mins[0], aabb.maxs[1]];
-    let br = aabb.maxs;
-
-    convexpolygon.contains_local_point(&tl)
-        && convexpolygon.contains_local_point(&tr)
-        && convexpolygon.contains_local_point(&bl)
-        && convexpolygon.contains_local_point(&br)
-}
-
-pub fn convexpolygon_intersects_aabb(
-    convexpolygon: &p2d::shape::ConvexPolygon,
-    aabb: &AABB,
-) -> bool {
-    let tl = aabb.mins;
-    let tr = na::point![aabb.maxs[0], aabb.mins[1]];
-    let bl = na::point![aabb.mins[0], aabb.maxs[1]];
-    let br = aabb.maxs;
-
-    convexpolygon.contains_local_point(&tl)
-        || convexpolygon.contains_local_point(&tr)
-        || convexpolygon.contains_local_point(&bl)
-        || convexpolygon.contains_local_point(&br)
 }
 
 pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {

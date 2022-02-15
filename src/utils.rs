@@ -9,13 +9,13 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
-pub fn now() -> String {
+pub fn now_formatted_string() -> String {
     match glib::DateTime::now_local() {
-        Ok(datetime) => match datetime.format("%F_%T") {
+        Ok(datetime) => match datetime.format("%F_%H-%M-%S") {
             Ok(s) => s.to_string(),
-            Err(_) => String::from("1970-01-01_12:00::00"),
+            Err(_) => String::from("1970-01-01_12-00-00"),
         },
-        Err(_) => String::from("1970-01-01_12:00:00"),
+        Err(_) => String::from("1970-01-01_12-00-00"),
     }
 }
 

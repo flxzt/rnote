@@ -5,13 +5,19 @@ mod imp {
         gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DirectoryList,
         ListView, Widget,
     };
-    use gtk4::{Button, Entry};
+    use gtk4::{Button, Entry, Separator};
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
     pub struct WorkspaceBrowser {
         #[template_child]
         pub open_workspace_button: TemplateChild<Button>,
+        #[template_child]
+        pub flap_close_buttonbox: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub flap_close_buttonseparator: TemplateChild<Separator>,
+        #[template_child]
+        pub flap_close_button: TemplateChild<Button>,
         #[template_child]
         pub workspace_pathup_button: TemplateChild<Button>,
         #[template_child]
@@ -30,6 +36,9 @@ mod imp {
             primary_dirlist.set_monitored(true);
 
             Self {
+                flap_close_buttonbox: TemplateChild::<gtk4::Box>::default(),
+                flap_close_buttonseparator: TemplateChild::<Separator>::default(),
+                flap_close_button: TemplateChild::<Button>::default(),
                 open_workspace_button: TemplateChild::<Button>::default(),
                 workspace_pathup_button: TemplateChild::<Button>::default(),
                 workspace_pathentry: TemplateChild::<Entry>::default(),
@@ -86,15 +95,14 @@ use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*,
     ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, ListItem,
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
-    Widget,
 };
-use gtk4::{DirectoryList, Entry, ListView, MultiSorter};
+use gtk4::{Button, DirectoryList, Entry, ListView, MultiSorter, Separator};
 
 use self::filerow::FileRow;
 
 glib::wrapper! {
     pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
-        @extends Widget;
+        @extends gtk4::Widget;
 }
 
 impl Default for WorkspaceBrowser {
@@ -128,6 +136,24 @@ impl WorkspaceBrowser {
             .get()
     }
 
+    pub fn flap_close_buttonbox(&self) -> gtk4::Box {
+        imp::WorkspaceBrowser::from_instance(self)
+            .flap_close_buttonbox
+            .get()
+    }
+
+    pub fn flap_close_buttonseparator(&self) -> Separator {
+        imp::WorkspaceBrowser::from_instance(self)
+            .flap_close_buttonseparator
+            .get()
+    }
+
+    pub fn flap_close_button(&self) -> Button {
+        imp::WorkspaceBrowser::from_instance(self)
+            .flap_close_button
+            .get()
+    }
+
     pub fn workspace_pathentry(&self) -> Entry {
         imp::WorkspaceBrowser::from_instance(self)
             .workspace_pathentry
@@ -135,6 +161,14 @@ impl WorkspaceBrowser {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.imp().flap_close_button.get().connect_clicked(
+            clone!(@weak appwindow => move |_flap_close_button| {
+                if appwindow.flap().reveals_flap() && appwindow.flap().is_folded() {
+                    appwindow.flap().set_reveal_flap(false);
+                }
+            }),
+        );
+
         self.imp().open_workspace_button.get().connect_clicked(
             clone!(@weak appwindow => move |_open_workspace_button| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "open-workspace", None);
@@ -253,10 +287,12 @@ impl WorkspaceBrowser {
         });
         let filefilter = FileFilter::new();
         filefilter.add_pattern("*.rnote");
+        filefilter.add_pattern("*.xopp");
         filefilter.add_pattern("*.svg");
         filefilter.add_mime_type("image/svg+xml");
         filefilter.add_mime_type("image/png");
         filefilter.add_mime_type("image/jpeg");
+        filefilter.add_mime_type("application/x-xopp");
         filefilter.add_mime_type("application/pdf");
         filefilter.add_mime_type("inode/directory");
         let filefilter_model =

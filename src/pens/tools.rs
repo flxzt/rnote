@@ -131,9 +131,10 @@ impl ExpandSheetTool {
         let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg { svg_data, bounds };
 
-        if let Some(image) = renderer.read().unwrap().gen_image(zoom, &[svg], bounds)? {
-            let rendernode = render::image_to_rendernode(&image, zoom)
-                .context("ExpandSheetTool draw() failed")?;
+        let images = renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?;
+        if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
+            .context("images_to_rendernode() failed in expandsheet .draw()")?
+        {
             snapshot.append_node(&rendernode);
         }
 
@@ -189,12 +190,12 @@ impl DragProximityTool {
         let cx = self.pos[0] + self.offset[0];
         let cy = self.pos[1] + self.offset[1];
         let r = self.radius;
-        let mut draw_bounds = geometry::aabb_new_positive(
+        let mut bounds = geometry::aabb_new_positive(
             na::point![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
             na::point![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
         );
-        draw_bounds.take_point(na::Point2::from(self.pos.add_scalar(-Self::OUTLINE_WIDTH)));
-        draw_bounds.take_point(na::Point2::from(self.pos.add_scalar(Self::OUTLINE_WIDTH)));
+        bounds.take_point(na::Point2::from(self.pos.add_scalar(-Self::OUTLINE_WIDTH)));
+        bounds.take_point(na::Point2::from(self.pos.add_scalar(Self::OUTLINE_WIDTH)));
 
         let mut group = svg::node::element::Group::new();
 
@@ -216,16 +217,13 @@ impl DragProximityTool {
         let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg {
             svg_data,
-            bounds: draw_bounds,
+            bounds,
         };
 
-        if let Some(image) = renderer
-            .read()
-            .unwrap()
-            .gen_image(zoom, &[svg], draw_bounds)?
+        let images = renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?;
+        if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
+            .context("images_to_rendernode() failed in proximitytool .draw()")?
         {
-            let rendernode = render::image_to_rendernode(&image, zoom)
-                .context("DrawProximityTool draw() failed")?;
             snapshot.append_node(&rendernode);
         }
 
@@ -452,7 +450,7 @@ impl PenBehaviour for Tools {
             }
         }
 
-        appwindow.canvas().resize_endless();
+        appwindow.canvas().update_size_autoexpand();
 
         appwindow.canvas().queue_resize();
         appwindow.canvas().queue_draw();

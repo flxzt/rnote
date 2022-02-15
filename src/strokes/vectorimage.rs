@@ -103,10 +103,10 @@ impl Transformable for VectorImage {
 }
 
 impl VectorImage {
-    pub const SIZE_X_DEFAULT: i32 = 500;
-    pub const SIZE_Y_DEFAULT: i32 = 500;
-    pub const OFFSET_X_DEFAULT: i32 = 32;
-    pub const OFFSET_Y_DEFAULT: i32 = 32;
+    pub const SIZE_X_DEFAULT: f64 = 500.0;
+    pub const SIZE_Y_DEFAULT: f64 = 500.0;
+    pub const OFFSET_X_DEFAULT: f64 = 32.0;
+    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
 
     pub fn import_from_svg_data(
         svg_data: &str,
@@ -298,12 +298,9 @@ impl VectorImage {
             svg_data: export_svg_data,
         };
 
-        let image_raw = renderer.read().unwrap()
-            .gen_image(zoom, &[export_svg], export_bounds)?
-            .ok_or(anyhow::Error::msg(
-            "gen_image() returned None in VectorImage export_to_bytes(), even though it has gotten a SVG",
-        ))?;
+        let image_raw = render::concat_images(renderer.read().unwrap()
+            .gen_images(zoom, vec![export_svg], export_bounds)?, export_bounds, zoom)?;
 
-        Ok(render::image_to_bytes(image_raw, format)?)
+        Ok(render::image_into_encoded_bytes(image_raw, format)?)
     }
 }

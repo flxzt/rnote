@@ -15,6 +15,7 @@ use crate::compose::geometry;
 use crate::compose::transformable::Transformable;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::tools::DragProximityTool;
+use crate::pens::Pens;
 use crate::render::{self, Renderer};
 use crate::strokes::bitmapimage::BitmapImage;
 use crate::strokes::strokestyle::{Element, StrokeStyle};
@@ -156,7 +157,6 @@ impl StrokesState {
                             .regenerate_rendering_with_images(key, images, appwindow.canvas().zoom());
 
                         appwindow.canvas().queue_draw();
-                        appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                     }
                     StateTask::AppendImagesToStroke { key, images } => {
                         appwindow
@@ -167,7 +167,6 @@ impl StrokesState {
                             .append_images_to_rendering(key, images, appwindow.canvas().zoom());
 
                         appwindow.canvas().queue_draw();
-                        appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                     }
                     StateTask::InsertStroke { stroke } => {
                         match stroke {
@@ -221,7 +220,7 @@ impl StrokesState {
 
                                 appwindow.mainheader().selector_toggle().set_active(true);
 
-                                appwindow.canvas().resize_to_format();
+                                appwindow.canvas().resize_sheet_to_fit_strokes();
                                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                             }
                             StrokeStyle::BitmapImage(bitmapimage) => {
@@ -244,18 +243,18 @@ impl StrokesState {
 
                                 appwindow.mainheader().selector_toggle().set_active(true);
 
-                                appwindow.canvas().resize_to_format();
+                                appwindow.canvas().resize_sheet_to_fit_strokes();
                                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                             }
                         }
+
+                        appwindow.canvas().queue_resize();
+                        appwindow.canvas().queue_draw();
                     }
                     StateTask::Quit => {
                         return glib::Continue(false);
                     }
                 }
-
-                appwindow.canvas().queue_resize();
-                appwindow.canvas().queue_draw();
 
                 glib::Continue(true)
             }),
@@ -302,14 +301,14 @@ impl StrokesState {
         self.strokes.remove(key)
     }
 
-    /// returns key to last stroke
     pub fn add_to_stroke(
         &mut self,
         key: StrokeKey,
+        pens: &mut Pens,
         element: Element,
         renderer: Arc<RwLock<Renderer>>,
         zoom: f64,
-    ) -> Option<StrokeKey> {
+    ) {
         match self.strokes.get_mut(key).unwrap() {
             StrokeStyle::MarkerStroke(ref mut markerstroke) => {
                 markerstroke.push_elem(element);
@@ -318,14 +317,13 @@ impl StrokesState {
                 brushstroke.push_elem(element);
             }
             StrokeStyle::ShapeStroke(ref mut shapestroke) => {
-                shapestroke.update_shape(element);
+                shapestroke.update_shape(&mut pens.shaper, element);
             }
             StrokeStyle::VectorImage(_vectorimage) => {}
             StrokeStyle::BitmapImage(_bitmapimage) => {}
         }
 
-        self.append_rendering_new_elem_threaded_fifo(key, renderer, zoom);
-        Some(key)
+        self.append_rendering_new_elem_threaded(key, renderer, zoom);
     }
 
     /// Clears every stroke and every component
@@ -548,8 +546,32 @@ impl StrokesState {
         });
     }
 
+    /// Calculates the width needed to fit all strokes
+    pub fn calc_width(&self) -> f64 {
+        let new_width = if let Some(stroke) = self
+            .strokes
+            .iter()
+            .filter_map(|(key, stroke)| {
+                if let Some(trash_comp) = self.trash_components.get(key) {
+                    if !trash_comp.trashed {
+                        return Some(stroke);
+                    }
+                }
+                None
+            })
+            .max_by_key(|&stroke| stroke.bounds().maxs[0].round() as i32)
+        {
+            // max_by_key() returns the element, so we need to extract the width again
+            stroke.bounds().maxs[0]
+        } else {
+            0.0
+        };
+
+        new_width
+    }
+
     /// Calculates the height needed to fit all strokes
-    pub fn calc_height(&self) -> u32 {
+    pub fn calc_height(&self) -> f64 {
         let new_height = if let Some(stroke) = self
             .strokes
             .iter()
@@ -561,12 +583,12 @@ impl StrokesState {
                 }
                 None
             })
-            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as u32)
+            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
         {
             // max_by_key() returns the element, so we need to extract the height again
-            stroke.bounds().maxs[1].round() as u32
+            stroke.bounds().maxs[1]
         } else {
-            0
+            0.0
         };
 
         new_height
@@ -590,6 +612,12 @@ impl StrokesState {
         }
 
         None
+    }
+
+    pub fn strokes_bounds(&self, keys: &[StrokeKey]) -> Vec<AABB> {
+        keys.iter()
+            .filter_map(|&key| Some(self.strokes.get(key)?.bounds()))
+            .collect::<Vec<AABB>>()
     }
 
     /// Generates a Svg for all strokes as drawn onto the canvas without xml headers or svg roots. Does not include the selection.

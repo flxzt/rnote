@@ -4,7 +4,7 @@
   <id>@APP_ID@</id>
   <metadata_license>CC0</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <name translatable="no">@APP_NAME@</name>
+  <name translatable="no">@APP_NAME_CAPITALIZED@</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
   <summary>A simple drawing application to create handwritten notes</summary>
 
@@ -20,6 +20,8 @@
   <description>
     <p>
       Rnote is a simple vector based drawing application for handwritten notes and to annotate documents and pictures.
+    </p>
+    <p>
       Disclaimer: The file format is still unstable. It might change between versions.
     </p>
   </description>
@@ -61,6 +63,48 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.3.5" date="2022-02-14">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>A new feature: infinite mode for exandable sheets in every direction</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.4" date="2022-02-06">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>UI improvements</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.3" date="2022-02-05">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>UX: Adaptive pen selection buttons (support smaller screens)</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.2" date="2022-02-02">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>new feature: Export as PDF</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.3.1" date="2022-01-31">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>`Select all` and `Deselect all` selector buttons</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.3.0" date="2022-01-29">
       <description>
         <p>this release changes:</p>

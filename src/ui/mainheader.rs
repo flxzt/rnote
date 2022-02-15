@@ -1,8 +1,7 @@
 mod imp {
-    use crate::config;
     use crate::ui::{appmenu::AppMenu, canvasmenu::CanvasMenu};
     use gtk4::{
-        glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Image, Label, Revealer,
+        glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label, Revealer,
         ToggleButton, Widget,
     };
 
@@ -15,8 +14,6 @@ mod imp {
         pub main_title: TemplateChild<adw::WindowTitle>,
         #[template_child]
         pub main_title_unsaved_indicator: TemplateChild<Label>,
-        #[template_child]
-        pub header_icon_image: TemplateChild<Image>,
         #[template_child]
         pub menus_box: TemplateChild<gtk4::Box>,
         #[template_child]
@@ -32,7 +29,11 @@ mod imp {
         #[template_child]
         pub redo_button: TemplateChild<Button>,
         #[template_child]
+        pub pens_toggles_squeezer: TemplateChild<adw::Squeezer>,
+        #[template_child]
         pub pens_toggles_clamp: TemplateChild<adw::Clamp>,
+        #[template_child]
+        pub pens_toggles_placeholderbox: TemplateChild<gtk4::Box>,
         #[template_child]
         pub marker_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -69,10 +70,6 @@ mod imp {
     impl ObjectImpl for MainHeader {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-
-            self.header_icon_image
-                .get()
-                .set_icon_name(Some(config::APP_ID));
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -87,7 +84,7 @@ mod imp {
 use crate::{ui::appmenu::AppMenu, ui::appwindow::RnoteAppWindow, ui::canvasmenu::CanvasMenu};
 
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, Image, Label, Revealer,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, Label, Revealer,
     ToggleButton, Widget,
 };
 
@@ -122,10 +119,6 @@ impl MainHeader {
             .get()
     }
 
-    pub fn header_icon_image(&self) -> Image {
-        imp::MainHeader::from_instance(self).header_icon_image.get()
-    }
-
     pub fn menus_box(&self) -> gtk4::Box {
         imp::MainHeader::from_instance(self).menus_box.get()
     }
@@ -156,9 +149,15 @@ impl MainHeader {
         imp::MainHeader::from_instance(self).redo_button.get()
     }
 
-    pub fn pens_toggles_clamp(&self) -> adw::Clamp {
+    pub fn pens_toggles_placeholderbox(&self) -> gtk4::Box {
         imp::MainHeader::from_instance(self)
-            .pens_toggles_clamp
+            .pens_toggles_placeholderbox
+            .get()
+    }
+
+    pub fn pens_toggles_squeezer(&self) -> adw::Squeezer {
+        imp::MainHeader::from_instance(self)
+            .pens_toggles_squeezer
             .get()
     }
 
@@ -225,6 +224,18 @@ impl MainHeader {
             )
             .build();
 
+        self.pens_toggles_squeezer().connect_visible_child_notify(
+            clone!(@weak self as mainheader, @weak appwindow => move |pens_toggles_squeezer| {
+                if let Some(visible_child) = pens_toggles_squeezer.visible_child() {
+                    if visible_child == mainheader.imp().pens_toggles_placeholderbox.get() {
+                        appwindow.narrow_pens_toggles_revealer().set_reveal_child(true);
+                    } else if visible_child == mainheader.imp().pens_toggles_clamp.get() {
+                        appwindow.narrow_pens_toggles_revealer().set_reveal_child(false);
+                    }
+                }
+            }),
+        );
+
         self.imp().add_page_button.get().connect_clicked(
             clone!(@weak appwindow => move |_add_page_button| {
                 let format_height = appwindow.canvas().sheet().borrow().format.height;
@@ -237,7 +248,7 @@ impl MainHeader {
 
         self.imp().resize_to_format_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
-                appwindow.canvas().resize_to_format();
+                appwindow.canvas().resize_sheet_to_fit_strokes();
                 appwindow.canvas().update_background_rendernode(true);
             }),
         );
@@ -301,8 +312,10 @@ impl MainHeader {
                 None::<&gio::Cancellable>,
             ) {
                 Ok(fileinfo) => {
-                    self.main_title()
-                        .set_title(fileinfo.display_name().as_str());
+                    let title = fileinfo.name().with_extension("");
+
+                    self.main_title().set_title(&title.to_string_lossy());
+
                     if let Some(mut path) = file.path() {
                         if path.pop() {
                             self.main_title()

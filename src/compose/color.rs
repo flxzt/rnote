@@ -4,15 +4,15 @@ use gtk4::gdk;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(default, rename="Color")]
+#[serde(default, rename = "color")]
 pub struct Color {
-    #[serde(rename="r")]
+    #[serde(rename = "r")]
     pub r: f64, // between 0.0 and 1.0
-    #[serde(rename="g")]
+    #[serde(rename = "g")]
     pub g: f64, // between 0.0 and 1.0
-    #[serde(rename="b")]
+    #[serde(rename = "b")]
     pub b: f64, // between 0.0 and 1.0
-    #[serde(rename="a")]
+    #[serde(rename = "a")]
     pub a: f64, // between 0.0 and 1.0
 }
 
@@ -147,7 +147,7 @@ impl From<u32> for Color {
     }
 }
 
-/// From XoppColor
+/// From XoppColor into Color
 impl From<xoppformat::XoppColor> for Color {
     fn from(xopp_color: xoppformat::XoppColor) -> Self {
         Self {
@@ -159,14 +159,14 @@ impl From<xoppformat::XoppColor> for Color {
     }
 }
 
-/// Into XoppColor
-impl Into<xoppformat::XoppColor> for Color {
-    fn into(self) -> xoppformat::XoppColor {
+// From Color into xoppcolor
+impl From<Color> for xoppformat::XoppColor {
+    fn from(color: Color) -> Self {
         xoppformat::XoppColor {
-            red: (self.r * 255.0).floor() as u8,
-            green: (self.g * 255.0).floor() as u8,
-            blue: (self.b * 255.0).floor() as u8,
-            alpha: (self.a * 255.0).floor() as u8,
+            red: (color.r * 255.0).floor() as u8,
+            green: (color.g * 255.0).floor() as u8,
+            blue: (color.b * 255.0).floor() as u8,
+            alpha: (color.a * 255.0).floor() as u8,
         }
     }
 }

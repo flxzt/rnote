@@ -22,7 +22,7 @@ One main consideration is that it is vector based, which should make it very fle
 This is my first Rust and GTK project and I am learning as I go along. Expect some bugs and crashes. Also, the file format is still unstable and will change between versions!
 
 ## Installation
-Rnote is available as  a flatpak on Flathub:
+Rnote is available as a flatpak on Flathub:
 
 <br><div align="start">
 <a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="256" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
@@ -52,8 +52,12 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 
 ## Pitfalls & known issues
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
-* Xournal++ export does not export images: in v0.3.0, it is broken with the default renderer backend. To fix it, enable the `developer options` toggle in the app menu. Then the entry `developer settings` will appear there.
-    Then change the settings `renderer backend` to `resvg`. Image export should work again.
+* odd location for current file: when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
+    Again, granting them in Flatseal fixes this issue.
+
+## Community
+If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  
+There is also the [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org) chat room.  
 
 ## File Format
 The `.rnote` file format is a gzipped json file. It is (de)compressed with the `flate2` crate and (de)serialized with the `Serde` crate.
@@ -99,9 +103,10 @@ To be able to open and export older files that are incompatible with the newest 
 
 If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
-<div align="start">
-        <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" width="300">
-        <img alt="Pikachu" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/pikachu.png" width="300">
+<div align="center" spacing="20px">
+        <img alt="Pikachu" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/pikachu.png" height="400">
+        <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" height="400">
+        <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" height="400">
 </div><br>
 
 # Building, contributing

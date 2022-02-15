@@ -1,7 +1,7 @@
 mod imp {
     use gtk4::{
         gio::MenuModel, glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
-        MenuButton, PopoverMenu, ToggleButton,
+        MenuButton, PopoverMenu,
     };
 
     #[derive(Default, Debug, CompositeTemplate)]
@@ -21,10 +21,6 @@ mod imp {
         pub zoom_reset_button: TemplateChild<Button>,
         #[template_child]
         pub zoom_fit_width_button: TemplateChild<Button>,
-        #[template_child]
-        pub lefthanded_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub righthanded_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -69,7 +65,7 @@ mod imp {
 use crate::ui::appwindow::RnoteAppWindow;
 
 use gtk4::{gio, MenuButton, PopoverMenu, Widget};
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Button, ToggleButton};
+use gtk4::{glib, subclass::prelude::*, Button};
 
 glib::wrapper! {
     pub struct CanvasMenu(ObjectSubclass<imp::CanvasMenu>)
@@ -118,49 +114,5 @@ impl CanvasMenu {
             .get()
     }
 
-    pub fn lefthanded_toggle(&self) -> ToggleButton {
-        imp::CanvasMenu::from_instance(self).lefthanded_toggle.get()
-    }
-
-    pub fn righthanded_toggle(&self) -> ToggleButton {
-        imp::CanvasMenu::from_instance(self)
-            .righthanded_toggle
-            .get()
-    }
-
-    pub fn init(&self, appwindow: &RnoteAppWindow) {
-        let zoomreset_button = self.imp().zoom_reset_button.get();
-
-        /*         self.imp().lefthanded_toggle.connect_toggled(clone!(@weak appwindow => move |righthanded_toggle| {
-                   adw::prelude::ActionGroupExt::activate_action(&appwindow, "righthanded", Some(&(!righthanded_toggle.is_active()).to_variant()));
-               }));
-
-               self.imp().righthanded_toggle.connect_toggled(clone!(@weak appwindow => move |righthanded_toggle| {
-                   adw::prelude::ActionGroupExt::activate_action(&appwindow, "righthanded", Some(&righthanded_toggle.is_active().to_variant()));
-               }));
-        */
-        self.imp().zoom_fit_width_button.connect_clicked(
-            clone!(@weak appwindow => move |_zoom_fit_width_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-fit-width", None);
-            }),
-        );
-
-        self.imp().zoom_reset_button.connect_clicked(
-            clone!(@weak appwindow => move |_zoomreset_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-reset", None);
-            }),
-        );
-
-        self.imp().zoom_in_button.connect_clicked(
-            clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_in_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-in", None);
-            }),
-        );
-
-        self.imp().zoom_out_button.connect_clicked(
-            clone!(@weak appwindow, @weak zoomreset_button => move |_zoom_out_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-out", None);
-            }),
-        );
-    }
+    pub fn init(&self, _appwindow: &RnoteAppWindow) {}
 }

@@ -40,11 +40,11 @@ mod imp {
 
 use crate::pens::eraser::Eraser;
 use crate::ui::appwindow::RnoteAppWindow;
-use gtk4::{glib, glib::clone, subclass::prelude::*, Orientable, SpinButton, Widget};
+use gtk4::{glib, glib::clone, subclass::prelude::*, SpinButton};
 
 glib::wrapper! {
     pub struct EraserPage(ObjectSubclass<imp::EraserPage>)
-        @extends Widget, @implements Orientable;
+        @extends gtk4::Widget;
 }
 
 impl Default for EraserPage {

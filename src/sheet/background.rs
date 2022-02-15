@@ -2,7 +2,7 @@ use std::sync::{Arc, RwLock};
 
 use anyhow::Context;
 use gtk4::{glib, gsk, Snapshot};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -36,32 +36,42 @@ impl Default for PatternStyle {
     }
 }
 
-pub fn gen_horizontal_line_pattern(
+pub fn gen_hline_pattern(
     bounds: AABB,
     spacing: f64,
     color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
-    let mut group = element::Group::new();
+    let pattern_id = compose::random_id_prefix() + "_bg_hline_pattern";
 
-    let mut y_offset = bounds.mins[1] + spacing;
-
-    if spacing > 1.0 {
-        while y_offset <= bounds.maxs[1] {
-            group = group.add(
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", bounds.extents()[0])
+            .set("height", spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color())
-                    .set("x1", bounds.mins[0])
-                    .set("y1", y_offset - line_width)
-                    .set("x2", bounds.maxs[0])
-                    .set("y2", y_offset - line_width),
-            );
+                    .set("x1", 0_f64)
+                    .set("y1", 0_f64)
+                    .set("x2", bounds.extents()[0])
+                    .set("y2", 0_f64),
+            ),
+    );
 
-            y_offset += spacing
-        }
-    }
+    let rect = element::Rectangle::new()
+        .set("x", bounds.mins[0])
+        .set("y", bounds.mins[1])
+        .set("width", bounds.extents()[0])
+        .set("height", bounds.extents()[1])
+        .set("fill", format!("url(#{})", pattern_id));
 
+    let group = element::Group::new().add(pattern).add(rect);
     group.into()
 }
 
@@ -72,41 +82,45 @@ pub fn gen_grid_pattern(
     color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
-    let mut group = element::Group::new();
+    let pattern_id = compose::random_id_prefix() + "_bg_grid_pattern";
 
-    if column_spacing > 1.0 && row_spacing > 1.0 {
-        let mut x_offset = bounds.mins[0] + column_spacing;
-        while x_offset <= bounds.maxs[0] {
-            // vertical lines
-            group = group.add(
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", column_spacing)
+            .set("height", row_spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color())
-                    .set("x1", x_offset - line_width)
-                    .set("y1", bounds.mins[1])
-                    .set("x2", x_offset - line_width)
-                    .set("y2", bounds.maxs[1]),
-            );
-
-            x_offset += column_spacing
-        }
-
-        let mut y_offset = bounds.mins[1] + row_spacing;
-        while y_offset <= bounds.maxs[1] {
-            // horizontal lines
-            group = group.add(
+                    .set("x1", 0_f64)
+                    .set("y1", 0_f64)
+                    .set("x2", column_spacing)
+                    .set("y2", 0_f64),
+            )
+            .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color())
-                    .set("x1", bounds.mins[0])
-                    .set("y1", y_offset - line_width)
-                    .set("x2", bounds.maxs[0])
-                    .set("y2", y_offset - line_width),
-            );
+                    .set("x1", 0_f64)
+                    .set("y1", 0_f64)
+                    .set("x2", 0_f64)
+                    .set("y2", row_spacing),
+            ),
+    );
 
-            y_offset += row_spacing
-        }
-    }
+    let rect = element::Rectangle::new()
+        .set("x", bounds.mins[0])
+        .set("y", bounds.mins[1])
+        .set("width", bounds.extents()[0])
+        .set("height", bounds.extents()[1])
+        .set("fill", format!("url(#{})", pattern_id));
+
+    let group = element::Group::new().add(pattern).add(rect);
     group.into()
 }
 
@@ -117,32 +131,36 @@ pub fn gen_dots_pattern(
     color: Color,
     dots_width: f64,
 ) -> svg::node::element::Element {
-    let mut group = element::Group::new();
+    let pattern_id = compose::random_id_prefix() + "_bg_dots_pattern";
 
-    // Only generate pattern if spacings are sufficiently large
-    if column_spacing > 1.0 && row_spacing > 1.0 {
-        let mut x_offset = bounds.mins[0] + column_spacing;
-        while x_offset <= bounds.maxs[0] {
-            let mut y_offset = bounds.mins[1] + row_spacing;
-            while y_offset <= bounds.maxs[1] {
-                // row by row
-                group = group.add(
-                    element::Rectangle::new()
-                        .set("stroke", "none")
-                        .set("fill", color.to_css_color())
-                        .set("x", x_offset - dots_width)
-                        .set("y", y_offset - dots_width)
-                        .set("width", dots_width)
-                        .set("height", dots_width),
-                );
+    let pattern = element::Definitions::new().add(
+        element::Pattern::new()
+            .set("id", pattern_id.as_str())
+            .set("x", 0_f64)
+            .set("y", 0_f64)
+            .set("width", column_spacing)
+            .set("height", row_spacing)
+            .set("patternUnits", "userSpaceOnUse")
+            .set("patternContentUnits", "userSpaceOnUse")
+            .add(
+                element::Rectangle::new()
+                    .set("stroke", "none")
+                    .set("fill", color.to_css_color())
+                    .set("x", 0_f64)
+                    .set("y", 0_f64)
+                    .set("width", dots_width)
+                    .set("height", dots_width),
+            ),
+    );
 
-                y_offset += row_spacing;
-            }
+    let rect = element::Rectangle::new()
+        .set("x", bounds.mins[0])
+        .set("y", bounds.mins[1])
+        .set("width", bounds.extents()[0])
+        .set("height", bounds.extents()[1])
+        .set("fill", format!("url(#{})", pattern_id));
 
-            x_offset += column_spacing;
-        }
-    }
-
+    let group = element::Group::new().add(pattern).add(rect);
     group.into()
 }
 
@@ -177,14 +195,8 @@ impl Default for Background {
 }
 
 impl Background {
-    pub const TILE_MAX_SIZE: f64 = 256.0;
-
-    pub const COLOR_DEFAULT: Color = Color {
-        r: 1.0,
-        g: 1.0,
-        b: 1.0,
-        a: 1.0,
-    };
+    pub const TILE_MAX_SIZE: f64 = 192.0;
+    pub const COLOR_DEFAULT: Color = Color::WHITE;
     pub const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
     pub const PATTERN_COLOR_DEFAULT: Color = Color {
         r: 0.8,
@@ -229,7 +241,7 @@ impl Background {
         match self.pattern {
             PatternStyle::None => {}
             PatternStyle::Lines => {
-                group = group.add(gen_horizontal_line_pattern(
+                group = group.add(gen_hline_pattern(
                     bounds,
                     self.pattern_size[1],
                     self.pattern_color,
@@ -268,45 +280,58 @@ impl Background {
         bounds: AABB,
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let svg = self.gen_svg(bounds)?;
-        renderer.read().unwrap().gen_image(zoom, &[svg], bounds)
+        Ok(Some(render::concat_images(
+            renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?,
+            bounds,
+            zoom,
+        )?))
     }
 
     pub fn regenerate_background(
         &mut self,
         zoom: f64,
-        bounds: AABB,
+        sheet_bounds: AABB,
+        viewport: Option<AABB>,
         renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 
         self.image = self.gen_image(renderer, zoom, tile_bounds)?;
-        self.update_rendernode(zoom, bounds)?;
+
+        self.update_rendernode(zoom, sheet_bounds, viewport)?;
         Ok(())
     }
 
     pub fn gen_rendernode(
         &mut self,
         zoom: f64,
-        bounds: AABB,
+        sheet_bounds: AABB,
+        viewport: Option<AABB>,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let snapshot = Snapshot::new();
         let tile_size = self.tile_size();
 
         snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-            bounds, zoom,
+            sheet_bounds,
+            zoom,
         )));
 
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_color(
             &self.color.to_gdk(),
-            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(bounds, zoom)),
+            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(sheet_bounds, zoom)),
         );
 
         if let Some(image) = &self.image {
             let new_texture = render::image_to_memtexture(image)
                 .context("image_to_memtexture() failed in gen_rendernode().")?;
-            for aabb in geometry::split_aabb_extended(bounds, tile_size) {
+            for aabb in geometry::split_aabb_extended_origin_aligned(sheet_bounds, tile_size) {
+                if let Some(viewport) = viewport {
+                    if !aabb.intersects(&viewport) {
+                        continue;
+                    }
+                }
                 snapshot.append_texture(
                     &new_texture,
                     &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, zoom)),
@@ -323,8 +348,9 @@ impl Background {
         &mut self,
         zoom: f64,
         sheet_bounds: AABB,
+        viewport: Option<AABB>,
     ) -> Result<(), anyhow::Error> {
-        match self.gen_rendernode(zoom, sheet_bounds) {
+        match self.gen_rendernode(zoom, sheet_bounds, viewport) {
             Ok(new_rendernode) => {
                 self.rendernode = new_rendernode;
             }
@@ -340,8 +366,8 @@ impl Background {
     }
 
     pub fn draw(&self, snapshot: &Snapshot) {
-        if let Some(rendernode) = self.rendernode.as_ref() {
+        self.rendernode.iter().for_each(|rendernode| {
             snapshot.append_node(rendernode);
-        }
+        });
     }
 }

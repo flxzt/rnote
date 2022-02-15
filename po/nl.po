@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-30 07:39+0100\n"
-"PO-Revision-Date: 2022-01-30 14:09+0100\n"
+"POT-Creation-Date: 2022-02-13 13:22+0100\n"
+"PO-Revision-Date: 2022-02-15 13:22+0100\n"
 "Last-Translator: Heimen Stoffels <vistausss@fastmail.com>\n"
 "Language-Team: \n"
 "Language: nl\n"
@@ -36,27 +36,32 @@ msgstr "Gnome;GTK;Kantoor;Grafisch;Foto;Aantekeningen;Notities;"
 #: resources/app.metainfo.xml.in.in:21
 msgid ""
 "Rnote is a simple vector based drawing application for handwritten notes and "
-"to annotate documents and pictures. Disclaimer: The file format is still "
-"unstable. It might change between versions."
+"to annotate documents and pictures."
 msgstr ""
 "Rnote is een eenvoudig te gebruiken vector-gebaseerde toepassing voor het "
-"maken van handgeschreven notities en aantekeningen, evt. voorzien van "
-"afbeeldingen. Let op: het bestandsformaat is nog niet af, dus er kunnen "
-"schoonheidsfoutjes in zitten."
+"maken van handgeschreven notities en aantekeningen."
 
-#: resources/app.metainfo.xml.in.in:30
+#: resources/app.metainfo.xml.in.in:24
+msgid ""
+"Disclaimer: The file format is still unstable. It might change between "
+"versions."
+msgstr ""
+"Let op: het bestandsformaat is nog niet af, dus er kunnen schoonheidsfoutjes "
+"in zitten."
+
+#: resources/app.metainfo.xml.in.in:32
 msgid "Main window in light colors"
 msgstr "Hoofdvenster (licht thema)"
 
-#: resources/app.metainfo.xml.in.in:34
+#: resources/app.metainfo.xml.in.in:36
 msgid "Main window in dark colors"
 msgstr "Hoofdvenster (donker thema)"
 
-#: resources/app.metainfo.xml.in.in:38
+#: resources/app.metainfo.xml.in.in:40
 msgid "A PDF annotation"
 msgstr "Een pdf-aantekening"
 
-#: resources/app.metainfo.xml.in.in:42
+#: resources/app.metainfo.xml.in.in:44
 msgid "A selection"
 msgstr "Een selectie"
 
@@ -84,23 +89,57 @@ msgstr "Sneltoetsen"
 msgid "About Rnote"
 msgstr "Over Rnote"
 
-#: resources/ui/appmenu.ui:78
+#: resources/ui/appmenu.ui:108
+msgid "Toggle fullscreen"
+msgstr "Beeldvullende modus aan/uit"
+
+#: resources/ui/appmenu.ui:122
 msgid "Use system colors preference"
 msgstr "Systeemthema"
 
-#: resources/ui/appmenu.ui:91
+#: resources/ui/appmenu.ui:136
 msgid "Use light colors"
 msgstr "Licht thema"
 
-#: resources/ui/appmenu.ui:105
+#: resources/ui/appmenu.ui:151
 msgid "Use dark colors"
 msgstr "Donker thema"
 
-#: resources/ui/appwindow.ui:210
+#: resources/ui/appwindow.ui:65 resources/ui/mainheader.ui:131
+#: resources/ui/penssidebar/penssidebar.ui:17
+msgid "Marker"
+msgstr "Markeerstift"
+
+#: resources/ui/appwindow.ui:73 resources/ui/mainheader.ui:139
+#: resources/ui/penssidebar/penssidebar.ui:34
+msgid "Brush"
+msgstr "Kwast"
+
+#: resources/ui/appwindow.ui:81 resources/ui/mainheader.ui:147
+#: resources/ui/penssidebar/penssidebar.ui:51
+msgid "Shaper"
+msgstr "Vormbepaling"
+
+#: resources/ui/appwindow.ui:89 resources/ui/mainheader.ui:155
+#: resources/ui/penssidebar/penssidebar.ui:68
+msgid "Eraser"
+msgstr "Gum"
+
+#: resources/ui/appwindow.ui:97 resources/ui/mainheader.ui:163
+#: resources/ui/penssidebar/penssidebar.ui:85
+msgid "Selector"
+msgstr "Selectie"
+
+#: resources/ui/appwindow.ui:105 resources/ui/mainheader.ui:171
+#: resources/ui/penssidebar/penssidebar.ui:102
+msgid "Tools"
+msgstr "Gereedschappen"
+
+#: resources/ui/appwindow.ui:300
 msgid "Workspace"
 msgstr "Werkblad"
 
-#: resources/ui/appwindow.ui:221
+#: resources/ui/appwindow.ui:311
 msgid "Settings"
 msgstr "Voorkeuren"
 
@@ -109,63 +148,79 @@ msgid "Draw with touch input"
 msgstr "Tekenen met touchscreen/pen"
 
 #: resources/ui/canvasmenu.ui:30
-msgid "Endless sheet"
-msgstr "Oneindig werkblad"
+msgid "Expand mode"
+msgstr "Werkblad vergroten"
 
-#: resources/ui/canvasmenu.ui:35
+#: resources/ui/canvasmenu.ui:33
+msgid "fixed size"
+msgstr "Vaste grootte"
+
+#: resources/ui/canvasmenu.ui:38
+msgid "endless vertical"
+msgstr "Oneindig (verticaal)"
+
+#: resources/ui/canvasmenu.ui:43
+msgid "infinite"
+msgstr "Oneindig"
+
+#: resources/ui/canvasmenu.ui:50
 msgid "Show format borders"
 msgstr "Formaatkaders tonen"
 
-#: resources/ui/canvasmenu.ui:40
+#: resources/ui/canvasmenu.ui:55
 msgid "Pen sounds"
 msgstr "Pengeluiden"
 
-#: resources/ui/canvasmenu.ui:45
+#: resources/ui/canvasmenu.ui:60
 msgid "Clear sheet"
 msgstr "Werkblad leegmaken"
 
-#: resources/ui/canvasmenu.ui:51 resources/ui/dialogs.ui:24
+#: resources/ui/canvasmenu.ui:66 resources/ui/dialogs.ui:24
 msgid "New"
 msgstr "Nieuw"
 
-#: resources/ui/canvasmenu.ui:55 resources/ui/dialogs.ui:88
-#: src/ui/dialogs.rs:187 src/ui/dialogs.rs:224
+#: resources/ui/canvasmenu.ui:70 resources/ui/dialogs.ui:88
+#: src/ui/dialogs.rs:195 src/ui/dialogs.rs:232
 msgid "Open"
 msgstr "Openen"
 
-#: resources/ui/canvasmenu.ui:59
+#: resources/ui/canvasmenu.ui:74
 msgid "Save"
 msgstr "Opslaan"
 
-#: resources/ui/canvasmenu.ui:63 src/ui/dialogs.rs:267
+#: resources/ui/canvasmenu.ui:78 src/ui/dialogs.rs:275
 msgid "Save as"
 msgstr "Opslaan als"
 
-#: resources/ui/canvasmenu.ui:67
+#: resources/ui/canvasmenu.ui:82
 msgid "Print"
 msgstr "Afdrukken"
 
-#: resources/ui/canvasmenu.ui:71 src/ui/dialogs.rs:347
+#: resources/ui/canvasmenu.ui:86 src/ui/dialogs.rs:356
 msgid "Import file"
 msgstr "Bestand importeren"
 
-#: resources/ui/canvasmenu.ui:75
+#: resources/ui/canvasmenu.ui:90
 msgid "Export .."
 msgstr "Exporteren…"
 
-#: resources/ui/canvasmenu.ui:77
+#: resources/ui/canvasmenu.ui:92
 msgid "Export selection as SVG"
 msgstr "Selectie exporteren naar svg"
 
-#: resources/ui/canvasmenu.ui:81
+#: resources/ui/canvasmenu.ui:96
 msgid "Export sheet as SVG"
 msgstr "Werkblad exporteren naar svg"
 
-#: resources/ui/canvasmenu.ui:85
+#: resources/ui/canvasmenu.ui:100
+msgid "Export sheet as PDF"
+msgstr "Werkblad exporteren naar pdf"
+
+#: resources/ui/canvasmenu.ui:104
 msgid "Export sheet as Xournal++ .xopp"
 msgstr "Werkblad exporteren .xopp (Xournal++)"
 
-#: resources/ui/canvasmenu.ui:142
+#: resources/ui/canvasmenu.ui:156
 msgid "Zoom to fit sheet width"
 msgstr "Aanpassen aan werkbladbreedte"
 
@@ -183,9 +238,10 @@ msgstr ""
 "Hierdoor gaan alle niet-opgeslagen aanpassingen verloren. Weet u het zeker?"
 
 #: resources/ui/dialogs.ui:11 resources/ui/dialogs.ui:43
-#: resources/ui/dialogs.ui:75 resources/ui/dialogs.ui:107 src/ui/dialogs.rs:188
-#: src/ui/dialogs.rs:225 src/ui/dialogs.rs:268 src/ui/dialogs.rs:351
-#: src/ui/dialogs.rs:393 src/ui/dialogs.rs:434 src/ui/dialogs.rs:477
+#: resources/ui/dialogs.ui:75 resources/ui/dialogs.ui:107 src/ui/dialogs.rs:196
+#: src/ui/dialogs.rs:233 src/ui/dialogs.rs:276 src/ui/dialogs.rs:360
+#: src/ui/dialogs.rs:402 src/ui/dialogs.rs:444 src/ui/dialogs.rs:488
+#: src/ui/dialogs.rs:532
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -227,193 +283,161 @@ msgstr "Hierdoor wordt het gehele werkblad leeggemaakt. Weet u het zeker?"
 msgid "Clear"
 msgstr "Leegmaken"
 
-#: resources/ui/mainheader.ui:20
+#: resources/ui/mainheader.ui:18
 msgid "New document"
 msgstr "Nieuw document"
 
-#: resources/ui/mainheader.ui:21
+#: resources/ui/mainheader.ui:19
 msgid "Draft"
 msgstr "Concept"
 
-#: resources/ui/mainheader.ui:77
+#: resources/ui/mainheader.ui:70
 msgid "Add page"
 msgstr "Pagina toevoegen"
 
-#: resources/ui/mainheader.ui:83
+#: resources/ui/mainheader.ui:76
 msgid "Resize to fit sheet format"
 msgstr "Aanpassen aan werkbladformaat"
 
-#: resources/ui/mainheader.ui:93
+#: resources/ui/mainheader.ui:86
 msgid "Undo last stroke"
 msgstr "Vorige penseelstreek ongedaan maken"
 
-#: resources/ui/mainheader.ui:99
+#: resources/ui/mainheader.ui:92
 msgid "Redo last stroke"
 msgstr "Vorige penseelstreek herhalen"
-
-#: resources/ui/mainheader.ui:139 resources/ui/penssidebar/penssidebar.ui:17
-msgid "Marker"
-msgstr "Markeerstift"
-
-#: resources/ui/mainheader.ui:147 resources/ui/penssidebar/penssidebar.ui:34
-msgid "Brush"
-msgstr "Kwast"
-
-#: resources/ui/mainheader.ui:155 resources/ui/penssidebar/penssidebar.ui:51
-msgid "Shaper"
-msgstr "Vormbepaling"
-
-#: resources/ui/mainheader.ui:163 resources/ui/penssidebar/penssidebar.ui:68
-msgid "Eraser"
-msgstr "Gum"
-
-#: resources/ui/mainheader.ui:171 resources/ui/penssidebar/penssidebar.ui:85
-msgid "Selector"
-msgstr "Selectie"
-
-#: resources/ui/mainheader.ui:179 resources/ui/penssidebar/penssidebar.ui:102
-msgid "Tools"
-msgstr "Gereedschappen"
 
 #: resources/ui/settingspanel.ui:42
 msgid "General"
 msgstr "Algemeen"
 
 #: resources/ui/settingspanel.ui:45
-msgid "Sheet margin"
-msgstr "Werkbladmarge"
-
-#: resources/ui/settingspanel.ui:46
-msgid "Set the margins around the sheet"
-msgstr "Stel de marges rondom het werkblad in"
-
-#: resources/ui/settingspanel.ui:59
 msgid "PDF import width (%)"
 msgstr "Pdf-importbreedte (in %)"
 
-#: resources/ui/settingspanel.ui:60
-msgid "Set the width of imported PDF's in percentage to the sheet width"
+#: resources/ui/settingspanel.ui:46
+msgid "Set the width of imported PDF's in percentage to the sheet format width"
 msgstr "Stel de breedte van geïmporteerde pdf-bestanden in (in procenten)"
 
-#: resources/ui/settingspanel.ui:80
+#: resources/ui/settingspanel.ui:66
 msgid "PDF import image type"
 msgstr "Pdf-afbeeldingsformaat"
 
-#: resources/ui/settingspanel.ui:81
+#: resources/ui/settingspanel.ui:67
 msgid "Set wether PDFs should be imported as vector or bitmap images"
 msgstr ""
 "Geef aan of pdf-bestanden dienen te worden geïmporteerd als vector- of "
 "bitmapafbeeldingen"
 
-#: resources/ui/settingspanel.ui:93
+#: resources/ui/settingspanel.ui:79
 msgid "Vector"
 msgstr "Vector"
 
-#: resources/ui/settingspanel.ui:100
+#: resources/ui/settingspanel.ui:86
 msgid "Bitmap"
 msgstr "Bitmap"
 
-#: resources/ui/settingspanel.ui:112
+#: resources/ui/settingspanel.ui:98
 msgid "Sheet Format"
 msgstr "Werkbladformaat"
 
-#: resources/ui/settingspanel.ui:115
+#: resources/ui/settingspanel.ui:101
 msgid "Format"
 msgstr "Formaat"
 
-#: resources/ui/settingspanel.ui:116
+#: resources/ui/settingspanel.ui:102
 msgid "Choose a format"
 msgstr "Kies een formaat"
 
-#: resources/ui/settingspanel.ui:129
+#: resources/ui/settingspanel.ui:115
 msgid "Orientation"
 msgstr "Oriëntatie"
 
-#: resources/ui/settingspanel.ui:130
+#: resources/ui/settingspanel.ui:116
 msgid "Set the format orientation"
 msgstr "Kies een formaatoriëntatie"
 
-#: resources/ui/settingspanel.ui:142
+#: resources/ui/settingspanel.ui:128
 msgid "Portrait"
 msgstr "Verticaal"
 
-#: resources/ui/settingspanel.ui:148
+#: resources/ui/settingspanel.ui:134
 msgid "Landscape"
 msgstr "Horizontaal"
 
-#: resources/ui/settingspanel.ui:158
+#: resources/ui/settingspanel.ui:144
 msgid "Width"
 msgstr "Breedte"
 
-#: resources/ui/settingspanel.ui:159
+#: resources/ui/settingspanel.ui:145
 msgid "Set the format width"
 msgstr "Stel de formaatbreedte in"
 
-#: resources/ui/settingspanel.ui:172
+#: resources/ui/settingspanel.ui:158
 msgid "Height"
 msgstr "Hoogte"
 
-#: resources/ui/settingspanel.ui:173
+#: resources/ui/settingspanel.ui:159
 msgid "Set the format height"
 msgstr "Stel de formaathoogte in"
 
-#: resources/ui/settingspanel.ui:186
+#: resources/ui/settingspanel.ui:172
 msgid "DPI"
 msgstr "DPI"
 
-#: resources/ui/settingspanel.ui:187
+#: resources/ui/settingspanel.ui:173
 msgid "Set the DPI (dots per inch). Defaults to 96"
 msgstr "Stel het aantal dpi (dots per inch) in. Standaard: 96"
 
-#: resources/ui/settingspanel.ui:210
+#: resources/ui/settingspanel.ui:196
 msgid "Revert"
 msgstr "Terugdraaien"
 
-#: resources/ui/settingspanel.ui:219
+#: resources/ui/settingspanel.ui:205
 msgid "Apply"
 msgstr "Toepassen"
 
-#: resources/ui/settingspanel.ui:232
+#: resources/ui/settingspanel.ui:218
 msgid "Sheet Background"
 msgstr "Werkbladachtergrond"
 
-#: resources/ui/settingspanel.ui:235
+#: resources/ui/settingspanel.ui:221
 msgid "Color"
 msgstr "Kleur"
 
-#: resources/ui/settingspanel.ui:236
+#: resources/ui/settingspanel.ui:222
 msgid "Set the background color"
 msgstr "Stel de achtergrondkleur in"
 
-#: resources/ui/settingspanel.ui:253
+#: resources/ui/settingspanel.ui:239
 msgid "Pattern"
 msgstr "Patroon"
 
-#: resources/ui/settingspanel.ui:254
+#: resources/ui/settingspanel.ui:240
 msgid "Choose a background pattern"
 msgstr "Kies een achtergrondpatroon"
 
-#: resources/ui/settingspanel.ui:267
+#: resources/ui/settingspanel.ui:253
 msgid "Pattern Color"
 msgstr "Patroonkleur"
 
-#: resources/ui/settingspanel.ui:268
+#: resources/ui/settingspanel.ui:254
 msgid "Set the background pattern color"
 msgstr "Stel de achtergrondpatroonkleur in"
 
-#: resources/ui/settingspanel.ui:285
+#: resources/ui/settingspanel.ui:271
 msgid "Pattern Width"
 msgstr "Patroonbreedte"
 
-#: resources/ui/settingspanel.ui:286
+#: resources/ui/settingspanel.ui:272
 msgid "Set the background pattern width"
 msgstr "Stel de achtergrondpatroonbreedte in"
 
-#: resources/ui/settingspanel.ui:299
+#: resources/ui/settingspanel.ui:285
 msgid "Pattern Height"
 msgstr "Patroonhoogte"
 
-#: resources/ui/settingspanel.ui:300
+#: resources/ui/settingspanel.ui:286
 msgid "Set the background pattern height"
 msgstr "Stel de achtergrondpatroonhoogte in"
 
@@ -447,207 +471,229 @@ msgctxt "shortcut window"
 msgid "Open the app menu"
 msgstr "Open het toepassingsmenu"
 
-#: resources/ui/shortcuts.ui:46
+#: resources/ui/shortcuts.ui:44
+msgctxt "shortcut window"
+msgid "Toggle fullscreen"
+msgstr "Beeldvullende modus aan/uit"
+
+#: resources/ui/shortcuts.ui:52
 msgctxt "shortcut window"
 msgid "Navigation"
 msgstr "Navigatie"
 
-#: resources/ui/shortcuts.ui:49 resources/ui/shortcuts.ui:55
+#: resources/ui/shortcuts.ui:55 resources/ui/shortcuts.ui:61
 msgctxt "shortcut window"
 msgid "Zoom in"
 msgstr "Zoom in"
 
-#: resources/ui/shortcuts.ui:61 resources/ui/shortcuts.ui:67
+#: resources/ui/shortcuts.ui:67 resources/ui/shortcuts.ui:73
 msgctxt "shortcut window"
 msgid "Zoom out"
 msgstr "Zoom uit"
 
-#: resources/ui/shortcuts.ui:75
+#: resources/ui/shortcuts.ui:81
 msgctxt "shortcut window"
 msgid "Sheet"
 msgstr "Werkblad"
 
-#: resources/ui/shortcuts.ui:78
+#: resources/ui/shortcuts.ui:84
 msgctxt "shortcut window"
 msgid "New sheet"
 msgstr "Nieuw werkblad"
 
-#: resources/ui/shortcuts.ui:84
+#: resources/ui/shortcuts.ui:90
 msgctxt "shortcut window"
 msgid "Open sheet"
 msgstr "Open een werkblad"
 
-#: resources/ui/shortcuts.ui:90
+#: resources/ui/shortcuts.ui:96
 msgctxt "shortcut window"
 msgid "Save sheet"
 msgstr "Sla het werkblad op"
 
-#: resources/ui/shortcuts.ui:96
+#: resources/ui/shortcuts.ui:102
 msgctxt "shortcut window"
 msgid "Save sheet as"
 msgstr "Sla het werkblad op als"
 
-#: resources/ui/shortcuts.ui:102
+#: resources/ui/shortcuts.ui:108
 msgctxt "shortcut window"
 msgid "Clear sheet"
 msgstr "Maak het werkblad leeg"
 
-#: resources/ui/shortcuts.ui:108
+#: resources/ui/shortcuts.ui:114
 msgctxt "shortcut window"
 msgid "Print sheet"
 msgstr "Druk het werkblad af"
 
-#: resources/ui/shortcuts.ui:114
+#: resources/ui/shortcuts.ui:120
 msgctxt "shortcut window"
 msgid "Import file"
 msgstr "Importeer een bestand"
 
-#: resources/ui/shortcuts.ui:120
+#: resources/ui/shortcuts.ui:126
 msgctxt "shortcut window"
 msgid "Drawing"
 msgstr "Teken"
 
-#: resources/ui/shortcuts.ui:123
+#: resources/ui/shortcuts.ui:129
 msgctxt "shortcut window"
 msgid "Delete current selection"
 msgstr "Wis de huidige selectie"
 
-#: resources/ui/shortcuts.ui:129
+#: resources/ui/shortcuts.ui:135
 msgctxt "shortcut window"
 msgid "Duplicate current selection"
 msgstr "Kloon de huidige selectie"
 
-#: resources/ui/shortcuts.ui:135
+#: resources/ui/shortcuts.ui:141
 msgctxt "shortcut window"
-msgid "Select all stroks"
+msgid "Select all strokes"
 msgstr "Selecteer alle penseelstreken"
 
-#: resources/ui/shortcuts.ui:141
+#: resources/ui/shortcuts.ui:147
+msgctxt "shortcut window"
+msgid "Deselect all strokes"
+msgstr "Deselecteer alle penseelstreken"
+
+#: resources/ui/shortcuts.ui:153
 msgctxt "shortcut window"
 msgid "Copy selection into clipboard"
 msgstr "Kopieer de selectie naar het klembord"
 
-#: resources/ui/shortcuts.ui:147
+#: resources/ui/shortcuts.ui:159
 msgctxt "shortcut window"
 msgid "Paste clipboard as selection"
 msgstr "Plak een klemborditem als selectie"
 
-#: resources/ui/shortcuts.ui:153
+#: resources/ui/shortcuts.ui:165
 msgctxt "shortcut window"
 msgid "Enable temporary Eraser"
 msgstr "Gebruik de tijdelijke gum"
 
-#: resources/ui/shortcuts.ui:159
+#: resources/ui/shortcuts.ui:171
 msgctxt "shortcut window"
 msgid "Undo last stroke"
 msgstr "Maak de vorige penseelstreek ongedaan"
 
-#: resources/ui/shortcuts.ui:165
+#: resources/ui/shortcuts.ui:177
 msgctxt "shortcut window"
 msgid "Redo last stroke"
 msgstr "Herhaal de vorige penseelstreek"
 
-#: resources/ui/workspacebrowser.ui:112
+#: resources/ui/workspacebrowser.ui:77
 msgid "Change workspace directory"
 msgstr "Werkbladmap wijzigen"
 
-#: resources/ui/penssidebar/brushpage.ui:34
+#: resources/ui/workspacebrowser.ui:127
+msgid "Close the folded flap"
+msgstr "Omgevouwen pagina sluiten"
+
+#: resources/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
 msgstr "Kwaststijl"
 
-#: resources/ui/penssidebar/brushpage.ui:54
+#: resources/ui/penssidebar/brushpage.ui:53
 msgid "Brush styles"
 msgstr "Kwaststijlen"
 
-#: resources/ui/penssidebar/brushpage.ui:72
+#: resources/ui/penssidebar/brushpage.ui:71
 msgid "Solid"
 msgstr "Vaste kleur"
 
-#: resources/ui/penssidebar/brushpage.ui:83
+#: resources/ui/penssidebar/brushpage.ui:82
 msgid "Textured"
 msgstr "Textuur"
 
-#: resources/ui/penssidebar/brushpage.ui:111
+#: resources/ui/penssidebar/brushpage.ui:109
 msgid "Brush styles configuration"
 msgstr "Kwaststijlen instellen"
 
-#: resources/ui/penssidebar/brushpage.ui:125
+#: resources/ui/penssidebar/brushpage.ui:123
 msgid "Brush configuration"
 msgstr "Kwast afstellen"
 
-#: resources/ui/penssidebar/brushpage.ui:145
+#: resources/ui/penssidebar/brushpage.ui:143
 msgid "Density"
 msgstr "Dichtheid"
 
-#: resources/ui/penssidebar/brushpage.ui:146
+#: resources/ui/penssidebar/brushpage.ui:144
 msgid "The density is the amount of dots per 10x10 area"
 msgstr "De dichtheid is het aantal punten op een gebied van 10x10"
 
-#: resources/ui/penssidebar/brushpage.ui:161
+#: resources/ui/penssidebar/brushpage.ui:159
 msgid "Dot Radii"
 msgstr "Puntstraal"
 
-#: resources/ui/penssidebar/brushpage.ui:162
+#: resources/ui/penssidebar/brushpage.ui:160
 msgid "The radii of the dots"
 msgstr "De straal van de punten"
 
-#: resources/ui/penssidebar/brushpage.ui:192
+#: resources/ui/penssidebar/brushpage.ui:190
 msgid "Distribution"
 msgstr "Verspreiding"
 
-#: resources/ui/penssidebar/brushpage.ui:193
+#: resources/ui/penssidebar/brushpage.ui:191
 msgid "Choose a dots position probability distribution"
 msgstr "Geef aan hoe punten verspreid dienen te worden"
 
-#: resources/ui/penssidebar/selectorpage.ui:35
+#: resources/ui/penssidebar/selectorpage.ui:34
 msgid "Selecting with a polygon"
 msgstr "Polygoonselectie"
 
-#: resources/ui/penssidebar/selectorpage.ui:49
+#: resources/ui/penssidebar/selectorpage.ui:48
 msgid "Selecting with a rectangle"
 msgstr "Rechthoekselectie"
 
-#: resources/ui/penssidebar/selectorpage.ui:70
+#: resources/ui/penssidebar/selectorpage.ui:72
 msgid "Lock aspectratio while resizing the selection"
 msgstr "Beeldverhouding vastzetten tijdens vergroten/verkleinen van selectie"
 
-#: resources/ui/penssidebar/selectorpage.ui:82
-msgid "Delete selection"
-msgstr "Selectie wissen"
+#: resources/ui/penssidebar/selectorpage.ui:83
+msgid "Select all strokes"
+msgstr "Alle penseelstreken selecteren"
 
-#: resources/ui/penssidebar/selectorpage.ui:97
+#: resources/ui/penssidebar/selectorpage.ui:95
+msgid "Deselect all strokes"
+msgstr "Alle penseelstreken deselecteren"
+
+#: resources/ui/penssidebar/selectorpage.ui:107
 msgid "Duplicate selection"
 msgstr "Selectie klonen"
 
-#: resources/ui/penssidebar/shaperpage.ui:35
+#: resources/ui/penssidebar/selectorpage.ui:119
+msgid "Delete selection"
+msgstr "Selectie wissen"
+
+#: resources/ui/penssidebar/shaperpage.ui:34
 msgid "Smooth shapes"
 msgstr "Gladgestreken vormen"
 
-#: resources/ui/penssidebar/shaperpage.ui:48
+#: resources/ui/penssidebar/shaperpage.ui:47
 msgid "Rough shapes"
 msgstr "Ruige vormen"
 
-#: resources/ui/penssidebar/shaperpage.ui:71
-#: resources/ui/penssidebar/shaperpage.ui:85
+#: resources/ui/penssidebar/shaperpage.ui:70
+#: resources/ui/penssidebar/shaperpage.ui:84
 msgid "Rough shapes configuration"
 msgstr "Ruige vormen afstellen"
 
-#: resources/ui/penssidebar/shaperpage.ui:104
+#: resources/ui/penssidebar/shaperpage.ui:103
 msgid "Roughness"
 msgstr "Ruigheid"
 
-#: resources/ui/penssidebar/shaperpage.ui:105
+#: resources/ui/penssidebar/shaperpage.ui:104
 msgid ""
 "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
 msgstr ""
 "Geef aan hoe ruig de tekening dient te zijn. Gladgestreken lijn: 0.0 - "
 "Standaardvoorkeur: 1.0"
 
-#: resources/ui/penssidebar/shaperpage.ui:120
+#: resources/ui/penssidebar/shaperpage.ui:119
 msgid "Bowing"
 msgstr "Afbuiging"
 
-#: resources/ui/penssidebar/shaperpage.ui:121
+#: resources/ui/penssidebar/shaperpage.ui:120
 msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
@@ -655,40 +701,40 @@ msgstr ""
 "Geef aan hoe gebogen de lijnen dienen te zijn bij het tekenen van een ruige "
 "vorm. Rechte lijn: 0.0 - Standaardvoorkeur: 1.0"
 
-#: resources/ui/penssidebar/shaperpage.ui:136
+#: resources/ui/penssidebar/shaperpage.ui:135
 msgid "Curve step count"
 msgstr "Aantal curvestappen"
 
-#: resources/ui/penssidebar/shaperpage.ui:137
+#: resources/ui/penssidebar/shaperpage.ui:136
 msgid "How many steps make up a curve. Defaults to 9"
 msgstr "Hoeveel stappen samen een curve vormen. Standaard: 9"
 
-#: resources/ui/penssidebar/shaperpage.ui:152
+#: resources/ui/penssidebar/shaperpage.ui:151
 msgid "Multistroke"
 msgstr "Meerdere penseelstreken"
 
-#: resources/ui/penssidebar/shaperpage.ui:153
+#: resources/ui/penssidebar/shaperpage.ui:152
 msgid "Multiple stroke generation for a sketched look. Defaults to true"
 msgstr ""
 "Meerdere penseelstreken maken van het geheel een schets. Standaard: aan"
 
-#: resources/ui/penssidebar/shaperpage.ui:189
+#: resources/ui/penssidebar/shaperpage.ui:186
 msgid "Line"
 msgstr "Lijn"
 
-#: resources/ui/penssidebar/shaperpage.ui:201
+#: resources/ui/penssidebar/shaperpage.ui:198
 msgid "Rectangle"
 msgstr "Rechthoek"
 
-#: resources/ui/penssidebar/shaperpage.ui:214
+#: resources/ui/penssidebar/shaperpage.ui:211
 msgid "Ellipse"
 msgstr "Ellips"
 
-#: resources/ui/penssidebar/toolspage.ui:39
+#: resources/ui/penssidebar/toolspage.ui:38
 msgid "Expand the sheet vertically"
 msgstr "Werkblad verlengen in verticale richting"
 
-#: resources/ui/penssidebar/toolspage.ui:52
+#: resources/ui/penssidebar/toolspage.ui:51
 msgid "Drag stroke elements based on proximity"
 msgstr "Penseelstreek-elementen verslepen op basis van afstand"
 
@@ -697,53 +743,64 @@ msgstr "Penseelstreek-elementen verslepen op basis van afstand"
 msgid "translator-credits"
 msgstr "Heimen Stoffels <vistausss@fastmail.com>"
 
-#: src/ui/dialogs.rs:181
+#: src/ui/dialogs.rs:189
 msgid ".rnote / .xopp File"
 msgstr ".rnote-/.xopp-bestand"
 
-#: src/ui/dialogs.rs:184
+#: src/ui/dialogs.rs:192
 msgid "Open file"
 msgstr "Bestand openen"
 
-#: src/ui/dialogs.rs:221
+#: src/ui/dialogs.rs:229
 msgid "Open workspace"
 msgstr "Werkblad openen"
 
-#: src/ui/dialogs.rs:261
+#: src/ui/dialogs.rs:269
 msgid ".rnote file"
 msgstr ".rnote-bestand"
 
-#: src/ui/dialogs.rs:264
+#: src/ui/dialogs.rs:272
 msgid "Save sheet as"
 msgstr "Sla het werkblad op als"
 
-#: src/ui/dialogs.rs:344
+#: src/ui/dialogs.rs:353
 msgid "PNG / SVG / JPG / PDF file"
 msgstr "PNG-/SVG-/JPG-/PDF-bestand"
 
-#: src/ui/dialogs.rs:350
+#: src/ui/dialogs.rs:359
 msgid "Import"
 msgstr "Importeren"
 
-#: src/ui/dialogs.rs:386 src/ui/dialogs.rs:427
+#: src/ui/dialogs.rs:395 src/ui/dialogs.rs:437
 msgid "SVG file"
 msgstr "SVG-bestand"
 
-#: src/ui/dialogs.rs:389
+#: src/ui/dialogs.rs:398
 msgid "Export Selection"
 msgstr "Selectie exporteren"
 
-#: src/ui/dialogs.rs:392 src/ui/dialogs.rs:433 src/ui/dialogs.rs:476
+#: src/ui/dialogs.rs:401 src/ui/dialogs.rs:443 src/ui/dialogs.rs:487
+#: src/ui/dialogs.rs:531
 msgid "Export"
 msgstr "Exporteren"
 
-#: src/ui/dialogs.rs:430 src/ui/dialogs.rs:473
+#: src/ui/dialogs.rs:440 src/ui/dialogs.rs:484 src/ui/dialogs.rs:528
 msgid "Export Sheet"
 msgstr "Werkblad exporteren"
 
-#: src/ui/dialogs.rs:470
+#: src/ui/dialogs.rs:481
+msgid "PDF file"
+msgstr "PDF-bestand"
+
+#: src/ui/dialogs.rs:525
 msgid ".xopp file"
 msgstr ".xopp-bestand"
+
+#~ msgid "Sheet margin"
+#~ msgstr "Werkbladmarge"
+
+#~ msgid "Set the margins around the sheet"
+#~ msgstr "Stel de marges rondom het werkblad in"
 
 #~ msgid "An easy and simple vector-based note taking app"
 #~ msgstr "Een eenvoudig te gebruiken toepassing om aantekeningen mee te maken"

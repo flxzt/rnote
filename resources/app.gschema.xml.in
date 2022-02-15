@@ -52,7 +52,7 @@
       <summary>Expand mode</summary>
     </key>
     <key name="format-borders" type="b">
-      <default>false</default>
+      <default>true</default>
       <summary>show format borders</summary>
     </key>
     <key name="pdf-import-width" type="d">

@@ -1,7 +1,8 @@
 use std::collections::VecDeque;
 use std::sync::{Arc, RwLock};
 
-use crate::compose::{color::Color, geometry};
+use crate::compose::color::Color;
+use crate::compose::geometry::AABBHelpers;
 use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
 use crate::ui::appwindow::RnoteAppWindow;
@@ -66,7 +67,8 @@ impl PenBehaviour for Eraser {
         );
 
         appwindow.canvas().pens().borrow_mut().eraser.current_input = None;
-        appwindow.canvas().update_size_autoexpand();
+        appwindow.canvas().resize_sheet_autoexpand();
+        appwindow.canvas().update_background_rendernode(true);
     }
 
     fn draw(
@@ -82,12 +84,12 @@ impl PenBehaviour for Eraser {
 
             snapshot.append_color(
                 &Self::FILL_COLOR_DEFAULT.to_gdk(),
-                &geometry::aabb_to_graphene_rect(bounds),
+                &bounds.to_graphene_rect(),
             );
 
             snapshot.append_border(
                 &gsk::RoundedRect::new(
-                    geometry::aabb_to_graphene_rect(bounds),
+                    bounds.to_graphene_rect(),
                     graphene::Size::zero(),
                     graphene::Size::zero(),
                     graphene::Size::zero(),

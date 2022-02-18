@@ -1,5 +1,6 @@
+use crate::compose::geometry::AABBHelpers;
 use crate::compose::smooth::SmoothOptions;
-use crate::compose::{self, curves, geometry, smooth};
+use crate::compose::{self, curves, smooth};
 use crate::{
     drawbehaviour::DrawBehaviour, pens::marker::Marker, render, strokes::strokestyle::Element,
 };
@@ -29,7 +30,7 @@ impl Default for MarkerStroke {
         Self {
             elements: vec![],
             options: SmoothOptions::default(),
-            bounds: geometry::aabb_new_zero(),
+            bounds: AABB::new_zero(),
             hitbox: vec![],
         }
     }
@@ -254,12 +255,12 @@ impl MarkerStroke {
             let marker_x = if delta[0] < 0.0 { -width } else { width };
             let marker_y = if delta[1] < 0.0 { -width } else { width };
 
-            geometry::aabb_new_positive(
+            AABB::new_positive(
                 na::Point2::from(first - na::vector![marker_x / 2.0, marker_y / 2.0]),
                 na::Point2::from(first + delta + na::vector![marker_x / 2.0, marker_y / 2.0]),
             )
         } else {
-            geometry::aabb_new_positive(
+            AABB::new_positive(
                 na::Point2::from(
                     first
                         - na::vector![

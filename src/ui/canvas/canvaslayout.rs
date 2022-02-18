@@ -8,8 +8,8 @@ mod imp {
     use gtk4::SizeRequestMode;
     use gtk4::Widget;
 
-    use crate::compose::geometry;
-    use crate::ui::canvas::{Canvas, ExpandMode};
+    use crate::compose::geometry::AABBHelpers;
+    use crate::ui::canvas::Canvas;
     use crate::ui::selectionmodifier::SelectionModifier;
 
     #[derive(Debug, Default)]
@@ -61,77 +61,15 @@ mod imp {
             height: i32,
             _baseline: i32,
         ) {
-            let width = f64::from(width);
-            let height = f64::from(height);
             let canvas = widget.downcast_ref::<Canvas>().unwrap();
             let canvas_priv = canvas.imp();
             let total_zoom = canvas.total_zoom();
 
             let hadj = canvas.hadjustment().unwrap();
-
-            let (h_lower, h_upper) = match canvas.expand_mode() {
-                ExpandMode::FixedSize => (
-                    (canvas.sheet().borrow().x - Canvas::SHADOW_WIDTH) * total_zoom,
-                    (canvas.sheet().borrow().x
-                        + canvas.sheet().borrow().width
-                        + Canvas::SHADOW_WIDTH)
-                        * total_zoom,
-                ),
-                ExpandMode::EndlessVertical => (
-                    (canvas.sheet().borrow().x - Canvas::SHADOW_WIDTH) * total_zoom,
-                    (canvas.sheet().borrow().x
-                        + canvas.sheet().borrow().width
-                        + Canvas::SHADOW_WIDTH)
-                        * total_zoom,
-                ),
-                ExpandMode::Infinite => (
-                    canvas.sheet().borrow().x * total_zoom,
-                    (canvas.sheet().borrow().x + canvas.sheet().borrow().width) * total_zoom,
-                ),
-            };
-
             let vadj = canvas.vadjustment().unwrap();
 
-            let (v_lower, v_upper) = match canvas.expand_mode() {
-                ExpandMode::FixedSize => (
-                    (canvas.sheet().borrow().y - Canvas::SHADOW_WIDTH) * total_zoom,
-                    (canvas.sheet().borrow().y
-                        + canvas.sheet().borrow().height
-                        + Canvas::SHADOW_WIDTH)
-                        * total_zoom,
-                ),
-                ExpandMode::EndlessVertical => (
-                    (canvas.sheet().borrow().y - Canvas::SHADOW_WIDTH) * total_zoom,
-                    (canvas.sheet().borrow().y
-                        + canvas.sheet().borrow().height
-                        + Canvas::SHADOW_WIDTH)
-                        * total_zoom,
-                ),
-                ExpandMode::Infinite => (
-                    canvas.sheet().borrow().y * total_zoom,
-                    (canvas.sheet().borrow().y + canvas.sheet().borrow().height) * total_zoom,
-                ),
-            };
-
-            hadj.configure(
-                hadj.value(),
-                h_lower,
-                h_upper,
-                0.1 * width,
-                0.9 * width,
-                width,
-            );
-
-            vadj.configure(
-                vadj.value(),
-                v_lower,
-                v_upper,
-                0.1 * height,
-                0.9 * height,
-                height,
-            );
-
-            canvas.update_size_autoexpand();
+            // Update the adjustments
+            canvas.update_adj_config(na::vector![f64::from(width), f64::from(height)]);
 
             // Allocate the selection_modifier child
             {
@@ -150,7 +88,7 @@ mod imp {
                     canvas_priv.selection_modifier.selection_bounds()
                 {
                     let selection_bounds_zoomed =
-                        geometry::aabb_scale(selection_bounds, total_zoom);
+                        selection_bounds.scale(na::Vector2::from_element(total_zoom));
 
                     (
                         (selection_bounds_zoomed.mins[0] - hadj.value()).ceil() as i32

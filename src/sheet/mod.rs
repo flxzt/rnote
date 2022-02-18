@@ -4,9 +4,10 @@ pub mod format;
 use std::sync::{Arc, RwLock};
 
 use crate::compose::color::Color;
+use crate::compose::geometry::AABBHelpers;
+use crate::compose::shapes;
 use crate::compose::smooth::SmoothOptions;
 use crate::compose::transformable::{Transform, Transformable};
-use crate::compose::{geometry, shapes};
 use crate::pens::brush::{Brush, BrushStyle};
 use crate::render::Renderer;
 use crate::strokes::bitmapimage::{self, BitmapImage};
@@ -70,7 +71,7 @@ impl Sheet {
 
     /// Generates bounds which contain all pages with content, and are extended to fit the format size.
     pub fn bounds_w_content_extended(&self) -> Option<AABB> {
-        let bounds = self.gen_pages_bounds_containing_content();
+        let bounds = self.pages_bounds_containing_content();
         if bounds.is_empty() {
             return None;
         }
@@ -86,6 +87,39 @@ impl Sheet {
         )
     }
 
+    // Generates bounds for each page for the sheet size, extended to fit the sheet format. May contain many empty pages (in infinite mode)
+    pub fn pages_bounds(&self) -> Vec<AABB> {
+        let sheet_bounds = self.bounds();
+
+        if self.format.height > 0.0 && self.format.width > 0.0 {
+            sheet_bounds
+                .split_extended_origin_aligned(na::vector![self.format.width, self.format.height])
+        } else {
+            vec![]
+        }
+    }
+
+    // Generates bounds for each page which is containing content, extended to fit the sheet format
+    pub fn pages_bounds_containing_content(&self) -> Vec<AABB> {
+        let sheet_bounds = self.bounds();
+        let keys = self.strokes_state.keys_sorted_chrono();
+        let strokes_bounds = &self.strokes_state.strokes_bounds(&keys);
+
+        if self.format.height > 0.0 && self.format.width > 0.0 {
+            sheet_bounds
+                .split_extended_origin_aligned(na::vector![self.format.width, self.format.height])
+                .into_iter()
+                .filter(|current_page_bounds| {
+                    strokes_bounds
+                        .iter()
+                        .any(|stroke_bounds| stroke_bounds.intersects(&current_page_bounds))
+                })
+                .collect::<Vec<AABB>>()
+        } else {
+            vec![]
+        }
+    }
+
     pub fn calc_n_pages(&self) -> u32 {
         // Avoid div by 0
         if self.format.height > 0.0 && self.format.width > 0.0 {
@@ -96,41 +130,65 @@ impl Sheet {
         }
     }
 
-    // Generates bounds for each page for the sheet size, extended to fit the sheet format. May contain many empty pages (in infinite mode)
-    pub fn gen_pages_bounds(&self) -> Vec<AABB> {
-        let sheet_bounds = self.bounds();
+    pub fn resize_sheet_mode_fixed_size(&mut self) {
+        let format_height = self.format.height;
 
-        if self.format.height > 0.0 && self.format.width > 0.0 {
-            geometry::split_aabb_extended_origin_aligned(
-                sheet_bounds,
-                na::vector![self.format.width, self.format.height],
-            )
-        } else {
-            vec![]
-        }
+        let new_width = self.format.width;
+        // +1.0 because then 'fraction'.ceil() is at least 1
+        let new_height =
+            (f64::from(self.strokes_state.calc_height() + 1.0) / f64::from(format_height)).ceil()
+                * format_height;
+
+        self.x = 0.0;
+        self.y = 0.0;
+        self.width = new_width;
+        self.height = new_height;
     }
 
-    // Generates bounds for each page which is containing content, extended to fit the sheet format
-    pub fn gen_pages_bounds_containing_content(&self) -> Vec<AABB> {
-        let sheet_bounds = self.bounds();
-        let keys = self.strokes_state.keys_sorted_chrono();
-        let strokes_bounds = &self.strokes_state.strokes_bounds(&keys);
+    pub fn resize_sheet_mode_endless_vertical(&mut self) {
+        let padding_bottom = self.format.height;
+        let new_height = self.strokes_state.calc_height() + padding_bottom;
+        let new_width = self.format.width;
 
-        if self.format.height > 0.0 && self.format.width > 0.0 {
-            geometry::split_aabb_extended_origin_aligned(
-                sheet_bounds,
-                na::vector![self.format.width, self.format.height],
-            )
-            .into_iter()
-            .filter(|current_page_bounds| {
-                strokes_bounds
-                    .iter()
-                    .any(|stroke_bounds| stroke_bounds.intersects(&current_page_bounds))
-            })
-            .collect::<Vec<AABB>>()
+        self.x = 0.0;
+        self.y = 0.0;
+        self.width = new_width;
+        self.height = new_height;
+    }
+
+    pub fn resize_sheet_mode_infinite_to_fit_strokes(&mut self) {
+        let padding_horizontal = self.format.width * 2.0;
+        let padding_vertical = self.format.height * 2.0;
+
+        let keys = self.strokes_state.keys_as_rendered();
+        let new_bounds = if let Some(new_bounds) = self.strokes_state.gen_bounds(&keys) {
+            new_bounds.expand(na::vector![padding_horizontal, padding_vertical])
         } else {
-            vec![]
-        }
+            // If sheet is empty, resize to one page with the format size
+            AABB::new(
+                na::point![0.0, 0.0],
+                na::point![self.format.width, self.format.height],
+            )
+            .expand(na::vector![padding_horizontal, padding_vertical])
+        };
+        self.x = new_bounds.mins[0];
+        self.y = new_bounds.mins[1];
+        self.width = new_bounds.extents()[0];
+        self.height = new_bounds.extents()[1];
+    }
+
+    pub fn expand_sheet_mode_infinite_for_viewport(&mut self, viewport: AABB) {
+        let padding_horizontal = self.format.width * 2.0;
+        let padding_vertical = self.format.height * 2.0;
+
+        let new_bounds = self
+            .bounds()
+            .merged(&viewport.expand(na::vector![padding_horizontal, padding_vertical]));
+
+        self.x = new_bounds.mins[0];
+        self.y = new_bounds.mins[1];
+        self.width = new_bounds.extents()[0];
+        self.height = new_bounds.extents()[1];
     }
 
     // a new sheet should always be imported with this method, as to not replace the threadpool, channel handlers, ..
@@ -145,10 +203,12 @@ impl Sheet {
     }
 
     pub fn draw(&self, zoom: f64, snapshot: &Snapshot, with_borders: bool) {
-        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-            self.bounds(),
-            zoom,
-        )));
+        snapshot.push_clip(
+            &self
+                .bounds()
+                .scale(na::Vector2::from_element(zoom))
+                .to_graphene_rect(),
+        );
 
         self.background.draw(snapshot);
 
@@ -254,13 +314,11 @@ impl Sheet {
 
                 // import images
                 for image in layers.images.into_iter() {
-                    let bounds = geometry::aabb_translate(
-                        AABB::new(
-                            na::point![image.left, image.top],
-                            na::point![image.right, image.bottom],
-                        ),
-                        na::vector![x_offset, y_offset],
-                    );
+                    let bounds = AABB::new(
+                        na::point![image.left, image.top],
+                        na::point![image.right, image.bottom],
+                    )
+                    .translate(na::vector![x_offset, y_offset]);
 
                     let intrinsic_size =
                         bitmapimage::extract_dimensions(&base64::decode(&image.data)?)?;
@@ -327,10 +385,10 @@ impl Sheet {
 
         // xopp spec needs at least one page in vec, but its fine since pages_bounds() always produces at least one
         let pages = self
-            .gen_pages_bounds_containing_content()
+            .pages_bounds_containing_content()
             .iter()
             .map(|&page_bounds| {
-                let page_keys = self.strokes_state.stroke_keys_intersect_bounds(page_bounds);
+                let page_keys = self.strokes_state.keys_intersecting_bounds(page_bounds);
 
                 let strokes = self.strokes_state.clone_strokes_for_keys(&page_keys);
 
@@ -490,7 +548,7 @@ impl Sheet {
         let sheet_bounds = self.bounds();
         let format_size = na::vector![f64::from(self.format.width), f64::from(self.format.height)];
 
-        let pages_bounds = self.gen_pages_bounds_containing_content();
+        let pages_bounds = self.pages_bounds_containing_content();
         let surface =
             cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())?;
 

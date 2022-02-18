@@ -3,7 +3,7 @@ use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
 use crate::compose::color::Color;
-use crate::compose::geometry;
+use crate::compose::geometry::AABBHelpers;
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
@@ -155,19 +155,20 @@ impl Format {
         let border_radius = graphene::Size::new(0.0, 0.0);
         let border_width = 1_f32;
 
-        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-            sheet_bounds,
-            zoom,
-        )));
-
-        let pages_bounds = geometry::split_aabb_extended_origin_aligned(
-            sheet_bounds,
-            na::vector![self.width, self.height],
+        snapshot.push_clip(
+            &sheet_bounds
+                .scale(na::Vector2::from_element(zoom))
+                .to_graphene_rect(),
         );
+
+        let pages_bounds =
+            sheet_bounds.split_extended_origin_aligned(na::vector![self.width, self.height]);
 
         for page_bounds in pages_bounds {
             let rounded_rect = gsk::RoundedRect::new(
-                geometry::aabb_to_graphene_rect(geometry::aabb_scale(page_bounds, zoom)),
+                page_bounds
+                    .scale(na::Vector2::from_element(zoom))
+                    .to_graphene_rect(),
                 border_radius.clone(),
                 border_radius.clone(),
                 border_radius.clone(),

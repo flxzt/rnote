@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 use std::sync::{Arc, RwLock};
 
 use crate::compose::color::Color;
-use crate::compose::geometry;
+use crate::compose::geometry::AABBHelpers;
 use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
 use crate::strokesstate::StrokeKey;
@@ -89,10 +89,7 @@ impl ExpandSheetTool {
         let y = self.y_start_pos;
         let width = sheet_bounds.extents()[0];
         let height = self.y_current_pos - self.y_start_pos;
-        let bounds = geometry::aabb_ceil(geometry::aabb_new_positive(
-            na::point![x, y],
-            na::point![x + width, y + height],
-        ));
+        let bounds = AABB::new_positive(na::point![x, y], na::point![x + width, y + height]).ceil();
 
         let bounds_rect = svg::node::element::Rectangle::new()
             .set("x", bounds.mins[0])
@@ -131,7 +128,10 @@ impl ExpandSheetTool {
         let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg { svg_data, bounds };
 
-        let images = renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?;
+        let images = renderer
+            .read()
+            .unwrap()
+            .gen_images(zoom, vec![svg], bounds)?;
         if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
             .context("images_to_rendernode() failed in expandsheet .draw()")?
         {
@@ -190,7 +190,7 @@ impl DragProximityTool {
         let cx = self.pos[0] + self.offset[0];
         let cy = self.pos[1] + self.offset[1];
         let r = self.radius;
-        let mut bounds = geometry::aabb_new_positive(
+        let mut bounds = AABB::new_positive(
             na::point![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
             na::point![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
         );
@@ -215,12 +215,12 @@ impl DragProximityTool {
         }
 
         let svg_data = compose::svg_node_to_string(&group)?;
-        let svg = render::Svg {
-            svg_data,
-            bounds,
-        };
+        let svg = render::Svg { svg_data, bounds };
 
-        let images = renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?;
+        let images = renderer
+            .read()
+            .unwrap()
+            .gen_images(zoom, vec![svg], bounds)?;
         if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
             .context("images_to_rendernode() failed in proximitytool .draw()")?
         {
@@ -287,7 +287,7 @@ impl PenBehaviour for Tools {
                         .sheet()
                         .borrow()
                         .strokes_state
-                        .strokes_below_y_pos(y_current_pos);
+                        .keys_below_y_pos(y_current_pos);
                 }
                 ToolStyle::DragProximity => {
                     appwindow
@@ -450,10 +450,8 @@ impl PenBehaviour for Tools {
             }
         }
 
-        appwindow.canvas().update_size_autoexpand();
-
-        appwindow.canvas().queue_resize();
-        appwindow.canvas().queue_draw();
+        appwindow.canvas().resize_sheet_autoexpand();
+        appwindow.canvas().update_background_rendernode(true);
     }
 
     fn draw(

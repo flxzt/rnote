@@ -2,293 +2,330 @@ use geo::line_string;
 use gtk4::graphene;
 use p2d::bounding_volume::AABB;
 
-pub fn vector2_unit_tang(vec: na::Vector2<f64>) -> na::Vector2<f64> {
-    if vec.magnitude() > 0.0 {
-        vec.normalize()
-    } else {
-        na::Vector2::from_element(0.0)
+pub trait Vector2Helpers
+where
+    Self: Sized,
+{
+    fn unit_tang(&self) -> Self;
+    fn unit_norm(&self) -> Self;
+    fn mins(&self, other: &Self) -> Self;
+    fn maxs(&self, other: &Self) -> Self;
+    fn mins_maxs(&self, other: &Self) -> (Self, Self);
+}
+
+impl Vector2Helpers for na::Vector2<f64> {
+    fn unit_tang(&self) -> Self {
+        if self.magnitude() > 0.0 {
+            self.normalize()
+        } else {
+            na::Vector2::from_element(0.0)
+        }
+    }
+
+    fn unit_norm(&self) -> Self {
+        let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
+
+        let normalized = if self.magnitude() > 0.0 {
+            self.normalize()
+        } else {
+            return na::Vector2::from_element(0.0);
+        };
+
+        rot_90deg * normalized
+    }
+
+    fn mins(&self, other: &Self) -> Self {
+        na::vector![self[0].min(other[0]), self[1].min(other[1])]
+    }
+
+    fn maxs(&self, other: &Self) -> Self {
+        na::vector![self[0].max(other[0]), self[1].max(other[1])]
+    }
+
+    fn mins_maxs(&self, other: &Self) -> (Self, Self) {
+        if self[0] < other[0] && self[1] < other[1] {
+            (*self, *other)
+        } else if self[0] > other[0] && self[1] < other[1] {
+            (
+                na::vector![other[0], self[1]],
+                na::vector![self[0], other[1]],
+            )
+        } else if self[0] < other[0] && self[1] > other[1] {
+            (
+                na::vector![self[0], other[1]],
+                na::vector![other[0], self[1]],
+            )
+        } else {
+            (*other, *self)
+        }
     }
 }
 
-pub fn vector2_unit_norm(vec: na::Vector2<f64>) -> na::Vector2<f64> {
-    let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
-
-    let normalized = if vec.magnitude() > 0.0 {
-        vec.normalize()
-    } else {
-        return na::Vector2::from_element(0.0);
-    };
-
-    rot_90deg * normalized
+pub trait AABBHelpers
+where
+    Self: Sized,
+{
+    /// New AABB at position zero, with size zero
+    fn new_zero() -> Self;
+    /// New AABB, ensuring its mins, maxs are valid (maxs >= mins)
+    fn new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> Self;
+    /// Translates the AABB by a offset
+    fn translate(&self, offset: na::Vector2<f64>) -> Self;
+    /// Shrinks the aabb to the nearest integer of its vertices
+    fn floor(&self) -> Self;
+    /// Extends the aabb to the nearest integer of its vertices
+    fn ceil(&self) -> Self;
+    /// Clamps to the min and max bounds
+    fn clamp(&self, min: Option<Self>, max: Option<Self>) -> Self;
+    /// Expands on every side by the given size
+    fn expand(&self, expand_by: na::Vector2<f64>) -> Self;
+    /// Scales the AABB by the scalefactor
+    fn scale(&self, scale: na::Vector2<f64>) -> Self;
+    /// Ensures the AABB is valid (maxs >= mins)
+    fn ensure_valid(&mut self);
+    /// Splits the AABB horizontally in the center
+    fn hsplit(&self) -> [Self; 2];
+    /// Splits the AABB vertically in the center
+    fn vsplit(&self) -> [Self; 2];
+    /// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
+    /// the splitted bounds are exactly fitted to not overlap, or extend the given bounds
+    fn split(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
+    /// splits a aabb into multiple of the given size. Their union contains the given aabb.
+    /// The boxes on the edges most likely extend beyond the given aabb.
+    fn split_extended(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
+    /// splits a aabb into multiple of the given size. Their union contains the given aabb.
+    /// It is also guaranteed that bounding boxes are aligned to the origin, meaning (0.0,0.0) is the corner of four boxes.
+    /// The boxes on the edges most likely extend beyond the given aabb.
+    fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
+    /// Converts a AABB to a geo::Polygon
+    fn to_geo_polygon(&self) -> geo::Polygon<f64>;
+    /// Converts a AABB to a graphene::Rect
+    fn to_graphene_rect(&self) -> graphene::Rect;
 }
 
-pub fn vector2_mins(vec: na::Vector2<f64>, other: na::Vector2<f64>) -> na::Vector2<f64> {
-    na::vector![vec[0].min(other[0]), vec[1].min(other[1])]
-}
+impl AABBHelpers for AABB {
+    fn new_zero() -> Self {
+        AABB::new(na::point![0.0, 0.0], na::point![0.0, 0.0])
+    }
 
-pub fn vector2_maxs(vec: na::Vector2<f64>, other: na::Vector2<f64>) -> na::Vector2<f64> {
-    na::vector![vec[0].max(other[0]), vec[1].max(other[1])]
-}
+    fn new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> Self {
+        if start[0] <= end[0] && start[1] <= end[1] {
+            AABB::new(na::point![start[0], start[1]], na::point![end[0], end[1]])
+        } else if start[0] > end[0] && start[1] <= end[1] {
+            AABB::new(na::point![end[0], start[1]], na::point![start[0], end[1]])
+        } else if start[0] <= end[0] && start[1] > end[1] {
+            AABB::new(na::point![start[0], end[1]], na::point![end[0], start[1]])
+        } else {
+            AABB::new(na::point![end[0], end[1]], na::point![start[0], start[1]])
+        }
+    }
 
-/// Return mins, maxs
-pub fn vec2_mins_maxs(
-    first: na::Vector2<f64>,
-    second: na::Vector2<f64>,
-) -> (na::Vector2<f64>, na::Vector2<f64>) {
-    if first[0] < second[0] && first[1] < second[1] {
-        (first, second)
-    } else if first[0] > second[0] && first[1] < second[1] {
-        (
-            na::vector![second[0], first[1]],
-            na::vector![first[0], second[1]],
+    fn translate(&self, offset: na::Vector2<f64>) -> AABB {
+        self.transform_by(&na::convert(na::Translation2::from(offset)))
+    }
+
+    fn floor(&self) -> AABB {
+        AABB::new(
+            na::point![self.mins[0].ceil(), self.mins[1].ceil()],
+            na::point![self.maxs[0].floor(), self.maxs[1].floor()],
         )
-    } else if first[0] < second[0] && first[1] > second[1] {
-        (
-            na::vector![first[0], second[1]],
-            na::vector![second[0], first[1]],
+    }
+
+    fn ceil(&self) -> AABB {
+        AABB::new(
+            na::point![self.mins[0].floor(), self.mins[1].floor()],
+            na::point![self.maxs[0].ceil(), self.maxs[1].ceil()],
         )
-    } else {
-        (second, first)
-    }
-}
-
-/// AABB to graphene Rect
-pub fn aabb_to_graphene_rect(aabb: AABB) -> graphene::Rect {
-    graphene::Rect::new(
-        aabb.mins[0] as f32,
-        aabb.mins[1] as f32,
-        (aabb.extents()[0]) as f32,
-        (aabb.extents()[1]) as f32,
-    )
-}
-
-/// splits a aabb into multiple of the given size. Their union contains the given aabb.
-/// The boxes on the edges most likely extend beyond the given aabb.
-pub fn split_aabb_extended(aabb: AABB, mut splitted_size: na::Vector2<f64>) -> Vec<AABB> {
-    let mut splitted_aabbs = Vec::new();
-
-    let mut offset_x = aabb.mins[0];
-    let mut offset_y = aabb.mins[1];
-    let width = aabb.extents()[0];
-    let height = aabb.extents()[1];
-
-    if width <= splitted_size[0] {
-        splitted_size[0] = width;
-    }
-    if height <= splitted_size[1] {
-        splitted_size[1] = height;
     }
 
-    while offset_y < height {
-        while offset_x < width {
-            splitted_aabbs.push(AABB::new(
-                na::point![offset_x, offset_y],
-                na::point![offset_x + splitted_size[0], offset_y + splitted_size[1]],
-            ));
+    fn clamp(&self, min: Option<Self>, max: Option<Self>) -> Self {
+        let mut aabb_mins_x = self.mins[0];
+        let mut aabb_mins_y = self.mins[1];
+        let mut aabb_maxs_x = self.maxs[0];
+        let mut aabb_maxs_y = self.maxs[1];
 
-            offset_x += splitted_size[0];
+        if let Some(min) = min {
+            aabb_mins_x = self.mins[0].min(min.mins[0]);
+            aabb_mins_y = self.mins[1].min(min.mins[1]);
+            aabb_maxs_x = self.maxs[0].max(min.maxs[0]);
+            aabb_maxs_y = self.maxs[1].max(min.maxs[1]);
+        }
+        if let Some(max) = max {
+            aabb_mins_x = self.mins[0].max(max.mins[0]);
+            aabb_mins_y = self.mins[1].max(max.mins[1]);
+            aabb_maxs_x = self.maxs[0].min(max.maxs[0]);
+            aabb_maxs_y = self.maxs[1].min(max.maxs[1]);
         }
 
-        offset_x = aabb.mins[0];
-        offset_y += splitted_size[1];
+        AABB::new(
+            na::point![aabb_mins_x, aabb_mins_y],
+            na::point![aabb_maxs_x, aabb_maxs_y],
+        )
     }
 
-    splitted_aabbs
-}
-
-/// splits a aabb into multiple of the given size. Their union contains the given aabb.
-/// It is also guaranteed that bounding boxes are aligned to the origin, meaning (0.0,0.0) is the corner of four boxes.
-/// The boxes on the edges most likely extend beyond the given aabb.
-pub fn split_aabb_extended_origin_aligned(
-    aabb: AABB,
-    mut splitted_size: na::Vector2<f64>,
-) -> Vec<AABB> {
-    let mut splitted_aabbs = Vec::new();
-
-    let width = aabb.extents()[0];
-    let height = aabb.extents()[1];
-
-    if width <= splitted_size[0] {
-        splitted_size[0] = width;
-    }
-    if height <= splitted_size[1] {
-        splitted_size[1] = height;
+    fn expand(&self, expand_by: nalgebra::Vector2<f64>) -> AABB {
+        AABB::new(
+            na::Point2::from(self.mins.coords - expand_by),
+            na::Point2::from(self.maxs.coords + expand_by),
+        )
     }
 
-    let n_columns = (aabb.extents()[0] / splitted_size[0]).ceil() as u32;
-    let n_rows = (aabb.extents()[1] / splitted_size[1]).ceil() as u32;
+    fn scale(&self, scale: nalgebra::Vector2<f64>) -> AABB {
+        AABB::new(
+            na::Point2::from(na::vector![self.mins[0], self.mins[1]].scale(scale[0])),
+            na::Point2::from(na::vector![self.maxs[0], self.maxs[1]].scale(scale[1])),
+        )
+    }
 
-    let offset = na::vector![
-        (aabb.mins[0] / splitted_size[0]).floor() * splitted_size[0],
-        (aabb.mins[1] / splitted_size[1]).floor() * splitted_size[1]
-    ];
-
-    for current_row in 0..=n_rows {
-        for current_column in 0..=n_columns {
-            let mins = na::point![
-                offset[0] + f64::from(current_column) * splitted_size[0],
-                offset[1] + f64::from(current_row) * splitted_size[1]
-            ];
-            let maxs = na::Point2::from(mins.coords + splitted_size);
-
-            splitted_aabbs.push(AABB::new(mins, maxs));
+    fn ensure_valid(&mut self) {
+        if self.mins[0] > self.maxs[0] {
+            std::mem::swap(&mut self.mins[0], &mut self.maxs[0]);
+        }
+        if self.mins[1] > self.maxs[1] {
+            std::mem::swap(&mut self.mins[1], &mut self.maxs[1]);
         }
     }
 
-    splitted_aabbs
-}
+    fn hsplit(&self) -> [Self; 2] {
+        [
+            AABB::new(self.mins, na::point![self.center()[0], self.maxs[1]]),
+            AABB::new(na::point![self.center()[0], self.mins[1]], self.maxs),
+        ]
+    }
 
-/// splits a aabb into multiple which have a maximum of the given size. Their union is the given aabb.
-/// the splitted bounds are exactly fitted to not overlap, or extend the given bounds
-pub fn split_aabb(aabb: AABB, splitted_size: na::Vector2<f64>) -> Vec<AABB> {
-    let mut splitted_aabbs = vec![aabb];
+    fn vsplit(&self) -> [Self; 2] {
+        [
+            AABB::new(self.mins, na::point![self.maxs[0], self.center()[1]]),
+            AABB::new(na::point![self.mins[0], self.center()[1]], self.maxs),
+        ]
+    }
 
-    // Split them horizontally
-    while splitted_size[0] < splitted_aabbs[0].extents()[0] {
-        let old_splitted = splitted_aabbs.clone();
-        splitted_aabbs.clear();
+    fn split(self, splitted_size: nalgebra::Vector2<f64>) -> Vec<Self> {
+        let mut splitted_aabbs = vec![self];
 
-        for old in old_splitted.iter() {
-            splitted_aabbs.append(&mut aabb_hsplit(old).to_vec());
+        // Split them horizontally
+        while splitted_size[0] < splitted_aabbs[0].extents()[0] {
+            let old_splitted = splitted_aabbs.clone();
+            splitted_aabbs.clear();
+
+            for old in old_splitted.iter() {
+                splitted_aabbs.append(&mut old.hsplit().to_vec());
+            }
         }
-    }
 
-    // Split them vertically
-    while splitted_size[1] < splitted_aabbs[0].extents()[1] {
-        let old_splitted = splitted_aabbs.clone();
-        splitted_aabbs.clear();
+        // Split them vertically
+        while splitted_size[1] < splitted_aabbs[0].extents()[1] {
+            let old_splitted = splitted_aabbs.clone();
+            splitted_aabbs.clear();
 
-        for old in old_splitted.iter() {
-            splitted_aabbs.append(&mut aabb_vsplit(old).to_vec());
+            for old in old_splitted.iter() {
+                splitted_aabbs.append(&mut old.vsplit().to_vec());
+            }
         }
+
+        splitted_aabbs
     }
 
-    splitted_aabbs
-}
+    fn split_extended(self, mut splitted_size: na::Vector2<f64>) -> Vec<Self> {
+        let mut splitted_aabbs = Vec::new();
 
-// Splits the aab horizontally in the center
-pub fn aabb_hsplit(aabb: &AABB) -> [AABB; 2] {
-    [
-        AABB::new(aabb.mins, na::point![aabb.center()[0], aabb.maxs[1]]),
-        AABB::new(na::point![aabb.center()[0], aabb.mins[1]], aabb.maxs),
-    ]
-}
+        let mut offset_x = self.mins[0];
+        let mut offset_y = self.mins[1];
+        let width = self.extents()[0];
+        let height = self.extents()[1];
 
-// Splits the aab vertically in the center
-pub fn aabb_vsplit(aabb: &AABB) -> [AABB; 2] {
-    [
-        AABB::new(aabb.mins, na::point![aabb.maxs[0], aabb.center()[1]]),
-        AABB::new(na::point![aabb.mins[0], aabb.center()[1]], aabb.maxs),
-    ]
-}
+        if width <= splitted_size[0] {
+            splitted_size[0] = width;
+        }
+        if height <= splitted_size[1] {
+            splitted_size[1] = height;
+        }
 
-pub fn aabb_new_zero() -> AABB {
-    AABB::new(na::point![0.0, 0.0], na::point![0.0, 0.0])
-}
+        while offset_y < height {
+            while offset_x < width {
+                splitted_aabbs.push(AABB::new(
+                    na::point![offset_x, offset_y],
+                    na::point![offset_x + splitted_size[0], offset_y + splitted_size[1]],
+                ));
 
-pub fn aabb_new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> AABB {
-    if start[0] <= end[0] && start[1] <= end[1] {
-        AABB::new(na::point![start[0], start[1]], na::point![end[0], end[1]])
-    } else if start[0] > end[0] && start[1] <= end[1] {
-        AABB::new(na::point![end[0], start[1]], na::point![start[0], end[1]])
-    } else if start[0] <= end[0] && start[1] > end[1] {
-        AABB::new(na::point![start[0], end[1]], na::point![end[0], start[1]])
-    } else {
-        AABB::new(na::point![end[0], end[1]], na::point![start[0], start[1]])
-    }
-}
+                offset_x += splitted_size[0];
+            }
 
-pub fn aabb_ensure_valid(aabb: &mut AABB) {
-    if aabb.mins[0] > aabb.maxs[0] {
-        std::mem::swap(&mut aabb.mins[0], &mut aabb.maxs[0]);
-    }
-    if aabb.mins[1] > aabb.maxs[1] {
-        std::mem::swap(&mut aabb.mins[1], &mut aabb.maxs[1]);
-    }
-}
+            offset_x = self.mins[0];
+            offset_y += splitted_size[1];
+        }
 
-/// clamp a aabb to min size, max size
-pub fn aabb_clamp(aabb: AABB, min: Option<AABB>, max: Option<AABB>) -> AABB {
-    let mut aabb_mins_x = aabb.mins[0];
-    let mut aabb_mins_y = aabb.mins[1];
-    let mut aabb_maxs_x = aabb.maxs[0];
-    let mut aabb_maxs_y = aabb.maxs[1];
-
-    if let Some(min) = min {
-        aabb_mins_x = aabb.mins[0].min(min.mins[0]);
-        aabb_mins_y = aabb.mins[1].min(min.mins[1]);
-        aabb_maxs_x = aabb.maxs[0].max(min.maxs[0]);
-        aabb_maxs_y = aabb.maxs[1].max(min.maxs[1]);
-    }
-    if let Some(max) = max {
-        aabb_mins_x = aabb.mins[0].max(max.mins[0]);
-        aabb_mins_y = aabb.mins[1].max(max.mins[1]);
-        aabb_maxs_x = aabb.maxs[0].min(max.maxs[0]);
-        aabb_maxs_y = aabb.maxs[1].min(max.maxs[1]);
+        splitted_aabbs
     }
 
-    AABB::new(
-        na::point![aabb_mins_x, aabb_mins_y],
-        na::point![aabb_maxs_x, aabb_maxs_y],
-    )
-}
+    fn split_extended_origin_aligned(self, mut splitted_size: na::Vector2<f64>) -> Vec<Self> {
+        let mut splitted_aabbs = Vec::new();
 
-/// Scale a aabb by the zoom
-pub fn aabb_scale(aabb: AABB, zoom: f64) -> AABB {
-    AABB::new(
-        na::Point2::from(na::vector![aabb.mins[0], aabb.mins[1]].scale(zoom)),
-        na::Point2::from(na::vector![aabb.maxs[0], aabb.maxs[1]].scale(zoom)),
-    )
-}
+        let width = self.extents()[0];
+        let height = self.extents()[1];
 
-pub fn aabb_translate(aabb: AABB, offset: na::Vector2<f64>) -> AABB {
-    aabb.transform_by(&na::convert(na::Translation2::from(offset)))
-}
+        if width <= splitted_size[0] {
+            splitted_size[0] = width;
+        }
+        if height <= splitted_size[1] {
+            splitted_size[1] = height;
+        }
 
-/// Shrinks the aabb to the nearest integer of its vertices
-pub fn aabb_floor(aabb: AABB) -> AABB {
-    AABB::new(
-        na::point![aabb.mins[0].ceil(), aabb.mins[1].ceil()],
-        na::point![aabb.maxs[0].floor(), aabb.maxs[1].floor()],
-    )
-}
+        let n_columns = (self.extents()[0] / splitted_size[0]).ceil() as u32;
+        let n_rows = (self.extents()[1] / splitted_size[1]).ceil() as u32;
 
-/// Extends the aabb to the nearest integer of its vertices
-pub fn aabb_ceil(aabb: AABB) -> AABB {
-    AABB::new(
-        na::point![aabb.mins[0].floor(), aabb.mins[1].floor()],
-        na::point![aabb.maxs[0].ceil(), aabb.maxs[1].ceil()],
-    )
-}
+        let offset = na::vector![
+            (self.mins[0] / splitted_size[0]).floor() * splitted_size[0],
+            (self.mins[1] / splitted_size[1]).floor() * splitted_size[1]
+        ];
 
-pub fn aabb_expand(aabb: AABB, expand_by: na::Vector2<f64>) -> AABB {
-    AABB::new(
-        na::Point2::from(aabb.mins.coords - expand_by),
-        na::Point2::from(aabb.maxs.coords + expand_by),
-    )
+        for current_row in 0..=n_rows {
+            for current_column in 0..=n_columns {
+                let mins = na::point![
+                    offset[0] + f64::from(current_column) * splitted_size[0],
+                    offset[1] + f64::from(current_row) * splitted_size[1]
+                ];
+                let maxs = na::Point2::from(mins.coords + splitted_size);
+
+                splitted_aabbs.push(AABB::new(mins, maxs));
+            }
+        }
+
+        splitted_aabbs
+    }
+
+    fn to_geo_polygon(&self) -> geo::Polygon<f64> {
+        let line_string = line_string![
+            (x: self.mins[0], y: self.mins[1]),
+            (x: self.maxs[0], y: self.mins[1]),
+            (x: self.maxs[0], y: self.maxs[1]),
+            (x: self.mins[0], y: self.maxs[1]),
+            (x: self.mins[0], y: self.mins[1]),
+        ];
+        geo::Polygon::new(line_string, vec![])
+    }
+
+    fn to_graphene_rect(&self) -> graphene::Rect {
+        graphene::Rect::new(
+            self.mins[0] as f32,
+            self.mins[1] as f32,
+            (self.extents()[0]) as f32,
+            (self.extents()[1]) as f32,
+        )
+    }
 }
 
 /// Scale the source size with a specified max size, while keeping its aspect ratio
-pub fn scale_with_locked_aspectratio(
-    src_size: na::Vector2<f64>,
-    max_size: na::Vector2<f64>,
+pub fn scale_w_locked_aspectratio(
+    src_size: nalgebra::Vector2<f64>,
+    max_size: nalgebra::Vector2<f64>,
 ) -> na::Vector2<f64> {
     let ratio = (max_size[0] / src_size[0]).min(max_size[1] / src_size[1]);
 
     src_size * ratio
 }
 
-pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
-    let line_string = line_string![
-        (x: aabb.mins[0], y: aabb.mins[1]),
-        (x: aabb.maxs[0], y: aabb.mins[1]),
-        (x: aabb.maxs[0], y: aabb.maxs[1]),
-        (x: aabb.mins[0], y: aabb.maxs[1]),
-        (x: aabb.mins[0], y: aabb.mins[1]),
-    ];
-    geo::Polygon::new(line_string, vec![])
-}
-
+// Scales some inner bounds to new outer bounds
 pub fn scale_inner_bounds_to_new_outer_bounds(
     old_inner_bounds: AABB,
     old_outer_bounds: AABB,

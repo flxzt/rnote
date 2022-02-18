@@ -11,7 +11,7 @@ use render_comp::RenderComponent;
 use selection_comp::SelectionComponent;
 use trash_comp::TrashComponent;
 
-use crate::compose::geometry;
+use crate::compose::geometry::{self, AABBHelpers};
 use crate::compose::transformable::Transformable;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::tools::DragProximityTool;
@@ -249,7 +249,6 @@ impl StrokesState {
                         }
 
                         appwindow.canvas().queue_resize();
-                        appwindow.canvas().queue_draw();
                     }
                     StateTask::Quit => {
                         return glib::Continue(false);
@@ -338,7 +337,7 @@ impl StrokesState {
     }
 
     /// Returns the stroke keys in the order that they should be rendered. Does not return the selection keys!
-    pub fn stroke_keys_in_order_rendered(&self) -> Vec<StrokeKey> {
+    pub fn keys_as_rendered(&self) -> Vec<StrokeKey> {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
         keys_sorted_chrono
@@ -356,8 +355,8 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn stroke_keys_intersect_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
-        self.stroke_keys_in_order_rendered()
+    pub fn keys_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+        self.keys_as_rendered()
             .iter()
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
@@ -665,7 +664,7 @@ impl StrokesState {
 
                 if let Some(render_comp) = self.render_components.get_mut(key) {
                     for image in render_comp.images.iter_mut() {
-                        image.bounds = geometry::aabb_translate(image.bounds, offset);
+                        image.bounds = image.bounds.translate(offset);
                     }
 
                     match render::images_to_rendernode(&render_comp.images, zoom) {
@@ -733,7 +732,7 @@ impl StrokesState {
     }
 
     /// Returns all strokes below the y_pos
-    pub fn strokes_below_y_pos(&self, y_pos: f64) -> Vec<StrokeKey> {
+    pub fn keys_below_y_pos(&self, y_pos: f64) -> Vec<StrokeKey> {
         self.strokes
             .iter()
             .filter_map(|(key, stroke)| {
@@ -756,7 +755,7 @@ impl StrokesState {
             center: na::Point2::from(drag_proximity_tool.pos),
             radius: drag_proximity_tool.radius,
         };
-        let tool_bounds = geometry::aabb_new_positive(
+        let tool_bounds = AABB::new_positive(
             na::point![
                 drag_proximity_tool.pos[0] - drag_proximity_tool.radius,
                 drag_proximity_tool.pos[1] - drag_proximity_tool.radius

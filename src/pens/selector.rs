@@ -189,9 +189,12 @@ impl PenBehaviour for Selector {
             })?;
 
             let svg = render::Svg { bounds, svg_data };
-            let images = renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?;
-            if let Some(rendernode) =
-                render::images_to_rendernode(&images, zoom).context("images_to_rendernode() failed in selector.draw()")?
+            let images = renderer
+                .read()
+                .unwrap()
+                .gen_images(zoom, vec![svg], bounds)?;
+            if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
+                .context("images_to_rendernode() failed in selector.draw()")?
             {
                 snapshot.append_node(&rendernode);
             }

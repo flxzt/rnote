@@ -1,7 +1,8 @@
 use std::io;
 use std::sync::{Arc, RwLock};
 
-use crate::compose::{geometry, shapes};
+use crate::compose::geometry::AABBHelpers;
+use crate::compose::shapes;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
 use crate::{compose, render};
@@ -54,7 +55,7 @@ impl Default for BitmapImage {
             format: BitmapImageFormat::Png,
             intrinsic_size: na::vector![0.0, 0.0],
             rectangle: shapes::Rectangle::default(),
-            bounds: geometry::aabb_new_zero(),
+            bounds: AABB::new_zero(),
         }
     }
 }
@@ -103,7 +104,7 @@ impl DrawBehaviour for BitmapImage {
 
         let svg_data = compose::svg_node_to_string(&svg_root)?;
         let svg = render::Svg {
-            bounds: geometry::aabb_translate(self.bounds, offset),
+            bounds: self.bounds.translate(offset),
             svg_data,
         };
 
@@ -167,7 +168,7 @@ impl BitmapImage {
             format,
             intrinsic_size,
             rectangle,
-            bounds: geometry::aabb_new_zero(),
+            bounds: AABB::new_zero(),
         };
         bitmapimage.update_geometry();
 
@@ -260,7 +261,7 @@ impl BitmapImage {
         format: image::ImageOutputFormat,
         renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        let export_bounds = geometry::aabb_translate(self.bounds, -self.bounds().mins.coords);
+        let export_bounds = self.bounds.translate(-self.bounds().mins.coords);
         let mut export_svg_data = self
             .gen_svgs(-self.bounds().mins.coords)
             .context("gen_svgs() failed in BitmapImage export_as_bytes()")?
@@ -279,8 +280,14 @@ impl BitmapImage {
             svg_data: export_svg_data,
         };
 
-        let image_raw = render::concat_images(renderer.read().unwrap()
-            .gen_images(zoom, vec![export_svg], export_bounds)?, export_bounds, zoom)?;
+        let image_raw = render::concat_images(
+            renderer
+                .read()
+                .unwrap()
+                .gen_images(zoom, vec![export_svg], export_bounds)?,
+            export_bounds,
+            zoom,
+        )?;
 
         Ok(render::image_into_encoded_bytes(image_raw, format)?)
     }

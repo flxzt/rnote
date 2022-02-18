@@ -228,7 +228,9 @@ impl RnoteApp {
 
     // Anything that needs to be done right before showing the appwindow
     pub fn init_misc(&self, appwindow: &RnoteAppWindow) {
-        appwindow.canvas().resize_sheet_to_fit_strokes();
         appwindow.canvas().return_to_origin_page();
+        appwindow.canvas().resize_sheet_autoexpand();
+        appwindow.canvas().regenerate_background(false);
+        appwindow.canvas().regenerate_content(true, true);
     }
 }

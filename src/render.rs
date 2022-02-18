@@ -4,7 +4,8 @@ use anyhow::Context;
 use gtk4::{gdk, gio, glib, gsk, prelude::*, Native, Snapshot, Widget};
 use p2d::bounding_volume::AABB;
 
-use crate::compose::{self, geometry};
+use crate::compose::geometry::AABBHelpers;
+use crate::compose::{self};
 
 #[derive(Debug, Clone, Copy, glib::Enum)]
 #[repr(u32)]
@@ -153,7 +154,7 @@ impl Renderer {
         mut svgs: Vec<Svg>,
         mut bounds: AABB,
     ) -> Result<Vec<Image>, anyhow::Error> {
-        geometry::aabb_ensure_valid(&mut bounds);
+        bounds.ensure_valid();
         assert_bounds(bounds)?;
 
         // joining svgs for sizes that are not worth
@@ -175,12 +176,12 @@ impl Renderer {
             let svg_data =
                 compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), Some(bounds), false);
 
-            for mut splitted_bounds in geometry::split_aabb(svg.bounds, self.max_tile_size / zoom) {
-                geometry::aabb_ensure_valid(&mut splitted_bounds);
+            for mut splitted_bounds in svg.bounds.split(self.max_tile_size / zoom) {
+                splitted_bounds.ensure_valid();
                 if assert_bounds(splitted_bounds).is_err() {
                     continue;
                 }
-                let splitted_bounds = geometry::aabb_ceil(splitted_bounds);
+                let splitted_bounds = splitted_bounds.ceil();
 
                 let splitted_width_scaled = ((splitted_bounds.extents()[0]) * zoom).round() as u32;
                 let splitted_height_scaled = ((splitted_bounds.extents()[1]) * zoom).round() as u32;
@@ -270,7 +271,7 @@ impl Renderer {
         mut svgs: Vec<Svg>,
         mut bounds: AABB,
     ) -> Result<Vec<Image>, anyhow::Error> {
-        geometry::aabb_ensure_valid(&mut bounds);
+        bounds.ensure_valid();
         assert_bounds(bounds)?;
 
         // joining svgs for sizes that are not worth
@@ -293,12 +294,12 @@ impl Renderer {
                 compose::wrap_svg_root(svg.svg_data.as_str(), Some(bounds), Some(bounds), false);
             let svg_tree = usvg::Tree::from_data(svg_data.as_bytes(), &self.usvg_options.to_ref())?;
 
-            for mut splitted_bounds in geometry::split_aabb(bounds, self.max_tile_size / zoom) {
-                geometry::aabb_ensure_valid(&mut splitted_bounds);
+            for mut splitted_bounds in bounds.split(self.max_tile_size / zoom) {
+                splitted_bounds.ensure_valid();
                 if assert_bounds(splitted_bounds).is_err() {
                     continue;
                 }
-                let splitted_bounds = geometry::aabb_ceil(splitted_bounds);
+                let splitted_bounds = splitted_bounds.ceil();
 
                 let splitted_width_scaled = ((splitted_bounds.extents()[0]) * zoom).round() as u32;
                 let splitted_height_scaled = ((splitted_bounds.extents()[1]) * zoom).round() as u32;
@@ -400,12 +401,10 @@ pub fn image_to_rendernode(image: &Image, zoom: f64) -> Result<gsk::RenderNode, 
 
     let memtexture = image_to_memtexture(image)?;
 
-    let scaled_bounds = geometry::aabb_scale(image.bounds, zoom);
+    let scaled_bounds = image.bounds.scale(na::Vector2::from_element(zoom));
     assert_bounds(scaled_bounds)?;
 
-    let rendernode =
-        gsk::TextureNode::new(&memtexture, &geometry::aabb_to_graphene_rect(scaled_bounds))
-            .upcast();
+    let rendernode = gsk::TextureNode::new(&memtexture, &scaled_bounds.to_graphene_rect()).upcast();
     Ok(rendernode)
 }
 
@@ -456,7 +455,7 @@ pub fn rendernode_to_texture(
         assert_bounds(viewport)?;
     }
 
-    let viewport = viewport.map(geometry::aabb_to_graphene_rect);
+    let viewport = viewport.map(|viewport| viewport.to_graphene_rect());
 
     if let Some(root) = active_widget.root() {
         let texture = root
@@ -508,9 +507,9 @@ fn gen_caironode_librsvg(zoom: f64, svg: &Svg) -> Result<gsk::CairoNode, anyhow:
         ));
     }
 
-    let caironode_bounds = geometry::aabb_scale(geometry::aabb_ceil(svg.bounds), zoom);
+    let caironode_bounds = svg.bounds.ceil().scale(na::Vector2::from_element(zoom));
 
-    let new_caironode = gsk::CairoNode::new(&geometry::aabb_to_graphene_rect(caironode_bounds));
+    let new_caironode = gsk::CairoNode::new(&caironode_bounds.to_graphene_rect());
     let cx = new_caironode.draw_context();
 
     draw_svgs_to_cairo_context(zoom, &[svg.to_owned()], caironode_bounds, &cx)?;

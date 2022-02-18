@@ -742,14 +742,14 @@ impl RnoteAppWindow {
         // Undo stroke
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().sheet().borrow_mut().strokes_state.undo_last_stroke();
-            appwindow.canvas().update_size_autoexpand();
+            appwindow.canvas().resize_sheet_autoexpand();
             appwindow.canvas().update_background_rendernode(true);
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().sheet().borrow_mut().strokes_state.redo_last_stroke();
-            appwindow.canvas().update_size_autoexpand();
+            appwindow.canvas().resize_sheet_autoexpand();
             appwindow.canvas().update_background_rendernode(true);
         }));
 
@@ -780,9 +780,10 @@ impl RnoteAppWindow {
             appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
         }));
 
-        // Return to center
+        // Return to the origin page
         action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().return_to_origin_page();
+            appwindow.canvas().resize_sheet_autoexpand();
         }));
 
         // Temporary Eraser
@@ -868,7 +869,7 @@ impl RnoteAppWindow {
                 .unit(Unit::Points)
                 .build();
 
-                let pages_bounds = appwindow.canvas().sheet().borrow().gen_pages_bounds_containing_content();
+                let pages_bounds = appwindow.canvas().sheet().borrow().pages_bounds_containing_content();
                 let n_pages = pages_bounds.len();
 
             print_op.connect_begin_print(clone!(@weak appwindow => move |print_op, _print_cx| {

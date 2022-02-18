@@ -7,7 +7,7 @@ mod imp {
 
     use super::canvaslayout::CanvasLayout;
     use super::debug;
-    use crate::compose::geometry;
+    use crate::compose::geometry::AABBHelpers;
     use crate::config;
     use crate::pens::{PenStyle, Pens};
     use crate::render::Renderer;
@@ -333,7 +333,6 @@ mod imp {
                         .expect("The value needs to be of type `f64`.")
                         .clamp(super::Canvas::ZOOM_MIN, super::Canvas::ZOOM_MAX);
                     self.zoom.replace(zoom);
-                    obj.update_size_autoexpand();
 
                     obj.queue_resize();
                     obj.queue_draw();
@@ -348,9 +347,6 @@ mod imp {
                         );
 
                     self.temporary_zoom.replace(temporary_zoom);
-                    obj.update_size_autoexpand();
-
-                    obj.queue_resize();
                     obj.queue_draw();
                 }
                 "visual-debug" => {
@@ -394,8 +390,11 @@ mod imp {
                         .expect("The value needs to be of type `ExpandMode`.");
 
                     self.expand_mode.replace(expand_mode);
-                    obj.resize_sheet_to_fit_strokes();
+
                     obj.return_to_origin_page();
+                    obj.resize_sheet_to_fit_strokes();
+                    obj.update_background_rendernode(false);
+                    obj.regenerate_content(false, true)
                 }
                 "format-borders" => {
                     let format_borders = value
@@ -443,8 +442,7 @@ mod imp {
         fn snapshot(&self, widget: &Self::Type, snapshot: &gtk4::Snapshot) {
             let temporary_zoom = widget.temporary_zoom();
             let zoom = widget.zoom();
-            let hadj = widget.hadjustment().unwrap();
-            let vadj = widget.vadjustment().unwrap();
+            let adj_values = widget.adj_values();
 
             let (clip_x, clip_y, clip_width, clip_height) = if let Some(parent) = widget.parent() {
                 // unwrapping is fine, because its the parent
@@ -469,24 +467,32 @@ mod imp {
             snapshot.save();
 
             snapshot.translate(&graphene::Point::new(
-                (-hadj.value()) as f32,
-                (-vadj.value()) as f32,
+                -adj_values[0] as f32,
+                -adj_values[1] as f32,
             ));
 
             // From here in scaled sheet coordinate space
             snapshot.scale(temporary_zoom as f32, temporary_zoom as f32);
 
             self.draw_shadow(
-                geometry::aabb_scale(widget.sheet().borrow().bounds(), zoom),
+                widget
+                    .sheet()
+                    .borrow()
+                    .bounds()
+                    .scale(na::Vector2::from_element(zoom)),
                 f64::from(super::Canvas::SHADOW_WIDTH) * zoom,
                 snapshot,
             );
 
             // Clip sheet and stroke drawing to sheet bounds
-            snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-                widget.sheet().borrow().bounds(),
-                zoom,
-            )));
+            snapshot.push_clip(
+                &widget
+                    .sheet()
+                    .borrow()
+                    .bounds()
+                    .scale(na::Vector2::from_element(zoom))
+                    .to_graphene_rect(),
+            );
 
             self.sheet
                 .borrow()
@@ -530,7 +536,7 @@ mod imp {
             let corner_radius = graphene::Size::new(width as f32 / 4.0, width as f32 / 4.0);
 
             let rounded_rect = gsk::RoundedRect::new(
-                geometry::aabb_to_graphene_rect(bounds),
+                bounds.to_graphene_rect(),
                 corner_radius.clone(),
                 corner_radius.clone(),
                 corner_radius.clone(),
@@ -596,7 +602,7 @@ mod imp {
 }
 
 use crate::compose::color::Color;
-use crate::compose::geometry;
+use crate::compose::geometry::AABBHelpers;
 use crate::input;
 use crate::render::Renderer;
 use crate::strokes::strokestyle::InputData;
@@ -789,14 +795,13 @@ impl Canvas {
             old_adj.disconnect(signal_id);
         }
 
-        if let Some(ref adjustment) = adj {
-            let signal_id =
-                adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
-                     canvas.update_size_infinite_mode();
-
+        if let Some(ref hadjustment) = adj {
+            let signal_id = hadjustment.connect_value_changed(
+                clone!(@weak self as canvas => move |_hadjustment| {
                     canvas.update_background_rendernode(false);
                     canvas.regenerate_content(false, true);
-                }));
+                }),
+            );
             self_.hadjustment_signal.replace(Some(signal_id));
         }
         self_.hadjustment.replace(adj);
@@ -809,14 +814,13 @@ impl Canvas {
             old_adj.disconnect(signal_id);
         }
 
-        if let Some(ref adjustment) = adj {
-            let signal_id =
-                adjustment.connect_value_changed(clone!(@weak self as canvas => move |_| {
-                     canvas.update_size_infinite_mode();
-
+        if let Some(ref vadjustment) = adj {
+            let signal_id = vadjustment.connect_value_changed(
+                clone!(@weak self as canvas => move |_vadjustment| {
                     canvas.update_background_rendernode(false);
                     canvas.regenerate_content(false, true);
-                }));
+                }),
+            );
             self_.vadjustment_signal.replace(Some(signal_id));
         }
         self_.vadjustment.replace(adj);
@@ -832,16 +836,16 @@ impl Canvas {
             .connect_value_changed(clone!(@weak appwindow => move |_hadj| {
                 if appwindow.canvas().expand_mode() == ExpandMode::Infinite {
                     let viewport = appwindow.canvas().viewport_in_sheet_coords();
-                    let center_bounds = geometry::aabb_expand(
+                    let origin_page_bounds =
                         AABB::new(
                             na::point![0.0, 0.0],
-                            na::point![appwindow.canvas().sheet().borrow().format.width, appwindow.canvas().sheet().borrow().format.width]),
-                        // Expand to a few format sizes around the center
+                            na::point![appwindow.canvas().sheet().borrow().format.width, appwindow.canvas().sheet().borrow().format.width]).expand(
+                        // Expand to a few format sizes around the origin page
                         na::vector![
                             2.0 * appwindow.canvas().sheet().borrow().format.width,
                             2.0 * appwindow.canvas().sheet().borrow().format.height]);
 
-                    if !viewport.intersects(&center_bounds) {
+                    if !viewport.intersects(&origin_page_bounds) {
                         appwindow.canvas().show_return_to_center_toast(&appwindow)
                     } else {
                         appwindow.canvas().dismiss_return_to_center_toast();
@@ -854,16 +858,16 @@ impl Canvas {
             .connect_value_changed(clone!(@weak appwindow => move |_hadj| {
                 if appwindow.canvas().expand_mode() == ExpandMode::Infinite {
                     let viewport = appwindow.canvas().viewport_in_sheet_coords();
-                    let center_bounds = geometry::aabb_expand(
+                    let origin_page_bounds =
                         AABB::new(
                             na::point![0.0, 0.0],
-                            na::point![appwindow.canvas().sheet().borrow().format.width, appwindow.canvas().sheet().borrow().format.width]),
-                        // Expand to a few format sizes around the center
+                            na::point![appwindow.canvas().sheet().borrow().format.width, appwindow.canvas().sheet().borrow().format.width]).expand(
+                        // Expand to a few format sizes around the origin page
                         na::vector![
                             2.0 * appwindow.canvas().sheet().borrow().format.width,
                             2.0 * appwindow.canvas().sheet().borrow().format.height]);
 
-                    if !viewport.intersects(&center_bounds) {
+                    if !viewport.intersects(&origin_page_bounds) {
                         appwindow.canvas().show_return_to_center_toast(&appwindow)
                     } else {
                         appwindow.canvas().dismiss_return_to_center_toast();
@@ -921,7 +925,7 @@ impl Canvas {
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
                 stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
 
-                // Disable backlog, only allowed in motion signal handler
+                // Disabled backlog, only allowed in motion signal handler
                 let mut data_entries = input::retreive_stylus_inputdata(stylus_drawing_gesture, false, x, y);
                 input::transform_inputdata(canvas.zoom(), &mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]));
 
@@ -1087,7 +1091,10 @@ impl Canvas {
 
     /// The bounds of the sheet in the coordinate space of the canvas
     pub fn sheet_bounds_in_canvas_coords(&self) -> AABB {
-        geometry::aabb_scale(self.sheet().borrow().bounds(), self.total_zoom())
+        self.sheet()
+            .borrow()
+            .bounds()
+            .scale(na::Vector2::from_element(self.total_zoom()))
     }
 
     /// transforming a AABB in canvas coordinate space into sheet coordinate space
@@ -1104,12 +1111,7 @@ impl Canvas {
     ) -> na::Vector2<f64> {
         let total_zoom = self.total_zoom();
 
-        (canvas_coords
-            + na::vector![
-                self.hadjustment().unwrap().value(),
-                self.vadjustment().unwrap().value()
-            ])
-            / total_zoom
+        (canvas_coords + self.adj_values()) / total_zoom
     }
 
     /// transforming a AABB in sheet coordinate space into canvas coordinate space
@@ -1126,29 +1128,23 @@ impl Canvas {
     ) -> na::Vector2<f64> {
         let total_zoom = self.total_zoom();
 
-        sheet_coords * total_zoom
-            - na::vector![
-                self.hadjustment().unwrap().value(),
-                self.vadjustment().unwrap().value()
-            ]
+        sheet_coords * total_zoom - self.adj_values()
     }
 
     /// The view of the parent scroller onto the Canvas
     pub fn viewport(&self) -> AABB {
         let parent = self.parent().unwrap();
-        let (parent_width, parent_height) = (f64::from(parent.width()), f64::from(parent.height()));
-        let (parent_offset_x, parent_offset_y) = self
+        let parent_size = na::vector![f64::from(parent.width()), f64::from(parent.height())];
+        let parent_offset = self
             .translate_coordinates(&parent, 0.0, 0.0)
-            .unwrap_or((0.0, 0.0));
+            .map(|parent_offset| na::vector![parent_offset.0, parent_offset.1])
+            .unwrap();
 
-        let (x, y) = (
-            self.hadjustment().unwrap().value() - parent_offset_x,
-            self.vadjustment().unwrap().value() - parent_offset_y,
-        );
+        let offset = self.adj_values() - parent_offset;
 
         AABB::new(
-            na::point![x, y],
-            na::point![x + parent_width, y + parent_height],
+            na::Point2::from(offset),
+            na::Point2::from(offset + parent_size),
         )
     }
 
@@ -1157,154 +1153,138 @@ impl Canvas {
         let viewport = self.viewport();
         let total_zoom = self.total_zoom();
 
-        geometry::aabb_scale(viewport, 1.0 / total_zoom)
+        viewport.scale(na::Vector2::from_element(1.0 / total_zoom))
     }
 
-    /// Called when sheet should resize to the format
+    pub fn adj_values(&self) -> na::Vector2<f64> {
+        na::vector![
+            self.hadjustment().unwrap().value(),
+            self.vadjustment().unwrap().value()
+        ]
+    }
+
+    pub fn update_adj_values(&self, new_values: na::Vector2<f64>) {
+        match self.expand_mode() {
+            ExpandMode::Infinite => {
+                let new_viewport = self
+                    .viewport_in_sheet_coords()
+                    .translate(new_values - self.adj_values());
+
+                self.sheet()
+                    .borrow_mut()
+                    .expand_sheet_mode_infinite_for_viewport(new_viewport);
+
+                self.update_adj_config(na::vector![
+                    f64::from(self.allocation().width()),
+                    f64::from(self.allocation().height())
+                ]);
+            }
+            _ => {}
+        }
+
+        self.hadjustment().unwrap().set_value(new_values[0]);
+        self.vadjustment().unwrap().set_value(new_values[1]);
+
+        self.queue_resize();
+    }
+
+    pub fn update_adj_config(&self, size_request: na::Vector2<f64>) {
+        let total_zoom = self.total_zoom();
+
+        let hadj = self.hadjustment().unwrap();
+
+        let (h_lower, h_upper) = match self.expand_mode() {
+            ExpandMode::FixedSize | ExpandMode::EndlessVertical => (
+                (self.sheet().borrow().x - Canvas::SHADOW_WIDTH) * total_zoom,
+                (self.sheet().borrow().x + self.sheet().borrow().width + Canvas::SHADOW_WIDTH)
+                    * total_zoom,
+            ),
+            ExpandMode::Infinite => (
+                self.sheet().borrow().x * total_zoom,
+                (self.sheet().borrow().x + self.sheet().borrow().width) * total_zoom,
+            ),
+        };
+
+        let vadj = self.vadjustment().unwrap();
+
+        let (v_lower, v_upper) = match self.expand_mode() {
+            ExpandMode::FixedSize | ExpandMode::EndlessVertical => (
+                (self.sheet().borrow().y - Canvas::SHADOW_WIDTH) * total_zoom,
+                (self.sheet().borrow().y + self.sheet().borrow().height + Canvas::SHADOW_WIDTH)
+                    * total_zoom,
+            ),
+            ExpandMode::Infinite => (
+                self.sheet().borrow().y * total_zoom,
+                (self.sheet().borrow().y + self.sheet().borrow().height) * total_zoom,
+            ),
+        };
+
+        hadj.configure(
+            hadj.value(),
+            h_lower,
+            h_upper,
+            0.1 * size_request[0],
+            0.9 * size_request[0],
+            size_request[0],
+        );
+
+        vadj.configure(
+            vadj.value(),
+            v_lower,
+            v_upper,
+            0.1 * size_request[1],
+            0.9 * size_request[1],
+            size_request[1],
+        );
+    }
+
+    /// Called when sheet should resize to the format and to fit all strokes
     pub fn resize_sheet_to_fit_strokes(&self) {
         match self.expand_mode() {
             ExpandMode::FixedSize => {
-                self.update_size_fixed_size_mode();
+                self.sheet().borrow_mut().resize_sheet_mode_fixed_size();
             }
             ExpandMode::EndlessVertical => {
-                self.update_size_endless_vertical_mode();
+                self.sheet()
+                    .borrow_mut()
+                    .resize_sheet_mode_endless_vertical();
             }
             ExpandMode::Infinite => {
-                self.update_size_infinite_mode();
+                self.sheet()
+                    .borrow_mut()
+                    .resize_sheet_mode_infinite_to_fit_strokes();
+                self.sheet()
+                    .borrow_mut()
+                    .expand_sheet_mode_infinite_for_viewport(self.viewport_in_sheet_coords());
             }
         }
+        self.queue_resize();
     }
 
     /// resize the sheet when in autoexpanding expand modes. called e.g. when finishing a new stroke
-    pub fn update_size_autoexpand(&self) {
+    pub fn resize_sheet_autoexpand(&self) {
         match self.expand_mode() {
             ExpandMode::FixedSize => {
-                // Does not auto update size in fixed size mode, use update_size_to_strokes for it.
+                // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.
             }
             ExpandMode::EndlessVertical => {
-                self.update_size_endless_vertical_mode();
+                self.sheet()
+                    .borrow_mut()
+                    .resize_sheet_mode_endless_vertical();
             }
             ExpandMode::Infinite => {
-                self.update_size_infinite_mode();
-            }
-        }
-    }
-
-    /// updates size in fixed size mode to fit all strokes and will resize to full pages
-    pub fn update_size_fixed_size_mode(&self) {
-        if self.expand_mode() == ExpandMode::FixedSize {
-            let format_height = self.sheet().borrow().format.height;
-
-            let new_width = self.sheet().borrow().format.width;
-            // +1.0 because then 'fraction'.ceil() is at least 1
-            let new_height = (f64::from(self.sheet().borrow().strokes_state.calc_height() + 1.0)
-                / f64::from(format_height))
-            .ceil()
-                * format_height;
-
-            self.sheet().borrow_mut().x = 0.0;
-            self.sheet().borrow_mut().y = 0.0;
-            self.sheet().borrow_mut().width = new_width;
-            self.sheet().borrow_mut().height = new_height;
-
-            self.update_background_rendernode(true);
-        }
-    }
-
-    /// updates size in endless vertical mode to fit all strokes
-    pub fn update_size_endless_vertical_mode(&self) {
-        if self.expand_mode() == ExpandMode::EndlessVertical {
-            let padding_bottom = self.sheet().borrow().format.height;
-            let new_height = self.sheet().borrow().strokes_state.calc_height() + padding_bottom;
-            let new_width = self.sheet().borrow().format.width;
-
-            self.sheet().borrow_mut().x = 0.0;
-            self.sheet().borrow_mut().y = 0.0;
-            self.sheet().borrow_mut().width = new_width;
-            self.sheet().borrow_mut().height = new_height;
-
-            self.update_background_rendernode(true);
-        }
-    }
-
-    /// Called when the sheet should be resized to fit all strokes and the viewport in infinite expand mode
-    pub fn update_size_infinite_mode(&self) {
-        if self.expand_mode() == ExpandMode::Infinite {
-            let padding_horizontal = self.sheet().borrow().format.width;
-            let padding_vertical = self.sheet().borrow().format.height;
-
-            let mut new_bounds = self
-                .sheet()
-                .borrow()
-                .bounds()
-                .merged(&self.viewport_in_sheet_coords());
-
-            let keys = self.sheet().borrow().strokes_state.keys_sorted_chrono();
-
-            // Expand by stroke bounds
-            if let Some(stroke_bounds) =
                 self.sheet()
-                    .borrow()
-                    .strokes_state
-                    .gen_bounds(&keys)
-                    .map(|stroke_bounds| {
-                        geometry::aabb_expand(
-                            stroke_bounds,
-                            na::vector![padding_horizontal, padding_vertical],
-                        )
-                    })
-            {
-                new_bounds.merge(&stroke_bounds)
+                    .borrow_mut()
+                    .resize_sheet_mode_infinite_to_fit_strokes();
+                self.sheet()
+                    .borrow_mut()
+                    .expand_sheet_mode_infinite_for_viewport(self.viewport_in_sheet_coords());
             }
-
-            self.sheet().borrow_mut().x = new_bounds.mins[0];
-            self.sheet().borrow_mut().y = new_bounds.mins[1];
-            self.sheet().borrow_mut().width = new_bounds.extents()[0];
-            self.sheet().borrow_mut().height = new_bounds.extents()[1];
-
-            self.update_background_rendernode(true);
         }
+        self.queue_resize();
     }
 
-    // Resizing the sheet by merging with new desired adjustment values. Will expand to fit the strokes if the desired adj values are not large enough
-    pub fn resize_sheet_infinite_mode_new_adjs(&self, desired_adjs: na::Vector2<f64>) {
-        if self.expand_mode() == ExpandMode::Infinite {
-            let total_zoom = self.total_zoom();
-            let scroller_width = f64::from(self.parent().unwrap().width());
-            let scroller_height = f64::from(self.parent().unwrap().height());
-
-            let new_x = self
-                .sheet()
-                .borrow_mut()
-                .x
-                .min(desired_adjs[0] / total_zoom);
-            let new_y = self
-                .sheet()
-                .borrow_mut()
-                .y
-                .min(desired_adjs[1] / total_zoom);
-
-            let new_width = self
-                .sheet()
-                .borrow()
-                .width
-                .max((desired_adjs[0] + scroller_width) / total_zoom - self.sheet().borrow().x);
-            let new_height =
-                self.sheet().borrow().height.max(
-                    (desired_adjs[1] + scroller_height) / total_zoom - self.sheet().borrow().y,
-                );
-
-            self.sheet().borrow_mut().x = new_x;
-            self.sheet().borrow_mut().y = new_y;
-            self.sheet().borrow_mut().width = new_width;
-            self.sheet().borrow_mut().height = new_height;
-
-            // updating size to fit strokes
-            self.update_size_infinite_mode();
-        }
-    }
-
-    /// The point parameter has the coordinate space of the sheet!
+    /// Centers the view around a coord on the sheet. The coord parameter has the coordinate space of the sheet!
     pub fn center_around_coord_on_sheet(&self, coord: na::Vector2<f64>) {
         let (parent_width, parent_height) = (
             f64::from(self.parent().unwrap().width()),
@@ -1312,31 +1292,25 @@ impl Canvas {
         );
         let total_zoom = self.total_zoom();
 
-        let new_adjs = na::vector![
+        let new_adj_values = na::vector![
             ((coord[0]) * total_zoom) - parent_width * 0.5,
             ((coord[1]) * total_zoom) - parent_height * 0.5
         ];
-        self.resize_sheet_infinite_mode_new_adjs(new_adjs);
 
-        self.hadjustment().unwrap().set_value(new_adjs[0]);
-        self.vadjustment().unwrap().set_value(new_adjs[1]);
-        self.queue_resize();
+        self.update_adj_values(new_adj_values);
     }
 
     /// Centering the view to the first page
     pub fn return_to_origin_page(&self) {
         let total_zoom = self.total_zoom();
-        let parent_width = f64::from(self.parent().unwrap().width());
 
-        let new_adjs = na::vector![
-            ((self.sheet().borrow().format.width / 2.0) * total_zoom) - parent_width * 0.5,
+        let new_adj_values = na::vector![
+            ((self.sheet().borrow().format.width / 2.0) * total_zoom)
+                - f64::from(self.parent().unwrap().width()) * 0.5,
             -Self::SHADOW_WIDTH * total_zoom
         ];
-        self.resize_sheet_infinite_mode_new_adjs(new_adjs);
 
-        self.hadjustment().unwrap().set_value(new_adjs[0]);
-        self.vadjustment().unwrap().set_value(new_adjs[1]);
-        self.queue_resize();
+        self.update_adj_values(new_adj_values);
     }
 
     /// Zoom temporarily to a new zoom, not regenerating the contents while doing it.
@@ -1344,7 +1318,7 @@ impl Canvas {
     pub fn zoom_temporarily_to(&self, temp_zoom: f64) {
         self.set_temporary_zoom(temp_zoom / self.zoom());
 
-        self.update_size_infinite_mode();
+        self.update_background_rendernode(true);
     }
 
     /// zooms and regenerates the canvas and its contents to a new zoom
@@ -1361,7 +1335,7 @@ impl Canvas {
             .strokes_state
             .reset_regenerate_flag_all_strokes();
 
-        self.update_size_infinite_mode();
+        self.resize_sheet_autoexpand();
 
         // update rendernodes to new zoom until threaded regeneration is finished
         self.update_content_rendernodes(false);
@@ -1414,7 +1388,6 @@ impl Canvas {
 
         if redraw {
             self.queue_resize();
-            self.queue_draw();
         }
     }
 
@@ -1427,7 +1400,6 @@ impl Canvas {
 
         if redraw {
             self.queue_resize();
-            self.queue_draw();
         }
     }
 
@@ -1454,13 +1426,11 @@ impl Canvas {
 
     /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch. redraw: queue canvas redrawing
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
-        let viewport = self.viewport_in_sheet_coords();
-
         self.sheet()
             .borrow_mut()
             .strokes_state
             .regenerate_rendering_current_view_threaded(
-                Some(viewport),
+                Some(self.viewport_in_sheet_coords()),
                 force_regenerate,
                 self.renderer(),
                 self.zoom(),
@@ -1468,7 +1438,6 @@ impl Canvas {
 
         if redraw {
             self.queue_resize();
-            self.queue_draw();
         }
     }
 
@@ -1489,8 +1458,6 @@ impl Canvas {
                 );
                 None
             })?;
-
-        self.selection_modifier().update_state(self);
 
         Some(texture)
     }
@@ -1534,7 +1501,7 @@ pub mod debug {
     use p2d::bounding_volume::AABB;
 
     use crate::compose::color::Color;
-    use crate::compose::geometry;
+    use crate::compose::geometry::AABBHelpers;
 
     pub const COLOR_POS: Color = Color {
         r: 1.0,
@@ -1623,7 +1590,9 @@ pub mod debug {
     pub fn draw_fill(rect: AABB, color: Color, zoom: f64, snapshot: &Snapshot) {
         snapshot.append_color(
             &color.to_gdk(),
-            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(rect, zoom)),
+            &rect
+                .scale(na::Vector2::from_element(zoom))
+                .to_graphene_rect(),
         );
     }
 }

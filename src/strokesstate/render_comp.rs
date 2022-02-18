@@ -627,24 +627,22 @@ impl StrokesState {
 
     /// Draws the strokes without the selection
     pub fn draw_strokes(&self, snapshot: &Snapshot, viewport: Option<AABB>) {
-        self.stroke_keys_in_order_rendered()
-            .iter()
-            .for_each(|&key| {
-                if let (Some(stroke), Some(render_comp)) =
-                    (self.strokes.get(key), self.render_components.get(key))
-                {
-                    // skip if stroke is not in viewport
-                    if let Some(viewport) = viewport {
-                        if !viewport.intersects(&stroke.bounds()) {
-                            return;
-                        }
-                    }
-
-                    if let Some(rendernode) = render_comp.rendernode.as_ref() {
-                        snapshot.append_node(rendernode);
+        self.keys_as_rendered().iter().for_each(|&key| {
+            if let (Some(stroke), Some(render_comp)) =
+                (self.strokes.get(key), self.render_components.get(key))
+            {
+                // skip if stroke is not in viewport
+                if let Some(viewport) = viewport {
+                    if !viewport.intersects(&stroke.bounds()) {
+                        return;
                     }
                 }
-            });
+
+                if let Some(rendernode) = render_comp.rendernode.as_ref() {
+                    snapshot.append_node(rendernode);
+                }
+            }
+        });
     }
 
     /// Draws the selection

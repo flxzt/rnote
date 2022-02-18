@@ -1,6 +1,7 @@
 use std::sync::{Arc, RwLock};
 
-use crate::compose::{geometry, shapes};
+use crate::compose::geometry::AABBHelpers;
+use crate::compose::shapes;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::render::Renderer;
 use crate::{compose, render};
@@ -32,7 +33,7 @@ impl Default for VectorImage {
             svg_data: String::default(),
             intrinsic_size: na::Vector2::zeros(),
             rectangle: shapes::Rectangle::default(),
-            bounds: geometry::aabb_new_zero(),
+            bounds: AABB::new_zero(),
         }
     }
 }
@@ -77,7 +78,7 @@ impl DrawBehaviour for VectorImage {
 
         let svg_data = compose::svg_node_to_string(&group)?;
         let svg = render::Svg {
-            bounds: geometry::aabb_translate(self.bounds, offset),
+            bounds: self.bounds.translate(offset),
             svg_data,
         };
 
@@ -149,7 +150,7 @@ impl VectorImage {
             svg_data,
             intrinsic_size,
             rectangle,
-            bounds: geometry::aabb_new_zero(),
+            bounds: AABB::new_zero(),
         };
         vector_image.update_geometry();
 
@@ -255,7 +256,7 @@ impl VectorImage {
     }
 
     pub fn export_as_svg(&self) -> Result<String, anyhow::Error> {
-        let export_bounds = geometry::aabb_translate(self.bounds, -self.bounds().mins.coords);
+        let export_bounds = self.bounds.translate(-self.bounds().mins.coords);
         let mut export_svg_data = self
             .gen_svgs(-self.bounds().mins.coords)?
             .iter()
@@ -279,7 +280,7 @@ impl VectorImage {
         format: image::ImageOutputFormat,
         renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        let export_bounds = geometry::aabb_translate(self.bounds, -self.bounds().mins.coords);
+        let export_bounds = self.bounds.translate(-self.bounds().mins.coords);
         let mut export_svg_data = self
             .gen_svgs(-self.bounds().mins.coords)
             .context("gen_svgs() failed in VectorImage export_as_bytes()")?
@@ -298,8 +299,14 @@ impl VectorImage {
             svg_data: export_svg_data,
         };
 
-        let image_raw = render::concat_images(renderer.read().unwrap()
-            .gen_images(zoom, vec![export_svg], export_bounds)?, export_bounds, zoom)?;
+        let image_raw = render::concat_images(
+            renderer
+                .read()
+                .unwrap()
+                .gen_images(zoom, vec![export_svg], export_bounds)?,
+            export_bounds,
+            zoom,
+        )?;
 
         Ok(render::image_into_encoded_bytes(image_raw, format)?)
     }

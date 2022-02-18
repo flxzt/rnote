@@ -1,4 +1,5 @@
-use super::{color::Color, curves, geometry, shapes};
+use super::geometry::Vector2Helpers;
+use super::{color::Color, curves, shapes};
 
 use serde::{Deserialize, Serialize};
 use svg::node::element::{self, path};
@@ -72,7 +73,7 @@ pub fn compose_line_offsetted(
     move_start: bool,
     _options: &SmoothOptions,
 ) -> Vec<path::Command> {
-    let direction_unit_norm = geometry::vector2_unit_norm(line.end - line.start);
+    let direction_unit_norm = (line.end - line.start).unit_norm();
     let start_offset = direction_unit_norm * start_offset_dist;
     let end_offset = direction_unit_norm * end_offset_dist;
 
@@ -108,7 +109,7 @@ pub fn compose_line_variable_width(
         start: line.end,
         end: line.start,
     };
-    let direction_unit_norm = geometry::vector2_unit_norm(line.end - line.start);
+    let direction_unit_norm = (line.end - line.start).unit_norm();
 
     let mut commands = Vec::new();
     commands.append(&mut compose_line_offsetted(
@@ -200,8 +201,8 @@ pub fn compose_quadbez_offsetted(
 ) -> Vec<path::Command> {
     let mut commands = Vec::new();
 
-    let start_unit_norm = geometry::vector2_unit_norm(quadbez.cp - quadbez.start);
-    let end_unit_norm = geometry::vector2_unit_norm(quadbez.end - quadbez.cp);
+    let start_unit_norm = (quadbez.cp - quadbez.start).unit_norm();
+    let end_unit_norm = (quadbez.end - quadbez.cp).unit_norm();
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
@@ -366,8 +367,8 @@ pub fn compose_quadbez_variable_width(
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
 
-    let start_unit_norm = geometry::vector2_unit_norm(quadbez.cp - quadbez.start);
-    let end_unit_norm = geometry::vector2_unit_norm(quadbez.end - quadbez.cp);
+    let start_unit_norm = (quadbez.cp - quadbez.start).unit_norm();
+    let end_unit_norm = (quadbez.end - quadbez.cp).unit_norm();
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
@@ -472,8 +473,8 @@ pub fn compose_cubbez_variable_width(
     let start_offset_dist = width_start / 2.0;
     let end_offset_dist = width_end / 2.0;
 
-    let start_unit_norm = geometry::vector2_unit_norm(cubbez.cp1 - cubbez.start);
-    let end_unit_norm = geometry::vector2_unit_norm(cubbez.end - cubbez.cp2);
+    let start_unit_norm = (cubbez.cp1 - cubbez.start).unit_norm();
+    let end_unit_norm = (cubbez.end - cubbez.cp2).unit_norm();
 
     let start_offset = start_unit_norm * start_offset_dist;
     let end_offset = end_unit_norm * end_offset_dist;
@@ -546,10 +547,7 @@ pub fn compose_rectangle(
         String::from("none")
     };
 
-    let (mins, maxs) = geometry::vec2_mins_maxs(
-        -rectangle.cuboid.half_extents,
-        rectangle.cuboid.half_extents,
-    );
+    let (mins, maxs) = (-rectangle.cuboid.half_extents).mins_maxs(&rectangle.cuboid.half_extents);
 
     let transform_string = rectangle.transform.transform_as_svg_transform_attr();
 

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use svg::node::element;
 
 use crate::compose::color::Color;
-use crate::compose::geometry;
+use crate::compose::geometry::AABBHelpers;
 use crate::render::Renderer;
 use crate::{compose, render};
 
@@ -281,7 +281,10 @@ impl Background {
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let svg = self.gen_svg(bounds)?;
         Ok(Some(render::concat_images(
-            renderer.read().unwrap().gen_images(zoom, vec![svg], bounds)?,
+            renderer
+                .read()
+                .unwrap()
+                .gen_images(zoom, vec![svg], bounds)?,
             bounds,
             zoom,
         )?))
@@ -312,21 +315,24 @@ impl Background {
         let snapshot = Snapshot::new();
         let tile_size = self.tile_size();
 
-        snapshot.push_clip(&geometry::aabb_to_graphene_rect(geometry::aabb_scale(
-            sheet_bounds,
-            zoom,
-        )));
+        snapshot.push_clip(
+            &sheet_bounds
+                .scale(na::Vector2::from_element(zoom))
+                .to_graphene_rect(),
+        );
 
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_color(
             &self.color.to_gdk(),
-            &geometry::aabb_to_graphene_rect(geometry::aabb_scale(sheet_bounds, zoom)),
+            &sheet_bounds
+                .scale(na::Vector2::from_element(zoom))
+                .to_graphene_rect(),
         );
 
         if let Some(image) = &self.image {
             let new_texture = render::image_to_memtexture(image)
                 .context("image_to_memtexture() failed in gen_rendernode().")?;
-            for aabb in geometry::split_aabb_extended_origin_aligned(sheet_bounds, tile_size) {
+            for aabb in sheet_bounds.split_extended_origin_aligned(tile_size) {
                 if let Some(viewport) = viewport {
                     if !aabb.intersects(&viewport) {
                         continue;
@@ -334,7 +340,9 @@ impl Background {
                 }
                 snapshot.append_texture(
                     &new_texture,
-                    &geometry::aabb_to_graphene_rect(geometry::aabb_scale(aabb, zoom)),
+                    &aabb
+                        .scale(na::Vector2::from_element(zoom))
+                        .to_graphene_rect(),
                 );
             }
         }

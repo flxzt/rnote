@@ -1,7 +1,7 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use super::geometry;
+use super::geometry::AABBHelpers;
 use super::shapes::Rectangle;
 use super::transformable::{Transform, Transformable};
 
@@ -39,7 +39,7 @@ impl Transformable for Line {
 
 impl Line {
     pub fn global_aabb(&self) -> AABB {
-        geometry::aabb_new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
+        AABBHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
     }
 
     pub fn line_w_width_to_rect(self, width: f64) -> Rectangle {

@@ -1,5 +1,5 @@
 use super::{StrokeKey, StrokeStyle, StrokesState};
-use crate::compose::geometry;
+use crate::compose::geometry::AABBHelpers;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::selector::{self, Selector};
 use crate::{compose, render};
@@ -179,17 +179,12 @@ impl StrokesState {
 
                 match stroke {
                     StrokeStyle::MarkerStroke(markerstroke) => {
-                        if selector_polygon
-                            .contains(&geometry::p2d_aabb_to_geo_polygon(markerstroke.bounds))
-                        {
+                        if selector_polygon.contains(&markerstroke.bounds.to_geo_polygon()) {
                             selection_comp.selected = true;
-                        } else if selector_polygon
-                            .intersects(&geometry::p2d_aabb_to_geo_polygon(markerstroke.bounds))
+                        } else if selector_polygon.intersects(&markerstroke.bounds.to_geo_polygon())
                         {
                             for &hitbox_elem in markerstroke.hitbox.iter() {
-                                if !selector_polygon
-                                    .contains(&geometry::p2d_aabb_to_geo_polygon(hitbox_elem))
-                                {
+                                if !selector_polygon.contains(&hitbox_elem.to_geo_polygon()) {
                                     return;
                                 }
                             }
@@ -202,17 +197,12 @@ impl StrokesState {
                         }
                     }
                     StrokeStyle::BrushStroke(brushstroke) => {
-                        if selector_polygon
-                            .contains(&geometry::p2d_aabb_to_geo_polygon(brushstroke.bounds))
-                        {
+                        if selector_polygon.contains(&brushstroke.bounds.to_geo_polygon()) {
                             selection_comp.selected = true;
-                        } else if selector_polygon
-                            .intersects(&geometry::p2d_aabb_to_geo_polygon(brushstroke.bounds))
+                        } else if selector_polygon.intersects(&brushstroke.bounds.to_geo_polygon())
                         {
                             for &hitbox_elem in brushstroke.hitboxes.iter() {
-                                if !selector_polygon
-                                    .contains(&geometry::p2d_aabb_to_geo_polygon(hitbox_elem))
-                                {
+                                if !selector_polygon.contains(&hitbox_elem.to_geo_polygon()) {
                                     return;
                                 }
                             }
@@ -225,9 +215,7 @@ impl StrokesState {
                         }
                     }
                     StrokeStyle::ShapeStroke(shapestroke) => {
-                        if selector_polygon
-                            .contains(&geometry::p2d_aabb_to_geo_polygon(shapestroke.bounds))
-                        {
+                        if selector_polygon.contains(&shapestroke.bounds.to_geo_polygon()) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
@@ -237,9 +225,7 @@ impl StrokesState {
                         }
                     }
                     StrokeStyle::VectorImage(vectorimage) => {
-                        if selector_polygon
-                            .contains(&geometry::p2d_aabb_to_geo_polygon(vectorimage.bounds))
-                        {
+                        if selector_polygon.contains(&vectorimage.bounds.to_geo_polygon()) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
@@ -249,9 +235,7 @@ impl StrokesState {
                         }
                     }
                     StrokeStyle::BitmapImage(bitmapimage) => {
-                        if selector_polygon
-                            .contains(&geometry::p2d_aabb_to_geo_polygon(bitmapimage.bounds))
-                        {
+                        if selector_polygon.contains(&bitmapimage.bounds.to_geo_polygon()) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {

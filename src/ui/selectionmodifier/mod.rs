@@ -408,7 +408,7 @@ use gtk4::{gdk, EventSequenceState, GestureDrag, PropagationPhase};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use p2d::bounding_volume::AABB;
 
-use crate::compose::geometry;
+use crate::compose::geometry::{self, AABBHelpers, Vector2Helpers};
 use crate::{ui::appwindow::RnoteAppWindow, ui::selectionmodifier::modifiernode::ModifierNode};
 
 use super::canvas::Canvas;
@@ -486,7 +486,7 @@ impl SelectionModifier {
     pub fn set_selection_bounds(&self, bounds: Option<AABB>) {
         self.imp()
             .selection_bounds
-            .set(bounds.map(|bounds| geometry::aabb_new_positive(bounds.mins, bounds.maxs)));
+            .set(bounds.map(|bounds| AABB::new_positive(bounds.mins, bounds.maxs)));
     }
 
     /// Updates the internal state for measuring the widgets size, allocation, etc.
@@ -507,7 +507,6 @@ impl SelectionModifier {
         };
 
         self.queue_resize();
-        self.queue_draw();
     }
 
     pub fn update_translate_node_size_request(&self, canvas: &Canvas) {
@@ -524,7 +523,6 @@ impl SelectionModifier {
         };
 
         self.queue_resize();
-        self.queue_draw();
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -564,11 +562,11 @@ impl SelectionModifier {
                     // Lock aspectratio when property is set or with left click drag + ctrl
                     let new_extents = if selection_modifier.resize_lock_aspectratio()
                         || (drag_gesture.current_event_state() == gdk::ModifierType::BUTTON1_MASK | gdk::ModifierType::SHIFT_MASK) {
-                            geometry::scale_with_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
+                            geometry::scale_w_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
                     } else {
                         selection_bounds.extents() + offset
                     };
-                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
+                    let new_extents = new_extents.maxs(&na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
 
                     let new_bounds = AABB::new(
                         na::point![
@@ -631,11 +629,11 @@ impl SelectionModifier {
                     // Lock aspectratio when property is set or with left click drag + ctrl
                     let new_extents = if selection_modifier.resize_lock_aspectratio()
                         || (drag_gesture.current_event_state() == gdk::ModifierType::BUTTON1_MASK | gdk::ModifierType::SHIFT_MASK) {
-                            geometry::scale_with_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
+                            geometry::scale_w_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
                     } else {
                         selection_bounds.extents() + offset
                     };
-                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
+                    let new_extents = new_extents.maxs(&na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
 
                     let new_bounds = AABB::new(
                         na::point![
@@ -698,11 +696,11 @@ impl SelectionModifier {
                     // Lock aspectratio when property is set or with left click drag + ctrl
                     let new_extents = if selection_modifier.resize_lock_aspectratio()
                         || (drag_gesture.current_event_state() == gdk::ModifierType::BUTTON1_MASK | gdk::ModifierType::SHIFT_MASK) {
-                            geometry::scale_with_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
+                            geometry::scale_w_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
                     } else {
                         selection_bounds.extents() + offset
                     };
-                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
+                    let new_extents = new_extents.maxs(&na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
 
                     let new_bounds = AABB::new(
                         na::point![
@@ -765,11 +763,11 @@ impl SelectionModifier {
                     // Lock aspectratio when property is set or with left click drag + ctrl
                     let new_extents = if selection_modifier.resize_lock_aspectratio()
                         || (drag_gesture.current_event_state() == gdk::ModifierType::BUTTON1_MASK | gdk::ModifierType::SHIFT_MASK) {
-                            geometry::scale_with_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
+                            geometry::scale_w_locked_aspectratio(start_bounds.extents(), selection_bounds.extents() + offset)
                     } else {
                         selection_bounds.extents() + offset
                     };
-                    let new_extents = geometry::vector2_maxs(new_extents, na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
+                    let new_extents = new_extents.maxs(&na::Vector2::from_element(Self::SELECTION_BOUNDS_MIN / zoom));
 
                     let new_bounds = AABB::new(
                         na::point![
@@ -827,7 +825,7 @@ impl SelectionModifier {
 
                 let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
                 appwindow.canvas().sheet().borrow_mut().strokes_state.translate_strokes(&selection_keys, offset, zoom);
-                selection_modifier.set_selection_bounds(selection_modifier.imp().selection_bounds.get().map(|selection_bounds| geometry::aabb_translate(selection_bounds, offset)));
+                selection_modifier.set_selection_bounds(selection_modifier.imp().selection_bounds.get().map(|selection_bounds| selection_bounds.translate(offset)));
 
                 selection_modifier.update_translate_node_size_request(&appwindow.canvas());
                 appwindow.canvas().queue_draw();

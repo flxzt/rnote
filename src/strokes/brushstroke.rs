@@ -1,4 +1,4 @@
-use crate::compose::geometry;
+use crate::compose::geometry::AABBHelpers;
 use crate::compose::smooth::SmoothOptions;
 use crate::compose::textured::TexturedOptions;
 use crate::compose::transformable::Transformable;
@@ -276,12 +276,12 @@ impl BrushStroke {
             let brush_x = if delta[0] < 0.0 { -width } else { width };
             let brush_y = if delta[1] < 0.0 { -width } else { width };
 
-            geometry::aabb_new_positive(
+            AABB::new_positive(
                 na::Point2::from(first - na::vector![brush_x / 2.0, brush_y / 2.0]),
                 na::Point2::from(first + delta + na::vector![brush_x / 2.0, brush_y / 2.0]),
             )
         } else {
-            geometry::aabb_new_positive(
+            AABB::new_positive(
                 na::Point2::from(
                     first
                         - na::vector![

@@ -252,9 +252,6 @@ impl RnoteAppWindow {
             }
         }
 
-        // Refresh the canvas
-        self.canvas().resize_sheet_to_fit_strokes();
-
         // refresh the UI
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
         Ok(())

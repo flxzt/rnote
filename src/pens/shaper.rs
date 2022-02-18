@@ -197,7 +197,8 @@ impl PenBehaviour for Shaper {
                     appwindow.canvas().zoom(),
                 );
 
-            appwindow.canvas().update_size_autoexpand();
+            appwindow.canvas().resize_sheet_autoexpand();
+            appwindow.canvas().update_background_rendernode(true);
         }
     }
 }

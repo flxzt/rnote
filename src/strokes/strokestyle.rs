@@ -237,7 +237,12 @@ impl StrokeStyle {
                 ))
             }
             StrokeStyle::ShapeStroke(shapestroke) => {
-                let shape_image = render::concat_images(shapestroke.gen_images(1.0, renderer).ok()?, shapestroke.bounds(), 1.0).ok()?;
+                let shape_image = render::concat_images(
+                    shapestroke.gen_images(1.0, renderer).ok()?,
+                    shapestroke.bounds(),
+                    1.0,
+                )
+                .ok()?;
                 let image_bytes =
                     render::image_into_encoded_bytes(shape_image, image::ImageOutputFormat::Png)
                         .map_err(|e| {

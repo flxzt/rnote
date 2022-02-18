@@ -1,7 +1,8 @@
+use crate::compose::geometry::AABBHelpers;
 use crate::compose::rough::roughoptions::RoughOptions;
 use crate::compose::smooth::SmoothOptions;
 use crate::compose::transformable::{Transform, Transformable};
-use crate::compose::{curves, geometry, rough, shapes};
+use crate::compose::{curves, rough, shapes};
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::shaper::ShaperDrawStyle;
 use crate::strokes::strokestyle::Element;
@@ -205,7 +206,7 @@ impl DrawBehaviour for ShapeStroke {
         })?;
 
         let svg = render::Svg {
-            bounds: geometry::aabb_translate(self.bounds, offset),
+            bounds: self.bounds.translate(offset),
             svg_data,
         };
         Ok(vec![svg])

@@ -133,5 +133,4 @@ pub fn process_peninput_end(appwindow: &RnoteAppWindow, data_entries: VecDeque<I
     appwindow.canvas().set_empty(false);
 
     appwindow.canvas().queue_resize();
-    appwindow.canvas().queue_draw();
 }

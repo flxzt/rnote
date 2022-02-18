@@ -13,3 +13,8 @@ Categories=GNOME;GTK;Graphics;
 # Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 Keywords=Gnome;GTK;Office;Graphics;Notes;
 StartupNotify=true
+Actions=new-window
+
+[Desktop Action new-window]
+Name=New Window
+Exec=@APP_NAME@ %f

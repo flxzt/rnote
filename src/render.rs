@@ -158,7 +158,7 @@ impl Renderer {
 
         // joining svgs for sizes that are not worth
         if bounds.extents()[0] < self.max_join_size[0]
-            && bounds.extents()[0] < self.max_join_size[1]
+            && bounds.extents()[1] < self.max_join_size[1]
         {
             let svg_data = svgs
                 .into_iter()

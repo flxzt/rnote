@@ -102,7 +102,7 @@ impl Sheet {
     // Generates bounds for each page which is containing content, extended to fit the sheet format
     pub fn pages_bounds_containing_content(&self) -> Vec<AABB> {
         let sheet_bounds = self.bounds();
-        let keys = self.strokes_state.keys_sorted_chrono();
+        let keys = self.strokes_state.keys_as_rendered();
         let strokes_bounds = &self.strokes_state.strokes_bounds(&keys);
 
         if self.format.height > 0.0 && self.format.width > 0.0 {
@@ -187,7 +187,7 @@ impl Sheet {
         let padding_vertical = self.format.height * 2.0;
 
         let mut keys = self.strokes_state.keys_as_rendered();
-        keys.append(&mut self.strokes_state.selection_keys_in_order_rendered());
+        keys.append(&mut self.strokes_state.selection_keys_as_rendered());
 
         let new_bounds = if let Some(new_bounds) = self.strokes_state.gen_bounds(&keys) {
             new_bounds.expand(na::vector![padding_horizontal, padding_vertical])

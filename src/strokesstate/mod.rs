@@ -538,7 +538,7 @@ impl StrokesState {
     }
 
     pub fn update_geometry_selection_strokes(&mut self) {
-        let keys: Vec<StrokeKey> = self.selection_keys_in_order_rendered();
+        let keys: Vec<StrokeKey> = self.selection_keys_as_rendered();
 
         keys.iter().for_each(|&key| {
             self.update_geometry_for_stroke(key);

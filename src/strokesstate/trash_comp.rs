@@ -79,7 +79,7 @@ impl StrokesState {
     }
 
     pub fn trash_selection(&mut self) {
-        self.selection_keys_in_order_rendered()
+        self.selection_keys_as_rendered()
             .iter()
             .for_each(|&key| {
                 if let Some(selection_comp) = self.selection_components.get_mut(key) {

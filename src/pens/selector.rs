@@ -118,7 +118,7 @@ impl PenBehaviour for Selector {
             .sheet()
             .borrow()
             .strokes_state
-            .selection_keys_in_order_rendered();
+            .selection_keys_as_rendered();
         appwindow
             .canvas()
             .sheet()

@@ -75,7 +75,7 @@ impl StrokesState {
     }
 
     /// Returns the selection keys in the order that they should be rendered. Does not return the stroke keys!
-    pub fn selection_keys_in_order_rendered(&self) -> Vec<StrokeKey> {
+    pub fn selection_keys_as_rendered(&self) -> Vec<StrokeKey> {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
         keys_sorted_chrono
@@ -94,11 +94,11 @@ impl StrokesState {
     }
 
     pub fn selection_len(&self) -> usize {
-        self.selection_keys_in_order_rendered().len()
+        self.selection_keys_as_rendered().len()
     }
 
     pub fn gen_selection_bounds(&self) -> Option<AABB> {
-        self.gen_bounds(&self.selection_keys_in_order_rendered())
+        self.gen_bounds(&self.selection_keys_as_rendered())
     }
 
     pub fn duplicate_selection(&mut self, zoom: f64) {
@@ -107,7 +107,7 @@ impl StrokesState {
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
         ];
 
-        let old_selected = self.selection_keys_in_order_rendered();
+        let old_selected = self.selection_keys_as_rendered();
         self.set_selected_keys(&old_selected, false);
 
         let new_selected = old_selected
@@ -252,14 +252,8 @@ impl StrokesState {
     /// the svgs of the current selection, without xml header or svg root
     pub fn gen_svgs_selection(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
         Ok(self
-            .keys_sorted_chrono()
+            .selection_keys_as_rendered()
             .iter()
-            .filter(|&&key| {
-                self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && (self.selected(key).unwrap_or(false))
-                    && (self.does_render(key).unwrap_or(false))
-            })
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 

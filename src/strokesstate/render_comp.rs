@@ -681,7 +681,7 @@ impl StrokesState {
             );
         }
 
-        self.selection_keys_in_order_rendered()
+        self.selection_keys_as_rendered()
             .iter()
             .for_each(|&key| {
                 let render_comp = self.render_components.get(key).unwrap();

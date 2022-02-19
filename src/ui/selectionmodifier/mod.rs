@@ -579,7 +579,7 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().sheet().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds, appwindow.canvas().renderer(), zoom);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
@@ -646,7 +646,7 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().sheet().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds, appwindow.canvas().renderer(), zoom);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
@@ -713,7 +713,7 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().sheet().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds, appwindow.canvas().renderer(), zoom);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
@@ -780,7 +780,7 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().sheet().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds, appwindow.canvas().renderer(), zoom);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
@@ -823,7 +823,7 @@ impl SelectionModifier {
                 let zoom = appwindow.canvas().zoom();
                 let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-                let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_as_rendered();
                 appwindow.canvas().sheet().borrow_mut().strokes_state.translate_strokes(&selection_keys, offset, zoom);
                 selection_modifier.set_selection_bounds(selection_modifier.imp().selection_bounds.get().map(|selection_bounds| selection_bounds.translate(offset)));
 
@@ -899,7 +899,7 @@ impl SelectionModifier {
 
                     let angle_delta = angle - selection_modifier.imp().current_rotation_angle.get();
 
-                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_in_order_rendered();
+                    let selection_keys = appwindow.canvas().sheet().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().sheet().borrow_mut().strokes_state.rotate_strokes(&selection_keys, angle_delta, start_bounds.center(), appwindow.canvas().renderer(), zoom);
                     selection_modifier.update_state(&appwindow.canvas());
 

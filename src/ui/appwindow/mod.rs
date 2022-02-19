@@ -448,7 +448,7 @@ use std::{
 
 use adw::prelude::*;
 use futures::channel::oneshot;
-use gtk4::Revealer;
+use gtk4::{Revealer, EventSequenceState};
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
     EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme,
@@ -799,7 +799,7 @@ impl RnoteAppWindow {
         {
             let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
+            canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
                 mouse_drag_start.set(na::vector![
                     appwindow.canvas().hadjustment().unwrap().value(),
                     appwindow.canvas().vadjustment().unwrap().value()
@@ -816,7 +816,7 @@ impl RnoteAppWindow {
         {
             let mouse_drag_empty_area_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
-            canvas_mouse_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, _x, _y| {
+            canvas_mouse_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_empty_area_gesture, _x, _y| {
                 mouse_drag_empty_area_start.set(na::vector![
                     appwindow.canvas().hadjustment().unwrap().value(),
                     appwindow.canvas().vadjustment().unwrap().value()
@@ -844,7 +844,7 @@ impl RnoteAppWindow {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    //canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
+                    canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
                     zoom_begin.set(appwindow.canvas().zoom());
                     new_zoom.set(appwindow.canvas().zoom());

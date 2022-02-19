@@ -619,18 +619,38 @@ impl StrokesState {
             .collect::<Vec<AABB>>()
     }
 
-    /// Generates a Svg for all strokes as drawn onto the canvas without xml headers or svg roots. Does not include the selection.
-    pub fn gen_svgs_for_strokes(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let chrono_sorted = self.keys_sorted_chrono();
+    pub fn gen_svgs_for_bounds(&self, bounds: AABB) -> Vec<render::Svg> {
+        let keys = self.keys_as_rendered();
 
-        let svgs = chrono_sorted
+        keys
             .iter()
-            .filter(|&&key| {
-                self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && !(self.selected(key).unwrap_or(false))
-                    && (self.does_render(key).unwrap_or(false))
+            .filter_map(|&key| {
+                let stroke = self.strokes.get(key)?;
+                if !stroke.bounds().intersects(&bounds) {
+                    return None
+                }
+
+                match stroke.gen_svgs(na::vector![0.0, 0.0]) {
+                    Ok(svgs) => Some(svgs),
+                    Err(e) => {
+                        log::error!(
+                            "stroke.gen_svgs() failed in gen_svg_for_bounds() with Err {}",
+                            e
+                        );
+                        None
+                    }
+                }
             })
+            .flatten()
+            .collect::<Vec<render::Svg>>()
+    }
+
+    /// Generates a Svg for all strokes as drawn onto the canvas without xml headers or svg roots. Does not include the selection.
+    pub fn gen_svgs_all_strokes(&self) -> Vec<render::Svg> {
+        let keys = self.keys_as_rendered();
+
+        keys
+            .iter()
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 
@@ -646,9 +666,7 @@ impl StrokesState {
                 }
             })
             .flatten()
-            .collect::<Vec<render::Svg>>();
-
-        Ok(svgs)
+            .collect::<Vec<render::Svg>>()
     }
 
     /// Translate the strokes with the offset

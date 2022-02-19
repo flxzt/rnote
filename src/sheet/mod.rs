@@ -482,7 +482,20 @@ impl Sheet {
 
         svgs.push(self.background.gen_svg(sheet_bounds.loosened(1.0))?);
 
-        svgs.append(&mut self.strokes_state.gen_svgs_for_strokes()?);
+        svgs.append(&mut self.strokes_state.gen_svgs_all_strokes());
+
+        Ok(svgs)
+    }
+
+    /// Generates all containing svgs for the sheet without root or xml header.
+    pub fn gen_svgs_for_viewport(&self, viewport: AABB) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let sheet_bounds = self.bounds();
+        let mut svgs = vec![];
+
+        // Background bounds are still sheet bounds, for alignment
+        svgs.push(self.background.gen_svg(sheet_bounds.loosened(1.0))?);
+
+        svgs.append(&mut self.strokes_state.gen_svgs_for_bounds(viewport));
 
         Ok(svgs)
     }
@@ -544,7 +557,6 @@ impl Sheet {
     }
 
     pub fn export_sheet_in_pdf_bytes(&self, title: &str) -> Result<Vec<u8>, anyhow::Error> {
-        let sheet_svgs = self.gen_svgs()?;
         let sheet_bounds = self.bounds();
         let format_size = na::vector![f64::from(self.format.width), f64::from(self.format.height)];
 
@@ -563,8 +575,10 @@ impl Sheet {
             let cx = cairo::Context::new(&surface)?;
 
             for page_bounds in pages_bounds {
+                let page_svgs = self.gen_svgs_for_viewport(page_bounds)?;
+
                 cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                render::draw_svgs_to_cairo_context(1.0, &sheet_svgs, sheet_bounds, &cx)?;
+                render::draw_svgs_to_cairo_context(1.0, &page_svgs, sheet_bounds, &cx)?;
                 cx.show_page()?;
                 cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
             }

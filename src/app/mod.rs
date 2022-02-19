@@ -127,9 +127,9 @@ mod imp {
 
             // Load the resources
             app.set_resource_base_path(Some(config::APP_IDPATH));
-            let res = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
+            let resource = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
                 .expect("Could not load gresource file");
-            gio::resources_register(&res);
+            gio::resources_register(&resource);
 
             // init gstreamer
             if let Err(e) = gst::init() {

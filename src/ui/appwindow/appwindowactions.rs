@@ -876,40 +876,38 @@ impl RnoteAppWindow {
                 print_op.set_n_pages(n_pages as i32);
             }));
 
-            let sheet_svgs = match appwindow.canvas().sheet().borrow().gen_svgs() {
-                Ok(sheet_svgs) => sheet_svgs,
-                Err(e) => {
-                    log::error!("gen_svg() failed in print-sheet action with Err {}", e);
-                    return;
-                }
-            };
             let sheet_bounds = appwindow.canvas().sheet().borrow().bounds();
 
             print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
                 let cx = print_cx.cairo_context();
 
-                let print_zoom = {
-                    let width_scale = print_cx.width() / appwindow.canvas().sheet().borrow().format.width;
-                    let height_scale = print_cx.height() / appwindow.canvas().sheet().borrow().format.height;
-                    width_scale.min(height_scale)
-                };
+                if let Err(e) = || -> Result<(), anyhow::Error> {
+                    let print_zoom = {
+                        let width_scale = print_cx.width() / appwindow.canvas().sheet().borrow().format.width;
+                        let height_scale = print_cx.height() / appwindow.canvas().sheet().borrow().format.height;
+                        width_scale.min(height_scale)
+                    };
 
-                let page_bounds = pages_bounds[page_nr as usize];
+                    let page_bounds = pages_bounds[page_nr as usize];
 
-                cx.scale(print_zoom, print_zoom);
-                cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
+                    let page_svgs = appwindow.canvas().sheet().borrow().gen_svgs_for_viewport(page_bounds)?;
 
-                cx.rectangle(
-                    page_bounds.mins[0],
-                    page_bounds.mins[1],
-                    page_bounds.extents()[0],
-                    page_bounds.extents()[1]
-                );
-                cx.clip();
+                    cx.scale(print_zoom, print_zoom);
+                    cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
 
-                // We zoom on the context, so 1.0 here
-                if let Err(e) = render::draw_svgs_to_cairo_context(1.0, &sheet_svgs, sheet_bounds, &cx) {
-                    log::error!("render::draw_svgs_to_cairo_context() failed in draw_page() callback while printing page: {}, {}", page_nr, e);
+                    cx.rectangle(
+                        page_bounds.mins[0],
+                        page_bounds.mins[1],
+                        page_bounds.extents()[0],
+                        page_bounds.extents()[1]
+                    );
+                    cx.clip();
+
+                    // We zoom on the context, so 1.0 here
+                    render::draw_svgs_to_cairo_context(1.0, &page_svgs, sheet_bounds, &cx)?;
+                    Ok(())
+                }() {
+                    log::error!("draw_page() failed while printing page: {}, Err {}", page_nr, e);
                 }
             }));
 

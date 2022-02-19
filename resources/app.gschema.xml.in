@@ -25,7 +25,7 @@
         <choice value="light" />
         <choice value="dark" />
       </choices>
-      <default>"light"</default>
+      <default>"default"</default>
       <summary>Color scheme</summary>
       <description>
         Use the color scheme in the application's UI and in the text area.

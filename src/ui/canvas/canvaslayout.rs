@@ -70,6 +70,7 @@ mod imp {
 
             // Update the adjustments
             canvas.update_adj_config(na::vector![f64::from(width), f64::from(height)]);
+            canvas.update_background_rendernode(true);
 
             // Allocate the selection_modifier child
             {

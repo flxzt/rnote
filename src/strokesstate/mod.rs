@@ -276,18 +276,18 @@ impl StrokesState {
         let key = self.strokes.insert(stroke);
         self.chrono_counter += 1;
 
+        let mut render_comp = RenderComponent::default();
+        // set flag for rendering regeneration
+        render_comp.regenerate_flag = true;
+
         self.trash_components.insert(key, TrashComponent::default());
         self.selection_components
             .insert(key, SelectionComponent::default());
         self.render_components
-            .insert(key, RenderComponent::default());
+            .insert(key, render_comp);
         self.chrono_components
             .insert(key, ChronoComponent::new(self.chrono_counter));
 
-        // set flag for rendering regeneration
-        if let Some(render_comp) = self.render_components.get_mut(key) {
-            render_comp.regenerate_flag = true;
-        }
         key
     }
 

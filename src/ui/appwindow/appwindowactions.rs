@@ -13,6 +13,7 @@ use crate::{
 };
 
 use gettextrs::gettext;
+use gtk4::PrintStatus;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
     PrintOperation, PrintOperationAction, Unit,
@@ -912,12 +913,25 @@ impl RnoteAppWindow {
                 }
             }));
 
+            print_op.connect_status_changed(clone!(@weak appwindow => move |print_op| {
+                log::debug!("{:?}", print_op.status());
+                match print_op.status() {
+                    PrintStatus::Finished => {
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Printed sheet successfully").to_variant()));
+                    }
+                    PrintStatus::FinishedAborted => {
+                        log::error!("print op failed, status {:?}", print_op.status());
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing sheet failed").to_variant()));
+                    }
+                    _ => {}
+                }
+            }));
+
+            // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
                 log::error!("print_op.run() failed with Err, {}", e);
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing sheet failed").to_variant()));
-            } else {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Printed sheet successfully").to_variant()));
-            };
+            }
 
         }));
 

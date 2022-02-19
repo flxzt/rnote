@@ -749,7 +749,6 @@ impl RnoteAppWindow {
         // Gesture Grouping
         canvas_mouse_drag_middle_gesture.group_with(&canvas_touch_drag_gesture);
         canvas_mouse_drag_empty_area_gesture.group_with(&canvas_touch_drag_gesture);
-        //canvas_zoom_gesture.group_with(&canvas_touch_drag_gesture);
 
         // zoom scrolling with <ctrl> + scroll
         {
@@ -885,16 +884,18 @@ impl RnoteAppWindow {
             }));
 
             canvas_zoom_gesture.connect_cancel(
-                clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |_canvas_zoom_gesture, _event_sequence| {
+                clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     appwindow.canvas().zoom_to(new_zoom.get());
                     bbcenter_begin.set(None);
+                    canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
 
             canvas_zoom_gesture.connect_end(
-                clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |_canvas_zoom_gesture, _event_sequence| {
+                clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     appwindow.canvas().zoom_to(new_zoom.get());
                     bbcenter_begin.set(None);
+                    canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
         }

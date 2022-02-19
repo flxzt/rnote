@@ -12,6 +12,7 @@ use crate::{
     utils,
 };
 
+use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
     PrintOperation, PrintOperationAction, Unit,
@@ -33,12 +34,12 @@ impl RnoteAppWindow {
         self.add_action(&action_open_canvasmenu);
         let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
         self.add_action(&action_open_appmenu);
-        let action_text_notify =
-            gio::SimpleAction::new("text-notify", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_text_notify);
-        let action_error =
-            gio::SimpleAction::new("error", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_error);
+        let action_text_toast =
+            gio::SimpleAction::new("text-toast", Some(&glib::VariantType::new("s").unwrap()));
+        self.add_action(&action_text_toast);
+        let action_error_toast =
+            gio::SimpleAction::new("error-toast", Some(&glib::VariantType::new("s").unwrap()));
+        self.add_action(&action_error_toast);
 
         let action_devel_mode =
             gio::SimpleAction::new_stateful("devel-mode", None, &false.to_variant());
@@ -182,21 +183,21 @@ impl RnoteAppWindow {
         }));
 
         // Notify with a text toast
-        action_text_notify.connect_activate(
-            clone!(@weak self as appwindow => move |_action_text_notify, parameter| {
+        action_text_toast.connect_activate(
+            clone!(@weak self as appwindow => move |_action_text_toast, parameter| {
                 let text = parameter.unwrap().get::<String>().unwrap();
-                let text_notify_toast = adw::Toast::builder().title(text.as_str()).build();
+                let text_notify_toast = adw::Toast::builder().title(text.as_str()).priority(adw::ToastPriority::Normal).timeout(5).build();
 
                 appwindow.toast_overlay().add_toast(&text_notify_toast);
             }),
         );
 
         // Error
-        action_error.connect_activate(
-            clone!(@weak self as appwindow => move |_action_error, parameter| {
-                let error = parameter.unwrap().get::<String>().unwrap();
-                log::error!("{}", error);
-                let error_toast = adw::Toast::builder().title(error.as_str()).build();
+        action_error_toast.connect_activate(
+            clone!(@weak self as appwindow => move |_action_error_toast, parameter| {
+                let error_text = parameter.unwrap().get::<String>().unwrap();
+                log::error!("{}", error_text);
+                let error_toast = adw::Toast::builder().title(error_text.as_str()).priority(adw::ToastPriority::High).timeout(0).build();
 
                 appwindow.toast_overlay().add_toast(&error_toast);
             }),
@@ -913,6 +914,9 @@ impl RnoteAppWindow {
 
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
                 log::error!("print_op.run() failed with Err, {}", e);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing sheet failed").to_variant()));
+            } else {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Printed sheet successfully").to_variant()));
             };
 
         }));

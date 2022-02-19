@@ -456,7 +456,7 @@ use gtk4::{
 };
 use p2d::bounding_volume::AABB;
 
-use crate::{render, compose};
+use crate::{render};
 use crate::{
     app::RnoteApp,
     audioplayer::RnoteAudioPlayer,
@@ -1271,24 +1271,7 @@ impl RnoteAppWindow {
     }
 
     pub fn export_sheet_as_svg(&self, file: &gio::File) -> Result<(), anyhow::Error> {
-        let bounds =
-            if let Some(bounds) = self.canvas().sheet().borrow().bounds_w_content_extended() {
-                bounds
-            } else {
-                return Err(anyhow::anyhow!(
-                    "export_sheet_as_svg() failed, bounds_with_content() returned None"
-                ));
-            };
-
-        let svgs = self.canvas().sheet().borrow().gen_svgs()?;
-
-        let mut svg_data = svgs
-            .iter()
-            .map(|svg| svg.svg_data.as_str())
-            .collect::<Vec<&str>>()
-            .join("\n");
-
-        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
+        let svg_data = self.canvas().sheet().borrow().export_sheet_as_svg_string()?;
 
         file.replace_async(
             None,
@@ -1327,7 +1310,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_sheet_in_pdf_bytes(&self, title: String) -> Result<Vec<u8>, anyhow::Error> {
+    pub async fn export_sheet_as_pdf_bytes(&self, title: String) -> Result<Vec<u8>, anyhow::Error> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<Vec<u8>>();
 
         let pages = self
@@ -1413,7 +1396,7 @@ impl RnoteAppWindow {
     pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         if let Some(basename) = file.basename() {
             let pdf_data = self
-                .export_sheet_in_pdf_bytes(basename.to_string_lossy().to_string())
+                .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string())
                 .await?;
 
             let output_stream = file

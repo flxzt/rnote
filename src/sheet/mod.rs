@@ -5,7 +5,7 @@ use std::sync::{Arc, RwLock};
 
 use crate::compose::color::Color;
 use crate::compose::geometry::AABBHelpers;
-use crate::compose::shapes;
+use crate::compose::{shapes, self};
 use crate::compose::smooth::SmoothOptions;
 use crate::compose::transformable::{Transform, Transformable};
 use crate::pens::brush::{Brush, BrushStyle};
@@ -130,6 +130,32 @@ impl Sheet {
         }
     }
 
+    /// Generates all containing svgs for the sheet without root or xml header for the entire size
+    pub fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let sheet_bounds = self.bounds();
+        let mut svgs = vec![];
+
+        svgs.push(self.background.gen_svg(sheet_bounds.loosened(1.0))?);
+
+        svgs.append(&mut self.strokes_state.gen_svgs_all_strokes());
+
+        Ok(svgs)
+    }
+
+    /// Generates all containing svgs for the sheet without root or xml header for the given viewport
+    pub fn gen_svgs_for_viewport(&self, viewport: AABB) -> Result<Vec<render::Svg>, anyhow::Error> {
+        let sheet_bounds = self.bounds();
+        let mut svgs = vec![];
+
+        // Background bounds are still sheet bounds, for alignment
+        svgs.push(self.background.gen_svg(sheet_bounds.loosened(1.0))?);
+
+        svgs.append(&mut self.strokes_state.gen_svgs_for_bounds(viewport));
+
+        Ok(svgs)
+    }
+
+
     pub fn resize_sheet_mode_fixed_size(&mut self) {
         let format_height = self.format.height;
 
@@ -160,7 +186,9 @@ impl Sheet {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
-        let keys = self.strokes_state.keys_as_rendered();
+        let mut keys = self.strokes_state.keys_as_rendered();
+        keys.append(&mut self.strokes_state.selection_keys_in_order_rendered());
+
         let new_bounds = if let Some(new_bounds) = self.strokes_state.gen_bounds(&keys) {
             new_bounds.expand(na::vector![padding_horizontal, padding_vertical])
         } else {
@@ -367,6 +395,29 @@ impl Sheet {
         Ok(compressed_bytes)
     }
 
+    pub fn export_sheet_as_svg_string(&self) -> Result<String, anyhow::Error> {
+        let bounds =
+            if let Some(bounds) = self.bounds_w_content_extended() {
+                bounds
+            } else {
+                return Err(anyhow::anyhow!(
+                    "export_sheet_as_svg() failed, bounds_with_content() returned None"
+                ));
+            };
+
+        let svgs = self.gen_svgs()?;
+
+        let mut svg_data = svgs
+            .iter()
+            .map(|svg| svg.svg_data.as_str())
+            .collect::<Vec<&str>>()
+            .join("\n");
+
+        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
+
+        Ok(svg_data)
+    }
+
     pub fn export_sheet_as_xopp_bytes(
         &self,
         filename: &str,
@@ -473,30 +524,5 @@ impl Sheet {
         let xoppfile_bytes = xopp_file.save_as_bytes(filename)?;
 
         Ok(xoppfile_bytes)
-    }
-
-    /// Generates all containing svgs for the sheet without root or xml header.
-    pub fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let sheet_bounds = self.bounds();
-        let mut svgs = vec![];
-
-        svgs.push(self.background.gen_svg(sheet_bounds.loosened(1.0))?);
-
-        svgs.append(&mut self.strokes_state.gen_svgs_all_strokes());
-
-        Ok(svgs)
-    }
-
-    /// Generates all containing svgs for the sheet without root or xml header.
-    pub fn gen_svgs_for_viewport(&self, viewport: AABB) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let sheet_bounds = self.bounds();
-        let mut svgs = vec![];
-
-        // Background bounds are still sheet bounds, for alignment
-        svgs.push(self.background.gen_svg(sheet_bounds.loosened(1.0))?);
-
-        svgs.append(&mut self.strokes_state.gen_svgs_for_bounds(viewport));
-
-        Ok(svgs)
     }
 }

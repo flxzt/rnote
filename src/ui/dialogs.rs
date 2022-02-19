@@ -210,6 +210,7 @@ pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
                         dialog_open_overwrite(&appwindow);
                     } else {
                         log::error!("Can't open file. No file selected.");
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening sheet failed").to_variant()));
                     };
                 },
                 _ => {
@@ -311,9 +312,11 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                                                         appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
                                                         appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
                                                         appwindow.canvas().set_unsaved_changes(false);
+                                                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Saved sheet successfully").to_variant()));
                                                     }
                                                     Err(e) => {
                                                         log::error!("file.replace_future() in save_sheet_as() returned Err {}",e);
+                                                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving sheet failed").to_variant()));
                                                     }
                                                 }
                                             }));
@@ -415,6 +418,9 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
                         Some(file) => {
                             if let Err(e) = appwindow.canvas().sheet().borrow().strokes_state.export_selection_as_svg(file) {
                                 log::error!("exporting selection failed with error `{}`", e);
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection as SVG failed").to_variant()));
+                            } else {
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported selection as SVG successfully").to_variant()));
                             }
                         },
                         None => { log::error!("Unable to export selection. No file selected.")},
@@ -458,6 +464,9 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
                         Some(file) => {
                             if let Err(e) = appwindow.export_sheet_as_svg(&file) {
                                 log::error!("exporting sheet failed with error `{}`", e);
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export sheet as SVG failed").to_variant()));
+                            } else {
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported sheet as SVG successfully").to_variant()));
                             }
                         },
                         None => { log::error!("Can't export sheet. No file selected.")},
@@ -504,8 +513,9 @@ pub fn dialog_export_sheet_as_pdf(appwindow: &RnoteAppWindow) {
                             main_cx.spawn_local(clone!(@weak appwindow, @strong file => async move {
                                 if let Err(e) = appwindow.export_sheet_as_pdf(&file).await {
                                     log::error!("export_sheet_as_pdf() failed in dialog_export_sheet() with Err {}", e);
+                                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export sheet as PDF failed").to_variant()));
                                 } else {
-                                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-notify", Some(&String::from("Exported to PDF").to_variant()));
+                                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported sheet as PDF successfully").to_variant()));
                                 };
                             }));
                         },

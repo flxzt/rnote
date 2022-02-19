@@ -9,7 +9,7 @@ use crate::ui::appwindow::RnoteAppWindow;
 use crate::ui::canvas::ExpandMode;
 
 use adw::prelude::*;
-use gtk4::{gio, glib};
+use gtk4::gio;
 
 impl RnoteAppWindow {
     /// Settings binds
@@ -19,17 +19,24 @@ impl RnoteAppWindow {
         // Color scheme
         self.app_settings()
             .bind("color-scheme", &app.style_manager(), "color-scheme")
-            .mapping(
-                |variant, _| match variant.get::<String>().unwrap().as_str() {
+            .mapping(|variant, _| {
+                let value = variant.get::<String>().unwrap();
+                match value.as_str() {
                     "default" => Some(adw::ColorScheme::Default.to_value()),
-                    "light" => Some(adw::ColorScheme::ForceLight.to_value()),
-                    "dark" => Some(adw::ColorScheme::ForceDark.to_value()),
-                    _ => None,
-                },
-            )
+                    "force-light" => Some(adw::ColorScheme::ForceLight.to_value()),
+                    "force-dark" => Some(adw::ColorScheme::ForceDark.to_value()),
+                    _ => {
+                        log::error!(
+                            "mapping color-scheme to setting failed, invalid str {}",
+                            value.as_str()
+                        );
+                        None
+                    }
+                }
+            })
             .set_mapping(|value, _| match value.get::<adw::ColorScheme>().unwrap() {
-                adw::ColorScheme::ForceDark => Some(String::from("dark").to_variant()),
-                adw::ColorScheme::ForceLight => Some(String::from("light").to_variant()),
+                adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_variant()),
+                adw::ColorScheme::ForceLight => Some(String::from("force-light").to_variant()),
                 _ => Some(String::from("default").to_variant()),
             })
             .build();
@@ -85,15 +92,15 @@ impl RnoteAppWindow {
                     }
                 }
             })
-            .set_mapping(move |value, _type_| {
-                Some(
-                    glib::EnumValue::from_value(value)
-                        .unwrap()
-                        .1
-                        .nick()
-                        .to_variant(),
-                )
-            })
+            .set_mapping(
+                move |value, _type_| match value.get::<ExpandMode>().unwrap() {
+                    ExpandMode::FixedSize => Some(String::from("fixed-size").to_variant()),
+                    ExpandMode::EndlessVertical => {
+                        Some(String::from("endless-vertical").to_variant())
+                    }
+                    ExpandMode::Infinite => Some(String::from("infinite").to_variant()),
+                },
+            )
             .build();
 
         // format borders

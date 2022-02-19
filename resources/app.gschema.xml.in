@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-  <enum id="@APP_ID@.expandmode">
-    <value nick="fixed-size" value="0"/>
-    <value nick="endless-vertical" value="1"/>
-    <value nick="infinite" value="2"/>
-  </enum>
-
   <schema id="@APP_ID@" path="@APP_IDPATH@">
     <key name="window-width" type="i">
       <default>-1</default>
@@ -22,8 +16,8 @@
     <key name='color-scheme' type='s'>
       <choices>
         <choice value="default" />
-        <choice value="light" />
-        <choice value="dark" />
+        <choice value="force-light" />
+        <choice value="force-dark" />
       </choices>
       <default>"default"</default>
       <summary>Color scheme</summary>
@@ -47,8 +41,13 @@
       <default>false</default>
       <summary>enable drawing with touch input</summary>
     </key>
-    <key name="expand-mode" enum="@APP_ID@.expandmode">
-      <default>'fixed-size'</default>
+    <key name="expand-mode" type="s">
+      <choices>
+        <choice value="fixed-size"/>
+        <choice value="endless-vertical"/>
+        <choice value="infinite"/>
+      </choices>
+      <default>"infinite"</default>
       <summary>Expand mode</summary>
     </key>
     <key name="format-borders" type="b">

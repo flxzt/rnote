@@ -456,7 +456,7 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     match dialog_export_sheet.file() {
                         Some(file) => {
-                            if let Err(e) = appwindow.canvas().sheet().borrow().export_sheet_as_svg(&file) {
+                            if let Err(e) = appwindow.export_sheet_as_svg(&file) {
                                 log::error!("exporting sheet failed with error `{}`", e);
                             }
                         },
@@ -500,9 +500,14 @@ pub fn dialog_export_sheet_as_pdf(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     match dialog_export_sheet.file() {
                         Some(file) => {
-                            if let Err(e) = appwindow.canvas().sheet().borrow().export_sheet_as_pdf(&file) {
-                                log::error!("exporting sheet s pdf failed with error `{}`", e);
-                            }
+                            let main_cx = glib::MainContext::default();
+                            main_cx.spawn_local(clone!(@weak appwindow, @strong file => async move {
+                                if let Err(e) = appwindow.export_sheet_as_pdf(&file).await {
+                                    log::error!("export_sheet_as_pdf() failed in dialog_export_sheet() with Err {}", e);
+                                } else {
+                                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-notify", Some(&String::from("Exported to PDF").to_variant()));
+                                };
+                            }));
                         },
                         None => { log::error!("Can't export sheet as pdf. No file selected.")},
                     }

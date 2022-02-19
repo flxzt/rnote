@@ -447,13 +447,16 @@ use std::{
 };
 
 use adw::prelude::*;
+use futures::channel::oneshot;
 use gtk4::Revealer;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
     EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme,
     Inhibit, PropagationPhase, ScrolledWindow, Separator, ToggleButton,
 };
+use p2d::bounding_volume::AABB;
 
+use crate::{render, compose};
 use crate::{
     app::RnoteApp,
     audioplayer::RnoteAudioPlayer,
@@ -1263,6 +1266,178 @@ impl RnoteAppWindow {
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
+
+        Ok(())
+    }
+
+    pub fn export_sheet_as_svg(&self, file: &gio::File) -> Result<(), anyhow::Error> {
+        let bounds =
+            if let Some(bounds) = self.canvas().sheet().borrow().bounds_w_content_extended() {
+                bounds
+            } else {
+                return Err(anyhow::anyhow!(
+                    "export_sheet_as_svg() failed, bounds_with_content() returned None"
+                ));
+            };
+
+        let svgs = self.canvas().sheet().borrow().gen_svgs()?;
+
+        let mut svg_data = svgs
+            .iter()
+            .map(|svg| svg.svg_data.as_str())
+            .collect::<Vec<&str>>()
+            .join("\n");
+
+        svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
+
+        file.replace_async(
+            None,
+            false,
+            gio::FileCreateFlags::REPLACE_DESTINATION,
+            glib::PRIORITY_HIGH_IDLE,
+            None::<&gio::Cancellable>,
+            move |result| {
+                let output_stream = match result {
+                    Ok(output_stream) => output_stream,
+                    Err(e) => {
+                        log::error!(
+                            "replace_async() failed in export_sheet_as_svg() with Err {}",
+                            e
+                        );
+                        return;
+                    }
+                };
+
+                if let Err(e) = output_stream.write(svg_data.as_bytes(), None::<&gio::Cancellable>)
+                {
+                    log::error!(
+                        "output_stream().write() failed in export_sheet_as_svg() with Err {}",
+                        e
+                    );
+                };
+                if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
+                    log::error!(
+                        "output_stream().close() failed in export_sheet_as_svg() with Err {}",
+                        e
+                    );
+                };
+            },
+        );
+
+        Ok(())
+    }
+
+    pub async fn export_sheet_in_pdf_bytes(&self, title: String) -> Result<Vec<u8>, anyhow::Error> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<Vec<u8>>();
+
+        let pages = self
+            .canvas()
+            .sheet()
+            .borrow()
+            .pages_bounds_containing_content()
+            .into_iter()
+            .filter_map(|page_bounds| {
+                Some((page_bounds, self.canvas().sheet().borrow().gen_svgs_for_viewport(page_bounds).ok()?))
+            })
+            .collect::<Vec<(AABB, Vec<render::Svg>)>>();
+
+        let sheet_bounds = self.canvas().sheet().borrow().bounds();
+        let format_size = na::vector![
+            f64::from(self.canvas().sheet().borrow().format.width),
+            f64::from(self.canvas().sheet().borrow().format.height)
+        ];
+
+        // Fill the pdf surface on a new thread to avoid blocking
+        rayon::spawn(move || {
+            if let Err(e) = || -> Result<(), anyhow::Error> {
+                let surface = cairo::PdfSurface::for_stream(
+                    format_size[0],
+                    format_size[1],
+                    Vec::<u8>::new(),
+                )?;
+
+                surface.set_metadata(cairo::PdfMetadata::Title, title.as_str())?;
+                surface.set_metadata(
+                    cairo::PdfMetadata::CreateDate,
+                    utils::now_formatted_string().as_str(),
+                )?;
+
+                // New scope to avoid errors when flushing
+                {
+                    let cairo_cx = cairo::Context::new(&surface)?;
+
+                    for (page_bounds, page_svgs) in pages.into_iter() {
+                        cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
+                        render::draw_svgs_to_cairo_context(
+                            1.0,
+                            &page_svgs,
+                            sheet_bounds,
+                            &cairo_cx,
+                        )?;
+                        cairo_cx.show_page()?;
+                        cairo_cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
+                    }
+                }
+                let data = *surface
+                    .finish_output_stream()
+                    .map_err(|e| {
+                        anyhow::anyhow!(
+                            "finish_outputstream() failed in export_sheet_as_pdf_bytes with Err {:?}",
+                            e
+                        )
+                    })?
+                    .downcast::<Vec<u8>>()
+                    .map_err(|e| {
+                        anyhow::anyhow!(
+                            "downcast() finished output stream failed in export_sheet_as_pdf_bytes with Err {:?}",
+                            e
+                        )
+                    })?;
+
+                oneshot_sender.send(data).map_err(|e| {
+                    anyhow::anyhow!(
+                        "oneshot_sender.send() failed in export_sheet_as_pdf_bytes with Err {:?}",
+                        e
+                    )
+                })?;
+                Ok(())
+            }() {
+                log::error!("err, {}", e);
+            }
+        });
+
+        // await the data from the spawned thread
+        Ok(oneshot_receiver.await?)
+    }
+
+    pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> Result<(), anyhow::Error> {
+        if let Some(basename) = file.basename() {
+            let pdf_data = self
+                .export_sheet_in_pdf_bytes(basename.to_string_lossy().to_string())
+                .await?;
+
+            let output_stream = file
+                .replace_future(
+                    None,
+                    false,
+                    gio::FileCreateFlags::REPLACE_DESTINATION,
+                    glib::PRIORITY_HIGH_IDLE,
+                )
+                .await?;
+
+            if let Err(e) = output_stream.write(&pdf_data, None::<&gio::Cancellable>) {
+                log::error!(
+                    "output_stream().write() failed in export_sheet_as_pdf() with Err {}",
+                    e
+                );
+            };
+            if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
+                log::error!(
+                    "output_stream().close() failed in export_sheet_as_pdf() with Err {}",
+                    e
+                );
+            };
+        }
 
         Ok(())
     }

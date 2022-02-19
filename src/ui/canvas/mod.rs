@@ -1470,7 +1470,7 @@ impl Canvas {
                 .title(&gettext("Return to origin"))
                 .timeout(0)
                 .button_label(&gettext("Return"))
-                .priority(adw::ToastPriority::High)
+                .priority(adw::ToastPriority::Normal)
                 .action_name("win.return-origin-page")
                 .build();
 

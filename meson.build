@@ -58,10 +58,6 @@ desktop_file_validate = find_program('desktop-file-validate', required: false)
 appstream_util = find_program('appstream-util', required: false)
 update_mime_database = find_program('update-mime-database', required: false)
 
-cargo_sources= files(
-  meson.project_source_root() + '/' + 'Cargo.toml',
-)
-
 meson.add_dist_script(
   'build-aux/dist-vendor.sh',
   meson.project_build_root() / 'meson-dist' / app_name + '-' + version,
@@ -69,10 +65,36 @@ meson.add_dist_script(
 )
 
 # local crates
-subdir('notetakingfileformats')
+cargo_sources= files(
+  meson.project_source_root() + '/' + 'Cargo.toml',
+  meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
+  meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
+  meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
+)
 
-subdir('resources')
-subdir('src')
-subdir('po')
+subdir('rnote-engine')
+subdir('rnote-ui')
+subdir('rnote-fileformats')
+
+sources = [rnote_fileformats_sources, rnote_ui_sources, cargo_sources]
+
+custom_target(
+  'cargo-build',
+  build_by_default: true,
+  input: sources,
+  output: app_name,
+  console: true,
+  install: true,
+  install_dir: bindir,
+  depends: resources,
+  command: [
+    cargo_script,
+    meson.project_build_root(),
+    meson.project_source_root(),
+    '@OUTPUT@',
+    profile,
+    app_name,
+  ]
+)
 
 meson.add_install_script('build-aux/meson_post_install.py')

@@ -1,0 +1,32 @@
+[package]
+name = "rnote"
+version = "0.3.5"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
+rnote-engine = {path = "../rnote-engine", version="0.1"}
+
+num-derive = "0.3.3"
+num-traits = "0.2.14"
+once_cell = "1.8"
+rand = "0.8.4"
+rand_pcg = "0.3.1"
+rand_distr = "0.4.3"
+log = "0.4.14"
+pretty_env_logger = "0.4.0"
+anyhow = "1.0"
+serde = {version = "1.0", features = ["derive", "rc"]}
+serde_json = { version="1.0" }
+futures = "0.3.21"
+rayon = "1.5"
+nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.8.0", features = ["serde-serialize"] }
+gtk4 = {version = "0.4.6", features = ["v4_4"]}
+gstreamer = "0.18.3"
+adw = {version = "0.1.0", package="libadwaita"}
+cairo-rs = {version = "0.15.1", features = ["png", "svg", "pdf"]}
+svg = "0.10.0"
+gettext-rs = { version = "0.7.0", features = ["gettext-system"] }

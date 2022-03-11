@@ -1,0 +1,42 @@
+[package]
+name = "rnote-engine"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
+
+log = "0.4.14"
+pretty_env_logger = "0.4.0"
+anyhow = "1.0"
+serde = {version = "1.0", features = ["derive"]}
+serde_json = { version="1.0" }
+rand = "0.8.4"
+rand_pcg = "0.3.1"
+rand_distr = "0.4.3"
+regex = "1.5"
+rayon = "1.5"
+futures = "0.3.21"
+chrono = {version ="0.4.19", features = ["serde"] }
+slotmap = { version = "1.0", features = ["serde"] }
+nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.8.0", features = ["serde-serialize"] }
+gtk4 = {version = "0.4.6", features = ["v4_4"]}
+cairo-rs = {version = "0.15.1", features = ["png", "svg", "pdf"]}
+librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
+gstreamer = "0.18.3"
+base64 = "0.13.0"
+flate2 = "1.0"
+image = "0.23.14"
+svg = "0.10.0"
+geo = "0.18.0"
+xmlwriter = "0.1.0"
+resvg = "0.20"
+usvg = "0.20"
+tiny-skia = "0.6.3"
+poppler-rs = "0.19.0"
+
+[dev-dependencies]
+rayon = "1.5"

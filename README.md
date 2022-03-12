@@ -45,10 +45,10 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 
 ## Screenshots
 
-![main_window_dark](./resources/screenshots/main_window_dark.png)
-![main_window_light](./resources/screenshots/main_window_light.png)
-![pdf_annotation](./resources/screenshots/pdf_annotation.png)
-![selection](./resources/screenshots/selection.png)
+![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)
+![main_window_light](./rnote-ui/data/screenshots/main_window_light.png)
+![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)
+![selection](./rnote-ui/data/screenshots/selection.png)
 
 ## Pitfalls & known issues
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)

@@ -65,14 +65,6 @@ impl PenBehaviour for Eraser {
         _renderer: Arc<RwLock<Renderer>>,
     ) {
         self.current_input = None;
-
-        /*         // Reset to previous if tmperaser was enabled
-        gtk4::prelude::ActionGroupExt::activate_action(
-            appwindow,
-            "tmperaser",
-            Some(&false.to_variant()),
-        );
-        */
     }
 
     fn draw(

@@ -940,7 +940,10 @@ impl Canvas {
                 let mut data_entries = input::retreive_stylus_inputdata(stylus_drawing_gesture, x, y);
                 input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
 
-                log::debug!("stylus tool_type: {:?}", device_tool.tool_type());
+                log::debug!("\n\nstylus modifier: {:?}", stylus_drawing_gesture.current_event_state());
+                log::debug!("stylus button(): {:?}", stylus_drawing_gesture.button());
+                log::debug!("stylus current_button(): {:?}", stylus_drawing_gesture.current_button());
+                log::debug!("stylus tool_type(): {:?}", device_tool.tool_type());
                 match device_tool.tool_type() {
                     gdk::DeviceToolType::Pen => { },
                     gdk::DeviceToolType::Eraser => {

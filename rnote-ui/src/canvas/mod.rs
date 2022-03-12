@@ -547,9 +547,9 @@ mod imp {
             let pen_shown = self.pens.borrow().pen_shown();
 
             if pen_shown {
-                let current_pen = self.pens.borrow().current_pen;
+                let current_pen_style = self.pens.borrow().current_style();
 
-                match current_pen {
+                match current_pen_style {
                     PenStyle::EraserStyle => {
                         if let Some(current_input) = self.pens.borrow().eraser.current_input {
                             visual_debug::draw_pos(
@@ -940,14 +940,15 @@ impl Canvas {
                 let mut data_entries = input::retreive_stylus_inputdata(stylus_drawing_gesture, x, y);
                 input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
 
+                log::debug!("stylus tool_type: {:?}", device_tool.tool_type());
                 match device_tool.tool_type() {
                     gdk::DeviceToolType::Pen => { },
                     gdk::DeviceToolType::Eraser => {
 
                     gtk4::prelude::ActionGroupExt::activate_action(
                         &appwindow,
-                        "tmperaser",
-                        Some(&true.to_variant())
+                        "pen-overwrite",
+                        Some(&String::from("eraser").to_variant())
                     );
                     }
                     _ => { return; },

@@ -50,8 +50,10 @@ impl Default for PenStyle {
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "pens")]
 pub struct Pens {
-    #[serde(rename = "current_pen")]
-    pub current_pen: PenStyle,
+    #[serde(rename = "style")]
+    pub style: PenStyle,
+    #[serde(rename = "style_overwrite")]
+    pub style_overwrite: Option<PenStyle>,
 
     #[serde(rename = "brush")]
     pub brush: Brush,
@@ -79,7 +81,7 @@ impl PenBehaviour for Pens {
     ) {
         self.pen_shown = true;
 
-        match self.current_pen {
+        match self.current_style() {
             PenStyle::BrushStyle => {
                 self.brush
                     .begin(data_entries, sheet, viewport, zoom, renderer);
@@ -111,7 +113,7 @@ impl PenBehaviour for Pens {
         zoom: f64,
         renderer: Arc<RwLock<Renderer>>,
     ) {
-        match self.current_pen {
+        match self.current_style() {
             PenStyle::BrushStyle => {
                 self.brush
                     .motion(data_entries, sheet, viewport, zoom, renderer);
@@ -143,9 +145,7 @@ impl PenBehaviour for Pens {
         zoom: f64,
         renderer: Arc<RwLock<Renderer>>,
     ) {
-        self.pen_shown = false;
-
-        match self.current_pen {
+        match self.current_style() {
             PenStyle::BrushStyle => {
                 self.brush
                     .end(data_entries, sheet, viewport, zoom, renderer);
@@ -167,6 +167,9 @@ impl PenBehaviour for Pens {
                     .end(data_entries, sheet, viewport, zoom, renderer);
             }
         }
+
+        self.pen_shown = false;
+        self.style_overwrite = None;
     }
 
     fn draw(
@@ -178,7 +181,7 @@ impl PenBehaviour for Pens {
         renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         if self.pen_shown {
-            match self.current_pen {
+            match self.current_style() {
                 PenStyle::BrushStyle => self.brush.draw(snapshot, sheet, viewport, zoom, renderer),
                 PenStyle::ShaperStyle => {
                     self.shaper.draw(snapshot, sheet, viewport, zoom, renderer)
@@ -200,5 +203,9 @@ impl PenBehaviour for Pens {
 impl Pens {
     pub fn pen_shown(&self) -> bool {
         self.pen_shown
+    }
+
+    pub fn current_style(&self) -> PenStyle {
+        self.style_overwrite.unwrap_or(self.style)
     }
 }

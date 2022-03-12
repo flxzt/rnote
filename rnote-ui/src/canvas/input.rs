@@ -57,14 +57,14 @@ pub fn retreive_stylus_inputdata(
 
 /// Process the start of the pen input ( "Pen down" )
 pub fn process_peninput_start(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
-    let current_pen = appwindow.canvas().pens().borrow().current_pen;
+    let current_pen_style = appwindow.canvas().pens().borrow().current_style();
     appwindow
         .canvas()
         .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
     appwindow.audioplayer().borrow().play_pen_sound_begin(
         RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-        current_pen,
+        current_pen_style,
         &*appwindow.canvas().pens().borrow(),
     );
 
@@ -84,11 +84,11 @@ pub fn process_peninput_start(data_entries: VecDeque<InputData>, appwindow: &Rno
 
 /// Process the motion of the pen input ( "Pen moves while down" )
 pub fn process_peninput_motion(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
-    let current_pen = appwindow.canvas().pens().borrow().current_pen;
+    let current_pen_style = appwindow.canvas().pens().borrow().current_style();
 
     appwindow.audioplayer().borrow().play_pen_sound_motion(
         RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-        current_pen,
+        current_pen_style,
         &*appwindow.canvas().pens().borrow(),
     );
 

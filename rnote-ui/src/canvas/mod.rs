@@ -944,7 +944,7 @@ impl Canvas {
             input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
 
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
-                // the middle / secondary buttons are sometimes lower or upper buttons on the stylus, but in no consistent order. TODO: Make it configurable
+                // the middle / secondary buttons are the lower or upper buttons on the stylus, but the mapping on gtk's side is inconsistent. TODO: Make the override mappings configurable
                 // Also, libinput sometimes picks one button as tool_type: Eraser, but this is not supported by all devices.
                 match stylus_drawing_gesture.current_button() {
                     gdk::BUTTON_MIDDLE => {
@@ -958,7 +958,7 @@ impl Canvas {
                         gtk4::prelude::ActionGroupExt::activate_action(
                             &appwindow,
                             "pen-override",
-                            Some(&String::from("eraser").to_variant())
+                            Some(&String::from("selector").to_variant())
                         );
                     }
                     _ => {}

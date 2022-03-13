@@ -38,12 +38,6 @@ pub fn filter_mouse_drawing_gesture_input(mouse_drawing_gesture: &GestureDrag) -
 
 /// Returns true if input should be rejected
 pub fn filter_stylus_drawing_gesture_input(_stylus_drawing_gesture: &GestureStylus) -> bool {
-    /*     let current_event_state = stylus_drawing_gesture.current_event_state();
-    let current_button = stylus_drawing_gesture.current_button();
-
-    if current_event_state == gdk::ModifierType::BUTTON2_MASK {
-        return true;
-    } */
     false
 }
 

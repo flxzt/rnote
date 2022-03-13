@@ -112,7 +112,7 @@ impl StrokesState {
                             render_comp.regenerate_flag = false;
                             render_comp.images = images;
                         }
-                        Ok(None) => log::error!("image_to_rendernode() failed in regenerate_rendering_for_stroke(), returned None"),
+                        Ok(None) => {},
                         Err(e) => log::error!("image_to_rendernode() failed in regenerate_rendering_for_stroke() with Err {}", e),
                     }
                 }

@@ -1,5 +1,5 @@
-use gtk4::{gdk, prelude::*, GestureStylus};
-use rnote_engine::pens::penbehaviour::PenBehaviour;
+use gtk4::{gdk, prelude::*, GestureDrag, GestureStylus};
+use rnote_engine::pens::PenEvent;
 use std::collections::VecDeque;
 
 use crate::appwindow::RnoteAppWindow;
@@ -20,9 +20,58 @@ pub fn transform_inputdata(
     });
 }
 
+/// Returns true if input should be rejected
+pub fn filter_mouse_drawing_gesture_input(mouse_drawing_gesture: &GestureDrag) -> bool {
+    if let Some(event) = mouse_drawing_gesture.current_event() {
+        let event_type = event.event_type();
+        if event.is_pointer_emulated()
+            || event_type == gdk::EventType::TouchBegin
+            || event_type == gdk::EventType::TouchUpdate
+            || event_type == gdk::EventType::TouchEnd
+            || event_type == gdk::EventType::TouchCancel
+        {
+            return true;
+        }
+    }
+    false
+}
+
+/// Returns true if input should be rejected
+pub fn filter_stylus_drawing_gesture_input(_stylus_drawing_gesture: &GestureStylus) -> bool {
+    /*     let current_event_state = stylus_drawing_gesture.current_event_state();
+    let current_button = stylus_drawing_gesture.current_button();
+
+    if current_event_state == gdk::ModifierType::BUTTON2_MASK {
+        return true;
+    } */
+    false
+}
+
+pub fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
+    log::debug!(
+        "gesture modifier: {:?}",
+        stylus_gesture.current_event_state()
+    );
+    log::debug!("gesture button(): {:?}", stylus_gesture.button());
+    log::debug!(
+        "gesture current_button(): {:?}",
+        stylus_gesture.current_button()
+    );
+    log::debug!(
+        "gesture tool_type(): {:?}",
+        stylus_gesture
+            .device_tool()
+            .map(|device_tool| { device_tool.tool_type() })
+    );
+}
+
 /// Retreive inputdata from a (emulated) pointer
 /// X and Y is already available from closure, and should not retreived from .axis() (because of gtk weirdness)
-pub fn retreive_pointer_inputdata(x: f64, y: f64) -> VecDeque<InputData> {
+pub fn retreive_pointer_drawing_gesture_inputdata(
+    _mouse_gesture: &GestureDrag,
+    x: f64,
+    y: f64,
+) -> VecDeque<InputData> {
     let mut data_entries: VecDeque<InputData> = VecDeque::with_capacity(1);
     //std::thread::sleep(std::time::Duration::from_millis(100));
 
@@ -35,7 +84,7 @@ pub fn retreive_pointer_inputdata(x: f64, y: f64) -> VecDeque<InputData> {
 
 /// Retreives available input axes, defaults if not available.
 /// X and Y is already available from closure, and should not retreived from .axis() (because of gtk weirdness)
-pub fn retreive_stylus_inputdata(
+pub fn retreive_stylus_drawing_gesture_inputdata(
     gesture_stylus: &GestureStylus,
     x: f64,
     y: f64,
@@ -55,9 +104,9 @@ pub fn retreive_stylus_inputdata(
     data_entries
 }
 
-/// Process the start of the pen input ( "Pen down" )
-pub fn process_peninput_start(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
-    let current_pen_style = appwindow.canvas().pens().borrow().current_style();
+/// Process "Pen down"
+pub fn process_pen_down(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    let current_pen_style = appwindow.canvas().pens().borrow().style_w_override();
     appwindow
         .canvas()
         .set_cursor(Some(&appwindow.canvas().motion_cursor()));
@@ -71,7 +120,8 @@ pub fn process_peninput_start(data_entries: VecDeque<InputData>, appwindow: &Rno
     // We hide the selection modifier here already, but actually only deselect all strokes when ending the stroke (for responsiveness reasons)
     appwindow.canvas().selection_modifier().set_visible(false);
 
-    appwindow.canvas().pens().borrow_mut().begin(
+    appwindow.canvas().pens().borrow_mut().handle_event(
+        PenEvent::DownEvent,
         data_entries,
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),
@@ -82,9 +132,9 @@ pub fn process_peninput_start(data_entries: VecDeque<InputData>, appwindow: &Rno
     appwindow.canvas().queue_draw();
 }
 
-/// Process the motion of the pen input ( "Pen moves while down" )
-pub fn process_peninput_motion(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
-    let current_pen_style = appwindow.canvas().pens().borrow().current_style();
+/// Process "Pen motions"
+pub fn process_pen_motion(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+    let current_pen_style = appwindow.canvas().pens().borrow().style_w_override();
 
     appwindow.audioplayer().borrow().play_pen_sound_motion(
         RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
@@ -92,7 +142,8 @@ pub fn process_peninput_motion(data_entries: VecDeque<InputData>, appwindow: &Rn
         &*appwindow.canvas().pens().borrow(),
     );
 
-    appwindow.canvas().pens().borrow_mut().motion(
+    appwindow.canvas().pens().borrow_mut().handle_event(
+        PenEvent::MotionEvent,
         data_entries,
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),
@@ -105,27 +156,14 @@ pub fn process_peninput_motion(data_entries: VecDeque<InputData>, appwindow: &Rn
     appwindow.canvas().queue_draw();
 }
 
-/// Process the end of the pen input ( "Pen up" )
-pub fn process_peninput_end(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
+/// Process "Pen up"
+pub fn process_pen_up(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
     appwindow
         .canvas()
         .set_cursor(Some(&appwindow.canvas().cursor()));
 
-    // We deselect the selection here. (before current_pen.end()!)
-    let all_strokes = appwindow
-        .canvas()
-        .sheet()
-        .borrow()
-        .strokes_state
-        .keys_sorted_chrono();
-    appwindow
-        .canvas()
-        .sheet()
-        .borrow_mut()
-        .strokes_state
-        .set_selected_keys(&all_strokes, false);
-
-    appwindow.canvas().pens().borrow_mut().end(
+    appwindow.canvas().pens().borrow_mut().handle_event(
+        PenEvent::UpEvent,
         data_entries,
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),

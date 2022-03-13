@@ -47,13 +47,32 @@ impl Default for PenStyle {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PenState {
+    Up,
+    Down,
+}
+
+impl Default for PenState {
+    fn default() -> Self {
+        Self::Up
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PenEvent {
+    DownEvent,
+    MotionEvent,
+    UpEvent,
+}
+
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "pens")]
 pub struct Pens {
     #[serde(rename = "style")]
-    pub style: PenStyle,
-    #[serde(rename = "style_overwrite")]
-    pub style_overwrite: Option<PenStyle>,
+    style: PenStyle,
+    #[serde(skip)]
+    style_override: Option<PenStyle>,
 
     #[serde(rename = "brush")]
     pub brush: Brush,
@@ -68,111 +87,152 @@ pub struct Pens {
 
     #[serde(skip)]
     pen_shown: bool,
+    #[serde(skip)]
+    state: PenState,
 }
 
-impl PenBehaviour for Pens {
-    fn begin(
+impl Pens {
+    /// If the pen is currently shown.
+    pub fn pen_shown(&self) -> bool {
+        self.pen_shown
+    }
+
+    /// gets the pen style. May be overriden by style_override.
+    pub fn style(&self) -> PenStyle {
+        self.style
+    }
+
+    /// Sets the style. Only has an effect if the current pen state is PenState::Up
+    pub fn set_style(&mut self, style: PenStyle) {
+        if self.state == PenState::Up {
+            self.style = style;
+        }
+    }
+
+    /// Gets the current override
+    pub fn style_override(&self) -> Option<PenStyle> {
+        self.style_override
+    }
+
+    /// Sets the style override. Only has an effect if the current pen state is PenState::Up
+    pub fn set_style_override(&mut self, style_override: Option<PenStyle>) {
+        if self.state == PenState::Up {
+            self.style_override = style_override;
+        }
+    }
+
+    /// Gets the current style, or the override if it is set.
+    pub fn style_w_override(&self) -> PenStyle {
+        self.style_override.unwrap_or(self.style)
+    }
+
+    pub fn handle_event(
         &mut self,
+        event: PenEvent,
         data_entries: VecDeque<InputData>,
         sheet: &mut crate::sheet::Sheet,
         viewport: Option<AABB>,
         zoom: f64,
         renderer: Arc<RwLock<Renderer>>,
     ) {
-        self.pen_shown = true;
+/*         log::debug!(
+            "handle_event() with state: {:?}, event: {:?}, style: {:?}, style_override: {:?}",
+            self.state,
+            event,
+            self.style,
+            self.style_override
+        ); */
 
-        match self.current_style() {
-            PenStyle::BrushStyle => {
-                self.brush
-                    .begin(data_entries, sheet, viewport, zoom, renderer);
+        match (self.state, event) {
+            (PenState::Up, PenEvent::DownEvent) => {
+                self.state = PenState::Down;
+                self.pen_shown = true;
+
+                match self.style_w_override() {
+                    PenStyle::BrushStyle => {
+                        self.brush
+                            .begin(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::ShaperStyle => {
+                        self.shaper
+                            .begin(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::EraserStyle => {
+                        self.eraser
+                            .begin(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::SelectorStyle => {
+                        self.selector
+                            .begin(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::ToolsStyle => {
+                        self.tools
+                            .begin(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                }
             }
-            PenStyle::ShaperStyle => {
-                self.shaper
-                    .begin(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::EraserStyle => {
-                self.eraser
-                    .begin(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::SelectorStyle => {
-                self.selector
-                    .begin(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::ToolsStyle => {
-                self.tools
-                    .begin(data_entries, sheet, viewport, zoom, renderer);
+            (PenState::Down, PenEvent::DownEvent) => {}
+            (PenState::Up, PenEvent::MotionEvent) => {}
+            (PenState::Down, PenEvent::MotionEvent) => match self.style_w_override() {
+                PenStyle::BrushStyle => {
+                    self.brush
+                        .motion(data_entries, sheet, viewport, zoom, renderer);
+                }
+                PenStyle::ShaperStyle => {
+                    self.shaper
+                        .motion(data_entries, sheet, viewport, zoom, renderer);
+                }
+                PenStyle::EraserStyle => {
+                    self.eraser
+                        .motion(data_entries, sheet, viewport, zoom, renderer);
+                }
+                PenStyle::SelectorStyle => {
+                    self.selector
+                        .motion(data_entries, sheet, viewport, zoom, renderer);
+                }
+                PenStyle::ToolsStyle => {
+                    self.tools
+                        .motion(data_entries, sheet, viewport, zoom, renderer);
+                }
+            },
+            (PenState::Up, PenEvent::UpEvent) => {}
+            (PenState::Down, PenEvent::UpEvent) => {
+                self.state = PenState::Up;
+
+                // We deselect the selection here, before updating it when the current style is the selector
+                let all_strokes = sheet.strokes_state.keys_sorted_chrono();
+                sheet.strokes_state.set_selected_keys(&all_strokes, false);
+
+                match self.style_w_override() {
+                    PenStyle::BrushStyle => {
+                        self.brush
+                            .end(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::ShaperStyle => {
+                        self.shaper
+                            .end(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::EraserStyle => {
+                        self.eraser
+                            .end(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::SelectorStyle => {
+                        self.selector
+                            .end(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::ToolsStyle => {
+                        self.tools
+                            .end(data_entries, sheet, viewport, zoom, renderer);
+                    }
+                }
+
+                self.pen_shown = false;
+                self.style_override = None;
             }
         }
     }
 
-    fn motion(
-        &mut self,
-        data_entries: VecDeque<InputData>,
-        sheet: &mut crate::sheet::Sheet,
-        viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
-        match self.current_style() {
-            PenStyle::BrushStyle => {
-                self.brush
-                    .motion(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::ShaperStyle => {
-                self.shaper
-                    .motion(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::EraserStyle => {
-                self.eraser
-                    .motion(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::SelectorStyle => {
-                self.selector
-                    .motion(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::ToolsStyle => {
-                self.tools
-                    .motion(data_entries, sheet, viewport, zoom, renderer);
-            }
-        }
-    }
-
-    fn end(
-        &mut self,
-        data_entries: VecDeque<InputData>,
-        sheet: &mut crate::sheet::Sheet,
-        viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
-        match self.current_style() {
-            PenStyle::BrushStyle => {
-                self.brush
-                    .end(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::ShaperStyle => {
-                self.shaper
-                    .end(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::EraserStyle => {
-                self.eraser
-                    .end(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::SelectorStyle => {
-                self.selector
-                    .end(data_entries, sheet, viewport, zoom, renderer);
-            }
-            PenStyle::ToolsStyle => {
-                self.tools
-                    .end(data_entries, sheet, viewport, zoom, renderer);
-            }
-        }
-
-        self.pen_shown = false;
-        self.style_overwrite = None;
-    }
-
-    fn draw(
+    pub fn draw(
         &self,
         snapshot: &Snapshot,
         sheet: &Sheet,
@@ -181,7 +241,7 @@ impl PenBehaviour for Pens {
         renderer: Arc<RwLock<Renderer>>,
     ) -> Result<(), anyhow::Error> {
         if self.pen_shown {
-            match self.current_style() {
+            match self.style_w_override() {
                 PenStyle::BrushStyle => self.brush.draw(snapshot, sheet, viewport, zoom, renderer),
                 PenStyle::ShaperStyle => {
                     self.shaper.draw(snapshot, sheet, viewport, zoom, renderer)
@@ -197,15 +257,5 @@ impl PenBehaviour for Pens {
         } else {
             Ok(())
         }
-    }
-}
-
-impl Pens {
-    pub fn pen_shown(&self) -> bool {
-        self.pen_shown
-    }
-
-    pub fn current_style(&self) -> PenStyle {
-        self.style_overwrite.unwrap_or(self.style)
     }
 }

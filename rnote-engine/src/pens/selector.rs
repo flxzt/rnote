@@ -53,6 +53,8 @@ impl PenBehaviour for Selector {
         _zoom: f64,
         _renderer: Arc<RwLock<Renderer>>,
     ) {
+        //log::debug!("selector begin");
+
         self.path.clear();
 
         if let Some(inputdata) = data_entries.pop_back() {
@@ -68,6 +70,8 @@ impl PenBehaviour for Selector {
         _zoom: f64,
         _renderer: Arc<RwLock<Renderer>>,
     ) {
+        //log::debug!("selector motion. data_entries: {:?}, self.path.len(): {}", data_entries, self.path.len());
+
         if let Some(inputdata) = data_entries.pop_back() {
             let style = self.style;
 
@@ -76,10 +80,12 @@ impl PenBehaviour for Selector {
                     self.path.push(inputdata);
                 }
                 SelectorStyle::Rectangle => {
+                    self.path.push(inputdata);
+
                     if self.path.len() > 2 {
                         self.path.resize(2, InputData::default());
+                        self.path.insert(1, inputdata);
                     }
-                    self.path.insert(1, inputdata)
                 }
             }
         }
@@ -93,6 +99,8 @@ impl PenBehaviour for Selector {
         zoom: f64,
         renderer: Arc<RwLock<Renderer>>,
     ) {
+        //log::debug!("selector end");
+
         sheet
             .strokes_state
             .update_selection_for_selector(&self, viewport);

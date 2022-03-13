@@ -125,7 +125,7 @@ impl RnoteAppWindow {
             gio::SimpleAction::new("clipboard-paste-selection", None);
         self.add_action(&action_clipboard_paste_selection);
         let action_pen_overwrite =
-            gio::SimpleAction::new("pen-overwrite", Some(&glib::VariantType::new("s").unwrap()));
+            gio::SimpleAction::new("pen-override", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_pen_overwrite);
         let action_current_pen =
             gio::SimpleAction::new("current-pen", Some(&glib::VariantType::new("s").unwrap()));
@@ -418,19 +418,19 @@ impl RnoteAppWindow {
 
                 match current_pen {
                     "brush_style" => {
-                        appwindow.canvas().pens().borrow_mut().style = PenStyle::BrushStyle;
+                        appwindow.canvas().pens().borrow_mut().set_style(PenStyle::BrushStyle);
                     },
                     "shaper_style" => {
-                        appwindow.canvas().pens().borrow_mut().style = PenStyle::ShaperStyle;
+                        appwindow.canvas().pens().borrow_mut().set_style(PenStyle::ShaperStyle);
                     },
                     "eraser_style" => {
-                        appwindow.canvas().pens().borrow_mut().style = PenStyle::EraserStyle;
+                        appwindow.canvas().pens().borrow_mut().set_style(PenStyle::EraserStyle);
                     },
                     "selector_style" => {
-                        appwindow.canvas().pens().borrow_mut().style = PenStyle::SelectorStyle;
+                        appwindow.canvas().pens().borrow_mut().set_style(PenStyle::SelectorStyle);
                     },
                     "tools_style" => {
-                        appwindow.canvas().pens().borrow_mut().style = PenStyle::ToolsStyle;
+                        appwindow.canvas().pens().borrow_mut().set_style(PenStyle::ToolsStyle);
                     },
                     _ => { log::error!("set invalid state of action `current-pen`")}
                 }
@@ -560,7 +560,7 @@ impl RnoteAppWindow {
                 let pens = appwindow.canvas().pens().borrow().clone();
 
                 // Current pen
-                match pens.style {
+                match pens.style() {
                     PenStyle::BrushStyle => {
                         appwindow.mainheader().brush_toggle().set_active(true);
                         appwindow.narrow_brush_toggle().set_active(true);
@@ -780,18 +780,30 @@ impl RnoteAppWindow {
         // Pen overwrite
         action_pen_overwrite.connect_activate(
         clone!(@weak self as appwindow => move |_action_pen_overwrite, target| {
-            let pen_overwrite = target.unwrap().str().unwrap();
+            let pen_override = target.unwrap().str().unwrap();
 
-            log::trace!("pen overwrite activated with target: {}", pen_overwrite);
-            match pen_overwrite {
+            log::trace!("pen overwrite activated with target: {}", pen_override);
+            match pen_override {
+                "brush" => {
+                    appwindow.canvas().pens().borrow_mut().set_style_override(Some(PenStyle::BrushStyle));
+                }
+                "shaper" => {
+                    appwindow.canvas().pens().borrow_mut().set_style_override(Some(PenStyle::ShaperStyle));
+                }
                 "eraser" => {
-                    appwindow.canvas().pens().borrow_mut().style_overwrite = Some(PenStyle::EraserStyle);
+                    appwindow.canvas().pens().borrow_mut().set_style_override(Some(PenStyle::EraserStyle));
+                }
+                "selector" => {
+                    appwindow.canvas().pens().borrow_mut().set_style_override(Some(PenStyle::SelectorStyle));
+                }
+                "tools" => {
+                    appwindow.canvas().pens().borrow_mut().set_style_override(Some(PenStyle::ToolsStyle));
                 }
                 "none" => {
-                    appwindow.canvas().pens().borrow_mut().style_overwrite = None;
+                    appwindow.canvas().pens().borrow_mut().set_style_override(None);
                 }
                 _ => {
-                    log::error!("invalid target for action_pen_overwrite, `{}`", pen_overwrite);
+                    log::error!("invalid target for action_pen_overwrite, `{}`", pen_override);
                 }
             }
         }));
@@ -1055,7 +1067,7 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.selection-duplicate", &["<Ctrl>d"]);
         app.set_accels_for_action("win.selection-select-all", &["<Ctrl>a"]);
         app.set_accels_for_action("win.selection-deselect-all", &["Escape"]);
-        app.set_accels_for_action("win.pen-overwrite::eraser", &["d"]);
+        app.set_accels_for_action("win.pen-override::eraser", &["d"]);
         app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste-selection", &["<Ctrl>v"]);
     }

@@ -11,7 +11,6 @@ mod imp {
     use crate::config;
     use crate::selectionmodifier::SelectionModifier;
     use rnote_engine::compose::geometry::AABBHelpers;
-    use rnote_engine::pens::penbehaviour::PenBehaviour;
     use rnote_engine::pens::{PenStyle, Pens};
     use rnote_engine::render::Renderer;
     use rnote_engine::sheet::Sheet;
@@ -547,7 +546,7 @@ mod imp {
             let pen_shown = self.pens.borrow().pen_shown();
 
             if pen_shown {
-                let current_pen_style = self.pens.borrow().current_style();
+                let current_pen_style = self.pens.borrow().style_w_override();
 
                 match current_pen_style {
                     PenStyle::EraserStyle => {
@@ -933,108 +932,110 @@ impl Canvas {
 
         // Stylus Drawing
         self.imp().stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+            //log::debug!("stylus_drawing_gesture down");
+            //input::debug_stylus_gesture(&stylus_drawing_gesture);
+
+            // as default, set the overwrite to None and then handle pressed buttons, etc.
+            canvas.pens().borrow_mut().set_style_override(None);
+
+            // filter out invalid stylus input
+            if input::filter_stylus_drawing_gesture_input(&stylus_drawing_gesture) { return; }
+
+            let mut data_entries = input::retreive_stylus_drawing_gesture_inputdata(stylus_drawing_gesture, x, y);
+            input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
+
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
-                stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
-
-                // Disabled backlog, only allowed in motion signal handler
-                let mut data_entries = input::retreive_stylus_inputdata(stylus_drawing_gesture, x, y);
-                input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
-
-                log::debug!("\n\nstylus modifier: {:?}", stylus_drawing_gesture.current_event_state());
-                log::debug!("stylus button(): {:?}", stylus_drawing_gesture.button());
-                log::debug!("stylus current_button(): {:?}", stylus_drawing_gesture.current_button());
-                log::debug!("stylus tool_type(): {:?}", device_tool.tool_type());
-                match device_tool.tool_type() {
-                    gdk::DeviceToolType::Pen => { },
-                    gdk::DeviceToolType::Eraser => {
+                // Button2 is the upper stylus button
+                if stylus_drawing_gesture.current_event_state().contains(gdk::ModifierType::BUTTON2_MASK) {
+                    // Bring the pen in the up state so we can set the override
+                    input::process_pen_up(data_entries.clone(), &appwindow);
 
                     gtk4::prelude::ActionGroupExt::activate_action(
                         &appwindow,
-                        "pen-overwrite",
-                        Some(&String::from("eraser").to_variant())
+                        "pen-override",
+                        Some(&String::from("selector").to_variant())
                     );
-                    }
-                    _ => { return; },
-                }
+                } else {
+                    // Eraser is the lower stylus button
+                    match device_tool.tool_type() {
+                        gdk::DeviceToolType::Pen => {},
+                        gdk::DeviceToolType::Eraser => {
+                            // Bring the pen in the up state so we can set the override
+                            input::process_pen_up(data_entries.clone(), &appwindow);
 
-                input::process_peninput_start(data_entries, &appwindow);
+                            gtk4::prelude::ActionGroupExt::activate_action(
+                                &appwindow,
+                                "pen-override",
+                                Some(&String::from("eraser").to_variant())
+                            );
+                        }
+                        _ => { return; },
+                    }
+                }
+                stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
+
+                input::process_pen_down(data_entries, &appwindow);
             }
         }));
 
         self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
-            // backlog doesn't provide time equidistant inputdata and makes line look worse, so its disabled for now
-            let mut data_entries: VecDeque<InputData> = input::retreive_stylus_inputdata(stylus_drawing_gesture, x, y);
+            //log::debug!("stylus_drawing_gesture motion");
+            //input::debug_stylus_gesture(&stylus_drawing_gesture);
+
+            // filter out invalid stylus input
+            if input::filter_stylus_drawing_gesture_input(&stylus_drawing_gesture) { return; }
+
+            let mut data_entries: VecDeque<InputData> = input::retreive_stylus_drawing_gesture_inputdata(stylus_drawing_gesture, x, y);
             input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
-            input::process_peninput_motion(data_entries, &appwindow);
+            input::process_pen_motion(data_entries, &appwindow);
         }));
 
-        self.imp().stylus_drawing_gesture.connect_up(
-            clone!(@weak self as canvas, @weak appwindow => move |gesture_stylus,x,y| {
-                let mut data_entries = input::retreive_stylus_inputdata(gesture_stylus, x, y);
-                input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
-                input::process_peninput_end(data_entries, &appwindow);
-            }),
-        );
+        self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+            //log::debug!("stylus_drawing_gesture up");
+            //input::debug_stylus_gesture(&stylus_drawing_gesture);
+
+            // filter out invalid stylus input
+            if input::filter_stylus_drawing_gesture_input(&stylus_drawing_gesture) { return; }
+
+            let mut data_entries = input::retreive_stylus_drawing_gesture_inputdata(stylus_drawing_gesture, x, y);
+            input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
+            input::process_pen_up(data_entries, &appwindow);
+        }));
 
         // Mouse drawing
-        self.imp().mouse_drawing_gesture.connect_drag_begin(
-            clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
-                if let Some(event) = mouse_drawing_gesture.current_event() {
-                    // Guard not to handle touch events
-                    let event_type = event.event_type();
-                    if event.is_pointer_emulated()
-                        || event_type == gdk::EventType::TouchBegin
-                        || event_type == gdk::EventType::TouchUpdate
-                        ||event_type == gdk::EventType::TouchEnd
-                        || event_type == gdk::EventType::TouchCancel {
-                        return;
-                    }
-                    mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
+        self.imp().mouse_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
+            // filter out invalid point input
+            if input::filter_mouse_drawing_gesture_input(&mouse_drawing_gesture) { return; }
 
-                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
-                    input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
-                    input::process_peninput_start(data_entries, &appwindow);
-                }
-            }),
-        );
+            mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
+            log::trace!("mouse_drawing_gesture begin");
+
+            let mut data_entries = input::retreive_pointer_drawing_gesture_inputdata(&mouse_drawing_gesture, x, y);
+            input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
+            input::process_pen_down(data_entries, &appwindow);
+        }));
 
         self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
-            if let Some(event) = mouse_drawing_gesture.current_event() {
-                // Guard not to handle touch events
-                let event_type = event.event_type();
-                if event.is_pointer_emulated()
-                    || event_type == gdk::EventType::TouchBegin
-                    || event_type == gdk::EventType::TouchUpdate
-                    ||event_type == gdk::EventType::TouchEnd
-                    || event_type == gdk::EventType::TouchCancel {
-                    return;
-                }
+            // filter out invalid point input
+            if input::filter_mouse_drawing_gesture_input(&mouse_drawing_gesture) { return; }
+            log::trace!("mouse_drawing_gesture motion");
 
-                if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
-                    input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]), canvas.zoom());
-                    input::process_peninput_motion(data_entries, &appwindow);
-                }
+            if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                let mut data_entries = input::retreive_pointer_drawing_gesture_inputdata(&mouse_drawing_gesture, x, y);
+                input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]), canvas.zoom());
+                input::process_pen_motion(data_entries, &appwindow);
             }
         }));
 
         self.imp().mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
-            if let Some(event) = mouse_drawing_gesture.current_event() {
-                // Guard not to handle touch events
-                let event_type = event.event_type();
-                if event.is_pointer_emulated()
-                    || event_type == gdk::EventType::TouchBegin
-                    || event_type == gdk::EventType::TouchUpdate
-                    ||event_type == gdk::EventType::TouchEnd
-                    || event_type == gdk::EventType::TouchCancel {
-                    return;
-                }
+            // filter out invalid point input
+            if input::filter_mouse_drawing_gesture_input(&mouse_drawing_gesture) { return; }
+            log::trace!("mouse_drawing_gesture end");
 
-                if let Some(start_point) = mouse_drawing_gesture.start_point() {
-                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
-                    input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]), canvas.zoom());
-                    input::process_peninput_end(data_entries, &appwindow);
-                }
+            if let Some(start_point) = mouse_drawing_gesture.start_point() {
+                let mut data_entries = input::retreive_pointer_drawing_gesture_inputdata(&mouse_drawing_gesture, x, y);
+                input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]), canvas.zoom());
+                input::process_pen_up(data_entries, &appwindow);
             }
         }));
 
@@ -1042,27 +1043,32 @@ impl Canvas {
         self.imp().touch_drawing_gesture.connect_drag_begin(
             clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
                 touch_drawing_gesture.set_state(EventSequenceState::Claimed);
+                log::trace!("touch_drawing_gesture begin");
 
-                let mut data_entries = input::retreive_pointer_inputdata(x, y);
+                let mut data_entries = input::retreive_pointer_drawing_gesture_inputdata(&touch_drawing_gesture, x, y);
                 input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
-                input::process_peninput_start(data_entries, &appwindow);
+                input::process_pen_down(data_entries, &appwindow);
             }),
         );
 
         self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
-                let mut data_entries = input::retreive_pointer_inputdata(x, y);
+                log::trace!("touch_drawing_gesture motion");
+
+                let mut data_entries = input::retreive_pointer_drawing_gesture_inputdata(&touch_drawing_gesture, x, y);
                 input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]), canvas.zoom());
-                input::process_peninput_motion(data_entries, &appwindow);
+                input::process_pen_motion(data_entries, &appwindow);
             }
         }));
 
         self.imp().touch_drawing_gesture.connect_drag_end(
             clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
-                    let mut data_entries = input::retreive_pointer_inputdata(x, y);
+                    log::trace!("touch_drawing_gesture end");
+
+                    let mut data_entries = input::retreive_pointer_drawing_gesture_inputdata(&touch_drawing_gesture, x, y);
                     input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![start_point.0, start_point.1]), canvas.zoom());
-                    input::process_peninput_end(data_entries, &appwindow);
+                    input::process_pen_up(data_entries, &appwindow);
                 }
             }),
         );

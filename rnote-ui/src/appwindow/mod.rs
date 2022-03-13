@@ -687,7 +687,7 @@ impl RnoteAppWindow {
 
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()
             .name("canvas_zoom_scroll_controller")
-            .propagation_phase(PropagationPhase::Capture)
+            .propagation_phase(PropagationPhase::Bubble)
             .flags(EventControllerScrollFlags::VERTICAL)
             .build();
         self.canvas_scroller()
@@ -704,7 +704,7 @@ impl RnoteAppWindow {
         let canvas_mouse_drag_middle_gesture = GestureDrag::builder()
             .name("canvas_mouse_drag_middle_gesture")
             .button(gdk::BUTTON_MIDDLE)
-            .propagation_phase(PropagationPhase::Capture)
+            .propagation_phase(PropagationPhase::Bubble)
             .build();
         self.canvas_scroller()
             .add_controller(&canvas_mouse_drag_middle_gesture);

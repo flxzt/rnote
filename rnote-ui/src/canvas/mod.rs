@@ -66,6 +66,8 @@ mod imp {
             let stylus_drawing_gesture = GestureStylus::builder()
                 .name("stylus_drawing_gesture")
                 .propagation_phase(PropagationPhase::Target)
+                // Listen for any button
+                .button(0)
                 .build();
 
             // mouse gesture handlers have a guard to not handle emulated pointer events ( e.g. coming from touch input )
@@ -935,9 +937,6 @@ impl Canvas {
             //log::debug!("stylus_drawing_gesture down");
             //input::debug_stylus_gesture(&stylus_drawing_gesture);
 
-            // as default, set the overwrite to None and then handle pressed buttons, etc.
-            canvas.pens().borrow_mut().set_style_override(None);
-
             // filter out invalid stylus input
             if input::filter_stylus_drawing_gesture_input(&stylus_drawing_gesture) { return; }
 
@@ -945,32 +944,39 @@ impl Canvas {
             input::transform_inputdata(&mut data_entries, canvas.transform_canvas_coords_to_sheet_coords(na::vector![0.0, 0.0]), canvas.zoom());
 
             if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
-                // Button2 is the upper stylus button
-                if stylus_drawing_gesture.current_event_state().contains(gdk::ModifierType::BUTTON2_MASK) {
-                    // Bring the pen in the up state so we can set the override
-                    input::process_pen_up(data_entries.clone(), &appwindow);
-
-                    gtk4::prelude::ActionGroupExt::activate_action(
-                        &appwindow,
-                        "pen-override",
-                        Some(&String::from("selector").to_variant())
-                    );
-                } else {
-                    // Eraser is the lower stylus button
-                    match device_tool.tool_type() {
-                        gdk::DeviceToolType::Pen => {},
-                        gdk::DeviceToolType::Eraser => {
-                            // Bring the pen in the up state so we can set the override
-                            input::process_pen_up(data_entries.clone(), &appwindow);
-
-                            gtk4::prelude::ActionGroupExt::activate_action(
-                                &appwindow,
-                                "pen-override",
-                                Some(&String::from("eraser").to_variant())
-                            );
-                        }
-                        _ => { return; },
+                // the middle / secondary buttons are sometimes lower or upper buttons on the stylus, but in no consistent order. TODO: Make it configurable
+                // Also, libinput sometimes picks one button as tool_type: Eraser, but this is not supported by all devices.
+                match stylus_drawing_gesture.current_button() {
+                    gdk::BUTTON_MIDDLE => {
+                        gtk4::prelude::ActionGroupExt::activate_action(
+                            &appwindow,
+                            "pen-override",
+                            Some(&String::from("selector").to_variant())
+                        );
+                    },
+                    gdk::BUTTON_SECONDARY => {
+                        gtk4::prelude::ActionGroupExt::activate_action(
+                            &appwindow,
+                            "pen-override",
+                            Some(&String::from("eraser").to_variant())
+                        );
                     }
+                    _ => {}
+                };
+                // Eraser is the lower stylus button
+                match device_tool.tool_type() {
+                    gdk::DeviceToolType::Pen => {},
+                    gdk::DeviceToolType::Eraser => {
+                        // Bring the pen in the up state so we can set the override
+                        input::process_pen_up(data_entries.clone(), &appwindow);
+
+                        gtk4::prelude::ActionGroupExt::activate_action(
+                            &appwindow,
+                            "pen-override",
+                            Some(&String::from("eraser").to_variant())
+                        );
+                    }
+                    _ => { return; },
                 }
                 stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
 

@@ -59,11 +59,13 @@ impl Default for PenState {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone)]
 pub enum PenEvent {
-    DownEvent,
-    MotionEvent,
-    UpEvent,
+    DownEvent(VecDeque<InputData>),
+    MotionEvent(VecDeque<InputData>),
+    UpEvent(VecDeque<InputData>),
+    ChangeStyle(PenStyle),
+    ChangeStyleOverride(Option<PenStyle>),
 }
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
@@ -103,23 +105,23 @@ impl Pens {
     }
 
     /// Sets the style. Only has an effect if the current pen state is PenState::Up
-    pub fn set_style(&mut self, style: PenStyle) {
+/*     pub fn set_style(&mut self, style: PenStyle) {
         if self.state == PenState::Up {
             self.style = style;
         }
-    }
+    } */
 
     /// Gets the current override
     pub fn style_override(&self) -> Option<PenStyle> {
         self.style_override
     }
 
-    /// Sets the style override. Only has an effect if the current pen state is PenState::Up
+/*     /// Sets the style override. Only has an effect if the current pen state is PenState::Up
     pub fn set_style_override(&mut self, style_override: Option<PenStyle>) {
         if self.state == PenState::Up {
             self.style_override = style_override;
         }
-    }
+    } */
 
     /// Gets the current style, or the override if it is set.
     pub fn style_w_override(&self) -> PenStyle {
@@ -129,25 +131,22 @@ impl Pens {
     pub fn handle_event(
         &mut self,
         event: PenEvent,
-        data_entries: VecDeque<InputData>,
         sheet: &mut crate::sheet::Sheet,
         viewport: Option<AABB>,
         zoom: f64,
         renderer: Arc<RwLock<Renderer>>,
     ) {
-/*         log::debug!(
+/* 
+        log::debug!(
             "handle_event() with state: {:?}, event: {:?}, style: {:?}, style_override: {:?}",
             self.state,
             event,
             self.style,
             self.style_override
-        ); */
-
+        );
+ */
         match (self.state, event) {
-            (PenState::Up, PenEvent::DownEvent) => {
-                self.state = PenState::Down;
-                self.pen_shown = true;
-
+            (PenState::Up, PenEvent::DownEvent(data_entries)) => {
                 match self.style_w_override() {
                     PenStyle::BrushStyle => {
                         self.brush
@@ -170,10 +169,13 @@ impl Pens {
                             .begin(data_entries, sheet, viewport, zoom, renderer);
                     }
                 }
+
+                self.state = PenState::Down;
+                self.pen_shown = true;
             }
-            (PenState::Down, PenEvent::DownEvent) => {}
-            (PenState::Up, PenEvent::MotionEvent) => {}
-            (PenState::Down, PenEvent::MotionEvent) => match self.style_w_override() {
+            (PenState::Down, PenEvent::DownEvent(_data_entries)) => {}
+            (PenState::Up, PenEvent::MotionEvent(_data_entries)) => {}
+            (PenState::Down, PenEvent::MotionEvent(data_entries)) => match self.style_w_override() {
                 PenStyle::BrushStyle => {
                     self.brush
                         .motion(data_entries, sheet, viewport, zoom, renderer);
@@ -195,10 +197,8 @@ impl Pens {
                         .motion(data_entries, sheet, viewport, zoom, renderer);
                 }
             },
-            (PenState::Up, PenEvent::UpEvent) => {}
-            (PenState::Down, PenEvent::UpEvent) => {
-                self.state = PenState::Up;
-
+            (PenState::Up, PenEvent::UpEvent(_data_entries)) => {}
+            (PenState::Down, PenEvent::UpEvent(data_entries)) => {
                 // We deselect the selection here, before updating it when the current style is the selector
                 let all_strokes = sheet.strokes_state.keys_sorted_chrono();
                 sheet.strokes_state.set_selected_keys(&all_strokes, false);
@@ -226,8 +226,73 @@ impl Pens {
                     }
                 }
 
+                self.state = PenState::Up;
                 self.pen_shown = false;
+                // Disable the style override after finishing the stroke
                 self.style_override = None;
+            }
+            (PenState::Down, PenEvent::ChangeStyle(new_style)) => {
+                // before changing the style, the current strokes are finished
+                match self.style_w_override() {
+                    PenStyle::BrushStyle => {
+                        self.brush
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::ShaperStyle => {
+                        self.shaper
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::EraserStyle => {
+                        self.eraser
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::SelectorStyle => {
+                        self.selector
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::ToolsStyle => {
+                        self.tools
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                }
+
+                self.state = PenState::Up;
+                self.pen_shown = false;
+                self.style = new_style;
+            }
+            (PenState::Up, PenEvent::ChangeStyle(new_style)) => {
+                self.style = new_style;
+            }
+            (PenState::Down, PenEvent::ChangeStyleOverride(new_style_override)) => {
+                // before changing the style override, the current strokes are finished
+                match self.style_w_override() {
+                    PenStyle::BrushStyle => {
+                        self.brush
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::ShaperStyle => {
+                        self.shaper
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::EraserStyle => {
+                        self.eraser
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::SelectorStyle => {
+                        self.selector
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                    PenStyle::ToolsStyle => {
+                        self.tools
+                            .end(VecDeque::new(), sheet, viewport, zoom, renderer);
+                    }
+                }
+                self.pen_shown = false;
+                self.state = PenState::Up;
+                self.style_override = new_style_override;
+            }
+            (PenState::Up, PenEvent::ChangeStyleOverride(new_style_override)) => {
+                self.style_override = new_style_override;
             }
         }
     }

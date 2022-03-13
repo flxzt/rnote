@@ -52,7 +52,6 @@ pub fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
         "gesture modifier: {:?}",
         stylus_gesture.current_event_state()
     );
-    log::debug!("gesture button(): {:?}", stylus_gesture.button());
     log::debug!(
         "gesture current_button(): {:?}",
         stylus_gesture.current_button()
@@ -62,6 +61,12 @@ pub fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
         stylus_gesture
             .device_tool()
             .map(|device_tool| { device_tool.tool_type() })
+    );
+    log::debug!(
+        "gesture event.event_type(): {:?}",
+        stylus_gesture
+            .current_event()
+            .map(|event| { event.event_type() })
     );
 }
 
@@ -121,8 +126,7 @@ pub fn process_pen_down(data_entries: VecDeque<InputData>, appwindow: &RnoteAppW
     appwindow.canvas().selection_modifier().set_visible(false);
 
     appwindow.canvas().pens().borrow_mut().handle_event(
-        PenEvent::DownEvent,
-        data_entries,
+        PenEvent::DownEvent(data_entries),
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),
         appwindow.canvas().zoom(),
@@ -143,8 +147,7 @@ pub fn process_pen_motion(data_entries: VecDeque<InputData>, appwindow: &RnoteAp
     );
 
     appwindow.canvas().pens().borrow_mut().handle_event(
-        PenEvent::MotionEvent,
-        data_entries,
+        PenEvent::MotionEvent(data_entries),
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),
         appwindow.canvas().zoom(),
@@ -163,8 +166,7 @@ pub fn process_pen_up(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWin
         .set_cursor(Some(&appwindow.canvas().cursor()));
 
     appwindow.canvas().pens().borrow_mut().handle_event(
-        PenEvent::UpEvent,
-        data_entries,
+        PenEvent::UpEvent(data_entries),
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),
         appwindow.canvas().zoom(),

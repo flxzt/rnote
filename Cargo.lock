@@ -1200,8 +1200,8 @@ checksum = "33a33a362ce288760ec6a508b94caaec573ae7d3bbbd91b87aa0bad4456839db"
 
 [[package]]
 name = "librsvg"
-version = "2.53.1"
-source = "git+https://gitlab.gnome.org/GNOME/librsvg#b895d9e6e8809d413748b1616fb3d06fde488280"
+version = "2.53.2"
+source = "git+https://gitlab.gnome.org/GNOME/librsvg#c5d0eb679ee45377417bbf9ce2dabde0eb72802d"
 dependencies = [
  "byteorder",
  "cairo-rs",
@@ -2492,9 +2492,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "1.0.86"
+version = "1.0.87"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8a65b3f4ffa0092e9887669db0eae07941f023991ab58ea44da8fe8e2d511c6b"
+checksum = "1e59d925cf59d8151f25a3bedf97c9c157597c9df7324d32d68991cc399ed08b"
 dependencies = [
  "proc-macro2",
  "quote",

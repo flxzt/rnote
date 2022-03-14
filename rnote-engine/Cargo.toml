@@ -39,4 +39,3 @@ tiny-skia = "0.6.3"
 poppler-rs = "0.19.0"
 
 [dev-dependencies]
-rayon = "1.5"

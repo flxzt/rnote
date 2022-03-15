@@ -5,16 +5,6 @@ use p2d::bounding_volume::AABB;
 use std::fs;
 use std::path::PathBuf;
 
-pub fn now_formatted_string() -> String {
-    match glib::DateTime::now_local() {
-        Ok(datetime) => match datetime.format("%F_%H-%M-%S") {
-            Ok(s) => s.to_string(),
-            Err(_) => String::from("1970-01-01_12-00-00"),
-        },
-        Err(_) => String::from("1970-01-01_12-00-00"),
-    }
-}
-
 pub fn app_config_base_dirpath() -> Option<PathBuf> {
     let mut app_config_dirpath = glib::user_config_dir();
     app_config_dirpath.push(config::APP_NAME);

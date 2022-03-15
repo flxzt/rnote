@@ -5,10 +5,21 @@ use flate2::read::MultiGzDecoder;
 use flate2::{Compression, GzBuilder};
 use p2d::bounding_volume::AABB;
 use rand::{Rng, SeedableRng};
+use gtk4::glib;
 
 use crate::strokes::inputdata::InputData;
 
 pub const INPUT_OVERSHOOT: f64 = 30.0;
+
+pub fn now_formatted_string() -> String {
+    match glib::DateTime::now_local() {
+        Ok(datetime) => match datetime.format("%F_%H-%M-%S") {
+            Ok(s) => s.to_string(),
+            Err(_) => String::from("1970-01-01_12-00-00"),
+        },
+        Err(_) => String::from("1970-01-01_12-00-00"),
+    }
+}
 
 /// returns a new seed by generating a random value seeded from the old seed
 pub fn seed_advance(seed: u64) -> u64 {

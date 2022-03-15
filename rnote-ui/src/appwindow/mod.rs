@@ -437,15 +437,12 @@ use std::{
 };
 
 use adw::prelude::*;
-use anyhow::Context;
-use futures::channel::oneshot;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
     EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme,
     Inhibit, PropagationPhase, ScrolledWindow, Separator, ToggleButton,
 };
 use gtk4::{EventSequenceState, Revealer};
-use p2d::bounding_volume::AABB;
 
 use crate::{
     app::RnoteApp,
@@ -458,7 +455,6 @@ use crate::{
     workspacebrowser::WorkspaceBrowser,
     {dialogs, mainheader::MainHeader},
 };
-use rnote_engine::render;
 use rnote_engine::{
     strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
     strokesstate::StateTask,
@@ -1293,99 +1289,9 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_sheet_as_pdf_bytes(&self, title: String) -> Result<Vec<u8>, anyhow::Error> {
-        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<Vec<u8>>();
-
-        let pages = self
-            .canvas()
-            .sheet()
-            .borrow()
-            .pages_bounds_containing_content()
-            .into_iter()
-            .filter_map(|page_bounds| {
-                Some((
-                    page_bounds,
-                    self.canvas()
-                        .sheet()
-                        .borrow()
-                        .gen_svgs_for_viewport(page_bounds)
-                        .ok()?,
-                ))
-            })
-            .collect::<Vec<(AABB, Vec<render::Svg>)>>();
-
-        let sheet_bounds = self.canvas().sheet().borrow().bounds();
-        let format_size = na::vector![
-            f64::from(self.canvas().sheet().borrow().format.width),
-            f64::from(self.canvas().sheet().borrow().format.height)
-        ];
-
-        // Fill the pdf surface on a new thread to avoid blocking
-        rayon::spawn(move || {
-            if let Err(e) = || -> Result<(), anyhow::Error> {
-                let surface = cairo::PdfSurface::for_stream(
-                    format_size[0],
-                    format_size[1],
-                    Vec::<u8>::new(),
-                ).context("pdfsurface creation failed")?;
-
-                surface.set_metadata(cairo::PdfMetadata::Title, title.as_str()).context("set pdf surface title metadata failed")?;
-                surface.set_metadata(
-                    cairo::PdfMetadata::CreateDate,
-                    utils::now_formatted_string().as_str(),
-                ).context("set pdf surface date metadata failed")?;
-
-                // New scope to avoid errors when flushing
-                {
-                    let cairo_cx = cairo::Context::new(&surface).context("cario cx new() failed")?;
-
-                    for (page_bounds, page_svgs) in pages.into_iter() {
-                        cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                        render::draw_svgs_to_cairo_context(
-                            1.0,
-                            &page_svgs,
-                            sheet_bounds,
-                            &cairo_cx,
-                        )?;
-                        cairo_cx.show_page().context("show page failed")?;
-                        cairo_cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
-                    }
-                }
-                let data = *surface
-                    .finish_output_stream()
-                    .map_err(|e| {
-                        anyhow::anyhow!(
-                            "finish_outputstream() failed in export_sheet_as_pdf_bytes with Err {:?}",
-                            e
-                        )
-                    })?
-                    .downcast::<Vec<u8>>()
-                    .map_err(|e| {
-                        anyhow::anyhow!(
-                            "downcast() finished output stream failed in export_sheet_as_pdf_bytes with Err {:?}",
-                            e
-                        )
-                    })?;
-
-                oneshot_sender.send(data).map_err(|e| {
-                    anyhow::anyhow!(
-                        "oneshot_sender.send() failed in export_sheet_as_pdf_bytes with Err {:?}",
-                        e
-                    )
-                })?;
-                Ok(())
-            }() {
-                log::error!("export_sheet_as pdf_bytes() failed with Err, {}", e);
-            }
-        });
-
-        // await the data from the spawned thread
-        Ok(oneshot_receiver.await?)
-    }
-
     pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         if let Some(basename) = file.basename() {
-            let pdf_data = self
+            let pdf_data = self.canvas().sheet().borrow()
                 .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string())
                 .await?;
 

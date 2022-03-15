@@ -37,6 +37,11 @@ pub fn filter_mouse_drawing_gesture_input(mouse_drawing_gesture: &GestureDrag) -
 }
 
 /// Returns true if input should be rejected
+pub fn filter_touch_drawing_gesture_input(_stylus_drawing_gesture: &GestureDrag) -> bool {
+    false
+}
+
+/// Returns true if input should be rejected
 pub fn filter_stylus_drawing_gesture_input(_stylus_drawing_gesture: &GestureStylus) -> bool {
     false
 }

@@ -20,9 +20,9 @@ use super::element::Element;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "brushstroke_style")]
 pub enum BrushStrokeStyle {
-    #[serde(rename = "solid")]
+    #[serde(rename = "marker")]
     Marker {
-        #[serde(rename = "marker")]
+        #[serde(rename = "options")]
         options: SmoothOptions,
     },
     #[serde(rename = "solid")]

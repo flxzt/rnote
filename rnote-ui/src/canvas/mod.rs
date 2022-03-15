@@ -1441,7 +1441,6 @@ impl Canvas {
 
         if redraw {
             self.queue_resize();
-            self.queue_draw();
         }
     }
 

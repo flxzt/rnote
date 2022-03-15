@@ -437,6 +437,7 @@ use std::{
 };
 
 use adw::prelude::*;
+use anyhow::Context;
 use futures::channel::oneshot;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
@@ -1326,17 +1327,17 @@ impl RnoteAppWindow {
                     format_size[0],
                     format_size[1],
                     Vec::<u8>::new(),
-                )?;
+                ).context("pdfsurface creation failed")?;
 
-                surface.set_metadata(cairo::PdfMetadata::Title, title.as_str())?;
+                surface.set_metadata(cairo::PdfMetadata::Title, title.as_str()).context("set pdf surface title metadata failed")?;
                 surface.set_metadata(
                     cairo::PdfMetadata::CreateDate,
                     utils::now_formatted_string().as_str(),
-                )?;
+                ).context("set pdf surface date metadata failed")?;
 
                 // New scope to avoid errors when flushing
                 {
-                    let cairo_cx = cairo::Context::new(&surface)?;
+                    let cairo_cx = cairo::Context::new(&surface).context("cario cx new() failed")?;
 
                     for (page_bounds, page_svgs) in pages.into_iter() {
                         cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
@@ -1346,7 +1347,7 @@ impl RnoteAppWindow {
                             sheet_bounds,
                             &cairo_cx,
                         )?;
-                        cairo_cx.show_page()?;
+                        cairo_cx.show_page().context("show page failed")?;
                         cairo_cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
                     }
                 }
@@ -1374,7 +1375,7 @@ impl RnoteAppWindow {
                 })?;
                 Ok(())
             }() {
-                log::error!("err, {}", e);
+                log::error!("export_sheet_as pdf_bytes() failed with Err, {}", e);
             }
         });
 

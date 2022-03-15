@@ -471,32 +471,46 @@ pub fn rendernode_to_texture(
 pub fn draw_svgs_to_cairo_context(
     zoom: f64,
     svgs: &[Svg],
-    bounds: AABB,
+    mut bounds: AABB,
     cx: &cairo::Context,
 ) -> Result<(), anyhow::Error> {
-    let mut svg_data = svgs
-        .iter()
-        .map(|svg| svg.svg_data.as_str())
-        .collect::<Vec<&str>>()
-        .join("\n");
-    svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(bounds), Some(bounds), true);
+    bounds.ensure_valid();
+    assert_bounds(bounds)?;
 
-    let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
+    for svg in svgs {
+        let svg_data = compose::wrap_svg_root(
+            svg.svg_data.as_str(),
+            Some(svg.bounds),
+            Some(svg.bounds),
+            false,
+        );
 
-    let librsvg_handle = librsvg::Loader::new()
-        .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)?;
+        cx.scale(zoom, zoom);
+        //cx.translate(-svg.bounds.mins[0], -svg.bounds.mins[1]);
 
-    let librsvg_renderer = librsvg::CairoRenderer::new(&librsvg_handle);
-    librsvg_renderer.render_document(
-        cx,
-        &cairo::Rectangle {
-            x: (bounds.mins[0].floor() * zoom),
-            y: (bounds.mins[1].floor() * zoom),
-            width: ((bounds.extents()[0]).ceil() * zoom),
-            height: ((bounds.extents()[1]).ceil() * zoom),
-        },
-    )?;
+        let stream = gio::MemoryInputStream::from_bytes(&glib::Bytes::from(svg_data.as_bytes()));
 
+        let handle = librsvg::Loader::new()
+            .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(&stream, None, None)
+            .context("read stream to librsvg Loader failed")?;
+        let renderer = librsvg::CairoRenderer::new(&handle);
+        renderer
+            .render_document(
+                &cx,
+                &cairo::Rectangle {
+                    x: svg.bounds.mins[0],
+                    y: svg.bounds.mins[1],
+                    width: svg.bounds.extents()[0],
+                    height: svg.bounds.extents()[1],
+                },
+            )
+            .map_err(|e| {
+                anyhow::Error::msg(format!(
+                    "librsvg render_document() failed in draw_svgs_to_cairo_context() with Err {}",
+                    e
+                ))
+            })?;
+    }
     Ok(())
 }
 

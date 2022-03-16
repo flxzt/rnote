@@ -296,6 +296,60 @@
                     </child>
                   </object>
                 </child>
+                <!-- Button Shortcuts Group -->
+                <child>
+                  <object class="AdwPreferencesGroup">
+                    <property name="title" translatable="yes">Button Shortcuts</property>
+                    <child>
+                      <object class="PenShortcutRow" id="penshortcut_stylus_button_primary_row">
+                        <property name="title" translatable="yes">Stylus primary button action</property>
+                        <property name="subtitle" translatable="yes">Set the action for the primary stylus button</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">stylus-button-primary-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="PenShortcutRow" id="penshortcut_stylus_button_secondary_row">
+                        <property name="title" translatable="yes">Stylus secondary button action</property>
+                        <property name="subtitle" translatable="yes">Set the action for the secondary stylus button</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">stylus-button-secondary-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="PenShortcutRow" id="penshortcut_stylus_button_eraser_row">
+                        <property name="title" translatable="yes">Stylus "Eraser" button action</property>
+                        <property name="subtitle" translatable="yes">Set the action for the "Eraser" stylus button</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">stylus-button-eraser-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="PenShortcutRow" id="penshortcut_mouse_button_secondary_row">
+                        <property name="title" translatable="yes">Mouse secondary button action</property>
+                        <property name="subtitle" translatable="yes">Set the action for the secondary mouse button</property>
+                        <child type="prefix">
+                          <object class="GtkImage">
+                            <property name="icon_name">mouse-button-secondary-symbolic</property>
+                            <property name="icon-size">large</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </property>
           </object>

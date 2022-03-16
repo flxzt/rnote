@@ -16,6 +16,7 @@ use crate::compose::transformable::Transformable;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::pens::shaper::Shaper;
 use crate::pens::tools::DragProximityTool;
+use crate::pens::PenStyle;
 use crate::render::{self, Renderer};
 use crate::strokes::bitmapimage::BitmapImage;
 use crate::strokes::element::Element;
@@ -158,47 +159,45 @@ impl StrokesState {
 
                 surface_flags.redraw = true;
             }
-            StateTask::InsertStroke { stroke } => {
-                match stroke {
-                    StrokeStyle::BrushStroke(brushstroke) => {
-                        let inserted = self.insert_stroke(StrokeStyle::BrushStroke(brushstroke));
+            StateTask::InsertStroke { stroke } => match stroke {
+                StrokeStyle::BrushStroke(brushstroke) => {
+                    let inserted = self.insert_stroke(StrokeStyle::BrushStroke(brushstroke));
 
-                        self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
+                    self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
 
-                        surface_flags.redraw = true;
-                    }
-                    StrokeStyle::ShapeStroke(shapestroke) => {
-                        let inserted = self.insert_stroke(StrokeStyle::ShapeStroke(shapestroke));
-
-                        self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
-
-                        surface_flags.redraw = true;
-                    }
-                    StrokeStyle::VectorImage(vectorimage) => {
-                        let inserted = self.insert_stroke(StrokeStyle::VectorImage(vectorimage));
-                        self.set_selected(inserted, true);
-
-                        self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
-
-                        surface_flags.redraw = true;
-                        surface_flags.resize = true;
-                        surface_flags.activate_selector = true;
-                        surface_flags.resize_to_fit_strokes = true;
-                    }
-                    StrokeStyle::BitmapImage(bitmapimage) => {
-                        let inserted = self.insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
-
-                        self.set_selected(inserted, true);
-
-                        self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
-
-                        surface_flags.redraw = true;
-                        surface_flags.resize = true;
-                        surface_flags.activate_selector = true;
-                        surface_flags.resize_to_fit_strokes = true;
-                    }
+                    surface_flags.redraw = true;
                 }
-            }
+                StrokeStyle::ShapeStroke(shapestroke) => {
+                    let inserted = self.insert_stroke(StrokeStyle::ShapeStroke(shapestroke));
+
+                    self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
+
+                    surface_flags.redraw = true;
+                }
+                StrokeStyle::VectorImage(vectorimage) => {
+                    let inserted = self.insert_stroke(StrokeStyle::VectorImage(vectorimage));
+                    self.set_selected(inserted, true);
+
+                    self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
+
+                    surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.pen_change = Some(PenStyle::SelectorStyle);
+                    surface_flags.resize_to_fit_strokes = true;
+                }
+                StrokeStyle::BitmapImage(bitmapimage) => {
+                    let inserted = self.insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
+
+                    self.set_selected(inserted, true);
+
+                    self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
+
+                    surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.pen_change = Some(PenStyle::SelectorStyle);
+                    surface_flags.resize_to_fit_strokes = true;
+                }
+            },
             StateTask::Quit => {
                 surface_flags.quit = true;
             }

@@ -8,8 +8,8 @@ pub mod render;
 pub mod sheet;
 pub mod strokes;
 pub mod strokesstate;
-pub mod utils;
 pub mod surfaceflags;
+pub mod utils;
 
 extern crate gstreamer as gst;
 extern crate nalgebra as na;

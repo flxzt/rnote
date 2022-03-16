@@ -3,9 +3,9 @@ use std::io::prelude::*;
 
 use flate2::read::MultiGzDecoder;
 use flate2::{Compression, GzBuilder};
+use gtk4::glib;
 use p2d::bounding_volume::AABB;
 use rand::{Rng, SeedableRng};
-use gtk4::glib;
 
 use crate::strokes::inputdata::InputData;
 

@@ -1,3 +1,6 @@
+pub mod penshortcutmodels;
+pub mod penshortcutrow;
+
 mod imp {
     use std::cell::RefCell;
     use std::rc::Rc;
@@ -8,6 +11,8 @@ mod imp {
 
     use crate::unitentry::UnitEntry;
     use rnote_engine::sheet::format::{self, Format};
+
+    use super::penshortcutrow::PenShortcutRow;
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
@@ -56,6 +61,14 @@ mod imp {
         pub background_pattern_width_unitentry: TemplateChild<UnitEntry>,
         #[template_child]
         pub background_pattern_height_unitentry: TemplateChild<UnitEntry>,
+        #[template_child]
+        pub penshortcut_stylus_button_primary_row: TemplateChild<PenShortcutRow>,
+        #[template_child]
+        pub penshortcut_stylus_button_secondary_row: TemplateChild<PenShortcutRow>,
+        #[template_child]
+        pub penshortcut_stylus_button_eraser_row: TemplateChild<PenShortcutRow>,
+        #[template_child]
+        pub penshortcut_mouse_button_secondary_row: TemplateChild<PenShortcutRow>,
     }
 
     #[glib::object_subclass]
@@ -359,6 +372,7 @@ use std::rc::Rc;
 use adw::prelude::*;
 use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
 use gtk4::{Adjustment, ColorButton, ScrolledWindow, ToggleButton};
+use rnote_engine::pens::shortcuts::ShortcutKey;
 
 use super::appwindow::RnoteAppWindow;
 use crate::unitentry::UnitEntry;
@@ -504,6 +518,7 @@ impl SettingsPanel {
         self.load_misc(appwindow);
         self.load_format(appwindow);
         self.load_background(appwindow);
+        self.load_shortcuts(appwindow);
     }
 
     pub fn load_misc(&self, appwindow: &RnoteAppWindow) {
@@ -556,8 +571,46 @@ impl SettingsPanel {
             .set_value(background.pattern_size[1]);
     }
 
+    pub fn load_shortcuts(&self, appwindow: &RnoteAppWindow) {
+        let current_shortcuts = appwindow.canvas().pens().borrow().list_current_shortcuts();
+
+        current_shortcuts
+            .into_iter()
+            .for_each(|(key, action)| match key.clone() {
+                ShortcutKey::StylusPrimaryButton => {
+                    self.imp()
+                        .penshortcut_stylus_button_primary_row
+                        .set_action(action.clone());
+                }
+                ShortcutKey::StylusSecondaryButton => {
+                    self.imp()
+                        .penshortcut_stylus_button_secondary_row
+                        .set_action(action.clone());
+                }
+                ShortcutKey::StylusEraserButton => {
+                    self.imp()
+                        .penshortcut_stylus_button_eraser_row
+                        .set_action(action.clone());
+                }
+                ShortcutKey::MouseSecondaryButton => {
+                    self.imp()
+                        .penshortcut_mouse_button_secondary_row
+                        .set_action(action.clone());
+                }
+                _ => {}
+            });
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         let temporary_format = self.imp().temporary_format.clone();
+        let penshortcut_stylus_button_primary_row =
+            self.imp().penshortcut_stylus_button_primary_row.get();
+        let penshortcut_stylus_button_secondary_row =
+            self.imp().penshortcut_stylus_button_secondary_row.get();
+        let penshortcut_stylus_button_eraser_row =
+            self.imp().penshortcut_stylus_button_eraser_row.get();
+        let penshortcut_mouse_button_secondary_row =
+            self.imp().penshortcut_mouse_button_secondary_row.get();
 
         // Pdf import width
         self.imp()
@@ -696,5 +749,42 @@ impl SettingsPanel {
                     None
             }),
         );
+
+        // Shortcuts
+        self.imp()
+            .penshortcut_stylus_button_primary_row
+            .set_key(Some(ShortcutKey::StylusPrimaryButton));
+        self.imp().penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_stylus_button_primary_row.action();
+            appwindow.canvas().pens().borrow_mut().register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
+            None
+        }));
+
+        self.imp()
+            .penshortcut_stylus_button_secondary_row
+            .set_key(Some(ShortcutKey::StylusSecondaryButton));
+        self.imp().penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_stylus_button_secondary_row.action();
+            appwindow.canvas().pens().borrow_mut().register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
+            None
+        }));
+
+        self.imp()
+            .penshortcut_stylus_button_eraser_row
+            .set_key(Some(ShortcutKey::StylusEraserButton));
+        self.imp().penshortcut_stylus_button_eraser_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_eraser_row, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_stylus_button_eraser_row.action();
+            appwindow.canvas().pens().borrow_mut().register_new_shortcut(ShortcutKey::StylusEraserButton, action);
+            None
+        }));
+
+        self.imp()
+            .penshortcut_mouse_button_secondary_row
+            .set_key(Some(ShortcutKey::StylusSecondaryButton));
+        self.imp().penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
+            let action = penshortcut_mouse_button_secondary_row.action();
+            appwindow.canvas().pens().borrow_mut().register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            None
+        }));
     }
 }

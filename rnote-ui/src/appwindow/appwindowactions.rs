@@ -416,7 +416,7 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |_action_current_pen, target| {
                 let current_pen = target.unwrap().str().unwrap();
 
-                match current_pen {
+                let surface_flags = match current_pen {
                     "brush_style" => {
                         appwindow.canvas().pens().borrow_mut().handle_event(
                             PenEvent::ChangeStyle(PenStyle::BrushStyle),
@@ -424,7 +424,7 @@ impl RnoteAppWindow {
                             Some(appwindow.canvas().viewport_in_sheet_coords()),
                             appwindow.canvas().zoom(),
                             appwindow.canvas().renderer()
-                        );
+                        )
                     },
                     "shaper_style" => {
                         appwindow.canvas().pens().borrow_mut().handle_event(
@@ -433,7 +433,7 @@ impl RnoteAppWindow {
                             Some(appwindow.canvas().viewport_in_sheet_coords()),
                             appwindow.canvas().zoom(),
                             appwindow.canvas().renderer()
-                        );
+                        )
                     },
                     "eraser_style" => {
                         appwindow.canvas().pens().borrow_mut().handle_event(
@@ -442,7 +442,7 @@ impl RnoteAppWindow {
                             Some(appwindow.canvas().viewport_in_sheet_coords()),
                             appwindow.canvas().zoom(),
                             appwindow.canvas().renderer()
-                        );
+                        )
                     },
                     "selector_style" => {
                         appwindow.canvas().pens().borrow_mut().handle_event(
@@ -451,7 +451,7 @@ impl RnoteAppWindow {
                             Some(appwindow.canvas().viewport_in_sheet_coords()),
                             appwindow.canvas().zoom(),
                             appwindow.canvas().renderer()
-                        );
+                        )
                     },
                     "tools_style" => {
                         appwindow.canvas().pens().borrow_mut().handle_event(
@@ -460,10 +460,15 @@ impl RnoteAppWindow {
                             Some(appwindow.canvas().viewport_in_sheet_coords()),
                             appwindow.canvas().zoom(),
                             appwindow.canvas().renderer()
-                        );
+                        )
                     },
-                    _ => { log::error!("set invalid state of action `current-pen`")}
-                }
+                    _ => {
+                        log::error!("set invalid state of action `current-pen`");
+                        return;
+                    }
+                };
+
+                appwindow.handle_surface_flags(surface_flags);
 
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
             }),
@@ -809,70 +814,71 @@ impl RnoteAppWindow {
 
         // Pen overwrite
         action_pen_overwrite.connect_activate(
-        clone!(@weak self as appwindow => move |_action_pen_overwrite, target| {
-            let pen_override = target.unwrap().str().unwrap();
+            clone!(@weak self as appwindow => move |_action_pen_overwrite, target| {
+                let pen_override = target.unwrap().str().unwrap();
 
-            log::trace!("pen overwrite activated with target: {}", pen_override);
-            match pen_override {
-                "brush" => {
-                    appwindow.canvas().pens().borrow_mut().handle_event(
-                        PenEvent::ChangeStyleOverride(Some(PenStyle::BrushStyle)),
-                        &mut *appwindow.canvas().sheet().borrow_mut(),
-                        Some(appwindow.canvas().viewport_in_sheet_coords()),
-                        appwindow.canvas().zoom(),
-                        appwindow.canvas().renderer()
-                    );
+                log::trace!("pen overwrite activated with target: {}", pen_override);
+                match pen_override {
+                    "brush" => {
+                        appwindow.canvas().pens().borrow_mut().handle_event(
+                            PenEvent::ChangeStyleOverride(Some(PenStyle::BrushStyle)),
+                            &mut *appwindow.canvas().sheet().borrow_mut(),
+                            Some(appwindow.canvas().viewport_in_sheet_coords()),
+                            appwindow.canvas().zoom(),
+                            appwindow.canvas().renderer()
+                        );
+                    }
+                    "shaper" => {
+                        appwindow.canvas().pens().borrow_mut().handle_event(
+                            PenEvent::ChangeStyleOverride(Some(PenStyle::ShaperStyle)),
+                            &mut *appwindow.canvas().sheet().borrow_mut(),
+                            Some(appwindow.canvas().viewport_in_sheet_coords()),
+                            appwindow.canvas().zoom(),
+                            appwindow.canvas().renderer()
+                        );
+                    }
+                    "eraser" => {
+                        appwindow.canvas().pens().borrow_mut().handle_event(
+                            PenEvent::ChangeStyleOverride(Some(PenStyle::EraserStyle)),
+                            &mut *appwindow.canvas().sheet().borrow_mut(),
+                            Some(appwindow.canvas().viewport_in_sheet_coords()),
+                            appwindow.canvas().zoom(),
+                            appwindow.canvas().renderer()
+                        );
+                    }
+                    "selector" => {
+                        appwindow.canvas().pens().borrow_mut().handle_event(
+                            PenEvent::ChangeStyleOverride(Some(PenStyle::SelectorStyle)),
+                            &mut *appwindow.canvas().sheet().borrow_mut(),
+                            Some(appwindow.canvas().viewport_in_sheet_coords()),
+                            appwindow.canvas().zoom(),
+                            appwindow.canvas().renderer()
+                        );
+                    }
+                    "tools" => {
+                        appwindow.canvas().pens().borrow_mut().handle_event(
+                            PenEvent::ChangeStyleOverride(Some(PenStyle::ToolsStyle)),
+                            &mut *appwindow.canvas().sheet().borrow_mut(),
+                            Some(appwindow.canvas().viewport_in_sheet_coords()),
+                            appwindow.canvas().zoom(),
+                            appwindow.canvas().renderer()
+                        );
+                    }
+                    "none" => {
+                        appwindow.canvas().pens().borrow_mut().handle_event(
+                            PenEvent::ChangeStyleOverride(None),
+                            &mut *appwindow.canvas().sheet().borrow_mut(),
+                            Some(appwindow.canvas().viewport_in_sheet_coords()),
+                            appwindow.canvas().zoom(),
+                            appwindow.canvas().renderer()
+                        );
+                    }
+                    _ => {
+                        log::error!("invalid target for action_pen_overwrite, `{}`", pen_override);
+                    }
                 }
-                "shaper" => {
-                    appwindow.canvas().pens().borrow_mut().handle_event(
-                        PenEvent::ChangeStyleOverride(Some(PenStyle::ShaperStyle)),
-                        &mut *appwindow.canvas().sheet().borrow_mut(),
-                        Some(appwindow.canvas().viewport_in_sheet_coords()),
-                        appwindow.canvas().zoom(),
-                        appwindow.canvas().renderer()
-                    );
-                }
-                "eraser" => {
-                    appwindow.canvas().pens().borrow_mut().handle_event(
-                        PenEvent::ChangeStyleOverride(Some(PenStyle::EraserStyle)),
-                        &mut *appwindow.canvas().sheet().borrow_mut(),
-                        Some(appwindow.canvas().viewport_in_sheet_coords()),
-                        appwindow.canvas().zoom(),
-                        appwindow.canvas().renderer()
-                    );
-                }
-                "selector" => {
-                    appwindow.canvas().pens().borrow_mut().handle_event(
-                        PenEvent::ChangeStyleOverride(Some(PenStyle::SelectorStyle)),
-                        &mut *appwindow.canvas().sheet().borrow_mut(),
-                        Some(appwindow.canvas().viewport_in_sheet_coords()),
-                        appwindow.canvas().zoom(),
-                        appwindow.canvas().renderer()
-                    );
-                }
-                "tools" => {
-                    appwindow.canvas().pens().borrow_mut().handle_event(
-                        PenEvent::ChangeStyleOverride(Some(PenStyle::ToolsStyle)),
-                        &mut *appwindow.canvas().sheet().borrow_mut(),
-                        Some(appwindow.canvas().viewport_in_sheet_coords()),
-                        appwindow.canvas().zoom(),
-                        appwindow.canvas().renderer()
-                    );
-                }
-                "none" => {
-                    appwindow.canvas().pens().borrow_mut().handle_event(
-                        PenEvent::ChangeStyleOverride(None),
-                        &mut *appwindow.canvas().sheet().borrow_mut(),
-                        Some(appwindow.canvas().viewport_in_sheet_coords()),
-                        appwindow.canvas().zoom(),
-                        appwindow.canvas().renderer()
-                    );
-                }
-                _ => {
-                    log::error!("invalid target for action_pen_overwrite, `{}`", pen_override);
-                }
-            }
-        }));
+            }),
+        );
 
         // New sheet
         action_new_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {

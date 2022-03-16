@@ -443,6 +443,7 @@ use gtk4::{
     Inhibit, PropagationPhase, ScrolledWindow, Separator, ToggleButton,
 };
 use gtk4::{EventSequenceState, Revealer};
+use rnote_engine::surfaceflags::SurfaceFlags;
 
 use crate::{
     app::RnoteApp,
@@ -656,6 +657,31 @@ impl RnoteAppWindow {
         if is_maximized {
             self.maximize();
         }
+    }
+
+    // Returns true if the flags indicate that any loop that handles the flags should be quit. (Mainloop, or event loop in another thread)
+    pub fn handle_surface_flags(&self, surface_flags: SurfaceFlags) -> bool {
+        if surface_flags.quit {
+            return true;
+        }
+        if surface_flags.redraw {
+            self.canvas().queue_draw();
+        }
+        if surface_flags.resize {
+            self.canvas().queue_resize();
+        }
+        if let Some(pen_change) = surface_flags.pen_change {
+            adw::prelude::ActionGroupExt::activate_action(
+                self,
+                "current-pen",
+                Some(&pen_change.nick().to_variant()),
+            );
+        }
+        if surface_flags.resize_to_fit_strokes {
+            self.canvas().resize_sheet_to_fit_strokes();
+        }
+
+        false
     }
 
     // Must be called after application is associated with it else it fails
@@ -1291,7 +1317,10 @@ impl RnoteAppWindow {
 
     pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         if let Some(basename) = file.basename() {
-            let pdf_data = self.canvas().sheet().borrow()
+            let pdf_data = self
+                .canvas()
+                .sheet()
+                .borrow()
                 .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string())
                 .await?;
 

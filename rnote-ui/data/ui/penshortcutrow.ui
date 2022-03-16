@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="PenShortcutRow" parent="AdwComboRow">
+    <child type="suffix">
+      <object class="GtkBox">
+        <child>
+          <object class="GtkCheckButton" id="permanent_checker">
+            <property name="label" translatable="yes">perm.</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

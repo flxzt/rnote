@@ -26,6 +26,7 @@ rnote_engine_sources = files(
     'pens/eraser.rs',
     'pens/selector.rs',
     'pens/tools.rs',
+    'pens/shortcuts.rs',
     'strokes/mod.rs',
     'strokes/inputdata.rs',
     'strokes/strokestyle.rs',

@@ -23,8 +23,9 @@ mod imp {
         penssidebar::eraserpage::EraserPage, penssidebar::selectorpage::SelectorPage,
         penssidebar::shaperpage::ShaperPage, penssidebar::toolspage::ToolsPage,
         penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
-        selectionmodifier::SelectionModifier, settingspanel::SettingsPanel, unitentry::UnitEntry,
-        utils, workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
+        selectionmodifier::SelectionModifier, settingspanel::penshortcutrow::PenShortcutRow,
+        settingspanel::SettingsPanel, unitentry::UnitEntry, utils,
+        workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
     };
 
     #[derive(Debug)]
@@ -119,6 +120,7 @@ mod imp {
             PatternStyle::static_type();
             UnitEntry::static_type();
             TexturedDotsDistribution::static_type();
+            PenShortcutRow::static_type();
 
             // Load the resources
             app.set_resource_base_path(Some(config::APP_IDPATH));

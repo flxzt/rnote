@@ -2145,6 +2145,8 @@ dependencies = [
  "librsvg",
  "log",
  "nalgebra 0.30.1",
+ "num-derive",
+ "num-traits",
  "parry2d-f64",
  "poppler-rs",
  "pretty_env_logger",

@@ -1139,7 +1139,7 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.selection-duplicate", &["<Ctrl>d"]);
         app.set_accels_for_action("win.selection-select-all", &["<Ctrl>a"]);
         app.set_accels_for_action("win.selection-deselect-all", &["Escape"]);
-        app.set_accels_for_action("win.pen-override::eraser", &["d"]);
+        //app.set_accels_for_action("win.pen-override::eraser", &["d"]);
         app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste-selection", &["<Ctrl>v"]);
     }

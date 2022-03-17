@@ -21,6 +21,7 @@ impl RnoteAppWindow {
             .bind("color-scheme", &app.style_manager(), "color-scheme")
             .mapping(|variant, _| {
                 let value = variant.get::<String>().unwrap();
+
                 match value.as_str() {
                     "default" => Some(adw::ColorScheme::Default.to_value()),
                     "force-light" => Some(adw::ColorScheme::ForceLight.to_value()),
@@ -35,9 +36,10 @@ impl RnoteAppWindow {
                 }
             })
             .set_mapping(|value, _| match value.get::<adw::ColorScheme>().unwrap() {
-                adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_variant()),
+                adw::ColorScheme::Default => Some(String::from("default").to_variant()),
                 adw::ColorScheme::ForceLight => Some(String::from("force-light").to_variant()),
-                _ => Some(String::from("default").to_variant()),
+                adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_variant()),
+                _ => None,
             })
             .build();
 
@@ -163,6 +165,15 @@ impl RnoteAppWindow {
 
         // appwindow
         self.load_window_size();
+
+        // colorscheme
+        // Set the buttons, as the style manager colorscheme property may not be changed from the binding
+        match self.app_settings().string("color-scheme").as_str() {
+            "default" => self.mainheader().appmenu().default_theme_toggle().set_active(true),
+            "force-light" => self.mainheader().appmenu().light_theme_toggle().set_active(true),
+            "force-dark" => self.mainheader().appmenu().dark_theme_toggle().set_active(true),
+            _ => {}
+        }
 
         {
             // Brush page

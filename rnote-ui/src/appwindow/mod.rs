@@ -708,6 +708,40 @@ impl RnoteAppWindow {
         let app_icon_theme = IconTheme::for_display(&self.display());
         app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
+        self.setup_controllers();
+
+        // actions and settings AFTER widget callback declarations
+        self.setup_actions();
+        self.setup_action_accels();
+        self.setup_settings();
+
+        if let Err(e) = self.load_settings() {
+            log::debug!("failed to load appwindow settings with Err `{}`", e);
+        }
+
+        // Loading in input file, if Some
+        if let Some(input_file) = self
+            .application()
+            .unwrap()
+            .downcast::<RnoteApp>()
+            .unwrap()
+            .input_file()
+        {
+            if self
+                .application()
+                .unwrap()
+                .downcast::<RnoteApp>()
+                .unwrap()
+                .unsaved_changes()
+            {
+                dialogs::dialog_open_overwrite(self);
+            } else if let Err(e) = self.load_in_file(&input_file, None) {
+                log::error!("failed to load in input file, {}", e);
+            }
+        }
+    }
+
+    pub fn setup_controllers(&self) {
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()
             .name("canvas_zoom_scroll_controller")
             .propagation_phase(PropagationPhase::Bubble)
@@ -898,36 +932,6 @@ impl RnoteAppWindow {
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
-        }
-
-        // actions and settings AFTER widget callback declarations
-        self.setup_actions();
-        self.setup_action_accels();
-        self.setup_settings();
-
-        if let Err(e) = self.load_settings() {
-            log::debug!("failed to load appwindow settings with Err `{}`", e);
-        }
-
-        // Loading in input file, if Some
-        if let Some(input_file) = self
-            .application()
-            .unwrap()
-            .downcast::<RnoteApp>()
-            .unwrap()
-            .input_file()
-        {
-            if self
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .unsaved_changes()
-            {
-                dialogs::dialog_open_overwrite(self);
-            } else if let Err(e) = self.load_in_file(&input_file, None) {
-                log::error!("failed to load in input file, {}", e);
-            }
         }
     }
 

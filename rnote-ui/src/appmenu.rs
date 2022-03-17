@@ -135,13 +135,15 @@ impl AppMenu {
                 }
             })
             .transform_from(|_, value| {
-                if value.get::<adw::ColorScheme>().unwrap() == adw::ColorScheme::Default {
+                let value = value.get::<adw::ColorScheme>().unwrap();
+
+                if value == adw::ColorScheme::Default {
                     Some(true.to_value())
                 } else {
                     None
                 }
             })
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .flags(glib::BindingFlags::BIDIRECTIONAL)
             .build();
 
         self.light_theme_toggle()
@@ -154,13 +156,15 @@ impl AppMenu {
                 }
             })
             .transform_from(|_, value| {
-                if value.get::<adw::ColorScheme>().unwrap() == adw::ColorScheme::ForceLight {
+                let value = value.get::<adw::ColorScheme>().unwrap();
+
+                if value == adw::ColorScheme::ForceLight {
                     Some(true.to_value())
                 } else {
                     None
                 }
             })
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .flags(glib::BindingFlags::BIDIRECTIONAL)
             .build();
 
         self.dark_theme_toggle()
@@ -173,13 +177,15 @@ impl AppMenu {
                 }
             })
             .transform_from(|_, value| {
-                if value.get::<adw::ColorScheme>().unwrap() == adw::ColorScheme::ForceDark {
+                let value = value.get::<adw::ColorScheme>().unwrap();
+
+                if value == adw::ColorScheme::ForceDark {
                     Some(true.to_value())
                 } else {
                     None
                 }
             })
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .flags(glib::BindingFlags::BIDIRECTIONAL)
             .build();
 
         self.imp()

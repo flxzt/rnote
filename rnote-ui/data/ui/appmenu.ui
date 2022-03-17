@@ -117,7 +117,6 @@
               <property name="spacing">24</property>
               <child>
                 <object class="GtkToggleButton" id="default_theme_toggle">
-                  <property name="active">true</property>
                   <property name="tooltip_text" translatable="yes">Use system colors preference</property>
                   <property name="height-request">50</property>
                   <property name="width-request">50</property>

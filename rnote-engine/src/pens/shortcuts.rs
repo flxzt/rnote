@@ -28,7 +28,7 @@ impl Default for Shortcuts {
         map.insert(
             ShortcutKey::StylusPrimaryButton,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::ShaperStyle,
+                style: PenStyle::SelectorStyle,
                 permanent: false,
             },
         );
@@ -49,7 +49,7 @@ impl Default for Shortcuts {
         map.insert(
             ShortcutKey::MouseSecondaryButton,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::EraserStyle,
+                style: PenStyle::ShaperStyle,
                 permanent: false,
             },
         );

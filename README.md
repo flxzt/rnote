@@ -32,6 +32,8 @@ Rnote is available as a flatpak on Flathub:
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
 | version | command                                                                                                                |
 | ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| v0.4.0  | `sudo flatpak update --commit=2ee585842334ad976802f08a1952c3fdc40f6f3afe2e056f3597fe4a029d54d2 com.github.flxzt.rnote` |
+| v0.3.5  | `sudo flatpak update --commit=34115ec5896cbe1b7c1b7a589ec2b6da45e9fcbd81ae53c665c08f2fc42bb52f com.github.flxzt.rnote` |
 | v0.2.5  | `sudo flatpak update --commit=2036a51c8118a30eb4ceb2e16ba2f84fa8ca4dc814fb88d9424709380093a6c6 com.github.flxzt.rnote` |
 | v0.1.6  | `sudo flatpak update --commit=ffb9781989704f3eb28910437bb26709357566a977178d5fb4ef1a2926edae8b com.github.flxzt.rnote` |
 
@@ -65,6 +67,7 @@ The `.rnote` file format is a gzipped json file. It is (de)compressed with the `
 So far breaking changes in the format happened in versions:  
 - `v0.2.0`
 - `v0.3.0`
+- `v0.4.0`
 
 To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
 

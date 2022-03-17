@@ -9,157 +9,155 @@
         <property name="icon_name">canvasmenu-symbolic</property>
       </object>
     </child>
-    <child>
-      <object class="GtkPopoverMenu" id="popovermenu">
-        <property name="menu-model">menu_model</property>
-        <property name="width-request">300</property>
-        <property name="hexpand">true</property>
-        <menu id="menu_model">
-          <section>
-            <item>
-              <attribute name="custom">canvas_quickcontrols_attr</attribute>
-            </item>
-          </section>
-          <section>
-            <item>
-              <attribute name="label" translatable="yes">Draw with touch input</attribute>
-              <attribute name="toggle" />
-              <attribute name="action">win.touch-drawing</attribute>
-            </item>
-            <submenu>
-              <attribute name="label" translatable="yes">Expand mode</attribute>
-              <section>
-                <item>
-                  <attribute name="label" translatable="yes">fixed size</attribute>
-                  <attribute name="action">win.expand-mode</attribute>
-                  <attribute name="target">fixed-size</attribute>
-                </item>
-                <item>
-                  <attribute name="label" translatable="yes">endless vertical</attribute>
-                  <attribute name="action">win.expand-mode</attribute>
-                  <attribute name="target">endless-vertical</attribute>
-                </item>
-                <item>
-                  <attribute name="label" translatable="yes">infinite</attribute>
-                  <attribute name="action">win.expand-mode</attribute>
-                  <attribute name="target">infinite</attribute>
-                </item>
-              </section>
-            </submenu>
-            <item>
-              <attribute name="label" translatable="yes">Show format borders</attribute>
-              <attribute name="toggle" />
-              <attribute name="action">win.format-borders</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Pen sounds</attribute>
-              <attribute name="toggle" />
-              <attribute name="action">win.pen-sounds</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Clear sheet</attribute>
-              <attribute name="action">win.clear-sheet</attribute>
-            </item>
-          </section>
-          <section>
-            <item>
-              <attribute name="label" translatable="yes">New</attribute>
-              <attribute name="action">win.new-sheet</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Open</attribute>
-              <attribute name="action">win.open-sheet</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Save</attribute>
-              <attribute name="action">win.save-sheet</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Save as</attribute>
-              <attribute name="action">win.save-sheet-as</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Print</attribute>
-              <attribute name="action">win.print-sheet</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">Import file</attribute>
-              <attribute name="action">win.import-file</attribute>
-            </item>
-            <submenu>
-              <attribute name="label" translatable="yes">Export ..</attribute>
+    <object class="GtkPopoverMenu" id="popovermenu">
+      <property name="menu-model">menu_model</property>
+      <property name="width-request">300</property>
+      <property name="hexpand">true</property>
+      <menu id="menu_model">
+        <section>
+          <item>
+            <attribute name="custom">canvas_quickcontrols_attr</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Draw with touch input</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.touch-drawing</attribute>
+          </item>
+          <submenu>
+            <attribute name="label" translatable="yes">Expand mode</attribute>
+            <section>
               <item>
-                <attribute name="label" translatable="yes">Export selection as SVG</attribute>
-                <attribute name="action">win.export-selection-as-svg</attribute>
+                <attribute name="label" translatable="yes">fixed size</attribute>
+                <attribute name="action">win.expand-mode</attribute>
+                <attribute name="target">fixed-size</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">Export sheet as SVG</attribute>
-                <attribute name="action">win.export-sheet-as-svg</attribute>
+                <attribute name="label" translatable="yes">endless vertical</attribute>
+                <attribute name="action">win.expand-mode</attribute>
+                <attribute name="target">endless-vertical</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">Export sheet as PDF</attribute>
-                <attribute name="action">win.export-sheet-as-pdf</attribute>
+                <attribute name="label" translatable="yes">infinite</attribute>
+                <attribute name="action">win.expand-mode</attribute>
+                <attribute name="target">infinite</attribute>
               </item>
-              <item>
-                <attribute name="label" translatable="yes">Export sheet as Xournal++ .xopp</attribute>
-                <attribute name="action">win.export-sheet-as-xopp</attribute>
-              </item>
-            </submenu>
-          </section>
-        </menu>
+            </section>
+          </submenu>
+          <item>
+            <attribute name="label" translatable="yes">Show format borders</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.format-borders</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Pen sounds</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.pen-sounds</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Clear sheet</attribute>
+            <attribute name="action">win.clear-sheet</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">New</attribute>
+            <attribute name="action">win.new-sheet</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Open</attribute>
+            <attribute name="action">win.open-sheet</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Save</attribute>
+            <attribute name="action">win.save-sheet</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Save as</attribute>
+            <attribute name="action">win.save-sheet-as</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Print</attribute>
+            <attribute name="action">win.print-sheet</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">Import file</attribute>
+            <attribute name="action">win.import-file</attribute>
+          </item>
+          <submenu>
+            <attribute name="label" translatable="yes">Export ..</attribute>
+            <item>
+              <attribute name="label" translatable="yes">Export selection as SVG</attribute>
+              <attribute name="action">win.export-selection-as-svg</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">Export sheet as SVG</attribute>
+              <attribute name="action">win.export-sheet-as-svg</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">Export sheet as PDF</attribute>
+              <attribute name="action">win.export-sheet-as-pdf</attribute>
+            </item>
+            <item>
+              <attribute name="label" translatable="yes">Export sheet as Xournal++ .xopp</attribute>
+              <attribute name="action">win.export-sheet-as-xopp</attribute>
+            </item>
+          </submenu>
+        </section>
+      </menu>
 
-        <child type="canvas_quickcontrols_attr">
-          <object class="GtkGrid">
-            <property name="hexpand">false</property>
-            <property name="vexpand">false</property>
-            <property name="margin-top">6</property>
-            <property name="margin-bottom">6</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
-            <property name="row-spacing">6</property>
-            <property name="column-spacing">6</property>
-            <child>
-              <object class="GtkBox">
-                <style>
-                  <class name="linked" />
-                </style>
-                <property name="orientation">horizontal</property>
-                <property name="hexpand">true</property>
-                <child>
-                  <object class="GtkButton" id="zoom_out_button">
-                    <property name="icon_name">zoom-out-symbolic</property>
-                    <property name="width_request">50</property>
-                    <property name="hexpand">false</property>
-                    <property name="action-name">win.zoom-out</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="zoom_reset_button">
-                    <property name="hexpand">true</property>
-                    <property name="action-name">win.zoom-reset</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="zoom_in_button">
-                    <property name="icon_name">zoom-in-symbolic</property>
-                    <property name="width_request">50</property>
-                    <property name="hexpand">false</property>
-                    <property name="action-name">win.zoom-in</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="zoom_fit_width_button">
-                <property name="hexpand">false</property>
-                <property name="icon_name">zoom-fit-width-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Zoom to fit sheet width</property>
-                <property name="action-name">win.zoom-fit-width</property>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
+      <child type="canvas_quickcontrols_attr">
+        <object class="GtkGrid">
+          <property name="hexpand">false</property>
+          <property name="vexpand">false</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">12</property>
+          <property name="margin-end">12</property>
+          <property name="row-spacing">6</property>
+          <property name="column-spacing">6</property>
+          <child>
+            <object class="GtkBox">
+              <style>
+                <class name="linked" />
+              </style>
+              <property name="orientation">horizontal</property>
+              <property name="hexpand">true</property>
+              <child>
+                <object class="GtkButton" id="zoom_out_button">
+                  <property name="icon_name">zoom-out-symbolic</property>
+                  <property name="width_request">50</property>
+                  <property name="hexpand">false</property>
+                  <property name="action-name">win.zoom-out</property>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="zoom_reset_button">
+                  <property name="hexpand">true</property>
+                  <property name="action-name">win.zoom-reset</property>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="zoom_in_button">
+                  <property name="icon_name">zoom-in-symbolic</property>
+                  <property name="width_request">50</property>
+                  <property name="hexpand">false</property>
+                  <property name="action-name">win.zoom-in</property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkButton" id="zoom_fit_width_button">
+              <property name="hexpand">false</property>
+              <property name="icon_name">zoom-fit-width-symbolic</property>
+              <property name="tooltip_text" translatable="yes">Zoom to fit sheet width</property>
+              <property name="action-name">win.zoom-fit-width</property>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
   </template>
 </interface>

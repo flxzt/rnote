@@ -96,7 +96,7 @@ use gtk4::{
     ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, ListItem,
     PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
 };
-use gtk4::{Button, DirectoryList, Entry, ListView, MultiSorter, Separator};
+use gtk4::{Button, DirectoryList, Entry, ListView, MultiSorter, Separator, Widget};
 
 use self::filerow::FileRow;
 
@@ -200,12 +200,27 @@ impl WorkspaceBrowser {
 
         primary_list_factory.connect_setup(move |_, list_item| {
             let filerow = FileRow::new();
-
             list_item.set_child(Some(&filerow));
 
             let list_item_expr = ConstantExpression::new(list_item);
             let fileinfo_expr =
                 PropertyExpression::new(ListItem::static_type(), Some(&list_item_expr), "item");
+
+            let file_expr = fileinfo_expr.chain_closure::<Option<gio::File>>(closure!(
+                |_: Option<glib::Object>, fileinfo_obj: Option<glib::Object>| {
+                    fileinfo_obj
+                        .map(|fileinfo_obj| {
+                            fileinfo_obj
+                                .downcast::<gio::FileInfo>()
+                                .unwrap()
+                                .attribute_object("standard::file")
+                                .unwrap()
+                                .downcast::<gio::File>()
+                                .unwrap()
+                        })
+                        .to_value()
+                }
+            ));
 
             let content_provider_expr =
                 fileinfo_expr.chain_closure::<gdk::ContentProvider>(closure!(
@@ -277,12 +292,13 @@ impl WorkspaceBrowser {
                     String::from("")
                 }));
 
-            basename_expr.bind(&filerow.file_label(), "label", Some(&filerow.file_label()));
-            icon_name_expr.bind(&filerow.file_image(), "gicon", Some(&filerow.file_image()));
+            file_expr.bind(&filerow, "current-file", Widget::NONE);
+            basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
+            icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
             content_provider_expr.bind(
                 &filerow.drag_source(),
                 "content",
-                Some(&filerow.drag_source()),
+                Widget::NONE,
             );
         });
         let filefilter = FileFilter::new();

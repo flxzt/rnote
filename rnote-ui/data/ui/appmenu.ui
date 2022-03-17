@@ -9,163 +9,161 @@
         <property name="icon_name">open-menu</property>
       </object>
     </child>
-    <child>
-      <object class="GtkPopoverMenu" id="popovermenu">
-        <property name="menu-model">menu_model</property>
-        <property name="width-request">200</property>
-        <property name="hexpand">true</property>
-        <menu id="menu_model">
-          <section>
-            <item>
-              <attribute name="custom">app_uicontrols_attr</attribute>
-            </item>
-          </section>
-          <section>
-            <item>
-              <attribute name="label" translatable="yes">Developer mode</attribute>
-              <attribute name="toggle" />
-              <attribute name="action">win.devel-mode</attribute>
-            </item>
-            <submenu>
-              <attribute name="label" translatable="yes">Developer settings</attribute>
-              <attribute name="action">win.devel-settings</attribute>
-              <attribute name="hidden-when">action-disabled</attribute>
-              <section>
-                <item>
-                  <attribute name="label" translatable="yes">Visual debugging</attribute>
-                  <attribute name="action">win.visual-debug</attribute>
-                </item>
-              </section>
-              <section>
-                <attribute name="label" translatable="yes">Renderer backend</attribute>
-                <item>
-                  <attribute name="label">librsvg (default)</attribute>
-                  <attribute name="action">win.renderer-backend</attribute>
-                  <attribute name="target">librsvg</attribute>
-                </item>
-                <item>
-                  <attribute name="label">resvg</attribute>
-                  <attribute name="action">win.renderer-backend</attribute>
-                  <attribute name="target">resvg</attribute>
-                </item>
-              </section>
-            </submenu>
-          </section>
-          <section>
-            <item>
-              <attribute name="label" translatable="yes">Keyboard shortcuts</attribute>
-              <attribute name="action">win.keyboard-shortcuts</attribute>
-            </item>
-            <item>
-              <attribute name="label" translatable="yes">About Rnote</attribute>
-              <attribute name="action">win.about</attribute>
-            </item>
-          </section>
-        </menu>
+    <object class="GtkPopoverMenu" id="popovermenu">
+      <property name="menu-model">menu_model</property>
+      <property name="width-request">200</property>
+      <property name="hexpand">true</property>
+      <menu id="menu_model">
+        <section>
+          <item>
+            <attribute name="custom">app_uicontrols_attr</attribute>
+          </item>
+        </section>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Developer mode</attribute>
+            <attribute name="toggle" />
+            <attribute name="action">win.devel-mode</attribute>
+          </item>
+          <submenu>
+            <attribute name="label" translatable="yes">Developer settings</attribute>
+            <attribute name="action">win.devel-settings</attribute>
+            <attribute name="hidden-when">action-disabled</attribute>
+            <section>
+              <item>
+                <attribute name="label" translatable="yes">Visual debugging</attribute>
+                <attribute name="action">win.visual-debug</attribute>
+              </item>
+            </section>
+            <section>
+              <attribute name="label" translatable="yes">Renderer backend</attribute>
+              <item>
+                <attribute name="label">librsvg (default)</attribute>
+                <attribute name="action">win.renderer-backend</attribute>
+                <attribute name="target">librsvg</attribute>
+              </item>
+              <item>
+                <attribute name="label">resvg</attribute>
+                <attribute name="action">win.renderer-backend</attribute>
+                <attribute name="target">resvg</attribute>
+              </item>
+            </section>
+          </submenu>
+        </section>
+        <section>
+          <item>
+            <attribute name="label" translatable="yes">Keyboard shortcuts</attribute>
+            <attribute name="action">win.keyboard-shortcuts</attribute>
+          </item>
+          <item>
+            <attribute name="label" translatable="yes">About Rnote</attribute>
+            <attribute name="action">win.about</attribute>
+          </item>
+        </section>
+      </menu>
 
-        <child type="app_uicontrols_attr">
-          <object class="GtkBox">
-            <property name="hexpand">false</property>
-            <property name="vexpand">false</property>
-            <property name="orientation">vertical</property>
-            <property name="margin-top">6</property>
-            <property name="margin-bottom">6</property>
-            <property name="margin-start">12</property>
-            <property name="margin-end">12</property>
-            <property name="spacing">12</property>
-            <child>
-              <object class="GtkBox">
-                <property name="orientation">horizontal</property>
-                <property name="spacing">6</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="homogeneous">true</property>
-                    <property name="hexpand">true</property>
-                    <property name="halign">fill</property>
-                    <style>
-                      <class name="linked" />
-                    </style>
-                    <child>
-                      <object class="GtkToggleButton" id="righthanded_toggle">
-                        <property name="icon_name">dock-left-symbolic</property>
-                        <property name="hexpand">true</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkToggleButton" id="lefthanded_toggle">
-                        <property name="group">righthanded_toggle</property>
-                        <property name="active">true</property>
-                        <property name="icon_name">dock-right-symbolic</property>
-                        <property name="hexpand">true</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkButton" id="fullscreen_toggle">
-                    <property name="hexpand">false</property>
-                    <property name="icon_name">appwindow-fullscreen-symbolic</property>
-                    <property name="tooltip_text" translatable="yes">Toggle fullscreen</property>
-                    <property name="action-name">win.fullscreen</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox">
-                <property name="orientation">horizontal</property>
-                <property name="homogeneous">true</property>
-                <property name="spacing">24</property>
-                <child>
-                  <object class="GtkToggleButton" id="default_theme_toggle">
-                    <property name="active">true</property>
-                    <property name="tooltip_text" translatable="yes">Use system colors preference</property>
-                    <property name="height-request">50</property>
-                    <property name="width-request">50</property>
-                    <property name="halign">center</property>
-                    <property name="valign">start</property>
-                    <style>
-                      <class name="theme_selector"/>
-                      <class name="default_theme" />
-                      <class name="circular" />
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="light_theme_toggle">
-                    <property name="tooltip_text" translatable="yes">Use light colors</property>
-                    <property name="height-request">50</property>
-                    <property name="width-request">50</property>
-                    <property name="halign">center</property>
-                    <property name="valign">start</property>
-                    <property name="group">default_theme_toggle</property>
-                    <style>
-                      <class name="theme_selector"/>
-                      <class name="light_theme" />
-                      <class name="circular" />
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="dark_theme_toggle">
-                    <property name="tooltip_text" translatable="yes">Use dark colors</property>
-                    <property name="height-request">50</property>
-                    <property name="width-request">50</property>
-                    <property name="halign">center</property>
-                    <property name="valign">start</property>
-                    <property name="group">default_theme_toggle</property>
-                    <style>
-                      <class name="theme_selector"/>
-                      <class name="dark_theme" />
-                      <class name="circular" />
-                    </style>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
-      </object>
-    </child>
+      <child type="app_uicontrols_attr">
+        <object class="GtkBox">
+          <property name="hexpand">false</property>
+          <property name="vexpand">false</property>
+          <property name="orientation">vertical</property>
+          <property name="margin-top">6</property>
+          <property name="margin-bottom">6</property>
+          <property name="margin-start">12</property>
+          <property name="margin-end">12</property>
+          <property name="spacing">12</property>
+          <child>
+            <object class="GtkBox">
+              <property name="orientation">horizontal</property>
+              <property name="spacing">6</property>
+              <child>
+                <object class="GtkBox">
+                  <property name="homogeneous">true</property>
+                  <property name="hexpand">true</property>
+                  <property name="halign">fill</property>
+                  <style>
+                    <class name="linked" />
+                  </style>
+                  <child>
+                    <object class="GtkToggleButton" id="righthanded_toggle">
+                      <property name="icon_name">dock-left-symbolic</property>
+                      <property name="hexpand">true</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkToggleButton" id="lefthanded_toggle">
+                      <property name="group">righthanded_toggle</property>
+                      <property name="active">true</property>
+                      <property name="icon_name">dock-right-symbolic</property>
+                      <property name="hexpand">true</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="GtkButton" id="fullscreen_toggle">
+                  <property name="hexpand">false</property>
+                  <property name="icon_name">appwindow-fullscreen-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Toggle fullscreen</property>
+                  <property name="action-name">win.fullscreen</property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkBox">
+              <property name="orientation">horizontal</property>
+              <property name="homogeneous">true</property>
+              <property name="spacing">24</property>
+              <child>
+                <object class="GtkToggleButton" id="default_theme_toggle">
+                  <property name="active">true</property>
+                  <property name="tooltip_text" translatable="yes">Use system colors preference</property>
+                  <property name="height-request">50</property>
+                  <property name="width-request">50</property>
+                  <property name="halign">center</property>
+                  <property name="valign">start</property>
+                  <style>
+                    <class name="theme_selector" />
+                    <class name="default_theme" />
+                    <class name="circular" />
+                  </style>
+                </object>
+              </child>
+              <child>
+                <object class="GtkToggleButton" id="light_theme_toggle">
+                  <property name="tooltip_text" translatable="yes">Use light colors</property>
+                  <property name="height-request">50</property>
+                  <property name="width-request">50</property>
+                  <property name="halign">center</property>
+                  <property name="valign">start</property>
+                  <property name="group">default_theme_toggle</property>
+                  <style>
+                    <class name="theme_selector" />
+                    <class name="light_theme" />
+                    <class name="circular" />
+                  </style>
+                </object>
+              </child>
+              <child>
+                <object class="GtkToggleButton" id="dark_theme_toggle">
+                  <property name="tooltip_text" translatable="yes">Use dark colors</property>
+                  <property name="height-request">50</property>
+                  <property name="width-request">50</property>
+                  <property name="halign">center</property>
+                  <property name="valign">start</property>
+                  <property name="group">default_theme_toggle</property>
+                  <style>
+                    <class name="theme_selector" />
+                    <class name="dark_theme" />
+                    <class name="circular" />
+                  </style>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
   </template>
 </interface>

@@ -22,7 +22,7 @@
       Rnote is a simple vector based drawing application for handwritten notes and to annotate documents and pictures.
     </p>
     <p>
-      Disclaimer: The file format is still unstable. It might change between versions.
+      Disclaimer: The file format is still unstable. It might change between versions and break backward compatibility.
     </p>
   </description>
 
@@ -63,6 +63,17 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.4.0" date="2022-03-17">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: configurable button shortcuts (stylus, mouse)</li>
+          <li>change: moved the marker into the brush pen as a style</li>
+          <li>improvement: faster PDF export &amp; fix export with large sheet dimensions</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.3.5" date="2022-02-14">
       <description>
         <p>this release changes:</p>

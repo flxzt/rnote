@@ -28,19 +28,19 @@
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/flxzt/rnote/main/resources/screenshots/main_window_dark.png</image>
+      <image>https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/main_window_dark.png</image>
       <caption>Main window in light colors</caption>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/flxzt/rnote/main/resources/screenshots/main_window_light.png</image>
+      <image>https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/main_window_light.png</image>
       <caption>Main window in dark colors</caption>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/flxzt/rnote/main/resources/screenshots/pdf_annotation.png</image>
+      <image>https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/pdf_annotation.png</image>
       <caption>A PDF annotation</caption>
     </screenshot>
     <screenshot>
-      <image>https://raw.githubusercontent.com/flxzt/rnote/main/resources/screenshots/selection.png</image>
+      <image>https://raw.githubusercontent.com/flxzt/rnote/main/rnote-ui/data/screenshots/selection.png</image>
       <caption>A selection</caption>
     </screenshot>
   </screenshots>

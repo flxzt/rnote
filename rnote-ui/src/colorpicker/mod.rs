@@ -98,9 +98,6 @@ mod imp {
                 }),
             );
 
-            self.colorpicker_button
-                .set_popover(Some(&colorpicker_popover));
-
             self.colorchooser.connect_show_editor_notify(
                 clone!(@weak colorchooser_editor_gobackbutton => move |_colorchooser| {
                     colorchooser_editor_gobackbutton.set_visible(true);

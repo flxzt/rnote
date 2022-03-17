@@ -29,11 +29,12 @@
         <property name="direction">left</property>
         <property name="icon-name">preferences-color-symbolic</property>
         <property name="margin-top">6</property>
+        <property name="popover">colorpicker_popover</property>
       </object>
     </child>
     <object class="GtkPopover" id="colorpicker_popover">
       <property name="position">right</property>
-      <property name="child">
+      <child>
         <object class="GtkGrid">
           <property name="row_spacing">12</property>
           <property name="column_spacing">12</property>
@@ -80,7 +81,7 @@
             </object>
           </child>
         </object>
-      </property>
+      </child>
     </object>
   </template>
 </interface>

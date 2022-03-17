@@ -40,73 +40,71 @@
             </child>
           </object>
         </child>
-        <child>
-          <object class="GtkPopover" id="brushstyle_popover">
-            <child>
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="margin-top">12</property>
-                <property name="margin-bottom">12</property>
-                <property name="spacing">12</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Brush styles</property>
-                    <property name="halign">center</property>
-                    <property name="margin-bottom">12</property>
-                    <style>
-                      <class name="title-4" />
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkListBox" id="brushstyle_listbox">
-                    <property name="width-request">300</property>
-                    <property name="selection-mode">single</property>
-                    <style>
-                      <class name="content" />
-                      <class name="large" />
-                    </style>
-                    <child>
-                      <object class="AdwActionRow" id="brushstyle_marker_row">
-                        <property name="title" translatable="yes">Marker</property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon-name">pen-brush-style-marker-symbolic</property>
-                            <property name="icon-size">large</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwActionRow" id="brushstyle_solid_row">
-                        <property name="title" translatable="yes">Solid</property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon-name">pen-brush-style-solid-symbolic</property>
-                            <property name="icon-size">large</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwActionRow" id="brushstyle_textured_row">
-                        <property name="title" translatable="yes">Textured</property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon-name">pen-brush-style-textured-symbolic</property>
-                            <property name="icon-size">large</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
       </object>
     </child>
+    <object class="GtkPopover" id="brushstyle_popover">
+      <child>
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="margin-top">12</property>
+          <property name="margin-bottom">12</property>
+          <property name="spacing">12</property>
+          <child>
+            <object class="GtkLabel">
+              <property name="label" translatable="yes">Brush styles</property>
+              <property name="halign">center</property>
+              <property name="margin-bottom">12</property>
+              <style>
+                <class name="title-4" />
+              </style>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBox" id="brushstyle_listbox">
+              <property name="width-request">300</property>
+              <property name="selection-mode">single</property>
+              <style>
+                <class name="content" />
+                <class name="large" />
+              </style>
+              <child>
+                <object class="AdwActionRow" id="brushstyle_marker_row">
+                  <property name="title" translatable="yes">Marker</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">pen-brush-style-marker-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="brushstyle_solid_row">
+                  <property name="title" translatable="yes">Solid</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">pen-brush-style-solid-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="brushstyle_textured_row">
+                  <property name="title" translatable="yes">Textured</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">pen-brush-style-textured-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
     <!-- Brush styles config -->
     <child>
       <object class="GtkBox">
@@ -121,103 +119,101 @@
             <property name="popover">styleconfig_popover</property>
           </object>
         </child>
-        <child>
-          <object class="GtkPopover" id="styleconfig_popover">
-            <child>
-              <object class="GtkBox">
-                <property name="orientation">vertical</property>
-                <property name="margin-top">12</property>
-                <property name="margin-bottom">12</property>
-                <property name="spacing">12</property>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="label" translatable="yes">Brush configuration</property>
-                    <property name="halign">center</property>
-                    <property name="margin-top">12</property>
-                    <property name="margin-bottom">24</property>
-                    <style>
-                      <class name="title-4" />
-                    </style>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkListBox">
-                    <property name="width-request">300</property>
-                    <property name="selection-mode">none</property>
-                    <style>
-                      <class name="content" />
-                      <class name="medium" />
-                    </style>
-                    <child>
-                      <!-- Textured Brush -->
-                      <object class="AdwActionRow">
-                        <property name="title" translatable="yes">Density</property>
-                        <property name="subtitle" translatable="yes">The density is the amount of dots per 10x10 area</property>
-                        <child type="suffix">
-                          <object class="GtkSpinButton" id="texturedstyle_density_spinbutton">
-                            <property name="valign">center</property>
-                            <property name="margin_start">12</property>
-                            <property name="orientation">horizontal</property>
-                            <property name="numeric">true</property>
-                            <property name="digits">1</property>
-                            <property name="climb-rate">0.5</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwActionRow">
-                        <property name="title" translatable="yes">Dot Radii</property>
-                        <property name="subtitle" translatable="yes">The radii of the dots</property>
-                        <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="orientation">horizontal</property>
-                            <child>
-                              <object class="GtkSpinButton" id="texturedstyle_radius_x_spinbutton">
-                                <property name="valign">center</property>
-                                <property name="margin_start">12</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="numeric">true</property>
-                                <property name="digits">1</property>
-                                <property name="climb-rate">0.5</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkSpinButton" id="texturedstyle_radius_y_spinbutton">
-                                <property name="valign">center</property>
-                                <property name="margin_start">12</property>
-                                <property name="orientation">horizontal</property>
-                                <property name="numeric">true</property>
-                                <property name="digits">1</property>
-                                <property name="climb-rate">0.5</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwComboRow" id="texturedstyle_distribution_row">
-                        <property name="title" translatable="yes">Distribution</property>
-                        <property name="subtitle" translatable="yes">Choose a dots position probability distribution</property>
-                        <property name="model">
-                          <object class="AdwEnumListModel">
-                            <property name="enum-type">TexturedDotsDistribution</property>
-                          </object>
-                        </property>
-                        <property name="expression">
-                          <lookup type="AdwEnumListItem" name="name" />
-                        </property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-          </object>
-        </child>
       </object>
     </child>
+    <object class="GtkPopover" id="styleconfig_popover">
+      <child>
+        <object class="GtkBox">
+          <property name="orientation">vertical</property>
+          <property name="margin-top">12</property>
+          <property name="margin-bottom">12</property>
+          <property name="spacing">12</property>
+          <child>
+            <object class="GtkLabel">
+              <property name="label" translatable="yes">Brush configuration</property>
+              <property name="halign">center</property>
+              <property name="margin-top">12</property>
+              <property name="margin-bottom">24</property>
+              <style>
+                <class name="title-4" />
+              </style>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBox">
+              <property name="width-request">300</property>
+              <property name="selection-mode">none</property>
+              <style>
+                <class name="content" />
+                <class name="medium" />
+              </style>
+              <child>
+                <!-- Textured Brush -->
+                <object class="AdwActionRow">
+                  <property name="title" translatable="yes">Density</property>
+                  <property name="subtitle" translatable="yes">The density is the amount of dots per 10x10 area</property>
+                  <child type="suffix">
+                    <object class="GtkSpinButton" id="texturedstyle_density_spinbutton">
+                      <property name="valign">center</property>
+                      <property name="margin_start">12</property>
+                      <property name="orientation">horizontal</property>
+                      <property name="numeric">true</property>
+                      <property name="digits">1</property>
+                      <property name="climb-rate">0.5</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow">
+                  <property name="title" translatable="yes">Dot Radii</property>
+                  <property name="subtitle" translatable="yes">The radii of the dots</property>
+                  <child type="suffix">
+                    <object class="GtkBox">
+                      <property name="orientation">horizontal</property>
+                      <child>
+                        <object class="GtkSpinButton" id="texturedstyle_radius_x_spinbutton">
+                          <property name="valign">center</property>
+                          <property name="margin_start">12</property>
+                          <property name="orientation">horizontal</property>
+                          <property name="numeric">true</property>
+                          <property name="digits">1</property>
+                          <property name="climb-rate">0.5</property>
+                        </object>
+                      </child>
+                      <child>
+                        <object class="GtkSpinButton" id="texturedstyle_radius_y_spinbutton">
+                          <property name="valign">center</property>
+                          <property name="margin_start">12</property>
+                          <property name="orientation">horizontal</property>
+                          <property name="numeric">true</property>
+                          <property name="digits">1</property>
+                          <property name="climb-rate">0.5</property>
+                        </object>
+                      </child>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwComboRow" id="texturedstyle_distribution_row">
+                  <property name="title" translatable="yes">Distribution</property>
+                  <property name="subtitle" translatable="yes">Choose a dots position probability distribution</property>
+                  <property name="model">
+                    <object class="AdwEnumListModel">
+                      <property name="enum-type">TexturedDotsDistribution</property>
+                    </object>
+                  </property>
+                  <property name="expression">
+                    <lookup type="AdwEnumListItem" name="name" />
+                  </property>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
     <child>
       <object class="GtkSeparator">
         <property name="orientation">vertical</property>

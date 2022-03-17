@@ -112,7 +112,7 @@ pub fn retreive_mouse_shortcut_key(mouse_drawing_gesture: &GestureDrag) -> Optio
 pub fn retreive_stylus_shortcut_key(stylus_drawing_gesture: &GestureStylus) -> Option<ShortcutKey> {
     let mut shortcut_key = None;
 
-    // the middle / secondary buttons are the lower or upper buttons on the stylus, but the mapping on gtk's side is inconsistent. TODO: Make the override mappings configurable
+    // the middle / secondary buttons are the lower or upper buttons on the stylus, but the mapping on gtk's side is inconsistent.
     // Also, libinput sometimes picks one button as tool_type: Eraser, but this is not supported by all devices.
     match stylus_drawing_gesture.current_button() {
         gdk::BUTTON_MIDDLE => {

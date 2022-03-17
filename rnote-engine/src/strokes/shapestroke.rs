@@ -27,9 +27,18 @@ pub enum Shape {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "shape_drawstyle")]
 pub enum ShapeDrawStyle {
-    Smooth { options: SmoothOptions },
-    Rough { options: RoughOptions },
+    #[serde(rename = "smooth")]
+    Smooth {
+        #[serde(rename = "options")]
+        options: SmoothOptions
+    },
+    #[serde(rename = "rough")]
+    Rough {
+        #[serde(rename = "options")]
+        options: RoughOptions
+    },
 }
 
 impl Transformable for Shape {

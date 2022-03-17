@@ -67,6 +67,7 @@
       <description>
         <p>this release changes:</p>
         <ul>
+          <li>disclaimer: breaking file format compatibility</li>
           <li>feature: configurable button shortcuts (stylus, mouse)</li>
           <li>change: moved the marker into the brush pen as a style</li>
           <li>improvement: faster PDF export &amp; fix export with large sheet dimensions</li>

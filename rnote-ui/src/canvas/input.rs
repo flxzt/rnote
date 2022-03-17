@@ -203,7 +203,7 @@ pub fn process_pen_motion(data_entries: VecDeque<InputData>, appwindow: &RnoteAp
         &*appwindow.canvas().pens().borrow(),
     );
 
-    appwindow.canvas().pens().borrow_mut().handle_event(
+    let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
         PenEvent::MotionEvent { data_entries },
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),
@@ -211,9 +211,7 @@ pub fn process_pen_motion(data_entries: VecDeque<InputData>, appwindow: &RnoteAp
         appwindow.canvas().renderer(),
     );
 
-    appwindow.canvas().resize_sheet_autoexpand();
-    appwindow.canvas().update_background_rendernode(true);
-    appwindow.canvas().queue_draw();
+    appwindow.handle_surface_flags(surface_flags);
 }
 
 /// Process "Pen up"
@@ -222,7 +220,7 @@ pub fn process_pen_up(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWin
         .canvas()
         .set_cursor(Some(&appwindow.canvas().cursor()));
 
-    appwindow.canvas().pens().borrow_mut().handle_event(
+    let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
         PenEvent::UpEvent { data_entries },
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),
@@ -230,16 +228,5 @@ pub fn process_pen_up(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWin
         appwindow.canvas().renderer(),
     );
 
-    appwindow.canvas().resize_sheet_autoexpand();
-    appwindow.canvas().update_background_rendernode(true);
-
-    appwindow
-        .canvas()
-        .selection_modifier()
-        .update_state(&appwindow.canvas());
-
-    appwindow.canvas().set_unsaved_changes(true);
-    appwindow.canvas().set_empty(false);
-
-    appwindow.canvas().queue_resize();
+    appwindow.handle_surface_flags(surface_flags);
 }

@@ -668,7 +668,11 @@ impl RnoteAppWindow {
             self.canvas().queue_draw();
         }
         if surface_flags.resize {
-            self.canvas().queue_resize();
+            self.canvas().resize_sheet_autoexpand();
+            self.canvas().update_background_rendernode(true);
+        }
+        if surface_flags.resize_to_fit_strokes {
+            self.canvas().resize_sheet_to_fit_strokes();
         }
         if let Some(pen_change) = surface_flags.pen_change {
             adw::prelude::ActionGroupExt::activate_action(
@@ -677,8 +681,16 @@ impl RnoteAppWindow {
                 Some(&pen_change.nick().to_variant()),
             );
         }
-        if surface_flags.resize_to_fit_strokes {
-            self.canvas().resize_sheet_to_fit_strokes();
+        if surface_flags.sheet_changed {
+            self.canvas().set_unsaved_changes(true);
+            self.canvas().set_empty(false);
+        }
+        if surface_flags.selection_changed {
+            self
+                .canvas()
+                .selection_modifier()
+                .update_state(&self.canvas());
+            self.queue_resize();
         }
 
         false
@@ -1321,12 +1333,12 @@ impl RnoteAppWindow {
 
     pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> Result<(), anyhow::Error> {
         if let Some(basename) = file.basename() {
-            let pdf_data = self
+            let pdf_data_receiver = self
                 .canvas()
                 .sheet()
                 .borrow()
-                .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string())
-                .await?;
+                .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string());
+            let pdf_data = pdf_data_receiver.await?;
 
             let output_stream = file
                 .replace_future(

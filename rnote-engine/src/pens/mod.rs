@@ -249,6 +249,7 @@ impl Pens {
                     }
                 }
 
+                surface_flags.redraw = true;
                 self.state = PenState::Down;
                 self.pen_shown = true;
             }
@@ -283,6 +284,8 @@ impl Pens {
                             .motion(data_entries, sheet, viewport, zoom, renderer);
                     }
                 }
+
+                surface_flags.redraw = true;
             }
             (PenState::Up, PenEvent::UpEvent { data_entries: _ }) => {}
             (PenState::Down, PenEvent::UpEvent { data_entries }) => {
@@ -312,6 +315,11 @@ impl Pens {
                             .end(data_entries, sheet, viewport, zoom, renderer);
                     }
                 }
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.selection_changed = true;
 
                 self.state = PenState::Up;
                 self.pen_shown = false;
@@ -343,6 +351,11 @@ impl Pens {
                                 .end(VecDeque::new(), sheet, viewport, zoom, renderer);
                         }
                     }
+
+                    surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
+                    surface_flags.selection_changed = true;
 
                     self.state = PenState::Up;
                     self.pen_shown = false;
@@ -377,6 +390,12 @@ impl Pens {
                                 .end(VecDeque::new(), sheet, viewport, zoom, renderer);
                         }
                     }
+
+                    surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
+                    surface_flags.selection_changed = true;
+
                     self.pen_shown = false;
                     self.state = PenState::Up;
                     self.style_override = new_style_override;

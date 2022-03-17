@@ -1236,6 +1236,7 @@ impl Canvas {
                     .expand_sheet_mode_infinite_for_viewport(self.viewport_in_sheet_coords());
             }
         }
+
         self.queue_resize();
     }
 

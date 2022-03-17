@@ -6,8 +6,10 @@ pub struct SurfaceFlags {
     pub quit: bool,
     pub redraw: bool,
     pub resize: bool,
-    pub pen_change: Option<PenStyle>,
     pub resize_to_fit_strokes: bool,
+    pub pen_change: Option<PenStyle>,
+    pub sheet_changed: bool,
+    pub selection_changed: bool,
 }
 
 impl Default for SurfaceFlags {
@@ -16,8 +18,10 @@ impl Default for SurfaceFlags {
             quit: false,
             redraw: false,
             resize: false,
-            pen_change: None,
             resize_to_fit_strokes: false,
+            pen_change: None,
+            sheet_changed: false,
+            selection_changed: false,
         }
     }
 }

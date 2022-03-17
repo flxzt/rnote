@@ -148,16 +148,19 @@ impl StrokesState {
         renderer: Arc<RwLock<Renderer>>,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
+
         match task {
             StateTask::UpdateStrokeWithImages { key, images } => {
                 self.regenerate_rendering_with_images(key, images, zoom);
 
                 surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
             }
             StateTask::AppendImagesToStroke { key, images } => {
                 self.append_images_to_rendering(key, images, zoom);
 
                 surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
             }
             StateTask::InsertStroke { stroke } => match stroke {
                 StrokeStyle::BrushStroke(brushstroke) => {
@@ -166,6 +169,8 @@ impl StrokesState {
                     self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
 
                     surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
                 }
                 StrokeStyle::ShapeStroke(shapestroke) => {
                     let inserted = self.insert_stroke(StrokeStyle::ShapeStroke(shapestroke));
@@ -173,6 +178,8 @@ impl StrokesState {
                     self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
 
                     surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
                 }
                 StrokeStyle::VectorImage(vectorimage) => {
                     let inserted = self.insert_stroke(StrokeStyle::VectorImage(vectorimage));
@@ -182,8 +189,10 @@ impl StrokesState {
 
                     surface_flags.redraw = true;
                     surface_flags.resize = true;
-                    surface_flags.pen_change = Some(PenStyle::SelectorStyle);
                     surface_flags.resize_to_fit_strokes = true;
+                    surface_flags.pen_change = Some(PenStyle::SelectorStyle);
+                    surface_flags.sheet_changed = true;
+                    surface_flags.selection_changed = true;
                 }
                 StrokeStyle::BitmapImage(bitmapimage) => {
                     let inserted = self.insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
@@ -194,8 +203,10 @@ impl StrokesState {
 
                     surface_flags.redraw = true;
                     surface_flags.resize = true;
-                    surface_flags.pen_change = Some(PenStyle::SelectorStyle);
                     surface_flags.resize_to_fit_strokes = true;
+                    surface_flags.pen_change = Some(PenStyle::SelectorStyle);
+                    surface_flags.sheet_changed = true;
+                    surface_flags.selection_changed = true;
                 }
             },
             StateTask::Quit => {

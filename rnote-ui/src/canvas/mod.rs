@@ -923,8 +923,8 @@ impl Canvas {
     fn setup_input(&self, appwindow: &RnoteAppWindow) {
         // Stylus Drawing
         self.imp().stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
-            log::debug!("stylus_drawing_gesture down");
-            input::debug_stylus_gesture(&stylus_drawing_gesture);
+            //log::debug!("stylus_drawing_gesture down");
+            //input::debug_stylus_gesture(&stylus_drawing_gesture);
 
             // filter out invalid stylus input
             if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
@@ -939,7 +939,7 @@ impl Canvas {
         }));
 
         self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
-            log::trace!("stylus_drawing_gesture motion");
+            //log::debug!("stylus_drawing_gesture motion");
             //input::debug_stylus_gesture(&stylus_drawing_gesture);
 
             // filter out invalid stylus input
@@ -954,8 +954,8 @@ impl Canvas {
         }));
 
         self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
-            log::debug!("stylus_drawing_gesture up");
-            input::debug_stylus_gesture(&stylus_drawing_gesture);
+            //log::debug!("stylus_drawing_gesture up");
+            //input::debug_stylus_gesture(&stylus_drawing_gesture);
 
             // filter out invalid stylus input
             if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
@@ -970,8 +970,8 @@ impl Canvas {
 
         // Mouse drawing
         self.imp().mouse_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
-            log::debug!("mouse_drawing_gesture begin");
-            input::debug_drag_gesture(&mouse_drawing_gesture);
+            //log::debug!("mouse_drawing_gesture begin");
+            //input::debug_drag_gesture(&mouse_drawing_gesture);
 
             // filter out invalid point input
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
@@ -986,7 +986,7 @@ impl Canvas {
         }));
 
         self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
-            log::debug!("mouse_drawing_gesture motion");
+            //log::debug!("mouse_drawing_gesture motion");
 
             // filter out invalid point input
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
@@ -1002,7 +1002,7 @@ impl Canvas {
         }));
 
         self.imp().mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
-            log::debug!("mouse_drawing_gesture end");
+            //log::debug!("mouse_drawing_gesture end");
 
             // filter out invalid point input
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
@@ -1020,7 +1020,7 @@ impl Canvas {
         // Touch drawing
         self.imp().touch_drawing_gesture.connect_drag_begin(
             clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
-                log::debug!("touch_drawing_gesture begin");
+                //log::debug!("touch_drawing_gesture begin");
 
                 // filter out invalid stylus input
                 if input::filter_touch_input(touch_drawing_gesture) { return; }
@@ -1035,7 +1035,7 @@ impl Canvas {
 
         self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
-                log::debug!("touch_drawing_gesture motion");
+                //log::debug!("touch_drawing_gesture motion");
 
                 // filter out invalid stylus input
                 if input::filter_touch_input(touch_drawing_gesture) { return; }
@@ -1049,7 +1049,7 @@ impl Canvas {
         self.imp().touch_drawing_gesture.connect_drag_end(
             clone!(@weak self as canvas @weak appwindow => move |touch_drawing_gesture, x, y| {
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
-                    log::debug!("touch_drawing_gesture end");
+                    //log::debug!("touch_drawing_gesture end");
 
                     // filter out invalid stylus input
                     if input::filter_touch_input(touch_drawing_gesture) { return; }

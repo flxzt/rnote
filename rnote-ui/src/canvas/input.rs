@@ -1,6 +1,6 @@
 use gtk4::{gdk, prelude::*, GestureDrag, GestureStylus};
 use rnote_engine::pens::shortcuts::ShortcutKey;
-use rnote_engine::pens::PenEvent;
+use rnote_engine::pens::{PenEvent, PenStyle};
 use std::collections::VecDeque;
 
 use crate::appwindow::RnoteAppWindow;
@@ -174,10 +174,15 @@ pub fn process_pen_down(
                 .canvas()
                 .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-            appwindow
-                .audioplayer()
-                .borrow()
-                .play_brush_begin(appwindow.canvas().pens().borrow().brush.style);
+            match appwindow.canvas().pens().borrow().style_w_override() {
+                PenStyle::BrushStyle => {
+                    appwindow
+                        .audioplayer()
+                        .borrow()
+                        .play_brush_begin(appwindow.canvas().pens().borrow().brush.style);
+                }
+                _ => {}
+            }
 
             // We hide the selection modifier here already, but actually only deselect all strokes when ending the stroke (for performance reasons)
             appwindow.canvas().selection_modifier().set_visible(false);
@@ -206,10 +211,15 @@ pub fn process_pen_motion(
     shortcut_key: Option<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    appwindow
-        .audioplayer()
-        .borrow()
-        .play_brush_motion(appwindow.canvas().pens().borrow().brush.style);
+    match appwindow.canvas().pens().borrow().style_w_override() {
+        PenStyle::BrushStyle => {
+            appwindow
+                .audioplayer()
+                .borrow()
+                .play_brush_motion(appwindow.canvas().pens().borrow().brush.style);
+        }
+        _ => {}
+    }
 
     let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
         PenEvent::MotionEvent {

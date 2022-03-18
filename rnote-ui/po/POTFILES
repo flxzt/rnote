@@ -21,3 +21,4 @@ rnote-ui/data/ui/penssidebar/shaperpage.ui
 rnote-ui/data/ui/penssidebar/toolspage.ui
 
 rnote-ui/src/dialogs.rs
+rnote-ui/src/canvas/mod.rs

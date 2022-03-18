@@ -208,13 +208,13 @@ impl Pens {
         zoom: f64,
         renderer: Arc<RwLock<Renderer>>,
     ) -> SurfaceFlags {
-        log::debug!(
+/*         log::debug!(
             "handle_event() with state: {:?}, event: {:?}, style: {:?}, style_override: {:?}",
             self.state,
             event,
             self.style,
             self.style_override
-        );
+        ); */
 
         let mut surface_flags = SurfaceFlags::default();
         match (self.state, event) {

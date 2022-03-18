@@ -169,9 +169,21 @@ impl RnoteAppWindow {
         // colorscheme
         // Set the buttons, as the style manager colorscheme property may not be changed from the binding
         match self.app_settings().string("color-scheme").as_str() {
-            "default" => self.mainheader().appmenu().default_theme_toggle().set_active(true),
-            "force-light" => self.mainheader().appmenu().light_theme_toggle().set_active(true),
-            "force-dark" => self.mainheader().appmenu().dark_theme_toggle().set_active(true),
+            "default" => self
+                .mainheader()
+                .appmenu()
+                .default_theme_toggle()
+                .set_active(true),
+            "force-light" => self
+                .mainheader()
+                .appmenu()
+                .light_theme_toggle()
+                .set_active(true),
+            "force-dark" => self
+                .mainheader()
+                .appmenu()
+                .dark_theme_toggle()
+                .set_active(true),
             _ => {}
         }
 

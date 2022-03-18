@@ -148,19 +148,19 @@ impl PensSideBar {
                 if let Some(child_name) = sidebar_stack.visible_child_name() {
                     match child_name.to_value().get::<String>().unwrap().as_str() {
                         "brush_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"brush_style".to_variant()));
                         },
                         "shaper_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"shaper_style".to_variant()));
                         },
                         "eraser_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"eraser_style".to_variant()));
                         }
                         "selector_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"selector_style".to_variant()));
                         }
                         "tools_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"tools_style".to_variant()));
                         }
                         _ => {}
                     };

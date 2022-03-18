@@ -32,12 +32,12 @@ pub enum ShapeDrawStyle {
     #[serde(rename = "smooth")]
     Smooth {
         #[serde(rename = "options")]
-        options: SmoothOptions
+        options: SmoothOptions,
     },
     #[serde(rename = "rough")]
     Rough {
         #[serde(rename = "options")]
-        options: RoughOptions
+        options: RoughOptions,
     },
 }
 

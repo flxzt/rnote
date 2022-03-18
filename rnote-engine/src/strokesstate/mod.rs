@@ -190,7 +190,8 @@ impl StrokesState {
                     surface_flags.redraw = true;
                     surface_flags.resize = true;
                     surface_flags.resize_to_fit_strokes = true;
-                    surface_flags.pen_change = Some(PenStyle::SelectorStyle);
+                    surface_flags.change_to_pen = Some(PenStyle::SelectorStyle);
+                    surface_flags.pen_changed = true;
                     surface_flags.sheet_changed = true;
                     surface_flags.selection_changed = true;
                 }
@@ -204,7 +205,8 @@ impl StrokesState {
                     surface_flags.redraw = true;
                     surface_flags.resize = true;
                     surface_flags.resize_to_fit_strokes = true;
-                    surface_flags.pen_change = Some(PenStyle::SelectorStyle);
+                    surface_flags.change_to_pen = Some(PenStyle::SelectorStyle);
+                    surface_flags.pen_changed = true;
                     surface_flags.sheet_changed = true;
                     surface_flags.selection_changed = true;
                 }

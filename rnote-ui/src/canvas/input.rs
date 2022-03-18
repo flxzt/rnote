@@ -4,7 +4,6 @@ use rnote_engine::pens::PenEvent;
 use std::collections::VecDeque;
 
 use crate::appwindow::RnoteAppWindow;
-use crate::audioplayer::RnoteAudioPlayer;
 use rnote_engine::strokes::inputdata::InputData;
 
 /// transform pen input with zoom and offset
@@ -162,25 +161,58 @@ pub fn retreive_stylus_inputdata(
 /// Process "Pen down"
 pub fn process_pen_down(
     data_entries: VecDeque<InputData>,
-    appwindow: &RnoteAppWindow,
     shortcut_key: Option<ShortcutKey>,
+    appwindow: &RnoteAppWindow,
 ) {
-    let current_pen_style = appwindow.canvas().pens().borrow().style_w_override();
-    appwindow
-        .canvas()
-        .set_cursor(Some(&appwindow.canvas().motion_cursor()));
+    let pen_event = match shortcut_key {
+        // Stylus button presses are emitting separate down / up events, so we handle them here differently to only change the pen, not start drawing
+        Some(ShortcutKey::StylusPrimaryButton) | Some(ShortcutKey::StylusSecondaryButton) => {
+            PenEvent::PressedShortcutkey(shortcut_key.unwrap())
+        }
+        _ => {
+            appwindow
+                .canvas()
+                .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-    appwindow.audioplayer().borrow().play_pen_sound_begin(
-        RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-        current_pen_style,
-        &*appwindow.canvas().pens().borrow(),
-    );
+            appwindow
+                .audioplayer()
+                .borrow()
+                .play_brush_begin(appwindow.canvas().pens().borrow().brush.style);
 
-    // We hide the selection modifier here already, but actually only deselect all strokes when ending the stroke (for responsiveness reasons)
-    appwindow.canvas().selection_modifier().set_visible(false);
+            // We hide the selection modifier here already, but actually only deselect all strokes when ending the stroke (for performance reasons)
+            appwindow.canvas().selection_modifier().set_visible(false);
+
+            PenEvent::DownEvent {
+                data_entries,
+                shortcut_key,
+            }
+        }
+    };
 
     let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
-        PenEvent::DownEvent {
+        pen_event,
+        &mut *appwindow.canvas().sheet().borrow_mut(),
+        Some(appwindow.canvas().viewport_in_sheet_coords()),
+        appwindow.canvas().zoom(),
+        appwindow.canvas().renderer(),
+    );
+
+    appwindow.handle_surface_flags(surface_flags);
+}
+
+/// Process "Pen motions"
+pub fn process_pen_motion(
+    data_entries: VecDeque<InputData>,
+    shortcut_key: Option<ShortcutKey>,
+    appwindow: &RnoteAppWindow,
+) {
+    appwindow
+        .audioplayer()
+        .borrow()
+        .play_brush_motion(appwindow.canvas().pens().borrow().brush.style);
+
+    let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
+        PenEvent::MotionEvent {
             data_entries,
             shortcut_key,
         },
@@ -193,35 +225,30 @@ pub fn process_pen_down(
     appwindow.handle_surface_flags(surface_flags);
 }
 
-/// Process "Pen motions"
-pub fn process_pen_motion(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
-    let current_pen_style = appwindow.canvas().pens().borrow().style_w_override();
-
-    appwindow.audioplayer().borrow().play_pen_sound_motion(
-        RnoteAudioPlayer::PLAY_TIMEOUT_TIME,
-        current_pen_style,
-        &*appwindow.canvas().pens().borrow(),
-    );
-
-    let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
-        PenEvent::MotionEvent { data_entries },
-        &mut *appwindow.canvas().sheet().borrow_mut(),
-        Some(appwindow.canvas().viewport_in_sheet_coords()),
-        appwindow.canvas().zoom(),
-        appwindow.canvas().renderer(),
-    );
-
-    appwindow.handle_surface_flags(surface_flags);
-}
-
 /// Process "Pen up"
-pub fn process_pen_up(data_entries: VecDeque<InputData>, appwindow: &RnoteAppWindow) {
-    appwindow
-        .canvas()
-        .set_cursor(Some(&appwindow.canvas().cursor()));
+pub fn process_pen_up(
+    data_entries: VecDeque<InputData>,
+    shortcut_key: Option<ShortcutKey>,
+    appwindow: &RnoteAppWindow,
+) {
+    let pen_event = match shortcut_key {
+        // Stylus button presses are emitting separate down / up events, so we handle them here differently to only change the pen, not start drawing
+        Some(ShortcutKey::StylusPrimaryButton) | Some(ShortcutKey::StylusSecondaryButton) => {
+            PenEvent::PressedShortcutkey(shortcut_key.unwrap())
+        }
+        _ => {
+            appwindow
+                .canvas()
+                .set_cursor(Some(&appwindow.canvas().cursor()));
 
+            PenEvent::UpEvent {
+                data_entries,
+                shortcut_key,
+            }
+        }
+    };
     let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
-        PenEvent::UpEvent { data_entries },
+        pen_event,
         &mut *appwindow.canvas().sheet().borrow_mut(),
         Some(appwindow.canvas().viewport_in_sheet_coords()),
         appwindow.canvas().zoom(),

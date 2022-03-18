@@ -60,7 +60,7 @@ pub fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error>
     Ok(bytes)
 }
 
-/// Filter inputdata to
+/// Filter inputdata
 pub fn filter_mapped_inputdata(filter_bounds: AABB, data_entries: &mut VecDeque<InputData>) {
     data_entries.retain(|data| filter_bounds.contains_local_point(&na::Point2::from(data.pos())));
 }

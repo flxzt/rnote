@@ -161,31 +161,31 @@ mod imp {
             // pens narrow toggles
             self.narrow_brush_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_brush_toggle| {
                 if narrow_brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"brush_style".to_variant()));
                 }
             }));
 
             self.narrow_shaper_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_shaper_toggle| {
                 if narrow_shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"shaper_style".to_variant()));
                 }
             }));
 
             self.narrow_eraser_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_eraser_toggle| {
                 if narrow_eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"eraser_style".to_variant()));
                 }
             }));
 
             self.narrow_selector_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_selector_toggle| {
                 if narrow_selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"selector_style".to_variant()));
                 }
             }));
 
             self.narrow_tools_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_tools_toggle| {
                 if narrow_tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"tools_style".to_variant()));
                 }
             }));
         }
@@ -674,20 +674,22 @@ impl RnoteAppWindow {
         if surface_flags.resize_to_fit_strokes {
             self.canvas().resize_sheet_to_fit_strokes();
         }
-        if let Some(pen_change) = surface_flags.pen_change {
+        if let Some(new_pen_style) = surface_flags.change_to_pen {
             adw::prelude::ActionGroupExt::activate_action(
                 self,
-                "current-pen",
-                Some(&pen_change.nick().to_variant()),
+                "pen-style",
+                Some(&new_pen_style.nick().to_variant()),
             );
+        }
+        if surface_flags.pen_changed {
+            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
         }
         if surface_flags.sheet_changed {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
         }
         if surface_flags.selection_changed {
-            self
-                .canvas()
+            self.canvas()
                 .selection_modifier()
                 .update_state(&self.canvas());
             self.queue_resize();

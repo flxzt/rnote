@@ -249,31 +249,31 @@ impl MainHeader {
 
         self.imp().brush_toggle.get().connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"brush_style".to_variant()));
             }
         }));
 
         self.imp().shaper_toggle.get().connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
             if shaper_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"shaper_style".to_variant()));
             }
         }));
 
         self.imp().eraser_toggle.get().connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
             if eraser_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"eraser_style".to_variant()));
             }
         }));
 
         self.imp().selector_toggle.get().connect_toggled(clone!(@weak appwindow => move |selector_toggle| {
             if selector_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"selector_style".to_variant()));
             }
         }));
 
         self.imp().tools_toggle.get().connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
             if tools_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"tools_style".to_variant()));
             }
         }));
 

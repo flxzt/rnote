@@ -295,11 +295,7 @@ impl WorkspaceBrowser {
             file_expr.bind(&filerow, "current-file", Widget::NONE);
             basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
             icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
-            content_provider_expr.bind(
-                &filerow.drag_source(),
-                "content",
-                Widget::NONE,
-            );
+            content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);
         });
         let filefilter = FileFilter::new();
         filefilter.add_pattern("*.rnote");

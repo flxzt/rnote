@@ -125,12 +125,15 @@ pub enum PenEvent {
     },
     MotionEvent {
         data_entries: VecDeque<InputData>,
+        shortcut_key: Option<ShortcutKey>,
     },
     UpEvent {
         data_entries: VecDeque<InputData>,
+        shortcut_key: Option<ShortcutKey>,
     },
     ChangeStyle(PenStyle),
     ChangeStyleOverride(Option<PenStyle>),
+    PressedShortcutkey(ShortcutKey),
 }
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
@@ -196,6 +199,7 @@ impl Pens {
             .collect()
     }
 
+    /// Changes the internal state according to events
     pub fn handle_event(
         &mut self,
         event: PenEvent,
@@ -204,16 +208,15 @@ impl Pens {
         zoom: f64,
         renderer: Arc<RwLock<Renderer>>,
     ) -> SurfaceFlags {
+        log::debug!(
+            "handle_event() with state: {:?}, event: {:?}, style: {:?}, style_override: {:?}",
+            self.state,
+            event,
+            self.style,
+            self.style_override
+        );
+
         let mut surface_flags = SurfaceFlags::default();
-        /*
-               log::debug!(
-                   "handle_event() with state: {:?}, event: {:?}, style: {:?}, style_override: {:?}",
-                   self.state,
-                   event,
-                   self.style,
-                   self.style_override
-               );
-        */
         match (self.state, event) {
             (
                 PenState::Up,
@@ -226,32 +229,12 @@ impl Pens {
                     self.handle_shortcut_key(shortcut_key, &mut surface_flags);
                 }
 
-                match self.style_w_override() {
-                    PenStyle::BrushStyle => {
-                        self.brush
-                            .begin(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::ShaperStyle => {
-                        self.shaper
-                            .begin(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::EraserStyle => {
-                        self.eraser
-                            .begin(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::SelectorStyle => {
-                        self.selector
-                            .begin(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::ToolsStyle => {
-                        self.tools
-                            .begin(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                }
+                self.pen_begin(data_entries, sheet, viewport, zoom, renderer);
 
-                surface_flags.redraw = true;
                 self.state = PenState::Down;
                 self.pen_shown = true;
+
+                surface_flags.redraw = true;
             }
             (
                 PenState::Down,
@@ -260,149 +243,113 @@ impl Pens {
                     shortcut_key: _,
                 },
             ) => {}
-            (PenState::Up, PenEvent::MotionEvent { data_entries: _ }) => {}
-            (PenState::Down, PenEvent::MotionEvent { data_entries }) => {
-                match self.style_w_override() {
-                    PenStyle::BrushStyle => {
-                        self.brush
-                            .motion(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::ShaperStyle => {
-                        self.shaper
-                            .motion(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::EraserStyle => {
-                        self.eraser
-                            .motion(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::SelectorStyle => {
-                        self.selector
-                            .motion(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::ToolsStyle => {
-                        self.tools
-                            .motion(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                }
+            (
+                PenState::Up,
+                PenEvent::MotionEvent {
+                    data_entries: _,
+                    shortcut_key: _,
+                },
+            ) => {}
+            (
+                PenState::Down,
+                PenEvent::MotionEvent {
+                    data_entries,
+                    shortcut_key: _,
+                },
+            ) => {
+                self.pen_motion(data_entries, sheet, viewport, zoom, renderer);
 
                 surface_flags.redraw = true;
             }
-            (PenState::Up, PenEvent::UpEvent { data_entries: _ }) => {}
-            (PenState::Down, PenEvent::UpEvent { data_entries }) => {
+            (
+                PenState::Up,
+                PenEvent::UpEvent {
+                    data_entries: _,
+                    shortcut_key: _,
+                },
+            ) => {}
+            (
+                PenState::Down,
+                PenEvent::UpEvent {
+                    data_entries,
+                    shortcut_key: _,
+                },
+            ) => {
                 // We deselect the selection here, before updating it when the current style is the selector
                 let all_strokes = sheet.strokes_state.keys_sorted_chrono();
                 sheet.strokes_state.set_selected_keys(&all_strokes, false);
 
-                match self.style_w_override() {
-                    PenStyle::BrushStyle => {
-                        self.brush
-                            .end(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::ShaperStyle => {
-                        self.shaper
-                            .end(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::EraserStyle => {
-                        self.eraser
-                            .end(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::SelectorStyle => {
-                        self.selector
-                            .end(data_entries, sheet, viewport, zoom, renderer);
-                    }
-                    PenStyle::ToolsStyle => {
-                        self.tools
-                            .end(data_entries, sheet, viewport, zoom, renderer);
-                    }
+                self.pen_end(data_entries, sheet, viewport, zoom, renderer);
+
+                self.state = PenState::Up;
+                self.pen_shown = false;
+
+                // Disable the style override after finishing the stroke
+                if self.style_override.take().is_some() {
+                    surface_flags.pen_changed = true;
                 }
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
                 surface_flags.sheet_changed = true;
                 surface_flags.selection_changed = true;
-
-                self.state = PenState::Up;
-                self.pen_shown = false;
-                // Disable the style override after finishing the stroke
-                self.style_override = None;
             }
             (PenState::Down, PenEvent::ChangeStyle(new_style)) => {
-                if self.style() != new_style {
+                if self.style != new_style {
                     // before changing the style, the current stroke is finished
-                    match self.style_w_override() {
-                        PenStyle::BrushStyle => {
-                            self.brush
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                        PenStyle::ShaperStyle => {
-                            self.shaper
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                        PenStyle::EraserStyle => {
-                            self.eraser
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                        PenStyle::SelectorStyle => {
-                            self.selector
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                        PenStyle::ToolsStyle => {
-                            self.tools
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                    }
-
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.sheet_changed = true;
-                    surface_flags.selection_changed = true;
+                    self.pen_end(VecDeque::new(), sheet, viewport, zoom, renderer);
 
                     self.state = PenState::Up;
                     self.pen_shown = false;
                     self.style = new_style;
-                }
-            }
-            (PenState::Up, PenEvent::ChangeStyle(new_style)) => {
-                self.style = new_style;
-            }
-            (PenState::Down, PenEvent::ChangeStyleOverride(new_style_override)) => {
-                if self.style_override() != new_style_override {
-                    // before changing the style override, the current stroke is finished
-                    match self.style_w_override() {
-                        PenStyle::BrushStyle => {
-                            self.brush
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                        PenStyle::ShaperStyle => {
-                            self.shaper
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                        PenStyle::EraserStyle => {
-                            self.eraser
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                        PenStyle::SelectorStyle => {
-                            self.selector
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                        PenStyle::ToolsStyle => {
-                            self.tools
-                                .end(VecDeque::new(), sheet, viewport, zoom, renderer);
-                        }
-                    }
 
                     surface_flags.redraw = true;
                     surface_flags.resize = true;
+                    surface_flags.pen_changed = true;
                     surface_flags.sheet_changed = true;
                     surface_flags.selection_changed = true;
+                }
+            }
+            (PenState::Up, PenEvent::ChangeStyle(new_style)) => {
+                if self.style != new_style {
+                    self.style = new_style;
+                    //self.style_override = None;
+
+                    surface_flags.pen_changed = true;
+                    surface_flags.redraw = true;
+                }
+            }
+            (PenState::Down, PenEvent::ChangeStyleOverride(new_style_override)) => {
+                if self.style_override != new_style_override {
+                    // before changing the style override, the current stroke is finished
+                    self.pen_end(VecDeque::new(), sheet, viewport, zoom, renderer);
 
                     self.pen_shown = false;
                     self.state = PenState::Up;
                     self.style_override = new_style_override;
+
+                    surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.pen_changed = true;
+                    surface_flags.sheet_changed = true;
+                    surface_flags.selection_changed = true;
                 }
             }
             (PenState::Up, PenEvent::ChangeStyleOverride(new_style_override)) => {
-                self.style_override = new_style_override;
+                if self.style_override != new_style_override {
+                    self.style_override = new_style_override;
+
+                    surface_flags.pen_changed = true;
+                    surface_flags.redraw = true;
+                }
+            }
+            (PenState::Down, PenEvent::PressedShortcutkey(shortcut_key)) => {
+                self.pen_end(VecDeque::new(), sheet, viewport, zoom, renderer);
+
+                self.handle_shortcut_key(shortcut_key, &mut surface_flags);
+            }
+            (PenState::Up, PenEvent::PressedShortcutkey(shortcut_key)) => {
+                self.handle_shortcut_key(shortcut_key, &mut surface_flags);
             }
         }
 
@@ -435,6 +382,101 @@ impl Pens {
             Ok(())
         }
     }
+    fn pen_begin(
+        &mut self,
+        data_entries: VecDeque<InputData>,
+        sheet: &mut Sheet,
+        viewport: Option<AABB>,
+        zoom: f64,
+        renderer: Arc<RwLock<Renderer>>,
+    ) {
+        match self.style_w_override() {
+            PenStyle::BrushStyle => {
+                self.brush
+                    .begin(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::ShaperStyle => {
+                self.shaper
+                    .begin(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::EraserStyle => {
+                self.eraser
+                    .begin(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::SelectorStyle => {
+                self.selector
+                    .begin(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::ToolsStyle => {
+                self.tools
+                    .begin(data_entries, sheet, viewport, zoom, renderer);
+            }
+        }
+    }
+
+    fn pen_motion(
+        &mut self,
+        data_entries: VecDeque<InputData>,
+        sheet: &mut Sheet,
+        viewport: Option<AABB>,
+        zoom: f64,
+        renderer: Arc<RwLock<Renderer>>,
+    ) {
+        match self.style_w_override() {
+            PenStyle::BrushStyle => {
+                self.brush
+                    .motion(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::ShaperStyle => {
+                self.shaper
+                    .motion(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::EraserStyle => {
+                self.eraser
+                    .motion(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::SelectorStyle => {
+                self.selector
+                    .motion(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::ToolsStyle => {
+                self.tools
+                    .motion(data_entries, sheet, viewport, zoom, renderer);
+            }
+        }
+    }
+
+    fn pen_end(
+        &mut self,
+        data_entries: VecDeque<InputData>,
+        sheet: &mut Sheet,
+        viewport: Option<AABB>,
+        zoom: f64,
+        renderer: Arc<RwLock<Renderer>>,
+    ) {
+        match self.style_w_override() {
+            PenStyle::BrushStyle => {
+                self.brush
+                    .end(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::ShaperStyle => {
+                self.shaper
+                    .end(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::EraserStyle => {
+                self.eraser
+                    .end(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::SelectorStyle => {
+                self.selector
+                    .end(data_entries, sheet, viewport, zoom, renderer);
+            }
+            PenStyle::ToolsStyle => {
+                self.tools
+                    .end(data_entries, sheet, viewport, zoom, renderer);
+            }
+        }
+    }
 
     fn handle_shortcut_key(&mut self, shortcut_key: ShortcutKey, surface_flags: &mut SurfaceFlags) {
         if let Some(&action) = self.shortcuts.get(&shortcut_key) {
@@ -442,9 +484,12 @@ impl Pens {
                 ShortcutAction::ChangePenStyle { style, permanent } => {
                     if permanent {
                         self.style = style;
-                        surface_flags.pen_change = Some(style);
+
+                        surface_flags.pen_changed = true;
                     } else {
                         self.style_override = Some(style);
+
+                        surface_flags.pen_changed = true;
                     }
                 }
             }

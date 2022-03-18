@@ -7,7 +7,6 @@ use gst::prelude::*;
 use gtk4::{glib, glib::clone};
 use rand::Rng;
 use rnote_engine::pens::brush::BrushStyle;
-use rnote_engine::pens::{PenStyle, Pens};
 
 #[derive(Debug)]
 pub struct RnoteAudioPlayer {
@@ -301,42 +300,26 @@ impl RnoteAudioPlayer {
         Ok(())
     }
 
-    pub fn play_pen_sound_begin(
-        &self,
-        timeout_time: time::Duration,
-        current_pen: PenStyle,
-        pens: &Pens,
-    ) {
+    pub fn play_brush_begin(&self, brush_style: BrushStyle) {
         if self.enabled {
-            match current_pen {
-                PenStyle::BrushStyle => match pens.brush.style {
-                    BrushStyle::Marker => {
-                        self.play_marker_sound();
-                    }
-                    BrushStyle::Solid | BrushStyle::Textured => {
-                        self.play_pencil_sound_w_timeout(timeout_time);
-                    }
-                },
-                _ => {}
+            match brush_style {
+                BrushStyle::Marker => {
+                    self.play_marker_sound();
+                }
+                BrushStyle::Solid | BrushStyle::Textured => {
+                    self.play_pencil_sound_w_timeout(Self::PLAY_TIMEOUT_TIME);
+                }
             }
         }
     }
 
-    pub fn play_pen_sound_motion(
-        &self,
-        timeout_time: time::Duration,
-        current_pen: PenStyle,
-        pens: &Pens,
-    ) {
+    pub fn play_brush_motion(&self, brush_style: BrushStyle) {
         if self.enabled {
-            match current_pen {
-                PenStyle::BrushStyle => match pens.brush.style {
-                    BrushStyle::Marker => {}
-                    BrushStyle::Solid | BrushStyle::Textured => {
-                        self.play_pencil_sound_w_timeout(timeout_time);
-                    }
-                },
-                _ => {}
+            match brush_style {
+                BrushStyle::Marker => {}
+                BrushStyle::Solid | BrushStyle::Textured => {
+                    self.play_pencil_sound_w_timeout(Self::PLAY_TIMEOUT_TIME);
+                }
             }
         }
     }

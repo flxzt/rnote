@@ -3,6 +3,7 @@ use std::sync::{Arc, RwLock};
 use super::StateTask;
 use super::{StrokeKey, StrokeStyle, StrokesState};
 use crate::compose::color::Color;
+use crate::compose::geometry::AABBHelpers;
 use crate::drawbehaviour::DrawBehaviour;
 use crate::render::{self, Renderer};
 
@@ -216,7 +217,12 @@ impl StrokesState {
             {
                 // skip if stroke is not in viewport or does not need regeneration
                 if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
+                    // Loosening the bounds to avoid strokes popping up
+                    if !viewport.expand(viewport.extents()).intersects(&stroke.bounds()) {
+                        render_comp.rendernode = None;
+                        render_comp.images = vec![];
+                        render_comp.regenerate_flag = true;
+
                         return;
                     }
                 }
@@ -229,8 +235,8 @@ impl StrokesState {
                         match render::images_to_rendernode(&images, zoom) {
                             Ok(Some(rendernode)) => {
                                 render_comp.rendernode = Some(rendernode);
-                                render_comp.regenerate_flag = false;
                                 render_comp.images = images;
+                                render_comp.regenerate_flag = false;
                             }
                             Ok(None) => {}
                             Err(e) => log::error!("stroke.gen_images() failed in regenerate_stroke_current_view() with Err {}", e),
@@ -268,7 +274,12 @@ impl StrokesState {
             {
                 // skip if stroke is not in viewport or does not need regeneration
                 if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
+                    // Loosening the bounds to avoid strokes popping up
+                    if !viewport.expand(viewport.extents()).intersects(&stroke.bounds()) {
+                        render_comp.rendernode = None;
+                        render_comp.images = vec![];
+                        render_comp.regenerate_flag = true;
+
                         return;
                     }
                 }

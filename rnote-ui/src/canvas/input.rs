@@ -174,16 +174,6 @@ pub fn process_pen_down(
                 .canvas()
                 .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-            match appwindow.canvas().pens().borrow().style_w_override() {
-                PenStyle::BrushStyle => {
-                    appwindow
-                        .audioplayer()
-                        .borrow()
-                        .play_brush_begin(appwindow.canvas().pens().borrow().brush.style);
-                }
-                _ => {}
-            }
-
             // We hide the selection modifier here already, but actually only deselect all strokes when ending the stroke (for performance reasons)
             appwindow.canvas().selection_modifier().set_visible(false);
 
@@ -203,6 +193,16 @@ pub fn process_pen_down(
     );
 
     appwindow.handle_surface_flags(surface_flags);
+
+    match appwindow.canvas().pens().borrow().style_w_override() {
+        PenStyle::BrushStyle => {
+            appwindow
+                .audioplayer()
+                .borrow()
+                .play_brush_begin(appwindow.canvas().pens().borrow().brush.style);
+        }
+        _ => {}
+    }
 }
 
 /// Process "Pen motions"
@@ -211,16 +211,6 @@ pub fn process_pen_motion(
     shortcut_key: Option<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    match appwindow.canvas().pens().borrow().style_w_override() {
-        PenStyle::BrushStyle => {
-            appwindow
-                .audioplayer()
-                .borrow()
-                .play_brush_motion(appwindow.canvas().pens().borrow().brush.style);
-        }
-        _ => {}
-    }
-
     let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
         PenEvent::MotionEvent {
             data_entries,
@@ -233,6 +223,16 @@ pub fn process_pen_motion(
     );
 
     appwindow.handle_surface_flags(surface_flags);
+
+    match appwindow.canvas().pens().borrow().style_w_override() {
+        PenStyle::BrushStyle => {
+            appwindow
+                .audioplayer()
+                .borrow()
+                .play_brush_motion(appwindow.canvas().pens().borrow().brush.style);
+        }
+        _ => {}
+    }
 }
 
 /// Process "Pen up"

@@ -1,0 +1,870 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the rnote package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: rnote\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-03-17 10:53+0100\n"
+"PO-Revision-Date: 2022-03-21 15:41+0200\n"
+"Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
+"Language-Team: \n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : n==2 ? 1 : n>10 && n%10==0 ? "
+"2 : 3);\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#. Translators: This is the App name, don't translate this.
+#: rnote-ui/data/app.desktop.in.in:4
+msgid "@APP_NAME_CAPITALIZED@"
+msgstr "@APP_NAME_CAPITALIZED@"
+
+#: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
+#: rnote-ui/src/dialogs.rs:19
+msgid "A simple drawing application to create handwritten notes"
+msgstr "יישום ציור פשוט לציור הערות בכתב יד"
+
+#. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
+#: rnote-ui/data/app.desktop.in.in:15
+msgid "Gnome;GTK;Office;Graphics;Notes;"
+msgstr "‫Gnome;GTK;כלים משרדיים;אופיס;גרפיקה;הערות;פנקס;רישומים;תרשימים;"
+
+#: rnote-ui/data/app.desktop.in.in:20
+msgid "New Window"
+msgstr "חלון חדש"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:21
+msgid ""
+"Rnote is a simple vector based drawing application for handwritten notes and "
+"to annotate documents and pictures."
+msgstr ""
+"‫Rnote הוא יישום ציור פשוט מבוסס וקטורים להערות בכתב־יד וכדי להוסיף הערות על "
+"מסמכים ותמונות."
+
+#: rnote-ui/data/app.metainfo.xml.in.in:24
+msgid ""
+"Disclaimer: The file format is still unstable. It might change between "
+"versions and break backward compatibility."
+msgstr ""
+"הבהרה: סוג הקובץ אינו יציב. הוא עשוי להשתנות בין הגרסאות והתאימות לאחור "
+"עשויה להיפגע."
+
+#: rnote-ui/data/app.metainfo.xml.in.in:32
+msgid "Main window in light colors"
+msgstr "החלון הראשי בצבעים בהירים"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:36
+msgid "Main window in dark colors"
+msgstr "החלון הראשי בצבעים כהים"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:40
+msgid "A PDF annotation"
+msgstr "הערות על PDF"
+
+#: rnote-ui/data/app.metainfo.xml.in.in:44
+msgid "A selection"
+msgstr "בחירה"
+
+#: rnote-ui/data/ui/appmenu.ui:24
+msgid "Developer mode"
+msgstr "מצב מפתחים"
+
+#: rnote-ui/data/ui/appmenu.ui:29
+msgid "Developer settings"
+msgstr "הגדרות מפתחים"
+
+#: rnote-ui/data/ui/appmenu.ui:34
+msgid "Visual debugging"
+msgstr "ניפוי שגיאות חזותי"
+
+#: rnote-ui/data/ui/appmenu.ui:39
+msgid "Renderer backend"
+msgstr "מנגנון עיבוד"
+
+#: rnote-ui/data/ui/appmenu.ui:55
+msgid "Keyboard shortcuts"
+msgstr "צירופי מקשים"
+
+#: rnote-ui/data/ui/appmenu.ui:59
+msgid "About Rnote"
+msgstr "על rnote"
+
+#: rnote-ui/data/ui/appmenu.ui:107
+msgid "Toggle fullscreen"
+msgstr "החלפת מצב מסך מלא"
+
+#: rnote-ui/data/ui/appmenu.ui:120
+msgid "Use system colors preference"
+msgstr "להשתמש בהעדפת צבעי המערכת"
+
+#: rnote-ui/data/ui/appmenu.ui:134
+msgid "Use light colors"
+msgstr "להשתמש בצבעים בהירים"
+
+#: rnote-ui/data/ui/appmenu.ui:149
+msgid "Use dark colors"
+msgstr "להשתמש בצבעים כהים"
+
+#: rnote-ui/data/ui/appwindow.ui:65 rnote-ui/data/ui/mainheader.ui:131
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
+msgid "Brush"
+msgstr "מברשת"
+
+#: rnote-ui/data/ui/appwindow.ui:72 rnote-ui/data/ui/mainheader.ui:138
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
+msgid "Shaper"
+msgstr "מעצב צורות"
+
+#: rnote-ui/data/ui/appwindow.ui:80 rnote-ui/data/ui/mainheader.ui:146
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:51
+msgid "Eraser"
+msgstr "מוחק"
+
+#: rnote-ui/data/ui/appwindow.ui:88 rnote-ui/data/ui/mainheader.ui:154
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:68
+msgid "Selector"
+msgstr "בוחר"
+
+#: rnote-ui/data/ui/appwindow.ui:96 rnote-ui/data/ui/mainheader.ui:162
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:85
+msgid "Tools"
+msgstr "כלים"
+
+#: rnote-ui/data/ui/appwindow.ui:291
+msgid "Workspace"
+msgstr "סביבת עבודה"
+
+#: rnote-ui/data/ui/appwindow.ui:302
+msgid "Settings"
+msgstr "הגדרות"
+
+#: rnote-ui/data/ui/canvasmenu.ui:24
+msgid "Draw with touch input"
+msgstr "ציור עם קלט מגע"
+
+#: rnote-ui/data/ui/canvasmenu.ui:29
+msgid "Expand mode"
+msgstr "מצב הרחבה"
+
+#: rnote-ui/data/ui/canvasmenu.ui:32
+msgid "fixed size"
+msgstr "גודל קבוע"
+
+#: rnote-ui/data/ui/canvasmenu.ui:37
+msgid "endless vertical"
+msgstr "פריסה אנכית אינסופית"
+
+#: rnote-ui/data/ui/canvasmenu.ui:42
+msgid "infinite"
+msgstr "אינסוף"
+
+#: rnote-ui/data/ui/canvasmenu.ui:49
+msgid "Show format borders"
+msgstr "הצגת גבולות תצורה"
+
+#: rnote-ui/data/ui/canvasmenu.ui:54
+msgid "Pen sounds"
+msgstr "צלילי עט"
+
+#: rnote-ui/data/ui/canvasmenu.ui:59
+msgid "Clear sheet"
+msgstr "ניקוי גיליון"
+
+#: rnote-ui/data/ui/canvasmenu.ui:65 rnote-ui/data/ui/dialogs.ui:24
+msgid "New"
+msgstr "חדש"
+
+#: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/dialogs.ui:88
+#: rnote-ui/src/dialogs.rs:195 rnote-ui/src/dialogs.rs:233
+msgid "Open"
+msgstr "פתיחה"
+
+#: rnote-ui/data/ui/canvasmenu.ui:73
+msgid "Save"
+msgstr "שמירה"
+
+#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:276
+msgid "Save as"
+msgstr "שמירה בשם"
+
+#: rnote-ui/data/ui/canvasmenu.ui:81
+msgid "Print"
+msgstr "הדפסה"
+
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:364
+msgid "Import file"
+msgstr "ייבוא קובץ"
+
+#: rnote-ui/data/ui/canvasmenu.ui:89
+msgid "Export .."
+msgstr "ייצוא אל…"
+
+#: rnote-ui/data/ui/canvasmenu.ui:91
+msgid "Export selection as SVG"
+msgstr "ייצוא הבחירה ל־SVG"
+
+#: rnote-ui/data/ui/canvasmenu.ui:95
+msgid "Export sheet as SVG"
+msgstr "ייצוא הגיליון ל־SVG"
+
+#: rnote-ui/data/ui/canvasmenu.ui:99
+msgid "Export sheet as PDF"
+msgstr "ייצוא הגיליון ל־PDF"
+
+#: rnote-ui/data/ui/canvasmenu.ui:103
+msgid "Export sheet as Xournal++ .xopp"
+msgstr "ייצוא הגיליון ל־‎.xopp של Xournal++‎"
+
+#: rnote-ui/data/ui/canvasmenu.ui:155
+msgid "Zoom to fit sheet width"
+msgstr "הגדרת התקריב כדי להתאים לרוחב הגיליון"
+
+#: rnote-ui/data/ui/colorpicker.ui:61
+msgid "Select"
+msgstr "בחירה"
+
+#: rnote-ui/data/ui/dialogs.ui:7
+msgid "New Sheet"
+msgstr "גיליון חדש"
+
+#: rnote-ui/data/ui/dialogs.ui:8
+msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
+msgstr "יצירת גיליון חדש תמחק שינויים שלא נשמרו. ליצור?"
+
+#: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:43
+#: rnote-ui/data/ui/dialogs.ui:75 rnote-ui/data/ui/dialogs.ui:107
+#: rnote-ui/src/dialogs.rs:196 rnote-ui/src/dialogs.rs:234
+#: rnote-ui/src/dialogs.rs:277 rnote-ui/src/dialogs.rs:368
+#: rnote-ui/src/dialogs.rs:410 rnote-ui/src/dialogs.rs:460
+#: rnote-ui/src/dialogs.rs:508 rnote-ui/src/dialogs.rs:559
+msgid "Cancel"
+msgstr "ביטול"
+
+#: rnote-ui/data/ui/dialogs.ui:16 rnote-ui/data/ui/dialogs.ui:48
+#: rnote-ui/data/ui/dialogs.ui:80
+msgid "Save current sheet as"
+msgstr "שמירת הגיליון הנוכחי בשם"
+
+#: rnote-ui/data/ui/dialogs.ui:39
+msgid "Quit Application"
+msgstr "יציאה מהיישום"
+
+#: rnote-ui/data/ui/dialogs.ui:40
+msgid "Any unsaved changes will be lost. Do you want to quit anyways?"
+msgstr "השינויים שלא נשמרו יאבדו. לצאת בכל זאת?"
+
+#: rnote-ui/data/ui/dialogs.ui:56
+msgid "Quit"
+msgstr "יציאה"
+
+#: rnote-ui/data/ui/dialogs.ui:71
+msgid "Open File"
+msgstr "פתיחת קובץ"
+
+#: rnote-ui/data/ui/dialogs.ui:72
+msgid "Opening this file overwrites any unsaved changes."
+msgstr "פתיחת הקובץ משכתבת על שינויים שלא נשמרו."
+
+#: rnote-ui/data/ui/dialogs.ui:103
+msgid "Clear Sheet"
+msgstr "ניקוי גיליון"
+
+#: rnote-ui/data/ui/dialogs.ui:104
+msgid "This clears the entire sheet. Please confirm."
+msgstr "פעולה זו מוחקת את תוכן הגיליון במלואו. נא לאשר."
+
+#: rnote-ui/data/ui/dialogs.ui:112
+msgid "Clear"
+msgstr "ניקוי"
+
+#: rnote-ui/data/ui/filerow.ui:55
+msgid "Rename"
+msgstr "שינוי שם"
+
+#: rnote-ui/data/ui/filerow.ui:59
+msgid "Move into trash"
+msgstr "העברה לאשפה"
+
+#: rnote-ui/data/ui/mainheader.ui:18
+msgid "New document"
+msgstr "מסמך חדש"
+
+#: rnote-ui/data/ui/mainheader.ui:19
+msgid "Draft"
+msgstr "טיוטה"
+
+#: rnote-ui/data/ui/mainheader.ui:70
+msgid "Add page"
+msgstr "הוספת עמוד"
+
+#: rnote-ui/data/ui/mainheader.ui:76
+msgid "Resize to fit sheet format"
+msgstr "שינוי הגודל כדי להתאים לתצורת הגיליון"
+
+#: rnote-ui/data/ui/mainheader.ui:86
+msgid "Undo last stroke"
+msgstr "ביטול המשיכה האחרונה"
+
+#: rnote-ui/data/ui/mainheader.ui:92
+msgid "Redo last stroke"
+msgstr "ביצוע של המשיכה האחרונה מחדש"
+
+#: rnote-ui/data/ui/settingspanel.ui:42
+msgid "General"
+msgstr "כללי"
+
+#: rnote-ui/data/ui/settingspanel.ui:45
+msgid "PDF import width (%)"
+msgstr "רוחב ייבוא PDF (%)"
+
+#: rnote-ui/data/ui/settingspanel.ui:46
+msgid "Set the width of imported PDF's in percentage to the sheet format width"
+msgstr "להגדיר את רוחב ה־PDF המיובא באחוזים מתוך רוחב תצורת הגיליון"
+
+#: rnote-ui/data/ui/settingspanel.ui:66
+msgid "PDF import image type"
+msgstr "סוג תמונת ה־PDF לייבוא"
+
+#: rnote-ui/data/ui/settingspanel.ui:67
+msgid "Set wether PDFs should be imported as vector or bitmap images"
+msgstr "להגדיר האם לייבא PDFים כווקטורים או כתמונות מפות סיביות"
+
+#: rnote-ui/data/ui/settingspanel.ui:79
+msgid "Vector"
+msgstr "וקטור"
+
+#: rnote-ui/data/ui/settingspanel.ui:86
+msgid "Bitmap"
+msgstr "מפת סיביות"
+
+#: rnote-ui/data/ui/settingspanel.ui:98
+msgid "Sheet Format"
+msgstr "תצורת גיליון"
+
+#: rnote-ui/data/ui/settingspanel.ui:101
+msgid "Format"
+msgstr "תצורה"
+
+#: rnote-ui/data/ui/settingspanel.ui:102
+msgid "Choose a format"
+msgstr "בחירת תצורה"
+
+#: rnote-ui/data/ui/settingspanel.ui:115
+msgid "Orientation"
+msgstr "כיוון"
+
+#: rnote-ui/data/ui/settingspanel.ui:116
+msgid "Set the format orientation"
+msgstr "הגדרת כיוון התצורה"
+
+#: rnote-ui/data/ui/settingspanel.ui:128
+msgid "Portrait"
+msgstr "לאורך"
+
+#: rnote-ui/data/ui/settingspanel.ui:134
+msgid "Landscape"
+msgstr "לרוחב"
+
+#: rnote-ui/data/ui/settingspanel.ui:144
+msgid "Width"
+msgstr "רוחב"
+
+#: rnote-ui/data/ui/settingspanel.ui:145
+msgid "Set the format width"
+msgstr "הגדרת רוחב התצורה"
+
+#: rnote-ui/data/ui/settingspanel.ui:158
+msgid "Height"
+msgstr "גובה"
+
+#: rnote-ui/data/ui/settingspanel.ui:159
+msgid "Set the format height"
+msgstr "הגדרת גובה התצורה"
+
+#: rnote-ui/data/ui/settingspanel.ui:172
+msgid "DPI"
+msgstr "נק׳ לאינץ׳"
+
+#: rnote-ui/data/ui/settingspanel.ui:173
+msgid "Set the DPI (dots per inch). Defaults to 96"
+msgstr "הגדרת ה־DPI (נק׳ לאינץ׳). ברירת המחדל היא 96"
+
+#: rnote-ui/data/ui/settingspanel.ui:196
+msgid "Revert"
+msgstr "שחזור"
+
+#: rnote-ui/data/ui/settingspanel.ui:205
+msgid "Apply"
+msgstr "החלה"
+
+#: rnote-ui/data/ui/settingspanel.ui:218
+msgid "Sheet Background"
+msgstr "רקע הגיליון"
+
+#: rnote-ui/data/ui/settingspanel.ui:221
+msgid "Color"
+msgstr "צבע"
+
+#: rnote-ui/data/ui/settingspanel.ui:222
+msgid "Set the background color"
+msgstr "הגדרת צבע הרקע"
+
+#: rnote-ui/data/ui/settingspanel.ui:239
+msgid "Pattern"
+msgstr "תבנית"
+
+#: rnote-ui/data/ui/settingspanel.ui:240
+msgid "Choose a background pattern"
+msgstr "בחירת תבנית הרקע"
+
+#: rnote-ui/data/ui/settingspanel.ui:253
+msgid "Pattern Color"
+msgstr "צבע תבנית"
+
+#: rnote-ui/data/ui/settingspanel.ui:254
+msgid "Set the background pattern color"
+msgstr "הגדרת צבע תבנית הרקע"
+
+#: rnote-ui/data/ui/settingspanel.ui:271
+msgid "Pattern Width"
+msgstr "רוחב התבנית"
+
+#: rnote-ui/data/ui/settingspanel.ui:272
+msgid "Set the background pattern width"
+msgstr "הגדרת רוחב תבנית הרקע"
+
+#: rnote-ui/data/ui/settingspanel.ui:285
+msgid "Pattern Height"
+msgstr "גובה התבנית"
+
+#: rnote-ui/data/ui/settingspanel.ui:286
+msgid "Set the background pattern height"
+msgstr "הגדרת גובה תבנית הרקע"
+
+#: rnote-ui/data/ui/settingspanel.ui:302
+msgid "Button Shortcuts"
+msgstr "צירופי לחצנים"
+
+#: rnote-ui/data/ui/settingspanel.ui:305
+msgid "Stylus primary button action"
+msgstr "פעולת הכפתור העיקרי בעט האלקטרוני"
+
+#: rnote-ui/data/ui/settingspanel.ui:306
+msgid "Set the action for the primary stylus button"
+msgstr "הגדרת הפעולה לכפתור העיקרי בעט האלקטרוני"
+
+#: rnote-ui/data/ui/settingspanel.ui:317
+msgid "Stylus secondary button action"
+msgstr "פעולת הכפתור המשני בעט האלקטרוני"
+
+#: rnote-ui/data/ui/settingspanel.ui:318
+msgid "Set the action for the secondary stylus button"
+msgstr "הגדרת הפעולה לכפתור המשני בעט האלקטרוני"
+
+#: rnote-ui/data/ui/settingspanel.ui:329
+msgid "Stylus \"Eraser\" button action"
+msgstr "פעולת הלחצן „מוחק” בעט האלקטרוני"
+
+#: rnote-ui/data/ui/settingspanel.ui:330
+msgid "Set the action for the \"Eraser\" stylus button"
+msgstr "הגדרת פעולת הלחצן „מוחק” בעט האלקטרוני"
+
+#: rnote-ui/data/ui/settingspanel.ui:341
+msgid "Mouse secondary button action"
+msgstr "פעולת הכפתור המשני בעכבר"
+
+#: rnote-ui/data/ui/settingspanel.ui:342
+msgid "Set the action for the secondary mouse button"
+msgstr "הגדרת פעולת הכפתור המשני בעכבר"
+
+#: rnote-ui/data/ui/shortcuts.ui:11
+msgctxt "shortcut window"
+msgid "General"
+msgstr "כללי"
+
+#: rnote-ui/data/ui/shortcuts.ui:14
+msgctxt "shortcut window"
+msgid "Show keyboard shortcuts"
+msgstr "הצגת צירופי מקשים"
+
+#: rnote-ui/data/ui/shortcuts.ui:20
+msgctxt "shortcut window"
+msgid "Close the active window"
+msgstr "סגירת החלון הפעיל"
+
+#: rnote-ui/data/ui/shortcuts.ui:26
+msgctxt "shortcut window"
+msgid "Quit the application"
+msgstr "יציאה מהיישום"
+
+#: rnote-ui/data/ui/shortcuts.ui:32
+msgctxt "shortcut window"
+msgid "Open the canvas menu"
+msgstr "פתיחת תפריט משטח הציור"
+
+#: rnote-ui/data/ui/shortcuts.ui:38
+msgctxt "shortcut window"
+msgid "Open the app menu"
+msgstr "פתיחת תפריט היישום"
+
+#: rnote-ui/data/ui/shortcuts.ui:44
+msgctxt "shortcut window"
+msgid "Toggle fullscreen"
+msgstr "החלפת מצב מסך מלא"
+
+#: rnote-ui/data/ui/shortcuts.ui:52
+msgctxt "shortcut window"
+msgid "Navigation"
+msgstr "ניווט"
+
+#: rnote-ui/data/ui/shortcuts.ui:55 rnote-ui/data/ui/shortcuts.ui:61
+msgctxt "shortcut window"
+msgid "Zoom in"
+msgstr "התקרבות"
+
+#: rnote-ui/data/ui/shortcuts.ui:67 rnote-ui/data/ui/shortcuts.ui:73
+msgctxt "shortcut window"
+msgid "Zoom out"
+msgstr "התרחקות"
+
+#: rnote-ui/data/ui/shortcuts.ui:81
+msgctxt "shortcut window"
+msgid "Sheet"
+msgstr "גיליון"
+
+#: rnote-ui/data/ui/shortcuts.ui:84
+msgctxt "shortcut window"
+msgid "New sheet"
+msgstr "גיליון חדש"
+
+#: rnote-ui/data/ui/shortcuts.ui:90
+msgctxt "shortcut window"
+msgid "Open sheet"
+msgstr "פתיחת גיליון"
+
+#: rnote-ui/data/ui/shortcuts.ui:96
+msgctxt "shortcut window"
+msgid "Save sheet"
+msgstr "שמירת גיליון"
+
+#: rnote-ui/data/ui/shortcuts.ui:102
+msgctxt "shortcut window"
+msgid "Save sheet as"
+msgstr "שמירת גיליון בשם"
+
+#: rnote-ui/data/ui/shortcuts.ui:108
+msgctxt "shortcut window"
+msgid "Clear sheet"
+msgstr "ניקוי גיליון"
+
+#: rnote-ui/data/ui/shortcuts.ui:114
+msgctxt "shortcut window"
+msgid "Print sheet"
+msgstr "הדפסת גיליון"
+
+#: rnote-ui/data/ui/shortcuts.ui:120
+msgctxt "shortcut window"
+msgid "Import file"
+msgstr "ייבוא קובץ"
+
+#: rnote-ui/data/ui/shortcuts.ui:126
+msgctxt "shortcut window"
+msgid "Drawing"
+msgstr "ציור"
+
+#: rnote-ui/data/ui/shortcuts.ui:129
+msgctxt "shortcut window"
+msgid "Delete current selection"
+msgstr "מחיקת הבחירה הנוכחית"
+
+#: rnote-ui/data/ui/shortcuts.ui:135
+msgctxt "shortcut window"
+msgid "Duplicate current selection"
+msgstr "שכפול הבחירה הנוכחית"
+
+#: rnote-ui/data/ui/shortcuts.ui:141
+msgctxt "shortcut window"
+msgid "Select all strokes"
+msgstr "בחירת כל המשיכות"
+
+#: rnote-ui/data/ui/shortcuts.ui:147
+msgctxt "shortcut window"
+msgid "Deselect all strokes"
+msgstr "ביטול בחירת המשיכות"
+
+#: rnote-ui/data/ui/shortcuts.ui:153
+msgctxt "shortcut window"
+msgid "Copy selection into clipboard"
+msgstr "העתקת הבחירה ללוח הגזירים"
+
+#: rnote-ui/data/ui/shortcuts.ui:159
+msgctxt "shortcut window"
+msgid "Paste clipboard as selection"
+msgstr "הדבקת לוח הגזירים כבחירה"
+
+#: rnote-ui/data/ui/shortcuts.ui:165
+msgctxt "shortcut window"
+msgid "Undo last stroke"
+msgstr "ביטול המשיכה האחרונה"
+
+#: rnote-ui/data/ui/shortcuts.ui:171
+msgctxt "shortcut window"
+msgid "Redo last stroke"
+msgstr "ביצוע של המשיכה האחרונה מחדש"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:77
+msgid "Change workspace directory"
+msgstr "החלפת תיקיית סביבת עבודה"
+
+#: rnote-ui/data/ui/workspacebrowser.ui:127
+msgid "Close the folded flap"
+msgstr "סגירת הדש המקופל"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:33
+msgid "Brush style"
+msgstr "סגנון מברשת"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:54
+msgid "Brush styles"
+msgstr "סגנונות מברשת"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:72
+msgid "Marker"
+msgstr "סמן"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:83
+msgid "Solid"
+msgstr "אחיד"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:94
+msgid "Textured"
+msgstr "עם מרקם"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:118
+msgid "Brush styles configuration"
+msgstr "הגדרת סגנונות מברשת"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:133
+msgid "Brush configuration"
+msgstr "הגדרות מברשת"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:153
+msgid "Density"
+msgstr "צפיפות"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:154
+msgid "The density is the amount of dots per 10x10 area"
+msgstr "צפיפות היא כמות הנקודות לשטח של 10x10"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:169
+msgid "Dot Radii"
+msgstr "רדיוסי הנקודות"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:170
+msgid "The radii of the dots"
+msgstr "הרדיוסים של הנקודות"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:200
+msgid "Distribution"
+msgstr "התפלגות"
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:201
+msgid "Choose a dots position probability distribution"
+msgstr "בחירת הסתברות התפלגות של מיקומי נקודות"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
+msgid "Selecting with a polygon"
+msgstr "בחירה עם מצולע"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:48
+msgid "Selecting with a rectangle"
+msgstr "בחירה עם ריבוע"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:72
+msgid "Lock aspectratio while resizing the selection"
+msgstr "נעילת יחס גובה רוחב בעת שינוי גודל הבחירה"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
+msgid "Select all strokes"
+msgstr "בחירת כל המשיכות"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:95
+msgid "Deselect all strokes"
+msgstr "ביטול בחירת המשיכות"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:107
+msgid "Duplicate selection"
+msgstr "שכפול הבחירה"
+
+#: rnote-ui/data/ui/penssidebar/selectorpage.ui:119
+msgid "Delete selection"
+msgstr "מחיקת הבחירה"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:34
+msgid "Smooth shapes"
+msgstr "צורות חלקות"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:47
+msgid "Rough shapes"
+msgstr "צורות מחוספסות"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:70
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:85
+msgid "Rough shapes configuration"
+msgstr "הגדרת צורות מחוספסות"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:104
+msgid "Roughness"
+msgstr "חספוס"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:105
+msgid ""
+"Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
+msgstr "מציין כמה מחוספס הציור. 0.0 הוא קו חלק. ברירת המחדל היא 1.0"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:120
+msgid "Bowing"
+msgstr "הקשתה"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:121
+msgid ""
+"How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
+"Defaults to 1.0"
+msgstr ""
+"כמה מפותלים הקווים בעת ציור צורה מחוספסת. 0.0 זה קו ישר. ברירת המחדל היא 1.0"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:136
+msgid "Curve step count"
+msgstr "מניין צעדי עקומה"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:137
+msgid "How many steps make up a curve. Defaults to 9"
+msgstr "כמה צעדים דרושים ליצירת עקומה. ברירת המחדל היא 9"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:152
+msgid "Multistroke"
+msgstr "ריבוי משיכות"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:153
+msgid "Multiple stroke generation for a sketched look. Defaults to true"
+msgstr "יצירת מספר משיכות למראה משורטט"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:184
+msgid "Line"
+msgstr "קו"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:196
+msgid "Rectangle"
+msgstr "מרובע"
+
+#: rnote-ui/data/ui/penssidebar/shaperpage.ui:209
+msgid "Ellipse"
+msgstr "אליפסה"
+
+#: rnote-ui/data/ui/penssidebar/toolspage.ui:38
+msgid "Expand the sheet vertically"
+msgstr "הרחבת הגיליון אנכית"
+
+#: rnote-ui/data/ui/penssidebar/toolspage.ui:51
+msgid "Drag stroke elements based on proximity"
+msgstr "גרירת רכיבי משיכה על בסיס מרחק"
+
+#. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
+#: rnote-ui/src/dialogs.rs:30
+msgid "translator-credits"
+msgstr "ירון שהרבני <sh.yaron@gmail.com>"
+
+#: rnote-ui/src/dialogs.rs:189
+msgid ".rnote / .xopp File"
+msgstr "קובץ ‎.rnote / .xopp"
+
+#: rnote-ui/src/dialogs.rs:192
+msgid "Open file"
+msgstr "פתיחת קובץ"
+
+#: rnote-ui/src/dialogs.rs:213
+msgid "Opening sheet failed"
+msgstr "פתיחת הגיליון נכשלה"
+
+#: rnote-ui/src/dialogs.rs:230
+msgid "Open workspace"
+msgstr "פתיחת סביבת עבודה"
+
+#: rnote-ui/src/dialogs.rs:270
+msgid ".rnote file"
+msgstr "קובץ ‎.rnote"
+
+#: rnote-ui/src/dialogs.rs:273
+msgid "Save sheet as"
+msgstr "שמירת הגיליון בשם"
+
+#: rnote-ui/src/dialogs.rs:320
+msgid "Saved sheet successfully"
+msgstr "הגיליון נשמר בהצלחה"
+
+#: rnote-ui/src/dialogs.rs:324
+msgid "Saving sheet failed"
+msgstr "שמירת הגיליון נכשלה"
+
+#: rnote-ui/src/dialogs.rs:361
+msgid "PNG / SVG / JPG / PDF file"
+msgstr "קובץ PNG / SVG / JPG / PDF"
+
+#: rnote-ui/src/dialogs.rs:367
+msgid "Import"
+msgstr "ייבוא"
+
+#: rnote-ui/src/dialogs.rs:403 rnote-ui/src/dialogs.rs:453
+msgid "SVG file"
+msgstr "קובץ SVG"
+
+#: rnote-ui/src/dialogs.rs:406
+msgid "Export Selection"
+msgstr "יצוא הבחירה"
+
+#: rnote-ui/src/dialogs.rs:409 rnote-ui/src/dialogs.rs:459
+#: rnote-ui/src/dialogs.rs:507 rnote-ui/src/dialogs.rs:558
+msgid "Export"
+msgstr "ייצוא"
+
+#: rnote-ui/src/dialogs.rs:431
+msgid "Export selection as SVG failed"
+msgstr "ייצוא הבחירה ל־SVG נכשל"
+
+#: rnote-ui/src/dialogs.rs:433
+msgid "Exported selection as SVG successfully"
+msgstr "ייצוא הבחירה ל־SVG הצליח"
+
+#: rnote-ui/src/dialogs.rs:456 rnote-ui/src/dialogs.rs:504
+#: rnote-ui/src/dialogs.rs:555
+msgid "Export Sheet"
+msgstr "ייצוא גיליון"
+
+#: rnote-ui/src/dialogs.rs:478
+msgid "Export sheet as SVG failed"
+msgstr "ייצוא הגיליון ל־SVG נכשל"
+
+#: rnote-ui/src/dialogs.rs:480
+msgid "Exported sheet as SVG successfully"
+msgstr "ייצוא הגיליון ל־SVG הצליח"
+
+#: rnote-ui/src/dialogs.rs:501
+msgid "PDF file"
+msgstr "קובץ PDF"
+
+#: rnote-ui/src/dialogs.rs:528
+msgid "Export sheet as PDF failed"
+msgstr "ייצוא הגיליון ל־PDF נכשל"
+
+#: rnote-ui/src/dialogs.rs:530
+msgid "Exported sheet as PDF successfully"
+msgstr "הגיליון יוצא ל־PDF בהצלחה"
+
+#: rnote-ui/src/dialogs.rs:552
+msgid ".xopp file"
+msgstr "קובץ ‎.xopp"

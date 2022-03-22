@@ -51,8 +51,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://poppler.freedesktop.org/poppler-22.02.0.tar.xz",
-                    "sha256": "e390c8b806f6c9f0e35c8462033e0a738bb2460ebd660bdb8b6dca01556193e1"
+                    "url": "https://poppler.freedesktop.org/poppler-22.03.0.tar.xz",
+                    "sha256": "728c78ba94d75a55f6b6355d4fbdaa6f49934d9616be58e5e679a9cfd0980e1e"
                 }
             ]
         },
@@ -104,8 +104,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://download.gnome.org/sources/pango/1.50/pango-1.50.3.tar.xz",
-                    "sha256": "4add05edf51c1fb375a1ccde7498914120e23cb280dd7395b1aeb441f1838a4c"
+                    "url": "https://download.gnome.org/sources/pango/1.50/pango-1.50.6.tar.xz",
+                    "sha256": "a998bcf36881c3ac20495d40bceb304f4eaa9175bd2967c85656434cbdafe86a"
                 }
             ]
         },
@@ -121,8 +121,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://download.gnome.org/sources/gtk/4.6/gtk-4.6.1.tar.xz",
-                    "sha256": "d85508d21cbbcd63d568a7862af5ecd63b978d7d5799cbe404c91d2389d0ec5f"
+                    "url": "https://download.gnome.org/sources/gtk/4.6/gtk-4.6.2.tar.xz",
+                    "sha256": "ff263af609a50eb76056653592d929459aef4819a444c436f6d52c6f63c1faec"
                 }
             ]
         },
@@ -138,8 +138,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://download.gnome.org/sources/libadwaita/1.0/libadwaita-1.0.2.tar.xz",
-                    "sha256": "79e56011f5532fba6cb02531249d2bcfb8a6c42495c7a7de92f8819661fea091"
+                    "url": "https://download.gnome.org/sources/libadwaita/1.1/libadwaita-1.1.0.tar.xz",
+                    "sha256": "aff598803e810cc28266472cf5bf65e5ed5b90bb3523e206b06b14527325010e"
                 }
             ]
         },

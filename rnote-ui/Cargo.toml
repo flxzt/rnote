@@ -26,7 +26,7 @@ nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.8.0", features = ["serde-serialize"] }
 gtk4 = {version = "0.4.6", features = ["v4_4"]}
 gstreamer = "0.18.3"
-adw = {version = "0.1.0", package="libadwaita"}
+adw = {version = "0.1.1", package="libadwaita"}
 cairo-rs = {version = "0.15.1", features = ["png", "svg", "pdf"]}
 svg = "0.10.0"
 gettext-rs = { version = "0.7.0", features = ["gettext-system"] }

@@ -6,23 +6,24 @@ pub trait Vector2Helpers
 where
     Self: Sized,
 {
-    fn unit_tang(&self) -> Self;
-    fn unit_norm(&self) -> Self;
+    /// The orthogonal vector, normalized to length 1
+    fn orth_unit(&self) -> Self;
+    /// a new vector by taking the mins of each x and y values
     fn mins(&self, other: &Self) -> Self;
+    /// a new vector by taking the maxs of each x and y values
     fn maxs(&self, other: &Self) -> Self;
+    /// new vectors by taking the mins and maxs of each x and y values
     fn mins_maxs(&self, other: &Self) -> (Self, Self);
+    /// calculates the angle self is "ahead" of other (counter clockwise)
+    fn angle_ahead(&self, other: &Self) -> f64;
+    /// Converts to kurbo::Point
+    fn to_kurbo_point(&self) -> kurbo::Point;
+    /// Converts to kurbo::Vec2
+    fn to_kurbo_vec(&self) -> kurbo::Vec2;
 }
 
 impl Vector2Helpers for na::Vector2<f64> {
-    fn unit_tang(&self) -> Self {
-        if self.magnitude() > 0.0 {
-            self.normalize()
-        } else {
-            na::Vector2::from_element(0.0)
-        }
-    }
-
-    fn unit_norm(&self) -> Self {
+    fn orth_unit(&self) -> Self {
         let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
 
         let normalized = if self.magnitude() > 0.0 {
@@ -59,6 +60,24 @@ impl Vector2Helpers for na::Vector2<f64> {
             (*other, *self)
         }
     }
+
+    fn angle_ahead(&self, other: &Self) -> f64 {
+        other[1].atan2(other[0]) - self[1].atan2(self[0])
+    }
+
+    fn to_kurbo_point(&self) -> kurbo::Point {
+        kurbo::Point {
+            x: self[0],
+            y: self[1],
+        }
+    }
+
+    fn to_kurbo_vec(&self) -> kurbo::Vec2 {
+        kurbo::Vec2 {
+            x: self[0],
+            y: self[1],
+        }
+    }
 }
 
 pub trait AABBHelpers
@@ -69,6 +88,8 @@ where
     fn new_zero() -> Self;
     /// New AABB, ensuring its mins, maxs are valid (maxs >= mins)
     fn new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> Self;
+    /// Asserts the AABB is valid
+    fn assert_valid(&self) -> Result<(), anyhow::Error>;
     /// Translates the AABB by a offset
     fn translate(&self, offset: na::Vector2<f64>) -> Self;
     /// Shrinks the aabb to the nearest integer of its vertices
@@ -78,11 +99,13 @@ where
     /// Clamps to the min and max bounds
     fn clamp(&self, min: Option<Self>, max: Option<Self>) -> Self;
     /// Expands on every side by the given size
-    fn expand(&self, expand_by: na::Vector2<f64>) -> Self;
+    fn expand_by(&self, expand_by: na::Vector2<f64>) -> Self;
     /// Scales the AABB by the scalefactor
-    fn scale(&self, scale: na::Vector2<f64>) -> Self;
-    /// Ensures the AABB is valid (maxs >= mins)
-    fn ensure_valid(&mut self);
+    fn scale(&self, scale: f64) -> Self;
+    /// Scales the AABB by the scale vector
+    fn scale_non_uniform(&self, scale: na::Vector2<f64>) -> Self;
+    /// Ensures the AABB is positive (maxs >= mins)
+    fn ensure_positive(&mut self);
     /// Splits the AABB horizontally in the center
     fn hsplit(&self) -> [Self; 2];
     /// Splits the AABB vertically in the center
@@ -101,6 +124,8 @@ where
     fn to_geo_polygon(&self) -> geo::Polygon<f64>;
     /// Converts a AABB to a graphene::Rect
     fn to_graphene_rect(&self) -> graphene::Rect;
+    /// Converts a AABB to a kurbo Rectangle
+    fn to_kurbo_rect(&self) -> kurbo::Rect;
 }
 
 impl AABBHelpers for AABB {
@@ -117,6 +142,21 @@ impl AABBHelpers for AABB {
             AABB::new(na::point![start[0], end[1]], na::point![end[0], start[1]])
         } else {
             AABB::new(na::point![end[0], end[1]], na::point![start[0], start[1]])
+        }
+    }
+
+    fn assert_valid(&self) -> Result<(), anyhow::Error> {
+        if self.extents()[0] < 0.0
+            || self.extents()[1] < 0.0
+            || self.maxs[0] < self.mins[0]
+            || self.maxs[1] < self.mins[1]
+        {
+            Err(anyhow::anyhow!(
+                "assert_bounds() failed, invalid bounds `{:?}`",
+                self,
+            ))
+        } else {
+            Ok(())
         }
     }
 
@@ -163,21 +203,28 @@ impl AABBHelpers for AABB {
         )
     }
 
-    fn expand(&self, expand_by: nalgebra::Vector2<f64>) -> AABB {
+    fn expand_by(&self, size: nalgebra::Vector2<f64>) -> AABB {
         AABB::new(
-            na::Point2::from(self.mins.coords - expand_by),
-            na::Point2::from(self.maxs.coords + expand_by),
+            na::Point2::from(self.mins.coords - size),
+            na::Point2::from(self.maxs.coords + size),
         )
     }
 
-    fn scale(&self, scale: nalgebra::Vector2<f64>) -> AABB {
+    fn scale(&self, scale: f64) -> AABB {
         AABB::new(
-            na::Point2::from(na::vector![self.mins[0], self.mins[1]].scale(scale[0])),
-            na::Point2::from(na::vector![self.maxs[0], self.maxs[1]].scale(scale[1])),
+            na::Point2::from(self.mins.coords.scale(scale)),
+            na::Point2::from(self.maxs.coords.scale(scale)),
         )
     }
 
-    fn ensure_valid(&mut self) {
+    fn scale_non_uniform(&self, scale: nalgebra::Vector2<f64>) -> AABB {
+        AABB::new(
+            na::Point2::from(self.mins.coords.component_mul(&scale)),
+            na::Point2::from(self.maxs.coords.component_mul(&scale)),
+        )
+    }
+
+    fn ensure_positive(&mut self) {
         if self.mins[0] > self.maxs[0] {
             std::mem::swap(&mut self.mins[0], &mut self.maxs[0]);
         }
@@ -313,6 +360,45 @@ impl AABBHelpers for AABB {
             (self.extents()[1]) as f32,
         )
     }
+
+    fn to_kurbo_rect(&self) -> kurbo::Rect {
+        kurbo::Rect::from_points(
+            self.mins.coords.to_kurbo_point(),
+            self.maxs.coords.to_kurbo_point(),
+        )
+    }
+}
+
+///
+pub trait Affine2Helpers
+where
+    Self: Sized,
+{
+    fn to_kurbo(self) -> kurbo::Affine;
+    fn from_kurbo(affine: kurbo::Affine) -> Self;
+}
+
+impl Affine2Helpers for na::Affine2<f64> {
+    fn to_kurbo(self) -> kurbo::Affine {
+        let matrix = self.to_homogeneous();
+
+        kurbo::Affine::new([
+            matrix[(0, 0)],
+            matrix[(1, 0)],
+            matrix[(0, 1)],
+            matrix[(1, 1)],
+            matrix[(0, 2)],
+            matrix[(1, 2)],
+        ])
+    }
+
+    fn from_kurbo(affine: kurbo::Affine) -> Self {
+        let matrix = affine.as_coeffs();
+        na::try_convert(na::Matrix3::new(
+            matrix[0], matrix[2], matrix[4], matrix[1], matrix[3], matrix[5], 0.0, 0.0, 1.0,
+        ))
+        .unwrap()
+    }
 }
 
 /// Scale the source size with a specified max size, while keeping its aspect ratio
@@ -362,3 +448,25 @@ pub fn scale_inner_bounds_to_new_outer_bounds(
         ],
     )
 }
+
+pub trait KurboHelpers
+where
+    Self: Sized + kurbo::Shape,
+{
+    fn bounds_as_p2d_aabb(&self) -> AABB {
+        let rect = self.bounding_box();
+        AABB::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
+    }
+}
+
+impl KurboHelpers for kurbo::PathSeg {}
+impl KurboHelpers for kurbo::Arc {}
+impl KurboHelpers for kurbo::BezPath {}
+impl KurboHelpers for kurbo::Circle {}
+impl KurboHelpers for kurbo::CircleSegment {}
+impl KurboHelpers for kurbo::CubicBez {}
+impl KurboHelpers for kurbo::Ellipse {}
+impl KurboHelpers for kurbo::Line {}
+impl KurboHelpers for kurbo::QuadBez {}
+impl KurboHelpers for kurbo::Rect {}
+impl KurboHelpers for kurbo::RoundedRect {}

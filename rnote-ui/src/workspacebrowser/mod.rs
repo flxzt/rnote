@@ -198,8 +198,10 @@ impl WorkspaceBrowser {
 
         let primary_list_factory = SignalListItemFactory::new();
 
-        primary_list_factory.connect_setup(move |_, list_item| {
+        primary_list_factory.connect_setup(clone!(@weak appwindow => move |_, list_item| {
             let filerow = FileRow::new();
+            filerow.init(&appwindow);
+
             list_item.set_child(Some(&filerow));
 
             let list_item_expr = ConstantExpression::new(list_item);
@@ -296,7 +298,8 @@ impl WorkspaceBrowser {
             basename_expr.bind(&filerow.file_label(), "label", Widget::NONE);
             icon_name_expr.bind(&filerow.file_image(), "gicon", Widget::NONE);
             content_provider_expr.bind(&filerow.drag_source(), "content", Widget::NONE);
-        });
+        }));
+
         let filefilter = FileFilter::new();
         filefilter.add_pattern("*.rnote");
         filefilter.add_pattern("*.xopp");

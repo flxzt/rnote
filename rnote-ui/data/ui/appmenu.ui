@@ -35,19 +35,6 @@
                 <attribute name="action">win.visual-debug</attribute>
               </item>
             </section>
-            <section>
-              <attribute name="label" translatable="yes">Renderer backend</attribute>
-              <item>
-                <attribute name="label">librsvg (default)</attribute>
-                <attribute name="action">win.renderer-backend</attribute>
-                <attribute name="target">librsvg</attribute>
-              </item>
-              <item>
-                <attribute name="label">resvg</attribute>
-                <attribute name="action">win.renderer-backend</attribute>
-                <attribute name="target">resvg</attribute>
-              </item>
-            </section>
           </submenu>
         </section>
         <section>

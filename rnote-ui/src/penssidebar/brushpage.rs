@@ -70,8 +70,8 @@ use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use adw::prelude::*;
 use gtk4::{gdk, Image, ListBox, MenuButton, Popover};
 use gtk4::{glib, glib::clone, subclass::prelude::*, SpinButton};
-use rnote_engine::compose::color::Color;
-use rnote_engine::compose::textured::{TexturedDotsDistribution, TexturedOptions};
+use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
+use rnote_compose::Color;
 use rnote_engine::pens::brush::BrushStyle;
 
 glib::wrapper! {
@@ -199,24 +199,24 @@ impl BrushPage {
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = Color::from(colorpicker.property::<gdk::RGBA>("current-color"));
-                let brush_style = appwindow.canvas().pens().borrow_mut().brush.style;
+                let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
 
                 match brush_style {
-                    BrushStyle::Marker => appwindow.canvas().pens().borrow_mut().brush.smooth_options.stroke_color = Some(color),
-                    BrushStyle::Solid => appwindow.canvas().pens().borrow_mut().brush.smooth_options.stroke_color = Some(color),
-                    BrushStyle::Textured => appwindow.canvas().pens().borrow_mut().brush.textured_options.stroke_color = Some(color),
+                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(color),
+                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(color),
+                    BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_color = Some(color),
                 }
             }),
         );
 
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |brush_widthscale_spinbutton| {
-                let brush_style = appwindow.canvas().pens().borrow_mut().brush.style;
+                let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
 
                 match brush_style {
-                    BrushStyle::Marker => appwindow.canvas().pens().borrow_mut().brush.smooth_options.width = brush_widthscale_spinbutton.value(),
-                    BrushStyle::Solid => appwindow.canvas().pens().borrow_mut().brush.smooth_options.width = brush_widthscale_spinbutton.value(),
-                    BrushStyle::Textured => appwindow.canvas().pens().borrow_mut().brush.textured_options.width = brush_widthscale_spinbutton.value(),
+                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.width = brush_widthscale_spinbutton.value(),
+                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.width = brush_widthscale_spinbutton.value(),
+                    BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.width = brush_widthscale_spinbutton.value(),
                 }
             }),
         );
@@ -260,7 +260,7 @@ impl BrushPage {
 
         self.imp().texturedstyle_density_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |texturedstyle_density_adj| {
-                appwindow.canvas().pens().borrow_mut().brush.textured_options.density = texturedstyle_density_adj.value();
+                appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.density = texturedstyle_density_adj.value();
             }),
         );
 
@@ -283,9 +283,9 @@ impl BrushPage {
             .get()
             .connect_value_changed(
                 clone!(@weak appwindow => move |texturedstyle_radius_x_adj| {
-                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_options.radii;
+                    let mut radii = appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii;
                     radii[0] = texturedstyle_radius_x_adj.value();
-                    appwindow.canvas().pens().borrow_mut().brush.textured_options.radii = radii;
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii = radii;
                 }),
             );
 
@@ -308,9 +308,9 @@ impl BrushPage {
             .get()
             .connect_value_changed(
                 clone!(@weak appwindow => move |texturedstyle_radius_y_adj| {
-                    let mut radii = appwindow.canvas().pens().borrow().brush.textured_options.radii;
+                    let mut radii = appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii;
                     radii[1] = texturedstyle_radius_y_adj.value();
-                    appwindow.canvas().pens().borrow_mut().brush.textured_options.radii = radii;
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.radii = radii;
                 }),
             );
 
@@ -318,8 +318,9 @@ impl BrushPage {
         self.set_texturedstyle_distribution_variant(
             appwindow
                 .canvas()
-                .pens()
+                .engine()
                 .borrow()
+                .penholder
                 .brush
                 .textured_options
                 .distribution,
@@ -334,16 +335,16 @@ impl BrushPage {
                     .as_str()
                 {
                     "uniform" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_options.distribution = TexturedDotsDistribution::Uniform;
+                        appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Uniform;
                     },
                     "normal" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_options.distribution = TexturedDotsDistribution::Normal;
+                        appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Normal;
                     },
                     "exponential" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_options.distribution = TexturedDotsDistribution::Exponential;
+                        appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Exponential;
                     },
                     "reverse-exponential" => {
-                        appwindow.canvas().pens().borrow_mut().brush.textured_options.distribution = TexturedDotsDistribution::ReverseExponential;
+                        appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::ReverseExponential;
                     },
                     _ => {
                         log::error!(

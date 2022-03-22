@@ -85,6 +85,7 @@ use gtk4::{
     gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, Label, Revealer,
     ToggleButton, Widget,
 };
+use rnote_engine::pens::penholder::PenStyle;
 
 glib::wrapper! {
     pub struct MainHeader(ObjectSubclass<imp::MainHeader>)
@@ -232,9 +233,9 @@ impl MainHeader {
 
         self.imp().add_page_button.get().connect_clicked(
             clone!(@weak appwindow => move |_add_page_button| {
-                let format_height = appwindow.canvas().sheet().borrow().format.height;
-                let new_sheet_height = appwindow.canvas().sheet().borrow().height + format_height;
-                appwindow.canvas().sheet().borrow_mut().height = new_sheet_height;
+                let format_height = appwindow.canvas().engine().borrow().sheet.format.height;
+                let new_sheet_height = appwindow.canvas().engine().borrow().sheet.height + format_height;
+                appwindow.canvas().engine().borrow_mut().sheet.height = new_sheet_height;
 
                 appwindow.canvas().update_background_rendernode(true);
             }),
@@ -242,38 +243,38 @@ impl MainHeader {
 
         self.imp().resize_to_format_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
-                appwindow.canvas().resize_sheet_to_fit_strokes();
+                appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
                 appwindow.canvas().update_background_rendernode(true);
             }),
         );
 
         self.imp().brush_toggle.get().connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"brush_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
             }
         }));
 
         self.imp().shaper_toggle.get().connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
             if shaper_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"shaper_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
             }
         }));
 
         self.imp().eraser_toggle.get().connect_toggled(clone!(@weak appwindow => move |eraser_toggle| {
             if eraser_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"eraser_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
             }
         }));
 
         self.imp().selector_toggle.get().connect_toggled(clone!(@weak appwindow => move |selector_toggle| {
             if selector_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"selector_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
             }
         }));
 
         self.imp().tools_toggle.get().connect_toggled(clone!(@weak appwindow => move |tools_toggle| {
             if tools_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"tools_style".to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
             }
         }));
 

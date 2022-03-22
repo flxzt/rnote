@@ -30,7 +30,6 @@ rnote_ui_sources = files(
     'config.rs',
     'globals.rs',
     'utils.rs',
-    'audioplayer.rs',
     'app/mod.rs',
     'app/appactions.rs',
     'appwindow/mod.rs',

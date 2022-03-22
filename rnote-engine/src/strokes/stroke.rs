@@ -1,28 +1,27 @@
-use super::bitmapimage::{self, BitmapImage};
-use super::brushstroke::{BrushStroke, BrushStrokeStyle};
-use super::inputdata::InputData;
+use super::bitmapimage::BitmapImage;
+use super::brushstroke::BrushStroke;
 use super::shapestroke::ShapeStroke;
 use super::vectorimage::VectorImage;
-use crate::compose::color::Color;
-use crate::compose::geometry::AABBHelpers;
-use crate::compose::shapes;
-use crate::compose::smooth::SmoothOptions;
-use crate::compose::transformable::{Transform, Transformable};
-use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::brush::{Brush, BrushStyle};
-use crate::render::{self, Renderer};
-use crate::strokes::element::Element;
-use crate::utils;
-
-use std::sync::{Arc, RwLock};
+use super::StrokeBehaviour;
+use crate::pens::brush::BrushStyle;
+use crate::pens::Brush;
+use crate::render;
+use crate::{utils, DrawBehaviour};
+use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
+use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::transform::Transform;
+use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::{Color, PenPath, Style};
 
 use p2d::bounding_volume::AABB;
 use rnote_fileformats::xoppformat::{self, XoppColor};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "strokestyle")]
-pub enum StrokeStyle {
+#[serde(rename = "stroke")]
+pub enum Stroke {
     #[serde(rename = "brushstroke")]
     BrushStroke(BrushStroke),
     #[serde(rename = "shapestroke")]
@@ -33,13 +32,48 @@ pub enum StrokeStyle {
     BitmapImage(BitmapImage),
 }
 
-impl Default for StrokeStyle {
+impl Default for Stroke {
     fn default() -> Self {
         Self::BrushStroke(BrushStroke::default())
     }
 }
 
-impl DrawBehaviour for StrokeStyle {
+impl StrokeBehaviour for Stroke {
+    fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
+        match self {
+            Self::BrushStroke(brushstroke) => brushstroke.gen_svgs(),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_svgs(),
+            Self::VectorImage(vectorimage) => vectorimage.gen_svgs(),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svgs(),
+        }
+    }
+
+    fn gen_images(&self, zoom: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+        match self {
+            Self::BrushStroke(brushstroke) => brushstroke.gen_images(zoom),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_images(zoom),
+            Self::VectorImage(vectorimage) => vectorimage.gen_images(zoom),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_images(zoom),
+        }
+    }
+}
+
+impl DrawBehaviour for Stroke {
+    fn draw(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        image_scale: f64,
+    ) -> Result<(), anyhow::Error> {
+        match self {
+            Stroke::BrushStroke(brushstroke) => brushstroke.draw(cx, image_scale),
+            Stroke::ShapeStroke(shapestroke) => shapestroke.draw(cx, image_scale),
+            Stroke::VectorImage(vectorimage) => vectorimage.draw(cx, image_scale),
+            Stroke::BitmapImage(bitmapimage) => bitmapimage.draw(cx, image_scale),
+        }
+    }
+}
+
+impl ShapeBehaviour for Stroke {
     fn bounds(&self) -> AABB {
         match self {
             Self::BrushStroke(brushstroke) => brushstroke.bounds(),
@@ -48,27 +82,9 @@ impl DrawBehaviour for StrokeStyle {
             Self::BitmapImage(bitmapimage) => bitmapimage.bounds(),
         }
     }
-
-    fn set_bounds(&mut self, bounds: AABB) {
-        match self {
-            Self::BrushStroke(brushstroke) => brushstroke.set_bounds(bounds),
-            Self::ShapeStroke(shapestroke) => shapestroke.set_bounds(bounds),
-            Self::VectorImage(vectorimage) => vectorimage.set_bounds(bounds),
-            Self::BitmapImage(bitmapimage) => bitmapimage.set_bounds(bounds),
-        }
-    }
-
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        match self {
-            Self::BrushStroke(brushstroke) => brushstroke.gen_svgs(offset),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_svgs(offset),
-            Self::VectorImage(vectorimage) => vectorimage.gen_svgs(offset),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svgs(offset),
-        }
-    }
 }
 
-impl Transformable for StrokeStyle {
+impl TransformBehaviour for Stroke {
     fn translate(&mut self, offset: na::Vector2<f64>) {
         match self {
             Self::BrushStroke(brushstroke) => {
@@ -121,102 +137,87 @@ impl Transformable for StrokeStyle {
     }
 }
 
-impl StrokeStyle {
+impl Stroke {
     pub fn from_xoppstroke(
         stroke: xoppformat::XoppStroke,
         offset: na::Vector2<f64>,
     ) -> Result<Self, anyhow::Error> {
-        let mut width_iter = stroke.width.iter();
+        let mut width_iter = stroke.width.into_iter();
 
         let mut smooth_options = SmoothOptions::default();
         smooth_options.stroke_color = Some(Color::from(stroke.color));
 
         // The first element is the absolute width, every following is the relative width (between 0.0 and 1.0)
-        if let Some(&width) = width_iter.next() {
+        if let Some(width) = width_iter.next() {
             smooth_options.width = width;
         }
 
-        let brush = Brush {
-            style: BrushStyle::Solid,
-            smooth_options,
-            ..Brush::default()
-        };
+        let mut brush = Brush::default();
+        brush.style = BrushStyle::Solid;
+        brush.smooth_options = smooth_options;
 
-        let elements = stroke.coords.into_iter().map(|mut coords| {
-            coords[0] += offset[0];
-            coords[1] += offset[1];
-            // Defaulting to PRESSURE_DEFAULT if width iterator is shorter than the coords vec
-            let pressure = width_iter
-                .next()
-                .map(|&width| width / smooth_options.width)
-                .unwrap_or(InputData::PRESSURE_DEFAULT);
+        let elements = stroke
+            .coords
+            .into_iter()
+            .map(|mut coords| {
+                coords[0] += offset[0];
+                coords[1] += offset[1];
+                // Defaulting to PRESSURE_DEFAULT if width iterator is shorter than the coords vec
+                let pressure = width_iter
+                    .next()
+                    .map(|width| width / smooth_options.width)
+                    .unwrap_or(Element::PRESSURE_DEFAULT);
 
-            Element::new(InputData::new(coords, pressure))
-        });
+                Element::new(coords, pressure)
+            })
+            .collect::<Vec<Element>>();
 
-        BrushStroke::new_w_elements(elements, &brush)
-            .map(|brushstroke| StrokeStyle::BrushStroke(brushstroke))
-            .ok_or(anyhow::Error::msg(
-                "BrushStroke new_w_elements() failed in from_xoppstroke()",
-            ))
+        let penpath = elements
+            .iter()
+            .zip(elements.iter().skip(1))
+            .map(|(&start, &end)| Segment::Line { start, end })
+            .collect::<PenPath>();
+
+        Ok(Stroke::BrushStroke(BrushStroke::from_penpath(
+            penpath, &brush,
+        )))
     }
 
     pub fn from_xoppimage(
-        image: xoppformat::XoppImage,
+        xopp_image: xoppformat::XoppImage,
         offset: na::Vector2<f64>,
     ) -> Result<Self, anyhow::Error> {
         let bounds = AABB::new(
-            na::point![image.left, image.top],
-            na::point![image.right, image.bottom],
+            na::point![xopp_image.left, xopp_image.top],
+            na::point![xopp_image.right, xopp_image.bottom],
         )
         .translate(offset);
 
-        let intrinsic_size = bitmapimage::extract_dimensions(&base64::decode(&image.data)?)?;
+        let bytes = base64::decode(&xopp_image.data)?;
 
-        let rectangle = shapes::Rectangle {
+        let rectangle = Rectangle {
             cuboid: p2d::shape::Cuboid::new(bounds.half_extents()),
             transform: Transform::new_w_isometry(na::Isometry2::new(bounds.center().coords, 0.0)),
         };
+        let image = render::Image::try_from_encoded_bytes(&bytes)?;
 
-        let mut bitmapimage = BitmapImage {
-            data_base64: image.data,
-            // Xopp images are always Png
-            format: bitmapimage::BitmapImageFormat::Png,
-            intrinsic_size,
-            rectangle,
-            ..BitmapImage::default()
-        };
-        bitmapimage.update_geometry();
-
-        Ok(StrokeStyle::BitmapImage(bitmapimage))
+        Ok(Stroke::BitmapImage(BitmapImage { image, rectangle }))
     }
 
-    pub fn into_xopp(
-        self,
-        current_dpi: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) -> Option<xoppformat::XoppStrokeStyle> {
-        match self {
-            StrokeStyle::BrushStroke(brushstroke) => {
-                // Xopp expects at least 4 coordinates, so stroke with elements < 2 is not exported
-                if brushstroke.elements.len() < 2 {
-                    return None;
-                }
+    pub fn into_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeType> {
+        let image_scale = 3.0;
 
+        match self {
+            Stroke::BrushStroke(brushstroke) => {
                 let (width, color): (f64, XoppColor) = match brushstroke.style {
                     // Return early if color is None
-                    BrushStrokeStyle::Marker { options } => {
-                        (options.width, options.stroke_color?.into())
-                    }
-                    BrushStrokeStyle::Solid { options } => {
-                        (options.width, options.stroke_color?.into())
-                    }
-                    BrushStrokeStyle::Textured { options } => {
-                        (options.width, options.stroke_color?.into())
-                    }
+                    Style::Smooth(options) => (options.width, options.stroke_color?.into()),
+                    Style::Rough(options) => (options.stroke_width, options.stroke_color?.into()),
+                    Style::Textured(options) => (options.width, options.stroke_color?.into()),
                 };
 
                 let tool = xoppformat::XoppTool::Pen;
+                let elements_vec = brushstroke.path.into_elements();
 
                 // The first width element is the absolute width of the stroke
                 let stroke_width =
@@ -225,26 +226,29 @@ impl StrokeStyle {
                 let mut width_vec = vec![stroke_width];
 
                 // the rest are pressures between 0.0 and 1.0
-                let mut pressures = brushstroke
-                    .elements
+                let mut pressures = elements_vec
                     .iter()
-                    .map(|element| stroke_width * element.inputdata.pressure())
+                    .map(|element| stroke_width * element.pressure)
                     .collect::<Vec<f64>>();
                 width_vec.append(&mut pressures);
 
-                let coords = brushstroke
-                    .elements
+                // Xopp expects at least 4 coordinates, so stroke with elements < 2 is not exported
+                if elements_vec.len() < 2 {
+                    return None;
+                }
+
+                let coords = elements_vec
                     .iter()
                     .map(|element| {
                         utils::convert_coord_dpi(
-                            element.inputdata.pos(),
+                            element.pos,
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         )
                     })
                     .collect::<Vec<na::Vector2<f64>>>();
 
-                Some(xoppformat::XoppStrokeStyle::XoppStroke(
+                Some(xoppformat::XoppStrokeType::XoppStroke(
                     xoppformat::XoppStroke {
                         tool,
                         color,
@@ -256,83 +260,81 @@ impl StrokeStyle {
                     },
                 ))
             }
-            StrokeStyle::ShapeStroke(shapestroke) => {
-                let shape_image = render::concat_images(
-                    shapestroke.gen_images(1.0, renderer).ok()?,
+            Stroke::ShapeStroke(shapestroke) => {
+                let shape_image = render::Image::concat_images(
+                    shapestroke.gen_images(image_scale).ok()?,
                     shapestroke.bounds(),
-                    1.0,
+                    image_scale,
                 )
                 .ok()?;
-                let image_bytes =
-                    render::image_into_encoded_bytes(shape_image, image::ImageOutputFormat::Png)
-                        .map_err(|e| {
-                            log::error!(
-                                "image_to_bytes() failed in to_xopp() for shapestroke with Err {}",
-                                e
-                            )
-                        })
-                        .ok()?;
+                let image_bytes = shape_image
+                    .into_encoded_bytes(image::ImageOutputFormat::Png)
+                    .map_err(|e| {
+                        log::error!(
+                            "image_to_bytes() failed in to_xopp() for shapestroke with Err {}",
+                            e
+                        )
+                    })
+                    .ok()?;
+                let shapestroke_bounds = shapestroke.bounds();
 
-                Some(xoppformat::XoppStrokeStyle::XoppImage(
+                Some(xoppformat::XoppStrokeType::XoppImage(
                     xoppformat::XoppImage {
                         left: utils::convert_value_dpi(
-                            shapestroke.bounds.mins[0],
+                            shapestroke_bounds.mins[0],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         top: utils::convert_value_dpi(
-                            shapestroke.bounds.mins[1],
+                            shapestroke_bounds.mins[1],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         right: utils::convert_value_dpi(
-                            shapestroke.bounds.maxs[0],
+                            shapestroke_bounds.maxs[0],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         bottom: utils::convert_value_dpi(
-                            shapestroke.bounds.maxs[1],
+                            shapestroke_bounds.maxs[1],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         data: base64::encode(&image_bytes),
                     },
                 ))
-                // FIXME: The above is unacceptably slow, needs investigation
-                //None
             }
-            StrokeStyle::VectorImage(vectorimage) => {
-                let png_data = match vectorimage.export_as_image_bytes(
-                    1.0,
-                    image::ImageOutputFormat::Png,
-                    renderer,
-                ) {
+            Stroke::VectorImage(vectorimage) => {
+                let png_data = match vectorimage
+                    .export_as_image_bytes(image::ImageOutputFormat::Png, image_scale)
+                {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
                         log::error!("bitmapimage.export_as_bytes() failed in stroke to_xopp() with Err `{}`", e);
                         return None;
                     }
                 };
+                let vectorimage_bounds = vectorimage.bounds();
 
-                Some(xoppformat::XoppStrokeStyle::XoppImage(
+                Some(xoppformat::XoppStrokeType::XoppImage(
                     xoppformat::XoppImage {
                         left: utils::convert_value_dpi(
-                            vectorimage.bounds.mins[0],
+                            vectorimage_bounds.mins[0],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         top: utils::convert_value_dpi(
-                            vectorimage.bounds.mins[1],
+                            vectorimage_bounds.mins[1],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         right: utils::convert_value_dpi(
-                            vectorimage.bounds.maxs[0],
+                            vectorimage_bounds.maxs[0],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         bottom: utils::convert_value_dpi(
-                            vectorimage.bounds.maxs[1],
+                            vectorimage_bounds.maxs[1],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
@@ -340,12 +342,10 @@ impl StrokeStyle {
                     },
                 ))
             }
-            StrokeStyle::BitmapImage(bitmapimage) => {
-                let png_data = match bitmapimage.export_as_image_bytes(
-                    1.0,
-                    image::ImageOutputFormat::Png,
-                    renderer,
-                ) {
+            Stroke::BitmapImage(bitmapimage) => {
+                let png_data = match bitmapimage
+                    .export_as_image_bytes(image::ImageOutputFormat::Png, image_scale)
+                {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
                         log::error!("bitmapimage.export_as_bytes() failed in stroke to_xopp() with Err `{}`", e);
@@ -353,25 +353,27 @@ impl StrokeStyle {
                     }
                 };
 
-                Some(xoppformat::XoppStrokeStyle::XoppImage(
+                let bounds = bitmapimage.bounds();
+
+                Some(xoppformat::XoppStrokeType::XoppImage(
                     xoppformat::XoppImage {
                         left: utils::convert_value_dpi(
-                            bitmapimage.bounds.mins[0],
+                            bounds.mins[0],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         top: utils::convert_value_dpi(
-                            bitmapimage.bounds.mins[1],
+                            bounds.mins[1],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         right: utils::convert_value_dpi(
-                            bitmapimage.bounds.maxs[0],
+                            bounds.maxs[0],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
                         bottom: utils::convert_value_dpi(
-                            bitmapimage.bounds.maxs[1],
+                            bounds.maxs[1],
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),

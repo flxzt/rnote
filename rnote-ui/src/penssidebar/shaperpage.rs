@@ -73,9 +73,9 @@ mod imp {
 use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use gtk4::{gdk, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
-use rnote_engine::compose::color::Color;
-use rnote_engine::compose::rough::roughoptions::{self, RoughOptions};
-use rnote_engine::pens::shaper::ShaperDrawStyle;
+use rnote_compose::style::rough::RoughOptions;
+use rnote_compose::Color;
+use rnote_engine::pens::shaper::ShaperStyle;
 
 glib::wrapper! {
     pub struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
@@ -191,11 +191,11 @@ impl ShaperPage {
 
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                let shaper_style = appwindow.canvas().pens().borrow_mut().shaper.drawstyle;
+                let shaper_style = appwindow.canvas().engine().borrow_mut().penholder.shaper.style;
 
                 match shaper_style {
-                    ShaperDrawStyle::Smooth => appwindow.canvas().pens().borrow_mut().shaper.smooth_options.width = width_spinbutton.value(),
-                    ShaperDrawStyle::Rough => appwindow.canvas().pens().borrow_mut().shaper.rough_options.stroke_width = width_spinbutton.value(),
+                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.width = width_spinbutton.value(),
+                    ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_width = width_spinbutton.value(),
                 }
             }),
         );
@@ -205,11 +205,11 @@ impl ShaperPage {
             Some("current-color"),
             clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
                 let color = Color::from(stroke_colorpicker.property::<gdk::RGBA>("current-color"));
-                let shaper_style = appwindow.canvas().pens().borrow_mut().shaper.drawstyle;
+                let shaper_style = appwindow.canvas().engine().borrow_mut().penholder.shaper.style;
 
                 match shaper_style {
-                    ShaperDrawStyle::Smooth => appwindow.canvas().pens().borrow_mut().shaper.smooth_options.stroke_color = Some(color),
-                    ShaperDrawStyle::Rough => appwindow.canvas().pens().borrow_mut().shaper.rough_options.stroke_color= Some(color),
+                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_color = Some(color),
+                    ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_color= Some(color),
                 }
             }),
         );
@@ -219,11 +219,11 @@ impl ShaperPage {
             Some("current-color"),
             clone!(@weak appwindow => move |fill_colorpicker, _paramspec| {
                 let color = Color::from(fill_colorpicker.property::<gdk::RGBA>("current-color"));
-                let shaper_style = appwindow.canvas().pens().borrow_mut().shaper.drawstyle;
+                let shaper_style = appwindow.canvas().engine().borrow_mut().penholder.shaper.style;
 
                 match shaper_style {
-                    ShaperDrawStyle::Smooth => appwindow.canvas().pens().borrow_mut().shaper.smooth_options.fill_color = Some(color),
-                    ShaperDrawStyle::Rough => appwindow.canvas().pens().borrow_mut().shaper.rough_options.fill_color= Some(color),
+                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.fill_color = Some(color),
+                    ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_color= Some(color),
                 }
             }),
         );
@@ -244,7 +244,7 @@ impl ShaperPage {
 
         self.imp().roughconfig_roughness_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_roughness_spinbutton| {
-                appwindow.canvas().pens().borrow_mut().shaper.rough_options.set_roughness(roughconfig_roughness_spinbutton.value());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.set_roughness(roughconfig_roughness_spinbutton.value());
             }),
         );
 
@@ -260,11 +260,11 @@ impl ShaperPage {
         self.imp()
             .roughconfig_bowing_spinbutton
             .get()
-            .set_value(roughoptions::RoughOptions::BOWING_DEFAULT);
+            .set_value(RoughOptions::BOWING_DEFAULT);
 
         self.imp().roughconfig_bowing_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_bowing_spinbutton| {
-                appwindow.canvas().pens().borrow_mut().shaper.rough_options.set_bowing(roughconfig_bowing_spinbutton.value());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.set_bowing(roughconfig_bowing_spinbutton.value());
             }),
         );
 
@@ -283,17 +283,17 @@ impl ShaperPage {
         self.imp()
             .roughconfig_curvestepcount_spinbutton
             .get()
-            .set_value(roughoptions::RoughOptions::CURVESTEPCOUNT_DEFAULT);
+            .set_value(RoughOptions::CURVESTEPCOUNT_DEFAULT);
 
         self.imp().roughconfig_curvestepcount_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_curvestepcount_spinbutton| {
-                appwindow.canvas().pens().borrow_mut().shaper.rough_options.set_curve_stepcount(roughconfig_curvestepcount_spinbutton.value());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.set_curve_stepcount(roughconfig_curvestepcount_spinbutton.value());
             }),
         );
 
         // Multistroke
         self.imp().roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
-            appwindow.canvas().pens().borrow_mut().shaper.rough_options.set_multistroke(roughconfig_multistroke_switch.state());
+            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.set_multistroke(roughconfig_multistroke_switch.state());
         }));
 
         // Smooth / Rough shape toggle

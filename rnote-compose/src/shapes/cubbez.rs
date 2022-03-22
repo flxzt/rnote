@@ -1,0 +1,226 @@
+use p2d::bounding_volume::AABB;
+use serde::{Deserialize, Serialize};
+
+use crate::shapes::ShapeBehaviour;
+use crate::transform::TransformBehaviour;
+
+use super::line::Line;
+use super::quadbez::QuadraticBezier;
+
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
+#[serde(default, rename = "cubic_bezier")]
+pub struct CubicBezier {
+    #[serde(rename = "start")]
+    pub start: na::Vector2<f64>,
+    #[serde(rename = "cp1")]
+    pub cp1: na::Vector2<f64>,
+    #[serde(rename = "cp2")]
+    pub cp2: na::Vector2<f64>,
+    #[serde(rename = "end")]
+    pub end: na::Vector2<f64>,
+}
+
+impl TransformBehaviour for CubicBezier {
+    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+        self.start += offset;
+        self.cp1 += offset;
+        self.cp2 += offset;
+        self.end += offset;
+    }
+
+    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+        let mut isometry = na::Isometry2::identity();
+        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
+
+        self.start = (isometry * na::Point2::from(self.start)).coords;
+        self.cp1 = (isometry * na::Point2::from(self.cp1)).coords;
+        self.cp2 = (isometry * na::Point2::from(self.cp2)).coords;
+        self.end = (isometry * na::Point2::from(self.end)).coords;
+    }
+
+    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+        self.start = self.start.component_mul(&scale);
+        self.cp1 = self.cp1.component_mul(&scale);
+        self.cp2 = self.cp2.component_mul(&scale);
+        self.end = self.end.component_mul(&scale);
+    }
+}
+
+impl ShapeBehaviour for CubicBezier {
+    fn bounds(&self) -> p2d::bounding_volume::AABB {
+        let mut aabb = AABB::new(na::Point2::from(self.start), na::Point2::from(self.end));
+        aabb.take_point(na::Point2::from(self.cp1));
+        aabb.take_point(na::Point2::from(self.cp2));
+        aabb
+    }
+}
+
+impl CubicBezier {
+    // See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
+    pub fn gen_w_catmull_rom(
+        first: na::Vector2<f64>,
+        second: na::Vector2<f64>,
+        third: na::Vector2<f64>,
+        forth: na::Vector2<f64>,
+    ) -> Option<Self> {
+        // Tension factor (tau)
+        let tension = 1.0;
+
+        // Creating cubic bezier with catmull-rom
+        let start = second;
+        let cp1 = second + (third - first) / (6.0 * tension);
+        let cp2 = third - (forth - second) / (6.0 * tension);
+        let end = third;
+
+        let cubbez = CubicBezier {
+            start,
+            cp1,
+            cp2,
+            end,
+        };
+
+        // returns early when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
+        if (cubbez.end - cubbez.start).magnitude() == 0.0 {
+            return None;
+        }
+
+        Some(cubbez)
+    }
+
+    /// Split a cubic bezier into two at t where t > 0.0, < 1.0
+    pub fn split(&self, t: f64) -> (CubicBezier, CubicBezier) {
+        let a0 = self.start;
+        let a1 = self.cp1;
+        let a2 = self.cp2;
+        let a3 = self.end;
+
+        let b1 = a0.lerp(&a1, t);
+        let a12 = a1.lerp(&a2, t);
+        let b2 = b1.lerp(&a12, t);
+        let c2 = a2.lerp(&a3, t);
+        let c1 = a12.lerp(&c2, t);
+        let b3 = b2.lerp(&c1, t);
+
+        (
+            CubicBezier {
+                start: a0,
+                cp1: b1,
+                cp2: b2,
+                end: b3,
+            },
+            CubicBezier {
+                start: b3,
+                cp1: c1,
+                cp2: c2,
+                end: a3,
+            },
+        )
+    }
+
+    /// Approximating a cubic bezier with a quadratic bezier
+    pub fn approx_with_quadbez(&self) -> QuadraticBezier {
+        let start = self.start;
+        let cp = self.cp1.lerp(&self.cp2, 0.5);
+        let end = self.end;
+
+        QuadraticBezier { start, cp, end }
+    }
+
+    /// Approximating a cubic bezier with lines, given the number of splits
+    pub fn approx_with_lines(&self, n_splits: i32) -> Vec<Line> {
+        let mut lines = Vec::new();
+
+        for i in 0..n_splits {
+            let start_t = f64::from(i) / f64::from(n_splits);
+            let end_t = f64::from(i + 1) / f64::from(n_splits);
+
+            lines.push(Line {
+                start: cubbez_calc(self.start, self.cp1, self.cp2, self.end, start_t),
+                end: cubbez_calc(self.start, self.cp1, self.cp2, self.end, end_t),
+            })
+        }
+
+        lines
+    }
+
+    /// Approximating a cubic bezier with lines, splitted based on critical points and the angle condition
+    pub fn approx_offsetted_w_lines_w_subdivision(
+        &self,
+        start_offset_dist: f64,
+        end_offset_dist: f64,
+        angle_split: f64,
+    ) -> Vec<Line> {
+        let t_mid = 0.5;
+        let mid_offset_dist = start_offset_dist + (end_offset_dist - start_offset_dist) * t_mid;
+        let mut lines = Vec::new();
+
+        let (first_cubic, second_cubic) = self.split(t_mid);
+        let first_quad = first_cubic.approx_with_quadbez();
+        let second_quad = second_cubic.approx_with_quadbez();
+
+        let mut quads_to_approx = vec![];
+
+        let (mut first_quads, _, _) =
+            first_quad.split_offsetted_at_critical_points(start_offset_dist, mid_offset_dist);
+        quads_to_approx.append(&mut first_quads);
+
+        let (mut second_quads, _, _) =
+            second_quad.split_offsetted_at_critical_points(mid_offset_dist, end_offset_dist);
+        quads_to_approx.append(&mut second_quads);
+
+        for mut quad_to_approx in quads_to_approx {
+            // Abort after 10 iterations
+            let mut i = 0;
+
+            while i < 10 {
+                let t = quad_to_approx.calc_quadbez_angle_condition(angle_split);
+
+                if (0.0..1.0).contains(&t) {
+                    let (first, second) = quad_to_approx.split(t);
+
+                    lines.push(Line {
+                        start: first.start,
+                        end: first.end,
+                    });
+
+                    quad_to_approx = second;
+                } else {
+                    lines.push(Line {
+                        start: quad_to_approx.start,
+                        end: quad_to_approx.end,
+                    });
+
+                    // Break if angle conditions is no longer met
+                    break;
+                }
+                i += 1;
+            }
+        }
+
+        lines
+    }
+}
+
+fn cubbez_calc(
+    p0: na::Vector2<f64>,
+    p1: na::Vector2<f64>,
+    p2: na::Vector2<f64>,
+    p3: na::Vector2<f64>,
+    t: f64,
+) -> na::Vector2<f64> {
+    let transform_matrix = na::matrix![
+        1.0, 0.0, 0.0, 0.0;
+        -3.0, 3.0, 0.0, 0.0;
+        3.0, -6.0, 3.0, 0.0;
+        -1.0, 3.0, -3.0, 1.0
+    ];
+    let p_matrix = na::matrix![
+        p0[0], p0[1];
+        p1[0], p1[1];
+        p2[0], p2[1];
+        p3[0], p3[1]
+    ];
+
+    (na::vector![1.0, t, t.powi(2), t.powi(3)].transpose() * transform_matrix * p_matrix)
+        .transpose()
+}

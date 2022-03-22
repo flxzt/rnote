@@ -1,18 +1,5 @@
 use p2d::bounding_volume::AABB;
-use rand::Rng;
-use rand::SeedableRng;
-use svg::node::{self, element};
-
-pub mod color;
-pub mod curves;
-pub mod geometry;
-pub mod rough;
-pub mod shapes;
-pub mod smooth;
-pub mod textured;
-pub mod transformable;
-
-// Miscalleneous SVG functions
+use rand::{Rng, SeedableRng};
 
 const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
 const SVG_ROOT_REGEX: &str = r#"<svg[^>]*>|<[^/svg]*/svg>"#;
@@ -80,7 +67,7 @@ pub fn wrap_svg_root(
         String::from("none")
     };
 
-    let svg_root = element::SVG::new()
+    let svg_root = svg::node::element::SVG::new()
         .set("xmlns", "http://www.w3.org/2000/svg")
         .set("xmlns:svg", "http://www.w3.org/2000/svg")
         .set("xmlns:xlink", "http://www.w3.org/1999/xlink")
@@ -90,7 +77,7 @@ pub fn wrap_svg_root(
         .set("height", height.as_str())
         .set("viewBox", viewbox.as_str())
         .set("preserveAspectRatio", preserve_aspectratio.as_str())
-        .add(node::Text::new(data));
+        .add(svg::node::Text::new(data));
 
     // unwrapping because we know its a valid Svg
     svg_node_to_string(&svg_root).unwrap()
@@ -125,4 +112,10 @@ pub fn random_id_prefix() -> String {
         .take(8)
         .map(char::from)
         .collect::<String>()
+}
+
+/// returns a new seed by generating a random value seeded from the old seed
+pub fn seed_advance(seed: u64) -> u64 {
+    let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
+    rng.gen()
 }

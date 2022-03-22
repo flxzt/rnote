@@ -1,6 +1,7 @@
-use crate::compose::color::Color;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
+
+use crate::Color;
 
 /// The rough options
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -146,9 +147,11 @@ impl RoughOptions {
     /// Curve stepcount default
     pub const CURVESTEPCOUNT_DEFAULT: f64 = 9.0;
 
+    pub const SHAPE_BOUNDS_MARGIN: f64 = 20.0;
+
     pub(super) fn apply_to_line(&self, mut path: element::Path) -> element::Path {
         path = if let Some(stroke) = self.stroke_color {
-            path.set("stroke", stroke.to_css_color())
+            path.set("stroke", stroke.to_css_color_attr())
         } else {
             path.set("stroke", "none")
         };
@@ -176,7 +179,7 @@ impl RoughOptions {
         path = path.set("stroke", "none");
 
         path = if let Some(fill) = self.fill_color {
-            path.set("fill", fill.to_css_color())
+            path.set("fill", fill.to_css_color_attr())
         } else {
             path.set("fill", "none")
         };
@@ -186,7 +189,7 @@ impl RoughOptions {
 
     pub(super) fn apply_to_rect(&self, mut rect: element::Path) -> element::Path {
         rect = if let Some(stroke) = self.stroke_color {
-            rect.set("stroke", stroke.to_css_color())
+            rect.set("stroke", stroke.to_css_color_attr())
         } else {
             rect.set("stroke", "none")
         };
@@ -212,7 +215,7 @@ impl RoughOptions {
 
     pub(super) fn apply_to_ellipse(&self, mut ellipse_path: element::Path) -> element::Path {
         ellipse_path = if let Some(stroke) = self.stroke_color {
-            ellipse_path.set("stroke", stroke.to_css_color())
+            ellipse_path.set("stroke", stroke.to_css_color_attr())
         } else {
             ellipse_path.set("stroke", "none")
         };

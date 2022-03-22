@@ -1,9 +1,9 @@
 use gtk4::{glib, graphene, gsk, Snapshot};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-use crate::compose::color::Color;
-use crate::compose::geometry::AABBHelpers;
+use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::Color;
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
@@ -118,6 +118,9 @@ pub struct Format {
     pub dpi: f64,
     #[serde(rename = "orientation")]
     pub orientation: Orientation,
+
+    #[serde(skip)]
+    pub draw_borders: bool,
 }
 
 impl Default for Format {
@@ -127,6 +130,7 @@ impl Default for Format {
             height: Self::HEIGHT_DEFAULT,
             dpi: Self::DPI_DEFAULT,
             orientation: Orientation::default(),
+            draw_borders: true,
         }
     }
 }
@@ -144,6 +148,7 @@ impl Format {
     pub const DPI_MAX: f64 = 5000.0;
     pub const DPI_DEFAULT: f64 = 96.0;
 
+    pub const FORMAT_BORDER_WIDTH: f64 = 1.0;
     pub const FORMAT_BORDER_COLOR: Color = Color {
         r: 0.6,
         g: 0.0,
@@ -151,41 +156,52 @@ impl Format {
         a: 1.0,
     };
 
-    pub fn draw(&self, sheet_bounds: AABB, snapshot: &Snapshot, zoom: f64) {
-        let border_radius = graphene::Size::new(0.0, 0.0);
-        let border_width = 1_f32;
+    pub fn draw(
+        &self,
+        snapshot: &Snapshot,
+        sheet_bounds: AABB,
+        viewport: Option<AABB>,
+    ) -> Result<(), anyhow::Error> {
+        if self.draw_borders {
+            snapshot.push_clip(&sheet_bounds.loosened(2.0).to_graphene_rect());
 
-        snapshot.push_clip(
-            &sheet_bounds
-                .scale(na::Vector2::from_element(zoom))
-                .to_graphene_rect(),
-        );
+            for page_bounds in
+                sheet_bounds.split_extended_origin_aligned(na::vector![self.width, self.height])
+            {
+                if let Some(viewport) = viewport {
+                    if !page_bounds.intersects(&viewport) {
+                        continue;
+                    }
+                }
 
-        let pages_bounds =
-            sheet_bounds.split_extended_origin_aligned(na::vector![self.width, self.height]);
+                let rounded_rect = gsk::RoundedRect::new(
+                    page_bounds.to_graphene_rect(),
+                    graphene::Size::zero(),
+                    graphene::Size::zero(),
+                    graphene::Size::zero(),
+                    graphene::Size::zero(),
+                );
 
-        for page_bounds in pages_bounds {
-            let rounded_rect = gsk::RoundedRect::new(
-                page_bounds
-                    .scale(na::Vector2::from_element(zoom))
-                    .to_graphene_rect(),
-                border_radius.clone(),
-                border_radius.clone(),
-                border_radius.clone(),
-                border_radius.clone(),
-            );
-            snapshot.append_border(
-                &rounded_rect,
-                &[border_width, border_width, border_width, border_width],
-                &[
-                    Self::FORMAT_BORDER_COLOR.to_gdk(),
-                    Self::FORMAT_BORDER_COLOR.to_gdk(),
-                    Self::FORMAT_BORDER_COLOR.to_gdk(),
-                    Self::FORMAT_BORDER_COLOR.to_gdk(),
-                ],
-            );
+                snapshot.append_border(
+                    &rounded_rect,
+                    &[
+                        Self::FORMAT_BORDER_WIDTH as f32,
+                        Self::FORMAT_BORDER_WIDTH as f32,
+                        Self::FORMAT_BORDER_WIDTH as f32,
+                        Self::FORMAT_BORDER_WIDTH as f32,
+                    ],
+                    &[
+                        Self::FORMAT_BORDER_COLOR.into(),
+                        Self::FORMAT_BORDER_COLOR.into(),
+                        Self::FORMAT_BORDER_COLOR.into(),
+                        Self::FORMAT_BORDER_COLOR.into(),
+                    ],
+                )
+            }
+
+            snapshot.pop();
         }
 
-        snapshot.pop();
+        Ok(())
     }
 }

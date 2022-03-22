@@ -1,15 +1,12 @@
-use std::sync::{Arc, RwLock};
-
 use anyhow::Context;
 use gtk4::{glib, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-use crate::compose;
-use crate::compose::color::Color;
-use crate::compose::geometry::AABBHelpers;
-use crate::render::{self, Renderer};
+use crate::render;
+use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::Color;
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
@@ -42,7 +39,7 @@ pub fn gen_hline_pattern(
     color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
-    let pattern_id = compose::random_id_prefix() + "_bg_hline_pattern";
+    let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_hline_pattern";
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
@@ -56,7 +53,7 @@ pub fn gen_hline_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color())
+                    .set("stroke", color.to_css_color_attr())
                     .set("x1", 0_f64)
                     .set("y1", 0_f64)
                     .set("x2", bounds.extents()[0])
@@ -82,7 +79,7 @@ pub fn gen_grid_pattern(
     color: Color,
     line_width: f64,
 ) -> svg::node::element::Element {
-    let pattern_id = compose::random_id_prefix() + "_bg_grid_pattern";
+    let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_grid_pattern";
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
@@ -96,7 +93,7 @@ pub fn gen_grid_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color())
+                    .set("stroke", color.to_css_color_attr())
                     .set("x1", 0_f64)
                     .set("y1", 0_f64)
                     .set("x2", column_spacing)
@@ -105,7 +102,7 @@ pub fn gen_grid_pattern(
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
-                    .set("stroke", color.to_css_color())
+                    .set("stroke", color.to_css_color_attr())
                     .set("x1", 0_f64)
                     .set("y1", 0_f64)
                     .set("x2", 0_f64)
@@ -131,7 +128,7 @@ pub fn gen_dots_pattern(
     color: Color,
     dots_width: f64,
 ) -> svg::node::element::Element {
-    let pattern_id = compose::random_id_prefix() + "_bg_dots_pattern";
+    let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_dots_pattern";
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
@@ -145,7 +142,7 @@ pub fn gen_dots_pattern(
             .add(
                 element::Rectangle::new()
                     .set("stroke", "none")
-                    .set("fill", color.to_css_color())
+                    .set("fill", color.to_css_color_attr())
                     .set("x", 0_f64)
                     .set("y", 0_f64)
                     .set("width", dots_width)
@@ -235,7 +232,7 @@ impl Background {
             .set("y", bounds.mins[1])
             .set("width", bounds.extents()[0])
             .set("height", bounds.extents()[1])
-            .set("fill", self.color.to_css_color());
+            .set("fill", self.color.to_css_color_attr());
         group = group.add(color_rect);
 
         match self.pattern {
@@ -267,98 +264,74 @@ impl Background {
                 ));
             }
         }
-        let svg_data = compose::svg_node_to_string(&group)
+        let svg_data = rnote_compose::utils::svg_node_to_string(&group)
             .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
 
         Ok(render::Svg { svg_data, bounds })
     }
 
-    pub fn gen_image(
+    fn gen_image(
         &self,
-        renderer: Arc<RwLock<Renderer>>,
-        zoom: f64,
         bounds: AABB,
+        image_scale: f64,
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let svg = self.gen_svg(bounds)?;
-        Ok(Some(render::concat_images(
-            renderer
-                .read()
-                .unwrap()
-                .gen_images(zoom, vec![svg], bounds)?,
+        Ok(Some(render::Image::concat_images(
+            render::Image::gen_images(vec![svg], bounds, image_scale)?,
             bounds,
-            zoom,
+            image_scale,
         )?))
     }
 
     pub fn regenerate_background(
         &mut self,
-        zoom: f64,
         sheet_bounds: AABB,
         viewport: Option<AABB>,
-        renderer: Arc<RwLock<Renderer>>,
+        zoom: f64,
     ) -> Result<(), anyhow::Error> {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 
-        self.image = self.gen_image(renderer, zoom, tile_bounds)?;
+        self.image = self.gen_image(tile_bounds, zoom)?;
 
-        self.update_rendernode(zoom, sheet_bounds, viewport)?;
+        self.update_rendernode(sheet_bounds, viewport)?;
         Ok(())
     }
 
-    pub fn gen_rendernode(
+    fn gen_rendernode(
         &mut self,
-        zoom: f64,
         sheet_bounds: AABB,
         viewport: Option<AABB>,
     ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
         let snapshot = Snapshot::new();
         let tile_size = self.tile_size();
 
-        snapshot.push_clip(
-            &sheet_bounds
-                .scale(na::Vector2::from_element(zoom))
-                .to_graphene_rect(),
-        );
-
         // Fill with background color just in case there is any space left between the tiles
-        snapshot.append_color(
-            &self.color.to_gdk(),
-            &sheet_bounds
-                .scale(na::Vector2::from_element(zoom))
-                .to_graphene_rect(),
-        );
+        snapshot.append_color(&self.color.into(), &sheet_bounds.to_graphene_rect());
 
         if let Some(image) = &self.image {
-            let new_texture = render::image_to_memtexture(image)
+            let new_texture = image
+                .to_memtexture()
                 .context("image_to_memtexture() failed in gen_rendernode().")?;
-            for aabb in sheet_bounds.split_extended_origin_aligned(tile_size) {
+            for splitted_bounds in sheet_bounds.split_extended_origin_aligned(tile_size) {
                 if let Some(viewport) = viewport {
-                    if !aabb.intersects(&viewport) {
+                    if !splitted_bounds.intersects(&viewport) {
                         continue;
                     }
                 }
-                snapshot.append_texture(
-                    &new_texture,
-                    &aabb
-                        .scale(na::Vector2::from_element(zoom))
-                        .to_graphene_rect(),
-                );
+                snapshot.append_texture(&new_texture, &splitted_bounds.to_graphene_rect());
             }
         }
-
-        snapshot.pop();
 
         Ok(snapshot.to_node())
     }
 
     pub fn update_rendernode(
         &mut self,
-        zoom: f64,
         sheet_bounds: AABB,
         viewport: Option<AABB>,
     ) -> Result<(), anyhow::Error> {
-        match self.gen_rendernode(zoom, sheet_bounds, viewport) {
+        match self.gen_rendernode(sheet_bounds, viewport) {
             Ok(new_rendernode) => {
                 self.rendernode = new_rendernode;
             }
@@ -373,9 +346,13 @@ impl Background {
         Ok(())
     }
 
-    pub fn draw(&self, snapshot: &Snapshot) {
+    pub fn draw(&self, snapshot: &Snapshot, sheet_bounds: AABB) {
+        snapshot.push_clip(&sheet_bounds.to_graphene_rect());
+
         self.rendernode.iter().for_each(|rendernode| {
             snapshot.append_node(rendernode);
         });
+
+        snapshot.pop();
     }
 }

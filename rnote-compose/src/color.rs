@@ -85,7 +85,7 @@ impl Color {
         self.a
     }
 
-    pub fn to_css_color(self) -> String {
+    pub fn to_css_color_attr(self) -> String {
         format!(
             "rgb({:03},{:03},{:03},{:.3})",
             (self.r * 255.0) as i32,
@@ -94,19 +94,28 @@ impl Color {
             ((1000.0 * self.a).round() / 1000.0),
         )
     }
+}
 
-    pub fn to_gdk(&self) -> gdk::RGBA {
-        gdk::RGBA::new(self.r as f32, self.g as f32, self.b as f32, self.a as f32)
-    }
-
-    pub fn to_u32(&self) -> u32 {
-        ((((self.r * 255.0).round() as u32) & 0xff) << 24)
-            | ((((self.g * 255.0).round() as u32) & 0xff) << 16)
-            | ((((self.b * 255.0).round() as u32) & 0xff) << 8)
-            | (((self.a * 255.0).round() as u32) & 0xff)
+// Piet
+impl From<piet::Color> for Color {
+    fn from(piet_color: piet::Color) -> Self {
+        let piet_rgba = piet_color.as_rgba();
+        Self {
+            r: piet_rgba.0,
+            g: piet_rgba.1,
+            b: piet_rgba.2,
+            a: piet_rgba.3,
+        }
     }
 }
 
+impl From<Color> for piet::Color {
+    fn from(color: Color) -> Self {
+        piet::Color::rgba(color.r, color.g, color.b, color.a)
+    }
+}
+
+// Tuple
 impl From<(f64, f64, f64, f64)> for Color {
     fn from(tuple: (f64, f64, f64, f64)) -> Self {
         Self {
@@ -124,6 +133,7 @@ impl From<Color> for (f64, f64, f64, f64) {
     }
 }
 
+// Gdk
 impl From<gdk::RGBA> for Color {
     fn from(gdk_color: gdk::RGBA) -> Self {
         Self {
@@ -135,7 +145,18 @@ impl From<gdk::RGBA> for Color {
     }
 }
 
-/// u32 encoded as RGBA
+impl From<Color> for gdk::RGBA {
+    fn from(color: Color) -> Self {
+        gdk::RGBA::new(
+            color.r as f32,
+            color.g as f32,
+            color.b as f32,
+            color.a as f32,
+        )
+    }
+}
+
+// u32
 impl From<u32> for Color {
     fn from(value: u32) -> Self {
         Self {
@@ -147,7 +168,16 @@ impl From<u32> for Color {
     }
 }
 
-/// From XoppColor into Color
+impl From<Color> for u32 {
+    fn from(color: Color) -> Self {
+        ((((color.r * 255.0).round() as u32) & 0xff) << 24)
+            | ((((color.g * 255.0).round() as u32) & 0xff) << 16)
+            | ((((color.b * 255.0).round() as u32) & 0xff) << 8)
+            | (((color.a * 255.0).round() as u32) & 0xff)
+    }
+}
+
+// XoppColor
 impl From<xoppformat::XoppColor> for Color {
     fn from(xopp_color: xoppformat::XoppColor) -> Self {
         Self {
@@ -159,7 +189,6 @@ impl From<xoppformat::XoppColor> for Color {
     }
 }
 
-// From Color into xoppcolor
 impl From<Color> for xoppformat::XoppColor {
     fn from(color: Color) -> Self {
         xoppformat::XoppColor {

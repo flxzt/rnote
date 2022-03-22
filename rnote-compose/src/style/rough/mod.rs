@@ -1,22 +1,23 @@
-pub mod roughoptions;
+mod roughoptions;
 mod roughshapes;
+
+// Re-exports
+pub use roughoptions::FillStyle;
+pub use roughoptions::RoughOptions;
 
 use svg::node::element::{self, path};
 
-use roughoptions::RoughOptions;
+use crate::shapes::CubicBezier;
+use crate::shapes::Ellipse;
+use crate::shapes::Line;
+use crate::shapes::Rectangle;
 
-use super::{curves, shapes};
-use crate::compose;
-
-/* The rough module.
-This is a port of the [Rough.js](https://roughjs.com/) javascript library to Rust.
-Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
-The library defines primitives to draw lines, curves, arcs, polygons, circles, and ellipses. It also supports drawing SVG paths.
-*/
+/// This is a port of the [Rough.js](https://roughjs.com/) javascript library to Rust.
+/// Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
 
 /// Generating a single line element
-pub fn line(line: curves::Line, options: &RoughOptions) -> element::Path {
-    let mut rng = compose::new_rng_default_pcg64(options.seed);
+pub fn line(line: Line, options: &RoughOptions) -> element::Path {
+    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
     let commands = if !options.disable_multistroke {
         roughshapes::doubleline(line.start, line.end, options, &mut rng)
@@ -28,8 +29,8 @@ pub fn line(line: curves::Line, options: &RoughOptions) -> element::Path {
 }
 
 /// Generating a cubic bezier curve
-pub fn cubic_bezier(cubbez: curves::CubicBezier, options: &RoughOptions) -> element::Path {
-    let mut rng = compose::new_rng_default_pcg64(options.seed);
+pub fn cubic_bezier(cubbez: CubicBezier, options: &RoughOptions) -> element::Path {
+    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
     let commands = roughshapes::cubic_bezier(
         cubbez.start,
@@ -44,8 +45,8 @@ pub fn cubic_bezier(cubbez: curves::CubicBezier, options: &RoughOptions) -> elem
 }
 
 /// Generating a rectangle
-pub fn rectangle(rectangle: shapes::Rectangle, options: &RoughOptions) -> element::Group {
-    let mut rng = compose::new_rng_default_pcg64(options.seed);
+pub fn rectangle(rectangle: Rectangle, options: &RoughOptions) -> element::Group {
+    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
     let mut commands = Vec::new();
     // Applying the transform at the end
@@ -132,7 +133,7 @@ pub fn rectangle(rectangle: shapes::Rectangle, options: &RoughOptions) -> elemen
 
 /// Generating a fill polygon
 pub fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> element::Path {
-    let mut rng = compose::new_rng_default_pcg64(options.seed);
+    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
     let mut commands = Vec::new();
     commands.append(&mut roughshapes::fill_polygon(coords, options, &mut rng));
@@ -141,8 +142,8 @@ pub fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> el
 }
 
 /// Generating a ellipse
-pub fn ellipse(ellipse: shapes::Ellipse, options: &RoughOptions) -> element::Group {
-    let mut rng = compose::new_rng_default_pcg64(options.seed);
+pub fn ellipse(ellipse: Ellipse, options: &RoughOptions) -> element::Group {
+    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
     let ellipse_result = roughshapes::ellipse(
         na::vector![0.0, 0.0],

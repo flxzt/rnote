@@ -54,7 +54,7 @@ mod imp {
                 position: Cell::new(PositionType::Right),
                 selected: Cell::new(0),
                 amount_colorbuttons: Cell::new(super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT),
-                current_color: Cell::new(super::ColorPicker::COLOR_DEFAULT.to_gdk()),
+                current_color: Cell::new(super::ColorPicker::COLOR_DEFAULT.into()),
                 currentcolor_setters: Rc::new(RefCell::new(Vec::with_capacity(
                     super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT as usize,
                 ))),
@@ -128,11 +128,11 @@ mod imp {
 
                 // store color in the buttons
                 if currentcolor_setter1.is_active() {
-                    currentcolor_setter1.set_property("color", &current_color.to_gdk().to_value());
+                    currentcolor_setter1.set_property("color", &gdk::RGBA::from(current_color).to_value());
                 } else {
                     for setter_button in &*currentcolor_setters.borrow() {
                         if setter_button.is_active() {
-                            setter_button.set_property("color", &current_color.to_gdk().to_value());
+                            setter_button.set_property("color", &gdk::RGBA::from(current_color).to_value());
                         }
                     }
                 }
@@ -367,7 +367,7 @@ mod imp {
 
 use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, PositionType, Widget};
 
-use rnote_engine::compose::color::Color;
+use rnote_compose::Color;
 
 glib::wrapper! {
     pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>)
@@ -376,7 +376,7 @@ glib::wrapper! {
 
 impl Default for ColorPicker {
     fn default() -> Self {
-        Self::new(Color::BLACK.to_gdk())
+        Self::new(Color::BLACK.into())
     }
 }
 
@@ -407,7 +407,7 @@ impl ColorPicker {
 
     pub fn set_current_color(&self, color: Option<Color>) {
         let color = color.unwrap_or(Color::TRANSPARENT);
-        self.set_property("current-color", color.to_gdk().to_value());
+        self.set_property("current-color", gdk::RGBA::from(color).to_value());
     }
 
     pub fn amount_colorbuttons(&self) -> u32 {
@@ -439,15 +439,15 @@ impl ColorPicker {
 
     pub fn load_colors(&self, all_colors: &[Color]) {
         let mut all_colors_iter = all_colors.iter();
-        if let Some(first_color) = all_colors_iter.next() {
+        if let Some(&first_color) = all_colors_iter.next() {
             self.imp()
                 .currentcolor_setter1
-                .set_color(first_color.to_gdk());
+                .set_color(first_color.into());
         }
-        for (color, colorsetter) in
+        for (&color, colorsetter) in
             all_colors_iter.zip(self.imp().currentcolor_setters.borrow().iter())
         {
-            colorsetter.set_color(color.to_gdk());
+            colorsetter.set_color(color.into());
         }
     }
 }

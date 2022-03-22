@@ -5,8 +5,9 @@ mod imp {
     use gtk4::CheckButton;
     use gtk4::{glib, glib::clone, glib::subclass::*, subclass::prelude::*, CompositeTemplate};
     use once_cell::sync::Lazy;
-    use rnote_engine::pens::shortcuts::{ShortcutAction, ShortcutKey};
-    use rnote_engine::pens::PenStyle;
+    use rnote_compose::penevent::ShortcutKey;
+    use rnote_engine::pens::penholder::PenStyle;
+    use rnote_engine::pens::shortcuts::ShortcutAction;
 
     use crate::settingspanel::penshortcutmodels::{
         ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
@@ -28,7 +29,7 @@ mod imp {
             Self {
                 key: RefCell::new(None),
                 action: RefCell::new(ShortcutAction::ChangePenStyle {
-                    style: PenStyle::EraserStyle,
+                    style: PenStyle::Eraser,
                     permanent: false,
                 }),
                 permanent_checker: TemplateChild::<CheckButton>::default(),
@@ -142,7 +143,8 @@ mod imp {
 }
 use adw::prelude::*;
 use gtk4::{glib, subclass::prelude::*};
-use rnote_engine::pens::shortcuts::{ShortcutAction, ShortcutKey};
+use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::pens::shortcuts::ShortcutAction;
 
 glib::wrapper! {
     pub struct PenShortcutRow(ObjectSubclass<imp::PenShortcutRow>)

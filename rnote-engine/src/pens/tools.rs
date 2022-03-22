@@ -1,25 +1,19 @@
-use std::collections::VecDeque;
-use std::sync::{Arc, RwLock};
-
-use crate::compose;
-use crate::compose::color::Color;
-use crate::compose::geometry::AABBHelpers;
-use crate::render::{self, Renderer};
 use crate::sheet::Sheet;
-use crate::strokes::inputdata::InputData;
 use crate::strokesstate::StrokeKey;
+use crate::{DrawOnSheetBehaviour, StrokesState};
+use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
+use rnote_compose::{Color, PenEvent};
 
-use anyhow::Context;
-use gtk4::{glib, Snapshot};
+use gtk4::glib;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, glib::Enum)]
-#[serde(rename = "tool_style")]
-#[enum_type(name = "ToolStyle")]
-pub enum ToolStyle {
+#[serde(rename = "tools_style")]
+#[enum_type(name = "ToolsStyle")]
+pub enum ToolsStyle {
     #[serde(rename = "expandsheet")]
     #[enum_value(name = "Expandsheet", nick = "expandsheet")]
     ExpandSheet,
@@ -28,7 +22,7 @@ pub enum ToolStyle {
     DragProximity,
 }
 
-impl Default for ToolStyle {
+impl Default for ToolsStyle {
     fn default() -> Self {
         Self::ExpandSheet
     }
@@ -38,9 +32,9 @@ impl Default for ToolStyle {
 #[serde(default, rename = "expandsheet_tool")]
 pub struct ExpandSheetTool {
     #[serde(skip)]
-    y_start_pos: f64,
+    start_pos_y: f64,
     #[serde(skip)]
-    y_current_pos: f64,
+    current_pos_y: f64,
     #[serde(skip)]
     strokes_below: Vec<StrokeKey>,
 }
@@ -48,8 +42,8 @@ pub struct ExpandSheetTool {
 impl Default for ExpandSheetTool {
     fn default() -> Self {
         Self {
-            y_start_pos: 0.0,
-            y_current_pos: 0.0,
+            start_pos_y: 0.0,
+            current_pos_y: 0.0,
             strokes_below: vec![],
         }
     }
@@ -69,74 +63,67 @@ impl ExpandSheetTool {
         b: 0.7,
         a: 1.0,
     };
-    pub const THRESHOLD_LINE_STROKE_WIDTH: f64 = 10.0;
+    pub const THRESHOLD_LINE_WIDTH: f64 = 4.0;
     pub const OFFSET_LINE_COLOR: Color = Color {
         r: 0.0,
         g: 0.7,
         b: 1.0,
         a: 1.0,
     };
-    pub const OFFSET_LINE_STROKE_WIDTH: f64 = 2.0;
+    pub const OFFSET_LINE_WIDTH: f64 = 2.0;
+}
 
-    pub fn draw(
+impl DrawOnSheetBehaviour for ExpandSheetTool {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, viewport: AABB) -> Option<AABB> {
+        let x = viewport.mins[0];
+        let y = self.start_pos_y;
+        let width = viewport.extents()[0];
+        let height = self.current_pos_y - self.start_pos_y;
+        let tool_bounds = AABB::new_positive(na::point![x, y], na::point![x + width, y + height]);
+
+        Some(tool_bounds)
+    }
+
+    fn draw_on_sheet(
         &self,
-        sheet_bounds: AABB,
-        zoom: f64,
-        snapshot: &Snapshot,
-        renderer: Arc<RwLock<Renderer>>,
+        cx: &mut impl piet::RenderContext,
+        _sheet_bounds: AABB,
+        viewport: AABB,
     ) -> Result<(), anyhow::Error> {
-        let x = sheet_bounds.mins[0];
-        let y = self.y_start_pos;
-        let width = sheet_bounds.extents()[0];
-        let height = self.y_current_pos - self.y_start_pos;
-        let bounds = AABB::new_positive(na::point![x, y], na::point![x + width, y + height]).ceil();
+        let x = viewport.mins[0];
+        let y = self.start_pos_y;
+        let width = viewport.extents()[0];
+        let height = self.current_pos_y - self.start_pos_y;
+        let tool_bounds = AABB::new_positive(na::point![x, y], na::point![x + width, y + height]);
 
-        let bounds_rect = svg::node::element::Rectangle::new()
-            .set("x", bounds.mins[0])
-            .set("y", bounds.mins[1])
-            .set("width", bounds.extents()[0])
-            .set("height", bounds.extents()[1])
-            .set("stroke", "none")
-            .set("fill", Self::FILL_COLOR.to_css_color())
-            .set("stroke-linejoin", "miter")
-            .set("stroke-linecap", "butt");
+        let tool_bounds_rect = kurbo::Rect::from_points(
+            tool_bounds.mins.coords.to_kurbo_point(),
+            tool_bounds.maxs.coords.to_kurbo_point(),
+        );
+        cx.fill(
+            tool_bounds_rect,
+            &piet::PaintBrush::Color(Self::FILL_COLOR.into()),
+        );
 
-        let threshold_line = svg::node::element::Line::new()
-            .set("x1", x)
-            .set("y1", y)
-            .set("x2", x + width)
-            .set("y2", y)
-            .set("stroke", Self::THRESHOLD_LINE_COLOR.to_css_color())
-            .set("stroke-width", Self::THRESHOLD_LINE_STROKE_WIDTH)
-            .set("stroke-dasharray", "16 12")
-            .set("stroke-linecap", "butt");
+        let threshold_line =
+            kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y));
 
-        let offset_line = svg::node::element::Line::new()
-            .set("x1", x)
-            .set("y1", y + height)
-            .set("x2", x + width)
-            .set("y2", y + height)
-            .set("stroke", Self::OFFSET_LINE_COLOR.to_css_color())
-            .set("stroke-width", Self::OFFSET_LINE_STROKE_WIDTH)
-            .set("stroke-linecap", "butt");
+        cx.stroke_styled(
+            threshold_line,
+            &piet::PaintBrush::Color(Self::THRESHOLD_LINE_COLOR.into()),
+            Self::THRESHOLD_LINE_WIDTH,
+            &piet::StrokeStyle::new().dash_pattern(&[12.0, 6.0]),
+        );
 
-        let group = svg::node::element::Group::new()
-            .add(bounds_rect)
-            .add(threshold_line)
-            .add(offset_line);
-
-        let svg_data = compose::svg_node_to_string(&group)?;
-        let svg = render::Svg { svg_data, bounds };
-
-        let images = renderer
-            .read()
-            .unwrap()
-            .gen_images(zoom, vec![svg], bounds)?;
-        if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
-            .context("images_to_rendernode() failed in expandsheet .draw()")?
-        {
-            snapshot.append_node(&rendernode);
-        }
+        let offset_line = kurbo::Line::new(
+            kurbo::Point::new(x, y + height),
+            kurbo::Point::new(x + width, y + height),
+        );
+        cx.stroke(
+            offset_line,
+            &piet::PaintBrush::Color(Self::OFFSET_LINE_COLOR.into()),
+            Self::OFFSET_LINE_WIDTH,
+        );
 
         Ok(())
     }
@@ -179,55 +166,51 @@ impl DragProximityTool {
         a: 0.2,
     };
     pub const RADIUS_DEFAULT: f64 = 60.0;
+}
 
-    pub fn draw(
+impl DrawOnSheetBehaviour for DragProximityTool {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+        Some(AABB::from_half_extents(
+            na::Point2::from(self.pos),
+            na::Vector2::repeat(self.radius),
+        ))
+    }
+
+    fn draw_on_sheet(
         &self,
+        cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
-        zoom: f64,
-        snapshot: &Snapshot,
-        renderer: Arc<RwLock<Renderer>>,
+        _viewport: AABB,
     ) -> Result<(), anyhow::Error> {
-        let cx = self.pos[0] + self.offset[0];
-        let cy = self.pos[1] + self.offset[1];
-        let r = self.radius;
-        let mut bounds = AABB::new_positive(
-            na::point![cx - r - Self::OUTLINE_WIDTH, cy - r - Self::OUTLINE_WIDTH],
-            na::point![cx + r + Self::OUTLINE_WIDTH, cy + r + Self::OUTLINE_WIDTH],
-        );
-        bounds.take_point(na::Point2::from(self.pos.add_scalar(-Self::OUTLINE_WIDTH)));
-        bounds.take_point(na::Point2::from(self.pos.add_scalar(Self::OUTLINE_WIDTH)));
-
-        let mut group = svg::node::element::Group::new();
+        let mut radius = self.radius;
 
         let n_circles = 7;
         for i in (0..n_circles).rev() {
-            let r = r * (f64::from(i) / f64::from(n_circles));
+            radius *= f64::from(i) / f64::from(n_circles);
 
-            let outline_circle = svg::node::element::Circle::new()
-                .set("cx", cx)
-                .set("cy", cy)
-                .set("r", r)
-                .set("stroke", Self::OUTLINE_COLOR.to_css_color())
-                .set("stroke-width", Self::OUTLINE_WIDTH)
-                .set("fill", Self::FILL_COLOR.to_css_color());
+            let circle = kurbo::Circle::new(self.pos.to_kurbo_point(), radius);
 
-            group = group.add(outline_circle);
-        }
-
-        let svg_data = compose::svg_node_to_string(&group)?;
-        let svg = render::Svg { svg_data, bounds };
-
-        let images = renderer
-            .read()
-            .unwrap()
-            .gen_images(zoom, vec![svg], bounds)?;
-        if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
-            .context("images_to_rendernode() failed in proximitytool .draw()")?
-        {
-            snapshot.append_node(&rendernode);
+            cx.fill(circle, &piet::PaintBrush::Color(Self::FILL_COLOR.into()));
+            cx.stroke(
+                circle,
+                &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
+                Self::OUTLINE_WIDTH,
+            );
         }
 
         Ok(())
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+enum ToolsState {
+    UpState,
+    DownState,
+}
+
+impl Default for ToolsState {
+    fn default() -> Self {
+        Self::UpState
     }
 }
 
@@ -235,132 +218,143 @@ impl DragProximityTool {
 #[serde(default, rename = "tools")]
 pub struct Tools {
     #[serde(rename = "style")]
-    pub style: ToolStyle,
+    pub style: ToolsStyle,
     #[serde(skip)]
     pub expand_sheet_tool: ExpandSheetTool,
     #[serde(skip)]
     pub drag_proximity_tool: DragProximityTool,
+
+    #[serde(skip)]
+    state: ToolsState,
 }
 
 impl PenBehaviour for Tools {
-    fn begin(
+    fn handle_event(
         &mut self,
-        mut data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
-        if let Some(inputdata) = data_entries.pop_back() {
-            let current_style = self.style;
-
-            match current_style {
-                ToolStyle::ExpandSheet => {
-                    self.expand_sheet_tool.y_start_pos = inputdata.pos()[1];
-                    self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
-
-                    let y_current_pos = self.expand_sheet_tool.y_current_pos;
-
-                    self.expand_sheet_tool.strokes_below =
-                        sheet.strokes_state.keys_below_y_pos(y_current_pos);
-                }
-                ToolStyle::DragProximity => {
-                    self.drag_proximity_tool.pos = inputdata.pos();
-                    self.drag_proximity_tool.offset = na::Vector2::zeros();
-                }
-            }
-        }
-    }
-
-    fn motion(
-        &mut self,
-        mut data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
+        event: PenEvent,
+        _sheet: &mut Sheet,
+        strokes_state: &mut StrokesState,
+        viewport: Option<AABB>,
         zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
     ) {
-        if let Some(inputdata) = data_entries.pop_back() {
-            let current_style = self.style;
+        match (self.state, event) {
+            (
+                ToolsState::UpState,
+                PenEvent::Down {
+                    element,
+                    shortcut_key: _,
+                },
+            ) => {
+                match self.style {
+                    ToolsStyle::ExpandSheet => {
+                        self.expand_sheet_tool.start_pos_y = element.pos[1];
+                        self.expand_sheet_tool.current_pos_y = element.pos[1];
 
-            match current_style {
-                ToolStyle::ExpandSheet => {
-                    let y_offset = inputdata.pos()[1] - self.expand_sheet_tool.y_current_pos;
-
-                    if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
-                        sheet.strokes_state.translate_strokes(
-                            &self.expand_sheet_tool.strokes_below,
-                            na::vector![0.0, y_offset],
-                            zoom,
-                        );
-
-                        self.expand_sheet_tool.y_current_pos = inputdata.pos()[1];
+                        self.expand_sheet_tool.strokes_below =
+                            strokes_state.keys_below_y_pos(self.expand_sheet_tool.current_pos_y);
+                    }
+                    ToolsStyle::DragProximity => {
+                        self.drag_proximity_tool.pos = element.pos;
+                        self.drag_proximity_tool.offset = na::Vector2::zeros();
                     }
                 }
-                ToolStyle::DragProximity => {
-                    let offset = inputdata.pos() - self.drag_proximity_tool.pos;
+
+                self.state = ToolsState::DownState;
+            }
+            (
+                ToolsState::DownState,
+                PenEvent::Down {
+                    element,
+                    shortcut_key: _,
+                },
+            ) => match self.style {
+                ToolsStyle::ExpandSheet => {
+                    let y_offset = element.pos[1] - self.expand_sheet_tool.current_pos_y;
+
+                    if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
+                        strokes_state.translate_strokes(
+                            &self.expand_sheet_tool.strokes_below,
+                            na::vector![0.0, y_offset],
+                        );
+
+                        self.expand_sheet_tool.current_pos_y = element.pos[1];
+                    }
+                }
+                ToolsStyle::DragProximity => {
+                    let offset = element.pos - self.drag_proximity_tool.pos;
                     self.drag_proximity_tool.offset = offset;
 
                     if self.drag_proximity_tool.offset.magnitude()
                         > DragProximityTool::OFFSET_MAGN_THRESHOLD
                     {
-                        sheet.strokes_state.drag_strokes_proximity(
-                            &self.drag_proximity_tool,
-                            renderer,
-                            zoom,
-                        );
+                        strokes_state.drag_strokes_proximity(&self.drag_proximity_tool);
+                        strokes_state
+                            .regenerate_rendering_current_view_threaded(viewport, false, zoom);
 
-                        self.drag_proximity_tool.pos = inputdata.pos();
+                        self.drag_proximity_tool.pos = element.pos;
                         self.drag_proximity_tool.offset = na::Vector2::zeros();
                     }
                 }
+            },
+            (ToolsState::UpState, PenEvent::Up { .. }) => {}
+            (ToolsState::DownState, PenEvent::Up { .. }) => {
+                self.reset();
+                self.state = ToolsState::UpState;
+            }
+            (ToolsState::UpState, PenEvent::Proximity { .. }) => {}
+            (ToolsState::DownState, PenEvent::Proximity { .. }) => {
+                self.reset();
+                self.state = ToolsState::UpState;
+            }
+            (ToolsState::UpState, PenEvent::Cancel) => {}
+            (ToolsState::DownState, PenEvent::Cancel) => {
+                self.reset();
+                self.state = ToolsState::UpState;
             }
         }
     }
+}
 
-    fn end(
-        &mut self,
-        _data_entries: VecDeque<InputData>,
-        _sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
+impl DrawOnSheetBehaviour for Tools {
+    fn bounds_on_sheet(&self, sheet_bounds: AABB, viewport: AABB) -> Option<AABB> {
+        match self.style {
+            ToolsStyle::ExpandSheet => self.expand_sheet_tool.bounds_on_sheet(sheet_bounds, viewport),
+            ToolsStyle::DragProximity => self.drag_proximity_tool.bounds_on_sheet(sheet_bounds, viewport),
+        }
+    }
+
+    fn draw_on_sheet(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        sheet_bounds: AABB,
+        viewport: AABB,
+    ) -> Result<(), anyhow::Error> {
+        match &self.style {
+            ToolsStyle::ExpandSheet => {
+                self.expand_sheet_tool
+                    .draw_on_sheet(cx, sheet_bounds, viewport)
+            }
+            ToolsStyle::DragProximity => {
+                self.drag_proximity_tool
+                    .draw_on_sheet(cx, sheet_bounds, viewport)
+            }
+        }
+    }
+}
+
+impl Tools {
+    fn reset(&mut self) {
         let current_style = self.style;
 
         match current_style {
-            ToolStyle::ExpandSheet => {
-                self.expand_sheet_tool.y_start_pos = 0.0;
-                self.expand_sheet_tool.y_current_pos = 0.0;
+            ToolsStyle::ExpandSheet => {
+                self.expand_sheet_tool.start_pos_y = 0.0;
+                self.expand_sheet_tool.current_pos_y = 0.0;
             }
-            ToolStyle::DragProximity => {
+            ToolsStyle::DragProximity => {
                 self.drag_proximity_tool.pos = na::Vector2::zeros();
                 self.drag_proximity_tool.offset = na::Vector2::zeros();
             }
         }
-    }
-
-    fn draw(
-        &self,
-        snapshot: &Snapshot,
-        sheet: &Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) -> Result<(), anyhow::Error> {
-        let sheet_bounds = sheet.bounds();
-
-        match &self.style {
-            ToolStyle::ExpandSheet => {
-                self.expand_sheet_tool
-                    .draw(sheet_bounds, zoom, snapshot, renderer)?;
-            }
-            ToolStyle::DragProximity => {
-                self.drag_proximity_tool
-                    .draw(sheet_bounds, zoom, snapshot, renderer)?;
-            }
-        }
-
-        Ok(())
     }
 }

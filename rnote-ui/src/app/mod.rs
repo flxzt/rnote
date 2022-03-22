@@ -9,17 +9,17 @@ mod imp {
     use adw::subclass::prelude::AdwApplicationImpl;
     use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
     use once_cell::sync::Lazy;
-    use rnote_engine::compose::textured::TexturedDotsDistribution;
+    use rnote_compose::style::textured::TexturedDotsDistribution;
+    use rnote_engine::pens::penholder::PenStyle;
     use rnote_engine::{
-        pens::PenStyle,
         sheet::format::MeasureUnit,
         sheet::{background::PatternStyle, format::PredefinedFormat},
     };
 
     use crate::{
-        appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvas::ExpandMode,
-        canvasmenu::CanvasMenu, colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
-        config, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
+        appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::RnoteCanvas, canvasmenu::CanvasMenu,
+        colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker, config,
+        mainheader::MainHeader, penssidebar::brushpage::BrushPage,
         penssidebar::eraserpage::EraserPage, penssidebar::selectorpage::SelectorPage,
         penssidebar::shaperpage::ShaperPage, penssidebar::toolspage::ToolsPage,
         penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
@@ -96,8 +96,7 @@ mod imp {
         fn activate(&self, app: &Self::Type) {
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
-            Canvas::static_type();
-            ExpandMode::static_type();
+            RnoteCanvas::static_type();
             ColorPicker::static_type();
             ColorSetter::static_type();
             SelectionModifier::static_type();
@@ -127,12 +126,6 @@ mod imp {
             let resource = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
                 .expect("Could not load gresource file");
             gio::resources_register(&resource);
-
-            // init gstreamer
-            if let Err(e) = gst::init() {
-                log::error!("failed to initialize gstreamer. Err `{}`. Aborting.", e);
-                return;
-            }
 
             let appwindow = RnoteAppWindow::new(app.upcast_ref::<gtk4::Application>());
             appwindow.init();
@@ -226,7 +219,6 @@ impl RnoteApp {
     // Anything that needs to be done right before showing the appwindow
     pub fn init_misc(&self, appwindow: &RnoteAppWindow) {
         appwindow.canvas().return_to_origin_page();
-        appwindow.canvas().resize_sheet_autoexpand();
         appwindow.canvas().regenerate_background(false);
         appwindow.canvas().regenerate_content(true, true);
     }

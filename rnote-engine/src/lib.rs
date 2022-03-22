@@ -1,8 +1,9 @@
 #![warn(missing_debug_implementations)]
 //#![warn(missing_docs)]
 
-pub mod compose;
-pub mod drawbehaviour;
+pub mod camera;
+mod drawbehaviour;
+pub mod engine;
 pub mod pens;
 pub mod render;
 pub mod sheet;
@@ -11,9 +12,20 @@ pub mod strokesstate;
 pub mod surfaceflags;
 pub mod utils;
 
-extern crate gstreamer as gst;
+// Re-exports
+pub use camera::Camera;
+pub use drawbehaviour::DrawBehaviour;
+pub use drawbehaviour::DrawOnSheetBehaviour;
+pub use engine::RnoteEngine;
+pub use pens::PenHolder;
+pub use sheet::Sheet;
+pub use strokesstate::StrokesState;
+pub use surfaceflags::SurfaceFlags;
+
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;
+#[macro_use]
+extern crate lazy_static;
 
 #[cfg(test)]
 mod tests {

@@ -1,23 +1,18 @@
-use std::collections::VecDeque;
-use std::sync::{Arc, RwLock};
-
-use crate::compose::{self, color::Color};
-use crate::render::{self, Renderer};
+use super::penbehaviour::PenBehaviour;
 use crate::sheet::Sheet;
-use crate::strokes::inputdata::InputData;
+use crate::{DrawOnSheetBehaviour, StrokesState};
+use rnote_compose::helpers::Vector2Helpers;
+use rnote_compose::penpath::Element;
+use rnote_compose::{Color, PenEvent};
 
-use anyhow::Context;
-use gtk4::{glib, Snapshot};
+use gtk4::glib;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
-use svg::node::element;
-
-use super::penbehaviour::PenBehaviour;
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
 #[serde(rename = "selector_style")]
 #[enum_type(name = "SelectorStyle")]
-pub enum SelectorStyle {
+pub enum SelectorType {
     #[serde(rename = "polygon")]
     #[enum_value(name = "Polygon", nick = "polygon")]
     Polygon,
@@ -30,192 +25,85 @@ pub enum SelectorStyle {
 #[serde(default, rename = "selector")]
 pub struct Selector {
     #[serde(rename = "style")]
-    pub style: SelectorStyle,
+    pub style: SelectorType,
     #[serde(skip)]
-    pub path: Vec<InputData>,
+    pub path: Vec<Element>,
 }
 
 impl Default for Selector {
     fn default() -> Self {
         Self {
-            style: SelectorStyle::Polygon,
+            style: SelectorType::Polygon,
             path: vec![],
         }
     }
 }
 
 impl PenBehaviour for Selector {
-    fn begin(
+    fn handle_event(
         &mut self,
-        mut data_entries: VecDeque<InputData>,
+        event: PenEvent,
         _sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
-        //log::debug!("selector begin");
-
-        self.path.clear();
-
-        if let Some(inputdata) = data_entries.pop_back() {
-            self.path.push(inputdata);
-        }
-    }
-
-    fn motion(
-        &mut self,
-        mut data_entries: VecDeque<InputData>,
-        _sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
-        //log::debug!("selector motion. data_entries: {:?}, self.path.len(): {}", data_entries, self.path.len());
-
-        if let Some(inputdata) = data_entries.pop_back() {
-            let style = self.style;
-
-            match style {
-                SelectorStyle::Polygon => {
-                    self.path.push(inputdata);
-                }
-                SelectorStyle::Rectangle => {
-                    self.path.push(inputdata);
-
-                    if self.path.len() > 2 {
-                        self.path.resize(2, InputData::default());
-                        self.path.insert(1, inputdata);
-                    }
-                }
-            }
-        }
-    }
-
-    fn end(
-        &mut self,
-        _data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
+        strokes_state: &mut StrokesState,
         viewport: Option<AABB>,
         zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
     ) {
-        //log::debug!("selector end");
+        match event {
+            PenEvent::Down {
+                element,
+                shortcut_key: _,
+            } => {
+                let style = self.style;
 
-        sheet
-            .strokes_state
-            .update_selection_for_selector(&self, viewport);
+                match style {
+                    SelectorType::Polygon => {
+                        self.path.push(element);
+                    }
+                    SelectorType::Rectangle => {
+                        self.path.push(element);
 
-        let selection_keys = sheet.strokes_state.selection_keys_as_rendered();
-        sheet
-            .strokes_state
-            .regenerate_rendering_for_strokes(&selection_keys, renderer, zoom);
-
-        self.path.clear();
-    }
-
-    fn draw(
-        &self,
-        snapshot: &Snapshot,
-        _sheet: &Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) -> Result<(), anyhow::Error> {
-        if let Some(bounds) = self.gen_bounds() {
-            let mut data = element::path::Data::new();
-            let offset = na::vector![0.0, 0.0];
-
-            match self.style {
-                SelectorStyle::Polygon => {
-                    for (i, element) in self.path.iter().enumerate() {
-                        if i == 0 {
-                            data = data.move_to((
-                                element.pos()[0] + offset[0],
-                                element.pos()[1] + offset[1],
-                            ));
-                        } else {
-                            data = data.line_to((
-                                element.pos()[0] + offset[0],
-                                element.pos()[1] + offset[1],
-                            ));
+                        if self.path.len() > 2 {
+                            self.path.resize(2, Element::default());
+                            self.path.insert(1, element);
                         }
                     }
                 }
-                SelectorStyle::Rectangle => {
-                    if let (Some(first), Some(last)) = (self.path.first(), self.path.last()) {
-                        data =
-                            data.move_to((first.pos()[0] + offset[0], first.pos()[1] + offset[1]));
-                        data =
-                            data.line_to((last.pos()[0] + offset[0], first.pos()[1] + offset[1]));
-                        data = data.line_to((last.pos()[0] + offset[0], last.pos()[1] + offset[1]));
-                        data =
-                            data.line_to((first.pos()[0] + offset[0], last.pos()[1] + offset[1]));
-                    }
-                }
             }
-            data = data.close();
+            PenEvent::Up { .. } => {
+                strokes_state.update_selection_for_selector(&self, viewport);
 
-            let svg_path = element::Path::new()
-                .set("d", data)
-                .set("stroke", Self::PATH_COLOR.to_css_color())
-                .set("stroke-width", Self::PATH_WIDTH)
-                .set("stroke-dasharray", "4 6")
-                .set("fill", Self::FILL_COLOR.to_css_color());
+                let selection_keys = strokes_state.selection_keys_as_rendered();
+                strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
 
-            let svg_data = compose::svg_node_to_string(&svg_path).map_err(|e| {
-                anyhow::anyhow!(
-                    "node_to_string() failed in gen_svg_path() for selector, {}",
-                    e
-                )
-            })?;
+                self.path.clear();
+            }
+            PenEvent::Proximity { .. } => {}
+            PenEvent::Cancel => {
+                strokes_state.update_selection_for_selector(&self, viewport);
 
-            let svg = render::Svg { bounds, svg_data };
-            let images = renderer
-                .read()
-                .unwrap()
-                .gen_images(zoom, vec![svg], bounds)?;
-            if let Some(rendernode) = render::images_to_rendernode(&images, zoom)
-                .context("images_to_rendernode() failed in selector.draw()")?
-            {
-                snapshot.append_node(&rendernode);
+                let selection_keys = strokes_state.selection_keys_as_rendered();
+                strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
+
+                self.path.clear();
             }
         }
-        Ok(())
     }
 }
 
-impl Selector {
-    pub const PATH_WIDTH: f64 = 1.5;
-    pub const PATH_COLOR: Color = Color {
-        r: 0.5,
-        g: 0.5,
-        b: 0.5,
-        a: 0.7,
-    };
-    pub const FILL_COLOR: Color = Color {
-        r: 0.7,
-        g: 0.7,
-        b: 0.7,
-        a: 0.15,
-    };
-
-    pub fn gen_bounds(&self) -> Option<AABB> {
+impl DrawOnSheetBehaviour for Selector {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
         // Making sure bounds are always outside of coord + width
         let mut path_iter = self.path.iter();
         if let Some(first) = path_iter.next() {
             let mut new_bounds = AABB::new(
-                na::Point2::from(first.pos() - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
-                na::Point2::from(first.pos() + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
+                na::Point2::from(first.pos - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
+                na::Point2::from(first.pos + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
             );
 
-            path_iter.for_each(|inputdata| {
+            path_iter.for_each(|element| {
                 let pos_bounds = AABB::new(
-                    na::Point2::from(
-                        inputdata.pos() - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH],
-                    ),
-                    na::Point2::from(
-                        inputdata.pos() + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH],
-                    ),
+                    na::Point2::from(element.pos - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
+                    na::Point2::from(element.pos + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
                 );
                 new_bounds.merge(&pos_bounds);
             });
@@ -224,4 +112,64 @@ impl Selector {
             None
         }
     }
+
+    fn draw_on_sheet(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        _sheet_bounds: AABB,
+        _viewport: AABB,
+    ) -> Result<(), anyhow::Error> {
+        let mut bez_path = kurbo::BezPath::new();
+
+        match self.style {
+            SelectorType::Polygon => {
+                for (i, element) in self.path.iter().enumerate() {
+                    if i == 0 {
+                        bez_path.move_to((element.pos).to_kurbo_point());
+                    } else {
+                        bez_path.line_to((element.pos).to_kurbo_point());
+                    }
+                }
+            }
+            SelectorType::Rectangle => {
+                if let (Some(first), Some(last)) = (self.path.first(), self.path.last()) {
+                    bez_path.move_to(first.pos.to_kurbo_point());
+                    bez_path.line_to(kurbo::Point::new(last.pos[0], first.pos[1]));
+                    bez_path.line_to(kurbo::Point::new(last.pos[0], last.pos[1]));
+                    bez_path.line_to(kurbo::Point::new(first.pos[0], last.pos[1]));
+                    bez_path.line_to(kurbo::Point::new(first.pos[0], first.pos[1]));
+                }
+            }
+        }
+        bez_path.close_path();
+
+        cx.fill(
+            bez_path.clone(),
+            &piet::PaintBrush::Color(Self::FILL_COLOR.into()),
+        );
+        cx.stroke_styled(
+            bez_path,
+            &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
+            Self::PATH_WIDTH,
+            &piet::StrokeStyle::new().dash_pattern(&[4.0, 6.0]),
+        );
+
+        Ok(())
+    }
+}
+
+impl Selector {
+    pub const PATH_WIDTH: f64 = 1.5;
+    pub const OUTLINE_COLOR: Color = Color {
+        r: 0.6,
+        g: 0.6,
+        b: 0.6,
+        a: 0.7,
+    };
+    pub const FILL_COLOR: Color = Color {
+        r: 0.85,
+        g: 0.85,
+        b: 0.85,
+        a: 0.15,
+    };
 }

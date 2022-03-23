@@ -29,12 +29,12 @@ pub enum Shape {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shape_drawstyle")]
 pub enum ShapeDrawStyle {
-    #[serde(rename = "smooth", alias = "Smooth")]
+    #[serde(rename = "smooth")]
     Smooth {
         #[serde(rename = "options")]
         options: SmoothOptions,
     },
-    #[serde(rename = "rough", alias = "Rough")]
+    #[serde(rename = "rough")]
     Rough {
         #[serde(rename = "options")]
         options: RoughOptions,

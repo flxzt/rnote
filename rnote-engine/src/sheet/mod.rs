@@ -21,7 +21,7 @@ use self::{background::Background, format::Format};
 use gtk4::{glib, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, to_string_pretty};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "sheet")]
@@ -248,12 +248,20 @@ impl Sheet {
         let decompressed_bytes = utils::decompress_from_gzip(&bytes)?;
         let mut sheet: serde_json::Value = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
         for stroke in sheet["strokes_state"]["strokes"].as_array_mut().unwrap() {
-            if stroke.get("value").unwrap().as_object().unwrap().contains_key("markerstroke") {
-                *stroke.pointer_mut("/value/brushstroke").unwrap() = stroke.pointer("/value/markerstroke").unwrap().clone();
-                *stroke.pointer_mut("/value/brushstroke/style").unwrap() = json!({"marker":stroke.pointer("/value/markerstroke/marker").unwrap()});
+            let val = if let Some(val) = stroke.get_mut("value").unwrap().as_object_mut() { val } else { continue; };
+
+            if val.contains_key("markerstroke") {
+                val.insert(String::from("brushstroke"), val["markerstroke"].clone());
+                let marker = val["markerstroke"].get("marker").unwrap().clone();
+                val["brushstroke"].as_object_mut().unwrap().insert(String::from("style"), json!({"marker":{"options":marker}}));
+                val.remove("markerstroke");
+            } else if val.contains_key("brushstroke") {
+                if let Some(smooth) = val["brushstroke"].pointer("/style/smooth").cloned() {
+                    val["brushstroke"].get_mut("style").unwrap().as_object_mut().unwrap().insert(String::from("solid"), smooth.clone());
+                    val["brushstroke"].get_mut("style").unwrap().as_object_mut().unwrap().remove("smooth");
+                }
             }
         }
-
         self.import_sheet(serde_json::from_value(sheet)?);
 
         Ok(())

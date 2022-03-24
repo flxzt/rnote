@@ -21,7 +21,7 @@ use self::{background::Background, format::Format};
 use gtk4::{glib, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, to_string_pretty};
+use serde_json::json;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "sheet")]
@@ -246,25 +246,58 @@ impl Sheet {
 
     pub fn open_sheet_from_rnote_bytes(&mut self, bytes: glib::Bytes) -> Result<(), anyhow::Error> {
         let decompressed_bytes = utils::decompress_from_gzip(&bytes)?;
-        let mut sheet: serde_json::Value = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
-        for stroke in sheet["strokes_state"]["strokes"].as_array_mut().unwrap() {
-            let val = if let Some(val) = stroke.get_mut("value").unwrap().as_object_mut() { val } else { continue; };
+        let mut sheet: serde_json::Value =
+            serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
 
-            if val.contains_key("markerstroke") {
-                val.insert(String::from("brushstroke"), val["markerstroke"].clone());
-                let marker = val["markerstroke"].get("marker").unwrap().clone();
-                val["brushstroke"].as_object_mut().unwrap().insert(String::from("style"), json!({"marker":{"options":marker}}));
-                val.remove("markerstroke");
-            } else if val.contains_key("brushstroke") {
-                if let Some(smooth) = val["brushstroke"].pointer("/style/smooth").cloned() {
-                    val["brushstroke"].get_mut("style").unwrap().as_object_mut().unwrap().insert(String::from("solid"), smooth.clone());
-                    val["brushstroke"].get_mut("style").unwrap().as_object_mut().unwrap().remove("smooth");
-                }
-            }
-        }
+        sheet = Self::update_sheet_syntax(sheet).unwrap();
+
         self.import_sheet(serde_json::from_value(sheet)?);
 
         Ok(())
+    }
+
+    fn update_sheet_syntax(mut sheet: serde_json::Value) -> Option<serde_json::Value> {
+        if sheet["version"].as_string()?.starts_with("0.3.") {
+            for stroke in sheet["strokes_state"]["strokes"].as_array_mut()? {
+                let val = stroke.get_mut("value")?;
+                if val.is_null() {
+                    continue;
+                }
+
+                if let Some(bstroke) = val.as_object_mut()?.remove("markerstroke") {
+                    val.as_object_mut()?.insert(String::from("brushstroke"), bstroke);
+
+                    let brushstroke = val["brushstroke"].as_object_mut()?;
+                    let options = brushstroke.remove("marker")?;
+                    brushstroke.insert(
+                        "style".to_string(),
+                        json!({
+                            "marker": {
+                                "options": options
+                            }
+                        }),
+                    );
+                } else if let Some(style) = val.pointer_mut("/brushstroke/style") {
+                    let style = style.as_object_mut()?;
+
+                    if let Some(solid_settings) = style.remove("smooth") {
+                        style.insert("solid".to_string(), solid_settings);
+                    }
+                }
+
+                if val.get("shapestroke").is_some() {
+                    let drawstyle = val["shapestroke"]["drawstyle"].as_object_mut()?;
+
+                    if let Some(smooth) = drawstyle.remove("Smooth") {
+                        drawstyle.insert(String::from("smooth"), smooth);
+                    } else if let Some(smooth) = drawstyle.remove("Rough") {
+                        drawstyle.insert(String::from("rough"), smooth);
+                    }
+                }
+            }
+        }
+
+        Some(sheet)
     }
 
     pub fn open_from_xopp_bytes(&mut self, bytes: glib::Bytes) -> Result<(), anyhow::Error> {

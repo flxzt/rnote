@@ -56,6 +56,7 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
 * odd location for current file: when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
     Again, granting them in Flatseal fixes this issue.
+* Stylus buttons move canvas / are not functional: make sure that the `xf86-input-wacom` drivers on X11 and the `libwacom` drivers on Wayland are installed and loaded.
 
 ## Community
 If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  

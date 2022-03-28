@@ -1,5 +1,6 @@
 mod imp {
     use crate::colorpicker::ColorPicker;
+    use adw::ComboRow;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
     use gtk4::{MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
 
@@ -38,6 +39,8 @@ mod imp {
         pub rectangle_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub ellipse_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub constraint_ratio_combo: TemplateChild<ComboRow>,
     }
 
     #[glib::object_subclass]
@@ -71,6 +74,8 @@ mod imp {
 }
 
 use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use adw::traits::ComboRowExt;
+use adw::ComboRow;
 use gtk4::{gdk, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use rnote_engine::compose::color::Color;
@@ -180,6 +185,12 @@ impl ShaperPage {
 
     pub fn ellipse_toggle(&self) -> ToggleButton {
         imp::ShaperPage::from_instance(self).ellipse_toggle.get()
+    }
+
+    pub fn constraint_ratio_combo(&self) -> ComboRow {
+        imp::ShaperPage::from_instance(self)
+            .constraint_ratio_combo
+            .get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -352,5 +363,18 @@ impl ShaperPage {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"ellipse".to_variant()));
             }
         }));
+
+        // Constraints
+        self.constraint_ratio_combo().connect_selected_item_notify(
+            clone!(@weak appwindow => move |combo| {
+                let nick = combo
+                    .selected_item()
+                    .unwrap()
+                    .downcast::<adw::EnumListItem>()
+                    .unwrap()
+                    .nick();
+                appwindow.canvas().pens().borrow_mut().shaper.ratio = nick.into();
+            }),
+        );
     }
 }

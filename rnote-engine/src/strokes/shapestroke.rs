@@ -5,7 +5,7 @@ use crate::compose::smooth::SmoothOptions;
 use crate::compose::transformable::{Transform, Transformable};
 use crate::compose::{curves, rough, shapes};
 use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::shaper::ShaperDrawStyle;
+use crate::pens::shaper::{ShaperConstraintRatio, ShaperDrawStyle};
 use crate::render;
 use crate::strokes::element::Element;
 use crate::strokes::inputdata::InputData;
@@ -106,6 +106,8 @@ pub struct ShapeStroke {
     pub drawstyle: ShapeDrawStyle,
     #[serde(rename = "bounds")]
     pub bounds: AABB,
+    #[serde(skip)]
+    pub ratio: ShaperConstraintRatio,
 }
 
 impl Default for ShapeStroke {
@@ -276,12 +278,14 @@ impl ShapeStroke {
                 ShapeDrawStyle::Rough { options }
             }
         };
+        let ratio = shaper.ratio;
 
         let mut shapestroke = Self {
             shape,
             drawstyle,
             bounds,
             seed,
+            ratio,
         };
 
         if let Some(new_bounds) = shapestroke.gen_bounds() {
@@ -297,14 +301,15 @@ impl ShapeStroke {
                 line.end = element.inputdata.pos();
             }
             Shape::Rectangle(ref mut rectangle) => {
-                let diff = element.inputdata.pos() - shaper.rect_current;
+                let relative_pos = element.inputdata.pos() - shaper.rect_start;
+                let constrained_relative_pos = Self::constrain(relative_pos, shaper.ratio);
 
-                rectangle.cuboid.half_extents =
-                    ((element.inputdata.pos() - shaper.rect_start) / 2.0).abs();
-                rectangle.transform.transform =
-                    na::Translation2::from(diff / 2.0) * rectangle.transform.transform;
+                rectangle.cuboid.half_extents = (constrained_relative_pos / 2.0).abs();
 
-                shaper.rect_current = element.inputdata.pos();
+                let diff = constrained_relative_pos - shaper.rect_current + shaper.rect_start;
+                rectangle.transform.transform *= na::Translation2::from(diff / 2.0);
+
+                shaper.rect_current = shaper.rect_start + constrained_relative_pos;
             }
             Shape::Ellipse(ref mut ellipse) => {
                 let center = ellipse
@@ -313,8 +318,7 @@ impl ShapeStroke {
                     .transform_point(&na::point![0.0, 0.0]);
 
                 let diff = element.inputdata.pos() - center.coords;
-
-                ellipse.radii = diff.abs();
+                ellipse.radii = Self::constrain(diff.abs(), shaper.ratio);
             }
         }
 
@@ -324,6 +328,30 @@ impl ShapeStroke {
     pub fn update_geometry(&mut self) {
         if let Some(new_bounds) = self.gen_bounds() {
             self.bounds = new_bounds;
+        }
+    }
+
+    fn constrain(pos: na::Vector2<f64>, ratio: ShaperConstraintRatio) -> na::Vector2<f64> {
+        let max = pos.max();
+        let dx = *pos.index((0, 0));
+        let dy = *pos.index((1, 0));
+        match ratio {
+            ShaperConstraintRatio::Disabled => pos,
+            ShaperConstraintRatio::OneToOne => na::vector![max, max],
+            ShaperConstraintRatio::ThreeToTwo => {
+                if dx > dy {
+                    na::vector![dx, dx / 1.5]
+                } else {
+                    na::vector![dy / 1.5, dy]
+                }
+            }
+            ShaperConstraintRatio::Golden => {
+                if dx > dy {
+                    na::vector![dx, dx / 1.618]
+                } else {
+                    na::vector![dy / 1.618, dy]
+                }
+            }
         }
     }
 }

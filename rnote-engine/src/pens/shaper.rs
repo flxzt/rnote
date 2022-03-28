@@ -62,6 +62,36 @@ impl ShaperDrawStyle {
     pub const ROUGH_MARGIN: f64 = 20.0;
 }
 
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
+#[enum_type(name = "ShaperConstraintRatio")]
+#[serde(rename = "shaper_constraint_ratio")]
+pub enum ShaperConstraintRatio {
+    #[enum_value(name = "Disabled", nick = "disabled")]
+    #[serde(rename = "disabled")]
+    Disabled,
+    #[enum_value(name = "1:1", nick = "one_to_one")]
+    #[serde(rename = "one_to_one")]
+    OneToOne,
+    #[enum_value(name = "3:2", nick = "three_to_two")]
+    #[serde(rename = "three_to_two")]
+    ThreeToTwo,
+    #[enum_value(name = "Golden ratio", nick = "golden")]
+    #[serde(rename = "golden")]
+    Golden,
+}
+
+impl From<glib::GString> for ShaperConstraintRatio {
+    fn from(nick: glib::GString) -> Self {
+        match nick.to_string().as_str() {
+            "disabled" => ShaperConstraintRatio::Disabled,
+            "one_to_one" => ShaperConstraintRatio::OneToOne,
+            "three_to_two" => ShaperConstraintRatio::ThreeToTwo,
+            "golden" => ShaperConstraintRatio::Golden,
+            _ => unreachable!(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "shaper")]
 pub struct Shaper {
@@ -80,6 +110,8 @@ pub struct Shaper {
     pub rect_start: na::Vector2<f64>,
     #[serde(skip)]
     pub rect_current: na::Vector2<f64>,
+    #[serde(skip)]
+    pub ratio: ShaperConstraintRatio,
 }
 
 impl Default for Shaper {
@@ -92,6 +124,7 @@ impl Default for Shaper {
             current_stroke: None,
             rect_start: na::vector![0.0, 0.0],
             rect_current: na::vector![0.0, 0.0],
+            ratio: ShaperConstraintRatio::Disabled,
         }
     }
 }

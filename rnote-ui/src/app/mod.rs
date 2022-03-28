@@ -11,7 +11,7 @@ mod imp {
     use once_cell::sync::Lazy;
     use rnote_engine::compose::textured::TexturedDotsDistribution;
     use rnote_engine::{
-        pens::PenStyle,
+        pens::{shaper::ShaperConstraintRatio, PenStyle},
         sheet::format::MeasureUnit,
         sheet::{background::PatternStyle, format::PredefinedFormat},
     };
@@ -121,6 +121,7 @@ mod imp {
             UnitEntry::static_type();
             TexturedDotsDistribution::static_type();
             PenShortcutRow::static_type();
+            ShaperConstraintRatio::static_type();
 
             // Load the resources
             app.set_resource_base_path(Some(config::APP_IDPATH));

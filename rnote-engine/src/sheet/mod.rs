@@ -257,7 +257,7 @@ impl Sheet {
     }
 
     fn update_sheet_syntax(mut sheet: serde_json::Value) -> Option<serde_json::Value> {
-        if sheet["version"].as_string()?.starts_with("0.3.") {
+        if sheet["version"].as_str()?.starts_with("0.3.") {
             for stroke in sheet["strokes_state"]["strokes"].as_array_mut()? {
                 let val = stroke.get_mut("value")?;
                 if val.is_null() {

@@ -146,7 +146,7 @@ impl RoughOptions {
     pub const CURVESTEPCOUNT_MAX: f64 = 1000.0;
     /// Curve stepcount default
     pub const CURVESTEPCOUNT_DEFAULT: f64 = 9.0;
-
+    /// The bound margins around the shape, to not clip the shape when drawing it.
     pub const SHAPE_BOUNDS_MARGIN: f64 = 20.0;
 
     pub(super) fn apply_to_line(&self, mut path: element::Path) -> element::Path {

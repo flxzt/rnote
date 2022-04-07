@@ -22,7 +22,7 @@ use gtk4::{
 };
 
 impl RnoteAppWindow {
-    /// Boolean actions have no target, and a boolean state. They have default implementations for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
+    /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
     /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
     /// We can then either toggle the state through activating the action, or set the state explicitely through action.change_state(<request>)
     pub fn setup_actions(&self) {
@@ -262,6 +262,7 @@ impl RnoteAppWindow {
                     }
                 }
 
+                appwindow.canvas().queue_resize();
                 appwindow.canvas().return_to_origin_page();
 
                 action_expand_mode.set_state(&expand_mode.to_variant());
@@ -353,12 +354,12 @@ impl RnoteAppWindow {
                     appwindow
                         .penssidebar()
                         .brush_page()
-                        .styleconfig_menubutton()
+                        .brushconfig_menubutton()
                         .set_direction(ArrowType::Right);
                     appwindow
                         .penssidebar()
                         .shaper_page()
-                        .roughconfig_menubutton()
+                        .shapeconfig_menubutton()
                         .set_direction(ArrowType::Right);
                     appwindow
                         .penssidebar()
@@ -435,12 +436,12 @@ impl RnoteAppWindow {
                     appwindow
                         .penssidebar()
                         .brush_page()
-                        .styleconfig_menubutton()
+                        .brushconfig_menubutton()
                         .set_direction(ArrowType::Left);
                     appwindow
                         .penssidebar()
                         .shaper_page()
-                        .roughconfig_menubutton()
+                        .shapeconfig_menubutton()
                         .set_direction(ArrowType::Left);
                     appwindow
                         .penssidebar()
@@ -697,21 +698,21 @@ impl RnoteAppWindow {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_marker_row()));
                         appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.smooth_options.width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.smooth_options.stroke_color);
-                        appwindow.penssidebar().brush_page().styleconfig_menubutton().set_sensitive(false);
+                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-marker-symbolic"));
                     },
                     BrushStyle::Solid => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
                         appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.smooth_options.width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.smooth_options.stroke_color);
-                        appwindow.penssidebar().brush_page().styleconfig_menubutton().set_sensitive(false);
+                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-solid-symbolic"));
                     },
                     BrushStyle::Textured => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
                         appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.textured_options.width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.textured_options.stroke_color);
-                        appwindow.penssidebar().brush_page().styleconfig_menubutton().set_sensitive(true);
+                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(true);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-textured-symbolic"));
                     },
                 }
@@ -826,14 +827,14 @@ impl RnoteAppWindow {
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().engine().borrow_mut().strokes_state.undo_last_stroke();
             appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.canvas().update_background_rendernode(true);
+            appwindow.canvas().update_background_rendernodes(true);
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().engine().borrow_mut().strokes_state.redo_last_stroke();
             appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.canvas().update_background_rendernode(true);
+            appwindow.canvas().update_background_rendernodes(true);
         }));
 
         // Zoom reset
@@ -844,7 +845,7 @@ impl RnoteAppWindow {
 
         // Zoom fit to width
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let mut new_zoom = appwindow.canvas().engine().borrow().camera.zoom();
+            let mut new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
 
             for _ in 0..2 {
                 new_zoom = f64::from(appwindow.canvas_scroller().width()) / appwindow.canvas().engine().borrow().sheet.format.width as f64;
@@ -854,13 +855,13 @@ impl RnoteAppWindow {
 
         // Zoom in
         action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = ((appwindow.canvas().engine().borrow().camera.zoom() + RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).floor() / 10.0;
+            let new_zoom = ((appwindow.canvas().engine().borrow().camera.total_zoom() + RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).round() / 10.0;
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
         }));
 
         // Zoom out
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = ((appwindow.canvas().engine().borrow().camera.zoom() - RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).ceil() / 10.0;
+            let new_zoom = ((appwindow.canvas().engine().borrow().camera.total_zoom() - RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).round() / 10.0;
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
         }));
 
@@ -877,7 +878,7 @@ impl RnoteAppWindow {
         action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().return_to_origin_page();
             appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.canvas().update_background_rendernode(true);
+            appwindow.canvas().update_background_rendernodes(true);
         }));
 
         // New sheet
@@ -980,10 +981,6 @@ impl RnoteAppWindow {
                 match print_op.status() {
                     PrintStatus::Finished => {
                         adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Printed sheet successfully").to_variant()));
-                    }
-                    PrintStatus::FinishedAborted => {
-                        log::error!("print op failed, status {:?}", print_op.status());
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing sheet failed").to_variant()));
                     }
                     _ => {}
                 }

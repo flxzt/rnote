@@ -8,7 +8,7 @@ use crate::PenEvent;
 use super::ShapeBuilderBehaviour;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum PenPathBuilderState {
+pub(crate) enum PenPathBuilderState {
     Start,
     During,
 }
@@ -21,10 +21,12 @@ impl Default for PenPathBuilderState {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "penpathbuilder")]
+/// The pen path builder
 pub struct PenPathBuilder {
     #[serde(rename = "state")]
-    pub state: PenPathBuilderState,
+    pub(crate) state: PenPathBuilderState,
     #[serde(rename = "buffer")]
+    /// Buffered elements, which is filled up by new pen events and used to try to build path segments
     pub buffer: VecDeque<Element>,
 }
 
@@ -32,7 +34,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
     type BuildedShape = Segment;
 
     fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
-/*         log::debug!(
+        /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,
             self.buffer.len(),
@@ -112,7 +114,7 @@ impl PenPathBuilder {
     fn try_build_segment_during(&mut self) -> Option<Vec<Segment>> {
         let segment = match self.buffer.len() {
             4.. => {
-                if let Some(cubbez) = CubicBezier::gen_w_catmull_rom(
+                if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
                     self.buffer[0].pos,
                     self.buffer[1].pos,
                     self.buffer[2].pos,
@@ -174,7 +176,7 @@ impl PenPathBuilder {
                 }])
             }
             4.. => {
-                if let Some(cubbez) = CubicBezier::gen_w_catmull_rom(
+                if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
                     self.buffer[0].pos,
                     self.buffer[1].pos,
                     self.buffer[2].pos,

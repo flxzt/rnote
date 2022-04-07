@@ -5,7 +5,7 @@ use crate::render::{self};
 use crate::DrawBehaviour;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::style::{composer, Composer};
+use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{PenPath, Style};
 
@@ -35,7 +35,58 @@ impl Default for BrushStroke {
     }
 }
 
-impl StrokeBehaviour for BrushStroke {}
+impl StrokeBehaviour for BrushStroke {
+    /*     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+        let images = match &self.style {
+            Style::Smooth(options) => self
+                .path
+                .iter()
+                .filter_map(|segment| {
+                    match render::Image::gen_from_composable_shape(
+                        segment,
+                        options,
+                        self.path.composed_bounds(options),
+                        image_scale,
+                    ) {
+                        Ok(image) => Some(image),
+                        Err(e) => {
+                            log::error!("gen_images() failed with Err {}", e);
+                            None
+                        }
+                    }
+                })
+                .flatten()
+                .collect::<Vec<render::Image>>(),
+            Style::Rough(_) => vec![],
+            Style::Textured(options) => {
+                let mut options = options.clone();
+
+                self
+                .path
+                .iter()
+                .filter_map(|segment| {
+                    options.seed = options.seed.map(|seed| rnote_compose::utils::seed_advance(seed));
+
+                    match render::Image::gen_from_composable_shape(
+                        segment,
+                        &options,
+                        self.path.composed_bounds(&options),
+                        image_scale,
+                    ) {
+                        Ok(image) => Some(image),
+                        Err(e) => {
+                            log::error!("gen_images() failed with Err {}", e);
+                            None
+                        }
+                    }
+                })
+                .flatten()
+                .collect::<Vec<render::Image>>()},
+        };
+
+        Ok(images)
+    } */
+}
 
 impl DrawBehaviour for BrushStroke {
     fn draw(
@@ -146,78 +197,57 @@ impl BrushStroke {
         }
     }
 
-    pub fn gen_svgs_for_last_segments(
+    pub fn gen_images_for_last_segments(
         &self,
         no_last_segments: usize,
-        _offset: na::Vector2<f64>,
-        svg_root: bool,
-    ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let svg_elements = match &self.style {
+        image_scale: f64,
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
+        let images = match &self.style {
             Style::Smooth(options) => self
                 .path
                 .iter()
                 .rev()
                 .take(no_last_segments)
+                .rev()
                 .filter_map(|segment| {
-                    let bounds = segment.composed_bounds(options);
-                    let mut svg_cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
-                        bounds.extents()[0],
-                        bounds.extents()[1],
-                    ));
-
-                    segment.draw_composed(&mut svg_cx, options);
-
-                    Some((composer::piet_svg_cx_to_svg(svg_cx).ok()?, bounds))
+                    match render::Image::gen_from_composable_shape(segment, options, image_scale) {
+                        Ok(image) => Some(image),
+                        Err(e) => {
+                            log::error!("gen_images_for_last_segments() failed with Err {}", e);
+                            None
+                        }
+                    }
                 })
-                .collect::<Vec<(String, AABB)>>(),
+                .flatten()
+                .collect::<Vec<render::Image>>(),
             Style::Rough(_) => vec![],
-            Style::Textured(options) => {
-                let mut options = options.clone();
-                // Advancing the seed exactly by one for each element, just like drawing the whole path.
-                (0..self.path.len() - no_last_segments).for_each(|_i| {
-                    options.seed = options
-                        .seed
-                        .map(|seed| rnote_compose::utils::seed_advance(seed));
-                });
-
-                self.path
-                    .iter()
-                    .rev()
-                    .take(no_last_segments as usize)
-                    .rev()
-                    .filter_map(|segment| {
+            Style::Textured(options) => self
+                .path
+                .iter()
+                .enumerate()
+                .rev()
+                .take(no_last_segments)
+                .rev()
+                .filter_map(|(i, segment)| {
+                    let mut options = options.clone();
+                    (0..=i).for_each(|_| {
                         options.seed = options
                             .seed
-                            .map(|seed| rnote_compose::utils::seed_advance(seed));
+                            .map(|seed| rnote_compose::utils::seed_advance(seed))
+                    });
 
-                        let bounds = segment.composed_bounds(&options);
-                        let mut svg_cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
-                            bounds.extents()[0],
-                            bounds.extents()[1],
-                        ));
-
-                        segment.draw_composed(&mut svg_cx, &options);
-
-                        Some((composer::piet_svg_cx_to_svg(svg_cx).ok()?, bounds))
-                    })
-                    .collect::<Vec<(String, AABB)>>()
-            }
+                    match render::Image::gen_from_composable_shape(segment, &options, image_scale) {
+                        Ok(image) => Some(image),
+                        Err(e) => {
+                            log::error!("gen_images_for_last_segments() failed with Err {}", e);
+                            None
+                        }
+                    }
+                })
+                .flatten()
+                .collect::<Vec<render::Image>>(),
         };
 
-        Ok(svg_elements
-            .into_iter()
-            .map(|(mut svg_data, bounds)| {
-                if svg_root {
-                    svg_data = rnote_compose::utils::wrap_svg_root(
-                        &svg_data,
-                        Some(bounds),
-                        Some(bounds),
-                        false,
-                    );
-                }
-
-                render::Svg { svg_data, bounds }
-            })
-            .collect::<Vec<render::Svg>>())
+        Ok(images)
     }
 }

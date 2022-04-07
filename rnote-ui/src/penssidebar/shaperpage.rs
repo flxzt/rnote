@@ -11,9 +11,9 @@ mod imp {
         #[template_child]
         pub drawstyle_rough_toggle: TemplateChild<ToggleButton>,
         #[template_child]
-        pub roughconfig_menubutton: TemplateChild<MenuButton>,
+        pub shapeconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub roughconfig_popover: TemplateChild<Popover>,
+        pub shapeconfig_popover: TemplateChild<Popover>,
         #[template_child]
         pub roughconfig_roughness_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -74,8 +74,8 @@ use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
 use gtk4::{gdk, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use rnote_compose::style::rough::RoughOptions;
-use rnote_compose::Color;
 use rnote_engine::pens::shaper::ShaperStyle;
+use rnote_engine::utils::GdkRGBAHelpers;
 
 glib::wrapper! {
     pub struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
@@ -112,15 +112,15 @@ impl ShaperPage {
             .get()
     }
 
-    pub fn roughconfig_menubutton(&self) -> MenuButton {
+    pub fn shapeconfig_menubutton(&self) -> MenuButton {
         imp::ShaperPage::from_instance(self)
-            .roughconfig_menubutton
+            .shapeconfig_menubutton
             .get()
     }
 
-    pub fn roughconfig_popover(&self) -> Popover {
+    pub fn shapeconfig_popover(&self) -> Popover {
         imp::ShaperPage::from_instance(self)
-            .roughconfig_popover
+            .shapeconfig_popover
             .get()
     }
 
@@ -204,7 +204,7 @@ impl ShaperPage {
         self.stroke_colorpicker().connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |stroke_colorpicker, _paramspec| {
-                let color = Color::from(stroke_colorpicker.property::<gdk::RGBA>("current-color"));
+                let color = stroke_colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
                 let shaper_style = appwindow.canvas().engine().borrow_mut().penholder.shaper.style;
 
                 match shaper_style {
@@ -218,7 +218,7 @@ impl ShaperPage {
         self.fill_colorpicker().connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |fill_colorpicker, _paramspec| {
-                let color = Color::from(fill_colorpicker.property::<gdk::RGBA>("current-color"));
+                let color = fill_colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
                 let shaper_style = appwindow.canvas().engine().borrow_mut().penholder.shaper.style;
 
                 match shaper_style {
@@ -304,7 +304,7 @@ impl ShaperPage {
         }));
 
         self.drawstyle_smooth_toggle()
-            .bind_property("active", &self.roughconfig_menubutton(), "sensitive")
+            .bind_property("active", &self.shapeconfig_menubutton(), "sensitive")
             .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::INVERT_BOOLEAN)
             .build();
 
@@ -315,7 +315,7 @@ impl ShaperPage {
         }));
 
         self.drawstyle_rough_toggle()
-            .bind_property("active", &self.roughconfig_menubutton(), "sensitive")
+            .bind_property("active", &self.shapeconfig_menubutton(), "sensitive")
             .flags(glib::BindingFlags::DEFAULT)
             .build();
 

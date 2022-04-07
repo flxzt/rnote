@@ -9,12 +9,12 @@ edition = "2021"
 rnote-compose = {path = "../rnote-compose", version="0.1"}
 rnote-fileformats = {path = "../rnote-fileformats", version="0.1"}
 
-log = "0.4.14"
+log = "0.4.16"
 pretty_env_logger = "0.4.0"
 anyhow = "1.0"
 serde = {version = "1.0", features = ["derive"]}
 serde_json = { version="1.0" }
-rand = "0.8.4"
+rand = "0.8.5"
 rand_pcg = "0.3.1"
 rand_distr = "0.4.3"
 regex = "1.5"
@@ -32,7 +32,7 @@ rstar = "0.9.2"
 nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.8.0", features = ["serde-serialize"] }
 gtk4 = {version = "0.4.6"}
-cairo-rs = {version = "0.15.1", features = ["png", "svg", "pdf"]}
+cairo-rs = {version = "0.15.10", features = ["png", "svg", "pdf"]}
 librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
 kurbo = {version = "0.8.2", features = ["serde"] }
 piet = { path = "../piet/piet"}
@@ -40,10 +40,10 @@ piet-svg = { path = "../piet/piet-svg"}
 piet-cairo = { path = "../piet/piet-cairo"}
 image = "0.23.14"
 svg = "0.10.0"
-geo = "0.18.0"
+geo = "0.19.0"
 xmlwriter = "0.1.0"
-resvg = "0.20"
-usvg = "0.20"
+resvg = "0.22"
+usvg = "0.22"
 tiny-skia = "0.6.3"
 poppler-rs = "0.19.0"
 

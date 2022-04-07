@@ -1,22 +1,21 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
-use gtk4::glib;
 
 use super::{Ellipse, Line, Rectangle, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 #[serde(rename = "shape_type")]
-#[enum_type(name = "ShapeType")]
+/// A choice of a shape type
 pub enum ShapeType {
     #[serde(rename = "line")]
-    #[enum_value(name = "Line", nick = "line")]
+    /// A line shape
     Line,
     #[serde(rename = "rectangle")]
-    #[enum_value(name = "Rectangle", nick = "rectangle")]
+    /// A rectangle shape
     Rectangle,
     #[serde(rename = "ellipse")]
-    #[enum_value(name = "Ellipse", nick = "ellipse")]
+    /// An ellipse shape
     Ellipse,
 }
 
@@ -29,12 +28,16 @@ impl Default for ShapeType {
 // Container type to store shapes
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shape")]
+/// A Shape type, holding the actual shape inside it
 pub enum Shape {
     #[serde(rename = "line")]
+    /// A line shape
     Line(Line),
     #[serde(rename = "rectangle")]
+    /// A rectangle shape
     Rectangle(Rectangle),
     #[serde(rename = "ellipse")]
+    /// An ellipse shape
     Ellipse(Ellipse),
 }
 

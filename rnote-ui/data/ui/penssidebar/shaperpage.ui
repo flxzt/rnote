@@ -57,23 +57,23 @@
         </child>
       </object>
     </child>
-    <!-- Rough shape config -->
+    <!-- Shape config -->
     <child>
       <object class="GtkBox">
         <child>
-          <object class="GtkMenuButton" id="roughconfig_menubutton">
+          <object class="GtkMenuButton" id="shapeconfig_menubutton">
             <property name="icon-name">settings-symbolic</property>
             <property name="hexpand">true</property>
             <property name="sensitive">false</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Rough shapes configuration</property>
-            <property name="popover">roughconfig_popover</property>
+            <property name="tooltip_text" translatable="yes">Shape configuration</property>
+            <property name="popover">shapeconfig_popover</property>
           </object>
         </child>
       </object>
     </child>
-    <object class="GtkPopover" id="roughconfig_popover">
+    <object class="GtkPopover" id="shapeconfig_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
@@ -82,7 +82,7 @@
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
-              <property name="label" translatable="yes">Rough shapes configuration</property>
+              <property name="label" translatable="yes">Shape configuration</property>
               <property name="halign">center</property>
               <property name="margin-top">12</property>
               <property name="margin-bottom">24</property>

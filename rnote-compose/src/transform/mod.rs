@@ -12,6 +12,7 @@ use crate::helpers::Vector2Helpers;
 #[serde(default, rename = "transform")]
 pub struct Transform {
     #[serde(rename = "affine")]
+    /// The affine transform matrix
     pub affine: na::Affine2<f64>,
 }
 
@@ -34,24 +35,29 @@ impl From<Transform> for kurbo::Affine {
 }
 
 impl Transform {
+    /// A new transform given the affine
     pub fn new(transform: na::Affine2<f64>) -> Self {
         Self { affine: transform }
     }
 
+    /// A new transform given the isometry
     pub fn new_w_isometry(isometry: na::Isometry2<f64>) -> Self {
         Self {
             affine: na::convert(isometry),
         }
     }
 
+    /// Returns the translation part of the transform
     pub fn translation_part(&self) -> na::Vector2<f64> {
         (self.affine * na::point![0.0, 0.0]).coords
     }
 
+    /// Returns the rotation part of the transform
     pub fn rotation_part(&self) -> f64 {
         na::Vector2::x().angle_ahead(&(self.affine * na::Vector2::x()))
     }
 
+    /// Returns the scale part of the transform
     pub fn scale_part(&self) -> na::Vector2<f64> {
         let scale_x = (self.affine * na::Vector2::x()).magnitude();
         let scale_y = (self.affine * na::Vector2::y()).magnitude();
@@ -59,20 +65,24 @@ impl Transform {
         na::vector![scale_x, scale_y]
     }
 
+    /// transforms a point by the transform
     pub fn transform_point(&self, point: na::Point2<f64>) -> na::Point2<f64> {
         self.affine * point
     }
 
+    /// appends a translation to the transform
     pub fn append_translation_mut(&mut self, offset: na::Vector2<f64>) {
         self.affine = na::Translation2::from(offset) * self.affine;
     }
 
+    /// appends a rotation around a point to the transform
     pub fn append_rotation_wrt_point_mut(&mut self, angle: f64, center: na::Point2<f64>) {
         self.affine = na::Translation2::from(-center.coords) * self.affine;
         self.affine = na::Rotation2::new(angle) * self.affine;
         self.affine = na::Translation2::from(center.coords) * self.affine;
     }
 
+    /// appends a scale to the transform
     pub fn append_scale_mut(&mut self, scale: na::Vector2<f64>) {
         let translation = self.translation_part();
 
@@ -86,6 +96,7 @@ impl Transform {
         self.affine = na::Translation2::from(translation) * self.affine;
     }
 
+    /// converts the transform to a svg attribute string, insertable into svg elements
     pub fn to_svg_transform_attr_str(&self) -> String {
         let matrix = self.affine;
 

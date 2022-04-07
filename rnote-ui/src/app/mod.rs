@@ -5,7 +5,6 @@ mod imp {
 
     use adw::subclass::prelude::AdwApplicationImpl;
     use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
-    use rnote_compose::style::textured::TexturedDotsDistribution;
     use rnote_engine::pens::penholder::PenStyle;
     use rnote_engine::{
         sheet::format::MeasureUnit,
@@ -72,7 +71,6 @@ mod imp {
             MeasureUnit::static_type();
             PatternStyle::static_type();
             UnitEntry::static_type();
-            TexturedDotsDistribution::static_type();
             PenShortcutRow::static_type();
 
             // Load the resources

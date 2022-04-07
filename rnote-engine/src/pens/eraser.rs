@@ -1,9 +1,9 @@
-use crate::{DrawOnSheetBehaviour, Sheet, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokesState};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
 use rnote_compose::{Color, PenEvent};
 
-use p2d::bounding_volume::{AABB, BoundingVolume};
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
@@ -32,8 +32,7 @@ impl PenBehaviour for Eraser {
         event: PenEvent,
         _sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        viewport: Option<AABB>,
-        _zoom: f64,
+        camera: &Camera,
     ) {
         match event {
             PenEvent::Down {
@@ -42,7 +41,7 @@ impl PenBehaviour for Eraser {
             } => {
                 self.current_input = Some(element);
 
-                strokes_state.trash_colliding_strokes(&self, viewport);
+                strokes_state.trash_colliding_strokes(&self, Some(camera.viewport()));
             }
             PenEvent::Up { .. } => self.current_input = None,
             PenEvent::Proximity { .. } => self.current_input = None,
@@ -79,7 +78,7 @@ impl Eraser {
 
 impl DrawOnSheetBehaviour for Eraser {
     fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
-self.current_input.map(|current_input| {
+        self.current_input.map(|current_input| {
             AABB::from_half_extents(
                 na::Point2::from(current_input.pos),
                 na::Vector2::from_element(self.width * 0.5),
@@ -95,7 +94,7 @@ self.current_input.map(|current_input| {
     ) -> Result<(), anyhow::Error> {
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, viewport) {
             let fill_rect = bounds.to_kurbo_rect();
-            let outline_rect = bounds.loosened(Self::OUTLINE_WIDTH * 0.48).to_kurbo_rect();
+            let outline_rect = bounds.tightened(Self::OUTLINE_WIDTH * 0.5).to_kurbo_rect();
 
             cx.fill(fill_rect, &piet::PaintBrush::Color(Self::FILL_COLOR.into()));
             cx.stroke(

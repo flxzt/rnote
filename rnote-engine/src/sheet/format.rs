@@ -1,9 +1,11 @@
-use gtk4::{glib, graphene, gsk, Snapshot};
+use gtk4::{glib, graphene, gsk, Snapshot, gdk};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::Color;
+
+use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
@@ -163,7 +165,7 @@ impl Format {
         viewport: Option<AABB>,
     ) -> Result<(), anyhow::Error> {
         if self.draw_borders {
-            snapshot.push_clip(&sheet_bounds.loosened(2.0).to_graphene_rect());
+            snapshot.push_clip(&graphene::Rect::from_aabb(sheet_bounds.loosened(2.0)));
 
             for page_bounds in
                 sheet_bounds.split_extended_origin_aligned(na::vector![self.width, self.height])
@@ -175,7 +177,7 @@ impl Format {
                 }
 
                 let rounded_rect = gsk::RoundedRect::new(
-                    page_bounds.to_graphene_rect(),
+                    graphene::Rect::from_aabb(page_bounds),
                     graphene::Size::zero(),
                     graphene::Size::zero(),
                     graphene::Size::zero(),
@@ -191,10 +193,10 @@ impl Format {
                         Self::FORMAT_BORDER_WIDTH as f32,
                     ],
                     &[
-                        Self::FORMAT_BORDER_COLOR.into(),
-                        Self::FORMAT_BORDER_COLOR.into(),
-                        Self::FORMAT_BORDER_COLOR.into(),
-                        Self::FORMAT_BORDER_COLOR.into(),
+                        gdk::RGBA::from_compose_color(Self::FORMAT_BORDER_COLOR),
+                        gdk::RGBA::from_compose_color(Self::FORMAT_BORDER_COLOR),
+                        gdk::RGBA::from_compose_color(Self::FORMAT_BORDER_COLOR),
+                        gdk::RGBA::from_compose_color(Self::FORMAT_BORDER_COLOR),
                     ],
                 )
             }

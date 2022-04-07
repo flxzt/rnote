@@ -1,5 +1,4 @@
 use crate::helpers::AABBHelpers;
-use crate::shapes::CubicBezier;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 
@@ -8,94 +7,56 @@ use serde::{Deserialize, Serialize};
 
 use super::Element;
 
-/// A single segment (usually of a path), containing Elements to be able to being drawn with variable width
+/// A single segment (usually of a path), containing elements to be able to being drawn with variable width
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "segment")]
 pub enum Segment {
     #[serde(rename = "dot")]
+    /// A dot segment.
     Dot {
         #[serde(rename = "element")]
+        /// The element of the dot
         element: Element,
     },
     #[serde(rename = "line")]
+    /// A line segment
     Line {
         #[serde(rename = "start")]
+        /// The line start
         start: Element,
         #[serde(rename = "end")]
+        /// The line end
         end: Element,
     },
     #[serde(rename = "quadbez")]
+    /// A quadratic bezier segment
     QuadBez {
         #[serde(rename = "start")]
+        /// The quadratic curve start
         start: Element,
         #[serde(rename = "cp")]
+        /// The quadratic curve control point
         cp: na::Vector2<f64>,
         #[serde(rename = "end")]
+        /// The quadratic curve end
         end: Element,
     },
     #[serde(rename = "cubbez")]
+    /// A cubic bezier segment.
     CubBez {
         #[serde(rename = "start")]
+        /// The cubic curve start
         start: Element,
         #[serde(rename = "cp1")]
+        /// The cubic curve first control point
         cp1: na::Vector2<f64>,
         #[serde(rename = "cp2")]
+        /// The cubic curve second control point
         cp2: na::Vector2<f64>,
         #[serde(rename = "end")]
+        /// The cubic curve end
         end: Element,
     },
-}
-
-impl Segment {
-    /// Creates the fitting segment from the available elements.
-    pub fn new_from_elements(
-        prev: Option<Element>,
-        start: Option<Element>,
-        current: Element,
-        ahead: Option<Element>,
-    ) -> Self {
-        match (prev, start, ahead) {
-            (Some(prev), Some(start), Some(ahead)) => {
-                if let Some(cubbez) =
-                    CubicBezier::gen_w_catmull_rom(prev.pos, start.pos, current.pos, ahead.pos)
-                {
-                    Segment::CubBez {
-                        start: Element {
-                            pos: cubbez.start,
-                            ..start
-                        },
-                        cp1: cubbez.cp1,
-                        cp2: cubbez.cp2,
-                        end: Element {
-                            pos: cubbez.end,
-                            ..current
-                        },
-                    }
-                } else {
-                    Segment::QuadBez {
-                        start,
-                        cp: (2.0 * prev.pos - start.pos),
-                        end: current,
-                    }
-                }
-            }
-            (Some(prev), Some(start), None) => Segment::QuadBez {
-                start,
-                cp: (2.0 * prev.pos - start.pos),
-                end: current,
-            },
-            (None, Some(start), Some(ahead)) => Segment::QuadBez {
-                start,
-                cp: (2.0 * current.pos - ahead.pos),
-                end: current,
-            },
-            (None, Some(start), None) => Segment::Line {
-                start,
-                end: current,
-            },
-            _ => Segment::Dot { element: current },
-        }
-    }
 }
 
 impl ShapeBehaviour for Segment {

@@ -7,6 +7,7 @@ use crate::Transform;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "ellipse")]
+/// A Ellipse
 pub struct Ellipse {
     /// The radii of the ellipse
     #[serde(rename = "radii")]

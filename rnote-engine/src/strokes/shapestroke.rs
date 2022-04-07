@@ -1,7 +1,7 @@
 use super::StrokeBehaviour;
 use crate::pens::shaper::ShaperStyle;
+use crate::pens::Shaper;
 use crate::DrawBehaviour;
-use crate::{pens::Shaper};
 use rnote_compose::penpath::Element;
 use rnote_compose::shapes::Line;
 use rnote_compose::shapes::Rectangle;
@@ -32,35 +32,7 @@ impl Default for ShapeStroke {
     }
 }
 
-impl StrokeBehaviour for ShapeStroke {
-    /*     fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let bounds = self.bounds();
-
-        let mut svg_cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
-            bounds.extents()[0],
-            bounds.extents()[1],
-        ));
-
-        self.draw(&mut svg_cx);
-
-        let svg_data = composer::piet_svg_cx_to_svg(svg_cx)?;
-
-        Ok(vec![render::Svg { svg_data, bounds }])
-    } */
-    /*
-    fn gen_images(
-        &self,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
-        let svgs = self.gen_svgs()?;
-
-        renderer
-            .read()
-            .unwrap()
-            .gen_images(zoom, svgs, self.bounds())
-    } */
-}
+impl StrokeBehaviour for ShapeStroke {}
 
 impl DrawBehaviour for ShapeStroke {
     fn draw(

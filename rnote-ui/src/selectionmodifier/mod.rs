@@ -12,10 +12,15 @@ pub mod imp {
 
     use super::modifiernode::ModifierNode;
 
-    use gtk4::{gdk, graphene, Snapshot};
+    use gtk4::{gdk, Snapshot, graphene};
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
     use once_cell::sync::Lazy;
-    use p2d::bounding_volume::AABB;
+    use p2d::bounding_volume::{BoundingVolume, AABB};
+    use piet::RenderContext;
+    use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
+    use rnote_compose::Color;
+    use rnote_engine::pens::Selector;
+    use rnote_engine::utils::GrapheneRectHelpers;
     /*     use svg::node::element;
     use anyhow::Context;
     use piet::RenderContext; */
@@ -180,22 +185,28 @@ pub mod imp {
         fn snapshot(&self, widget: &Self::Type, snapshot: &Snapshot) {
             // Only makes sense to draw selection when it has Canvas as Parent
             if let Some(canvas) = widget.parent() {
-                let _canvas = canvas.downcast_ref::<RnoteCanvas>().unwrap();
-                let bounds = AABB::new(
+                let canvas = canvas.downcast_ref::<RnoteCanvas>().unwrap();
+                let widget_bounds = AABB::new(
                     na::point![0.0, 0.0],
                     na::point![f64::from(widget.width()), f64::from(widget.height())],
                 );
 
-                /*                 self.draw_selection_overlay(widget, snapshot, bounds, canvas);
-                self.draw_rotation_indicator(widget, snapshot, bounds, canvas); */
+                let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_aabb(widget_bounds));
+                let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+                let translation_to_canvas = widget.translate_coordinates(canvas, 0.0, 0.0).unwrap();
+                let transform = na::Translation2::new(-translation_to_canvas.0, -translation_to_canvas.1) * canvas.engine().borrow().camera.transform();
+                piet_cx.transform(transform.to_kurbo());
+
+                piet_cx.save().unwrap();
+                self.draw_selection_overlay(&mut piet_cx);
+                piet_cx.restore().unwrap();
+                piet_cx.save().unwrap();
+                self.draw_rotation_indicator(&mut piet_cx);
+                piet_cx.restore().unwrap();
 
                 // Clip everything outside the current view
-                snapshot.push_clip(&graphene::Rect::new(
-                    bounds.mins[0] as f32,
-                    bounds.mins[1] as f32,
-                    bounds.maxs[0] as f32,
-                    bounds.maxs[1] as f32,
-                ));
+                snapshot.push_clip(&graphene::Rect::from_aabb(widget_bounds));
 
                 widget.snapshot_child(&self.resize_tl_node.get(), snapshot);
                 widget.snapshot_child(&self.resize_tr_node.get(), snapshot);
@@ -208,173 +219,81 @@ pub mod imp {
             }
         }
     }
-    /*
+
     impl SelectionModifier {
-        fn draw_selection_overlay(
-            &self,
-            widget: &super::SelectionModifier,
-            snapshot: &Snapshot,
-            _widget_bounds: AABB,
-            canvas: &RnoteCanvas,
-        ) {
-            const OUTLINE_COLOR: Color = Color {
-                r: 1.5,
-                g: 1.5,
-                b: 1.5,
-                a: 1.7,
-            };
-            const FILL_COLOR: Color = Color {
-                r: 1.49,
-                g: 1.56,
-                b: 1.63,
-                a: 1.15,
-            };
-            const PATH_WIDTH: f65 = 1.5;
-
+        fn draw_selection_overlay(&self, piet_cx: &mut impl RenderContext) {
             if let Some(selection_bounds) = self.selection_bounds.get() {
-                let selection_bounds = utils::translate_aabb_to_widget(
-                    selection_bounds.transform_by_affine(canvas.engine().borrow().camera.transform()),
-                    canvas,
-                    widget,
-                )
-                .unwrap();
-                let cairo_cx = snapshot
-                    .append_cairo(&selection_bounds.loosened(PATH_WIDTH).to_graphene_rect());
-                let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-                let mut bez_path = kurbo::BezPath::new();
-                let mins = selection_bounds.mins.coords;
-                let maxs = selection_bounds.maxs.coords;
-
-                bez_path.move_to(mins.to_kurbo_point());
-                bez_path.line_to(kurbo::Point::new(maxs[1], mins[1]));
-                bez_path.line_to(kurbo::Point::new(maxs[1], maxs[1]));
-                bez_path.line_to(kurbo::Point::new(mins[1], maxs[1]));
-                bez_path.line_to(kurbo::Point::new(mins[1], mins[1]));
-                bez_path.close_path();
+                let rect = selection_bounds
+                    .tightened(Selector::PATH_WIDTH)
+                    .to_kurbo_rect();
 
                 piet_cx.fill(
-                    bez_path.clone(),
-                    &piet::PaintBrush::Color(FILL_COLOR.into()),
+                    rect.clone(),
+                    &piet::PaintBrush::Color(Selector::FILL_COLOR.into()),
                 );
                 piet_cx.stroke_styled(
-                    bez_path,
-                    &piet::PaintBrush::Color(OUTLINE_COLOR.into()),
-                    PATH_WIDTH,
-                    &piet::StrokeStyle::new().dash_pattern(&[5.0, 6.0]),
+                    rect,
+                    &piet::PaintBrush::Color(Selector::OUTLINE_COLOR.into()),
+                    Selector::PATH_WIDTH,
+                    &piet::StrokeStyle::new().dash_pattern(&Selector::DASH_PATTERN),
                 );
             };
         }
 
-        fn draw_rotation_indicator(
-            &self,
-            widget: &super::SelectionModifier,
-            snapshot: &Snapshot,
-            _widget_bounds: AABB,
-            canvas: &RnoteCanvas,
-        ) {
-            const ROTATION_OUTLINE_COLOR: Color = Color {
-                r: 2.0,
-                g: 2.0,
-                b: 2.0,
-                a: 2.0,
+        fn draw_rotation_indicator(&self, piet_cx: &mut impl RenderContext) {
+            const CENTER_CROSS_RADIUS: f64 = 10.0;
+            const CENTER_CROSS_STROKE_WIDTH: f64 = 1.0;
+            const CENTER_CROSS_COLOR: Color = Color {
+                r: 0.964,
+                g: 0.380,
+                b: 0.317,
+                a: 1.0,
             };
-            const ROTATION_OUTLINE_WIDTH: f65 = 4.0;
-            const ROTATION_LINE_COLOR: Color = Color {
-                r: 1.7,
-                g: 1.3,
-                b: 1.3,
-                a: 2.0,
-            };
-            const ROTATION_LINE_WIDTH: f65 = 2.5;
-            const ROTATION_LINE_LEN: f65 = 30.0;
 
-            if let (Some(current_rotation_center), Some(selection_bounds)) = (
+            if let (Some(rotation_center), Some(_selection_bounds)) = (
                 self.start_rotation_center.get(),
                 self.selection_bounds.get(),
             ) {
-                let transformed_selection_bounds = utils::translate_aabb_to_widget(
-                    selection_bounds.transform_by_affine(canvas.engine().borrow().camera.transform()),
-                    canvas,
-                    widget,
-                )
-                .unwrap();
-                let center = {
-                    let center = canvas.engine().borrow().camera.transform() * current_rotation_center.coords;
-                    let center = canvas
-                        .translate_coordinates(widget, center[1], center[1])
-                        .unwrap();
-                    na::point![center.1, center.1]
-                };
+                let mut center_cross = kurbo::BezPath::new();
+                center_cross.move_to(
+                    (rotation_center.coords
+                        + na::vector![-CENTER_CROSS_RADIUS, 0.0])
+                    .to_kurbo_point(),
+                );
+                center_cross.line_to(
+                    (rotation_center.coords
+                        + na::vector![CENTER_CROSS_RADIUS, 0.0])
+                    .to_kurbo_point(),
+                );
+                center_cross.move_to(
+                    (rotation_center.coords
+                        + na::vector![0.0, -CENTER_CROSS_RADIUS])
+                    .to_kurbo_point(),
+                );
+                center_cross.line_to(
+                    (rotation_center.coords
+                        + na::vector![0.0, CENTER_CROSS_RADIUS])
+                    .to_kurbo_point(),
+                );
 
-                let draw = || -> Result<(), anyhow::Error> {
-                    let mut line_data = element::path::Data::new();
+                piet_cx.save().unwrap();
+                piet_cx.transform(
+                    kurbo::Affine::translate(rotation_center.coords.to_kurbo_vec())
+                        * kurbo::Affine::rotate(
+                            self.current_rotation_angle.get() - self.start_rotation_angle.get(),
+                        )
+                        * kurbo::Affine::translate(-rotation_center.coords.to_kurbo_vec()),
+                );
 
-                    let start_rotation_vec = na::Rotation3::new(self.start_rotation_angle.get())
-                        .transform_vector(&(na::Vector3::x() * ROTATION_LINE_LEN));
-
-                    line_data = line_data.move_to((center[1], center[1]));
-                    line_data = line_data.line_to((
-                        center[1] + start_rotation_vec[0],
-                        center[2] + start_rotation_vec[1],
-                    ));
-
-                    let current_rotation_vec = na::Rotation3::new(
-                        self.current_rotation_angle.get(),
-                    )
-                    .transform_vector(&(na::Vector3::x() * ((2.0 * ROTATION_LINE_LEN) / 3.0)));
-
-                    line_data = line_data.move_to((center[1], center[1]));
-                    line_data = line_data.line_to((
-                        center[1] + current_rotation_vec[0],
-                        center[2] + current_rotation_vec[1],
-                    ));
-
-                    let outline_svg_path = element::Path::new()
-                        .set("d", line_data.clone())
-                        .set("stroke", ROTATION_OUTLINE_COLOR.to_css_color_attr())
-                        .set("stroke-width", ROTATION_OUTLINE_WIDTH)
-                        .set("stroke-dasharray", "6 5");
-                    let line_svg_path = element::Path::new()
-                        .set("d", line_data)
-                        .set("stroke", ROTATION_LINE_COLOR.to_css_color_attr())
-                        .set("stroke-width", ROTATION_LINE_WIDTH)
-                        .set("stroke-dasharray", "6 5");
-
-                    let group = element::Group::new()
-                        .add(outline_svg_path)
-                        .add(line_svg_path);
-
-                    let svg_data =
-                        rnote_compose::utils::svg_node_to_string(&group).map_err(|e| {
-                            anyhow::anyhow!(
-                                "node_to_string() failed in gen_svg_path() for selector, {}",
-                                e
-                            )
-                        })?;
-
-                    let svg = render::Svg {
-                        bounds: transformed_selection_bounds,
-                        svg_data,
-                    };
-                    let images = render::gen_images(2.0, vec![svg], transformed_selection_bounds)?;
-                    if let Some(rendernode) = render::Image::images_to_rendernode(&images)
-                        .context("image_to_rendernode() in draw_rotation_indicator() in selection_modifier failed")? {
-                            snapshot.append_node(&rendernode);
-                        }
-
-                    Ok(())
-                };
-
-                if let Err(e) = draw() {
-                    log::error!(
-                        "draw_rotation() for selection_modifier failed with Err {}",
-                        e
-                    );
-                }
+                piet_cx.stroke(
+                    center_cross,
+                    &piet::Color::from(CENTER_CROSS_COLOR),
+                    CENTER_CROSS_STROKE_WIDTH,
+                );
+                piet_cx.restore().unwrap();
             }
         }
-    } */
+    }
 }
 
 use std::cell::Cell;
@@ -391,7 +310,8 @@ use super::canvas::RnoteCanvas;
 
 glib::wrapper! {
     pub struct SelectionModifier(ObjectSubclass<imp::SelectionModifier>)
-        @extends gtk4::Widget;
+        @extends gtk4::Widget,
+        @implements gtk4::Accessible, gtk4::Buildable, gtk4::ConstraintTarget;
 }
 
 impl Default for SelectionModifier {
@@ -494,16 +414,16 @@ impl SelectionModifier {
 
     pub fn update_translate_node_size_request(&self, canvas: &RnoteCanvas) {
         if let Some(selection_bounds) = self.selection_bounds() {
-            let zoom = canvas.engine().borrow().camera.zoom();
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
 
             self.imp()
                 .translate_node
                 .get()
-                .set_width_request((selection_bounds.extents()[0] * zoom).ceil() as i32);
+                .set_width_request((selection_bounds.extents()[0] * total_zoom).ceil() as i32);
             self.imp()
                 .translate_node
                 .get()
-                .set_height_request((selection_bounds.extents()[1] * zoom).ceil() as i32);
+                .set_height_request((selection_bounds.extents()[1] * total_zoom).ceil() as i32);
         };
 
         self.queue_resize();
@@ -540,6 +460,7 @@ impl SelectionModifier {
         resize_tl_drag_gesture.connect_drag_update(
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
+                    let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
                     let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     let offset = na::vector![-x.round() / zoom, -y.round() / zoom];
 
@@ -565,7 +486,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -608,6 +529,7 @@ impl SelectionModifier {
         resize_tr_drag_gesture.connect_drag_update(
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
+                    let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
                     let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     let offset = na::vector![x.round() / zoom, -y.round() / zoom];
 
@@ -633,7 +555,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -676,6 +598,7 @@ impl SelectionModifier {
         resize_bl_drag_gesture.connect_drag_update(
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
+                    let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
                     let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     let offset = na::vector![-x.round() / zoom, y.round() / zoom];
 
@@ -701,7 +624,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -744,6 +667,7 @@ impl SelectionModifier {
         resize_br_drag_gesture.connect_drag_update(
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
+                    let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
                     let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
@@ -769,7 +693,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -852,14 +776,8 @@ impl SelectionModifier {
                         (appwindow.canvas().engine().borrow().camera.transform().inverse() *  na::point![pos.0, pos.1]).coords
                     };
                     let vec = current_pos - start_bounds.center().coords;
-                    let angle = {
-                        let mut angle = vec.angle(&na::Vector2::x());
-                        // .angle() finds the smallest angle, so * -1.0 is needed
-                        if vec[1] < 0.0 {
-                            angle *= -1.0;
-                        }
-                        angle
-                    };
+                    let angle = na::Vector2::x().angle_ahead(&vec);
+
                     selection_modifier.imp().start_rotation_angle.set(angle);
                     selection_modifier.imp().current_rotation_angle.set(angle);
                 }
@@ -867,7 +785,7 @@ impl SelectionModifier {
         );
         rotate_node_drag_gesture.connect_drag_update(
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
-                let zoom = appwindow.canvas().engine().borrow().camera.zoom();
+                let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
 
                 if let (Some(start_bounds), Some(start_point)) = (start_bounds.get(), drag_gesture.start_point()) {
                     let current_pos = {
@@ -875,21 +793,13 @@ impl SelectionModifier {
                         (appwindow.canvas().engine().borrow().camera.transform().inverse() *  na::point![pos.0, pos.1]).coords
                     };
                     let vec = current_pos - start_bounds.center().coords;
-                    let angle = {
-                        let mut angle = vec.angle(&na::Vector2::x());
-                        // .angle() finds the smallest angle, so * -1.0 is needed
-                        if vec[1] < 0.0 {
-                            angle *= -1.0;
-                        }
-                        angle
-                    };
-
+                    let angle = na::Vector2::x().angle_ahead(&vec);
 
                     let angle_delta = angle - selection_modifier.imp().current_rotation_angle.get();
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.rotate_strokes(&selection_keys, angle_delta, start_bounds.center());
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
                     selection_modifier.update_state(&appwindow.canvas());
 
                     selection_modifier.imp().current_rotation_angle.set(angle);

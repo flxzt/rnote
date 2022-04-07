@@ -45,17 +45,19 @@ There also is a different category of methods which return filtered keys, e.g. `
 
 #[derive(Debug, Clone)]
 pub enum StateTask {
+    /// Replace the images of the render_comp
     UpdateStrokeWithImages {
         key: StrokeKey,
         images: Vec<render::Image>,
     },
+    /// Append images to the render_comp. (e.g. when new segments of brush strokes are inserted)
     AppendImagesToStroke {
         key: StrokeKey,
         images: Vec<render::Image>,
     },
-    InsertStroke {
-        stroke: Stroke,
-    },
+    /// Inserts a new stroke to the store
+    InsertStroke { stroke: Stroke },
+    /// indicates that the application is in the process of quitting
     Quit,
 }
 
@@ -155,7 +157,12 @@ impl StrokesState {
     ///            }
     ///        }));
     /// ```
-    pub fn process_received_task(&mut self, task: StateTask, zoom: f64) -> SurfaceFlags {
+    pub fn process_received_task(
+        &mut self,
+        task: StateTask,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
         match task {
@@ -171,54 +178,48 @@ impl StrokesState {
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
             }
-            StateTask::InsertStroke { stroke } => match stroke {
-                Stroke::BrushStroke(brushstroke) => {
-                    let inserted = self.insert_stroke(Stroke::BrushStroke(brushstroke));
+            StateTask::InsertStroke { stroke } => {
+                match stroke {
+                    Stroke::BrushStroke(brushstroke) => {
+                        let _inserted = self.insert_stroke(Stroke::BrushStroke(brushstroke));
 
-                    self.regenerate_rendering_for_stroke_threaded(inserted, zoom);
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.sheet_changed = true;
+                    }
+                    Stroke::ShapeStroke(shapestroke) => {
+                        let _inserted = self.insert_stroke(Stroke::ShapeStroke(shapestroke));
 
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.sheet_changed = true;
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.sheet_changed = true;
+                    }
+                    Stroke::VectorImage(vectorimage) => {
+                        let inserted = self.insert_stroke(Stroke::VectorImage(vectorimage));
+                        self.set_selected(inserted, true);
+
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.resize_to_fit_strokes = true;
+                        surface_flags.change_to_pen = Some(PenStyle::Selector);
+                        surface_flags.sheet_changed = true;
+                        surface_flags.selection_changed = true;
+                    }
+                    Stroke::BitmapImage(bitmapimage) => {
+                        let inserted = self.insert_stroke(Stroke::BitmapImage(bitmapimage));
+                        self.set_selected(inserted, true);
+
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.resize_to_fit_strokes = true;
+                        surface_flags.change_to_pen = Some(PenStyle::Selector);
+                        surface_flags.sheet_changed = true;
+                        surface_flags.selection_changed = true;
+                    }
                 }
-                Stroke::ShapeStroke(shapestroke) => {
-                    let inserted = self.insert_stroke(Stroke::ShapeStroke(shapestroke));
 
-                    self.regenerate_rendering_for_stroke_threaded(inserted, zoom);
-
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.sheet_changed = true;
-                }
-                Stroke::VectorImage(vectorimage) => {
-                    let inserted = self.insert_stroke(Stroke::VectorImage(vectorimage));
-                    self.set_selected(inserted, true);
-
-                    self.regenerate_rendering_for_stroke_threaded(inserted, zoom);
-
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.resize_to_fit_strokes = true;
-                    surface_flags.change_to_pen = Some(PenStyle::Selector);
-                    surface_flags.pen_changed = true;
-                    surface_flags.sheet_changed = true;
-                    surface_flags.selection_changed = true;
-                }
-                Stroke::BitmapImage(bitmapimage) => {
-                    let inserted = self.insert_stroke(Stroke::BitmapImage(bitmapimage));
-                    self.set_selected(inserted, true);
-
-                    self.regenerate_rendering_for_stroke_threaded(inserted, zoom);
-
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.resize_to_fit_strokes = true;
-                    surface_flags.change_to_pen = Some(PenStyle::Selector);
-                    surface_flags.pen_changed = true;
-                    surface_flags.sheet_changed = true;
-                    surface_flags.selection_changed = true;
-                }
-            },
+                self.regenerate_rendering_in_viewport_threaded(false, Some(viewport), image_scale);
+            }
             StateTask::Quit => {
                 surface_flags.quit = true;
             }
@@ -255,7 +256,7 @@ impl StrokesState {
     }
 
     /// Needs rendering regeneration after calling
-    pub fn add_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
+    pub fn add_segment_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
         if let Some(Stroke::BrushStroke(ref mut brushstroke)) = self.strokes.get_mut(key) {
             brushstroke.push_segment(segment);
 
@@ -396,10 +397,8 @@ impl StrokesState {
                 match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width) {
                     Ok(images) => {
                         for image in images {
-                            let image = Stroke::VectorImage(image);
-
                             tasks_tx.unbounded_send(StateTask::InsertStroke {
-                                stroke: image
+                                stroke: Stroke::VectorImage(image)
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() failed in insert_pdf_bytes_as_vector_threaded() with Err, {}", e);
                             });
@@ -578,7 +577,7 @@ impl StrokesState {
                     return None;
                 }
 
-                match stroke.gen_svgs() {
+                match stroke.gen_svg() {
                     Ok(svgs) => Some(svgs),
                     Err(e) => {
                         log::error!(
@@ -589,7 +588,6 @@ impl StrokesState {
                     }
                 }
             })
-            .flatten()
             .collect::<Vec<render::Svg>>()
     }
 
@@ -601,7 +599,7 @@ impl StrokesState {
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 
-                match stroke.gen_svgs() {
+                match stroke.gen_svg() {
                     Ok(svgs) => Some(svgs),
                     Err(e) => {
                         log::error!(
@@ -612,7 +610,6 @@ impl StrokesState {
                     }
                 }
             })
-            .flatten()
             .collect::<Vec<render::Svg>>()
     }
 
@@ -627,11 +624,10 @@ impl StrokesState {
                         image.bounds = image.bounds.translate(offset);
                     }
 
-                    match render::Image::images_to_rendernode(&render_comp.images) {
-                        Ok(Some(rendernode)) => {
-                            render_comp.rendernode = Some(rendernode);
+                    match render::Image::images_to_rendernodes(&render_comp.images) {
+                        Ok(rendernodes) => {
+                            render_comp.rendernodes = rendernodes;
                         }
-                        Ok(None) => {}
                         Err(e) => log::error!(
                             "images_to_rendernode() failed in translate_strokes() with Err {}",
                             e
@@ -709,6 +705,7 @@ impl StrokesState {
             radius: drag_proximity_tool.radius,
         };
 
+        #[allow(dead_code)]
         fn calc_distance_ratio(
             pos: na::Vector2<f64>,
             tool_pos: na::Vector2<f64>,
@@ -729,31 +726,7 @@ impl StrokesState {
                                 let segment_sphere = segment.bounds().bounding_sphere();
 
                                 if sphere.intersects(&segment_sphere) {
-                                    match segment {
-                                        Segment::Dot { element } => {
-                                            element.pos += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    element.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            return Some(key);
-                                        }
-                                        Segment::Line { start, end } => {
-                                            start.pos += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    start.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            end.pos += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    end.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            return Some(key);
-                                        }
+                                    /*                                     match segment {
                                         Segment::QuadBez { start, cp, end } => {
                                             start.pos += drag_proximity_tool.offset
                                                 * calc_distance_ratio(
@@ -763,7 +736,7 @@ impl StrokesState {
                                                 );
                                             *cp += drag_proximity_tool.offset
                                                 * calc_distance_ratio(
-                                                    start.pos,
+                                                    *cp,
                                                     drag_proximity_tool.pos,
                                                     drag_proximity_tool.radius,
                                                 );
@@ -775,39 +748,8 @@ impl StrokesState {
                                                 );
                                             return Some(key);
                                         }
-                                        Segment::CubBez {
-                                            start,
-                                            cp1,
-                                            cp2,
-                                            end,
-                                        } => {
-                                            start.pos += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    start.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            *cp1 += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    start.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            *cp2 += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    start.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            end.pos += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    end.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            return Some(key);
-                                        }
-                                    }
+                                    } */
+                                    return Some(key);
                                 }
                             }
                         }

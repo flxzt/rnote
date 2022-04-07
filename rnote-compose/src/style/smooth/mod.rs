@@ -3,6 +3,7 @@ mod smoothoptions;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
 
+use crate::builders::penpathbuilder::PenPathBuilderState;
 use crate::builders::PenPathBuilder;
 use crate::helpers::{Affine2Helpers, Vector2Helpers};
 use crate::penpath::Segment;
@@ -325,15 +326,28 @@ impl Composer<SmoothOptions> for PenPathBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let penpath = self
-            .buffer
-            .iter()
-            .zip(self.buffer.iter().skip(1))
-            .map(|(start, end)| Segment::Line {
-                start: *start,
-                end: *end,
-            })
-            .collect::<PenPath>();
+        let penpath = match &self.state {
+            PenPathBuilderState::Start => self
+                .buffer
+                .iter()
+                .zip(self.buffer.iter().skip(1))
+                .map(|(start, end)| Segment::Line {
+                    start: *start,
+                    end: *end,
+                })
+                .collect::<PenPath>(),
+            // Skipping the first buffer element as that is the not drained by the segment builder and is the prev element in the "During" state
+            PenPathBuilderState::During => self
+                .buffer
+                .iter()
+                .skip(1)
+                .zip(self.buffer.iter().skip(2))
+                .map(|(start, end)| Segment::Line {
+                    start: *start,
+                    end: *end,
+                })
+                .collect::<PenPath>(),
+        };
 
         penpath.draw_composed(cx, options);
     }

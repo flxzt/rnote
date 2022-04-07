@@ -273,7 +273,7 @@ mod imp {
             if obj.unsaved_changes() {
                 dialogs::dialog_quit_save(obj);
             } else {
-                obj.close();
+                obj.close_force();
             }
 
             // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
@@ -485,7 +485,7 @@ impl RnoteAppWindow {
     }
 
     /// Called to close the window
-    pub fn close(&self) {
+    pub fn close_force(&self) {
         // Saving all state
         if let Err(err) = self.save_to_settings() {
             log::error!("Failed to save appwindow to settings, with Err `{}`", &err);
@@ -685,11 +685,11 @@ impl RnoteAppWindow {
         }
         if surface_flags.resize {
             self.canvas().engine().borrow_mut().resize_autoexpand();
-            self.canvas().update_background_rendernode(true);
+            self.canvas().update_background_rendernodes(true);
         }
         if surface_flags.resize_to_fit_strokes {
             self.canvas().engine().borrow_mut().resize_to_fit_strokes();
-            self.canvas().update_background_rendernode(true);
+            self.canvas().update_background_rendernodes(true);
         }
         if let Some(new_pen_style) = surface_flags.change_to_pen {
             adw::prelude::ActionGroupExt::activate_action(
@@ -738,7 +738,6 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get().selector_page().init(self);
         self.imp().penssidebar.get().tools_page().init(self);
         self.imp().canvas.get().init(self);
-        //StrokesState::init(self);
         self.imp().canvas.get().selection_modifier().init(self);
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
@@ -747,7 +746,7 @@ impl RnoteAppWindow {
 
         self.setup_input();
 
-        // actions and settings AFTER widget callback declarations
+        // actions and settings AFTER widget inits
         self.setup_actions();
         self.setup_action_accels();
         self.setup_settings();

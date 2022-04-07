@@ -1,19 +1,23 @@
 use rnote_fileformats::xoppformat;
 
-use gtk4::gdk;
 use serde::{Deserialize, Serialize};
 
+/// A rgba color
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "color")]
 pub struct Color {
+    /// red, ranging [0.0, 1.0]
     #[serde(rename = "r")]
-    pub r: f64, // between 0.0 and 1.0
+    pub r: f64,
+    /// green, ranging [0.0, 1.0]
     #[serde(rename = "g")]
-    pub g: f64, // between 0.0 and 1.0
+    pub g: f64,
+    /// blue, ranging [0.0, 1.0]
     #[serde(rename = "b")]
-    pub b: f64, // between 0.0 and 1.0
+    pub b: f64,
+    /// alpha, ranging [0.0, 1.0]
     #[serde(rename = "a")]
-    pub a: f64, // between 0.0 and 1.0
+    pub a: f64,
 }
 
 impl Default for Color {
@@ -23,36 +27,47 @@ impl Default for Color {
 }
 
 impl Color {
+    /// Transparent color with rgb set to 0.0
     pub const TRANSPARENT: Self = Self {
         r: 0.0,
         g: 0.0,
         b: 0.0,
         a: 0.0,
     };
+
+    /// Black color
     pub const BLACK: Self = Self {
         r: 0.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     };
+
+    /// White color
     pub const WHITE: Self = Self {
         r: 1.0,
         g: 1.0,
         b: 1.0,
         a: 1.0,
     };
+
+    /// Red color
     pub const RED: Self = Self {
         r: 1.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     };
+
+    /// Green color
     pub const GREEN: Self = Self {
         r: 0.0,
         g: 1.0,
         b: 0.0,
         a: 1.0,
     };
+
+    /// Blue color
     pub const BLUE: Self = Self {
         r: 0.0,
         g: 0.0,
@@ -60,6 +75,7 @@ impl Color {
         a: 1.0,
     };
 
+    /// A new color from rgba values
     pub fn new(r: f64, g: f64, b: f64, a: f64) -> Self {
         Self {
             r: r.clamp(0.0, 1.0),
@@ -69,22 +85,27 @@ impl Color {
         }
     }
 
+    /// Returns the red part
     pub fn r(&self) -> f64 {
         self.r
     }
 
+    /// Returns the green part
     pub fn g(&self) -> f64 {
         self.g
     }
 
+    /// Returns the blue part
     pub fn b(&self) -> f64 {
         self.b
     }
 
+    /// Returns the alpha part
     pub fn a(&self) -> f64 {
         self.a
     }
 
+    /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`. The values are 8 bit integers, ranging [0, 255]
     pub fn to_css_color_attr(self) -> String {
         format!(
             "rgb({:03},{:03},{:03},{:.3})",
@@ -96,7 +117,6 @@ impl Color {
     }
 }
 
-// Piet
 impl From<piet::Color> for Color {
     fn from(piet_color: piet::Color) -> Self {
         let piet_rgba = piet_color.as_rgba();
@@ -115,7 +135,6 @@ impl From<Color> for piet::Color {
     }
 }
 
-// Tuple
 impl From<(f64, f64, f64, f64)> for Color {
     fn from(tuple: (f64, f64, f64, f64)) -> Self {
         Self {
@@ -133,30 +152,6 @@ impl From<Color> for (f64, f64, f64, f64) {
     }
 }
 
-// Gdk
-impl From<gdk::RGBA> for Color {
-    fn from(gdk_color: gdk::RGBA) -> Self {
-        Self {
-            r: f64::from(gdk_color.red()),
-            g: f64::from(gdk_color.green()),
-            b: f64::from(gdk_color.blue()),
-            a: f64::from(gdk_color.alpha()),
-        }
-    }
-}
-
-impl From<Color> for gdk::RGBA {
-    fn from(color: Color) -> Self {
-        gdk::RGBA::new(
-            color.r as f32,
-            color.g as f32,
-            color.b as f32,
-            color.a as f32,
-        )
-    }
-}
-
-// u32
 impl From<u32> for Color {
     fn from(value: u32) -> Self {
         Self {
@@ -177,7 +172,6 @@ impl From<Color> for u32 {
     }
 }
 
-// XoppColor
 impl From<xoppformat::XoppColor> for Color {
     fn from(xopp_color: xoppformat::XoppColor) -> Self {
         Self {

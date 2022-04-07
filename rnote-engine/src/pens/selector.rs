@@ -1,6 +1,6 @@
 use super::penbehaviour::PenBehaviour;
 use crate::sheet::Sheet;
-use crate::{DrawOnSheetBehaviour, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penpath::Element;
 use rnote_compose::{Color, PenEvent};
@@ -45,8 +45,7 @@ impl PenBehaviour for Selector {
         event: PenEvent,
         _sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        viewport: Option<AABB>,
-        zoom: f64,
+        camera: &Camera,
     ) {
         match event {
             PenEvent::Down {
@@ -70,19 +69,21 @@ impl PenBehaviour for Selector {
                 }
             }
             PenEvent::Up { .. } => {
-                strokes_state.update_selection_for_selector(&self, viewport);
+                strokes_state.update_selection_for_selector(&self, Some(camera.viewport()));
 
                 let selection_keys = strokes_state.selection_keys_as_rendered();
-                strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
+                strokes_state
+                    .regenerate_rendering_for_strokes(&selection_keys, camera.image_scale());
 
                 self.path.clear();
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {
-                strokes_state.update_selection_for_selector(&self, viewport);
+                strokes_state.update_selection_for_selector(&self, Some(camera.viewport()));
 
                 let selection_keys = strokes_state.selection_keys_as_rendered();
-                strokes_state.regenerate_rendering_for_strokes(&selection_keys, zoom);
+                strokes_state
+                    .regenerate_rendering_for_strokes(&selection_keys, camera.image_scale());
 
                 self.path.clear();
             }
@@ -151,7 +152,7 @@ impl DrawOnSheetBehaviour for Selector {
             bez_path,
             &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
             Self::PATH_WIDTH,
-            &piet::StrokeStyle::new().dash_pattern(&[4.0, 6.0]),
+            &piet::StrokeStyle::new().dash_pattern(&Self::DASH_PATTERN),
         );
 
         Ok(())
@@ -170,6 +171,8 @@ impl Selector {
         r: 0.85,
         g: 0.85,
         b: 0.85,
-        a: 0.15,
+        a: 0.12,
     };
+
+    pub const DASH_PATTERN: [f64; 2] = [8.0, 12.0];
 }

@@ -60,10 +60,15 @@ impl Default for RnoteEngine {
 }
 
 impl RnoteEngine {
+    /// Import and replace the engine. NOT for opening files
     pub fn import_engine(&mut self, engine: Self) {
         self.sheet.import_sheet(engine.sheet);
+        self.penholder = engine.penholder;
         self.strokes_state
             .import_strokes_state(engine.strokes_state);
+        self.expand_mode = engine.expand_mode;
+        self.camera = engine.camera;
+        self.visual_debug = engine.visual_debug;
     }
 
     pub fn expand_mode(&self) -> ExpandMode {
@@ -74,10 +79,10 @@ impl RnoteEngine {
         self.expand_mode = expand_mode;
 
         let viewport = self.camera.viewport();
-        let zoom = self.camera.zoom();
+        let image_scale = self.camera.image_scale();
         self.resize_to_fit_strokes();
         self.strokes_state
-            .regenerate_rendering_current_view_threaded(Some(viewport), false, zoom);
+            .regenerate_rendering_in_viewport_threaded(false, Some(viewport), image_scale);
     }
 
     pub fn handle_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
@@ -85,8 +90,7 @@ impl RnoteEngine {
             event,
             &mut self.sheet,
             &mut self.strokes_state,
-            Some(self.camera.viewport()),
-            self.camera.zoom(),
+            &self.camera,
         )
     }
 
@@ -218,7 +222,10 @@ impl RnoteEngine {
         let decompressed_bytes = utils::decompress_from_gzip(bytes)?;
         let engine: Self = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
 
-        self.import_engine(engine);
+        self.sheet.import_sheet(engine.sheet);
+        self.strokes_state
+            .import_strokes_state(engine.strokes_state);
+        self.expand_mode = engine.expand_mode;
 
         Ok(())
     }
@@ -537,13 +544,11 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    pub fn draw(&self, snapshot: &Snapshot) -> Result<(), anyhow::Error> {
+    pub fn draw(&self, snapshot: &Snapshot, _surface_bounds: AABB) -> Result<(), anyhow::Error> {
         let sheet_bounds = self.sheet.bounds();
-        // Expanded by the temporary zoom
         let viewport = self.camera.viewport();
 
         snapshot.save();
-        //snapshot.transform(Some(&self.camera.to_gsk_transform()));
         snapshot.transform(Some(&self.camera.transform_as_gsk()));
 
         self.sheet.draw_shadow(snapshot);
@@ -563,16 +568,20 @@ impl RnoteEngine {
             .draw_on_sheet_snapshot(snapshot, sheet_bounds, &self.camera)?;
 
         /*         {
+            use piet::RenderContext;
+            use rnote_compose::helpers::Affine2Helpers;
+            let zoom = self.camera.zoom();
+
             let cairo_cx = snapshot.append_cairo(&surface_bounds.to_graphene_rect());
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
             // Transform to sheet coordinate space
             piet_cx.transform(self.camera.transform().to_kurbo());
 
-            /*             piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+            piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
             self.strokes_state
                 .draw_strokes_immediate_w_piet(&mut piet_cx, sheet_bounds, Some(viewport), zoom)?;
-            piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?; */
+            piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
 
             piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
             self.penholder
@@ -598,15 +607,15 @@ impl RnoteEngine {
 
 /// module for visual debugging
 pub mod visual_debug {
-    use gtk4::{graphene, gsk, Snapshot};
+    use gtk4::{graphene, gsk, Snapshot, gdk};
     use p2d::bounding_volume::{BoundingVolume, AABB};
 
-    use rnote_compose::helpers::AABBHelpers;
     use rnote_compose::shapes::ShapeBehaviour;
     use rnote_compose::Color;
 
     use crate::pens::penholder::PenStyle;
     use crate::strokes::Stroke;
+    use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
     use crate::{DrawOnSheetBehaviour, RnoteEngine};
 
     const COLOR_POS: Color = Color {
@@ -671,13 +680,18 @@ pub mod visual_debug {
         snapshot.append_border(
             &rounded_rect,
             &[width as f32, width as f32, width as f32, width as f32],
-            &[color.into(), color.into(), color.into(), color.into()],
+            &[
+                gdk::RGBA::from_compose_color(color),
+                gdk::RGBA::from_compose_color(color),
+                gdk::RGBA::from_compose_color(color),
+                gdk::RGBA::from_compose_color(color)
+            ],
         )
     }
 
     fn draw_pos(pos: na::Vector2<f64>, color: Color, snapshot: &Snapshot, width: f64) {
         snapshot.append_color(
-            &color.into(),
+            &gdk::RGBA::from_compose_color(color),
             &graphene::Rect::new(
                 (pos[0] - 0.5 * width) as f32,
                 (pos[1] - 0.5 * width) as f32,
@@ -688,7 +702,7 @@ pub mod visual_debug {
     }
 
     fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
-        snapshot.append_color(&color.into(), &rect.to_graphene_rect());
+        snapshot.append_color(&gdk::RGBA::from_compose_color(color), &graphene::Rect::from_aabb(rect));
     }
 
     // Draw bounds, positions, .. for visual debugging purposes

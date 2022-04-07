@@ -1,9 +1,54 @@
-use std::io::prelude::*;
 use flate2::read::MultiGzDecoder;
 use flate2::{Compression, GzBuilder};
-use gtk4::glib;
+use gtk4::{gdk, glib, graphene};
+use p2d::bounding_volume::AABB;
+use std::io::prelude::*;
 
-pub const INPUT_OVERSHOOT: f64 = 30.0;
+
+pub trait GdkRGBAHelpers
+where
+    Self: Sized,
+{
+    fn from_compose_color(color: rnote_compose::Color) -> Self;
+    fn into_compose_color(self) -> rnote_compose::Color;
+}
+
+impl GdkRGBAHelpers for gdk::RGBA {
+    fn from_compose_color(color: rnote_compose::Color) -> Self {
+        gdk::RGBA::new(
+            color.r as f32,
+            color.g as f32,
+            color.b as f32,
+            color.a as f32,
+        )
+    }
+    fn into_compose_color(self) -> rnote_compose::Color {
+        rnote_compose::Color {
+            r: f64::from(self.red()),
+            g: f64::from(self.green()),
+            b: f64::from(self.blue()),
+            a: f64::from(self.alpha()),
+        }
+    }
+}
+
+pub trait GrapheneRectHelpers
+where
+    Self: Sized,
+{
+    fn from_aabb(aabb: AABB) -> Self;
+}
+
+impl GrapheneRectHelpers for graphene::Rect {
+    fn from_aabb(aabb: AABB) -> Self {
+        graphene::Rect::new(
+            aabb.mins[0] as f32,
+            aabb.mins[1] as f32,
+            (aabb.extents()[0]) as f32,
+            (aabb.extents()[1]) as f32,
+        )
+    }
+}
 
 pub fn now_formatted_string() -> String {
     match glib::DateTime::now_local() {

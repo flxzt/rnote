@@ -4,14 +4,19 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "smooth_options")]
+/// Options for shapes that can be drawn smoothly (plain)
 pub struct SmoothOptions {
     #[serde(rename = "width")]
+    /// The stroke width
     pub width: f64,
     #[serde(rename = "stroke_color")]
+    /// The stroke color
     pub stroke_color: Option<Color>,
     #[serde(rename = "fill_color")]
+    /// The fill color
     pub fill_color: Option<Color>,
     #[serde(rename = "segment_constant_width")]
+    /// True if segments should have a constant width ( ignoring pen pressures )
     pub segment_constant_width: bool,
 }
 

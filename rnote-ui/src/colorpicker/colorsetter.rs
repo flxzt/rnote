@@ -6,6 +6,7 @@ mod imp {
         PositionType, ToggleButton,
     };
     use once_cell::sync::Lazy;
+    use rnote_engine::utils::GdkRGBAHelpers;
 
     #[derive(Debug)]
     pub struct ColorSetter {
@@ -25,7 +26,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 css: CssProvider::new(),
-                color: Cell::new(super::ColorSetter::COLOR_DEFAULT.into()),
+                color: Cell::new(gdk::RGBA::from_compose_color(super::ColorSetter::COLOR_DEFAULT)),
                 position: Cell::new(PositionType::Right),
             }
         }
@@ -38,7 +39,7 @@ mod imp {
             obj.set_css_classes(&["setter-button"]);
             self.css.load_from_data(
                 self.generate_css_string(
-                    &super::ColorSetter::COLOR_DEFAULT.into(),
+                    &gdk::RGBA::from_compose_color(super::ColorSetter::COLOR_DEFAULT),
                     self.position.get(),
                 )
                 .as_bytes(),

@@ -1,21 +1,18 @@
 use std::ops::Range;
 
-use gtk4::glib;
 use rand_distr::Distribution;
 use serde::{Deserialize, Serialize};
 
-/// The distribution for the spread of dots across the width of the textured stroke
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
-#[repr(u32)]
-#[enum_type(name = "TexturedDotsDistribution")]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize)]
+/// The distribution for the spread of dots across the width of a textured shape
 pub enum TexturedDotsDistribution {
-    #[enum_value(name = "Uniform", nick = "uniform")]
-    Uniform = 0,
-    #[enum_value(name = "Normal", nick = "normal")]
+    /// Uniform distribution
+    Uniform,
+    /// Normal distribution
     Normal,
-    #[enum_value(name = "Exponential", nick = "exponential")]
+    /// Exponential distribution distribution, from the outline increasing in probability symmetrically to the center
     Exponential,
-    #[enum_value(name = "ReverseExponential", nick = "reverse-exponential")]
+    /// Exponential distribution distribution, from the center increasing in probability symmetrically outwards to the outline
     ReverseExponential,
 }
 
@@ -26,7 +23,7 @@ impl Default for TexturedDotsDistribution {
 }
 
 impl TexturedDotsDistribution {
-    /// Samples a value for the given range, symmetrical to the mid of the range. For distributions that are open ended, samples are clipped to the range
+    /// Samples a value for the given range, symmetrical to the center of the range. For distributions that are open ended, samples are clipped to the range
     pub fn sample_for_range_symmetrical_clipped<G: rand::Rng + ?Sized>(
         &self,
         rng: &mut G,

@@ -7,10 +7,13 @@ use crate::Transform;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "rectangle")]
+/// A rectangle
 pub struct Rectangle {
     #[serde(rename = "cuboid")]
+    /// The cuboid, consisting of half extents.
     pub cuboid: p2d::shape::Cuboid,
     #[serde(rename = "transform")]
+    /// The transform to place the rect in a coordinate space
     pub transform: Transform,
 }
 

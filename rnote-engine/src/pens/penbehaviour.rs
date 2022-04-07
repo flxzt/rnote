@@ -1,7 +1,5 @@
-use p2d::bounding_volume::AABB;
-
 use crate::sheet::Sheet;
-use crate::{DrawOnSheetBehaviour, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
 
 pub trait PenBehaviour: DrawOnSheetBehaviour {
     fn handle_event(
@@ -9,7 +7,6 @@ pub trait PenBehaviour: DrawOnSheetBehaviour {
         event: rnote_compose::PenEvent,
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        viewport: Option<AABB>,
-        zoom: f64,
+        camera: &Camera,
     );
 }

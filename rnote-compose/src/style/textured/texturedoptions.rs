@@ -27,6 +27,7 @@ pub struct TexturedOptions {
     /// the distribution type
     #[serde(rename = "distribution")]
     pub distribution: TexturedDotsDistribution,
+    /// True if segments should have a constant width ( ignoring pen pressures )
     #[serde(rename = "segment_constant_width")]
     pub segment_constant_width: bool,
 }

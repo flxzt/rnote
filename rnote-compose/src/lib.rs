@@ -1,13 +1,24 @@
 #![warn(missing_debug_implementations)]
+#![warn(missing_docs)]
 
+//! the rnote-compose crate provides rnote with building blocks for creating, styling, composing, drawing, transforming shapes and paths.
+
+/// module for shape builders
 pub mod builders;
 mod color;
+/// module for helper traits that extend foreign types
 pub mod helpers;
+/// module for pen events
 pub mod penevent;
+/// module for pen paths
 pub mod penpath;
+/// module for shapes
 pub mod shapes;
+/// module for styles, that can be applied onto shapes
 pub mod style;
+/// module for transformation
 pub mod transform;
+/// other misc utilities
 pub mod utils;
 
 // Re-exports

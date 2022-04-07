@@ -1,14 +1,17 @@
 use p2d::bounding_volume::AABB;
+use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 
 const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
 const SVG_ROOT_REGEX: &str = r#"<svg[^>]*>|<[^/svg]*/svg>"#;
 
+/// Check if a xml header is present
 pub fn check_xml_header(svg: &str) -> bool {
     let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
     re.is_match(svg)
 }
 
+/// Adds a xml header to the &str
 pub fn add_xml_header(svg: &str) -> String {
     let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
     if !re.is_match(svg) {
@@ -18,16 +21,19 @@ pub fn add_xml_header(svg: &str) -> String {
     }
 }
 
+/// Removes the xml header from the &str, if present
 pub fn remove_xml_header(svg: &str) -> String {
     let re = regex::Regex::new(XML_HEADER_REGEX).unwrap();
     String::from(re.replace_all(svg, ""))
 }
 
+/// Checks is a svg root is present
 pub fn check_svg_root(svg: &str) -> bool {
     let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
     re.is_match(svg)
 }
 
+/// Wraps a svg str with a svg root element and its attributes
 pub fn wrap_svg_root(
     data: &str,
     bounds: Option<AABB>,
@@ -83,6 +89,7 @@ pub fn wrap_svg_root(
     svg_node_to_string(&svg_root).unwrap()
 }
 
+/// Strips the svg root element, if present
 pub fn strip_svg_root(svg: &str) -> String {
     let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
     String::from(re.replace_all(svg, ""))
@@ -98,6 +105,7 @@ where
     Ok(String::from_utf8(document_buffer)?)
 }
 
+/// A new random number generator with the pcg64 algorithm. Used for seedable, reproducable random numbers.
 pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     if let Some(seed) = seed {
         rand_pcg::Pcg64::seed_from_u64(seed)
@@ -106,6 +114,7 @@ pub fn new_rng_default_pcg64(seed: Option<u64>) -> rand_pcg::Pcg64 {
     }
 }
 
+/// generates a alphanumeric random prefix for svg ids. used to avoid id collisions.
 pub fn random_id_prefix() -> String {
     rand::thread_rng()
         .sample_iter(&rand::distributions::Alphanumeric)
@@ -118,4 +127,17 @@ pub fn random_id_prefix() -> String {
 pub fn seed_advance(seed: u64) -> u64 {
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
     rng.gen()
+}
+
+/// Generates a svg string from the piet context
+pub fn piet_svg_cx_to_svg(mut cx: piet_svg::RenderContext) -> Result<String, anyhow::Error> {
+    cx.finish()
+        .map_err(|e| anyhow::anyhow!("cx.finish() failed in svg_cx_to_svg() with Err {}", e))?;
+
+    let mut data: Vec<u8> = vec![];
+    cx.write(&mut data)?;
+
+    let svg_data = crate::utils::strip_svg_root(String::from_utf8(data)?.as_str());
+
+    Ok(svg_data)
 }

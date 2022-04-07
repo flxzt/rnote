@@ -1,10 +1,11 @@
 use anyhow::Context;
-use gtk4::{glib, gsk, Snapshot};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use gtk4::{glib, gsk, prelude::*, Snapshot, gdk, graphene};
+use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
 use crate::render;
+use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::Color;
 
@@ -175,7 +176,7 @@ pub struct Background {
     #[serde(skip)]
     pub image: Option<render::Image>,
     #[serde(skip)]
-    rendernode: Option<gsk::RenderNode>,
+    rendernodes: Vec<gsk::RenderNode>,
 }
 
 impl Default for Background {
@@ -186,7 +187,7 @@ impl Default for Background {
             pattern_size: Self::PATTERN_SIZE_DEFAULT,
             pattern_color: Self::PATTERN_COLOR_DEFAULT,
             image: None,
-            rendernode: None,
+            rendernodes: vec![],
         }
     }
 }
@@ -276,64 +277,44 @@ impl Background {
         image_scale: f64,
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let svg = self.gen_svg(bounds)?;
-        Ok(Some(render::Image::concat_images(
-            render::Image::gen_images(vec![svg], bounds, image_scale)?,
+        Ok(render::Image::join_images(
+            render::Image::gen_images_from_svg(svg, bounds, image_scale)?,
             bounds,
             image_scale,
-        )?))
+        )?)
     }
 
-    pub fn regenerate_background(
+    fn gen_rendernodes(
         &mut self,
         sheet_bounds: AABB,
-        viewport: Option<AABB>,
-        zoom: f64,
-    ) -> Result<(), anyhow::Error> {
+    ) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
         let tile_size = self.tile_size();
-        let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
-
-        self.image = self.gen_image(tile_bounds, zoom)?;
-
-        self.update_rendernode(sheet_bounds, viewport)?;
-        Ok(())
-    }
-
-    fn gen_rendernode(
-        &mut self,
-        sheet_bounds: AABB,
-        viewport: Option<AABB>,
-    ) -> Result<Option<gsk::RenderNode>, anyhow::Error> {
-        let snapshot = Snapshot::new();
-        let tile_size = self.tile_size();
+        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
         // Fill with background color just in case there is any space left between the tiles
-        snapshot.append_color(&self.color.into(), &sheet_bounds.to_graphene_rect());
+        rendernodes.push(
+            gsk::ColorNode::new(&gdk::RGBA::from_compose_color(self.color), &graphene::Rect::from_aabb(sheet_bounds)).upcast(),
+        );
 
         if let Some(image) = &self.image {
             let new_texture = image
                 .to_memtexture()
                 .context("image_to_memtexture() failed in gen_rendernode().")?;
             for splitted_bounds in sheet_bounds.split_extended_origin_aligned(tile_size) {
-                if let Some(viewport) = viewport {
-                    if !splitted_bounds.intersects(&viewport) {
-                        continue;
-                    }
-                }
-                snapshot.append_texture(&new_texture, &splitted_bounds.to_graphene_rect());
+                rendernodes.push(
+                    gsk::TextureNode::new(&new_texture, &graphene::Rect::from_aabb(splitted_bounds))
+                        .upcast(),
+                );
             }
         }
 
-        Ok(snapshot.to_node())
+        Ok(rendernodes)
     }
 
-    pub fn update_rendernode(
-        &mut self,
-        sheet_bounds: AABB,
-        viewport: Option<AABB>,
-    ) -> Result<(), anyhow::Error> {
-        match self.gen_rendernode(sheet_bounds, viewport) {
-            Ok(new_rendernode) => {
-                self.rendernode = new_rendernode;
+    pub fn update_rendernodes(&mut self, sheet_bounds: AABB) -> Result<(), anyhow::Error> {
+        match self.gen_rendernodes(sheet_bounds) {
+            Ok(rendernodes) => {
+                self.rendernodes = rendernodes;
             }
             Err(e) => {
                 log::error!(
@@ -346,10 +327,24 @@ impl Background {
         Ok(())
     }
 
-    pub fn draw(&self, snapshot: &Snapshot, sheet_bounds: AABB) {
-        snapshot.push_clip(&sheet_bounds.to_graphene_rect());
+    pub fn regenerate_background(
+        &mut self,
+        sheet_bounds: AABB,
+        image_scale: f64,
+    ) -> Result<(), anyhow::Error> {
+        let tile_size = self.tile_size();
+        let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 
-        self.rendernode.iter().for_each(|rendernode| {
+        self.image = self.gen_image(tile_bounds, image_scale)?;
+
+        self.update_rendernodes(sheet_bounds)?;
+        Ok(())
+    }
+
+    pub fn draw(&self, snapshot: &Snapshot, sheet_bounds: AABB) {
+        snapshot.push_clip(&graphene::Rect::from_aabb(sheet_bounds));
+
+        self.rendernodes.iter().for_each(|rendernode| {
             snapshot.append_node(rendernode);
         });
 

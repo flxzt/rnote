@@ -31,7 +31,7 @@ impl Default for VectorImage {
 }
 
 impl StrokeBehaviour for VectorImage {
-    fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
+    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let transform_string = self.rectangle.transform.to_svg_transform_attr_str();
 
         let svg_root = svg::node::element::SVG::new()
@@ -59,7 +59,7 @@ impl StrokeBehaviour for VectorImage {
             svg_data,
         };
 
-        Ok(vec![svg])
+        Ok(svg)
     }
 }
 
@@ -71,27 +71,34 @@ impl DrawBehaviour for VectorImage {
         cx: &mut impl piet::RenderContext,
         image_scale: f64,
     ) -> Result<(), anyhow::Error> {
-        for mut image in render::Image::gen_images(self.gen_svgs()?, self.bounds(), image_scale)? {
-            // piet needs rgba8-prem. the gen_images() func might produces bgra8-prem format, so we need to convert the image first
-            image.convert_to_rgba8pre_inplace()?;
+        let mut image = match render::Image::join_images(
+            render::Image::gen_images_from_svg(self.gen_svg()?, self.bounds(), image_scale)?,
+            self.bounds(),
+            image_scale,
+        )? {
+            Some(image) => image,
+            None => return Ok(()),
+        };
 
-            let piet_image_format = piet::ImageFormat::try_from(image.memory_format)?;
+        // piet needs rgba8-prem. the gen_images() func might produces bgra8-prem format, so we need to convert the image first
+        image.convert_to_rgba8pre()?;
 
-            let piet_image = cx
-                .make_image(
-                    image.pixel_width as usize,
-                    image.pixel_height as usize,
-                    &image.data,
-                    piet_image_format,
-                )
-                .map_err(|e| anyhow::anyhow!("{}", e))?;
+        let piet_image_format = piet::ImageFormat::try_from(image.memory_format)?;
 
-            cx.draw_image(
-                &piet_image,
-                image.bounds.to_kurbo_rect(),
-                piet::InterpolationMode::Bilinear,
-            );
-        }
+        let piet_image = cx
+            .make_image(
+                image.pixel_width as usize,
+                image.pixel_height as usize,
+                &image.data,
+                piet_image_format,
+            )
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        cx.draw_image(
+            &piet_image,
+            image.bounds.to_kurbo_rect(),
+            piet::InterpolationMode::Bilinear,
+        );
 
         Ok(())
     }
@@ -258,12 +265,7 @@ impl VectorImage {
     pub fn export_as_svg(&self) -> Result<String, anyhow::Error> {
         let export_bounds = self.bounds().translate(-self.bounds().mins.coords);
 
-        let mut export_svg_data = self
-            .gen_svgs()?
-            .iter()
-            .map(|svg| svg.svg_data.clone())
-            .collect::<Vec<String>>()
-            .join("\n");
+        let mut export_svg_data = self.gen_svg()?.svg_data;
 
         export_svg_data = rnote_compose::utils::wrap_svg_root(
             export_svg_data.as_str(),
@@ -280,8 +282,15 @@ impl VectorImage {
         format: image::ImageOutputFormat,
         image_scale: f64,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        let image = render::Image::gen_image_from_piet(self, self.bounds(), image_scale)?;
+        let bounds = self.bounds();
 
-        Ok(image.into_encoded_bytes(format)?)
+        match render::Image::join_images(
+            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
+            bounds,
+            image_scale,
+        )? {
+            Some(image) => Ok(image.into_encoded_bytes(format)?),
+            None => Ok(vec![]),
+        }
     }
 }

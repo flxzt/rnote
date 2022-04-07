@@ -9,10 +9,13 @@ use crate::Transform;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "line")]
+/// A line
 pub struct Line {
     #[serde(rename = "start")]
+    /// The line start
     pub start: na::Vector2<f64>,
     #[serde(rename = "end")]
+    /// The line end
     pub end: na::Vector2<f64>,
 }
 
@@ -43,22 +46,7 @@ impl ShapeBehaviour for Line {
 }
 
 impl Line {
-    pub fn valid_from_vecs(first: na::Vector2<f64>, second: na::Vector2<f64>) -> Option<Self> {
-        let line = Line {
-            start: first,
-            end: second,
-        };
-
-        let start_to_end = line.end - line.start;
-
-        // returns early to prevent NaN when calculating the normals.
-        if start_to_end.magnitude() == 0.0 {
-            return None;
-        }
-
-        Some(line)
-    }
-
+    /// creates a rect in the direction of the line, with a constant given width
     pub fn line_w_width_to_rect(&self, width: f64) -> Rectangle {
         let vec = self.end - self.start;
         let magn = vec.magnitude();

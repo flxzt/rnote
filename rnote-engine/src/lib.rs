@@ -1,6 +1,9 @@
 #![warn(missing_debug_implementations)]
 //#![warn(missing_docs)]
 
+//! The rnote-engine crate is the core of rnote. It holds the strokes store, the pens, has methods for importing / exporting, rendering, etc..
+//! The main entry point is the RnoteEngine struct.
+
 pub mod camera;
 mod drawbehaviour;
 pub mod engine;

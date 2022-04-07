@@ -9,14 +9,19 @@ use super::quadbez::QuadraticBezier;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "cubic_bezier")]
+/// A cubic bezier curve
 pub struct CubicBezier {
     #[serde(rename = "start")]
+    /// the cubic curve start
     pub start: na::Vector2<f64>,
     #[serde(rename = "cp1")]
+    /// the cubic curve first control point
     pub cp1: na::Vector2<f64>,
     #[serde(rename = "cp2")]
+    /// the cubic curve second control point
     pub cp2: na::Vector2<f64>,
     #[serde(rename = "end")]
+    /// the cubic curve end
     pub end: na::Vector2<f64>,
 }
 
@@ -56,8 +61,11 @@ impl ShapeBehaviour for CubicBezier {
 }
 
 impl CubicBezier {
-    // See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
-    pub fn gen_w_catmull_rom(
+    /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition betwen them,
+    /// and only being only affected by their four points (locality), so are easily calculated and easy to work with.
+    /// making it a good spline to represent pen paths.
+    /// See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
+    pub fn new_w_catmull_rom(
         first: na::Vector2<f64>,
         second: na::Vector2<f64>,
         third: na::Vector2<f64>,
@@ -142,66 +150,10 @@ impl CubicBezier {
 
         lines
     }
-
-    /// Approximating a cubic bezier with lines, splitted based on critical points and the angle condition
-    pub fn approx_offsetted_w_lines_w_subdivision(
-        &self,
-        start_offset_dist: f64,
-        end_offset_dist: f64,
-        angle_split: f64,
-    ) -> Vec<Line> {
-        let t_mid = 0.5;
-        let mid_offset_dist = start_offset_dist + (end_offset_dist - start_offset_dist) * t_mid;
-        let mut lines = Vec::new();
-
-        let (first_cubic, second_cubic) = self.split(t_mid);
-        let first_quad = first_cubic.approx_with_quadbez();
-        let second_quad = second_cubic.approx_with_quadbez();
-
-        let mut quads_to_approx = vec![];
-
-        let (mut first_quads, _, _) =
-            first_quad.split_offsetted_at_critical_points(start_offset_dist, mid_offset_dist);
-        quads_to_approx.append(&mut first_quads);
-
-        let (mut second_quads, _, _) =
-            second_quad.split_offsetted_at_critical_points(mid_offset_dist, end_offset_dist);
-        quads_to_approx.append(&mut second_quads);
-
-        for mut quad_to_approx in quads_to_approx {
-            // Abort after 10 iterations
-            let mut i = 0;
-
-            while i < 10 {
-                let t = quad_to_approx.calc_quadbez_angle_condition(angle_split);
-
-                if (0.0..1.0).contains(&t) {
-                    let (first, second) = quad_to_approx.split(t);
-
-                    lines.push(Line {
-                        start: first.start,
-                        end: first.end,
-                    });
-
-                    quad_to_approx = second;
-                } else {
-                    lines.push(Line {
-                        start: quad_to_approx.start,
-                        end: quad_to_approx.end,
-                    });
-
-                    // Break if angle conditions is no longer met
-                    break;
-                }
-                i += 1;
-            }
-        }
-
-        lines
-    }
 }
 
-fn cubbez_calc(
+/// Calculates a point on a cubic curve given t ranging [0.0, 1.0]
+pub fn cubbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,

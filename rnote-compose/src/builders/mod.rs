@@ -1,3 +1,4 @@
+/// The pen path builder.
 pub mod penpathbuilder;
 mod shapebuilderbehaviour;
 

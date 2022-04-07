@@ -237,14 +237,14 @@ impl MainHeader {
                 let new_sheet_height = appwindow.canvas().engine().borrow().sheet.height + format_height;
                 appwindow.canvas().engine().borrow_mut().sheet.height = new_sheet_height;
 
-                appwindow.canvas().update_background_rendernode(true);
+                appwindow.canvas().update_background_rendernodes(true);
             }),
         );
 
         self.imp().resize_to_format_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
                 appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
-                appwindow.canvas().update_background_rendernode(true);
+                appwindow.canvas().update_background_rendernodes(true);
             }),
         );
 

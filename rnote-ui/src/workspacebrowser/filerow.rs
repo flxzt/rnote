@@ -150,8 +150,9 @@ mod imp {
 }
 
 use gettextrs::gettext;
+use gtk4::pango;
 use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
-use gtk4::{Button, DragSource, Entry, Image, Label, Orientation, Popover, PositionType};
+use gtk4::{Align, Button, DragSource, Entry, Grid, Image, Label, Popover, PositionType};
 
 use crate::RnoteAppWindow;
 
@@ -236,21 +237,22 @@ impl FileRow {
                                 .text(current_name.as_str())
                                 .build();
 
-                            let rename_apply_button = Button::builder().label(&gettext("Apply")).build();
+                            let rename_cancel_button = Button::builder().halign(Align::Start).label(&gettext("Cancel")).build();
+
+                            let rename_apply_button = Button::builder().halign(Align::End).label(&gettext("Apply")).build();
                             rename_apply_button.style_context().add_class("suggested-action");
 
-                            let rename_apply_box = gtk4::Box::builder().orientation(Orientation::Horizontal).margin_start(12).margin_end(12).build();
-                            rename_apply_box.style_context().add_class("linked");
-                            rename_apply_box.prepend(&rename_entry);
-                            rename_apply_box.append(&rename_apply_button);
+                            let rename_label = Label::builder().margin_bottom(12).halign(Align::Center).label(&gettext("Rename")).width_chars(24).ellipsize(pango::EllipsizeMode::End).build();
+                            rename_label.style_context().add_class("title-4");
 
-                            let rename_cancel_button = Button::builder().label(&gettext("Cancel")).build();
-                            let rename_box = gtk4::Box::builder().orientation(Orientation::Horizontal).margin_start(12).margin_top(6).margin_bottom(6).build();
-                            rename_box.prepend(&rename_cancel_button);
-                            rename_box.append(&rename_apply_box);
+                            let rename_grid = Grid::builder().margin_top(6).margin_bottom(6).column_spacing(18).row_spacing(6).build();
+                            rename_grid.attach(&rename_label, 0, 0, 2, 1);
+                            rename_grid.attach(&rename_entry, 0, 1, 2, 1);
+                            rename_grid.attach(&rename_cancel_button, 0, 2, 1, 1);
+                            rename_grid.attach(&rename_apply_button, 1, 2, 1, 1);
 
                             let rename_popover = Popover::builder().autohide(true).has_arrow(true).position(PositionType::Bottom).build();
-                            rename_popover.set_child(Some(&rename_box));
+                            rename_popover.set_child(Some(&rename_grid));
                             filerow.menubutton_box().append(&rename_popover);
 
                             let parent_path_1 = parent_path.clone();
@@ -262,7 +264,7 @@ impl FileRow {
                                 rename_apply_button.set_sensitive(!new_file.query_exists(None::<&gio::Cancellable>));
                             }));
 
-                            rename_apply_button.connect_clicked(clone!(@weak rename_popover, @weak rename_entry => move |_| {
+                            rename_cancel_button.connect_clicked(clone!(@weak rename_popover => move |_| {
                                 rename_popover.popdown();
                             }));
 
@@ -276,9 +278,9 @@ impl FileRow {
                                 } else {
                                     if let Err(e) = current_file.move_(&new_file, gio::FileCopyFlags::NONE, None::<&gio::Cancellable>, None) {
                                         log::error!("rename file failed with Err {}", e);
-                                    } else {
-                                        rename_popover.popdown();
                                     }
+
+                                    rename_popover.popdown();
                                 }
                             }));
 

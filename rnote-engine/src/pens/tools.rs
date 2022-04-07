@@ -1,6 +1,6 @@
 use crate::sheet::Sheet;
 use crate::strokesstate::StrokeKey;
-use crate::{DrawOnSheetBehaviour, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 use rnote_compose::{Color, PenEvent};
 
@@ -234,8 +234,7 @@ impl PenBehaviour for Tools {
         event: PenEvent,
         _sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        viewport: Option<AABB>,
-        zoom: f64,
+        camera: &Camera,
     ) {
         match (self.state, event) {
             (
@@ -288,8 +287,11 @@ impl PenBehaviour for Tools {
                         > DragProximityTool::OFFSET_MAGN_THRESHOLD
                     {
                         strokes_state.drag_strokes_proximity(&self.drag_proximity_tool);
-                        strokes_state
-                            .regenerate_rendering_current_view_threaded(viewport, false, zoom);
+                        strokes_state.regenerate_rendering_in_viewport_threaded(
+                            false,
+                            Some(camera.viewport()),
+                            camera.image_scale(),
+                        );
 
                         self.drag_proximity_tool.pos = element.pos;
                         self.drag_proximity_tool.offset = na::Vector2::zeros();
@@ -318,8 +320,12 @@ impl PenBehaviour for Tools {
 impl DrawOnSheetBehaviour for Tools {
     fn bounds_on_sheet(&self, sheet_bounds: AABB, viewport: AABB) -> Option<AABB> {
         match self.style {
-            ToolsStyle::ExpandSheet => self.expand_sheet_tool.bounds_on_sheet(sheet_bounds, viewport),
-            ToolsStyle::DragProximity => self.drag_proximity_tool.bounds_on_sheet(sheet_bounds, viewport),
+            ToolsStyle::ExpandSheet => self
+                .expand_sheet_tool
+                .bounds_on_sheet(sheet_bounds, viewport),
+            ToolsStyle::DragProximity => self
+                .drag_proximity_tool
+                .bounds_on_sheet(sheet_bounds, viewport),
         }
     }
 

@@ -39,12 +39,12 @@ impl Default for Stroke {
 }
 
 impl StrokeBehaviour for Stroke {
-    fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
+    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         match self {
-            Self::BrushStroke(brushstroke) => brushstroke.gen_svgs(),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_svgs(),
-            Self::VectorImage(vectorimage) => vectorimage.gen_svgs(),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svgs(),
+            Self::BrushStroke(brushstroke) => brushstroke.gen_svg(),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_svg(),
+            Self::VectorImage(vectorimage) => vectorimage.gen_svg(),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svg(),
         }
     }
 
@@ -261,12 +261,20 @@ impl Stroke {
                 ))
             }
             Stroke::ShapeStroke(shapestroke) => {
-                let shape_image = render::Image::concat_images(
+                let shapestroke_bounds = shapestroke.bounds();
+                let shape_image = render::Image::join_images(
                     shapestroke.gen_images(image_scale).ok()?,
-                    shapestroke.bounds(),
+                    shapestroke_bounds,
                     image_scale,
                 )
-                .ok()?;
+                .map_err(|e| {
+                    log::error!(
+                        "concat_images() failed in to_xopp() for shapestroke with Err {}",
+                        e
+                    )
+                })
+                .ok()??;
+
                 let image_bytes = shape_image
                     .into_encoded_bytes(image::ImageOutputFormat::Png)
                     .map_err(|e| {
@@ -276,7 +284,6 @@ impl Stroke {
                         )
                     })
                     .ok()?;
-                let shapestroke_bounds = shapestroke.bounds();
 
                 Some(xoppformat::XoppStrokeType::XoppImage(
                     xoppformat::XoppImage {

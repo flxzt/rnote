@@ -3,7 +3,7 @@ use crate::sheet::Sheet;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::strokesstate::StrokeKey;
-use crate::{utils, DrawOnSheetBehaviour, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
 
 use gtk4::glib;
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -12,7 +12,6 @@ use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::PenEvent;
 use serde::{Deserialize, Serialize};
-
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
 #[enum_type(name = "ShaperStyle")]
@@ -77,8 +76,7 @@ impl PenBehaviour for Shaper {
         event: PenEvent,
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        _viewport: Option<AABB>,
-        zoom: f64,
+        camera: &Camera,
     ) {
         match (self.current_stroke_key, event) {
             (
@@ -88,15 +86,17 @@ impl PenBehaviour for Shaper {
                     shortcut_key: _,
                 },
             ) => {
-                if !element.filter_by_bounds(sheet.bounds().loosened(utils::INPUT_OVERSHOOT)) {
+                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     self.rect_start = element.pos;
                     self.rect_current = element.pos;
 
                     let shapestroke = Stroke::ShapeStroke(ShapeStroke::new(element, self));
                     let current_stroke_key = strokes_state.insert_stroke(shapestroke);
 
-                    strokes_state
-                        .regenerate_rendering_for_stroke_threaded(current_stroke_key, zoom);
+                    strokes_state.regenerate_rendering_for_stroke_threaded(
+                        current_stroke_key,
+                        camera.image_scale(),
+                    );
 
                     self.current_stroke_key = Some(current_stroke_key);
                 }
@@ -108,11 +108,13 @@ impl PenBehaviour for Shaper {
                     shortcut_key: _,
                 },
             ) => {
-                if !element.filter_by_bounds(sheet.bounds().loosened(utils::INPUT_OVERSHOOT)) {
+                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     strokes_state.update_shapestroke(current_stroke_key, self, element);
 
-                    strokes_state
-                        .regenerate_rendering_for_stroke_threaded(current_stroke_key, zoom);
+                    strokes_state.regenerate_rendering_for_stroke_threaded(
+                        current_stroke_key,
+                        camera.image_scale(),
+                    );
                 }
             }
             (None, PenEvent::Up { .. }) => {}
@@ -125,17 +127,32 @@ impl PenBehaviour for Shaper {
             ) => {
                 strokes_state.update_shapestroke(current_stroke_key, self, element);
 
-                finish_current_stroke(current_stroke_key, sheet, strokes_state, zoom);
+                finish_current_stroke(
+                    current_stroke_key,
+                    sheet,
+                    strokes_state,
+                    camera.image_scale(),
+                );
                 self.current_stroke_key = None;
             }
             (None, PenEvent::Proximity { .. }) => {}
             (Some(current_stroke_key), PenEvent::Proximity { .. }) => {
-                finish_current_stroke(current_stroke_key, sheet, strokes_state, zoom);
+                finish_current_stroke(
+                    current_stroke_key,
+                    sheet,
+                    strokes_state,
+                    camera.image_scale(),
+                );
                 self.current_stroke_key = None;
             }
             (None, PenEvent::Cancel) => {}
             (Some(current_stroke_key), PenEvent::Cancel) => {
-                finish_current_stroke(current_stroke_key, sheet, strokes_state, zoom);
+                finish_current_stroke(
+                    current_stroke_key,
+                    sheet,
+                    strokes_state,
+                    camera.image_scale(),
+                );
                 self.current_stroke_key = None;
             }
         }
@@ -161,9 +178,13 @@ fn finish_current_stroke(
     current_stroke_key: StrokeKey,
     _sheet: &mut Sheet,
     strokes_state: &mut StrokesState,
-    zoom: f64,
+    image_scale: f64,
 ) {
     strokes_state.update_geometry_for_stroke(current_stroke_key);
 
-    strokes_state.regenerate_rendering_for_stroke_threaded(current_stroke_key, zoom);
+    strokes_state.regenerate_rendering_for_stroke_threaded(current_stroke_key, image_scale);
+}
+
+impl Shaper {
+    pub const INPUT_OVERSHOOT: f64 = 30.0;
 }

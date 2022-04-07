@@ -31,7 +31,6 @@ impl Default for BitmapImage {
     }
 }
 
-// Using the default impl
 impl StrokeBehaviour for BitmapImage {}
 
 impl DrawBehaviour for BitmapImage {
@@ -177,8 +176,15 @@ impl BitmapImage {
         format: image::ImageOutputFormat,
         image_scale: f64,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        let image = render::Image::gen_image_from_piet(self, self.bounds(), image_scale)?;
+        let bounds = self.bounds();
 
-        Ok(image.into_encoded_bytes(format)?)
+        match render::Image::join_images(
+            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
+            bounds,
+            image_scale,
+        )? {
+            Some(image) => Ok(image.into_encoded_bytes(format)?),
+            None => Ok(vec![]),
+        }
     }
 }

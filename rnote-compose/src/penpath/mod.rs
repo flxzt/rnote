@@ -16,6 +16,7 @@ use crate::transform::TransformBehaviour;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename = "path")]
+/// a pen path, consisting of segments of pen input elements
 pub struct PenPath(VecDeque<Segment>);
 
 impl Deref for PenPath {
@@ -61,10 +62,12 @@ impl TransformBehaviour for PenPath {
 }
 
 impl PenPath {
+    /// A new pen path with a first dot segment
     pub fn new_w_dot(element: Element) -> Self {
         Self::new_w_segment(Segment::Dot { element })
     }
 
+    /// A new pen path with a first segment
     pub fn new_w_segment(segment: Segment) -> Self {
         let mut segment_vec = VecDeque::with_capacity(1);
         segment_vec.push_back(segment);
@@ -72,6 +75,7 @@ impl PenPath {
         Self(segment_vec)
     }
 
+    /// extracts the elements from the path. the path shape will be lost, as only the actual input elements are returned.
     pub fn into_elements(self) -> Vec<Element> {
         self.0
             .into_iter()

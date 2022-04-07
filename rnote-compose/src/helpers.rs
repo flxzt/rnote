@@ -1,7 +1,7 @@
 use geo::line_string;
-use gtk4::graphene;
 use p2d::bounding_volume::AABB;
 
+/// Helpers that extend the Vector2 type
 pub trait Vector2Helpers
 where
     Self: Sized,
@@ -16,6 +16,10 @@ where
     fn mins_maxs(&self, other: &Self) -> (Self, Self);
     /// calculates the angle self is "ahead" of other (counter clockwise)
     fn angle_ahead(&self, other: &Self) -> f64;
+    /// Ceil to the next integer
+    fn ceil(&self) -> Self;
+    /// Floor to the next integer
+    fn floor(&self) -> Self;
     /// Converts to kurbo::Point
     fn to_kurbo_point(&self) -> kurbo::Point;
     /// Converts to kurbo::Vec2
@@ -65,6 +69,14 @@ impl Vector2Helpers for na::Vector2<f64> {
         other[1].atan2(other[0]) - self[1].atan2(self[0])
     }
 
+    fn ceil(&self) -> Self {
+        na::vector![self[0].ceil(), self[1].ceil()]
+    }
+
+    fn floor(&self) -> Self {
+        na::vector![self[0].floor(), self[1].floor()]
+    }
+
     fn to_kurbo_point(&self) -> kurbo::Point {
         kurbo::Point {
             x: self[0],
@@ -80,6 +92,7 @@ impl Vector2Helpers for na::Vector2<f64> {
     }
 }
 
+/// Helpers that extend the AABB type
 pub trait AABBHelpers
 where
     Self: Sized,
@@ -122,8 +135,6 @@ where
     fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
     /// Converts a AABB to a geo::Polygon
     fn to_geo_polygon(&self) -> geo::Polygon<f64>;
-    /// Converts a AABB to a graphene::Rect
-    fn to_graphene_rect(&self) -> graphene::Rect;
     /// Converts a AABB to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
 }
@@ -152,7 +163,7 @@ impl AABBHelpers for AABB {
             || self.maxs[1] < self.mins[1]
         {
             Err(anyhow::anyhow!(
-                "assert_bounds() failed, invalid bounds `{:?}`",
+                "bounds assert_valid() failed, invalid bounds `{:?}`",
                 self,
             ))
         } else {
@@ -352,15 +363,6 @@ impl AABBHelpers for AABB {
         geo::Polygon::new(line_string, vec![])
     }
 
-    fn to_graphene_rect(&self) -> graphene::Rect {
-        graphene::Rect::new(
-            self.mins[0] as f32,
-            self.mins[1] as f32,
-            (self.extents()[0]) as f32,
-            (self.extents()[1]) as f32,
-        )
-    }
-
     fn to_kurbo_rect(&self) -> kurbo::Rect {
         kurbo::Rect::from_points(
             self.mins.coords.to_kurbo_point(),
@@ -369,12 +371,15 @@ impl AABBHelpers for AABB {
     }
 }
 
-///
+
+/// Helpers that extend the Affine2 type
 pub trait Affine2Helpers
 where
     Self: Sized,
 {
+    /// converting to kurbo affine
     fn to_kurbo(self) -> kurbo::Affine;
+    /// converting from kurbo affine
     fn from_kurbo(affine: kurbo::Affine) -> Self;
 }
 
@@ -411,7 +416,7 @@ pub fn scale_w_locked_aspectratio(
     src_size * ratio
 }
 
-// Scales some inner bounds to new outer bounds
+/// Scales some inner bounds to new outer bounds
 pub fn scale_inner_bounds_to_new_outer_bounds(
     old_inner_bounds: AABB,
     old_outer_bounds: AABB,
@@ -449,10 +454,12 @@ pub fn scale_inner_bounds_to_new_outer_bounds(
     )
 }
 
+/// Helpers that extend types in kurbo that implement kurbo::Shape
 pub trait KurboHelpers
 where
     Self: Sized + kurbo::Shape,
 {
+    /// Converting the bounds to parry2d aabb bounds
     fn bounds_as_p2d_aabb(&self) -> AABB {
         let rect = self.bounding_box();
         AABB::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])

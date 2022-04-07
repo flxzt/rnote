@@ -69,44 +69,13 @@ mod imp {
             let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
             let expand_mode = canvas.engine().borrow().expand_mode();
-            let viewport = canvas.engine().borrow().camera.viewport();
 
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
             let new_size = na::vector![f64::from(width), f64::from(height)];
 
-            canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
-            canvas.engine().borrow_mut().camera.size = new_size;
-
-            match expand_mode {
-                ExpandMode::FixedSize | ExpandMode::EndlessVertical => {}
-                ExpandMode::Infinite => {
-                    // Show "return to center" toast when far away in infinite mode
-                    let threshold_bounds = AABB::new(
-                        na::point![0.0, 0.0],
-                        na::point![
-                            canvas.engine().borrow().sheet.format.width,
-                            canvas.engine().borrow().sheet.format.height
-                        ],
-                    )
-                    .expand_by(
-                        // Expand to a few format sizes around the origin page
-                        na::vector![
-                            2.0 * canvas.engine().borrow().sheet.format.width,
-                            2.0 * canvas.engine().borrow().sheet.format.height
-                        ],
-                    );
-
-                    if !viewport.intersects(&threshold_bounds) {
-                        canvas.show_return_to_center_toast()
-                    } else {
-                        canvas.dismiss_return_to_center_toast();
-                    }
-                }
-            }
 
             // Update the adjustments
-
             let (h_lower, h_upper) = match expand_mode {
                 ExpandMode::FixedSize | ExpandMode::EndlessVertical => (
                     (canvas.engine().borrow().sheet.x - Sheet::SHADOW_WIDTH) * total_zoom,
@@ -155,9 +124,40 @@ mod imp {
                 new_size[1],
             );
 
+            // Update the camera
+            canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
+            canvas.engine().borrow_mut().camera.size = new_size;
+
             // Update content and background
-            canvas.update_background_rendernode(false);
+            canvas.update_background_rendernodes(false);
             canvas.regenerate_content(false, true);
+
+            let viewport = canvas.engine().borrow().camera.viewport();
+            match expand_mode {
+                ExpandMode::FixedSize | ExpandMode::EndlessVertical => {}
+                ExpandMode::Infinite => {
+                    // Show "return to center" toast when far away in infinite mode
+                    let threshold_bounds = AABB::new(
+                        na::point![0.0, 0.0],
+                        na::point![
+                            canvas.engine().borrow().sheet.format.width,
+                            canvas.engine().borrow().sheet.format.height
+                        ],
+                    )
+                    .expand_by(
+                        na::vector![
+                            2.0 * canvas.engine().borrow().sheet.format.width,
+                            2.0 * canvas.engine().borrow().sheet.format.height
+                        ],
+                    );
+
+                    if !viewport.intersects(&threshold_bounds) {
+                        canvas.show_return_to_center_toast()
+                    } else {
+                        canvas.dismiss_return_to_center_toast();
+                    }
+                }
+            }
 
             // Allocate the selection_modifier child
             {

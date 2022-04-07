@@ -197,32 +197,12 @@ impl RnoteAppWindow {
 
         {
             // load Expand mode
-            match self.app_settings().string("expand-mode").as_str() {
-                "fixed-size" => {
-                    self.canvas()
-                        .engine()
-                        .borrow_mut()
-                        .set_expand_mode(ExpandMode::FixedSize);
-                }
-                "endless-vertical" => {
-                    self.canvas()
-                        .engine()
-                        .borrow_mut()
-                        .set_expand_mode(ExpandMode::EndlessVertical);
-                }
-                "infinite" => {
-                    self.canvas()
-                        .engine()
-                        .borrow_mut()
-                        .set_expand_mode(ExpandMode::Infinite);
-                }
-                invalid_string => {
-                    log::error!(
-                        "mapping expand-mode to setting failed, invalid str {}",
-                        invalid_string
-                    );
-                }
-            }
+            let expand_mode = self.app_settings().string("expand-mode");
+            adw::prelude::ActionGroupExt::activate_action(
+                self,
+                "expand-mode",
+                Some(&expand_mode.to_variant()),
+            );
         }
 
         {

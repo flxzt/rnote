@@ -7,9 +7,10 @@ pub use format::Format;
 use rnote_compose::Color;
 
 use crate::strokesstate::StrokesState;
+use crate::utils::{GrapheneRectHelpers, GdkRGBAHelpers};
 use rnote_compose::helpers::AABBHelpers;
 
-use gtk4::{graphene, gsk, Snapshot};
+use gtk4::{graphene, gsk, Snapshot, gdk};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -168,7 +169,7 @@ impl Sheet {
             graphene::Size::new(shadow_width as f32 / 4.0, shadow_width as f32 / 4.0);
 
         let rounded_rect = gsk::RoundedRect::new(
-            bounds.to_graphene_rect(),
+            graphene::Rect::from_aabb(bounds),
             corner_radius.clone(),
             corner_radius.clone(),
             corner_radius.clone(),
@@ -177,7 +178,7 @@ impl Sheet {
 
         snapshot.append_outset_shadow(
             &rounded_rect,
-            &Self::SHADOW_COLOR.into(),
+            &gdk::RGBA::from_compose_color(Self::SHADOW_COLOR),
             0.0,
             0.0,
             (shadow_width / 2.0) as f32,

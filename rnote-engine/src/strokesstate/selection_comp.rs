@@ -243,9 +243,8 @@ impl StrokesState {
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 
-                stroke.gen_svgs().ok()
+                stroke.gen_svg().ok()
             })
-            .flatten()
             .collect::<Vec<render::Svg>>())
     }
 

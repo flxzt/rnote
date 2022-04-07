@@ -23,9 +23,9 @@ mod imp {
         #[template_child]
         pub brushstyle_textured_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub styleconfig_menubutton: TemplateChild<MenuButton>,
+        pub brushconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub styleconfig_popover: TemplateChild<Popover>,
+        pub brushconfig_popover: TemplateChild<Popover>,
         #[template_child]
         pub texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -71,8 +71,8 @@ use adw::prelude::*;
 use gtk4::{gdk, Image, ListBox, MenuButton, Popover};
 use gtk4::{glib, glib::clone, subclass::prelude::*, SpinButton};
 use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
-use rnote_compose::Color;
 use rnote_engine::pens::brush::BrushStyle;
+use rnote_engine::utils::GdkRGBAHelpers;
 
 glib::wrapper! {
     pub struct BrushPage(ObjectSubclass<imp::BrushPage>)
@@ -137,15 +137,15 @@ impl BrushPage {
             .get()
     }
 
-    pub fn styleconfig_menubutton(&self) -> MenuButton {
+    pub fn brushconfig_menubutton(&self) -> MenuButton {
         imp::BrushPage::from_instance(self)
-            .styleconfig_menubutton
+            .brushconfig_menubutton
             .get()
     }
 
-    pub fn styleconfigonfig_popover(&self) -> Popover {
+    pub fn brushconfig_popover(&self) -> Popover {
         imp::BrushPage::from_instance(self)
-            .styleconfig_popover
+            .brushconfig_popover
             .get()
     }
 
@@ -174,18 +174,17 @@ impl BrushPage {
     }
 
     pub fn set_texturedstyle_distribution_variant(&self, distribution: TexturedDotsDistribution) {
-        let texturedstyle_distribution_listmodel = self
-            .imp()
-            .texturedstyle_distribution_row
-            .get()
-            .model()
-            .unwrap()
-            .downcast::<adw::EnumListModel>()
-            .unwrap();
+        let position = match distribution {
+            TexturedDotsDistribution::Uniform => 0,
+            TexturedDotsDistribution::Normal => 1,
+            TexturedDotsDistribution::Exponential => 2,
+            TexturedDotsDistribution::ReverseExponential => 3,
+        };
+
         self.imp()
             .texturedstyle_distribution_row
             .get()
-            .set_selected(texturedstyle_distribution_listmodel.find_position(distribution as i32));
+            .set_selected(position);
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -198,7 +197,7 @@ impl BrushPage {
         self.colorpicker().connect_notify_local(
             Some("current-color"),
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
-                let color = Color::from(colorpicker.property::<gdk::RGBA>("current-color"));
+                let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
                 let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
 
                 match brush_style {
@@ -326,34 +325,25 @@ impl BrushPage {
                 .distribution,
         );
 
-        self.imp().texturedstyle_distribution_row.get().connect_selected_item_notify(clone!(@weak self as brushpage, @weak appwindow => move |texturedstyle_distribution_row| {
-            if let Some(selected_item) = texturedstyle_distribution_row.selected_item() {
-                match selected_item
-                    .downcast::<adw::EnumListItem>()
-                    .unwrap()
-                    .nick()
-                    .as_str()
-                {
-                    "uniform" => {
+        self.imp().texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |texturedstyle_distribution_row| {
+            match texturedstyle_distribution_row.selected() {
+                    0 => {
                         appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Uniform;
                     },
-                    "normal" => {
+                    1 => {
                         appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Normal;
                     },
-                    "exponential" => {
+                    2 => {
                         appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Exponential;
                     },
-                    "reverse-exponential" => {
+                    3 => {
                         appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::ReverseExponential;
                     },
                     _ => {
                         log::error!(
-                            "invalid nick string when selecting a distribution in texturedstyle_distribution_row"
+                            "invalid position when selecting a distribution in texturedstyle_distribution_row"
                         );
                     }
-                };
-
-                appwindow.canvas().regenerate_background(true);
             }
         }));
     }

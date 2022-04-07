@@ -8,12 +8,16 @@ use super::line::Line;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "quadratic_bezier")]
+/// A quadratic bezier curve
 pub struct QuadraticBezier {
     #[serde(rename = "start")]
+    /// The curve start
     pub start: na::Vector2<f64>,
     #[serde(rename = "cp")]
+    /// The curve control point
     pub cp: na::Vector2<f64>,
     #[serde(rename = "end")]
+    /// The curve end
     pub end: na::Vector2<f64>,
 }
 
@@ -49,7 +53,8 @@ impl ShapeBehaviour for QuadraticBezier {
 }
 
 impl QuadraticBezier {
-    // Returns offset distance of a quadratic bezier at t where t > 0.0, < 1.0
+    /// Returns offset distance of a quadratic bezier at t where t > 0.0, < 1.0. Currently a linear interpolation between the start and end offset.
+    /// TODO: finding a better algorithm based on curve length
     pub fn quadbez_calc_offset_dist_at_t(
         &self,
         start_offset_dist: f64,
@@ -59,65 +64,7 @@ impl QuadraticBezier {
         start_offset_dist + (end_offset_dist - start_offset_dist) * t
     }
 
-    /// Calcs quadratic bezier t at angle condition ( in rad ) to minimize max error when flattening the curve.
-    /// returns the t for the angle condition. is between 0.0 and 1.0 if the condition is met and the quadbez should be splitted.
-    /// See "precise offsetting of quadratic bezier curves, Section 3.3 split curve by angle"
-    pub fn calc_quadbez_angle_condition(&self, angle: f64) -> f64 {
-        let m = angle.tan();
-
-        let a = quadbez_coeff_a(self.start, self.cp, self.end);
-        let b = quadbez_coeff_b(self.start, self.cp);
-
-        (m * (b[0].powi(2) + b[1].powi(2)))
-            / ((a[0] * b[1] - a[1] * b[0]).abs() - m * (a[0] * b[0] + a[1] * b[1]))
-    }
-
-    /// splitting offsetted quadratic bezier curve at critical points where offset dist < curvature radius minimize cusps
-    /// returns the splitted quad beziers, and possible split points t1, t2
-    /// See "precise offsetting of quadratic bezier curves, Section 3.4 Handling cusps"
-    pub fn split_offsetted_at_critical_points(
-        &self,
-        start_offset_dist: f64,
-        end_offset_dist: f64,
-    ) -> (Vec<QuadraticBezier>, Option<f64>, Option<f64>) {
-        let mut quads = Vec::new();
-
-        let max_offset_dist = start_offset_dist.max(end_offset_dist);
-
-        let coeff_a = quad_bezier_derive_coeff_a(self.start, self.cp, self.end);
-        let coeff_b = quadbez_derive_coeff_b(self.start, self.cp);
-
-        // Calculate critical points (local curvature less or equals offset witdh)
-        let (mut t1, mut t2) = quadbez_solve_critical_points(coeff_a, coeff_b, max_offset_dist);
-
-        if t2 < t1 {
-            std::mem::swap(&mut t1, &mut t2);
-        }
-        let mut option_t1 = None;
-        let mut option_t2 = None;
-
-        if t1 > 0.0 && t1 < 1.0 {
-            let (t1_first, t1_second) = self.split(t1);
-            quads.push(t1_first);
-            option_t1 = Some(t1);
-
-            if t2 > 0.0 && t2 < 1.0 {
-                let (t2_first, t2_second) = t1_second.split(t2);
-                quads.push(t2_first);
-                quads.push(t2_second);
-
-                option_t2 = Some(t2);
-            } else {
-                quads.push(t1_second);
-            }
-        } else {
-            quads.push(*self);
-        }
-
-        (quads, option_t1, option_t2)
-    }
-
-    /// Split a quadratic bezier curve into two quadratics, interpolation value z: between 0.0 and 1.0
+    /// Split a quadratic bezier curve into two quadratics, at interpolation value z: between 0.0 and 1.0
     pub fn split(&self, z: f64) -> (QuadraticBezier, QuadraticBezier) {
         let p0 = self.start;
         let p1 = self.cp;
@@ -138,7 +85,7 @@ impl QuadraticBezier {
         (first_splitted, second_splitted)
     }
 
-    /// Approximating a quadratic bezier with lines, given the number of splits
+    /// Approximating a quadratic bezier with lines, given the number of splits distributed evenly based on the t value.
     pub fn approx_with_lines(&self, n_splits: i32) -> Vec<Line> {
         let mut lines = Vec::new();
 
@@ -157,7 +104,7 @@ impl QuadraticBezier {
 }
 
 // Coefficient a of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-fn quadbez_coeff_a(
+pub fn quadbez_coeff_a(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
@@ -166,19 +113,19 @@ fn quadbez_coeff_a(
 }
 
 // Coefficient b of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
-fn quadbez_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
+pub fn quadbez_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }
 
 // Coefficient c of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
 #[allow(dead_code)]
-fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
+pub fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
     p0
 }
 
 // calculating the value of a bezier curve with its support points, for t: between 0.0 and 1.0
 #[allow(dead_code)]
-fn quadbez_calc(
+pub fn quadbez_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
@@ -188,7 +135,7 @@ fn quadbez_calc(
 }
 
 // Coefficient a of quadratic bezier derivation in polynomial form: C' = a * t + b
-fn quad_bezier_derive_coeff_a(
+pub fn quad_bezier_derive_coeff_a(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
@@ -197,42 +144,17 @@ fn quad_bezier_derive_coeff_a(
 }
 
 // Coefficient b of quadratic bezier derivation in polynomial form: C' = a * t + b
-fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
+pub fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }
 
-// calculating the derivative of the bezier curve for t: between 0.0 and 1.0
 #[allow(dead_code)]
-fn quadbez_derive_calc(
+/// calculating the derivative of the bezier curve for t: between 0.0 and 1.0
+pub fn quadbez_derive_calc(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
     p2: na::Vector2<f64>,
     t: f64,
 ) -> na::Vector2<f64> {
     quad_bezier_derive_coeff_a(p0, p1, p2) * t + quadbez_derive_coeff_b(p0, p1)
-}
-
-/// Returns (t1, t2) with t1, t2 between 0.0 and 1.0
-fn quadbez_solve_critical_points(
-    a: na::Vector2<f64>,
-    b: na::Vector2<f64>,
-    dist: f64,
-) -> (f64, f64) {
-    let t1 = (-(a[0] * b[0] + a[1] + b[1])
-        + ((a[0] * b[0] + a[1] * b[1]).powi(2)
-            - (a[0].powi(2) + a[1].powi(2))
-                * (b[0].powi(2) + b[1].powi(2)
-                    - (dist.powi(2) * (b[0] * a[1] - a[0] * b[1]).powi(2)).cbrt()))
-        .sqrt())
-        / (a[0].powi(2) + a[1].powi(2));
-
-    let t2 = (-(a[0] * b[0] + a[1] + b[1])
-        - ((a[0] * b[0] + a[1] * b[1]).powi(2)
-            - (a[0].powi(2) + a[1].powi(2))
-                * (b[0].powi(2) + b[1].powi(2)
-                    - (dist.powi(2) * (b[0] * a[1] - a[0] * b[1]).powi(2)).cbrt()))
-        .sqrt())
-        / (a[0].powi(2) + a[1].powi(2));
-
-    (t1, t2)
 }

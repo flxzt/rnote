@@ -1,10 +1,10 @@
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::strokesstate::StrokeKey;
-use crate::{utils, DrawOnSheetBehaviour, Sheet, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokesState};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penpath::Segment;
-use rnote_compose::{PenEvent};
+use rnote_compose::PenEvent;
 
 use gtk4::glib;
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -71,8 +71,7 @@ impl PenBehaviour for Brush {
         event: PenEvent,
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        _viewport: Option<AABB>,
-        zoom: f64,
+        camera: &Camera,
     ) {
         match (self.current_stroke_key, event) {
             (
@@ -82,7 +81,7 @@ impl PenBehaviour for Brush {
                     shortcut_key: _,
                 },
             ) => {
-                if !element.filter_by_bounds(sheet.bounds().loosened(utils::INPUT_OVERSHOOT)) {
+                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     let brushstroke =
                         Stroke::BrushStroke(BrushStroke::new(Segment::Dot { element }, &self));
                     let current_stroke_key = strokes_state.insert_stroke(brushstroke);
@@ -90,12 +89,15 @@ impl PenBehaviour for Brush {
 
                     if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
                         for new_segment in new_segments {
-                            strokes_state.add_to_brushstroke(current_stroke_key, new_segment);
+                            strokes_state
+                                .add_segment_to_brushstroke(current_stroke_key, new_segment);
                         }
                     }
 
-                    strokes_state
-                        .regenerate_rendering_for_stroke_threaded(current_stroke_key, zoom);
+                    strokes_state.regenerate_rendering_for_stroke_threaded(
+                        current_stroke_key,
+                        camera.image_scale(),
+                    );
                 }
             }
             (
@@ -105,18 +107,23 @@ impl PenBehaviour for Brush {
                     shortcut_key: _,
                 },
             ) => {
-                if !element.filter_by_bounds(sheet.bounds().loosened(utils::INPUT_OVERSHOOT)) {
+                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
                         let no_segments = new_segments.len();
+
                         for new_segment in new_segments {
-                            strokes_state.add_to_brushstroke(current_stroke_key, new_segment);
+                            strokes_state
+                                .add_segment_to_brushstroke(current_stroke_key, new_segment);
                         }
 
-                        strokes_state.append_rendering_last_segments_threaded(
+                        strokes_state.append_rendering_last_segments(
                             current_stroke_key,
                             no_segments,
-                            zoom,
+                            camera.image_scale(),
                         );
+
+                        /*                         strokes_state
+                        .regenerate_rendering_for_stroke_threaded(current_stroke_key, zoom); */
                     }
                 }
             }
@@ -124,24 +131,29 @@ impl PenBehaviour for Brush {
             (Some(current_stroke_key), pen_event @ PenEvent::Up { .. }) => {
                 if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
                     for new_segment in new_segments {
-                        strokes_state.add_to_brushstroke(current_stroke_key, new_segment);
+                        strokes_state.add_segment_to_brushstroke(current_stroke_key, new_segment);
                     }
                 }
                 // Finish up the last stroke
                 strokes_state.update_geometry_for_stroke(current_stroke_key);
-                strokes_state.regenerate_rendering_for_stroke_threaded(current_stroke_key, zoom);
+                strokes_state.regenerate_rendering_for_stroke_threaded(
+                    current_stroke_key,
+                    camera.image_scale(),
+                );
                 self.current_stroke_key = None;
             }
-            (None, PenEvent::Cancel) => {
-                self.path_builder
-                    .handle_event(rnote_compose::PenEvent::Cancel);
+            (None, pen_event @ PenEvent::Cancel) => {
+                self.path_builder.handle_event(pen_event);
             }
-            (Some(current_stroke_key), PenEvent::Cancel) => {
+            (Some(current_stroke_key), pen_event @ PenEvent::Cancel) => {
+                self.path_builder.handle_event(pen_event);
+
                 // Finish up the last stroke
                 strokes_state.update_geometry_for_stroke(current_stroke_key);
-
-                strokes_state.regenerate_rendering_for_stroke_threaded(current_stroke_key, zoom);
-
+                strokes_state.regenerate_rendering_for_stroke_threaded(
+                    current_stroke_key,
+                    camera.image_scale(),
+                );
                 self.current_stroke_key = None;
             }
             (None, PenEvent::Proximity { .. }) => {}
@@ -153,15 +165,9 @@ impl PenBehaviour for Brush {
 impl DrawOnSheetBehaviour for Brush {
     fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
         let bounds = match self.style {
-            BrushStyle::Marker => {
-                self.path_builder.composed_bounds(&self.smooth_options)
-            }
-            BrushStyle::Solid => {
-                self.path_builder.composed_bounds(&self.smooth_options)
-            }
-            BrushStyle::Textured => {
-                self.path_builder.composed_bounds(&self.textured_options)
-            }
+            BrushStyle::Marker => self.path_builder.composed_bounds(&self.smooth_options),
+            BrushStyle::Solid => self.path_builder.composed_bounds(&self.smooth_options),
+            BrushStyle::Textured => self.path_builder.composed_bounds(&self.textured_options),
         };
 
         Some(bounds)
@@ -175,7 +181,7 @@ impl DrawOnSheetBehaviour for Brush {
     ) -> Result<(), anyhow::Error> {
         // Different color for debugging
         let smooth_options = self.smooth_options;
-/*         smooth_options.stroke_color = Some(rnote_compose::Color {
+        /*         smooth_options.stroke_color = Some(rnote_compose::Color {
             r: 1.0,
             g: 0.0,
             b: 1.0,
@@ -196,4 +202,8 @@ impl DrawOnSheetBehaviour for Brush {
 
         Ok(())
     }
+}
+
+impl Brush {
+    pub const INPUT_OVERSHOOT: f64 = 30.0;
 }

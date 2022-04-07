@@ -29,6 +29,9 @@ pub struct Camera {
     zoom: f64,
     /// the temporary zoom. Is used to overlay the "permanent" zoom
     temporary_zoom: f64,
+
+    /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi values. Could become non-integer values in the future!
+    pub scale_factor: f64,
 }
 
 impl Default for Camera {
@@ -38,6 +41,7 @@ impl Default for Camera {
             size: na::vector![800.0, 600.0],
             zoom: 1.0,
             temporary_zoom: 1.0,
+            scale_factor: 1.0,
         }
     }
 }
@@ -80,6 +84,11 @@ impl Camera {
 
     pub fn total_zoom(&self) -> f64 {
         self.zoom * self.temporary_zoom
+    }
+
+    /// The desired scaling factor for generating pixel images with the current zoom. takes the surface scale factor in account
+    pub fn image_scale(&self) -> f64 {
+        self.zoom * self.scale_factor
     }
 
     /// the viewport in sheet coordinate space

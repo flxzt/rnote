@@ -371,12 +371,12 @@ use std::rc::Rc;
 
 use adw::prelude::*;
 use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
-use gtk4::{Adjustment, ColorButton, ScrolledWindow, ToggleButton};
+use gtk4::{Adjustment, ColorButton, ScrolledWindow, ToggleButton, gdk};
 use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::utils::GdkRGBAHelpers;
 
 use super::appwindow::RnoteAppWindow;
 use crate::unitentry::UnitEntry;
-use rnote_compose::Color;
 use rnote_engine::sheet::background::PatternStyle;
 use rnote_engine::sheet::format::{self, Format};
 
@@ -555,11 +555,11 @@ impl SettingsPanel {
         let format = appwindow.canvas().engine().borrow().sheet.format.clone();
 
         self.background_color_choosebutton()
-            .set_rgba(&background.color.into());
+            .set_rgba(&gdk::RGBA::from_compose_color(background.color));
 
         self.set_background_pattern_variant(background.pattern);
         self.background_pattern_color_choosebutton()
-            .set_rgba(&background.pattern_color.into());
+            .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
 
         // Background pattern Unit Entries
         self.background_pattern_width_unitentry()
@@ -684,7 +684,7 @@ impl SettingsPanel {
 
         // Background
         self.imp().background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.canvas().engine().borrow_mut().sheet.background.color = Color::from(background_color_choosebutton.rgba());
+            appwindow.canvas().engine().borrow_mut().sheet.background.color = background_color_choosebutton.rgba().into_compose_color();
             appwindow.canvas().regenerate_background(true);
         }));
 
@@ -729,7 +729,7 @@ impl SettingsPanel {
         }));
 
         self.imp().background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
-            appwindow.canvas().engine().borrow_mut().sheet.background.pattern_color = Color::from(background_pattern_color_choosebutton.rgba());
+            appwindow.canvas().engine().borrow_mut().sheet.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
             appwindow.canvas().regenerate_background(true);
         }));
 

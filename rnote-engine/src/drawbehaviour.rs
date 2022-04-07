@@ -1,8 +1,10 @@
+use gtk4::graphene;
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
 
 use crate::Camera;
+use crate::utils::GrapheneRectHelpers;
 
 /// Trait for types that can draw themselves on the sheet
 /// In the coordinate space of the sheet
@@ -26,12 +28,14 @@ pub trait DrawOnSheetBehaviour {
         let viewport = camera.viewport();
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, viewport) {
             // Transform the bounds into surface coords
-            let bounds_transformed = bounds
+            let mut bounds_transformed = bounds
                 .scale(camera.zoom())
-                .transform_by(&na::Isometry2::new(-camera.offset, 0.0));
+                .translate(-camera.offset);
+
+            bounds_transformed.ensure_positive();
             bounds_transformed.assert_valid()?;
 
-            let cairo_cx = snapshot.append_cairo(&bounds_transformed.to_graphene_rect());
+            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_aabb(bounds_transformed));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
             // Transform to sheet coordinate space
@@ -47,7 +51,7 @@ pub trait DrawOnSheetBehaviour {
 /// Trait for types that can draw themselves on a piet RenderContext.
 pub trait DrawBehaviour {
     /// draws itself. the callers are expected to call with save / restore context
-    /// image_scale is the scalefactor of generated pixel images. the context should not be zoomed by it!
+    /// image_scale is the scalefactor of generated pixel images within the type. the context should not be zoomed by it!
     fn draw(
         &self,
         cx: &mut impl piet::RenderContext,

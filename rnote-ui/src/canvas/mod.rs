@@ -335,7 +335,7 @@ mod imp {
                 snapshot.save();
 
                 // Draw the entire engine
-                self.engine.borrow().draw(&snapshot)?;
+                self.engine.borrow().draw(&snapshot, widget.bounds())?;
 
                 // Restore original coordinate space
                 snapshot.restore();
@@ -506,9 +506,11 @@ impl RnoteCanvas {
             let mut task_rx = canvas.engine().borrow_mut().strokes_state.tasks_rx.take().unwrap();
 
             loop {
-                let zoom = canvas.engine().borrow().camera.zoom();
+                let image_scale = canvas.engine().borrow().camera.image_scale();
+                let viewport = canvas.engine().borrow().camera.viewport();
+
                 if let Some(task) = task_rx.next().await {
-                    let surface_flags = canvas.engine().borrow_mut().strokes_state.process_received_task(task, zoom);
+                    let surface_flags = canvas.engine().borrow_mut().strokes_state.process_received_task(task, viewport, image_scale);
                     appwindow.handle_surface_flags(surface_flags);
                 }
             }
@@ -518,14 +520,21 @@ impl RnoteCanvas {
             .flags(glib::BindingFlags::DEFAULT)
             .build();
 
-        self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |app, _pspec| {
-            appwindow.mainheader().main_title_unsaved_indicator().set_visible(app.unsaved_changes());
-            if app.unsaved_changes() {
+        self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |canvas, _pspec| {
+            appwindow.mainheader().main_title_unsaved_indicator().set_visible(canvas.unsaved_changes());
+            if canvas.unsaved_changes() {
                 appwindow.mainheader().main_title().add_css_class("unsaved_changes");
             } else {
                 appwindow.mainheader().main_title().remove_css_class("unsaved_changes");
             }
         }));
+
+        self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
+            let scale_factor = f64::from(canvas.scale_factor());
+            canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
+            canvas.regenerate_background(false);
+            canvas.regenerate_content(true, true);
+        });
     }
 
     fn setup_input(&self, appwindow: &RnoteAppWindow) {
@@ -745,7 +754,7 @@ impl RnoteCanvas {
         self.update_camera_offset(new_offset);
     }
 
-    /// Centering the view to the first page
+    /// Centering the view to the origin page
     pub fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
 
@@ -775,8 +784,6 @@ impl RnoteCanvas {
             .reset_regenerate_flag_all_strokes();
 
         self.engine().borrow_mut().resize_autoexpand();
-
-        self.update_background_rendernode(true);
         self.regenerate_background(false);
         self.regenerate_content(false, true);
     }
@@ -800,7 +807,7 @@ impl RnoteCanvas {
             .camera
             .set_temporary_zoom(new_temp_zoom);
 
-        self.update_background_rendernode(true);
+        self.update_background_rendernodes(true);
 
         self.imp()
             .zoom_timeout_id
@@ -821,17 +828,16 @@ impl RnoteCanvas {
             ));
     }
 
-    /// Update rendernodes of the background. Used when the background itself did not change, but for example the sheet size or the viewport
-    pub fn update_background_rendernode(&self, redraw: bool) {
+    /// Update rendernodes of the background. Used when the background itself did not change, but for example the sheet size
+    pub fn update_background_rendernodes(&self, redraw: bool) {
         let sheet_bounds = self.engine().borrow().sheet.bounds();
-        let viewport = self.engine().borrow().camera.viewport();
 
         if let Err(e) = self
             .engine()
             .borrow_mut()
             .sheet
             .background
-            .update_rendernode(sheet_bounds, Some(viewport))
+            .update_rendernodes(sheet_bounds)
         {
             log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
         }
@@ -844,15 +850,14 @@ impl RnoteCanvas {
     /// use for example when changing the background pattern or zoom
     pub fn regenerate_background(&self, redraw: bool) {
         let sheet_bounds = self.engine().borrow().sheet.bounds();
-        let viewport = self.engine().borrow().camera.viewport();
-        let zoom = self.engine().borrow().camera.zoom();
+        let image_scale = self.engine().borrow().camera.image_scale();
 
         if let Err(e) = self
             .engine()
             .borrow_mut()
             .sheet
             .background
-            .regenerate_background(sheet_bounds, Some(viewport), zoom)
+            .regenerate_background(sheet_bounds, image_scale)
         {
             log::error!("failed to regenerate background, {}", e)
         };
@@ -864,13 +869,17 @@ impl RnoteCanvas {
 
     /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch. redraw: queue canvas redrawing
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
-        let zoom = self.engine().borrow().camera.zoom();
+        let image_scale = self.engine().borrow().camera.image_scale();
         let viewport = self.engine().borrow().camera.viewport();
 
         self.engine()
             .borrow_mut()
             .strokes_state
-            .regenerate_rendering_current_view_threaded(Some(viewport), force_regenerate, zoom);
+            .regenerate_rendering_in_viewport_threaded(
+                force_regenerate,
+                Some(viewport),
+                image_scale,
+            );
 
         if redraw {
             self.queue_resize();

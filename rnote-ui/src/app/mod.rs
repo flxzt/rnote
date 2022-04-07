@@ -1,14 +1,10 @@
 pub mod appactions;
 
 mod imp {
-    use std::{
-        cell::{Cell, RefCell},
-        path,
-    };
+    use std::{cell::RefCell, path};
 
     use adw::subclass::prelude::AdwApplicationImpl;
     use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
-    use once_cell::sync::Lazy;
     use rnote_compose::style::textured::TexturedDotsDistribution;
     use rnote_engine::pens::penholder::PenStyle;
     use rnote_engine::{
@@ -31,16 +27,12 @@ mod imp {
     #[derive(Debug)]
     pub struct RnoteApp {
         pub input_file: RefCell<Option<gio::File>>,
-        pub output_file: RefCell<Option<gio::File>>,
-        pub unsaved_changes: Cell<bool>,
     }
 
     impl Default for RnoteApp {
         fn default() -> Self {
             Self {
                 input_file: RefCell::new(None),
-                output_file: RefCell::new(None),
-                unsaved_changes: Cell::new(false),
             }
         }
     }
@@ -52,45 +44,7 @@ mod imp {
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for RnoteApp {
-        fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                // Any unsaved changes of the current application state
-                vec![glib::ParamSpecBoolean::new(
-                    "unsaved-changes",
-                    "unsaved-changes",
-                    "unsaved-changes",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                )]
-            });
-            PROPERTIES.as_ref()
-        }
-
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-            match pspec.name() {
-                "unsaved-changes" => self.unsaved_changes.get().to_value(),
-                _ => unimplemented!(),
-            }
-        }
-
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
-            match pspec.name() {
-                "unsaved-changes" => {
-                    let unsaved_changes: bool =
-                        value.get().expect("The value needs to be of type `bool`.");
-                    self.unsaved_changes.replace(unsaved_changes);
-                }
-                _ => unimplemented!(),
-            }
-        }
-    }
+    impl ObjectImpl for RnoteApp {}
 
     impl ApplicationImpl for RnoteApp {
         fn activate(&self, app: &Self::Type) {
@@ -159,7 +113,7 @@ mod imp {
     impl AdwApplicationImpl for RnoteApp {}
 }
 
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use gtk4::{gio, glib, subclass::prelude::*};
 
 use crate::appwindow::RnoteAppWindow;
 use crate::config;
@@ -194,26 +148,6 @@ impl RnoteApp {
 
     pub fn set_input_file(&self, input_file: Option<gio::File>) {
         *imp::RnoteApp::from_instance(self).input_file.borrow_mut() = input_file;
-    }
-
-    pub fn output_file(&self) -> Option<gio::File> {
-        imp::RnoteApp::from_instance(self)
-            .output_file
-            .borrow()
-            .clone()
-    }
-
-    pub fn set_output_file(&self, output_file: Option<&gio::File>, appwindow: &RnoteAppWindow) {
-        appwindow.mainheader().set_title_for_file(output_file);
-        *imp::RnoteApp::from_instance(self).output_file.borrow_mut() = output_file.cloned();
-    }
-
-    pub fn unsaved_changes(&self) -> bool {
-        self.property::<bool>("unsaved-changes")
-    }
-
-    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
     // Anything that needs to be done right before showing the appwindow

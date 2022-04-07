@@ -897,11 +897,11 @@ impl RnoteAppWindow {
 
         // Save sheet
         action_save_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().is_none() {
+            if appwindow.output_file().is_none() {
                 dialogs::dialog_save_sheet_as(&appwindow);
             }
 
-            if let Some(output_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file() {
+            if let Some(output_file) = appwindow.output_file() {
                 match output_file.basename() {
                     Some(basename) => {
                         match appwindow.canvas().engine().borrow().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {

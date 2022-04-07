@@ -94,7 +94,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
         match responsetype {
             ResponseType::Ok => {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
-                appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(None, &appwindow);
+                appwindow.set_output_file(None, &appwindow);
 
                 appwindow.canvas().engine().borrow_mut().strokes_state.clear();
                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
@@ -314,8 +314,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                                                             return;
                                                         };
 
-                                                        appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
-                                                        appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_output_file(Some(&file), &appwindow);
+                                                        appwindow.set_output_file(Some(&file), &appwindow);
                                                         appwindow.canvas().set_unsaved_changes(false);
                                                         adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Saved sheet successfully").to_variant()));
                                                     }

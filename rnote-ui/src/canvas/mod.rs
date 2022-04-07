@@ -8,7 +8,7 @@ mod imp {
     use super::canvaslayout::CanvasLayout;
     use crate::config;
     use crate::selectionmodifier::SelectionModifier;
-    use rnote_engine::{RnoteEngine};
+    use rnote_engine::RnoteEngine;
 
     use gtk4::{
         gdk, glib, graphene, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
@@ -357,10 +357,10 @@ mod imp {
     impl RnoteCanvas {}
 }
 
+use crate::appwindow::RnoteAppWindow;
 use crate::selectionmodifier::SelectionModifier;
-use crate::{app::RnoteApp, appwindow::RnoteAppWindow};
 use futures::StreamExt;
-use p2d::bounding_volume::{AABB};
+use p2d::bounding_volume::AABB;
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
 use rnote_engine::{RnoteEngine, Sheet};
@@ -514,17 +514,9 @@ impl RnoteCanvas {
             }
         }));
 
-        self.bind_property(
-            "unsaved-changes",
-            &appwindow
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap(),
-            "unsaved-changes",
-        )
-        .flags(glib::BindingFlags::DEFAULT)
-        .build();
+        self.bind_property("unsaved-changes", appwindow, "unsaved-changes")
+            .flags(glib::BindingFlags::DEFAULT)
+            .build();
 
         self.connect_notify_local(Some("unsaved-changes"), clone!(@weak appwindow => move |app, _pspec| {
             appwindow.mainheader().main_title_unsaved_indicator().set_visible(app.unsaved_changes());
@@ -803,7 +795,10 @@ impl RnoteCanvas {
 
         // Zoom temporarily
         let new_temp_zoom = zoom / self.engine().borrow().camera.zoom();
-        self.engine().borrow_mut().camera.set_temporary_zoom(new_temp_zoom);
+        self.engine()
+            .borrow_mut()
+            .camera
+            .set_temporary_zoom(new_temp_zoom);
 
         self.update_background_rendernode(true);
 

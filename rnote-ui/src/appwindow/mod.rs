@@ -15,8 +15,8 @@ mod imp {
     use rnote_engine::pens::penholder::PenStyle;
 
     use crate::{
-        app::RnoteApp, canvas::RnoteCanvas, config, dialogs, mainheader::MainHeader,
-        penssidebar::PensSideBar, settingspanel::SettingsPanel, workspacebrowser::WorkspaceBrowser,
+        canvas::RnoteCanvas, config, dialogs, mainheader::MainHeader, penssidebar::PensSideBar,
+        settingspanel::SettingsPanel, workspacebrowser::WorkspaceBrowser,
     };
 
     #[derive(Debug, CompositeTemplate)]
@@ -25,6 +25,8 @@ mod imp {
         pub app_settings: gio::Settings,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
 
+        pub output_file: RefCell<Option<gio::File>>,
+        pub unsaved_changes: Cell<bool>,
         pub righthanded: Cell<bool>,
         pub pen_sounds: Cell<bool>,
 
@@ -86,6 +88,8 @@ mod imp {
                 app_settings: gio::Settings::new(config::APP_ID),
                 filechoosernative: Rc::new(RefCell::new(None)),
 
+                output_file: RefCell::new(None),
+                unsaved_changes: Cell::new(false),
                 righthanded: Cell::new(true),
                 pen_sounds: Cell::new(true),
 
@@ -191,6 +195,13 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
+                    glib::ParamSpecBoolean::new(
+                        "unsaved-changes",
+                        "unsaved-changes",
+                        "unsaved-changes",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
                     // Pen sounds
                     glib::ParamSpecBoolean::new(
                         "righthanded",
@@ -214,6 +225,7 @@ mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
+                "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
                 "pen-sounds" => self.pen_sounds.get().to_value(),
                 _ => unimplemented!(),
@@ -228,6 +240,11 @@ mod imp {
             pspec: &glib::ParamSpec,
         ) {
             match pspec.name() {
+                "unsaved-changes" => {
+                    let unsaved_changes: bool =
+                        value.get().expect("The value needs to be of type `bool`.");
+                    self.unsaved_changes.replace(unsaved_changes);
+                }
                 "righthanded" => {
                     let righthanded = value
                         .get::<bool>()
@@ -253,13 +270,7 @@ mod imp {
         // Save window state right before the window will be closed
         fn close_request(&self, obj: &Self::Type) -> Inhibit {
             // Save current sheet
-            if obj
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .unsaved_changes()
-            {
+            if obj.unsaved_changes() {
                 dialogs::dialog_quit_save(obj);
             } else {
                 obj.close();
@@ -508,6 +519,28 @@ impl RnoteAppWindow {
             .clone()
     }
 
+    pub fn output_file(&self) -> Option<gio::File> {
+        imp::RnoteAppWindow::from_instance(self)
+            .output_file
+            .borrow()
+            .clone()
+    }
+
+    pub fn set_output_file(&self, output_file: Option<&gio::File>, appwindow: &RnoteAppWindow) {
+        appwindow.mainheader().set_title_for_file(output_file);
+        *imp::RnoteAppWindow::from_instance(self)
+            .output_file
+            .borrow_mut() = output_file.cloned();
+    }
+
+    pub fn unsaved_changes(&self) -> bool {
+        self.property::<bool>("unsaved-changes")
+    }
+
+    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
+        self.set_property("unsaved-changes", unsaved_changes.to_value());
+    }
+
     pub fn toast_overlay(&self) -> adw::ToastOverlay {
         imp::RnoteAppWindow::from_instance(self).toast_overlay.get()
     }
@@ -731,13 +764,7 @@ impl RnoteAppWindow {
             .unwrap()
             .input_file()
         {
-            if self
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .unsaved_changes()
-            {
+            if self.unsaved_changes() {
                 dialogs::dialog_open_overwrite(self);
             } else if let Err(e) = self.load_in_file(&input_file, None) {
                 log::error!("failed to load in input file, {}", e);
@@ -949,7 +976,7 @@ impl RnoteAppWindow {
                 // Setting input file to hand it to the open overwrite dialog
                 app.set_input_file(Some(file.clone()));
 
-                if app.unsaved_changes() {
+                if self.unsaved_changes() {
                     dialogs::dialog_open_overwrite(self);
                 } else if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!(
@@ -1081,7 +1108,7 @@ impl RnoteAppWindow {
         app.set_input_file(None);
         if let Some(path) = path {
             let file = gio::File::for_path(path);
-            app.set_output_file(Some(&file), self);
+            self.set_output_file(Some(&file), self);
         }
 
         self.canvas().set_unsaved_changes(false);
@@ -1113,7 +1140,7 @@ impl RnoteAppWindow {
         self.settings_panel().refresh_for_sheet(self);
 
         app.set_input_file(None);
-        app.set_output_file(None, self);
+        self.set_output_file(None, self);
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);

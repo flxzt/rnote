@@ -1,15 +1,21 @@
 mod imp {
     use crate::colorpicker::ColorPicker;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
+    use gtk4::{MenuButton, Popover, Revealer, SpinButton, Switch, Image, ListBox};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
     pub struct ShaperPage {
         #[template_child]
-        pub drawstyle_smooth_toggle: TemplateChild<ToggleButton>,
+        pub shaperstyle_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub drawstyle_rough_toggle: TemplateChild<ToggleButton>,
+        pub shaperstyle_image: TemplateChild<Image>,
+        #[template_child]
+        pub shaperstyle_listbox: TemplateChild<ListBox>,
+        #[template_child]
+        pub shaperstyle_smooth_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub shaperstyle_rough_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub shapeconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
@@ -31,13 +37,17 @@ mod imp {
         #[template_child]
         pub fill_colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
-        pub shapes_togglebox: TemplateChild<gtk4::Box>,
+        pub shapetype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub line_toggle: TemplateChild<ToggleButton>,
+        pub shapetype_image: TemplateChild<Image>,
         #[template_child]
-        pub rectangle_toggle: TemplateChild<ToggleButton>,
+        pub shapetype_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub ellipse_toggle: TemplateChild<ToggleButton>,
+        pub shapetype_line_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub shapetype_rectangle_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub shapetype_ellipse_row: TemplateChild<adw::ActionRow>,
     }
 
     #[glib::object_subclass]
@@ -71,7 +81,7 @@ mod imp {
 }
 
 use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use gtk4::{gdk, MenuButton, Popover, Revealer, SpinButton, Switch, ToggleButton};
+use gtk4::{gdk, MenuButton, Popover, Revealer, SpinButton, Switch, ListBox, Image};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use rnote_compose::style::rough::RoughOptions;
 use rnote_engine::pens::shaper::ShaperStyle;
@@ -100,15 +110,29 @@ impl ShaperPage {
         glib::Object::new(&[]).expect("Failed to create ShaperPage")
     }
 
-    pub fn drawstyle_smooth_toggle(&self) -> ToggleButton {
-        imp::ShaperPage::from_instance(self)
-            .drawstyle_smooth_toggle
+    pub fn shaperstyle_menubutton(&self) -> MenuButton {
+        self.imp()
+            .shaperstyle_menubutton
             .get()
     }
 
-    pub fn drawstyle_rough_toggle(&self) -> ToggleButton {
-        imp::ShaperPage::from_instance(self)
-            .drawstyle_rough_toggle
+    pub fn shaperstyle_image(&self) -> Image {
+        self.imp().shaperstyle_image.get()
+    }
+
+    pub fn shaperstyle_listbox(&self) -> ListBox {
+        self.imp().shaperstyle_listbox.get()
+    }
+
+    pub fn shaperstyle_smooth_row(&self) -> adw::ActionRow {
+        self.imp()
+            .shaperstyle_smooth_row
+            .get()
+    }
+
+    pub fn shaperstyle_rough_row(&self) -> adw::ActionRow {
+        self.imp()
+            .shaperstyle_rough_row
             .get()
     }
 
@@ -166,20 +190,36 @@ impl ShaperPage {
         imp::ShaperPage::from_instance(self).fill_colorpicker.get()
     }
 
-    pub fn shapes_togglebox(&self) -> gtk4::Box {
-        imp::ShaperPage::from_instance(self).shapes_togglebox.get()
+    pub fn shapetype_menubutton(&self) -> MenuButton {
+        self.imp()
+            .shapetype_menubutton
+            .get()
     }
 
-    pub fn line_toggle(&self) -> ToggleButton {
-        imp::ShaperPage::from_instance(self).line_toggle.get()
+    pub fn shapetype_image(&self) -> Image {
+        self.imp().shapetype_image.get()
     }
 
-    pub fn rectangle_toggle(&self) -> ToggleButton {
-        imp::ShaperPage::from_instance(self).rectangle_toggle.get()
+    pub fn shapetype_listbox(&self) -> ListBox {
+        self.imp().shapetype_listbox.get()
     }
 
-    pub fn ellipse_toggle(&self) -> ToggleButton {
-        imp::ShaperPage::from_instance(self).ellipse_toggle.get()
+    pub fn shapetype_line_row(&self) -> adw::ActionRow {
+        self.imp()
+            .shapetype_line_row
+            .get()
+    }
+
+    pub fn shapetype_rectangle_row(&self) -> adw::ActionRow {
+        self.imp()
+            .shapetype_rectangle_row
+            .get()
+    }
+
+    pub fn shapetype_ellipse_row(&self) -> adw::ActionRow {
+        self.imp()
+            .shapetype_ellipse_row
+            .get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -244,7 +284,7 @@ impl ShaperPage {
 
         self.imp().roughconfig_roughness_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_roughness_spinbutton| {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.set_roughness(roughconfig_roughness_spinbutton.value());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.roughness = roughconfig_roughness_spinbutton.value();
             }),
         );
 
@@ -264,7 +304,7 @@ impl ShaperPage {
 
         self.imp().roughconfig_bowing_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_bowing_spinbutton| {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.set_bowing(roughconfig_bowing_spinbutton.value());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.bowing = roughconfig_bowing_spinbutton.value();
             }),
         );
 
@@ -287,70 +327,55 @@ impl ShaperPage {
 
         self.imp().roughconfig_curvestepcount_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_curvestepcount_spinbutton| {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.set_curve_stepcount(roughconfig_curvestepcount_spinbutton.value());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.curve_stepcount = roughconfig_curvestepcount_spinbutton.value();
             }),
         );
 
         // Multistroke
         self.imp().roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
-            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.set_multistroke(roughconfig_multistroke_switch.state());
+            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.disable_multistroke = roughconfig_multistroke_switch.state();
         }));
 
-        // Smooth / Rough shape toggle
-        self.drawstyle_smooth_toggle().connect_toggled(clone!(@weak appwindow => move |drawstyle_smooth_toggle| {
-            if drawstyle_smooth_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-drawstyle", Some(&"smooth".to_variant()));
-            }
-        }));
+        // Smooth / Rough shaper style
+        self.shaperstyle_listbox().connect_row_selected(
+            clone!(@weak self as shaperpage, @weak appwindow => move |_shaperstyle_listbox, selected_row| {
+                if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
+                    match selected_row.index() {
+                        // Smooth
+                        0 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"smooth".to_variant()));
+                        }
+                        // Rough
+                        1 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"rough".to_variant()));
+                        }
+                        _ => {}
+                    }
+                }
+            }),
+        );
 
-        self.drawstyle_smooth_toggle()
-            .bind_property("active", &self.shapeconfig_menubutton(), "sensitive")
-            .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::INVERT_BOOLEAN)
-            .build();
-
-        self.drawstyle_rough_toggle().connect_toggled(clone!(@weak appwindow => move |drawstyle_rough_toggle| {
-            if drawstyle_rough_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-drawstyle", Some(&"rough".to_variant()));
-            }
-        }));
-
-        self.drawstyle_rough_toggle()
-            .bind_property("active", &self.shapeconfig_menubutton(), "sensitive")
-            .flags(glib::BindingFlags::DEFAULT)
-            .build();
-
-        self.line_toggle()
-            .bind_property("active", &self.fill_revealer(), "reveal-child")
-            .flags(glib::BindingFlags::DEFAULT | glib::BindingFlags::INVERT_BOOLEAN)
-            .build();
-
-        self.rectangle_toggle()
-            .bind_property("active", &self.fill_revealer(), "reveal-child")
-            .flags(glib::BindingFlags::DEFAULT)
-            .build();
-
-        self.ellipse_toggle()
-            .bind_property("active", &self.fill_revealer(), "reveal-child")
-            .flags(glib::BindingFlags::DEFAULT)
-            .build();
-
-        // Shape toggles
-        self.line_toggle().connect_toggled(clone!(@weak self as shaperpage, @weak appwindow => move |line_toggle| {
-            if line_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"line".to_variant()));
-            }
-        }));
-
-        self.rectangle_toggle().connect_toggled(clone!(@weak appwindow => move |rectangle_toggle| {
-            if rectangle_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"rectangle".to_variant()));
-            }
-        }));
-
-        self.ellipse_toggle().connect_toggled(clone!(@weak appwindow => move |ellipse_toggle| {
-            if ellipse_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"ellipse".to_variant()));
-            }
-        }));
+        // shape type
+        self.shapetype_listbox().connect_row_selected(
+            clone!(@weak self as shaperpage, @weak appwindow => move |_shapetype_listbox, selected_row| {
+                if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
+                    match selected_row.index() {
+                        // Line
+                        0 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-type", Some(&"line".to_variant()));
+                        }
+                        // Rectangle
+                        1 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-type", Some(&"rectangle".to_variant()));
+                        }
+                        // Ellipse
+                        2 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-type", Some(&"ellipse".to_variant()));
+                        }
+                        _ => {}
+                    }
+                }
+            }),
+        );
     }
 }

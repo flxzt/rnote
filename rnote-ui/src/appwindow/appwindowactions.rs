@@ -135,17 +135,17 @@ impl RnoteAppWindow {
         let action_pen_style =
             gio::SimpleAction::new("pen-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_pen_style);
-        let action_shaper_style =
-            gio::SimpleAction::new("shaper-style", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_shaper_style);
         let action_brush_style =
             gio::SimpleAction::new("brush-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_brush_style);
-        let action_shaper_drawstyle = gio::SimpleAction::new(
-            "shaper-drawstyle",
+        let action_shape_type =
+            gio::SimpleAction::new("shape-type", Some(&glib::VariantType::new("s").unwrap()));
+        self.add_action(&action_shape_type);
+        let action_shaper_style = gio::SimpleAction::new(
+            "shaper-style",
             Some(&glib::VariantType::new("s").unwrap()),
         );
-        self.add_action(&action_shaper_drawstyle);
+        self.add_action(&action_shaper_style);
         let action_selector_style = gio::SimpleAction::new(
             "selector-style",
             Some(&glib::VariantType::new("s").unwrap()),
@@ -565,12 +565,12 @@ impl RnoteAppWindow {
         }),
         );
 
-        // Shaper style
-        action_shaper_style.connect_activate(
-        clone!(@weak self as appwindow => move |_action_shaper_style, target| {
-            let shaper_style = target.unwrap().str().unwrap();
+        // Shape type
+        action_shape_type.connect_activate(
+        clone!(@weak self as appwindow => move |_action_shaper_type, target| {
+            let shape_type = target.unwrap().str().unwrap();
 
-            match shaper_style {
+            match shape_type {
                 "line" => {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.shape_type = ShapeType::Line;
                 },
@@ -580,7 +580,7 @@ impl RnoteAppWindow {
                 "ellipse" => {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.shape_type = ShapeType::Ellipse;
                 },
-                _ => { log::error!("set invalid state of action `shaper-style`")}
+                _ => { log::error!("set invalid state of action `shape-type`")}
             }
 
 
@@ -588,8 +588,8 @@ impl RnoteAppWindow {
         }),
         );
 
-        // Shaper drawstyle
-        action_shaper_drawstyle.connect_activate(
+        // Shaper style
+        action_shaper_style.connect_activate(
         clone!(@weak self as appwindow => move |_action_shaper_drawstyle, target| {
             let shaper_drawstyle = target.unwrap().str().unwrap();
 
@@ -606,7 +606,7 @@ impl RnoteAppWindow {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
                 },
-                _ => { log::error!("set invalid state of action `shaper-drawstyle`")}
+                _ => { log::error!("set invalid state of action `shaper-style`")}
             }
 
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
@@ -733,29 +733,40 @@ impl RnoteAppWindow {
 
                 match pens.shaper.shape_type {
                     ShapeType::Line => {
-                        appwindow.penssidebar().shaper_page().line_toggle().set_active(true);
+                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_line_row()));
+                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(false);
+                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-line-symbolic"));
                     }
                     ShapeType::Rectangle => {
-                        appwindow.penssidebar().shaper_page().rectangle_toggle().set_active(true);
+                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_rectangle_row()));
+                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
+                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-rectangle-symbolic"));
                     }
                     ShapeType::Ellipse => {
-                        appwindow.penssidebar().shaper_page().ellipse_toggle().set_active(true);
+                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_ellipse_row()));
+                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
+                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-ellipse-symbolic"));
                     }
                 }
                 match pens.shaper.style {
                     ShaperStyle::Smooth => {
-                        appwindow.penssidebar().shaper_page().drawstyle_smooth_toggle().set_active(true);
+                        appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_smooth_row()));
                         appwindow.penssidebar().shaper_page().width_spinbutton().set_value(pens.shaper.smooth_options.width);
                         appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(pens.shaper.smooth_options.stroke_color);
                         appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(pens.shaper.smooth_options.fill_color);
+                        appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(false);
+                        appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
                     },
                     ShaperStyle::Rough => {
-                        appwindow.penssidebar().shaper_page().drawstyle_rough_toggle().set_active(true);
+                        appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_rough_row()));
                         appwindow.penssidebar().shaper_page().width_spinbutton().set_value(pens.shaper.rough_options.stroke_width);
                         appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(pens.shaper.rough_options.stroke_color);
                         appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(pens.shaper.rough_options.fill_color);
+                        appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(true);
+                        appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-rough-symbolic"));
                     },
                 }
+
                 // Eraser
                 appwindow.penssidebar().eraser_page().width_spinbutton().set_value(pens.eraser.width);
 

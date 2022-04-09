@@ -1,6 +1,6 @@
 use anyhow::Context;
 use gtk4::{glib, gsk, prelude::*, Snapshot, gdk, graphene};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{AABB, BoundingVolume};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -302,7 +302,7 @@ impl Background {
                 .context("image_to_memtexture() failed in gen_rendernode().")?;
             for splitted_bounds in sheet_bounds.split_extended_origin_aligned(tile_size) {
                 rendernodes.push(
-                    gsk::TextureNode::new(&new_texture, &graphene::Rect::from_aabb(splitted_bounds))
+                    gsk::TextureNode::new(&new_texture, &graphene::Rect::from_aabb(splitted_bounds.ceil().loosened(1.0)))
                         .upcast(),
                 );
             }

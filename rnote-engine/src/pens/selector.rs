@@ -165,13 +165,13 @@ impl Selector {
         r: 0.6,
         g: 0.6,
         b: 0.6,
-        a: 0.7,
+        a: 0.75,
     };
     pub const FILL_COLOR: Color = Color {
         r: 0.85,
         g: 0.85,
         b: 0.85,
-        a: 0.12,
+        a: 0.15,
     };
 
     pub const DASH_PATTERN: [f64; 2] = [8.0, 12.0];

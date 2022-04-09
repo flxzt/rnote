@@ -52,10 +52,10 @@ impl Default for ExpandSheetTool {
 impl ExpandSheetTool {
     pub const Y_OFFSET_THRESHOLD: f64 = 2.0;
     pub const FILL_COLOR: Color = Color {
-        r: 0.8,
-        g: 0.9,
-        b: 1.0,
-        a: 0.2,
+        r: 0.7,
+        g: 0.8,
+        b: 0.9,
+        a: 0.15,
     };
     pub const THRESHOLD_LINE_COLOR: Color = Color {
         r: 0.5,

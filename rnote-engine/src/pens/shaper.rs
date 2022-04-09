@@ -31,11 +31,6 @@ impl Default for ShaperStyle {
     }
 }
 
-impl ShaperStyle {
-    pub const SMOOTH_MARGIN: f64 = 1.0;
-    pub const ROUGH_MARGIN: f64 = 20.0;
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "shaper")]
 pub struct Shaper {

@@ -13,7 +13,7 @@ use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::Style;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::AABB;
 use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 
@@ -45,21 +45,27 @@ impl DrawBehaviour for ShapeStroke {
                 Style::Smooth(options) => {
                     line.draw_composed(cx, options);
                 }
-                Style::Rough(_) => {}
+                Style::Rough(options) => {
+                    line.draw_composed(cx, options);
+                }
                 Style::Textured(_) => {}
             },
             Shape::Rectangle(ref rectangle) => match &self.style {
                 Style::Smooth(options) => {
                     rectangle.draw_composed(cx, options);
                 }
-                Style::Rough(_) => {}
+                Style::Rough(options) => {
+                    rectangle.draw_composed(cx, options);
+                }
                 Style::Textured(_) => {}
             },
             Shape::Ellipse(ref ellipse) => match &self.style {
                 Style::Smooth(options) => {
                     ellipse.draw_composed(cx, options);
                 }
-                Style::Rough(_) => {}
+                Style::Rough(options) => {
+                    ellipse.draw_composed(cx, options);
+                }
                 Style::Textured(_) => {}
             },
         };
@@ -71,18 +77,8 @@ impl DrawBehaviour for ShapeStroke {
 impl ShapeBehaviour for ShapeStroke {
     fn bounds(&self) -> AABB {
         match &self.style {
-            Style::Smooth(options) => {
-                let width = options.width;
-                self.shape
-                    .bounds()
-                    .loosened(width * 0.5 + ShaperStyle::SMOOTH_MARGIN)
-            }
-            Style::Rough(options) => {
-                let width = options.stroke_width();
-                self.shape
-                    .bounds()
-                    .loosened(width * 0.5 + ShaperStyle::ROUGH_MARGIN)
-            }
+            Style::Smooth(options) => self.shape.composed_bounds(options),
+            Style::Rough(options) => self.shape.composed_bounds(options),
             Style::Textured(_) => self.shape.bounds(),
         }
     }

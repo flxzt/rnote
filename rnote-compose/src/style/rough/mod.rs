@@ -1,167 +1,247 @@
-mod roughoptions;
-mod roughshapes;
+mod roughgenerator;
+/// The module for the rough style.
+pub mod roughoptions;
 
+use p2d::bounding_volume::{BoundingVolume, AABB};
 // Re-exports
-pub use roughoptions::FillStyle;
 pub use roughoptions::RoughOptions;
 
-use svg::node::element::{self, path};
-
-use crate::shapes::CubicBezier;
+use crate::helpers::Affine2Helpers;
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
+use crate::shapes::{CubicBezier, ShapeBehaviour};
 
-/// This is a port of the [Rough.js](https://roughjs.com/) javascript library to Rust.
+use super::Composer;
+
+/// This is a (incomplete) port of the [Rough.js](https://roughjs.com/) javascript library to Rust.
 /// Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
 
-/// Generating a single line element
-pub fn line(line: Line, options: &RoughOptions) -> element::Path {
-    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
-
-    let commands = if !options.disable_multistroke {
-        roughshapes::doubleline(line.start, line.end, options, &mut rng)
-    } else {
-        roughshapes::line(line.start, line.end, true, false, options, &mut rng)
-    };
-
-    options.apply_to_line(element::Path::new().set("d", path::Data::from(commands)))
-}
-
-/// Generating a cubic bezier curve
-pub fn cubic_bezier(cubbez: CubicBezier, options: &RoughOptions) -> element::Path {
-    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
-
-    let commands = roughshapes::cubic_bezier(
-        cubbez.start,
-        cubbez.cp1,
-        cubbez.cp2,
-        cubbez.end,
-        options,
-        &mut rng,
-    );
-
-    options.apply_to_line(element::Path::new().set("d", path::Data::from(commands)))
-}
-
-/// Generating a rectangle
-pub fn rectangle(rectangle: Rectangle, options: &RoughOptions) -> element::Group {
-    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
-
-    let mut commands = Vec::new();
-    // Applying the transform at the end
-    let top_left = -rectangle.cuboid.half_extents;
-    let bottom_right = rectangle.cuboid.half_extents;
-
-    if !options.disable_multistroke {
-        commands.append(&mut roughshapes::doubleline(
-            top_left,
-            na::vector![bottom_right[0], top_left[1]],
-            options,
-            &mut rng,
-        ));
-        commands.append(&mut roughshapes::doubleline(
-            na::vector![bottom_right[0], top_left[1]],
-            bottom_right,
-            options,
-            &mut rng,
-        ));
-        commands.append(&mut roughshapes::doubleline(
-            bottom_right,
-            na::vector![top_left[0], bottom_right[1]],
-            options,
-            &mut rng,
-        ));
-        commands.append(&mut roughshapes::doubleline(
-            na::vector![top_left[0], bottom_right[1]],
-            top_left,
-            options,
-            &mut rng,
-        ));
-    } else {
-        commands.append(&mut roughshapes::line(
-            top_left,
-            na::vector![bottom_right[0], top_left[1]],
-            true,
-            false,
-            options,
-            &mut rng,
-        ));
-        commands.append(&mut roughshapes::line(
-            na::vector![bottom_right[0], top_left[1]],
-            bottom_right,
-            true,
-            false,
-            options,
-            &mut rng,
-        ));
-        commands.append(&mut roughshapes::line(
-            bottom_right,
-            na::vector![top_left[0], bottom_right[1]],
-            true,
-            false,
-            options,
-            &mut rng,
-        ));
-        commands.append(&mut roughshapes::line(
-            na::vector![top_left[0], bottom_right[1]],
-            top_left,
-            true,
-            false,
-            options,
-            &mut rng,
-        ));
+impl Composer<RoughOptions> for Line {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
     }
 
-    let rect = options.apply_to_rect(element::Path::new().set("d", path::Data::from(commands)));
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
-    let fill_points = vec![
-        na::vector![top_left[0], top_left[1]],
-        na::vector![bottom_right[0], top_left[1]],
-        na::vector![bottom_right[0], bottom_right[1]],
-        na::vector![top_left[0], bottom_right[1]],
-    ];
-    let fill_polygon = fill_polygon(fill_points, options);
+        let bez_path = if !options.disable_multistroke {
+            roughgenerator::doubleline(self.start, self.end, options, &mut rng)
+        } else {
+            roughgenerator::line(self.start, self.end, true, false, options, &mut rng)
+        };
 
-    let transform_string = rectangle.transform.to_svg_transform_attr_str();
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
 
-    element::Group::new()
-        .set("transform", transform_string)
-        .add(fill_polygon)
-        .add(rect)
+            cx.stroke(bez_path, &stroke_brush, options.stroke_width)
+        }
+    }
+}
+
+impl Composer<RoughOptions> for Rectangle {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
+
+        cx.transform(self.transform.affine.to_kurbo());
+
+        let mut rect_path = kurbo::BezPath::new();
+
+        // Applying the transform at the end
+        let top_left = -self.cuboid.half_extents;
+        let bottom_right = self.cuboid.half_extents;
+
+        if !options.disable_multistroke {
+            rect_path.extend(
+                roughgenerator::doubleline(
+                    top_left,
+                    na::vector![bottom_right[0], top_left[1]],
+                    options,
+                    &mut rng,
+                )
+                .into_iter(),
+            );
+            rect_path.extend(roughgenerator::doubleline(
+                na::vector![bottom_right[0], top_left[1]],
+                bottom_right,
+                options,
+                &mut rng,
+            ));
+            rect_path.extend(
+                roughgenerator::doubleline(
+                    bottom_right,
+                    na::vector![top_left[0], bottom_right[1]],
+                    options,
+                    &mut rng,
+                )
+                .into_iter(),
+            );
+            rect_path.extend(
+                roughgenerator::doubleline(
+                    na::vector![top_left[0], bottom_right[1]],
+                    top_left,
+                    options,
+                    &mut rng,
+                )
+                .into_iter(),
+            );
+        } else {
+            rect_path.extend(
+                roughgenerator::line(
+                    top_left,
+                    na::vector![bottom_right[0], top_left[1]],
+                    true,
+                    false,
+                    options,
+                    &mut rng,
+                )
+                .into_iter(),
+            );
+            rect_path.extend(
+                roughgenerator::line(
+                    na::vector![bottom_right[0], top_left[1]],
+                    bottom_right,
+                    true,
+                    false,
+                    options,
+                    &mut rng,
+                )
+                .into_iter(),
+            );
+            rect_path.extend(roughgenerator::line(
+                bottom_right,
+                na::vector![top_left[0], bottom_right[1]],
+                true,
+                false,
+                options,
+                &mut rng,
+            ));
+            rect_path.extend(
+                roughgenerator::line(
+                    na::vector![top_left[0], bottom_right[1]],
+                    top_left,
+                    true,
+                    false,
+                    options,
+                    &mut rng,
+                )
+                .into_iter(),
+            );
+        }
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_points = vec![
+                na::vector![top_left[0], top_left[1]],
+                na::vector![bottom_right[0], top_left[1]],
+                na::vector![bottom_right[0], bottom_right[1]],
+                na::vector![top_left[0], bottom_right[1]],
+            ];
+            let fill_polygon = fill_polygon(fill_points, options);
+
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(fill_polygon, &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+
+            cx.stroke(rect_path, &stroke_brush, options.stroke_width)
+        }
+
+    }
+}
+
+impl Composer<RoughOptions> for Ellipse {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
+
+        cx.transform(self.transform.affine.to_kurbo());
+
+        let ellipse_result = roughgenerator::ellipse(
+            na::vector![0.0, 0.0],
+            self.radii[0],
+            self.radii[1],
+            options,
+            &mut rng,
+        );
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_polygon = fill_polygon(ellipse_result.estimated_points, options);
+
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(fill_polygon, &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+
+            cx.stroke(
+                ellipse_result.bez_path,
+                &stroke_brush,
+                options.stroke_width,
+            )
+        }
+    }
+}
+
+impl Composer<RoughOptions> for CubicBezier {
+    fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 + RoughOptions::ROUGH_BOUNDS_MARGIN)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
+
+        let bez_path = roughgenerator::cubic_bezier(
+            self.start,
+            self.cp1,
+            self.cp2,
+            self.end,
+            options,
+            &mut rng,
+        );
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+
+            cx.stroke(bez_path, &stroke_brush, options.stroke_width)
+        }
+    }
+}
+
+impl Composer<RoughOptions> for crate::Shape {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        match self {
+            crate::Shape::Line(line) => line.composed_bounds(options),
+            crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
+            crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        match self {
+            crate::Shape::Line(line) => line.draw_composed(cx, options),
+            crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
+            crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
+        }
+    }
 }
 
 /// Generating a fill polygon
-pub fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> element::Path {
+fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> kurbo::BezPath {
     let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
-    let mut commands = Vec::new();
-    commands.append(&mut roughshapes::fill_polygon(coords, options, &mut rng));
-
-    options.apply_to_fill_polygon_solid(element::Path::new().set("d", path::Data::from(commands)))
-}
-
-/// Generating a ellipse
-pub fn ellipse(ellipse: Ellipse, options: &RoughOptions) -> element::Group {
-    let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
-
-    let ellipse_result = roughshapes::ellipse(
-        na::vector![0.0, 0.0],
-        ellipse.radii[0],
-        ellipse.radii[1],
-        options,
-        &mut rng,
-    );
-
-    let transform_string = ellipse.transform.to_svg_transform_attr_str();
-
-    let ellipse = options
-        .apply_to_ellipse(element::Path::new().set("d", path::Data::from(ellipse_result.commands)));
-
-    let fill_polygon = fill_polygon(ellipse_result.estimated_points, options);
-
-    element::Group::new()
-        .set("transform", transform_string)
-        .add(fill_polygon)
-        .add(ellipse)
+    roughgenerator::fill_polygon(coords, options, &mut rng)
 }

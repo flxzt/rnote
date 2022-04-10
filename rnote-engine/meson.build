@@ -1,2 +1,2 @@
-subdir('src')
 subdir('data')
+subdir('src')

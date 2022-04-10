@@ -1,131 +1,80 @@
-use std::io;
-use std::sync::{Arc, RwLock};
-
-use crate::compose;
-use crate::compose::geometry::AABBHelpers;
-use crate::compose::shapes;
-use crate::compose::transformable::{Transform, Transformable};
-use crate::drawbehaviour::DrawBehaviour;
-use crate::render::{self, Renderer};
+use super::StrokeBehaviour;
+use crate::render;
+use crate::DrawBehaviour;
+use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
+use rnote_compose::shapes::Rectangle;
+use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::transform::Transform;
+use rnote_compose::transform::TransformBehaviour;
 
 use anyhow::Context;
 use gtk4::cairo;
-use image::{io::Reader, GenericImageView};
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
-use svg::node::element;
-
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
-#[serde(rename = "bitmapimage_format")]
-pub enum BitmapImageFormat {
-    #[serde(rename = "png")]
-    Png,
-    #[serde(rename = "jpeg")]
-    Jpeg,
-}
-
-impl BitmapImageFormat {
-    pub fn as_mime_type(&self) -> String {
-        match self {
-            BitmapImageFormat::Png => String::from("image/png"),
-            BitmapImageFormat::Jpeg => String::from("image/jpeg"),
-        }
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "bitmapimage")]
 pub struct BitmapImage {
-    #[serde(rename = "data_base64")]
-    pub data_base64: String,
-    #[serde(rename = "format")]
-    pub format: BitmapImageFormat,
-    #[serde(rename = "intrinsic_size")]
-    pub intrinsic_size: na::Vector2<f64>,
+    // The bounds field of the image should not be used. Use rectangle.bounds() instead.
+    #[serde(rename = "image")]
+    pub image: render::Image,
     #[serde(rename = "rectangle")]
-    pub rectangle: shapes::Rectangle,
-    #[serde(rename = "bounds")]
-    pub bounds: AABB,
+    pub rectangle: Rectangle,
 }
 
 impl Default for BitmapImage {
     fn default() -> Self {
         Self {
-            data_base64: String::default(),
-            format: BitmapImageFormat::Png,
-            intrinsic_size: na::vector![0.0, 0.0],
-            rectangle: shapes::Rectangle::default(),
-            bounds: AABB::new_zero(),
+            image: render::Image::default(),
+            rectangle: Rectangle::default(),
         }
     }
 }
 
+impl StrokeBehaviour for BitmapImage {}
+
 impl DrawBehaviour for BitmapImage {
-    fn bounds(&self) -> AABB {
-        self.bounds
-    }
-
-    fn set_bounds(&mut self, bounds: AABB) {
-        self.bounds = bounds;
-    }
-
-    fn gen_bounds(&self) -> Option<AABB> {
-        Some(self.rectangle.global_aabb())
-    }
-
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let mut rectangle = self.rectangle.clone();
-        rectangle.transform.append_translation_mut(offset);
-
-        let transform_string = rectangle.transform.to_svg_transform_attr_str();
-
-        let svg_root = element::Image::new()
-            .set("x", -self.rectangle.cuboid.half_extents[0])
-            .set("y", -self.rectangle.cuboid.half_extents[1])
-            .set("width", 2.0 * self.rectangle.cuboid.half_extents[0])
-            .set("height", 2.0 * self.rectangle.cuboid.half_extents[1])
-            .set(
-                "viewBox",
-                format!(
-                    "{:.3} {:.3} {:.3} {:.3}",
-                    0.0, 0.0, self.intrinsic_size[0], self.intrinsic_size[1]
-                ),
+    fn draw(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        _image_scale: f64,
+    ) -> Result<(), anyhow::Error> {
+        let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
+        let piet_image = cx
+            .make_image(
+                self.image.pixel_width as usize,
+                self.image.pixel_height as usize,
+                &self.image.data,
+                piet_image_format,
             )
-            .set("preserveAspectRatio", "none")
-            .set("transform", transform_string)
-            .set(
-                "href",
-                format!(
-                    "data:{mime_type};base64,{data_base64}",
-                    mime_type = &self.format.as_mime_type(),
-                    data_base64 = &self.data_base64
-                ),
-            );
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        let svg_data = compose::svg_node_to_string(&svg_root)?;
-        let svg = render::Svg {
-            bounds: self.bounds.translate(offset),
-            svg_data,
-        };
+        cx.transform(self.rectangle.transform.affine.to_kurbo());
 
-        Ok(vec![svg])
+        let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
+        cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
+
+        Ok(())
     }
 }
 
-impl Transformable for BitmapImage {
+impl ShapeBehaviour for BitmapImage {
+    fn bounds(&self) -> AABB {
+        self.rectangle.bounds()
+    }
+}
+
+impl TransformBehaviour for BitmapImage {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.rectangle.translate(offset);
-        self.update_geometry();
     }
 
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
         self.rectangle.rotate(angle, center);
-        self.update_geometry();
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.rectangle.scale(scale);
-        self.update_geometry();
     }
 }
 
@@ -133,46 +82,19 @@ impl BitmapImage {
     pub const OFFSET_X_DEFAULT: f64 = 32.0;
     pub const OFFSET_Y_DEFAULT: f64 = 32.0;
 
-    pub fn import_from_image_bytes<P>(
-        to_be_read: P,
+    pub fn import_from_image_bytes(
+        bytes: &[u8],
         pos: na::Vector2<f64>,
-    ) -> Result<Self, anyhow::Error>
-    where
-        P: AsRef<[u8]>,
-    {
-        let reader = Reader::new(io::Cursor::new(&to_be_read)).with_guessed_format()?;
-        log::debug!("BitmapImage detected format: {:?}", reader.format());
+    ) -> Result<Self, anyhow::Error> {
+        let image = render::Image::try_from_encoded_bytes(bytes)?;
+        let size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
 
-        let format = match reader.format() {
-            Some(image::ImageFormat::Png) => BitmapImageFormat::Png,
-            Some(image::ImageFormat::Jpeg) => BitmapImageFormat::Jpeg,
-            _ => {
-                return Err(anyhow::Error::msg("unsupported format."));
-            }
+        let rectangle = Rectangle {
+            cuboid: p2d::shape::Cuboid::new(size / 2.0),
+            transform: Transform::new_w_isometry(na::Isometry2::new(pos + size / 2.0, 0.0)),
         };
 
-        let data_base64 = base64::encode(&to_be_read);
-
-        let intrinsic_size = extract_dimensions(&to_be_read)?;
-
-        let rectangle = shapes::Rectangle {
-            cuboid: p2d::shape::Cuboid::new(intrinsic_size / 2.0),
-            transform: Transform::new_w_isometry(na::Isometry2::new(
-                pos + intrinsic_size / 2.0,
-                0.0,
-            )),
-        };
-
-        let mut bitmapimage = Self {
-            data_base64,
-            format,
-            intrinsic_size,
-            rectangle,
-            bounds: AABB::new_zero(),
-        };
-        bitmapimage.update_geometry();
-
-        Ok(bitmapimage)
+        Ok(Self { image, rectangle })
     }
 
     pub fn import_from_pdf_bytes(
@@ -249,61 +171,20 @@ impl BitmapImage {
         Ok(images)
     }
 
-    pub fn update_geometry(&mut self) {
-        if let Some(new_bounds) = self.gen_bounds() {
-            self.set_bounds(new_bounds);
-        }
-    }
-
     pub fn export_as_image_bytes(
         &self,
-        zoom: f64,
         format: image::ImageOutputFormat,
-        renderer: Arc<RwLock<Renderer>>,
+        image_scale: f64,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        let export_bounds = self.bounds.translate(-self.bounds().mins.coords);
-        let mut export_svg_data = self
-            .gen_svgs(-self.bounds().mins.coords)
-            .context("gen_svgs() failed in BitmapImage export_as_bytes()")?
-            .iter()
-            .map(|svg| svg.svg_data.clone())
-            .collect::<Vec<String>>()
-            .join("\n");
-        export_svg_data = compose::wrap_svg_root(
-            export_svg_data.as_str(),
-            Some(export_bounds),
-            Some(export_bounds),
-            false,
-        );
-        let export_svg = render::Svg {
-            bounds: export_bounds,
-            svg_data: export_svg_data,
-        };
+        let bounds = self.bounds();
 
-        let image_raw = render::concat_images(
-            renderer
-                .read()
-                .unwrap()
-                .gen_images(zoom, vec![export_svg], export_bounds)?,
-            export_bounds,
-            zoom,
-        )?;
-
-        Ok(render::image_into_encoded_bytes(image_raw, format)?)
+        match render::Image::join_images(
+            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
+            bounds,
+            image_scale,
+        )? {
+            Some(image) => Ok(image.into_encoded_bytes(format)?),
+            None => Ok(vec![]),
+        }
     }
-}
-
-pub fn extract_dimensions<P>(to_be_read: P) -> Result<na::Vector2<f64>, anyhow::Error>
-where
-    P: AsRef<[u8]>,
-{
-    let reader = Reader::new(io::Cursor::new(&to_be_read)).with_guessed_format()?;
-
-    let bitmap_data = reader.decode()?;
-    let dimensions = bitmap_data.dimensions();
-
-    Ok(na::vector![
-        f64::from(dimensions.0),
-        f64::from(dimensions.1)
-    ])
 }

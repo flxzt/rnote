@@ -6,7 +6,6 @@ mod imp {
     };
     use gtk4::{Adjustment, DropDown};
     use once_cell::sync::Lazy;
-
     use rnote_engine::sheet::format;
 
     #[derive(Debug, CompositeTemplate)]

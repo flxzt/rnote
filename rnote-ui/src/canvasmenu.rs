@@ -65,7 +65,8 @@ mod imp {
 use crate::appwindow::RnoteAppWindow;
 
 use gtk4::{gio, MenuButton, PopoverMenu, Widget};
-use gtk4::{glib, subclass::prelude::*, Button};
+use gtk4::{glib, prelude::*, subclass::prelude::*, Button};
+use rnote_engine::Camera;
 
 glib::wrapper! {
     pub struct CanvasMenu(ObjectSubclass<imp::CanvasMenu>)
@@ -114,5 +115,8 @@ impl CanvasMenu {
             .get()
     }
 
-    pub fn init(&self, _appwindow: &RnoteAppWindow) {}
+    pub fn init(&self, _appwindow: &RnoteAppWindow) {
+        self.zoomreset_button()
+            .set_label(format!("{:.0}%", (100.0 * Camera::ZOOM_DEFAULT).round()).as_str());
+    }
 }

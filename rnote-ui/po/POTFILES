@@ -22,3 +22,4 @@ rnote-ui/data/ui/penssidebar/toolspage.ui
 
 rnote-ui/src/dialogs.rs
 rnote-ui/src/canvas/mod.rs
+rnote-ui/src/workspacebrowser/filerow.rs

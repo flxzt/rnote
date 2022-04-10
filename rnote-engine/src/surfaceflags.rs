@@ -1,6 +1,6 @@
-use crate::pens::PenStyle;
+use crate::pens::penholder::PenStyle;
 
-/// Flags returned to the appwindow
+/// Flags returned to the surface drawing the engine
 #[derive(Debug, Clone, Copy)]
 pub struct SurfaceFlags {
     pub quit: bool,
@@ -11,6 +11,8 @@ pub struct SurfaceFlags {
     pub pen_changed: bool,
     pub sheet_changed: bool,
     pub selection_changed: bool,
+    /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
+    pub hide_scrollbars: Option<bool>,
 }
 
 impl Default for SurfaceFlags {
@@ -24,17 +26,19 @@ impl Default for SurfaceFlags {
             pen_changed: false,
             sheet_changed: false,
             selection_changed: false,
+            hide_scrollbars: None,
         }
     }
 }
 
 impl SurfaceFlags {
-    /// Merging with another SurfaceFlags struct, prioritizing self for conflicting values.
-    pub fn merge_with_other(&mut self, other: Self) {
+    /// Merging with another SurfaceFlags struct, prioritizing other for conflicting values.
+    pub fn merged_with_other(mut self, other: Self) -> Self {
         self.quit |= other.quit;
-        self.redraw |= other.resize;
+        self.redraw |= other.redraw;
+        self.resize |= other.resize;
         self.resize_to_fit_strokes |= other.resize_to_fit_strokes;
-        self.change_to_pen = if self.change_to_pen.is_none() {
+        self.change_to_pen = if other.change_to_pen.is_some() {
             other.change_to_pen
         } else {
             self.change_to_pen
@@ -43,5 +47,12 @@ impl SurfaceFlags {
         self.pen_changed |= other.pen_changed;
         self.sheet_changed |= other.sheet_changed;
         self.selection_changed |= other.selection_changed;
+        self.hide_scrollbars = if other.hide_scrollbars.is_some() {
+            other.hide_scrollbars
+        } else {
+            self.hide_scrollbars
+        };
+
+        self
     }
 }

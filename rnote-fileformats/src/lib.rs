@@ -14,18 +14,14 @@
 //! | Rnote | .rnote | - | native | see <https://github.com/flxzt/rnote> |
 //! | Xournal++ | .xopp | native | x | see <https://github.com/xournalpp/xournalpp> |
 
+use roxmltree::Node;
+
 /// The Rnote `.rnote` file format
 pub mod rnoteformat;
 /// The Xournal++ `.xopp` file format
 pub mod xoppformat;
 
 extern crate nalgebra as na;
-
-use std::io::{Read, Write};
-
-use flate2::read::MultiGzDecoder;
-use flate2::{Compression, GzBuilder};
-use roxmltree::Node;
 
 /// The file format loader trait, implemented by <Format>File types
 pub trait FileFormatLoader {
@@ -65,27 +61,4 @@ pub trait FromXmlAttributeValue {
     fn from_xml_attr_value(s: &str) -> Result<Self, anyhow::Error>
     where
         Self: Sized;
-}
-
-/// Compress bytes with gzip
-pub fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
-    let compressed_bytes = Vec::<u8>::new();
-
-    let mut encoder = GzBuilder::new()
-        .filename(file_name)
-        .comment("test")
-        .write(compressed_bytes, Compression::default());
-
-    encoder.write_all(to_compress)?;
-
-    Ok(encoder.finish()?)
-}
-
-/// Decompress from gzip
-pub fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut decoder = MultiGzDecoder::new(compressed);
-    let mut bytes: Vec<u8> = Vec::new();
-    decoder.read_to_end(&mut bytes)?;
-
-    Ok(bytes)
 }

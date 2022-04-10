@@ -3,26 +3,25 @@ pub mod render_comp;
 pub mod selection_comp;
 pub mod trash_comp;
 
-use std::sync::{Arc, RwLock};
+// Re-exports
+pub use chrono_comp::ChronoComponent;
+pub use render_comp::RenderComponent;
+use rnote_compose::penpath::{Element, Segment};
+pub use selection_comp::SelectionComponent;
+pub use trash_comp::TrashComponent;
 
-use chrono_comp::ChronoComponent;
-use p2d::query::PointQuery;
-use render_comp::RenderComponent;
-use selection_comp::SelectionComponent;
-use trash_comp::TrashComponent;
-
-use crate::compose::geometry::{self, AABBHelpers};
-use crate::compose::transformable::Transformable;
-use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::shaper::Shaper;
+use crate::pens::penholder::PenStyle;
 use crate::pens::tools::DragProximityTool;
-use crate::pens::PenStyle;
-use crate::render::{self, Renderer};
-use crate::strokes::bitmapimage::BitmapImage;
-use crate::strokes::element::Element;
-use crate::strokes::strokestyle::StrokeStyle;
-use crate::strokes::vectorimage::VectorImage;
+use crate::pens::Shaper;
+use crate::render;
+use crate::strokes::BitmapImage;
+use crate::strokes::Stroke;
+use crate::strokes::StrokeBehaviour;
+use crate::strokes::VectorImage;
 use crate::surfaceflags::SurfaceFlags;
+use rnote_compose::helpers::{self, AABBHelpers};
+use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::transform::TransformBehaviour;
 
 use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
 use rayon::iter::{ParallelBridge, ParallelIterator};
@@ -46,17 +45,19 @@ There also is a different category of methods which return filtered keys, e.g. `
 
 #[derive(Debug, Clone)]
 pub enum StateTask {
+    /// Replace the images of the render_comp
     UpdateStrokeWithImages {
         key: StrokeKey,
         images: Vec<render::Image>,
     },
+    /// Append images to the render_comp. (e.g. when new segments of brush strokes are inserted)
     AppendImagesToStroke {
         key: StrokeKey,
         images: Vec<render::Image>,
     },
-    InsertStroke {
-        stroke: StrokeStyle,
-    },
+    /// Inserts a new stroke to the store
+    InsertStroke { stroke: Stroke },
+    /// indicates that the application is in the process of quitting
     Quit,
 }
 
@@ -78,15 +79,15 @@ slotmap::new_key_type! {
 pub struct StrokesState {
     // Components
     #[serde(rename = "strokes")]
-    strokes: HopSlotMap<StrokeKey, StrokeStyle>,
+    pub(crate) strokes: HopSlotMap<StrokeKey, Stroke>,
     #[serde(rename = "trash_components")]
-    trash_components: SecondaryMap<StrokeKey, TrashComponent>,
+    pub(crate) trash_components: SecondaryMap<StrokeKey, TrashComponent>,
     #[serde(rename = "selection_components")]
-    selection_components: SecondaryMap<StrokeKey, SelectionComponent>,
+    pub(crate) selection_components: SecondaryMap<StrokeKey, SelectionComponent>,
     #[serde(rename = "chrono_components")]
-    chrono_components: SecondaryMap<StrokeKey, ChronoComponent>,
+    pub(crate) chrono_components: SecondaryMap<StrokeKey, ChronoComponent>,
     #[serde(rename = "render_components")]
-    render_components: SecondaryMap<StrokeKey, RenderComponent>,
+    pub(crate) render_components: SecondaryMap<StrokeKey, RenderComponent>,
 
     // Other state
     /// value is equal chrono_component of the newest inserted or modified stroke.
@@ -141,76 +142,84 @@ impl StrokesState {
 
     /// processes the received task from tasks_rx.
     /// Returns surface flags for what to update in the frontend UI.
+    /// An example how to use it:
+    /// ```rust, ignore
+    /// let main_cx = glib::MainContext::default();
+
+    /// main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
+    ///            let mut task_rx = canvas.engine().borrow_mut().strokes_state.tasks_rx.take().unwrap();
+
+    ///           loop {
+    ///              if let Some(task) = task_rx.next().await {
+    ///                    let surface_flags = canvas.engine().borrow_mut().strokes_state.process_received_task(task, canvas.zoom());
+    ///                    appwindow.handle_surface_flags(surface_flags);
+    ///                }
+    ///            }
+    ///        }));
+    /// ```
     pub fn process_received_task(
         &mut self,
         task: StateTask,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
+        viewport: AABB,
+        image_scale: f64,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
         match task {
             StateTask::UpdateStrokeWithImages { key, images } => {
-                self.regenerate_rendering_with_images(key, images, zoom);
+                self.replace_rendering_with_images(key, images);
 
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
             }
             StateTask::AppendImagesToStroke { key, images } => {
-                self.append_images_to_rendering(key, images, zoom);
+                self.append_images_to_rendering(key, images);
 
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
             }
-            StateTask::InsertStroke { stroke } => match stroke {
-                StrokeStyle::BrushStroke(brushstroke) => {
-                    let inserted = self.insert_stroke(StrokeStyle::BrushStroke(brushstroke));
+            StateTask::InsertStroke { stroke } => {
+                match stroke {
+                    Stroke::BrushStroke(brushstroke) => {
+                        let _inserted = self.insert_stroke(Stroke::BrushStroke(brushstroke));
 
-                    self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.sheet_changed = true;
+                    }
+                    Stroke::ShapeStroke(shapestroke) => {
+                        let _inserted = self.insert_stroke(Stroke::ShapeStroke(shapestroke));
 
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.sheet_changed = true;
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.sheet_changed = true;
+                    }
+                    Stroke::VectorImage(vectorimage) => {
+                        let inserted = self.insert_stroke(Stroke::VectorImage(vectorimage));
+                        self.set_selected(inserted, true);
+
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.resize_to_fit_strokes = true;
+                        surface_flags.change_to_pen = Some(PenStyle::Selector);
+                        surface_flags.sheet_changed = true;
+                        surface_flags.selection_changed = true;
+                    }
+                    Stroke::BitmapImage(bitmapimage) => {
+                        let inserted = self.insert_stroke(Stroke::BitmapImage(bitmapimage));
+                        self.set_selected(inserted, true);
+
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.resize_to_fit_strokes = true;
+                        surface_flags.change_to_pen = Some(PenStyle::Selector);
+                        surface_flags.sheet_changed = true;
+                        surface_flags.selection_changed = true;
+                    }
                 }
-                StrokeStyle::ShapeStroke(shapestroke) => {
-                    let inserted = self.insert_stroke(StrokeStyle::ShapeStroke(shapestroke));
 
-                    self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
-
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.sheet_changed = true;
-                }
-                StrokeStyle::VectorImage(vectorimage) => {
-                    let inserted = self.insert_stroke(StrokeStyle::VectorImage(vectorimage));
-                    self.set_selected(inserted, true);
-
-                    self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
-
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.resize_to_fit_strokes = true;
-                    surface_flags.change_to_pen = Some(PenStyle::SelectorStyle);
-                    surface_flags.pen_changed = true;
-                    surface_flags.sheet_changed = true;
-                    surface_flags.selection_changed = true;
-                }
-                StrokeStyle::BitmapImage(bitmapimage) => {
-                    let inserted = self.insert_stroke(StrokeStyle::BitmapImage(bitmapimage));
-
-                    self.set_selected(inserted, true);
-
-                    self.regenerate_rendering_for_stroke_threaded(inserted, renderer, zoom);
-
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.resize_to_fit_strokes = true;
-                    surface_flags.change_to_pen = Some(PenStyle::SelectorStyle);
-                    surface_flags.pen_changed = true;
-                    surface_flags.sheet_changed = true;
-                    surface_flags.selection_changed = true;
-                }
-            },
+                self.regenerate_rendering_in_viewport_threaded(false, Some(viewport), image_scale);
+            }
             StateTask::Quit => {
                 surface_flags.quit = true;
             }
@@ -219,12 +228,12 @@ impl StrokesState {
         surface_flags
     }
 
-    pub fn insert_stroke(&mut self, stroke: StrokeStyle) -> StrokeKey {
+    /// Needs rendering regeneration after calling
+    pub fn insert_stroke(&mut self, stroke: Stroke) -> StrokeKey {
         let key = self.strokes.insert(stroke);
         self.chrono_counter += 1;
 
         let mut render_comp = RenderComponent::default();
-        // set flag for rendering regeneration
         render_comp.regenerate_flag = true;
 
         self.trash_components.insert(key, TrashComponent::default());
@@ -237,7 +246,7 @@ impl StrokesState {
         key
     }
 
-    pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<StrokeStyle> {
+    pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<Stroke> {
         self.trash_components.remove(key);
         self.selection_components.remove(key);
         self.chrono_components.remove(key);
@@ -246,33 +255,26 @@ impl StrokesState {
         self.strokes.remove(key)
     }
 
-    pub fn add_to_brushstroke(
-        &mut self,
-        key: StrokeKey,
-        element: Element,
-        renderer: Arc<RwLock<Renderer>>,
-        zoom: f64,
-    ) {
-        if let Some(StrokeStyle::BrushStroke(ref mut brushstroke)) = self.strokes.get_mut(key) {
-            brushstroke.push_elem(element);
-        }
+    /// Needs rendering regeneration after calling
+    pub fn add_segment_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
+        if let Some(Stroke::BrushStroke(ref mut brushstroke)) = self.strokes.get_mut(key) {
+            brushstroke.push_segment(segment);
 
-        self.append_rendering_new_elem_threaded(key, renderer, zoom);
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                render_comp.regenerate_flag = true;
+            }
+        }
     }
 
-    pub fn add_to_shapestroke(
-        &mut self,
-        key: StrokeKey,
-        shaper: &mut Shaper,
-        element: Element,
-        renderer: Arc<RwLock<Renderer>>,
-        zoom: f64,
-    ) {
-        if let Some(StrokeStyle::ShapeStroke(ref mut shapestroke)) = self.strokes.get_mut(key) {
+    /// Needs rendering regeneration after calling
+    pub fn update_shapestroke(&mut self, key: StrokeKey, shaper: &mut Shaper, element: Element) {
+        if let Some(Stroke::ShapeStroke(ref mut shapestroke)) = self.strokes.get_mut(key) {
             shapestroke.update_shape(shaper, element);
-        }
 
-        self.append_rendering_new_elem_threaded(key, renderer, zoom);
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                render_comp.regenerate_flag = true;
+            }
+        }
     }
 
     /// Clears every stroke and every component
@@ -286,7 +288,7 @@ impl StrokesState {
         self.render_components.clear();
     }
 
-    /// Returns the stroke keys in the order that they should be rendered. Does not return the selection keys!
+    /// Returns the stroke keys in the order that they should be rendered. Does not include the selection keys!
     pub fn keys_as_rendered(&self) -> Vec<StrokeKey> {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
@@ -319,26 +321,24 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn clone_strokes_for_keys(&self, keys: &[StrokeKey]) -> Vec<StrokeStyle> {
+    pub fn clone_strokes_for_keys(&self, keys: &[StrokeKey]) -> Vec<Stroke> {
         keys.iter()
             .filter_map(|&key| Some(self.strokes.get(key)?.clone()))
-            .collect::<Vec<StrokeStyle>>()
+            .collect::<Vec<Stroke>>()
     }
 
-    pub fn insert_vectorimage_bytes_threaded(
-        &mut self,
-        pos: na::Vector2<f64>,
-        bytes: Vec<u8>,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
+    pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
         let tasks_tx = self.tasks_tx.clone();
+
+        let all_strokes = self.keys_sorted_chrono();
+        self.set_selected_keys(&all_strokes, false);
 
         self.threadpool.spawn(move || {
                 match String::from_utf8(bytes) {
                     Ok(svg) => {
-                        match VectorImage::import_from_svg_data(svg.as_str(), pos, None, renderer) {
+                        match VectorImage::import_from_svg_data(svg.as_str(), pos, None) {
                             Ok(vectorimage) => {
-                                let vectorimage = StrokeStyle::VectorImage(vectorimage);
+                                let vectorimage = Stroke::VectorImage(vectorimage);
 
                                 tasks_tx.unbounded_send(StateTask::InsertStroke {
                                     stroke: vectorimage
@@ -361,10 +361,13 @@ impl StrokesState {
     pub fn insert_bitmapimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
         let tasks_tx = self.tasks_tx.clone();
 
+        let all_strokes = self.keys_sorted_chrono();
+        self.set_selected_keys(&all_strokes, false);
+
         self.threadpool.spawn(move || {
                 match BitmapImage::import_from_image_bytes(&bytes, pos) {
                     Ok(bitmapimage) => {
-                        let bitmapimage = StrokeStyle::BitmapImage(bitmapimage);
+                        let bitmapimage = Stroke::BitmapImage(bitmapimage);
 
                         tasks_tx.unbounded_send(StateTask::InsertStroke {
                             stroke: bitmapimage
@@ -384,18 +387,18 @@ impl StrokesState {
         pos: na::Vector2<f64>,
         page_width: Option<i32>,
         bytes: Vec<u8>,
-        renderer: Arc<RwLock<Renderer>>,
     ) {
         let tasks_tx = self.tasks_tx.clone();
 
+        let all_strokes = self.keys_sorted_chrono();
+        self.set_selected_keys(&all_strokes, false);
+
         self.threadpool.spawn(move || {
-                match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width, renderer) {
+                match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width) {
                     Ok(images) => {
                         for image in images {
-                            let image = StrokeStyle::VectorImage(image);
-
                             tasks_tx.unbounded_send(StateTask::InsertStroke {
-                                stroke: image
+                                stroke: Stroke::VectorImage(image)
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() failed in insert_pdf_bytes_as_vector_threaded() with Err, {}", e);
                             });
@@ -416,11 +419,14 @@ impl StrokesState {
     ) {
         let tasks_tx = self.tasks_tx.clone();
 
+        let all_strokes = self.keys_sorted_chrono();
+        self.set_selected_keys(&all_strokes, false);
+
         self.threadpool.spawn(move || {
                 match BitmapImage::import_from_pdf_bytes(&bytes, pos, page_width) {
                     Ok(images) => {
                         for image in images {
-                            let image = StrokeStyle::BitmapImage(image);
+                            let image = Stroke::BitmapImage(image);
 
                             tasks_tx.unbounded_send(StateTask::InsertStroke {
                                 stroke: image
@@ -436,6 +442,7 @@ impl StrokesState {
             });
     }
 
+    /// Needs rendering regeneration after calling
     pub fn import_state(&mut self, strokes_state: &Self) {
         self.clear();
         self.chrono_counter = strokes_state.chrono_counter;
@@ -447,26 +454,20 @@ impl StrokesState {
         self.render_components = strokes_state.render_components.clone();
     }
 
+    /// Needs rendering regeneration after calling
     pub fn update_geometry_for_stroke(&mut self, key: StrokeKey) {
         if let Some(stroke) = self.strokes.get_mut(key) {
             match stroke {
-                StrokeStyle::BrushStroke(ref mut brushstroke) => {
+                Stroke::BrushStroke(ref mut brushstroke) => {
                     brushstroke.update_geometry();
-                }
-                StrokeStyle::ShapeStroke(shapestroke) => {
-                    shapestroke.update_geometry();
-                }
-                StrokeStyle::VectorImage(ref mut vectorimage) => {
-                    vectorimage.update_geometry();
-                }
-                StrokeStyle::BitmapImage(ref mut bitmapimage) => {
-                    bitmapimage.update_geometry();
-                }
-            }
 
-            // set flag for rendering regeneration
-            if let Some(render_comp) = self.render_components.get_mut(key) {
-                render_comp.regenerate_flag = true;
+                    if let Some(render_comp) = self.render_components.get_mut(key) {
+                        render_comp.regenerate_flag = true;
+                    }
+                }
+                Stroke::ShapeStroke(_) => {}
+                Stroke::VectorImage(_) => {}
+                Stroke::BitmapImage(_) => {}
             }
         } else {
             log::debug!(
@@ -576,7 +577,7 @@ impl StrokesState {
                     return None;
                 }
 
-                match stroke.gen_svgs(na::vector![0.0, 0.0]) {
+                match stroke.gen_svg() {
                     Ok(svgs) => Some(svgs),
                     Err(e) => {
                         log::error!(
@@ -587,7 +588,6 @@ impl StrokesState {
                     }
                 }
             })
-            .flatten()
             .collect::<Vec<render::Svg>>()
     }
 
@@ -599,7 +599,7 @@ impl StrokesState {
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 
-                match stroke.gen_svgs(na::vector![0.0, 0.0]) {
+                match stroke.gen_svg() {
                     Ok(svgs) => Some(svgs),
                     Err(e) => {
                         log::error!(
@@ -610,17 +610,11 @@ impl StrokesState {
                     }
                 }
             })
-            .flatten()
             .collect::<Vec<render::Svg>>()
     }
 
     /// Translate the strokes with the offset
-    pub fn translate_strokes(
-        &mut self,
-        strokes: &[StrokeKey],
-        offset: na::Vector2<f64>,
-        zoom: f64,
-    ) {
+    pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 stroke.translate(offset);
@@ -630,11 +624,10 @@ impl StrokesState {
                         image.bounds = image.bounds.translate(offset);
                     }
 
-                    match render::images_to_rendernode(&render_comp.images, zoom) {
-                        Ok(Some(rendernode)) => {
-                            render_comp.rendernode = Some(rendernode);
+                    match render::Image::images_to_rendernodes(&render_comp.images) {
+                        Ok(rendernodes) => {
+                            render_comp.rendernodes = rendernodes;
                         }
-                        Ok(None) => {}
                         Err(e) => log::error!(
                             "images_to_rendernode() failed in translate_strokes() with Err {}",
                             e
@@ -646,50 +639,47 @@ impl StrokesState {
     }
 
     /// Rotates the stroke with angle (rad) around the center
-    pub fn rotate_strokes(
-        &mut self,
-        strokes: &[StrokeKey],
-        angle: f64,
-        center: na::Point2<f64>,
-        renderer: Arc<RwLock<Renderer>>,
-        zoom: f64,
-    ) {
+    /// Rendering needs to be regenerated
+    pub fn rotate_strokes(&mut self, strokes: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 stroke.rotate(angle, center);
 
-                self.regenerate_rendering_for_stroke(key, Arc::clone(&renderer), zoom);
+                if let Some(render_comp) = self.render_components.get_mut(key) {
+                    render_comp.regenerate_flag = true;
+                }
             }
         });
     }
 
-    // Resizes the strokes to new bounds
-    pub fn resize_strokes(
-        &mut self,
-        strokes: &[StrokeKey],
-        old_bounds: AABB,
-        new_bounds: AABB,
-        renderer: Arc<RwLock<Renderer>>,
-        zoom: f64,
-    ) {
+    /// Resizes the strokes to new bounds
+    /// Needs rendering regeneration after calling
+    pub fn resize_strokes(&mut self, strokes: &[StrokeKey], old_bounds: AABB, new_bounds: AABB) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 let old_stroke_bounds = stroke.bounds();
-                let new_stroke_bounds = geometry::scale_inner_bounds_to_new_outer_bounds(
+                let new_stroke_bounds = helpers::scale_inner_bounds_to_new_outer_bounds(
                     stroke.bounds(),
                     old_bounds,
                     new_bounds,
                 );
 
-                let offset = new_stroke_bounds.center() - old_stroke_bounds.center();
+                let rel_offset = new_stroke_bounds.center() - old_stroke_bounds.center();
                 let scale = new_stroke_bounds
                     .extents()
                     .component_div(&old_stroke_bounds.extents());
 
-                stroke.translate(offset);
+                stroke.translate(-old_stroke_bounds.center().coords);
+
+                // Translate in relation to the selection
+                stroke.translate(rel_offset);
                 stroke.scale(scale);
 
-                self.regenerate_rendering_for_stroke(key, Arc::clone(&renderer), zoom);
+                stroke.translate(old_stroke_bounds.center().coords);
+
+                if let Some(render_comp) = self.render_components.get_mut(key) {
+                    render_comp.regenerate_flag = true;
+                }
             }
         });
     }
@@ -708,62 +698,71 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn drag_strokes_proximity(
-        &mut self,
-        drag_proximity_tool: &DragProximityTool,
-        renderer: Arc<RwLock<Renderer>>,
-        zoom: f64,
-    ) {
+    /// Needs rendering regeneration for current viewport after calling
+    pub fn drag_strokes_proximity(&mut self, drag_proximity_tool: &DragProximityTool) {
         let sphere = BoundingSphere {
             center: na::Point2::from(drag_proximity_tool.pos),
             radius: drag_proximity_tool.radius,
         };
-        let tool_bounds = AABB::new_positive(
-            na::point![
-                drag_proximity_tool.pos[0] - drag_proximity_tool.radius,
-                drag_proximity_tool.pos[1] - drag_proximity_tool.radius
-            ],
-            na::point![
-                drag_proximity_tool.pos[0] + drag_proximity_tool.radius,
-                drag_proximity_tool.pos[1] + drag_proximity_tool.radius
-            ],
-        );
+
+        #[allow(dead_code)]
+        fn calc_distance_ratio(
+            pos: na::Vector2<f64>,
+            tool_pos: na::Vector2<f64>,
+            radius: f64,
+        ) -> f64 {
+            // Zero when right at drag_proximity_tool position, One when right at the radius
+            (1.0 - (pos - tool_pos).magnitude() / radius).clamp(0.0, 1.0)
+        }
 
         self.strokes
             .iter_mut()
             .par_bridge()
-            .filter_map(|(key, stroke)| match stroke {
-                StrokeStyle::BrushStroke(brushstroke) => {
-                    if brushstroke.bounds().intersects(&tool_bounds) {
-                        brushstroke.elements.iter_mut().for_each(|element| {
-                            if sphere
-                                .contains_local_point(&na::Point2::from(element.inputdata.pos()))
-                            {
-                                // Zero when right at drag_proximity_tool position, One when right at the radius
-                                let distance_ratio = (1.0
-                                    - (element.inputdata.pos() - drag_proximity_tool.pos)
-                                        .magnitude()
-                                        / drag_proximity_tool.radius)
-                                    .clamp(0.0, 1.0);
+            .filter_map(|(key, stroke)| -> Option<StrokeKey> {
+                match stroke {
+                    Stroke::BrushStroke(brushstroke) => {
+                        if sphere.intersects(&brushstroke.path.bounds().bounding_sphere()) {
+                            for segment in brushstroke.path.iter_mut() {
+                                let segment_sphere = segment.bounds().bounding_sphere();
 
-                                element.inputdata.set_pos(
-                                    element.inputdata.pos()
-                                        + drag_proximity_tool.offset * distance_ratio,
-                                );
+                                if sphere.intersects(&segment_sphere) {
+                                    /*                                     match segment {
+                                        Segment::QuadBez { start, cp, end } => {
+                                            start.pos += drag_proximity_tool.offset
+                                                * calc_distance_ratio(
+                                                    start.pos,
+                                                    drag_proximity_tool.pos,
+                                                    drag_proximity_tool.radius,
+                                                );
+                                            *cp += drag_proximity_tool.offset
+                                                * calc_distance_ratio(
+                                                    *cp,
+                                                    drag_proximity_tool.pos,
+                                                    drag_proximity_tool.radius,
+                                                );
+                                            end.pos += drag_proximity_tool.offset
+                                                * calc_distance_ratio(
+                                                    end.pos,
+                                                    drag_proximity_tool.pos,
+                                                    drag_proximity_tool.radius,
+                                                );
+                                            return Some(key);
+                                        }
+                                    } */
+                                    return Some(key);
+                                }
                             }
-                        });
-                        Some(key)
-                    } else {
-                        None
+                        }
                     }
+                    _ => {}
                 }
-                _ => None,
+
+                None
             })
             .collect::<Vec<StrokeKey>>()
             .iter()
             .for_each(|&key| {
                 self.update_geometry_for_stroke(key);
-                self.regenerate_rendering_for_stroke(key, Arc::clone(&renderer), zoom);
             });
     }
 }

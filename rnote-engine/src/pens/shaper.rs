@@ -1,48 +1,23 @@
-use crate::render::Renderer;
-use crate::strokes::inputdata::InputData;
-use crate::utils;
+use super::AudioPlayer;
+use super::penbehaviour::PenBehaviour;
+use crate::sheet::Sheet;
+use crate::strokes::ShapeStroke;
+use crate::strokes::Stroke;
+use crate::strokesstate::StrokeKey;
+use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
+
 use gtk4::glib;
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use rnote_compose::shapes::ShapeType;
+use rnote_compose::style::rough::RoughOptions;
+use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::PenEvent;
 use serde::{Deserialize, Serialize};
-use std::collections::VecDeque;
-
-use std::sync::{Arc, RwLock};
-
-use crate::compose::rough::roughoptions::RoughOptions;
-use crate::compose::smooth::SmoothOptions;
-use crate::sheet::Sheet;
-use crate::strokes::element::Element;
-use crate::strokes::shapestroke::ShapeStroke;
-use crate::strokes::strokestyle::StrokeStyle;
-use crate::strokesstate::StrokeKey;
-
-use super::penbehaviour::PenBehaviour;
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
-#[serde(rename = "shaperstyle")]
 #[enum_type(name = "ShaperStyle")]
+#[serde(rename = "shaper_style")]
 pub enum ShaperStyle {
-    #[serde(rename = "line")]
-    #[enum_value(name = "Line", nick = "line")]
-    Line,
-    #[serde(rename = "rectangle")]
-    #[enum_value(name = "Rectangle", nick = "rectangle")]
-    Rectangle,
-    #[serde(rename = "ellipse")]
-    #[enum_value(name = "Ellipse", nick = "ellipse")]
-    Ellipse,
-}
-
-impl Default for ShaperStyle {
-    fn default() -> Self {
-        Self::Line
-    }
-}
-
-#[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
-#[enum_type(name = "ShaperDrawStyle")]
-#[serde(rename = "shaper_drawstyle")]
-pub enum ShaperDrawStyle {
     #[enum_value(name = "Smooth", nick = "smooth")]
     #[serde(rename = "smooth")]
     Smooth,
@@ -51,31 +26,26 @@ pub enum ShaperDrawStyle {
     Rough,
 }
 
-impl Default for ShaperDrawStyle {
+impl Default for ShaperStyle {
     fn default() -> Self {
         Self::Smooth
     }
 }
 
-impl ShaperDrawStyle {
-    pub const SMOOTH_MARGIN: f64 = 1.0;
-    pub const ROUGH_MARGIN: f64 = 20.0;
-}
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "shaper")]
 pub struct Shaper {
+    #[serde(rename = "shape_type")]
+    pub shape_type: ShapeType,
     #[serde(rename = "style")]
     pub style: ShaperStyle,
-    #[serde(rename = "drawstyle")]
-    pub drawstyle: ShaperDrawStyle,
     #[serde(rename = "smooth_options")]
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
     pub rough_options: RoughOptions,
 
     #[serde(skip)]
-    pub current_stroke: Option<StrokeKey>,
+    current_stroke_key: Option<StrokeKey>,
     #[serde(skip)]
     pub rect_start: na::Vector2<f64>,
     #[serde(skip)]
@@ -85,11 +55,11 @@ pub struct Shaper {
 impl Default for Shaper {
     fn default() -> Self {
         Self {
+            shape_type: ShapeType::default(),
             style: ShaperStyle::default(),
-            drawstyle: ShaperDrawStyle::default(),
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
-            current_stroke: None,
+            current_stroke_key: None,
             rect_start: na::vector![0.0, 0.0],
             rect_current: na::vector![0.0, 0.0],
         }
@@ -97,81 +67,121 @@ impl Default for Shaper {
 }
 
 impl PenBehaviour for Shaper {
-    fn begin(
+    fn handle_event(
         &mut self,
-        mut data_entries: VecDeque<InputData>,
+        event: PenEvent,
         sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
+        strokes_state: &mut StrokesState,
+        camera: &Camera,
+        _audioplayer: Option<&mut AudioPlayer>,
     ) {
-        self.current_stroke = None;
+        match (self.current_stroke_key, event) {
+            (
+                None,
+                PenEvent::Down {
+                    element,
+                    shortcut_key: _,
+                },
+            ) => {
+                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
+                    self.rect_start = element.pos;
+                    self.rect_current = element.pos;
 
-        let filter_bounds = sheet.bounds().loosened(utils::INPUT_OVERSHOOT);
+                    let shapestroke = Stroke::ShapeStroke(ShapeStroke::new(element, self));
+                    let current_stroke_key = strokes_state.insert_stroke(shapestroke);
 
-        utils::filter_mapped_inputdata(filter_bounds, &mut data_entries);
+                    strokes_state.regenerate_rendering_for_stroke_threaded(
+                        current_stroke_key,
+                        camera.image_scale(),
+                    );
 
-        if let Some(inputdata) = data_entries.pop_back() {
-            let element = Element::new(inputdata);
+                    self.current_stroke_key = Some(current_stroke_key);
+                }
+            }
+            (
+                Some(current_stroke_key),
+                PenEvent::Down {
+                    element,
+                    shortcut_key: _,
+                },
+            ) => {
+                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
+                    strokes_state.update_shapestroke(current_stroke_key, self, element);
 
-            let shapestroke = StrokeStyle::ShapeStroke(ShapeStroke::new(element, self));
-            self.rect_start = element.inputdata.pos();
-            self.rect_current = element.inputdata.pos();
+                    strokes_state.regenerate_rendering_for_stroke_threaded(
+                        current_stroke_key,
+                        camera.image_scale(),
+                    );
+                }
+            }
+            (None, PenEvent::Up { .. }) => {}
+            (
+                Some(current_stroke_key),
+                PenEvent::Up {
+                    element,
+                    shortcut_key: _,
+                },
+            ) => {
+                strokes_state.update_shapestroke(current_stroke_key, self, element);
 
-            let current_stroke_key = Some(sheet.strokes_state.insert_stroke(shapestroke));
-            self.current_stroke = current_stroke_key;
-        }
-    }
-
-    fn motion(
-        &mut self,
-        mut data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
-        let current_stroke_key = self.current_stroke;
-        if let Some(current_stroke_key) = current_stroke_key {
-            let filter_bounds = sheet.bounds().loosened(utils::INPUT_OVERSHOOT);
-
-            utils::filter_mapped_inputdata(filter_bounds, &mut data_entries);
-
-            for inputdata in data_entries {
-                sheet.strokes_state.add_to_shapestroke(
+                finish_current_stroke(
                     current_stroke_key,
-                    self,
-                    Element::new(inputdata),
-                    renderer.clone(),
-                    zoom,
+                    sheet,
+                    strokes_state,
+                    camera.image_scale(),
                 );
+                self.current_stroke_key = None;
+            }
+            (None, PenEvent::Proximity { .. }) => {}
+            (Some(current_stroke_key), PenEvent::Proximity { .. }) => {
+                finish_current_stroke(
+                    current_stroke_key,
+                    sheet,
+                    strokes_state,
+                    camera.image_scale(),
+                );
+                self.current_stroke_key = None;
+            }
+            (None, PenEvent::Cancel) => {}
+            (Some(current_stroke_key), PenEvent::Cancel) => {
+                finish_current_stroke(
+                    current_stroke_key,
+                    sheet,
+                    strokes_state,
+                    camera.image_scale(),
+                );
+                self.current_stroke_key = None;
             }
         }
     }
+}
 
-    fn end(
-        &mut self,
-        data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
-        let current_stroke_key = self.current_stroke.take();
-        if let Some(current_stroke_key) = current_stroke_key {
-            sheet
-                .strokes_state
-                .update_geometry_for_stroke(current_stroke_key);
-
-            for inputdata in data_entries {
-                sheet.strokes_state.add_to_shapestroke(
-                    current_stroke_key,
-                    self,
-                    Element::new(inputdata),
-                    renderer.clone(),
-                    zoom,
-                );
-            }
-        }
+impl DrawOnSheetBehaviour for Shaper {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+        None
     }
+
+    fn draw_on_sheet(
+        &self,
+        _cx: &mut impl piet::RenderContext,
+        _sheet_bounds: AABB,
+        _viewport: AABB,
+    ) -> Result<(), anyhow::Error> {
+        Ok(())
+    }
+}
+
+fn finish_current_stroke(
+    current_stroke_key: StrokeKey,
+    _sheet: &mut Sheet,
+    strokes_state: &mut StrokesState,
+    image_scale: f64,
+) {
+    strokes_state.update_geometry_for_stroke(current_stroke_key);
+
+    strokes_state.regenerate_rendering_for_stroke_threaded(current_stroke_key, image_scale);
+}
+
+impl Shaper {
+    pub const INPUT_OVERSHOOT: f64 = 30.0;
 }

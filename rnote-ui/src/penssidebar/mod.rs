@@ -75,6 +75,7 @@ use crate::appwindow::RnoteAppWindow;
 
 use brushpage::BrushPage;
 use eraserpage::EraserPage;
+use rnote_engine::pens::penholder::PenStyle;
 use selectorpage::SelectorPage;
 use shaperpage::ShaperPage;
 
@@ -148,19 +149,19 @@ impl PensSideBar {
                 if let Some(child_name) = sidebar_stack.visible_child_name() {
                     match child_name.to_value().get::<String>().unwrap().as_str() {
                         "brush_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"brush_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
                         },
                         "shaper_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"shaper_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
                         },
                         "eraser_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"eraser_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
                         }
                         "selector_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"selector_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
                         }
                         "tools_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"tools_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
                         }
                         _ => {}
                     };

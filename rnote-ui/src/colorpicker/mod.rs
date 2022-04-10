@@ -14,6 +14,7 @@ mod imp {
     use gtk4::{Align, BoxLayout};
 
     use once_cell::sync::Lazy;
+    use rnote_engine::utils::GdkRGBAHelpers;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/colorpicker.ui")]
@@ -54,7 +55,7 @@ mod imp {
                 position: Cell::new(PositionType::Right),
                 selected: Cell::new(0),
                 amount_colorbuttons: Cell::new(super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT),
-                current_color: Cell::new(super::ColorPicker::COLOR_DEFAULT.to_gdk()),
+                current_color: Cell::new(gdk::RGBA::from_compose_color(super::ColorPicker::COLOR_DEFAULT)),
                 currentcolor_setters: Rc::new(RefCell::new(Vec::with_capacity(
                     super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT as usize,
                 ))),
@@ -128,11 +129,11 @@ mod imp {
 
                 // store color in the buttons
                 if currentcolor_setter1.is_active() {
-                    currentcolor_setter1.set_property("color", &current_color.to_gdk().to_value());
+                    currentcolor_setter1.set_property("color", &gdk::RGBA::from_compose_color(current_color).to_value());
                 } else {
                     for setter_button in &*currentcolor_setters.borrow() {
                         if setter_button.is_active() {
-                            setter_button.set_property("color", &current_color.to_gdk().to_value());
+                            setter_button.set_property("color", &gdk::RGBA::from_compose_color(current_color).to_value());
                         }
                     }
                 }
@@ -367,7 +368,8 @@ mod imp {
 
 use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, PositionType, Widget};
 
-use rnote_engine::compose::color::Color;
+use rnote_compose::Color;
+use rnote_engine::utils::GdkRGBAHelpers;
 
 glib::wrapper! {
     pub struct ColorPicker(ObjectSubclass<imp::ColorPicker>)
@@ -376,7 +378,7 @@ glib::wrapper! {
 
 impl Default for ColorPicker {
     fn default() -> Self {
-        Self::new(Color::BLACK.to_gdk())
+        Self::new(gdk::RGBA::from_compose_color(Color::BLACK))
     }
 }
 
@@ -402,12 +404,12 @@ impl ColorPicker {
     }
 
     pub fn current_color(&self) -> Color {
-        Color::from(self.property::<gdk::RGBA>("current-color"))
+        self.property::<gdk::RGBA>("current-color").into_compose_color()
     }
 
     pub fn set_current_color(&self, color: Option<Color>) {
         let color = color.unwrap_or(Color::TRANSPARENT);
-        self.set_property("current-color", color.to_gdk().to_value());
+        self.set_property("current-color", gdk::RGBA::from_compose_color(color).to_value());
     }
 
     pub fn amount_colorbuttons(&self) -> u32 {
@@ -429,9 +431,9 @@ impl ColorPicker {
     /// Returns a vector of the colors
     pub fn fetch_all_colors(&self) -> Vec<Color> {
         let mut all_colors = Vec::with_capacity(8);
-        all_colors.push(Color::from(self.imp().currentcolor_setter1.get().color()));
+        all_colors.push(self.imp().currentcolor_setter1.get().color().into_compose_color());
         for colorsetter in self.imp().currentcolor_setters.borrow().iter() {
-            all_colors.push(Color::from(colorsetter.color()));
+            all_colors.push(colorsetter.color().into_compose_color());
         }
 
         all_colors
@@ -439,15 +441,15 @@ impl ColorPicker {
 
     pub fn load_colors(&self, all_colors: &[Color]) {
         let mut all_colors_iter = all_colors.iter();
-        if let Some(first_color) = all_colors_iter.next() {
+        if let Some(&first_color) = all_colors_iter.next() {
             self.imp()
                 .currentcolor_setter1
-                .set_color(first_color.to_gdk());
+                .set_color(gdk::RGBA::from_compose_color(first_color));
         }
-        for (color, colorsetter) in
+        for (&color, colorsetter) in
             all_colors_iter.zip(self.imp().currentcolor_setters.borrow().iter())
         {
-            colorsetter.set_color(color.to_gdk());
+            colorsetter.set_color(gdk::RGBA::from_compose_color(color));
         }
     }
 }

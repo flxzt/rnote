@@ -1,14 +1,16 @@
-use super::{StrokeKey, StrokeStyle, StrokesState};
-use crate::compose::geometry::AABBHelpers;
-use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::selector::{self, Selector};
-use crate::{compose, render};
+use super::{Stroke, StrokeKey, StrokesState};
+use crate::pens::selector::SelectorType;
+use crate::pens::Selector;
+use crate::render;
+use crate::strokes::StrokeBehaviour;
+use rnote_compose::helpers::AABBHelpers;
 
 use geo::line_string;
 use geo::prelude::*;
 use gtk4::{gio, glib, prelude::*};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rayon::prelude::*;
+use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -101,7 +103,7 @@ impl StrokesState {
         self.gen_bounds(&self.selection_keys_as_rendered())
     }
 
-    pub fn duplicate_selection(&mut self, zoom: f64) {
+    pub fn duplicate_selection(&mut self) {
         let offset = na::vector![
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_X,
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
@@ -120,32 +122,32 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>();
 
         // Offsetting the new selected stroke to make the duplication apparent to the user
-        self.translate_strokes(&new_selected, offset, zoom);
+        self.translate_strokes(&new_selected, offset);
     }
 
     /// Returns true if selection has changed
     pub fn update_selection_for_selector(&mut self, selector: &Selector, viewport: Option<AABB>) {
         let selector_polygon = match selector.style {
-            selector::SelectorStyle::Polygon => {
+            SelectorType::Polygon => {
                 let selector_path_points = selector
                     .path
                     .par_iter()
-                    .map(|inputdata| geo::Coordinate {
-                        x: inputdata.pos()[0],
-                        y: inputdata.pos()[1],
+                    .map(|element| geo::Coordinate {
+                        x: element.pos[0],
+                        y: element.pos[1],
                     })
                     .collect::<Vec<geo::Coordinate<f64>>>();
 
                 geo::Polygon::new(selector_path_points.into(), vec![])
             }
-            selector::SelectorStyle::Rectangle => {
+            SelectorType::Rectangle => {
                 if let (Some(first), Some(last)) = (selector.path.first(), selector.path.last()) {
                     let selector_path_points = line_string![
-                        (x: first.pos()[0], y: first.pos()[1]),
-                        (x: first.pos()[0], y: last.pos()[1]),
-                        (x: last.pos()[0], y: last.pos()[1]),
-                        (x: last.pos()[0], y: first.pos()[1]),
-                        (x: first.pos()[0], y: first.pos()[1]),
+                        (x: first.pos[0], y: first.pos[1]),
+                        (x: first.pos[0], y: last.pos[1]),
+                        (x: last.pos[0], y: last.pos[1]),
+                        (x: last.pos[0], y: first.pos[1]),
+                        (x: first.pos[0], y: first.pos[1]),
                     ];
 
                     geo::Polygon::new(selector_path_points, vec![])
@@ -178,10 +180,12 @@ impl StrokesState {
                 selection_comp.selected = false;
 
                 match stroke {
-                    StrokeStyle::BrushStroke(brushstroke) => {
-                        if selector_polygon.contains(&brushstroke.bounds.to_geo_polygon()) {
+                    Stroke::BrushStroke(brushstroke) => {
+                        let brushstroke_bounds = brushstroke.bounds();
+
+                        if selector_polygon.contains(&brushstroke_bounds.to_geo_polygon()) {
                             selection_comp.selected = true;
-                        } else if selector_polygon.intersects(&brushstroke.bounds.to_geo_polygon())
+                        } else if selector_polygon.intersects(&brushstroke_bounds.to_geo_polygon())
                         {
                             for &hitbox_elem in brushstroke.hitboxes.iter() {
                                 if !selector_polygon.contains(&hitbox_elem.to_geo_polygon()) {
@@ -196,8 +200,8 @@ impl StrokesState {
                             }
                         }
                     }
-                    StrokeStyle::ShapeStroke(shapestroke) => {
-                        if selector_polygon.contains(&shapestroke.bounds.to_geo_polygon()) {
+                    Stroke::ShapeStroke(shapestroke) => {
+                        if selector_polygon.contains(&shapestroke.bounds().to_geo_polygon()) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
@@ -206,8 +210,8 @@ impl StrokesState {
                             }
                         }
                     }
-                    StrokeStyle::VectorImage(vectorimage) => {
-                        if selector_polygon.contains(&vectorimage.bounds.to_geo_polygon()) {
+                    Stroke::VectorImage(vectorimage) => {
+                        if selector_polygon.contains(&vectorimage.bounds().to_geo_polygon()) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
@@ -216,8 +220,8 @@ impl StrokesState {
                             }
                         }
                     }
-                    StrokeStyle::BitmapImage(bitmapimage) => {
-                        if selector_polygon.contains(&bitmapimage.bounds.to_geo_polygon()) {
+                    Stroke::BitmapImage(bitmapimage) => {
+                        if selector_polygon.contains(&bitmapimage.bounds().to_geo_polygon()) {
                             selection_comp.selected = true;
 
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
@@ -239,9 +243,8 @@ impl StrokesState {
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
 
-                stroke.gen_svgs(na::vector![0.0, 0.0]).ok()
+                stroke.gen_svg().ok()
             })
-            .flatten()
             .collect::<Vec<render::Svg>>())
     }
 
@@ -259,7 +262,7 @@ impl StrokesState {
             .collect::<Vec<&str>>()
             .join("\n");
 
-        svg_data = compose::wrap_svg_root(
+        svg_data = rnote_compose::utils::wrap_svg_root(
             svg_data.as_str(),
             Some(selection_bounds),
             Some(selection_bounds),

@@ -67,16 +67,18 @@ meson.add_dist_script(
 # local crates
 cargo_sources= files(
   meson.project_source_root() + '/' + 'Cargo.toml',
+  meson.project_source_root() + '/' + 'rnote-compose' + '/' + 'Cargo.toml',
   meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
-  meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
   meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
+  meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
 )
 
+subdir('rnote-compose')
 subdir('rnote-engine')
-subdir('rnote-ui')
 subdir('rnote-fileformats')
+subdir('rnote-ui')
 
-sources = [rnote_fileformats_sources, rnote_ui_sources, cargo_sources]
+sources = [rnote_compose_sources, rnote_engine_sources, rnote_fileformats_sources, rnote_ui_sources, cargo_sources]
 
 custom_target(
   'cargo-build',

@@ -4,7 +4,7 @@
         "development"
     ],
     "runtime": "org.gnome.Platform",
-    "runtime-version": "41",
+    "runtime-version": "42",
     "sdk": "org.gnome.Sdk",
     "sdk-extensions": [
         "org.freedesktop.Sdk.Extension.rust-stable"
@@ -67,79 +67,6 @@
                     "type": "archive",
                     "url": "https://poppler.freedesktop.org/poppler-data-0.4.11.tar.gz",
                     "sha256": "2cec05cd1bb03af98a8b06a1e22f6e6e1a65b1e2f3816cb3069bb0874825f08c"
-                }
-            ]
-        },
-        {
-            "name": "libsass",
-            "buildsystem": "meson",
-            "cleanup": [
-                "*"
-            ],
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "https://github.com/lazka/libsass.git",
-                    "commit": "302397c0c8ae2d7ab02f45ea461c2c3d768f248e"
-                }
-            ]
-        },
-        {
-            "name": "sassc",
-            "buildsystem": "meson",
-            "cleanup": [
-                "*"
-            ],
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "https://github.com/lazka/sassc.git",
-                    "commit": "82803377c33247265d779af034eceb5949e78354"
-                }
-            ]
-        },
-        {
-            "name": "pango",
-            "buildsystem": "meson",
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://download.gnome.org/sources/pango/1.50/pango-1.50.6.tar.xz",
-                    "sha256": "a998bcf36881c3ac20495d40bceb304f4eaa9175bd2967c85656434cbdafe86a"
-                }
-            ]
-        },
-        {
-            "name": "gtk",
-            "buildsystem": "meson",
-            "config-opts": [
-                "-Ddebug=true",
-                "-Dbuild-examples=false",
-                "-Dbuild-tests=false",
-                "-Dsysprof=enabled"
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://download.gnome.org/sources/gtk/4.6/gtk-4.6.2.tar.xz",
-                    "sha256": "ff263af609a50eb76056653592d929459aef4819a444c436f6d52c6f63c1faec"
-                }
-            ]
-        },
-        {
-            "name": "libadwaita",
-            "buildsystem": "meson",
-            "config-opts": [
-                "-Dgtk_doc=false",
-                "-Dtests=false",
-                "-Dexamples=false",
-                "-Dvapi=false"
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://download.gnome.org/sources/libadwaita/1.1/libadwaita-1.1.0.tar.xz",
-                    "sha256": "aff598803e810cc28266472cf5bf65e5ed5b90bb3523e206b06b14527325010e"
                 }
             ]
         },

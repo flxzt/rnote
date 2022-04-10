@@ -1,15 +1,18 @@
 use super::RnoteAppWindow;
+use crate::config;
 use crate::{
     app::RnoteApp,
-    utils,
-    {canvas::Canvas, dialogs},
+    utils, {dialogs, RnoteCanvas},
 };
+use rnote_compose::shapes::ShapeType;
+use rnote_engine::engine::ExpandMode;
 use rnote_engine::pens::brush::BrushStyle;
-use rnote_engine::pens::selector::SelectorStyle;
-use rnote_engine::pens::shaper::{ShaperDrawStyle, ShaperStyle};
-use rnote_engine::pens::tools::ToolStyle;
-use rnote_engine::pens::{brush, selector, shaper, tools, PenEvent, PenStyle};
-use rnote_engine::render::{self, RendererBackend};
+use rnote_engine::pens::penholder::{PenHolderEvent, PenStyle};
+use rnote_engine::pens::selector::SelectorType;
+use rnote_engine::pens::shaper::ShaperStyle;
+use rnote_engine::pens::tools::ToolsStyle;
+use rnote_engine::pens::{brush, selector, shaper, tools};
+use rnote_engine::{render, Camera};
 
 use gettextrs::gettext;
 use gtk4::PrintStatus;
@@ -17,10 +20,11 @@ use gtk4::{
     gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
     PrintOperation, PrintOperationAction, Unit,
 };
-use rnote_engine::compose;
 
 impl RnoteAppWindow {
-    /// Appwindow actions only have state in the lifetime of the application. Actions that are saved to the settings should be app actions
+    /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
+    /// We generally want to connect to the change_state signal. (but then have to set the state with action.set_state() )
+    /// We can then either toggle the state through activating the action, or set the state explicitely through action.change_state(<request>)
     pub fn setup_actions(&self) {
         let action_close_active = gio::SimpleAction::new("close-active", None);
         self.add_action(&action_close_active);
@@ -47,15 +51,17 @@ impl RnoteAppWindow {
         let action_devel_settings = gio::SimpleAction::new("devel-settings", None);
         self.add_action(&action_devel_settings);
         let action_visual_debug =
-            gio::PropertyAction::new("visual-debug", &self.canvas(), "visual-debug");
+            gio::SimpleAction::new_stateful("visual-debug", None, &false.to_variant());
         self.add_action(&action_visual_debug);
-        let action_renderer_backend = gio::SimpleAction::new_stateful(
-            "renderer-backend",
+        let action_expand_mode = gio::SimpleAction::new_stateful(
+            "expand-mode",
             Some(&glib::VariantType::new("s").unwrap()),
-            &"librsvg".to_variant(),
+            &String::from("infinite").to_variant(),
         );
-        self.add_action(&action_renderer_backend);
-
+        self.add_action(&action_expand_mode);
+        let action_format_borders =
+            gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
+        self.add_action(&action_format_borders);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
         let action_pen_sounds = gio::PropertyAction::new("pen-sounds", self, "pen-sounds");
@@ -63,12 +69,6 @@ impl RnoteAppWindow {
         let action_touch_drawing =
             gio::PropertyAction::new("touch-drawing", &self.canvas(), "touch-drawing");
         self.add_action(&action_touch_drawing);
-        let action_expand_mode =
-            gio::PropertyAction::new("expand-mode", &self.canvas(), "expand-mode");
-        self.add_action(&action_expand_mode);
-        let action_format_borders =
-            gio::PropertyAction::new("format-borders", &self.canvas(), "format-borders");
-        self.add_action(&action_format_borders);
 
         let action_undo_stroke = gio::SimpleAction::new("undo-stroke", None);
         self.add_action(&action_undo_stroke);
@@ -82,6 +82,9 @@ impl RnoteAppWindow {
         self.add_action(&action_zoomin);
         let action_zoomout = gio::SimpleAction::new("zoom-out", None);
         self.add_action(&action_zoomout);
+        let action_zoom_to_value =
+            gio::SimpleAction::new("zoom-to-value", Some(&glib::VariantType::new("d").unwrap()));
+        self.add_action(&action_zoom_to_value);
         let action_return_origin_page = gio::SimpleAction::new("return-origin-page", None);
         self.add_action(&action_return_origin_page);
 
@@ -132,17 +135,17 @@ impl RnoteAppWindow {
         let action_pen_style =
             gio::SimpleAction::new("pen-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_pen_style);
-        let action_shaper_style =
-            gio::SimpleAction::new("shaper-style", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_shaper_style);
         let action_brush_style =
             gio::SimpleAction::new("brush-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_brush_style);
-        let action_shaper_drawstyle = gio::SimpleAction::new(
-            "shaper-drawstyle",
+        let action_shape_type =
+            gio::SimpleAction::new("shape-type", Some(&glib::VariantType::new("s").unwrap()));
+        self.add_action(&action_shape_type);
+        let action_shaper_style = gio::SimpleAction::new(
+            "shaper-style",
             Some(&glib::VariantType::new("s").unwrap()),
         );
-        self.add_action(&action_shaper_drawstyle);
+        self.add_action(&action_shaper_style);
         let action_selector_style = gio::SimpleAction::new(
             "selector-style",
             Some(&glib::VariantType::new("s").unwrap()),
@@ -185,7 +188,7 @@ impl RnoteAppWindow {
         action_text_toast.connect_activate(
             clone!(@weak self as appwindow => move |_action_text_toast, parameter| {
                 let text = parameter.unwrap().get::<String>().unwrap();
-                let text_notify_toast = adw::Toast::builder().title(text.as_str()).priority(adw::ToastPriority::Normal).timeout(5).build();
+                let text_notify_toast = adw::Toast::builder().title(text.as_str()).priority(adw::ToastPriority::High).timeout(5).build();
 
                 appwindow.toast_overlay().add_toast(&text_notify_toast);
             }),
@@ -213,32 +216,69 @@ impl RnoteAppWindow {
                 // If toggled to disable
                 if state {
                     log::debug!("disabling visual debugging");
-                    appwindow.canvas().set_visual_debug(false);
+                    appwindow.lookup_action("visual-debug").unwrap().change_state(&false.to_variant());
                 }
                 action_devel_mode.change_state(&(!state).to_variant());
             }),
         );
 
         // Developer settings
+        // Its enabled state toggles the visibility of the developer setttings menu entry. Is only modified inside action_devel_mode
         action_devel_settings.set_enabled(false);
 
-        // Renderer backend
-        action_renderer_backend.connect_activate(clone!(@weak self as appwindow => move |action_renderer_backend, target| {
-            let target = target.unwrap().get::<String>().unwrap();
-            match target.as_str() {
-                "librsvg" => {
-                    appwindow.canvas().renderer().write().unwrap().backend = RendererBackend::Librsvg;
-                }
-                "resvg" => {
-                    appwindow.canvas().renderer().write().unwrap().backend = RendererBackend::Resvg;
-                }
-                _ => { return; }
-            }
-            appwindow.canvas().regenerate_background(false);
-            appwindow.canvas().regenerate_content(true, true);
+        // Visual debugging
+        action_visual_debug.connect_change_state(
+            clone!(@weak self as appwindow => move |action_visual_debug, state_request| {
+                let requested_state = state_request.unwrap().get::<bool>().unwrap();
 
-            action_renderer_backend.change_state(&target.to_variant());
-        }));
+
+                appwindow.canvas().engine().borrow_mut().visual_debug = requested_state;
+                appwindow.canvas().queue_draw();
+                action_visual_debug.set_state(&requested_state.to_variant());
+            }),
+        );
+
+        // Expand Mode
+        action_expand_mode.connect_activate(
+            clone!(@weak self as appwindow => move |action_expand_mode, target| {
+                let expand_mode = target.unwrap().str().unwrap();
+
+                match expand_mode {
+                    "fixed-size" => {
+                        appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::FixedSize);
+                        appwindow.mainheader().pageedit_revealer().set_reveal_child(true);
+                    },
+                    "endless-vertical" => {
+                        appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::EndlessVertical);
+                        appwindow.mainheader().pageedit_revealer().set_reveal_child(false);
+                    },
+                    "infinite" => {
+                        appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::Infinite);
+                        appwindow.mainheader().pageedit_revealer().set_reveal_child(false);
+                    }
+                    invalid_str => {
+                        log::error!("action expand mode failed, invalid str: {}", invalid_str);
+                        return;
+                    }
+                }
+
+                appwindow.canvas().queue_resize();
+                appwindow.canvas().return_to_origin_page();
+
+                action_expand_mode.set_state(&expand_mode.to_variant());
+            }));
+
+        // Format borders
+        action_format_borders.connect_activate(
+            clone!(@weak self as appwindow => move |action_format_borders, _target| {
+                let state = action_format_borders.state().unwrap().get::<bool>().unwrap();
+
+                appwindow.canvas().engine().borrow_mut().sheet.format.draw_borders = !state;
+                appwindow.canvas().queue_draw();
+
+                action_format_borders.set_state(&(!state).to_variant());
+            }),
+        );
 
         // Righthanded
         action_righthanded.connect_state_notify(
@@ -314,12 +354,12 @@ impl RnoteAppWindow {
                     appwindow
                         .penssidebar()
                         .brush_page()
-                        .styleconfig_menubutton()
+                        .brushconfig_menubutton()
                         .set_direction(ArrowType::Right);
                     appwindow
                         .penssidebar()
                         .shaper_page()
-                        .roughconfig_menubutton()
+                        .shapeconfig_menubutton()
                         .set_direction(ArrowType::Right);
                     appwindow
                         .penssidebar()
@@ -396,12 +436,12 @@ impl RnoteAppWindow {
                     appwindow
                         .penssidebar()
                         .brush_page()
-                        .styleconfig_menubutton()
+                        .brushconfig_menubutton()
                         .set_direction(ArrowType::Left);
                     appwindow
                         .penssidebar()
                         .shaper_page()
-                        .roughconfig_menubutton()
+                        .shapeconfig_menubutton()
                         .set_direction(ArrowType::Left);
                     appwindow
                         .penssidebar()
@@ -419,43 +459,35 @@ impl RnoteAppWindow {
                 let pen_style = target.unwrap().str().unwrap();
 
                 let new_pen_style = match pen_style {
-                    "brush_style" => {
-                        Some(PenStyle::BrushStyle)
+                    "brush" => {
+                        Some(PenStyle::Brush)
                     }
-                    "shaper_style" => {
-                        Some(PenStyle::ShaperStyle)
+                    "shaper" => {
+                        Some(PenStyle::Shaper)
                     }
-                    "eraser_style" => {
-                        Some(PenStyle::EraserStyle)
+                    "eraser" => {
+                        Some(PenStyle::Eraser)
                     }
-                    "selector_style" => {
-                        Some(PenStyle::SelectorStyle)
+                    "selector" => {
+                        Some(PenStyle::Selector)
                     }
-                    "tools_style" => {
-                        Some(PenStyle::ToolsStyle)
+                    "tools" => {
+                        Some(PenStyle::Tools)
                     }
                     _ => {
-                        log::error!("invalid target for action_current_pen, `{}`", pen_style);
+                        log::error!("invalid target for action_pen_style, `{}`", pen_style);
                         None
                     }
                 };
 
                 if let Some(new_pen_style) = new_pen_style {
                     // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
-                    if new_pen_style != appwindow.canvas().pens().borrow().style_w_override() {
-                        let mut surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
-                            PenEvent::ChangeStyle(new_pen_style),
-                            &mut *appwindow.canvas().sheet().borrow_mut(),
-                            Some(appwindow.canvas().viewport_in_sheet_coords()),
-                            appwindow.canvas().zoom(),
-                            appwindow.canvas().renderer()
+                    if new_pen_style != appwindow.canvas().engine().borrow().penholder.style_w_override() {
+                        let mut surface_flags = appwindow.canvas().engine().borrow_mut().handle_event(
+                            PenHolderEvent::ChangeStyle(new_pen_style),
                         );
-                        surface_flags.merge_with_other(appwindow.canvas().pens().borrow_mut().handle_event(
-                            PenEvent::ChangeStyleOverride(None),
-                            &mut *appwindow.canvas().sheet().borrow_mut(),
-                            Some(appwindow.canvas().viewport_in_sheet_coords()),
-                            appwindow.canvas().zoom(),
-                            appwindow.canvas().renderer()
+                        surface_flags = surface_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().handle_event(
+                            PenHolderEvent::ChangeStyleOverride(None),
                         ));
 
                         appwindow.handle_surface_flags(surface_flags);
@@ -471,23 +503,23 @@ impl RnoteAppWindow {
                 log::trace!("pen overwrite activated with target: {}", pen_style_override);
 
                 let change_pen_style_override_event = match pen_style_override {
-                    "brush_style" => {
-                        Some(PenEvent::ChangeStyleOverride(Some(PenStyle::BrushStyle)))
+                    "brush" => {
+                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Brush)))
                     }
-                    "shaper_style" => {
-                        Some(PenEvent::ChangeStyleOverride(Some(PenStyle::ShaperStyle)))
+                    "shaper" => {
+                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Shaper)))
                     }
-                    "eraser_style" => {
-                        Some(PenEvent::ChangeStyleOverride(Some(PenStyle::EraserStyle)))
+                    "eraser" => {
+                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Eraser)))
                     }
-                    "selector_style" => {
-                        Some(PenEvent::ChangeStyleOverride(Some(PenStyle::SelectorStyle)))
+                    "selector" => {
+                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Selector)))
                     }
-                    "tools_style" => {
-                        Some(PenEvent::ChangeStyleOverride(Some(PenStyle::ToolsStyle)))
+                    "tools" => {
+                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Tools)))
                     }
                     "none" => {
-                        Some(PenEvent::ChangeStyleOverride(None))
+                        Some(PenHolderEvent::ChangeStyleOverride(None))
                     }
                     _ => {
                         log::error!("invalid target for action_pen_overwrite, `{}`", pen_style_override);
@@ -496,12 +528,8 @@ impl RnoteAppWindow {
                 };
 
                 if let Some(change_pen_style_override_event) = change_pen_style_override_event {
-                    let surface_flags = appwindow.canvas().pens().borrow_mut().handle_event(
+                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_event(
                         change_pen_style_override_event,
-                        &mut *appwindow.canvas().sheet().borrow_mut(),
-                        Some(appwindow.canvas().viewport_in_sheet_coords()),
-                        appwindow.canvas().zoom(),
-                        appwindow.canvas().renderer()
                     );
                     appwindow.handle_surface_flags(surface_flags);
                 }
@@ -515,19 +543,19 @@ impl RnoteAppWindow {
 
             match brush_style {
                 "marker" => {
-                    appwindow.canvas().pens().borrow_mut().brush.style = brush::BrushStyle::Marker;
-                    appwindow.canvas().pens().borrow_mut().brush.smooth_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
-                    appwindow.canvas().pens().borrow_mut().brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Marker;
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
                 },
                 "solid" => {
-                    appwindow.canvas().pens().borrow_mut().brush.style = brush::BrushStyle::Solid;
-                    appwindow.canvas().pens().borrow_mut().brush.smooth_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
-                    appwindow.canvas().pens().borrow_mut().brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Solid;
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
                 },
                 "textured" => {
-                    appwindow.canvas().pens().borrow_mut().brush.style = brush::BrushStyle::Textured;
-                    appwindow.canvas().pens().borrow_mut().brush.textured_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
-                    appwindow.canvas().pens().borrow_mut().brush.textured_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Textured;
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
                 },
                 _ => { log::error!("set invalid state of action `brush-style`")}
             }
@@ -537,22 +565,22 @@ impl RnoteAppWindow {
         }),
         );
 
-        // Shaper style
-        action_shaper_style.connect_activate(
-        clone!(@weak self as appwindow => move |_action_shaper_style, target| {
-            let shaper_style = target.unwrap().str().unwrap();
+        // Shape type
+        action_shape_type.connect_activate(
+        clone!(@weak self as appwindow => move |_action_shaper_type, target| {
+            let shape_type = target.unwrap().str().unwrap();
 
-            match shaper_style {
+            match shape_type {
                 "line" => {
-                    appwindow.canvas().pens().borrow_mut().shaper.style = shaper::ShaperStyle::Line;
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.shape_type = ShapeType::Line;
                 },
                 "rectangle" => {
-                    appwindow.canvas().pens().borrow_mut().shaper.style = shaper::ShaperStyle::Rectangle;
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.shape_type = ShapeType::Rectangle;
                 },
                 "ellipse" => {
-                    appwindow.canvas().pens().borrow_mut().shaper.style = shaper::ShaperStyle::Ellipse;
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.shape_type = ShapeType::Ellipse;
                 },
-                _ => { log::error!("set invalid state of action `shaper-style`")}
+                _ => { log::error!("set invalid state of action `shape-type`")}
             }
 
 
@@ -560,25 +588,25 @@ impl RnoteAppWindow {
         }),
         );
 
-        // Shaper drawstyle
-        action_shaper_drawstyle.connect_activate(
+        // Shaper style
+        action_shaper_style.connect_activate(
         clone!(@weak self as appwindow => move |_action_shaper_drawstyle, target| {
             let shaper_drawstyle = target.unwrap().str().unwrap();
 
             match shaper_drawstyle {
                 "smooth" => {
-                    appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::ShaperDrawStyle::Smooth;
-                    appwindow.canvas().pens().borrow_mut().shaper.smooth_options.width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
-                    appwindow.canvas().pens().borrow_mut().shaper.smooth_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
-                    appwindow.canvas().pens().borrow_mut().shaper.smooth_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.style = shaper::ShaperStyle::Smooth;
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
                 },
                 "rough" => {
-                    appwindow.canvas().pens().borrow_mut().shaper.drawstyle = shaper::ShaperDrawStyle::Rough;
-                    appwindow.canvas().pens().borrow_mut().shaper.rough_options.stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
-                    appwindow.canvas().pens().borrow_mut().shaper.rough_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
-                    appwindow.canvas().pens().borrow_mut().shaper.rough_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.style = shaper::ShaperStyle::Rough;
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
                 },
-                _ => { log::error!("set invalid state of action `shaper-drawstyle`")}
+                _ => { log::error!("set invalid state of action `shaper-style`")}
             }
 
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
@@ -591,10 +619,10 @@ impl RnoteAppWindow {
 
             match selector_style {
                 "polygon" => {
-                    appwindow.canvas().pens().borrow_mut().selector.style = selector::SelectorStyle::Polygon;
+                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorType::Polygon;
                 },
                 "rectangle" => {
-                    appwindow.canvas().pens().borrow_mut().selector.style = selector::SelectorStyle::Rectangle;
+                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorType::Rectangle;
                 },
                 _ => { log::error!("set invalid state of action `selector-style`")}
             }
@@ -610,10 +638,10 @@ impl RnoteAppWindow {
 
             match tool_style {
                 "expandsheet" => {
-                    appwindow.canvas().pens().borrow_mut().tools.style = tools::ToolStyle::ExpandSheet;
+                    appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::ExpandSheet;
                 },
                 "dragproximity" => {
-                    appwindow.canvas().pens().borrow_mut().tools.style = tools::ToolStyle::DragProximity;
+                    appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::DragProximity;
                 },
                 _ => { log::error!("set invalid state of action `tool-style`")}
             }
@@ -626,31 +654,36 @@ impl RnoteAppWindow {
         action_refresh_ui_for_sheet.connect_activate(
             clone!(@weak self as appwindow => move |_action_refresh_ui_for_sheet, _| {
                 // Avoids borrow errors
-                let pens = appwindow.canvas().pens().borrow().clone();
+                let pen_style = appwindow.canvas().engine().borrow().penholder.style_w_override();
+                let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
+                let shaper = appwindow.canvas().engine().borrow().penholder.shaper.clone();
+                let eraser = appwindow.canvas().engine().borrow().penholder.eraser.clone();
+                let selector = appwindow.canvas().engine().borrow().penholder.selector.clone();
+                let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
 
                 // Current pen
-                match pens.style_w_override() {
-                    PenStyle::BrushStyle => {
+                match pen_style {
+                    PenStyle::Brush => {
                         appwindow.mainheader().brush_toggle().set_active(true);
                         appwindow.narrow_brush_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
                     }
-                    PenStyle::ShaperStyle => {
+                    PenStyle::Shaper => {
                         appwindow.mainheader().shaper_toggle().set_active(true);
                         appwindow.narrow_shaper_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
                     }
-                    PenStyle::EraserStyle => {
+                    PenStyle::Eraser => {
                         appwindow.mainheader().eraser_toggle().set_active(true);
                         appwindow.narrow_eraser_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                     }
-                    PenStyle::SelectorStyle => {
+                    PenStyle::Selector => {
                         appwindow.mainheader().selector_toggle().set_active(true);
                         appwindow.narrow_selector_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                     }
-                    PenStyle::ToolsStyle => {
+                    PenStyle::Tools => {
                         appwindow.mainheader().tools_toggle().set_active(true);
                         appwindow.narrow_tools_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
@@ -659,32 +692,32 @@ impl RnoteAppWindow {
 
                 // Brush
                 appwindow.penssidebar().brush_page().texturedstyle_density_spinbutton()
-                    .set_value(pens.brush.textured_options.density);
+                    .set_value(brush.textured_options.density);
                 appwindow.penssidebar().brush_page().texturedstyle_radius_x_spinbutton()
-                    .set_value(pens.brush.textured_options.radii[0]);
+                    .set_value(brush.textured_options.radii[0]);
                 appwindow.penssidebar().brush_page().texturedstyle_radius_y_spinbutton()
-                    .set_value(pens.brush.textured_options.radii[1]);
-                appwindow.penssidebar().brush_page().set_texturedstyle_distribution_variant(pens.brush.textured_options.distribution);
-                match pens.brush.style {
+                    .set_value(brush.textured_options.radii[1]);
+                appwindow.penssidebar().brush_page().set_texturedstyle_distribution_variant(brush.textured_options.distribution);
+                match brush.style {
                     BrushStyle::Marker => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_marker_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.smooth_options.width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.smooth_options.stroke_color);
-                        appwindow.penssidebar().brush_page().styleconfig_menubutton().set_sensitive(false);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.width);
+                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
+                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-marker-symbolic"));
                     },
                     BrushStyle::Solid => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.smooth_options.width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.smooth_options.stroke_color);
-                        appwindow.penssidebar().brush_page().styleconfig_menubutton().set_sensitive(false);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.width);
+                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
+                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-solid-symbolic"));
                     },
                     BrushStyle::Textured => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.textured_options.width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.textured_options.stroke_color);
-                        appwindow.penssidebar().brush_page().styleconfig_menubutton().set_sensitive(true);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.textured_options.width);
+                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.textured_options.stroke_color);
+                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(true);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-textured-symbolic"));
                     },
                 }
@@ -692,55 +725,66 @@ impl RnoteAppWindow {
                 // Shaper
                 appwindow.penssidebar().shaper_page()
                     .roughconfig_roughness_spinbutton()
-                    .set_value(pens.shaper.rough_options.roughness);
+                    .set_value(shaper.rough_options.roughness);
                 appwindow.penssidebar().shaper_page()
                     .roughconfig_bowing_spinbutton()
-                    .set_value(pens.shaper.rough_options.bowing);
+                    .set_value(shaper.rough_options.bowing);
                 appwindow.penssidebar().shaper_page()
                     .roughconfig_curvestepcount_spinbutton()
-                    .set_value(pens.shaper.rough_options.curve_stepcount);
+                    .set_value(shaper.rough_options.curve_stepcount);
                 appwindow.penssidebar().shaper_page()
                     .roughconfig_multistroke_switch()
-                    .set_active(!pens.shaper.rough_options.disable_multistroke);
+                    .set_active(!shaper.rough_options.disable_multistroke);
 
-                match pens.shaper.style {
-                    ShaperStyle::Line => {
-                        appwindow.penssidebar().shaper_page().line_toggle().set_active(true);
+                match shaper.shape_type {
+                    ShapeType::Line => {
+                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_line_row()));
+                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(false);
+                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-line-symbolic"));
                     }
-                    ShaperStyle::Rectangle => {
-                        appwindow.penssidebar().shaper_page().rectangle_toggle().set_active(true);
+                    ShapeType::Rectangle => {
+                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_rectangle_row()));
+                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
+                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-rectangle-symbolic"));
                     }
-                    ShaperStyle::Ellipse => {
-                        appwindow.penssidebar().shaper_page().ellipse_toggle().set_active(true);
+                    ShapeType::Ellipse => {
+                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_ellipse_row()));
+                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
+                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-ellipse-symbolic"));
                     }
                 }
-                match pens.shaper.drawstyle {
-                    ShaperDrawStyle::Smooth => {
-                        appwindow.penssidebar().shaper_page().drawstyle_smooth_toggle().set_active(true);
-                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(pens.shaper.smooth_options.width);
-                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(pens.shaper.smooth_options.stroke_color);
-                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(pens.shaper.smooth_options.fill_color);
+                match shaper.style {
+                    ShaperStyle::Smooth => {
+                        appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_smooth_row()));
+                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper.smooth_options.width);
+                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(shaper.smooth_options.stroke_color);
+                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(shaper.smooth_options.fill_color);
+                        appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(false);
+                        appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
                     },
-                    ShaperDrawStyle::Rough => {
-                        appwindow.penssidebar().shaper_page().drawstyle_rough_toggle().set_active(true);
-                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(pens.shaper.rough_options.stroke_width);
-                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(pens.shaper.rough_options.stroke_color);
-                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(pens.shaper.rough_options.fill_color);
+                    ShaperStyle::Rough => {
+                        appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_rough_row()));
+                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper.rough_options.stroke_width);
+                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(shaper.rough_options.stroke_color);
+                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(shaper.rough_options.fill_color);
+                        appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(true);
+                        appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-rough-symbolic"));
                     },
                 }
+
                 // Eraser
-                appwindow.penssidebar().eraser_page().width_spinbutton().set_value(pens.eraser.width);
+                appwindow.penssidebar().eraser_page().width_spinbutton().set_value(eraser.width);
 
                 // Selector
-                match pens.selector.style {
-                    SelectorStyle::Polygon => appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true),
-                    SelectorStyle::Rectangle => appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true),
+                match selector.style {
+                    SelectorType::Polygon => appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true),
+                    SelectorType::Rectangle => appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true),
                 }
 
                 // Tools
-                match pens.tools.style {
-                    ToolStyle::ExpandSheet => appwindow.penssidebar().tools_page().toolstyle_expandsheet_toggle().set_active(true),
-                    ToolStyle::DragProximity => appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true),
+                match tools.style {
+                    ToolsStyle::ExpandSheet => appwindow.penssidebar().tools_page().toolstyle_expandsheet_toggle().set_active(true),
+                    ToolsStyle::DragProximity => appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true),
                 }
 
                 // Settings panel
@@ -751,7 +795,7 @@ impl RnoteAppWindow {
         // Trash Selection
         action_selection_trash.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_trash, _| {
-                appwindow.canvas().sheet().borrow_mut().strokes_state.trash_selection();
+                appwindow.canvas().engine().borrow_mut().strokes_state.trash_selection();
                 appwindow.canvas().selection_modifier().set_visible(false);
 
                 appwindow.canvas().queue_draw();
@@ -761,9 +805,7 @@ impl RnoteAppWindow {
         // Duplicate Selection
         action_selection_duplicate.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
-                appwindow.canvas().sheet().borrow_mut().strokes_state.duplicate_selection(
-                                    appwindow.canvas().zoom()
-                );
+                appwindow.canvas().engine().borrow_mut().strokes_state.duplicate_selection();
 
                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().regenerate_content(false, true);
@@ -773,8 +815,8 @@ impl RnoteAppWindow {
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
-                let all_strokes = appwindow.canvas().sheet().borrow().strokes_state.keys_sorted_chrono();
-                appwindow.canvas().sheet().borrow_mut().strokes_state.set_selected_keys(&all_strokes, true);
+                let all_strokes = appwindow.canvas().engine().borrow().strokes_state.keys_sorted_chrono();
+                appwindow.canvas().engine().borrow_mut().strokes_state.set_selected_keys(&all_strokes, true);
 
                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().regenerate_content(false, true);
@@ -784,8 +826,8 @@ impl RnoteAppWindow {
         // deselect all strokes
         action_selection_deselect_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
-                let all_strokes = appwindow.canvas().sheet().borrow().strokes_state.keys_sorted_chrono();
-                appwindow.canvas().sheet().borrow_mut().strokes_state.set_selected_keys(&all_strokes, false);
+                let all_strokes = appwindow.canvas().engine().borrow().strokes_state.keys_sorted_chrono();
+                appwindow.canvas().engine().borrow_mut().strokes_state.set_selected_keys(&all_strokes, false);
 
                 appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().regenerate_content(false, true);
@@ -799,49 +841,60 @@ impl RnoteAppWindow {
 
         // Undo stroke
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().sheet().borrow_mut().strokes_state.undo_last_stroke();
-            appwindow.canvas().resize_sheet_autoexpand();
-            appwindow.canvas().update_background_rendernode(true);
+            appwindow.canvas().engine().borrow_mut().strokes_state.undo_last_stroke();
+            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+            appwindow.canvas().update_background_rendernodes(true);
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().sheet().borrow_mut().strokes_state.redo_last_stroke();
-            appwindow.canvas().resize_sheet_autoexpand();
-            appwindow.canvas().update_background_rendernode(true);
+            appwindow.canvas().engine().borrow_mut().strokes_state.redo_last_stroke();
+            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+            appwindow.canvas().update_background_rendernodes(true);
         }));
 
         // Zoom reset
         action_zoom_reset.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().zoom_to(Canvas::ZOOM_DEFAULT);
+            let new_zoom = Camera::ZOOM_DEFAULT;
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
         }));
 
         // Zoom fit to width
         action_zoom_fit_width.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let mut new_zoom = appwindow.canvas().zoom();
+            let mut new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
 
             for _ in 0..2 {
-                new_zoom = f64::from(appwindow.canvas_scroller().width()) / appwindow.canvas().sheet().borrow().format.width as f64;
+                new_zoom = f64::from(appwindow.canvas_scroller().width()) / appwindow.canvas().engine().borrow().sheet.format.width as f64;
             }
-            appwindow.canvas().zoom_to(new_zoom);
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
         }));
 
         // Zoom in
         action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = ((appwindow.canvas().total_zoom() + Canvas::ZOOM_ACTION_DELTA) * 10.0).floor() / 10.0;
-            appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
+            let new_zoom = ((appwindow.canvas().engine().borrow().camera.total_zoom() + RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).round() / 10.0;
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
         }));
 
         // Zoom out
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = ((appwindow.canvas().total_zoom() - Canvas::ZOOM_ACTION_DELTA) * 10.0).ceil() / 10.0;
-            appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
+            let new_zoom = ((appwindow.canvas().engine().borrow().camera.total_zoom() - RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).round() / 10.0;
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
         }));
+
+        // Zoom to value
+        action_zoom_to_value.connect_activate(
+            clone!(@weak self as appwindow => move |_action_zoom_to_value, target| {
+                let new_zoom = target.unwrap().get::<f64>().unwrap();
+                appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, RnoteCanvas::ZOOM_TIMEOUT_TIME);
+
+                appwindow.mainheader().canvasmenu().zoomreset_button().set_label(format!("{:.0}%", (100.0 * new_zoom).round()).as_str());
+            }));
 
         // Return to the origin page
         action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().return_to_origin_page();
-            appwindow.canvas().resize_sheet_autoexpand();
+            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+            appwindow.canvas().update_background_rendernodes(true);
         }));
 
         // New sheet
@@ -861,14 +914,14 @@ impl RnoteAppWindow {
 
         // Save sheet
         action_save_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            if appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file().is_none() {
+            if appwindow.output_file().is_none() {
                 dialogs::dialog_save_sheet_as(&appwindow);
             }
 
-            if let Some(output_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().output_file() {
+            if let Some(output_file) = appwindow.output_file() {
                 match output_file.basename() {
                     Some(basename) => {
-                        match appwindow.canvas().sheet().borrow().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {
+                        match appwindow.canvas().engine().borrow().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {
                             Ok(bytes) => {
                                 if let Err(e) = utils::replace_file_async(bytes, &output_file) {
                                     log::error!("saving sheet as .rnote failed, replace_file_async failed with Err {}", e);
@@ -897,28 +950,28 @@ impl RnoteAppWindow {
                 .unit(Unit::Points)
                 .build();
 
-                let pages_bounds = appwindow.canvas().sheet().borrow().pages_bounds_containing_content();
+                let pages_bounds = appwindow.canvas().engine().borrow().pages_bounds_containing_content();
                 let n_pages = pages_bounds.len();
 
             print_op.connect_begin_print(clone!(@weak appwindow => move |print_op, _print_cx| {
                 print_op.set_n_pages(n_pages as i32);
             }));
 
-            let sheet_bounds = appwindow.canvas().sheet().borrow().bounds();
+            let sheet_bounds = appwindow.canvas().engine().borrow().sheet.bounds();
 
             print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
                 let cx = print_cx.cairo_context();
 
                 if let Err(e) = || -> Result<(), anyhow::Error> {
                     let print_zoom = {
-                        let width_scale = print_cx.width() / appwindow.canvas().sheet().borrow().format.width;
-                        let height_scale = print_cx.height() / appwindow.canvas().sheet().borrow().format.height;
+                        let width_scale = print_cx.width() / appwindow.canvas().engine().borrow().sheet.format.width;
+                        let height_scale = print_cx.height() / appwindow.canvas().engine().borrow().sheet.format.height;
                         width_scale.min(height_scale)
                     };
 
                     let page_bounds = pages_bounds[page_nr as usize];
 
-                    let page_svgs = appwindow.canvas().sheet().borrow().gen_svgs_for_viewport(page_bounds)?;
+                    let page_svgs = appwindow.canvas().engine().borrow().gen_svgs_intersecting_bounds(page_bounds)?;
 
                     cx.scale(print_zoom, print_zoom);
                     cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
@@ -932,7 +985,7 @@ impl RnoteAppWindow {
                     cx.clip();
 
                     // We zoom on the context, so 1.0 here
-                    render::draw_svgs_to_cairo_context(1.0, &page_svgs, sheet_bounds, &cx)?;
+                    render::Svg::draw_svgs_to_cairo_context(&page_svgs, sheet_bounds, &cx)?;
                     Ok(())
                 }() {
                     log::error!("draw_page() failed while printing page: {}, Err {}", page_nr, e);
@@ -944,10 +997,6 @@ impl RnoteAppWindow {
                 match print_op.status() {
                     PrintStatus::Finished => {
                         adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Printed sheet successfully").to_variant()));
-                    }
-                    PrintStatus::FinishedAborted => {
-                        log::error!("print op failed, status {:?}", print_op.status());
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing sheet failed").to_variant()));
                     }
                     _ => {}
                 }
@@ -992,7 +1041,7 @@ impl RnoteAppWindow {
 
         // Clipboard copy selection
         action_clipboard_copy_selection.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-        let selection_svgs = appwindow.canvas().sheet().borrow().strokes_state.gen_svgs_selection();
+        let selection_svgs = appwindow.canvas().engine().borrow().strokes_state.gen_svgs_selection();
         match selection_svgs {
             Ok(selection_svgs) => {
                 let mut svg_data = selection_svgs
@@ -1001,8 +1050,8 @@ impl RnoteAppWindow {
                     .collect::<Vec<&str>>()
                     .join("\n");
 
-                if let Some(selection_bounds) = appwindow.canvas().sheet().borrow().strokes_state.gen_selection_bounds() {
-                    svg_data = compose::wrap_svg_root(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true);
+                if let Some(selection_bounds) = appwindow.canvas().engine().borrow().strokes_state.gen_selection_bounds() {
+                    svg_data = rnote_compose::utils::wrap_svg_root(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true);
 
                     let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(svg_data.as_bytes()));
                     match appwindow.clipboard().set_content(Some(&svg_content_provider)) {
@@ -1029,7 +1078,7 @@ impl RnoteAppWindow {
                             appwindow.clipboard().read_text_async(None::<&gio::Cancellable>, clone!(@weak appwindow => move |text_res| {
                                 match text_res {
                                     Ok(Some(text)) => {
-                                        appwindow.load_in_vectorimage_bytes(glib::Bytes::from(text.as_bytes()), None).unwrap_or_else(|e| {
+                                        appwindow.load_in_vectorimage_bytes(text.as_bytes(), None).unwrap_or_else(|e| {
                                             log::error!("failed to paste clipboard as VectorImage, load_in_vectorimage_bytes() returned Err, {}", e);
                                         });
                                     }
@@ -1103,8 +1152,12 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.selection-duplicate", &["<Ctrl>d"]);
         app.set_accels_for_action("win.selection-select-all", &["<Ctrl>a"]);
         app.set_accels_for_action("win.selection-deselect-all", &["Escape"]);
-        //app.set_accels_for_action("win.pen-style-override::eraser_style", &["d"]);
         app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste-selection", &["<Ctrl>v"]);
+
+        // shortcuts for devel builds
+        if config::PROFILE.to_lowercase().as_str() == "devel" {
+            app.set_accels_for_action("win.visual-debug", &["<Ctrl><Shift>v"]);
+        }
     }
 }

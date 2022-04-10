@@ -70,7 +70,7 @@ impl EraserPage {
 
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                appwindow.canvas().pens().borrow_mut().eraser.width = width_spinbutton.value();
+                appwindow.canvas().engine().borrow_mut().penholder.eraser.width = width_spinbutton.value();
             }),
         );
     }

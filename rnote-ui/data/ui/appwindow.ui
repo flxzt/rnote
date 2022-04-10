@@ -130,8 +130,9 @@
                         <property name="vexpand">true</property>
                         <property name="hexpand">true</property>
                         <property name="window-placement">top-left</property>
+                        <property name="overlay-scrolling">true</property>
                         <child>
-                          <object class="Canvas" id="canvas">
+                          <object class="RnoteCanvas" id="canvas">
                             <property name="halign">center</property>
                             <property name="valign">start</property>
                           </object>

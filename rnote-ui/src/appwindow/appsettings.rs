@@ -2,11 +2,11 @@ use std::path::PathBuf;
 
 use crate::app::RnoteApp;
 use crate::appwindow::RnoteAppWindow;
-use crate::canvas::ExpandMode;
-use rnote_engine::compose::color::Color;
-use rnote_engine::pens::Pens;
-use rnote_engine::sheet::background::Background;
-use rnote_engine::sheet::format::Format;
+use rnote_compose::Color;
+use rnote_engine::engine::ExpandMode;
+use rnote_engine::sheet::Background;
+use rnote_engine::sheet::Format;
+use rnote_engine::PenHolder;
 
 use adw::prelude::*;
 use gtk4::gio;
@@ -74,40 +74,6 @@ impl RnoteAppWindow {
         // touch drawing
         self.app_settings()
             .bind("touch-drawing", &self.canvas(), "touch-drawing")
-            .build();
-
-        // expand mode
-        self.app_settings()
-            .bind("expand-mode", &self.canvas(), "expand-mode")
-            .mapping(move |settings_value, _type_| {
-                let value = settings_value.get::<String>().unwrap();
-                match value.as_str() {
-                    "fixed-size" => Some(ExpandMode::FixedSize.to_value()),
-                    "endless-vertical" => Some(ExpandMode::EndlessVertical.to_value()),
-                    "infinite" => Some(ExpandMode::Infinite.to_value()),
-                    _ => {
-                        log::error!(
-                            "mapping expand-mode to setting failed, invalid str {}",
-                            value.as_str()
-                        );
-                        None
-                    }
-                }
-            })
-            .set_mapping(
-                move |value, _type_| match value.get::<ExpandMode>().unwrap() {
-                    ExpandMode::FixedSize => Some(String::from("fixed-size").to_variant()),
-                    ExpandMode::EndlessVertical => {
-                        Some(String::from("endless-vertical").to_variant())
-                    }
-                    ExpandMode::Infinite => Some(String::from("infinite").to_variant()),
-                },
-            )
-            .build();
-
-        // format borders
-        self.app_settings()
-            .bind("format-borders", &self.canvas(), "format-borders")
             .build();
 
         // pdf import width
@@ -230,11 +196,21 @@ impl RnoteAppWindow {
         }
 
         {
+            // load Expand mode
+            let expand_mode = self.app_settings().string("expand-mode");
+            adw::prelude::ActionGroupExt::activate_action(
+                self,
+                "expand-mode",
+                Some(&expand_mode.to_variant()),
+            );
+        }
+
+        {
             // Load format
             if let Ok(loaded_format) =
                 serde_json::from_str::<Format>(self.app_settings().string("sheet-format").as_str())
             {
-                self.canvas().sheet().borrow_mut().format = loaded_format;
+                self.canvas().engine().borrow_mut().sheet.format = loaded_format;
             }
         }
 
@@ -243,16 +219,16 @@ impl RnoteAppWindow {
             if let Ok(loaded_background) = serde_json::from_str::<Background>(
                 self.app_settings().string("sheet-background").as_str(),
             ) {
-                self.canvas().sheet().borrow_mut().background = loaded_background;
+                self.canvas().engine().borrow_mut().sheet.background = loaded_background;
             }
         }
 
         {
             // Load pens
-            if let Ok(loaded_pens) =
-                serde_json::from_str::<Pens>(self.app_settings().string("pens").as_str())
+            if let Ok(loaded_penholder) =
+                serde_json::from_str::<PenHolder>(self.app_settings().string("pens").as_str())
             {
-                *self.canvas().pens().borrow_mut() = loaded_pens;
+                self.canvas().engine().borrow_mut().penholder = loaded_penholder;
             }
         }
 
@@ -273,7 +249,7 @@ impl RnoteAppWindow {
                 .colorpicker()
                 .fetch_all_colors()
                 .into_iter()
-                .map(|color| color.to_u32())
+                .map(|color| color.into())
                 .collect::<Vec<u32>>();
             let colors = (
                 colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6],
@@ -291,7 +267,7 @@ impl RnoteAppWindow {
                 .stroke_colorpicker()
                 .fetch_all_colors()
                 .into_iter()
-                .map(|color| color.to_u32())
+                .map(|color| color.into())
                 .collect::<Vec<u32>>();
             let colors = (colors[0], colors[1]);
             self.app_settings()
@@ -304,31 +280,51 @@ impl RnoteAppWindow {
                 .fill_colorpicker()
                 .fetch_all_colors()
                 .into_iter()
-                .map(|color| color.to_u32())
+                .map(|color| color.into())
                 .collect::<Vec<u32>>();
             let fills = (fills[0], fills[1]);
             self.app_settings()
                 .set_value("shaperpage-fills", &fills.to_variant())?;
+        }
 
+        {
+            // Save expand mode
+            let expand_mode_string = match self.canvas().engine().borrow().expand_mode() {
+                ExpandMode::FixedSize => String::from("fixed-size"),
+                ExpandMode::EndlessVertical => String::from("endless-vertical"),
+                ExpandMode::Infinite => String::from("infinite"),
+            };
+            self.app_settings()
+                .set_string("expand-mode", expand_mode_string.as_str())
+                .unwrap();
+        }
+
+        {
             // Save format
-            let format_string = serde_json::to_string(&self.canvas().sheet().borrow().format)?;
+            let format_string =
+                serde_json::to_string(&self.canvas().engine().borrow().sheet.format)?;
             self.app_settings()
                 .set_string("sheet-format", format_string.as_str())?;
 
             //println!("format:\n{}", format_string);
+        }
 
+        {
             // Save background
             let background_string =
-                serde_json::to_string(&self.canvas().sheet().borrow().background)?;
+                serde_json::to_string(&self.canvas().engine().borrow().sheet.background)?;
             self.app_settings()
                 .set_string("sheet-background", background_string.as_str())?;
 
             //println!("background:\n{}", background_string);
+        }
 
+        {
             // Save pens
-            let pens_string = serde_json::to_string(&*self.canvas().pens().borrow())?;
+            let penholder_string =
+                serde_json::to_string(&self.canvas().engine().borrow().penholder)?;
             self.app_settings()
-                .set_string("pens", pens_string.as_str())?;
+                .set_string("pens", penholder_string.as_str())?;
 
             //println!("pens:\n{}", pens_string);
         }

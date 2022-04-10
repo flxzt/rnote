@@ -7,10 +7,13 @@ mod imp {
     use gtk4::Orientation;
     use gtk4::SizeRequestMode;
     use gtk4::Widget;
+    use p2d::bounding_volume::{BoundingVolume, AABB};
+    use rnote_engine::engine::ExpandMode;
+    use rnote_engine::Sheet;
 
-    use crate::canvas::Canvas;
+    use crate::canvas::RnoteCanvas;
     use crate::selectionmodifier::SelectionModifier;
-    use rnote_engine::compose::geometry::AABBHelpers;
+    use rnote_compose::helpers::AABBHelpers;
 
     #[derive(Debug, Default)]
     pub struct CanvasLayout {}
@@ -35,17 +38,19 @@ mod imp {
             orientation: Orientation,
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
-            let canvas = widget.downcast_ref::<Canvas>().unwrap();
-            let total_zoom = canvas.zoom() * canvas.temporary_zoom();
+            let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
 
             if orientation == Orientation::Vertical {
-                let natural_height = ((canvas.sheet().borrow().height + 2.0 * Canvas::SHADOW_WIDTH)
+                let natural_height = ((canvas.engine().borrow().sheet.height
+                    + 2.0 * Sheet::SHADOW_WIDTH)
                     * total_zoom)
                     .ceil() as i32;
 
                 (0, natural_height, -1, -1)
             } else {
-                let natural_width = ((canvas.sheet().borrow().width + 2.0 * Canvas::SHADOW_WIDTH)
+                let natural_width = ((canvas.engine().borrow().sheet.width
+                    + 2.0 * Sheet::SHADOW_WIDTH)
                     * total_zoom)
                     .ceil() as i32;
 
@@ -61,35 +66,116 @@ mod imp {
             height: i32,
             _baseline: i32,
         ) {
-            let canvas = widget.downcast_ref::<Canvas>().unwrap();
-            let canvas_priv = canvas.imp();
-            let total_zoom = canvas.total_zoom();
+            let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            let expand_mode = canvas.engine().borrow().expand_mode();
 
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
+            let new_size = na::vector![f64::from(width), f64::from(height)];
+
 
             // Update the adjustments
-            canvas.update_adj_config(na::vector![f64::from(width), f64::from(height)]);
-            canvas.update_background_rendernode(true);
+            let (h_lower, h_upper) = match expand_mode {
+                ExpandMode::FixedSize | ExpandMode::EndlessVertical => (
+                    (canvas.engine().borrow().sheet.x - Sheet::SHADOW_WIDTH) * total_zoom,
+                    (canvas.engine().borrow().sheet.x
+                        + canvas.engine().borrow().sheet.width
+                        + Sheet::SHADOW_WIDTH)
+                        * total_zoom,
+                ),
+                ExpandMode::Infinite => (
+                    canvas.engine().borrow().sheet.x * total_zoom,
+                    (canvas.engine().borrow().sheet.x + canvas.engine().borrow().sheet.width)
+                        * total_zoom,
+                ),
+            };
+
+            let (v_lower, v_upper) = match canvas.engine().borrow().expand_mode() {
+                ExpandMode::FixedSize | ExpandMode::EndlessVertical => (
+                    (canvas.engine().borrow().sheet.y - Sheet::SHADOW_WIDTH) * total_zoom,
+                    (canvas.engine().borrow().sheet.y
+                        + canvas.engine().borrow().sheet.height
+                        + Sheet::SHADOW_WIDTH)
+                        * total_zoom,
+                ),
+                ExpandMode::Infinite => (
+                    canvas.engine().borrow().sheet.y * total_zoom,
+                    (canvas.engine().borrow().sheet.y + canvas.engine().borrow().sheet.height)
+                        * total_zoom,
+                ),
+            };
+
+            hadj.configure(
+                hadj.value(),
+                h_lower,
+                h_upper,
+                0.1 * new_size[0],
+                0.9 * new_size[0],
+                new_size[0],
+            );
+
+            vadj.configure(
+                vadj.value(),
+                v_lower,
+                v_upper,
+                0.1 * new_size[1],
+                0.9 * new_size[1],
+                new_size[1],
+            );
+
+            // Update the camera
+            canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
+            canvas.engine().borrow_mut().camera.size = new_size;
+
+            // Update content and background
+            canvas.update_background_rendernodes(false);
+            canvas.regenerate_content(false, true);
+
+            let viewport = canvas.engine().borrow().camera.viewport();
+            match expand_mode {
+                ExpandMode::FixedSize | ExpandMode::EndlessVertical => {}
+                ExpandMode::Infinite => {
+                    // Show "return to center" toast when far away in infinite mode
+                    let threshold_bounds = AABB::new(
+                        na::point![0.0, 0.0],
+                        na::point![
+                            canvas.engine().borrow().sheet.format.width,
+                            canvas.engine().borrow().sheet.format.height
+                        ],
+                    )
+                    .expand_by(
+                        na::vector![
+                            2.0 * canvas.engine().borrow().sheet.format.width,
+                            2.0 * canvas.engine().borrow().sheet.format.height
+                        ],
+                    );
+
+                    if !viewport.intersects(&threshold_bounds) {
+                        canvas.show_return_to_center_toast()
+                    } else {
+                        canvas.dismiss_return_to_center_toast();
+                    }
+                }
+            }
 
             // Allocate the selection_modifier child
             {
-                canvas_priv
-                    .selection_modifier
+                canvas
+                    .selection_modifier()
                     .update_translate_node_size_request(&canvas);
 
-                let (_, selection_modifier_width, _, _) = canvas_priv
-                    .selection_modifier
+                let (_, selection_modifier_width, _, _) = canvas
+                    .selection_modifier()
                     .measure(Orientation::Horizontal, -1);
-                let (_, selection_modifier_height, _, _) = canvas_priv
-                    .selection_modifier
+                let (_, selection_modifier_height, _, _) = canvas
+                    .selection_modifier()
                     .measure(Orientation::Vertical, -1);
 
                 let (selection_modifier_x, selection_modifier_y) = if let Some(selection_bounds) =
-                    canvas_priv.selection_modifier.selection_bounds()
+                    canvas.selection_modifier().selection_bounds()
                 {
-                    let selection_bounds_zoomed =
-                        selection_bounds.scale(na::Vector2::from_element(total_zoom));
+                    let selection_bounds_zoomed = selection_bounds.scale(total_zoom);
 
                     (
                         (selection_bounds_zoomed.mins[0] - hadj.value()).ceil() as i32
@@ -101,7 +187,7 @@ mod imp {
                     (0, 0)
                 };
 
-                canvas_priv.selection_modifier.size_allocate(
+                canvas.selection_modifier().size_allocate(
                     &gdk::Rectangle::new(
                         selection_modifier_x,
                         selection_modifier_y,

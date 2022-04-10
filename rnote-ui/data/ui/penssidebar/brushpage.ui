@@ -109,19 +109,19 @@
     <child>
       <object class="GtkBox">
         <child>
-          <object class="GtkMenuButton" id="styleconfig_menubutton">
+          <object class="GtkMenuButton" id="brushconfig_menubutton">
             <property name="icon-name">settings-symbolic</property>
             <property name="sensitive">false</property>
             <property name="hexpand">true</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Brush styles configuration</property>
-            <property name="popover">styleconfig_popover</property>
+            <property name="tooltip_text" translatable="yes">Brush configuration</property>
+            <property name="popover">brushconfig_popover</property>
           </object>
         </child>
       </object>
     </child>
-    <object class="GtkPopover" id="styleconfig_popover">
+    <object class="GtkPopover" id="brushconfig_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
@@ -200,12 +200,14 @@
                   <property name="title" translatable="yes">Distribution</property>
                   <property name="subtitle" translatable="yes">Choose a dots position probability distribution</property>
                   <property name="model">
-                    <object class="AdwEnumListModel">
-                      <property name="enum-type">TexturedDotsDistribution</property>
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Uniform</item>
+                        <item translatable="yes">Normal</item>
+                        <item translatable="yes">Exponential</item>
+                        <item translatable="yes">Reverse Exponential</item>
+                      </items>
                     </object>
-                  </property>
-                  <property name="expression">
-                    <lookup type="AdwEnumListItem" name="name" />
                   </property>
                 </object>
               </child>

@@ -1,18 +1,13 @@
-use std::sync::{Arc, RwLock};
+use super::StrokeBehaviour;
+use crate::{render, DrawBehaviour};
+use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::shapes::Rectangle;
+use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::transform::Transform;
+use rnote_compose::transform::TransformBehaviour;
 
-use crate::compose;
-use crate::compose::geometry::AABBHelpers;
-use crate::compose::shapes;
-use crate::compose::transformable::{Transform, Transformable};
-use crate::drawbehaviour::DrawBehaviour;
-use crate::render;
-use crate::render::Renderer;
-
-use anyhow::Context;
 use p2d::bounding_volume::AABB;
-use rand::Rng;
 use serde::{Deserialize, Serialize};
-use svg::node::{self, element};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "vectorimage")]
@@ -22,9 +17,7 @@ pub struct VectorImage {
     #[serde(rename = "intrinsic_size")]
     pub intrinsic_size: na::Vector2<f64>,
     #[serde(rename = "rectangle")]
-    pub rectangle: shapes::Rectangle,
-    #[serde(rename = "bounds")]
-    pub bounds: AABB,
+    pub rectangle: Rectangle,
 }
 
 impl Default for VectorImage {
@@ -32,32 +25,16 @@ impl Default for VectorImage {
         Self {
             svg_data: String::default(),
             intrinsic_size: na::Vector2::zeros(),
-            rectangle: shapes::Rectangle::default(),
-            bounds: AABB::new_zero(),
+            rectangle: Rectangle::default(),
         }
     }
 }
 
-impl DrawBehaviour for VectorImage {
-    fn bounds(&self) -> AABB {
-        self.bounds
-    }
+impl StrokeBehaviour for VectorImage {
+    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+        let transform_string = self.rectangle.transform.to_svg_transform_attr_str();
 
-    fn set_bounds(&mut self, bounds: AABB) {
-        self.bounds = bounds;
-    }
-
-    fn gen_bounds(&self) -> Option<AABB> {
-        Some(self.rectangle.global_aabb())
-    }
-
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let mut rectangle = self.rectangle.clone();
-        rectangle.transform.append_translation_mut(offset);
-
-        let transform_string = rectangle.transform.to_svg_transform_attr_str();
-
-        let svg_root = element::SVG::new()
+        let svg_root = svg::node::element::SVG::new()
             .set("x", -self.rectangle.cuboid.half_extents[0])
             .set("y", -self.rectangle.cuboid.half_extents[1])
             .set("width", 2.0 * self.rectangle.cuboid.half_extents[0])
@@ -70,36 +47,80 @@ impl DrawBehaviour for VectorImage {
                 ),
             )
             .set("preserveAspectRatio", "none")
-            .add(node::Text::new(self.svg_data.clone()));
+            .add(svg::node::Text::new(self.svg_data.clone()));
 
-        let group = element::Group::new()
+        let group = svg::node::element::Group::new()
             .set("transform", transform_string)
             .add(svg_root);
 
-        let svg_data = compose::svg_node_to_string(&group)?;
+        let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;
         let svg = render::Svg {
-            bounds: self.bounds.translate(offset),
+            bounds: self.rectangle.bounds(),
             svg_data,
         };
 
-        Ok(vec![svg])
+        Ok(svg)
     }
 }
 
-impl Transformable for VectorImage {
+// Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().
+// There we use a svg renderer to generate pixel images. In this way we ensure to export an actual svg when calling gen_svgs(), but can also draw it onto piet.
+impl DrawBehaviour for VectorImage {
+    fn draw(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        image_scale: f64,
+    ) -> Result<(), anyhow::Error> {
+        let mut image = match render::Image::join_images(
+            render::Image::gen_images_from_svg(self.gen_svg()?, self.bounds(), image_scale)?,
+            self.bounds(),
+            image_scale,
+        )? {
+            Some(image) => image,
+            None => return Ok(()),
+        };
+
+        // piet needs rgba8-prem. the gen_images() func might produces bgra8-prem format, so we need to convert the image first
+        image.convert_to_rgba8pre()?;
+
+        let piet_image_format = piet::ImageFormat::try_from(image.memory_format)?;
+
+        let piet_image = cx
+            .make_image(
+                image.pixel_width as usize,
+                image.pixel_height as usize,
+                &image.data,
+                piet_image_format,
+            )
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        cx.draw_image(
+            &piet_image,
+            image.bounds.to_kurbo_rect(),
+            piet::InterpolationMode::Bilinear,
+        );
+
+        Ok(())
+    }
+}
+
+impl ShapeBehaviour for VectorImage {
+    fn bounds(&self) -> AABB {
+        self.rectangle.bounds()
+    }
+}
+
+impl TransformBehaviour for VectorImage {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.rectangle.translate(offset);
-        self.update_geometry();
     }
 
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
         self.rectangle.rotate(angle, center);
-        self.update_geometry();
     }
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.rectangle.scale(scale);
-        self.update_geometry();
     }
 }
 
@@ -113,31 +134,29 @@ impl VectorImage {
         svg_data: &str,
         pos: na::Vector2<f64>,
         size: Option<na::Vector2<f64>>,
-        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Self, anyhow::Error> {
-        // Random prefix to ensure uniqueness
-        let rand_prefix = rand::thread_rng()
-            .sample_iter(&rand::distributions::Alphanumeric)
-            .take(8)
-            .map(char::from)
-            .collect::<String>();
-        let mut xml_options = renderer.read().unwrap().usvg_xml_options.clone();
-        xml_options.id_prefix = Some(rand_prefix);
+        let xml_options = usvg::XmlOptions {
+            id_prefix: Some(rnote_compose::utils::random_id_prefix()),
+            writer_opts: xmlwriter::Options {
+                use_single_quote: false,
+                indent: xmlwriter::Indent::None,
+                attributes_indent: xmlwriter::Indent::None,
+            },
+        };
 
-        let rtree =
-            usvg::Tree::from_str(svg_data, &renderer.read().unwrap().usvg_options.to_ref())?;
+        let rtree = usvg::Tree::from_str(svg_data, &render::USVG_OPTIONS.to_ref())?;
         let svg_data = rtree.to_string(&xml_options);
 
         let svg_node = rtree.svg_node();
         let intrinsic_size = na::vector![svg_node.size.width(), svg_node.size.height()];
 
         let rectangle = if let Some(size) = size {
-            shapes::Rectangle {
+            Rectangle {
                 cuboid: p2d::shape::Cuboid::new(size / 2.0),
                 transform: Transform::new_w_isometry(na::Isometry2::new(pos + size / 2.0, 0.0)),
             }
         } else {
-            shapes::Rectangle {
+            Rectangle {
                 cuboid: p2d::shape::Cuboid::new(intrinsic_size / 2.0),
                 transform: Transform::new_w_isometry(na::Isometry2::new(
                     pos + intrinsic_size / 2.0,
@@ -146,26 +165,21 @@ impl VectorImage {
             }
         };
 
-        let mut vector_image = Self {
+        Ok(Self {
             svg_data,
             intrinsic_size,
             rectangle,
-            bounds: AABB::new_zero(),
-        };
-        vector_image.update_geometry();
-
-        Ok(vector_image)
+        })
     }
 
     pub fn import_from_pdf_bytes(
         to_be_read: &[u8],
         pos: na::Vector2<f64>,
         page_width: Option<i32>,
-        renderer: Arc<RwLock<Renderer>>,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let doc = poppler::Document::from_data(to_be_read, None)?;
 
-        let mut images = Vec::new();
+        let mut vector_images = Vec::new();
 
         for i in 0..doc.n_pages() {
             if let Some(page) = doc.page(i) {
@@ -237,34 +251,23 @@ impl VectorImage {
                 };
                 let svg_data = String::from_utf8(svg_data)?;
 
-                images.push(Self::import_from_svg_data(
+                vector_images.push(Self::import_from_svg_data(
                     svg_data.as_str(),
                     na::vector![x, y],
                     Some(na::vector![width, height]),
-                    Arc::clone(&renderer),
                 )?);
             }
         }
 
-        Ok(images)
-    }
-
-    pub fn update_geometry(&mut self) {
-        if let Some(new_bounds) = self.gen_bounds() {
-            self.set_bounds(new_bounds);
-        }
+        Ok(vector_images)
     }
 
     pub fn export_as_svg(&self) -> Result<String, anyhow::Error> {
-        let export_bounds = self.bounds.translate(-self.bounds().mins.coords);
-        let mut export_svg_data = self
-            .gen_svgs(-self.bounds().mins.coords)?
-            .iter()
-            .map(|svg| svg.svg_data.clone())
-            .collect::<Vec<String>>()
-            .join("\n");
+        let export_bounds = self.bounds().translate(-self.bounds().mins.coords);
 
-        export_svg_data = compose::wrap_svg_root(
+        let mut export_svg_data = self.gen_svg()?.svg_data;
+
+        export_svg_data = rnote_compose::utils::wrap_svg_root(
             export_svg_data.as_str(),
             Some(export_bounds),
             Some(export_bounds),
@@ -276,38 +279,18 @@ impl VectorImage {
 
     pub fn export_as_image_bytes(
         &self,
-        zoom: f64,
         format: image::ImageOutputFormat,
-        renderer: Arc<RwLock<Renderer>>,
+        image_scale: f64,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        let export_bounds = self.bounds.translate(-self.bounds().mins.coords);
-        let mut export_svg_data = self
-            .gen_svgs(-self.bounds().mins.coords)
-            .context("gen_svgs() failed in VectorImage export_as_bytes()")?
-            .iter()
-            .map(|svg| svg.svg_data.clone())
-            .collect::<Vec<String>>()
-            .join("\n");
-        export_svg_data = compose::wrap_svg_root(
-            export_svg_data.as_str(),
-            Some(export_bounds),
-            Some(export_bounds),
-            false,
-        );
-        let export_svg = render::Svg {
-            bounds: export_bounds,
-            svg_data: export_svg_data,
-        };
+        let bounds = self.bounds();
 
-        let image_raw = render::concat_images(
-            renderer
-                .read()
-                .unwrap()
-                .gen_images(zoom, vec![export_svg], export_bounds)?,
-            export_bounds,
-            zoom,
-        )?;
-
-        Ok(render::image_into_encoded_bytes(image_raw, format)?)
+        match render::Image::join_images(
+            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
+            bounds,
+            image_scale,
+        )? {
+            Some(image) => Ok(image.into_encoded_bytes(format)?),
+            None => Ok(vec![]),
+        }
     }
 }

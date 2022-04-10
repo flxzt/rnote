@@ -98,22 +98,17 @@ impl PenBehaviour for Selector {
 }
 
 impl DrawOnSheetBehaviour for Selector {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
         // Making sure bounds are always outside of coord + width
         let mut path_iter = self.path.iter();
         if let Some(first) = path_iter.next() {
-            let mut new_bounds = AABB::new(
-                na::Point2::from(first.pos - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
-                na::Point2::from(first.pos + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
-            );
+            let mut new_bounds = AABB::from_half_extents(na::Point2::from(first.pos), na::Vector2::repeat(Self::PATH_WIDTH / camera.zoom()));
 
             path_iter.for_each(|element| {
-                let pos_bounds = AABB::new(
-                    na::Point2::from(element.pos - na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
-                    na::Point2::from(element.pos + na::vector![Self::PATH_WIDTH, Self::PATH_WIDTH]),
-                );
+                let pos_bounds = AABB::from_half_extents(na::Point2::from(element.pos), na::Vector2::repeat(Self::PATH_WIDTH / camera.zoom()));
                 new_bounds.merge(&pos_bounds);
             });
+
             Some(new_bounds)
         } else {
             None
@@ -124,9 +119,9 @@ impl DrawOnSheetBehaviour for Selector {
         &self,
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
-        _viewport: AABB,
-        _image_scale: f64,
+        camera: &Camera,
     ) -> Result<(), anyhow::Error> {
+        let total_zoom = camera.total_zoom();
         let mut bez_path = kurbo::BezPath::new();
 
         match self.style {
@@ -158,7 +153,7 @@ impl DrawOnSheetBehaviour for Selector {
         cx.stroke_styled(
             bez_path,
             &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
-            Self::PATH_WIDTH,
+            Self::PATH_WIDTH / total_zoom,
             &piet::StrokeStyle::new().dash_pattern(&Self::DASH_PATTERN),
         );
 
@@ -167,12 +162,12 @@ impl DrawOnSheetBehaviour for Selector {
 }
 
 impl Selector {
-    pub const PATH_WIDTH: f64 = 1.5;
+    pub const PATH_WIDTH: f64 = 1.8;
     pub const OUTLINE_COLOR: Color = Color {
         r: 0.6,
         g: 0.6,
         b: 0.6,
-        a: 0.75,
+        a: 0.8,
     };
     pub const FILL_COLOR: Color = Color {
         r: 0.85,

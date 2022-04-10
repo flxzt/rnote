@@ -820,7 +820,7 @@ pub mod visual_debug {
                     if let Some(bounds) = engine
                         .penholder
                         .selector
-                        .bounds_on_sheet(sheet_bounds, viewport)
+                        .bounds_on_sheet(sheet_bounds, &engine.camera)
                     {
                         draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
                     }

@@ -179,7 +179,7 @@ impl PenBehaviour for Brush {
 }
 
 impl DrawOnSheetBehaviour for Brush {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
         let bounds = match self.style {
             BrushStyle::Marker => self.path_builder.composed_bounds(&self.smooth_options),
             BrushStyle::Solid => self.path_builder.composed_bounds(&self.smooth_options),
@@ -193,8 +193,7 @@ impl DrawOnSheetBehaviour for Brush {
         &self,
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
-        _viewport: AABB,
-        _image_scale: f64,
+        _camera: &Camera,
     ) -> Result<(), anyhow::Error> {
         // Different color for debugging
         let smooth_options = self.smooth_options;

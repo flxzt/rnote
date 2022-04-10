@@ -9,14 +9,13 @@ use crate::utils::GrapheneRectHelpers;
 /// Trait for types that can draw themselves on the sheet
 /// In the coordinate space of the sheet
 pub trait DrawOnSheetBehaviour {
-    fn bounds_on_sheet(&self, sheet_bounds: AABB, viewport: AABB) -> Option<AABB>;
+    fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB>;
     /// draws itself on the sheet. the callers are expected to call with save / restore context
     fn draw_on_sheet(
         &self,
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
-        viewport: AABB,
-        image_scale: f64,
+        camera: &Camera,
     ) -> Result<(), anyhow::Error>;
 
     /// Expects snapshot untransformed in surface coordinate space.
@@ -26,10 +25,7 @@ pub trait DrawOnSheetBehaviour {
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> Result<(), anyhow::Error> {
-        let viewport = camera.viewport();
-        let image_scale = camera.image_scale();
-
-        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, viewport) {
+        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             // Transform the bounds into surface coords
             let mut bounds_transformed = bounds
                 .scale(camera.zoom())
@@ -44,7 +40,7 @@ pub trait DrawOnSheetBehaviour {
             // Transform to sheet coordinate space
             piet_cx.transform(camera.transform().to_kurbo());
 
-            self.draw_on_sheet(&mut piet_cx, sheet_bounds, viewport, image_scale)?;
+            self.draw_on_sheet(&mut piet_cx, sheet_bounds, camera)?;
         }
 
         Ok(())

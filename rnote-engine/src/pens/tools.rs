@@ -56,7 +56,9 @@ impl ExpandSheetTool {
 }
 
 impl DrawOnSheetBehaviour for ExpandSheetTool {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+        let viewport = camera.viewport();
+
         let x = viewport.mins[0];
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
@@ -70,9 +72,9 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
         &self,
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
-        viewport: AABB,
-        _image_scale: f64,
+        camera: &Camera,
     ) -> Result<(), anyhow::Error> {
+        let viewport = camera.viewport();
         let x = viewport.mins[0];
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
@@ -152,7 +154,7 @@ impl DragProximityTool {
 }
 
 impl DrawOnSheetBehaviour for DragProximityTool {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.pos),
             na::Vector2::repeat(self.radius),
@@ -163,8 +165,7 @@ impl DrawOnSheetBehaviour for DragProximityTool {
         &self,
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
-        _viewport: AABB,
-        _image_scale: f64,
+        _camera: &Camera,
     ) -> Result<(), anyhow::Error> {
         let mut radius = self.radius;
 
@@ -202,10 +203,10 @@ impl Default for OffsetCameraTool {
 }
 
 impl DrawOnSheetBehaviour for OffsetCameraTool {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.start),
-            Self::DRAW_SIZE / 2.0,
+            (Self::DRAW_SIZE * 0.5 + na::Vector2::repeat(Self::PATH_WIDTH)) / camera.total_zoom(),
         ))
     }
 
@@ -213,26 +214,25 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
         &self,
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
-        viewport: AABB,
-        _image_scale: f64,
+        camera: &Camera,
     ) -> Result<(), anyhow::Error> {
-        const PATH_COLOR: Color = Color {
-            r: 0.5,
-            g: 0.7,
-            b: 0.7,
-            a: 1.0,
-        };
-        const PATH_WIDTH: f64 = 1.4;
-
-        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, viewport) {
+        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
+            cx.transform(kurbo::Affine::scale(1.0 / camera.total_zoom()));
 
-            let bez_path = kurbo::BezPath::from_svg(include_str!("../../data/images/hand-grab-path.txt")).unwrap();
+            let bez_path =
+                kurbo::BezPath::from_svg(include_str!("../../data/images/hand-grab-path.txt"))
+                    .unwrap();
 
             cx.stroke(
+                bez_path.clone(),
+                &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
+                Self::PATH_WIDTH,
+            );
+            cx.stroke(
                 bez_path,
-                &piet::PaintBrush::Color(PATH_COLOR.into()),
-                PATH_WIDTH
+                &piet::PaintBrush::Color(Self::PATH_COLOR.into()),
+                Self::PATH_WIDTH * 0.5,
             );
         }
         Ok(())
@@ -240,7 +240,20 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
 }
 
 impl OffsetCameraTool {
-    pub const DRAW_SIZE: na::Vector2<f64> = na::vector![28.0, 28.0];
+    const DRAW_SIZE: na::Vector2<f64> = na::vector![28.0, 28.0];
+    const PATH_COLOR: Color = Color {
+        r: 0.5,
+        g: 0.7,
+        b: 0.7,
+        a: 1.0,
+    };
+    const OUTLINE_COLOR: Color = Color {
+        r: 0.9,
+        g: 0.9,
+        b: 0.9,
+        a: 0.8,
+    };
+    const PATH_WIDTH: f64 = 2.0;
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -401,17 +414,15 @@ impl PenBehaviour for Tools {
 }
 
 impl DrawOnSheetBehaviour for Tools {
-    fn bounds_on_sheet(&self, sheet_bounds: AABB, viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
         match self.style {
-            ToolsStyle::ExpandSheet => self
-                .expandsheet_tool
-                .bounds_on_sheet(sheet_bounds, viewport),
+            ToolsStyle::ExpandSheet => self.expandsheet_tool.bounds_on_sheet(sheet_bounds, camera),
             ToolsStyle::DragProximity => self
                 .dragproximity_tool
-                .bounds_on_sheet(sheet_bounds, viewport),
-            ToolsStyle::OffsetCamera => self
-                .offsetcamera_tool
-                .bounds_on_sheet(sheet_bounds, viewport),
+                .bounds_on_sheet(sheet_bounds, camera),
+            ToolsStyle::OffsetCamera => {
+                self.offsetcamera_tool.bounds_on_sheet(sheet_bounds, camera)
+            }
         }
     }
 
@@ -419,21 +430,20 @@ impl DrawOnSheetBehaviour for Tools {
         &self,
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
-        viewport: AABB,
-        image_scale: f64,
+        camera: &Camera,
     ) -> Result<(), anyhow::Error> {
         match &self.style {
             ToolsStyle::ExpandSheet => {
                 self.expandsheet_tool
-                    .draw_on_sheet(cx, sheet_bounds, viewport, image_scale)
+                    .draw_on_sheet(cx, sheet_bounds, camera)
             }
             ToolsStyle::DragProximity => {
                 self.dragproximity_tool
-                    .draw_on_sheet(cx, sheet_bounds, viewport, image_scale)
+                    .draw_on_sheet(cx, sheet_bounds, camera)
             }
             ToolsStyle::OffsetCamera => {
                 self.offsetcamera_tool
-                    .draw_on_sheet(cx, sheet_bounds, viewport, image_scale)
+                    .draw_on_sheet(cx, sheet_bounds, camera)
             }
         }
     }

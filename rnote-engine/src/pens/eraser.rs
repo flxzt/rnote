@@ -83,7 +83,7 @@ impl Eraser {
 }
 
 impl DrawOnSheetBehaviour for Eraser {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
         self.current_input.map(|current_input| {
             AABB::from_half_extents(
                 na::Point2::from(current_input.pos),
@@ -96,10 +96,9 @@ impl DrawOnSheetBehaviour for Eraser {
         &self,
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
-        viewport: AABB,
-        _image_scale: f64,
+        camera: &Camera,
     ) -> Result<(), anyhow::Error> {
-        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, viewport) {
+        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             let fill_rect = bounds.to_kurbo_rect();
             let outline_rect = bounds.tightened(Self::OUTLINE_WIDTH * 0.5).to_kurbo_rect();
 

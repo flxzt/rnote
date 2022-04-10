@@ -19,6 +19,7 @@ pub mod imp {
     use piet::RenderContext;
     use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
     use rnote_compose::Color;
+    use rnote_engine::Camera;
     use rnote_engine::pens::Selector;
     use rnote_engine::utils::GrapheneRectHelpers;
     /*     use svg::node::element;
@@ -199,10 +200,10 @@ pub mod imp {
                 piet_cx.transform(transform.to_kurbo());
 
                 piet_cx.save().unwrap();
-                self.draw_selection_overlay(&mut piet_cx);
+                self.draw_selection_overlay(&mut piet_cx, &canvas.engine().borrow().camera);
                 piet_cx.restore().unwrap();
                 piet_cx.save().unwrap();
-                self.draw_rotation_indicator(&mut piet_cx);
+                self.draw_rotation_indicator(&mut piet_cx, &canvas.engine().borrow().camera);
                 piet_cx.restore().unwrap();
 
                 // Clip everything outside the current view
@@ -221,34 +222,36 @@ pub mod imp {
     }
 
     impl SelectionModifier {
-        fn draw_selection_overlay(&self, piet_cx: &mut impl RenderContext) {
+        fn draw_selection_overlay(&self, piet_cx: &mut impl RenderContext, camera: &Camera) {
+            let total_zoom = camera.total_zoom();
+
             if let Some(selection_bounds) = self.selection_bounds.get() {
                 let rect = selection_bounds
-                    .tightened(Selector::PATH_WIDTH)
+                    .tightened(Selector::PATH_WIDTH / total_zoom)
                     .to_kurbo_rect();
 
                 piet_cx.fill(
                     rect.clone(),
                     &piet::PaintBrush::Color(Selector::FILL_COLOR.into()),
                 );
-                piet_cx.stroke_styled(
+                piet_cx.stroke(
                     rect,
                     &piet::PaintBrush::Color(Selector::OUTLINE_COLOR.into()),
-                    Selector::PATH_WIDTH,
-                    &piet::StrokeStyle::new().dash_pattern(&Selector::DASH_PATTERN),
+                    Selector::PATH_WIDTH / total_zoom,
                 );
             };
         }
 
-        fn draw_rotation_indicator(&self, piet_cx: &mut impl RenderContext) {
-            const CENTER_CROSS_RADIUS: f64 = 10.0;
-            const CENTER_CROSS_STROKE_WIDTH: f64 = 1.0;
+        fn draw_rotation_indicator(&self, piet_cx: &mut impl RenderContext, camera: &Camera) {
             const CENTER_CROSS_COLOR: Color = Color {
                 r: 0.964,
                 g: 0.380,
                 b: 0.317,
                 a: 1.0,
             };
+            let total_zoom = camera.total_zoom();
+            let center_cross_radius: f64 = 10.0 / total_zoom;
+            let center_cross_path_width: f64 = 1.0 / total_zoom;
 
             if let (Some(rotation_center), Some(_selection_bounds)) = (
                 self.start_rotation_center.get(),
@@ -257,22 +260,22 @@ pub mod imp {
                 let mut center_cross = kurbo::BezPath::new();
                 center_cross.move_to(
                     (rotation_center.coords
-                        + na::vector![-CENTER_CROSS_RADIUS, 0.0])
+                        + na::vector![-center_cross_radius, 0.0])
                     .to_kurbo_point(),
                 );
                 center_cross.line_to(
                     (rotation_center.coords
-                        + na::vector![CENTER_CROSS_RADIUS, 0.0])
+                        + na::vector![center_cross_radius, 0.0])
                     .to_kurbo_point(),
                 );
                 center_cross.move_to(
                     (rotation_center.coords
-                        + na::vector![0.0, -CENTER_CROSS_RADIUS])
+                        + na::vector![0.0, -center_cross_radius])
                     .to_kurbo_point(),
                 );
                 center_cross.line_to(
                     (rotation_center.coords
-                        + na::vector![0.0, CENTER_CROSS_RADIUS])
+                        + na::vector![0.0, center_cross_radius])
                     .to_kurbo_point(),
                 );
 
@@ -288,7 +291,7 @@ pub mod imp {
                 piet_cx.stroke(
                     center_cross,
                     &piet::Color::from(CENTER_CROSS_COLOR),
-                    CENTER_CROSS_STROKE_WIDTH,
+                    center_cross_path_width,
                 );
                 piet_cx.restore().unwrap();
             }

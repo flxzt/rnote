@@ -161,7 +161,7 @@ impl PenBehaviour for Shaper {
 }
 
 impl DrawOnSheetBehaviour for Shaper {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
         None
     }
 
@@ -169,8 +169,7 @@ impl DrawOnSheetBehaviour for Shaper {
         &self,
         _cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
-        _viewport: AABB,
-        _image_scale: f64,
+        _camera: &Camera,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }

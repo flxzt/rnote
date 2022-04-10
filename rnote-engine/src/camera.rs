@@ -65,6 +65,7 @@ impl Camera {
         self
     }
 
+    /// the permanent zoom
     pub fn zoom(&self) -> f64 {
         self.zoom
     }
@@ -73,6 +74,7 @@ impl Camera {
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX)
     }
 
+    /// The temporary zoom, supposed to be overlayed at the surface when zooming with a timeout
     pub fn temporary_zoom(&self) -> f64 {
         self.temporary_zoom
     }
@@ -82,6 +84,7 @@ impl Camera {
             temporary_zoom.clamp(Camera::ZOOM_MIN / self.zoom, Camera::ZOOM_MAX / self.zoom)
     }
 
+    /// The total zoom of the camera, including the temporary zoom
     pub fn total_zoom(&self) -> f64 {
         self.zoom * self.temporary_zoom
     }

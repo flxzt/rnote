@@ -403,29 +403,28 @@ impl PenHolder {
 }
 
 impl DrawOnSheetBehaviour for PenHolder {
-    fn bounds_on_sheet(&self, sheet_bounds: AABB, viewport: AABB) -> Option<AABB> {
+    fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
         match self.style_w_override() {
-            PenStyle::Brush => self.brush.bounds_on_sheet(sheet_bounds, viewport),
-            PenStyle::Shaper => self.shaper.bounds_on_sheet(sheet_bounds, viewport),
-            PenStyle::Eraser => self.eraser.bounds_on_sheet(sheet_bounds, viewport),
-            PenStyle::Selector => self.selector.bounds_on_sheet(sheet_bounds, viewport),
-            PenStyle::Tools => self.tools.bounds_on_sheet(sheet_bounds, viewport),
+            PenStyle::Brush => self.brush.bounds_on_sheet(sheet_bounds, camera),
+            PenStyle::Shaper => self.shaper.bounds_on_sheet(sheet_bounds, camera),
+            PenStyle::Eraser => self.eraser.bounds_on_sheet(sheet_bounds, camera),
+            PenStyle::Selector => self.selector.bounds_on_sheet(sheet_bounds, camera),
+            PenStyle::Tools => self.tools.bounds_on_sheet(sheet_bounds, camera),
         }
     }
     fn draw_on_sheet(
         &self,
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
-        viewport: AABB,
-        image_scale: f64,
+        camera: &Camera,
     ) -> Result<(), anyhow::Error> {
         if self.pen_shown {
             match self.style_w_override() {
-                PenStyle::Brush => self.brush.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
-                PenStyle::Shaper => self.shaper.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
-                PenStyle::Eraser => self.eraser.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
-                PenStyle::Selector => self.selector.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
-                PenStyle::Tools => self.tools.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
+                PenStyle::Brush => self.brush.draw_on_sheet(cx, sheet_bounds, camera),
+                PenStyle::Shaper => self.shaper.draw_on_sheet(cx, sheet_bounds, camera),
+                PenStyle::Eraser => self.eraser.draw_on_sheet(cx, sheet_bounds, camera),
+                PenStyle::Selector => self.selector.draw_on_sheet(cx, sheet_bounds, camera),
+                PenStyle::Tools => self.tools.draw_on_sheet(cx, sheet_bounds, camera),
             }
         } else {
             Ok(())

@@ -18,7 +18,7 @@ mod imp {
 
     use once_cell::sync::Lazy;
 
-    #[derive(Debug)]
+    #[allow(missing_debug_implementations)]
     pub struct RnoteCanvas {
         pub hadjustment: RefCell<Option<Adjustment>>,
         pub hadjustment_signal: RefCell<Option<glib::SignalHandlerId>>,

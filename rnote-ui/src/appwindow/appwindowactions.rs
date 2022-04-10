@@ -654,10 +654,15 @@ impl RnoteAppWindow {
         action_refresh_ui_for_sheet.connect_activate(
             clone!(@weak self as appwindow => move |_action_refresh_ui_for_sheet, _| {
                 // Avoids borrow errors
-                let pens = appwindow.canvas().engine().borrow().penholder.clone();
+                let pen_style = appwindow.canvas().engine().borrow().penholder.style_w_override();
+                let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
+                let shaper = appwindow.canvas().engine().borrow().penholder.shaper.clone();
+                let eraser = appwindow.canvas().engine().borrow().penholder.eraser.clone();
+                let selector = appwindow.canvas().engine().borrow().penholder.selector.clone();
+                let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
 
                 // Current pen
-                match pens.style_w_override() {
+                match pen_style {
                     PenStyle::Brush => {
                         appwindow.mainheader().brush_toggle().set_active(true);
                         appwindow.narrow_brush_toggle().set_active(true);
@@ -687,31 +692,31 @@ impl RnoteAppWindow {
 
                 // Brush
                 appwindow.penssidebar().brush_page().texturedstyle_density_spinbutton()
-                    .set_value(pens.brush.textured_options.density);
+                    .set_value(brush.textured_options.density);
                 appwindow.penssidebar().brush_page().texturedstyle_radius_x_spinbutton()
-                    .set_value(pens.brush.textured_options.radii[0]);
+                    .set_value(brush.textured_options.radii[0]);
                 appwindow.penssidebar().brush_page().texturedstyle_radius_y_spinbutton()
-                    .set_value(pens.brush.textured_options.radii[1]);
-                appwindow.penssidebar().brush_page().set_texturedstyle_distribution_variant(pens.brush.textured_options.distribution);
-                match pens.brush.style {
+                    .set_value(brush.textured_options.radii[1]);
+                appwindow.penssidebar().brush_page().set_texturedstyle_distribution_variant(brush.textured_options.distribution);
+                match brush.style {
                     BrushStyle::Marker => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_marker_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.smooth_options.width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.smooth_options.stroke_color);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.width);
+                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
                         appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-marker-symbolic"));
                     },
                     BrushStyle::Solid => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.smooth_options.width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.smooth_options.stroke_color);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.width);
+                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
                         appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-solid-symbolic"));
                     },
                     BrushStyle::Textured => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(pens.brush.textured_options.width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(pens.brush.textured_options.stroke_color);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.textured_options.width);
+                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.textured_options.stroke_color);
                         appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(true);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-textured-symbolic"));
                     },
@@ -720,18 +725,18 @@ impl RnoteAppWindow {
                 // Shaper
                 appwindow.penssidebar().shaper_page()
                     .roughconfig_roughness_spinbutton()
-                    .set_value(pens.shaper.rough_options.roughness);
+                    .set_value(shaper.rough_options.roughness);
                 appwindow.penssidebar().shaper_page()
                     .roughconfig_bowing_spinbutton()
-                    .set_value(pens.shaper.rough_options.bowing);
+                    .set_value(shaper.rough_options.bowing);
                 appwindow.penssidebar().shaper_page()
                     .roughconfig_curvestepcount_spinbutton()
-                    .set_value(pens.shaper.rough_options.curve_stepcount);
+                    .set_value(shaper.rough_options.curve_stepcount);
                 appwindow.penssidebar().shaper_page()
                     .roughconfig_multistroke_switch()
-                    .set_active(!pens.shaper.rough_options.disable_multistroke);
+                    .set_active(!shaper.rough_options.disable_multistroke);
 
-                match pens.shaper.shape_type {
+                match shaper.shape_type {
                     ShapeType::Line => {
                         appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_line_row()));
                         appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(false);
@@ -748,36 +753,36 @@ impl RnoteAppWindow {
                         appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-ellipse-symbolic"));
                     }
                 }
-                match pens.shaper.style {
+                match shaper.style {
                     ShaperStyle::Smooth => {
                         appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_smooth_row()));
-                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(pens.shaper.smooth_options.width);
-                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(pens.shaper.smooth_options.stroke_color);
-                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(pens.shaper.smooth_options.fill_color);
+                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper.smooth_options.width);
+                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(shaper.smooth_options.stroke_color);
+                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(shaper.smooth_options.fill_color);
                         appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
                     },
                     ShaperStyle::Rough => {
                         appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_rough_row()));
-                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(pens.shaper.rough_options.stroke_width);
-                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(pens.shaper.rough_options.stroke_color);
-                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(pens.shaper.rough_options.fill_color);
+                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper.rough_options.stroke_width);
+                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(shaper.rough_options.stroke_color);
+                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(shaper.rough_options.fill_color);
                         appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(true);
                         appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-rough-symbolic"));
                     },
                 }
 
                 // Eraser
-                appwindow.penssidebar().eraser_page().width_spinbutton().set_value(pens.eraser.width);
+                appwindow.penssidebar().eraser_page().width_spinbutton().set_value(eraser.width);
 
                 // Selector
-                match pens.selector.style {
+                match selector.style {
                     SelectorType::Polygon => appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true),
                     SelectorType::Rectangle => appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true),
                 }
 
                 // Tools
-                match pens.tools.style {
+                match tools.style {
                     ToolsStyle::ExpandSheet => appwindow.penssidebar().tools_page().toolstyle_expandsheet_toggle().set_active(true),
                     ToolsStyle::DragProximity => appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true),
                 }

@@ -14,6 +14,7 @@ use rnote_compose::style::Composer;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
+use super::AudioPlayer;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, glib::Enum)]
 #[repr(u32)]
@@ -72,6 +73,7 @@ impl PenBehaviour for Brush {
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
         camera: &Camera,
+        audioplayer: Option<&mut AudioPlayer>,
     ) {
         match (self.current_stroke_key, event) {
             (
@@ -82,6 +84,8 @@ impl PenBehaviour for Brush {
                 },
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
+                    self.start_audio(audioplayer);
+
                     let brushstroke =
                         Stroke::BrushStroke(BrushStroke::new(Segment::Dot { element }, &self));
                     let current_stroke_key = strokes_state.insert_stroke(brushstroke);
@@ -127,8 +131,10 @@ impl PenBehaviour for Brush {
                     }
                 }
             }
-            (None, PenEvent::Up { .. }) => {}
+            (None, PenEvent::Up { .. }) => self.stop_audio(audioplayer),
             (Some(current_stroke_key), pen_event @ PenEvent::Up { .. }) => {
+                self.stop_audio(audioplayer);
+
                 if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
                     for new_segment in new_segments {
                         strokes_state.add_segment_to_brushstroke(current_stroke_key, new_segment);
@@ -143,9 +149,11 @@ impl PenBehaviour for Brush {
                 self.current_stroke_key = None;
             }
             (None, pen_event @ PenEvent::Cancel) => {
+                self.stop_audio(audioplayer);
                 self.path_builder.handle_event(pen_event);
             }
             (Some(current_stroke_key), pen_event @ PenEvent::Cancel) => {
+                self.stop_audio(audioplayer);
                 self.path_builder.handle_event(pen_event);
 
                 // Finish up the last stroke
@@ -206,4 +214,23 @@ impl DrawOnSheetBehaviour for Brush {
 
 impl Brush {
     pub const INPUT_OVERSHOOT: f64 = 30.0;
+
+    fn start_audio(&self, audioplayer: Option<&mut AudioPlayer>) {
+        if let Some(audioplayer) = audioplayer {
+            match self.style {
+                BrushStyle::Marker => {
+                    audioplayer.play_random_marker_sound();
+                }
+                BrushStyle::Solid | BrushStyle::Textured => {
+                    audioplayer.start_random_brush_sound();
+                }
+            }
+        }
+    }
+
+    fn stop_audio(&self, audioplayer: Option<&mut AudioPlayer>) {
+        if let Some(audioplayer) = audioplayer {
+            audioplayer.stop_random_brush_sond();
+        }
+    }
 }

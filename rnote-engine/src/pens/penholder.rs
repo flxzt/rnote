@@ -12,7 +12,7 @@ use num_derive::FromPrimitive;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use super::{Brush, Eraser, PenBehaviour, Selector, Shaper, Shortcuts};
+use super::{AudioPlayer, Brush, Eraser, PenBehaviour, Selector, Shaper, Shortcuts};
 
 #[derive(
     Eq,
@@ -115,7 +115,8 @@ pub enum PenHolderEvent {
 }
 
 /// This holds the pens and is the main interaction point when changing the pen style / emitting pen events.
-#[derive(Default, Clone, Debug, Serialize, Deserialize)]
+#[allow(missing_debug_implementations)]
+#[derive(Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
     // brushes are configurable from the public
@@ -141,6 +142,31 @@ pub struct PenHolder {
     state: PenState,
     #[serde(skip)]
     style_override: Option<PenStyle>,
+    #[serde(skip)]
+    pub audioplayer: Option<AudioPlayer>,
+}
+
+impl Default for PenHolder {
+    fn default() -> Self {
+        let audioplayer = AudioPlayer::new().map_err(|e| {
+            log::error!("failed to create a new audio player in PenHolder::default(), Err {}", e);
+        }).ok();
+
+        Self {
+            brush: Brush::default(),
+            shaper: Shaper::default(),
+            eraser: Eraser::default(),
+            selector: Selector::default(),
+            tools: Tools::default(),
+
+            style: PenStyle::default(),
+            shortcuts: Shortcuts::default(),
+            pen_shown: false,
+            state: PenState::default(),
+            style_override: None,
+            audioplayer,
+        }
+    }
 }
 
 impl PenHolder {
@@ -331,23 +357,23 @@ impl PenHolder {
         match self.style_w_override() {
             PenStyle::Brush => {
                 self.brush
-                    .handle_event(pen_event, sheet, strokes_state, camera);
+                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
             }
             PenStyle::Shaper => {
                 self.shaper
-                    .handle_event(pen_event, sheet, strokes_state, camera);
+                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
             }
             PenStyle::Eraser => {
                 self.eraser
-                    .handle_event(pen_event, sheet, strokes_state, camera);
+                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
             }
             PenStyle::Selector => {
                 self.selector
-                    .handle_event(pen_event, sheet, strokes_state, camera);
+                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
             }
             PenStyle::Tools => {
                 self.tools
-                    .handle_event(pen_event, sheet, strokes_state, camera);
+                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
             }
         }
     }

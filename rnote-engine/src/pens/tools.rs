@@ -8,6 +8,7 @@ use gtk4::glib;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
+use super::AudioPlayer;
 use super::penbehaviour::PenBehaviour;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, glib::Enum)]
@@ -235,6 +236,7 @@ impl PenBehaviour for Tools {
         _sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
         camera: &Camera,
+        _audioplayer: Option<&mut AudioPlayer>,
     ) {
         match (self.state, event) {
             (

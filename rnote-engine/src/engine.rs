@@ -30,7 +30,8 @@ impl Default for ExpandMode {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[allow(missing_debug_implementations)]
+#[derive(Serialize, Deserialize)]
 pub struct RnoteEngine {
     pub sheet: Sheet,
     pub penholder: PenHolder,

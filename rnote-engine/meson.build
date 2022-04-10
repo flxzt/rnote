@@ -1,1 +1,2 @@
+subdir('data')
 subdir('src')

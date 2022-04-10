@@ -23,7 +23,7 @@ mod imp {
         workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
     };
 
-    #[derive(Debug)]
+    #[allow(missing_debug_implementations)]
     pub struct RnoteApp {
         pub input_file: RefCell<Option<gio::File>>,
     }

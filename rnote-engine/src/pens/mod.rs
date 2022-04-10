@@ -9,6 +9,7 @@ pub mod shortcuts;
 pub mod tools;
 
 // Re-exports
+pub use audioplayer::AudioPlayer;
 pub use brush::Brush;
 pub use eraser::Eraser;
 pub use penbehaviour::PenBehaviour;

@@ -19,7 +19,8 @@ mod imp {
         settingspanel::SettingsPanel, workspacebrowser::WorkspaceBrowser,
     };
 
-    #[derive(Debug, CompositeTemplate)]
+    #[allow(missing_debug_implementations)]
+    #[derive(CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
     pub struct RnoteAppWindow {
         pub app_settings: gio::Settings,
@@ -234,7 +235,7 @@ mod imp {
 
         fn set_property(
             &self,
-            _obj: &Self::Type,
+            obj: &Self::Type,
             _id: usize,
             value: &glib::Value,
             pspec: &glib::ParamSpec,
@@ -258,6 +259,12 @@ mod imp {
                         .expect("The value needs to be of type `bool`.");
 
                     self.pen_sounds.replace(pen_sounds);
+
+                    if let Some(ref mut audioplayer) =
+                        obj.canvas().engine().borrow_mut().penholder.audioplayer
+                    {
+                        audioplayer.enabled = pen_sounds;
+                    }
                 }
                 _ => unimplemented!(),
             }

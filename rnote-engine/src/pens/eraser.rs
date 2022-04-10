@@ -6,6 +6,7 @@ use rnote_compose::{Color, PenEvent};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
+use super::AudioPlayer;
 use super::penbehaviour::PenBehaviour;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -33,6 +34,7 @@ impl PenBehaviour for Eraser {
         _sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
         camera: &Camera,
+        _audioplayer: Option<&mut AudioPlayer>,
     ) {
         match event {
             PenEvent::Down {

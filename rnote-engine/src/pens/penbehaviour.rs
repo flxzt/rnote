@@ -1,6 +1,8 @@
 use crate::sheet::Sheet;
 use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
 
+use super::AudioPlayer;
+
 pub trait PenBehaviour: DrawOnSheetBehaviour {
     fn handle_event(
         &mut self,
@@ -8,5 +10,6 @@ pub trait PenBehaviour: DrawOnSheetBehaviour {
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
         camera: &Camera,
+        audioplayer: Option<&mut AudioPlayer>,
     );
 }

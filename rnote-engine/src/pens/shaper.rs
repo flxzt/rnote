@@ -1,3 +1,4 @@
+use super::AudioPlayer;
 use super::penbehaviour::PenBehaviour;
 use crate::sheet::Sheet;
 use crate::strokes::ShapeStroke;
@@ -72,6 +73,7 @@ impl PenBehaviour for Shaper {
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
         camera: &Camera,
+        _audioplayer: Option<&mut AudioPlayer>,
     ) {
         match (self.current_stroke_key, event) {
             (

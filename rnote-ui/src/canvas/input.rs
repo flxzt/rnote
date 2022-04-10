@@ -223,6 +223,7 @@ pub fn process_pen_up(
             })
         }
     };
+
     let surface_flags = appwindow
         .canvas()
         .engine()

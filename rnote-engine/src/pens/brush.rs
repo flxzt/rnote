@@ -125,14 +125,17 @@ impl PenBehaviour for Brush {
                             no_segments,
                             camera.image_scale(),
                         );
-
-                        /*                         strokes_state
-                        .regenerate_rendering_for_stroke_threaded(current_stroke_key, zoom); */
                     }
                 }
             }
             (None, PenEvent::Up { .. }) => self.stop_audio(audioplayer),
-            (Some(current_stroke_key), pen_event @ PenEvent::Up { .. }) => {
+            (
+                Some(current_stroke_key),
+                pen_event @ PenEvent::Up {
+                    element: _,
+                    shortcut_key: _,
+                },
+            ) => {
                 self.stop_audio(audioplayer);
 
                 if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
@@ -140,6 +143,7 @@ impl PenBehaviour for Brush {
                         strokes_state.add_segment_to_brushstroke(current_stroke_key, new_segment);
                     }
                 }
+
                 // Finish up the last stroke
                 strokes_state.update_geometry_for_stroke(current_stroke_key);
                 strokes_state.regenerate_rendering_for_stroke_threaded(

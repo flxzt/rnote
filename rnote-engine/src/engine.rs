@@ -86,6 +86,7 @@ impl RnoteEngine {
             .regenerate_rendering_in_viewport_threaded(false, Some(viewport), image_scale);
     }
 
+    /// Public method to handle pen events coming from ui event handlers
     pub fn handle_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
         self.penholder.handle_event(
             event,

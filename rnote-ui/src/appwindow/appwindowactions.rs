@@ -739,17 +739,14 @@ impl RnoteAppWindow {
                 match shaper.shape_type {
                     ShapeType::Line => {
                         appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_line_row()));
-                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(false);
                         appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-line-symbolic"));
                     }
                     ShapeType::Rectangle => {
                         appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_rectangle_row()));
-                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
                         appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-rectangle-symbolic"));
                     }
                     ShapeType::Ellipse => {
                         appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_ellipse_row()));
-                        appwindow.penssidebar().shaper_page().fill_revealer().set_reveal_child(true);
                         appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-ellipse-symbolic"));
                     }
                 }

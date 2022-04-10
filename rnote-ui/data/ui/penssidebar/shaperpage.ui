@@ -329,29 +329,16 @@
       </object>
     </child>
     <child>
-      <object class="GtkRevealer" id="fill_revealer">
-        <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_DOWN</property>
-        <property name="transition_duration">300</property>
-        <property name="reveal-child">true</property>
-        <child>
-          <object class="GtkBox" id="fill_box">
-            <property name="spacing">6</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkImage">
-                <property name="icon_name">fill-color-symbolic</property>
-                <property name="margin-top">6</property>
-                <property name="margin-bottom">6</property>
-              </object>
-            </child>
-            <child>
-              <object class="ColorPicker" id="fill_colorpicker">
-                <property name="height_request">127</property>
-                <property name="amount-colorbuttons">2</property>
-              </object>
-            </child>
-          </object>
-        </child>
+      <object class="GtkImage">
+        <property name="icon_name">fill-color-symbolic</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+      </object>
+    </child>
+    <child>
+      <object class="ColorPicker" id="fill_colorpicker">
+        <property name="height_request">127</property>
+        <property name="amount-colorbuttons">2</property>
       </object>
     </child>
   </template>

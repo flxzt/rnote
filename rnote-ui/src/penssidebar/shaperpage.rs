@@ -1,7 +1,7 @@
 mod imp {
     use crate::colorpicker::ColorPicker;
     use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{MenuButton, Popover, Revealer, SpinButton, Switch, Image, ListBox};
+    use gtk4::{MenuButton, Popover, SpinButton, Switch, Image, ListBox};
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
@@ -32,8 +32,6 @@ mod imp {
         pub width_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub stroke_colorpicker: TemplateChild<ColorPicker>,
-        #[template_child]
-        pub fill_revealer: TemplateChild<Revealer>,
         #[template_child]
         pub fill_colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
@@ -81,7 +79,7 @@ mod imp {
 }
 
 use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use gtk4::{gdk, MenuButton, Popover, Revealer, SpinButton, Switch, ListBox, Image};
+use gtk4::{gdk, MenuButton, Popover, SpinButton, Switch, ListBox, Image};
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
 use rnote_compose::style::rough::RoughOptions;
 use rnote_engine::pens::shaper::ShaperStyle;
@@ -180,10 +178,6 @@ impl ShaperPage {
         imp::ShaperPage::from_instance(self)
             .stroke_colorpicker
             .get()
-    }
-
-    pub fn fill_revealer(&self) -> Revealer {
-        imp::ShaperPage::from_instance(self).fill_revealer.get()
     }
 
     pub fn fill_colorpicker(&self) -> ColorPicker {

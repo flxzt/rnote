@@ -1,6 +1,7 @@
 use crate::pens::penholder::PenStyle;
 
 /// Flags returned to the surface drawing the engine
+#[must_use]
 #[derive(Debug, Clone, Copy)]
 pub struct SurfaceFlags {
     pub quit: bool,
@@ -13,6 +14,7 @@ pub struct SurfaceFlags {
     pub selection_changed: bool,
     /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
     pub hide_scrollbars: Option<bool>,
+    pub new_camera_offset: bool,
 }
 
 impl Default for SurfaceFlags {
@@ -27,6 +29,7 @@ impl Default for SurfaceFlags {
             sheet_changed: false,
             selection_changed: false,
             hide_scrollbars: None,
+            new_camera_offset: false,
         }
     }
 }
@@ -52,7 +55,12 @@ impl SurfaceFlags {
         } else {
             self.hide_scrollbars
         };
+        self.new_camera_offset |= other.new_camera_offset;
 
         self
+    }
+
+    pub fn merge_with_other(&mut self, other: Self) {
+        *self = self.merged_with_other(other);
     }
 }

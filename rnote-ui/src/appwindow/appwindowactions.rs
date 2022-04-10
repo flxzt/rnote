@@ -643,6 +643,9 @@ impl RnoteAppWindow {
                 "dragproximity" => {
                     appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::DragProximity;
                 },
+                "offsetcamera" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::OffsetCamera;
+                },
                 _ => { log::error!("set invalid state of action `tool-style`")}
             }
 
@@ -782,6 +785,7 @@ impl RnoteAppWindow {
                 match tools.style {
                     ToolsStyle::ExpandSheet => appwindow.penssidebar().tools_page().toolstyle_expandsheet_toggle().set_active(true),
                     ToolsStyle::DragProximity => appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true),
+                    ToolsStyle::OffsetCamera => appwindow.penssidebar().tools_page().toolstyle_offsetcamera_toggle().set_active(true),
                 }
 
                 // Settings panel

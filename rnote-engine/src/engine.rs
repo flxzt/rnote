@@ -92,7 +92,7 @@ impl RnoteEngine {
             event,
             &mut self.sheet,
             &mut self.strokes_state,
-            &self.camera,
+            &mut self.camera,
         )
     }
 

@@ -16,6 +16,7 @@ pub trait DrawOnSheetBehaviour {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         viewport: AABB,
+        image_scale: f64,
     ) -> Result<(), anyhow::Error>;
 
     /// Expects snapshot untransformed in surface coordinate space.
@@ -26,6 +27,8 @@ pub trait DrawOnSheetBehaviour {
         camera: &Camera,
     ) -> Result<(), anyhow::Error> {
         let viewport = camera.viewport();
+        let image_scale = camera.image_scale();
+
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, viewport) {
             // Transform the bounds into surface coords
             let mut bounds_transformed = bounds
@@ -41,7 +44,7 @@ pub trait DrawOnSheetBehaviour {
             // Transform to sheet coordinate space
             piet_cx.transform(camera.transform().to_kurbo());
 
-            self.draw_on_sheet(&mut piet_cx, sheet_bounds, viewport)?;
+            self.draw_on_sheet(&mut piet_cx, sheet_bounds, viewport, image_scale)?;
         }
 
         Ok(())

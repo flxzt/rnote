@@ -716,7 +716,7 @@ impl RnoteAppWindow {
             self.canvas()
                 .selection_modifier()
                 .update_state(&self.canvas());
-            self.queue_resize();
+            self.canvas().queue_resize();
         }
         if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
             if hide_scrollbars {
@@ -726,6 +726,10 @@ impl RnoteAppWindow {
                 self.canvas_scroller()
                     .set_policy(PolicyType::Automatic, PolicyType::Automatic);
             }
+        }
+        if surface_flags.new_camera_offset {
+            let new_offsets = self.canvas().engine().borrow().camera.offset;
+            self.canvas().update_offset(new_offsets);
         }
 
         false
@@ -863,7 +867,7 @@ impl RnoteAppWindow {
             canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
                 let new_adj_values = touch_drag_start.get() - na::vector![x,y];
 
-                appwindow.canvas().update_camera_offset(new_adj_values);
+                appwindow.canvas().update_offset(new_adj_values);
             }));
         }
 
@@ -880,7 +884,7 @@ impl RnoteAppWindow {
             canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
                 let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
 
-                appwindow.canvas().update_camera_offset(new_adj_values);
+                appwindow.canvas().update_offset(new_adj_values);
             }));
         }
 
@@ -897,7 +901,7 @@ impl RnoteAppWindow {
             canvas_mouse_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
                 let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
 
-                appwindow.canvas().update_camera_offset(new_adj_values);
+                appwindow.canvas().update_offset(new_adj_values);
             }));
         }
 
@@ -953,7 +957,7 @@ impl RnoteAppWindow {
                         let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
                         let new_adj_values = adjs_begin.get() * prev_scale.get() - bbcenter_delta;
 
-                        appwindow.canvas().update_camera_offset(new_adj_values);
+                        appwindow.canvas().update_offset(new_adj_values);
                     }
             }));
 

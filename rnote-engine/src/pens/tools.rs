@@ -1,33 +1,14 @@
 use crate::sheet::Sheet;
 use crate::strokesstate::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, StrokesState, SurfaceFlags};
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 use rnote_compose::{Color, PenEvent};
 
-use gtk4::glib;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use super::AudioPlayer;
 use super::penbehaviour::PenBehaviour;
-
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, glib::Enum)]
-#[serde(rename = "tools_style")]
-#[enum_type(name = "ToolsStyle")]
-pub enum ToolsStyle {
-    #[serde(rename = "expandsheet")]
-    #[enum_value(name = "Expandsheet", nick = "expandsheet")]
-    ExpandSheet,
-    #[serde(rename = "dragproximity")]
-    #[enum_value(name = "Dragproximity", nick = "dragproximity")]
-    DragProximity,
-}
-
-impl Default for ToolsStyle {
-    fn default() -> Self {
-        Self::ExpandSheet
-    }
-}
+use super::AudioPlayer;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "expandsheet_tool")]
@@ -90,6 +71,7 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         viewport: AABB,
+        _image_scale: f64,
     ) -> Result<(), anyhow::Error> {
         let x = viewport.mins[0];
         let y = self.start_pos_y;
@@ -182,6 +164,7 @@ impl DrawOnSheetBehaviour for DragProximityTool {
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         _viewport: AABB,
+        _image_scale: f64,
     ) -> Result<(), anyhow::Error> {
         let mut radius = self.radius;
 
@@ -203,6 +186,80 @@ impl DrawOnSheetBehaviour for DragProximityTool {
     }
 }
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(default, rename = "offsetcamera_tool")]
+pub struct OffsetCameraTool {
+    #[serde(skip)]
+    pub start: na::Vector2<f64>,
+}
+
+impl Default for OffsetCameraTool {
+    fn default() -> Self {
+        Self {
+            start: na::Vector2::zeros(),
+        }
+    }
+}
+
+impl DrawOnSheetBehaviour for OffsetCameraTool {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _viewport: AABB) -> Option<AABB> {
+        Some(AABB::from_half_extents(
+            na::Point2::from(self.start),
+            Self::DRAW_SIZE / 2.0,
+        ))
+    }
+
+    fn draw_on_sheet(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        sheet_bounds: AABB,
+        viewport: AABB,
+        _image_scale: f64,
+    ) -> Result<(), anyhow::Error> {
+        const PATH_COLOR: Color = Color {
+            r: 0.5,
+            g: 0.7,
+            b: 0.7,
+            a: 1.0,
+        };
+        const PATH_WIDTH: f64 = 1.4;
+
+        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, viewport) {
+            cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
+
+            let bez_path = kurbo::BezPath::from_svg(include_str!("../../data/images/hand-grab-path.txt")).unwrap();
+
+            cx.stroke(
+                bez_path,
+                &piet::PaintBrush::Color(PATH_COLOR.into()),
+                PATH_WIDTH
+            );
+        }
+        Ok(())
+    }
+}
+
+impl OffsetCameraTool {
+    pub const DRAW_SIZE: na::Vector2<f64> = na::vector![28.0, 28.0];
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename = "tools_style")]
+pub enum ToolsStyle {
+    #[serde(rename = "expandsheet")]
+    ExpandSheet,
+    #[serde(rename = "dragproximity")]
+    DragProximity,
+    #[serde(rename = "offsetcamera")]
+    OffsetCamera,
+}
+
+impl Default for ToolsStyle {
+    fn default() -> Self {
+        Self::ExpandSheet
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 enum ToolsState {
     UpState,
@@ -220,10 +277,12 @@ impl Default for ToolsState {
 pub struct Tools {
     #[serde(rename = "style")]
     pub style: ToolsStyle,
-    #[serde(skip)]
-    pub expand_sheet_tool: ExpandSheetTool,
-    #[serde(skip)]
-    pub drag_proximity_tool: DragProximityTool,
+    #[serde(rename = "expandsheet_tool")]
+    pub expandsheet_tool: ExpandSheetTool,
+    #[serde(rename = "dragproximity_tool")]
+    pub dragproximity_tool: DragProximityTool,
+    #[serde(rename = "offsetcamera_tool")]
+    pub offsetcamera_tool: OffsetCameraTool,
 
     #[serde(skip)]
     state: ToolsState,
@@ -235,9 +294,11 @@ impl PenBehaviour for Tools {
         event: PenEvent,
         _sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        camera: &Camera,
+        camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) {
+    ) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         match (self.state, event) {
             (
                 ToolsState::UpState,
@@ -248,15 +309,18 @@ impl PenBehaviour for Tools {
             ) => {
                 match self.style {
                     ToolsStyle::ExpandSheet => {
-                        self.expand_sheet_tool.start_pos_y = element.pos[1];
-                        self.expand_sheet_tool.current_pos_y = element.pos[1];
+                        self.expandsheet_tool.start_pos_y = element.pos[1];
+                        self.expandsheet_tool.current_pos_y = element.pos[1];
 
-                        self.expand_sheet_tool.strokes_below =
-                            strokes_state.keys_below_y_pos(self.expand_sheet_tool.current_pos_y);
+                        self.expandsheet_tool.strokes_below =
+                            strokes_state.keys_below_y_pos(self.expandsheet_tool.current_pos_y);
                     }
                     ToolsStyle::DragProximity => {
-                        self.drag_proximity_tool.pos = element.pos;
-                        self.drag_proximity_tool.offset = na::Vector2::zeros();
+                        self.dragproximity_tool.pos = element.pos;
+                        self.dragproximity_tool.offset = na::Vector2::zeros();
+                    }
+                    ToolsStyle::OffsetCamera => {
+                        self.offsetcamera_tool.start = element.pos;
                     }
                 }
 
@@ -270,33 +334,48 @@ impl PenBehaviour for Tools {
                 },
             ) => match self.style {
                 ToolsStyle::ExpandSheet => {
-                    let y_offset = element.pos[1] - self.expand_sheet_tool.current_pos_y;
+                    let y_offset = element.pos[1] - self.expandsheet_tool.current_pos_y;
 
                     if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
                         strokes_state.translate_strokes(
-                            &self.expand_sheet_tool.strokes_below,
+                            &self.expandsheet_tool.strokes_below,
                             na::vector![0.0, y_offset],
                         );
 
-                        self.expand_sheet_tool.current_pos_y = element.pos[1];
+                        self.expandsheet_tool.current_pos_y = element.pos[1];
                     }
                 }
                 ToolsStyle::DragProximity => {
-                    let offset = element.pos - self.drag_proximity_tool.pos;
-                    self.drag_proximity_tool.offset = offset;
+                    let offset = element.pos - self.dragproximity_tool.pos;
+                    self.dragproximity_tool.offset = offset;
 
-                    if self.drag_proximity_tool.offset.magnitude()
+                    if self.dragproximity_tool.offset.magnitude()
                         > DragProximityTool::OFFSET_MAGN_THRESHOLD
                     {
-                        strokes_state.drag_strokes_proximity(&self.drag_proximity_tool);
+                        strokes_state.drag_strokes_proximity(&self.dragproximity_tool);
                         strokes_state.regenerate_rendering_in_viewport_threaded(
                             false,
                             Some(camera.viewport()),
                             camera.image_scale(),
                         );
 
-                        self.drag_proximity_tool.pos = element.pos;
-                        self.drag_proximity_tool.offset = na::Vector2::zeros();
+                        self.dragproximity_tool.pos = element.pos;
+                        self.dragproximity_tool.offset = na::Vector2::zeros();
+                    }
+                }
+                ToolsStyle::OffsetCamera => {
+                    let offset = camera
+                        .transform()
+                        .transform_point(&na::Point2::from(element.pos))
+                        .coords
+                        - camera
+                            .transform()
+                            .transform_point(&na::Point2::from(self.offsetcamera_tool.start))
+                            .coords;
+
+                    if offset.magnitude() > 1.0 {
+                        camera.offset -= offset;
+                        surface_flags.new_camera_offset = true;
                     }
                 }
             },
@@ -316,6 +395,8 @@ impl PenBehaviour for Tools {
                 self.state = ToolsState::UpState;
             }
         }
+
+        surface_flags
     }
 }
 
@@ -323,10 +404,13 @@ impl DrawOnSheetBehaviour for Tools {
     fn bounds_on_sheet(&self, sheet_bounds: AABB, viewport: AABB) -> Option<AABB> {
         match self.style {
             ToolsStyle::ExpandSheet => self
-                .expand_sheet_tool
+                .expandsheet_tool
                 .bounds_on_sheet(sheet_bounds, viewport),
             ToolsStyle::DragProximity => self
-                .drag_proximity_tool
+                .dragproximity_tool
+                .bounds_on_sheet(sheet_bounds, viewport),
+            ToolsStyle::OffsetCamera => self
+                .offsetcamera_tool
                 .bounds_on_sheet(sheet_bounds, viewport),
         }
     }
@@ -336,15 +420,20 @@ impl DrawOnSheetBehaviour for Tools {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         viewport: AABB,
+        image_scale: f64,
     ) -> Result<(), anyhow::Error> {
         match &self.style {
             ToolsStyle::ExpandSheet => {
-                self.expand_sheet_tool
-                    .draw_on_sheet(cx, sheet_bounds, viewport)
+                self.expandsheet_tool
+                    .draw_on_sheet(cx, sheet_bounds, viewport, image_scale)
             }
             ToolsStyle::DragProximity => {
-                self.drag_proximity_tool
-                    .draw_on_sheet(cx, sheet_bounds, viewport)
+                self.dragproximity_tool
+                    .draw_on_sheet(cx, sheet_bounds, viewport, image_scale)
+            }
+            ToolsStyle::OffsetCamera => {
+                self.offsetcamera_tool
+                    .draw_on_sheet(cx, sheet_bounds, viewport, image_scale)
             }
         }
     }
@@ -356,12 +445,15 @@ impl Tools {
 
         match current_style {
             ToolsStyle::ExpandSheet => {
-                self.expand_sheet_tool.start_pos_y = 0.0;
-                self.expand_sheet_tool.current_pos_y = 0.0;
+                self.expandsheet_tool.start_pos_y = 0.0;
+                self.expandsheet_tool.current_pos_y = 0.0;
             }
             ToolsStyle::DragProximity => {
-                self.drag_proximity_tool.pos = na::Vector2::zeros();
-                self.drag_proximity_tool.offset = na::Vector2::zeros();
+                self.dragproximity_tool.pos = na::Vector2::zeros();
+                self.dragproximity_tool.offset = na::Vector2::zeros();
+            }
+            ToolsStyle::OffsetCamera => {
+                self.offsetcamera_tool.start = na::Vector2::zeros();
             }
         }
     }

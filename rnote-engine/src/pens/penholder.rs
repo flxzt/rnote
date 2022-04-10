@@ -211,7 +211,7 @@ impl PenHolder {
         event: PenHolderEvent,
         sheet: &mut crate::sheet::Sheet,
         strokes_state: &mut StrokesState,
-        camera: &Camera,
+        camera: &mut Camera,
     ) -> SurfaceFlags {
         /*         log::debug!(
             "handle_event() with state: {:?}, event: {:?}, style: {:?}, style_override: {:?}",
@@ -222,6 +222,7 @@ impl PenHolder {
         ); */
 
         let mut surface_flags = SurfaceFlags::default();
+
         match (self.state, event) {
             (
                 PenState::Up,
@@ -236,7 +237,7 @@ impl PenHolder {
                     self.change_state_for_shortcut_key(shortcut_key, &mut surface_flags);
                 }
 
-                self.handle_pen_event(pen_event, sheet, strokes_state, camera);
+                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
 
                 self.state = PenState::Down;
                 self.pen_shown = true;
@@ -245,7 +246,7 @@ impl PenHolder {
                 surface_flags.hide_scrollbars = Some(true);
             }
             (PenState::Down, PenHolderEvent::PenEvent(pen_event @ PenEvent::Down { .. })) => {
-                self.handle_pen_event(pen_event, sheet, strokes_state, camera);
+                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
 
                 surface_flags.redraw = true;
             }
@@ -255,7 +256,7 @@ impl PenHolder {
                 let all_strokes = strokes_state.keys_sorted_chrono();
                 strokes_state.set_selected_keys(&all_strokes, false);
 
-                self.handle_pen_event(pen_event, sheet, strokes_state, camera);
+                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
 
                 self.state = PenState::Up;
                 self.pen_shown = false;
@@ -272,10 +273,10 @@ impl PenHolder {
                 surface_flags.hide_scrollbars = Some(false);
             }
             (_, PenHolderEvent::PenEvent(pen_event @ PenEvent::Proximity { .. })) => {
-                self.handle_pen_event(pen_event, sheet, strokes_state, camera);
+                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
             }
             (_, PenHolderEvent::PenEvent(pen_event @ PenEvent::Cancel)) => {
-                self.handle_pen_event(pen_event, sheet, strokes_state, camera);
+                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
 
                 self.state = PenState::Up;
 
@@ -287,7 +288,7 @@ impl PenHolder {
             (PenState::Down, PenHolderEvent::ChangeStyle(new_style)) => {
                 if self.style != new_style {
                     // before changing the style, the current stroke is finished
-                    self.handle_pen_event(PenEvent::Cancel, sheet, strokes_state, camera);
+                    surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, sheet, strokes_state, camera));
 
                     self.state = PenState::Up;
                     self.pen_shown = false;
@@ -312,7 +313,7 @@ impl PenHolder {
             (PenState::Down, PenHolderEvent::ChangeStyleOverride(new_style_override)) => {
                 if self.style_override != new_style_override {
                     // before changing the style override, the current stroke is finished
-                    self.handle_pen_event(PenEvent::Cancel, sheet, strokes_state, camera);
+                    surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, sheet, strokes_state, camera));
 
                     self.pen_shown = false;
                     self.state = PenState::Up;
@@ -349,31 +350,31 @@ impl PenHolder {
 
     fn handle_pen_event(
         &mut self,
-        pen_event: PenEvent,
+        event: PenEvent,
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        camera: &Camera,
-    ) {
+        camera: &mut Camera,
+    ) -> SurfaceFlags {
         match self.style_w_override() {
             PenStyle::Brush => {
                 self.brush
-                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
+                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
             }
             PenStyle::Shaper => {
                 self.shaper
-                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
+                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
             }
             PenStyle::Eraser => {
                 self.eraser
-                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
+                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
             }
             PenStyle::Selector => {
                 self.selector
-                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
+                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
             }
             PenStyle::Tools => {
                 self.tools
-                    .handle_event(pen_event, sheet, strokes_state, camera, self.audioplayer.as_mut());
+                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
             }
         }
     }
@@ -416,14 +417,15 @@ impl DrawOnSheetBehaviour for PenHolder {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         viewport: AABB,
+        image_scale: f64,
     ) -> Result<(), anyhow::Error> {
         if self.pen_shown {
             match self.style_w_override() {
-                PenStyle::Brush => self.brush.draw_on_sheet(cx, sheet_bounds, viewport),
-                PenStyle::Shaper => self.shaper.draw_on_sheet(cx, sheet_bounds, viewport),
-                PenStyle::Eraser => self.eraser.draw_on_sheet(cx, sheet_bounds, viewport),
-                PenStyle::Selector => self.selector.draw_on_sheet(cx, sheet_bounds, viewport),
-                PenStyle::Tools => self.tools.draw_on_sheet(cx, sheet_bounds, viewport),
+                PenStyle::Brush => self.brush.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
+                PenStyle::Shaper => self.shaper.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
+                PenStyle::Eraser => self.eraser.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
+                PenStyle::Selector => self.selector.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
+                PenStyle::Tools => self.tools.draw_on_sheet(cx, sheet_bounds, viewport, image_scale),
             }
         } else {
             Ok(())

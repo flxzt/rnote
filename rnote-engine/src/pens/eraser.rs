@@ -1,4 +1,4 @@
-use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokesState, SurfaceFlags};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
 use rnote_compose::{Color, PenEvent};
@@ -33,9 +33,11 @@ impl PenBehaviour for Eraser {
         event: PenEvent,
         _sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        camera: &Camera,
+        camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) {
+    ) -> SurfaceFlags {
+        let surface_flags = SurfaceFlags::default();
+
         match event {
             PenEvent::Down {
                 element,
@@ -49,6 +51,8 @@ impl PenBehaviour for Eraser {
             PenEvent::Proximity { .. } => self.current_input = None,
             PenEvent::Cancel => self.current_input = None,
         }
+
+        surface_flags
     }
 }
 
@@ -93,6 +97,7 @@ impl DrawOnSheetBehaviour for Eraser {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         viewport: AABB,
+        _image_scale: f64,
     ) -> Result<(), anyhow::Error> {
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, viewport) {
             let fill_rect = bounds.to_kurbo_rect();

@@ -4,7 +4,7 @@ use crate::sheet::Sheet;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::strokesstate::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, StrokesState, SurfaceFlags};
 
 use gtk4::glib;
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -72,9 +72,11 @@ impl PenBehaviour for Shaper {
         event: PenEvent,
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        camera: &Camera,
+        camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) {
+    ) -> SurfaceFlags {
+        let surface_flags = SurfaceFlags::default();
+
         match (self.current_stroke_key, event) {
             (
                 None,
@@ -153,6 +155,8 @@ impl PenBehaviour for Shaper {
                 self.current_stroke_key = None;
             }
         }
+
+        surface_flags
     }
 }
 
@@ -166,6 +170,7 @@ impl DrawOnSheetBehaviour for Shaper {
         _cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         _viewport: AABB,
+        _image_scale: f64,
     ) -> Result<(), anyhow::Error> {
         Ok(())
     }

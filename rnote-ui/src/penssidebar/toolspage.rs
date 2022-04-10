@@ -8,6 +8,8 @@ mod imp {
         pub toolstyle_expandsheet_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub toolstyle_dragproximity_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -71,6 +73,12 @@ impl ToolsPage {
             .get()
     }
 
+    pub fn toolstyle_offsetcamera_toggle(&self) -> ToggleButton {
+        imp::ToolsPage::from_instance(self)
+            .toolstyle_offsetcamera_toggle
+            .get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.toolstyle_expandsheet_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_expandsheet_toggle| {
             if toolstyle_expandsheet_toggle.is_active() {
@@ -81,6 +89,12 @@ impl ToolsPage {
         self.toolstyle_dragproximity_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_dragproximity_toggle| {
             if toolstyle_dragproximity_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"dragproximity".to_variant()));
+            }
+        }));
+
+        self.toolstyle_offsetcamera_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
+            if toolstyle_offsetcamera_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"offsetcamera".to_variant()));
             }
         }));
     }

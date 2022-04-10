@@ -1,7 +1,7 @@
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::strokesstate::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokesState, SurfaceFlags};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penpath::Segment;
 use rnote_compose::PenEvent;
@@ -72,9 +72,11 @@ impl PenBehaviour for Brush {
         event: PenEvent,
         sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        camera: &Camera,
+        camera: &mut Camera,
         audioplayer: Option<&mut AudioPlayer>,
-    ) {
+    ) -> SurfaceFlags {
+        let surface_flags = SurfaceFlags::default();
+
         match (self.current_stroke_key, event) {
             (
                 None,
@@ -171,6 +173,8 @@ impl PenBehaviour for Brush {
             (None, PenEvent::Proximity { .. }) => {}
             (Some(_), PenEvent::Proximity { .. }) => {}
         }
+
+        surface_flags
     }
 }
 
@@ -190,6 +194,7 @@ impl DrawOnSheetBehaviour for Brush {
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         _viewport: AABB,
+        _image_scale: f64,
     ) -> Result<(), anyhow::Error> {
         // Different color for debugging
         let smooth_options = self.smooth_options;

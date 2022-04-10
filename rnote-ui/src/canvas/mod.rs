@@ -727,7 +727,7 @@ impl RnoteCanvas {
     }
 
     // When the camera offset should change, we call this ( for example from touch drag gestures )
-    pub fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
+    pub fn update_offset(&self, new_offset: na::Vector2<f64>) {
         self.engine().borrow_mut().camera.offset = new_offset;
 
         self.hadjustment().unwrap().set_value(new_offset[0]);
@@ -751,7 +751,7 @@ impl RnoteCanvas {
             ((coord[1]) * total_zoom) - parent_height * 0.5
         ];
 
-        self.update_camera_offset(new_offset);
+        self.update_offset(new_offset);
     }
 
     /// Centering the view to the origin page
@@ -764,7 +764,7 @@ impl RnoteCanvas {
             -Sheet::SHADOW_WIDTH * zoom
         ];
 
-        self.update_camera_offset(new_offset);
+        self.update_offset(new_offset);
     }
 
     /// zooms and regenerates the canvas and its contents to a new zoom

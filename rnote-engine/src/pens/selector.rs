@@ -1,7 +1,7 @@
 use super::AudioPlayer;
 use super::penbehaviour::PenBehaviour;
 use crate::sheet::Sheet;
-use crate::{Camera, DrawOnSheetBehaviour, StrokesState};
+use crate::{Camera, DrawOnSheetBehaviour, StrokesState, SurfaceFlags};
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penpath::Element;
 use rnote_compose::{Color, PenEvent};
@@ -46,9 +46,11 @@ impl PenBehaviour for Selector {
         event: PenEvent,
         _sheet: &mut Sheet,
         strokes_state: &mut StrokesState,
-        camera: &Camera,
+        camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) {
+    ) -> SurfaceFlags {
+        let surface_flags = SurfaceFlags::default();
+
         match event {
             PenEvent::Down {
                 element,
@@ -90,6 +92,8 @@ impl PenBehaviour for Selector {
                 self.path.clear();
             }
         }
+
+        surface_flags
     }
 }
 
@@ -121,6 +125,7 @@ impl DrawOnSheetBehaviour for Selector {
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         _viewport: AABB,
+        _image_scale: f64,
     ) -> Result<(), anyhow::Error> {
         let mut bez_path = kurbo::BezPath::new();
 

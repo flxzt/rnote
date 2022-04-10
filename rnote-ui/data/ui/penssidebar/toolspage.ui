@@ -54,6 +54,19 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="GtkToggleButton" id="toolstyle_offsetcamera_toggle">
+            <property name="tooltip_text" translatable="yes">Offset the camera by dragging</property>
+            <property name="group">toolstyle_expandsheet_toggle</property>
+            <property name="vexpand">true</property>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">pen-tools-offsetcameratool-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
   </template>

@@ -464,6 +464,7 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
                     let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
+                    let viewport = appwindow.canvas().engine().borrow().camera.viewport();
                     let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     let offset = na::vector![-x.round() / zoom, -y.round() / zoom];
 
@@ -489,7 +490,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, Some(viewport), image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -533,6 +534,7 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
                     let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
+                    let viewport = appwindow.canvas().engine().borrow().camera.viewport();
                     let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     let offset = na::vector![x.round() / zoom, -y.round() / zoom];
 
@@ -558,7 +560,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, Some(viewport), image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -602,6 +604,7 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
                     let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
+                    let viewport = appwindow.canvas().engine().borrow().camera.viewport();
                     let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     let offset = na::vector![-x.round() / zoom, y.round() / zoom];
 
@@ -627,7 +630,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, Some(viewport), image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -671,6 +674,7 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 if let (Some(selection_bounds), Some(start_bounds)) = (selection_modifier.selection_bounds(), start_bounds.get()) {
                     let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
+                    let viewport = appwindow.canvas().engine().borrow().camera.viewport();
                     let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
@@ -696,7 +700,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, Some(viewport), image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
 
                     selection_modifier.update_translate_node_size_request(&appwindow.canvas());
@@ -789,6 +793,7 @@ impl SelectionModifier {
         rotate_node_drag_gesture.connect_drag_update(
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |drag_gesture, x, y| {
                 let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
+                let viewport = appwindow.canvas().engine().borrow().camera.viewport();
 
                 if let (Some(start_bounds), Some(start_point)) = (start_bounds.get(), drag_gesture.start_point()) {
                     let current_pos = {
@@ -802,7 +807,7 @@ impl SelectionModifier {
 
                     let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.rotate_strokes(&selection_keys, angle_delta, start_bounds.center());
-                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, image_scale);
+                    appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_for_strokes(&selection_keys, Some(viewport), image_scale);
                     selection_modifier.update_state(&appwindow.canvas());
 
                     selection_modifier.imp().current_rotation_angle.set(angle);

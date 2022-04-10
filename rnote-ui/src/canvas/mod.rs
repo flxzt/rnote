@@ -875,11 +875,7 @@ impl RnoteCanvas {
         self.engine()
             .borrow_mut()
             .strokes_state
-            .regenerate_rendering_in_viewport_threaded(
-                force_regenerate,
-                Some(viewport),
-                image_scale,
-            );
+            .regenerate_rendering_in_viewport_threaded(force_regenerate, viewport, image_scale);
 
         if redraw {
             self.queue_resize();

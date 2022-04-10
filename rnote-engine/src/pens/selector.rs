@@ -1,5 +1,5 @@
-use super::AudioPlayer;
 use super::penbehaviour::PenBehaviour;
+use super::AudioPlayer;
 use crate::sheet::Sheet;
 use crate::{Camera, DrawOnSheetBehaviour, StrokesState, SurfaceFlags};
 use rnote_compose::helpers::Vector2Helpers;
@@ -76,8 +76,11 @@ impl PenBehaviour for Selector {
                 strokes_state.update_selection_for_selector(&self, Some(camera.viewport()));
 
                 let selection_keys = strokes_state.selection_keys_as_rendered();
-                strokes_state
-                    .regenerate_rendering_for_strokes(&selection_keys, camera.image_scale());
+                strokes_state.regenerate_rendering_for_strokes_threaded(
+                    &selection_keys,
+                    Some(camera.viewport()),
+                    camera.image_scale(),
+                );
 
                 self.path.clear();
             }
@@ -86,8 +89,11 @@ impl PenBehaviour for Selector {
                 strokes_state.update_selection_for_selector(&self, Some(camera.viewport()));
 
                 let selection_keys = strokes_state.selection_keys_as_rendered();
-                strokes_state
-                    .regenerate_rendering_for_strokes(&selection_keys, camera.image_scale());
+                strokes_state.regenerate_rendering_for_strokes_threaded(
+                    &selection_keys,
+                    Some(camera.viewport()),
+                    camera.image_scale(),
+                );
 
                 self.path.clear();
             }
@@ -102,10 +108,16 @@ impl DrawOnSheetBehaviour for Selector {
         // Making sure bounds are always outside of coord + width
         let mut path_iter = self.path.iter();
         if let Some(first) = path_iter.next() {
-            let mut new_bounds = AABB::from_half_extents(na::Point2::from(first.pos), na::Vector2::repeat(Self::PATH_WIDTH / camera.zoom()));
+            let mut new_bounds = AABB::from_half_extents(
+                na::Point2::from(first.pos),
+                na::Vector2::repeat(Self::PATH_WIDTH / camera.zoom()),
+            );
 
             path_iter.for_each(|element| {
-                let pos_bounds = AABB::from_half_extents(na::Point2::from(element.pos), na::Vector2::repeat(Self::PATH_WIDTH / camera.zoom()));
+                let pos_bounds = AABB::from_half_extents(
+                    na::Point2::from(element.pos),
+                    na::Vector2::repeat(Self::PATH_WIDTH / camera.zoom()),
+                );
                 new_bounds.merge(&pos_bounds);
             });
 

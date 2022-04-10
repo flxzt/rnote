@@ -354,6 +354,7 @@ impl Image {
             false,
         );
 
+        // .split() Only splits if the split size is larger than the bounds
         for mut splitted_bounds in svg.bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
             splitted_bounds.ensure_positive();
             if splitted_bounds.assert_valid().is_err() {
@@ -464,6 +465,7 @@ impl Image {
         );
         let svg_tree = usvg::Tree::from_data(svg_data.as_bytes(), &USVG_OPTIONS.to_ref())?;
 
+        // .split() Only splits if the split size is larger than the bounds
         for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
             splitted_bounds.ensure_positive();
             if splitted_bounds.assert_valid().is_err() {
@@ -505,14 +507,20 @@ impl Image {
         Ok(images)
     }
 
-    // Renders from a type that implements the DrawBehaviour trait
+    /// generates images for a type that implements the DrawBehaviour trait.
+    /// if viewport is Some, only generates the images that intersect it.
     pub fn gen_images_from_drawable(
         to_be_drawn: &impl DrawBehaviour,
         bounds: AABB,
+        viewport: Option<AABB>,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let mut images = vec![];
 
+        // Use the viewport as bounds if available
+        let bounds = viewport.unwrap_or(bounds);
+
+        // .split() Only splits if the split size is larger than the bounds
         for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
             splitted_bounds.ensure_positive();
             if splitted_bounds.assert_valid().is_err() {
@@ -594,6 +602,7 @@ impl Image {
         let mut images = vec![];
         let bounds = shape.composed_bounds(options);
 
+        // .split() Only splits if the split size is larger than the bounds
         for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
             splitted_bounds.ensure_positive();
             if splitted_bounds.assert_valid().is_err() {

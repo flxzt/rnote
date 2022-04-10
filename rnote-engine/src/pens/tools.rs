@@ -368,7 +368,7 @@ impl PenBehaviour for Tools {
                         strokes_state.drag_strokes_proximity(&self.dragproximity_tool);
                         strokes_state.regenerate_rendering_in_viewport_threaded(
                             false,
-                            Some(camera.viewport()),
+                            camera.viewport(),
                             camera.image_scale(),
                         );
 

@@ -36,18 +36,25 @@ impl Default for BrushStroke {
 }
 
 impl StrokeBehaviour for BrushStroke {
-    /*     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+    fn gen_images(
+        &self,
+        viewport: Option<AABB>,
+        image_scale: f64,
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
         let images = match &self.style {
             Style::Smooth(options) => self
                 .path
                 .iter()
                 .filter_map(|segment| {
-                    match render::Image::gen_from_composable_shape(
-                        segment,
-                        options,
-                        self.path.composed_bounds(options),
-                        image_scale,
-                    ) {
+                    let composed_bounds = segment.composed_bounds(options);
+
+                    if let Some(viewport) = viewport {
+                        if !composed_bounds.intersects(&viewport) {
+                            return None;
+                        }
+                    }
+
+                    match render::Image::gen_from_composable_shape(segment, options, image_scale) {
                         Ok(image) => Some(image),
                         Err(e) => {
                             log::error!("gen_images() failed with Err {}", e);
@@ -61,31 +68,39 @@ impl StrokeBehaviour for BrushStroke {
             Style::Textured(options) => {
                 let mut options = options.clone();
 
-                self
-                .path
-                .iter()
-                .filter_map(|segment| {
-                    options.seed = options.seed.map(|seed| rnote_compose::utils::seed_advance(seed));
+                self.path
+                    .iter()
+                    .filter_map(|segment| {
+                        options.seed = options
+                            .seed
+                            .map(|seed| rnote_compose::utils::seed_advance(seed));
+                        let composed_bounds = segment.composed_bounds(&options);
 
-                    match render::Image::gen_from_composable_shape(
-                        segment,
-                        &options,
-                        self.path.composed_bounds(&options),
-                        image_scale,
-                    ) {
-                        Ok(image) => Some(image),
-                        Err(e) => {
-                            log::error!("gen_images() failed with Err {}", e);
-                            None
+                        if let Some(viewport) = viewport {
+                            if !composed_bounds.intersects(&viewport) {
+                                return None;
+                            }
                         }
-                    }
-                })
-                .flatten()
-                .collect::<Vec<render::Image>>()},
+
+                        match render::Image::gen_from_composable_shape(
+                            segment,
+                            &options,
+                            image_scale,
+                        ) {
+                            Ok(image) => Some(image),
+                            Err(e) => {
+                                log::error!("gen_images() failed with Err {}", e);
+                                None
+                            }
+                        }
+                    })
+                    .flatten()
+                    .collect::<Vec<render::Image>>()
+            }
         };
 
         Ok(images)
-    } */
+    }
 }
 
 impl DrawBehaviour for BrushStroke {

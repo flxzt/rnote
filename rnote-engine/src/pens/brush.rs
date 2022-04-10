@@ -102,6 +102,7 @@ impl PenBehaviour for Brush {
 
                     strokes_state.regenerate_rendering_for_stroke_threaded(
                         current_stroke_key,
+                        Some(camera.viewport()),
                         camera.image_scale(),
                     );
                 }
@@ -150,6 +151,7 @@ impl PenBehaviour for Brush {
                 strokes_state.update_geometry_for_stroke(current_stroke_key);
                 strokes_state.regenerate_rendering_for_stroke_threaded(
                     current_stroke_key,
+                    Some(camera.viewport()),
                     camera.image_scale(),
                 );
                 self.current_stroke_key = None;
@@ -166,6 +168,7 @@ impl PenBehaviour for Brush {
                 strokes_state.update_geometry_for_stroke(current_stroke_key);
                 strokes_state.regenerate_rendering_for_stroke_threaded(
                     current_stroke_key,
+                    Some(camera.viewport()),
                     camera.image_scale(),
                 );
                 self.current_stroke_key = None;

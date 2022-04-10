@@ -83,7 +83,7 @@ impl RnoteEngine {
         let image_scale = self.camera.image_scale();
         self.resize_to_fit_strokes();
         self.strokes_state
-            .regenerate_rendering_in_viewport_threaded(false, Some(viewport), image_scale);
+            .regenerate_rendering_in_viewport_threaded(false, viewport, image_scale);
     }
 
     /// Public method to handle pen events coming from ui event handlers

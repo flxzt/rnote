@@ -48,12 +48,12 @@ impl StrokeBehaviour for Stroke {
         }
     }
 
-    fn gen_images(&self, zoom: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+    fn gen_images(&self, viewport: Option<AABB>, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
         match self {
-            Self::BrushStroke(brushstroke) => brushstroke.gen_images(zoom),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_images(zoom),
-            Self::VectorImage(vectorimage) => vectorimage.gen_images(zoom),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_images(zoom),
+            Self::BrushStroke(brushstroke) => brushstroke.gen_images(viewport, image_scale),
+            Self::ShapeStroke(shapestroke) => shapestroke.gen_images(viewport, image_scale),
+            Self::VectorImage(vectorimage) => vectorimage.gen_images(viewport, image_scale),
+            Self::BitmapImage(bitmapimage) => bitmapimage.gen_images(viewport, image_scale),
         }
     }
 }
@@ -263,7 +263,7 @@ impl Stroke {
             Stroke::ShapeStroke(shapestroke) => {
                 let shapestroke_bounds = shapestroke.bounds();
                 let shape_image = render::Image::join_images(
-                    shapestroke.gen_images(image_scale).ok()?,
+                    shapestroke.gen_images(None, image_scale).ok()?,
                     shapestroke_bounds,
                     image_scale,
                 )

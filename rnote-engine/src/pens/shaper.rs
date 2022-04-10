@@ -1,5 +1,5 @@
-use super::AudioPlayer;
 use super::penbehaviour::PenBehaviour;
+use super::AudioPlayer;
 use crate::sheet::Sheet;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
@@ -94,6 +94,7 @@ impl PenBehaviour for Shaper {
 
                     strokes_state.regenerate_rendering_for_stroke_threaded(
                         current_stroke_key,
+                        Some(camera.viewport()),
                         camera.image_scale(),
                     );
 
@@ -112,6 +113,7 @@ impl PenBehaviour for Shaper {
 
                     strokes_state.regenerate_rendering_for_stroke_threaded(
                         current_stroke_key,
+                        Some(camera.viewport()),
                         camera.image_scale(),
                     );
                 }
@@ -130,7 +132,7 @@ impl PenBehaviour for Shaper {
                     current_stroke_key,
                     sheet,
                     strokes_state,
-                    camera.image_scale(),
+                    camera,
                 );
                 self.current_stroke_key = None;
             }
@@ -140,7 +142,7 @@ impl PenBehaviour for Shaper {
                     current_stroke_key,
                     sheet,
                     strokes_state,
-                    camera.image_scale(),
+                    camera,
                 );
                 self.current_stroke_key = None;
             }
@@ -150,7 +152,7 @@ impl PenBehaviour for Shaper {
                     current_stroke_key,
                     sheet,
                     strokes_state,
-                    camera.image_scale(),
+                    camera,
                 );
                 self.current_stroke_key = None;
             }
@@ -179,11 +181,15 @@ fn finish_current_stroke(
     current_stroke_key: StrokeKey,
     _sheet: &mut Sheet,
     strokes_state: &mut StrokesState,
-    image_scale: f64,
+    camera: &Camera,
 ) {
     strokes_state.update_geometry_for_stroke(current_stroke_key);
 
-    strokes_state.regenerate_rendering_for_stroke_threaded(current_stroke_key, image_scale);
+    strokes_state.regenerate_rendering_for_stroke_threaded(
+        current_stroke_key,
+        Some(camera.viewport()),
+        camera.image_scale(),
+    );
 }
 
 impl Shaper {

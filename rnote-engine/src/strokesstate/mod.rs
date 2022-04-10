@@ -218,7 +218,7 @@ impl StrokesState {
                     }
                 }
 
-                self.regenerate_rendering_in_viewport_threaded(false, Some(viewport), image_scale);
+                self.regenerate_rendering_in_viewport_threaded(false, viewport, image_scale);
             }
             StateTask::Quit => {
                 surface_flags.quit = true;

@@ -285,7 +285,7 @@ impl VectorImage {
         let bounds = self.bounds();
 
         match render::Image::join_images(
-            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
+            render::Image::gen_images_from_drawable(self, bounds, None, image_scale)?,
             bounds,
             image_scale,
         )? {

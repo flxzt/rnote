@@ -450,6 +450,31 @@ impl StrokesState {
         snapshot.pop();
     }
 
+    /// Draws the selection
+    pub fn draw_selection(&self, snapshot: &Snapshot, _sheet_bounds: AABB, viewport: Option<AABB>) {
+        self.selection_keys_as_rendered().iter().for_each(|&key| {
+            let render_comp = self.render_components.get(key).unwrap();
+
+            if let (Some(selection_comp), Some(stroke)) =
+                (self.selection_components.get(key), self.strokes.get(key))
+            {
+                // skip if stroke is not in viewport
+                if let Some(viewport) = viewport {
+                    if !viewport.intersects(&stroke.bounds()) {
+                        return;
+                    }
+                }
+
+                if selection_comp.selected {
+                    for rendernode in render_comp.rendernodes.iter() {
+                        snapshot.append_node(rendernode);
+                    }
+                }
+            }
+        });
+    }
+
+
     pub fn draw_strokes_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
@@ -459,7 +484,6 @@ impl StrokesState {
     ) -> Result<(), anyhow::Error> {
         self.keys_as_rendered()
             .into_iter()
-            .chain(self.selection_keys_as_rendered().into_iter())
             .for_each(|key| {
                 if let Some(stroke) = self.strokes.get(key) {
                     if let Err(e) = || -> Result<(), anyhow::Error> {
@@ -488,27 +512,40 @@ impl StrokesState {
         Ok(())
     }
 
-    /// Draws the selection
-    pub fn draw_selection(&self, snapshot: &Snapshot, _sheet_bounds: AABB, viewport: Option<AABB>) {
-        self.selection_keys_as_rendered().iter().for_each(|&key| {
-            let render_comp = self.render_components.get(key).unwrap();
+    pub fn draw_selection_immediate_w_piet(
+        &self,
+        piet_cx: &mut impl piet::RenderContext,
+        _sheet_bounds: AABB,
+        viewport: Option<AABB>,
+        image_scale: f64,
+    ) -> Result<(), anyhow::Error> {
+        self.selection_keys_as_rendered()
+            .into_iter()
+            .for_each(|key| {
+                if let Some(stroke) = self.strokes.get(key) {
+                    if let Err(e) = || -> Result<(), anyhow::Error> {
+                        // skip if stroke is not in viewport
+                        if let Some(viewport) = viewport {
+                            if !viewport.intersects(&stroke.bounds()) {
+                                return Ok(());
+                            }
+                        }
 
-            if let (Some(selection_comp), Some(stroke)) =
-                (self.selection_components.get(key), self.strokes.get(key))
-            {
-                // skip if stroke is not in viewport
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return;
+                        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        stroke
+                            .draw(piet_cx, image_scale)
+                            .map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        Ok(())
+                    }() {
+                        log::error!(
+                            "drawing stroke in draw_strokes_immediate_w_piet() failed with Err {}",
+                            e
+                        );
                     }
                 }
+            });
 
-                if selection_comp.selected {
-                    for rendernode in render_comp.rendernodes.iter() {
-                        snapshot.append_node(rendernode);
-                    }
-                }
-            }
-        });
+        Ok(())
     }
 }

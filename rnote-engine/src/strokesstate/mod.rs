@@ -40,7 +40,7 @@ The Entities are the StrokeKey's, which represent a stroke. There are different 
 The systems are implemented as methods on StrokesState, loosely categorized to the different components (but often modify others as well).
 Most systems take a key or a slice of keys, and iterate with them over the different components.
 There also is a different category of methods which return filtered keys, e.g. `.keys_sorted_chrono` returns the keys in chronological ordering,
-    `.stoke_keys_in_order_rendering` returns keys in the order which they should be rendered.
+    `.stoke_keys_in_order_rendering` filters and returns keys in the order which they should be rendered.
 */
 
 #[derive(Debug, Clone)]

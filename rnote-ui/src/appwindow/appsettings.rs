@@ -126,7 +126,7 @@ impl RnoteAppWindow {
     }
 
     /// load settings that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
-    pub fn load_settings(&self) -> Result<(), anyhow::Error> {
+    pub fn load_settings(&self) -> anyhow::Result<()> {
         let _app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         // appwindow
@@ -238,7 +238,7 @@ impl RnoteAppWindow {
     }
 
     /// Save all state that is not bound in setup_settings
-    pub fn save_to_settings(&self) -> Result<(), anyhow::Error> {
+    pub fn save_to_settings(&self) -> anyhow::Result<()> {
         self.save_window_size()?;
 
         {

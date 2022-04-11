@@ -35,11 +35,7 @@ impl Default for ShapeStroke {
 impl StrokeBehaviour for ShapeStroke {}
 
 impl DrawBehaviour for ShapeStroke {
-    fn draw(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        _image_scale: f64,
-    ) -> Result<(), anyhow::Error> {
+    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         match self.shape {
             Shape::Line(ref line) => match &self.style {
                 Style::Smooth(options) => {

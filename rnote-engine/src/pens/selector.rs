@@ -6,19 +6,16 @@ use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penpath::Element;
 use rnote_compose::{Color, PenEvent};
 
-use gtk4::glib;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
+
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 #[serde(rename = "selector_style")]
-#[enum_type(name = "SelectorStyle")]
 pub enum SelectorType {
     #[serde(rename = "polygon")]
-    #[enum_value(name = "Polygon", nick = "polygon")]
     Polygon,
     #[serde(rename = "rectangle")]
-    #[enum_value(name = "Rectangle", nick = "rectangle")]
     Rectangle,
 }
 
@@ -78,7 +75,6 @@ impl PenBehaviour for Selector {
                 let selection_keys = strokes_state.selection_keys_as_rendered();
                 strokes_state.regenerate_rendering_for_strokes_threaded(
                     &selection_keys,
-                    Some(camera.viewport()),
                     camera.image_scale(),
                 );
 
@@ -91,7 +87,6 @@ impl PenBehaviour for Selector {
                 let selection_keys = strokes_state.selection_keys_as_rendered();
                 strokes_state.regenerate_rendering_for_strokes_threaded(
                     &selection_keys,
-                    Some(camera.viewport()),
                     camera.image_scale(),
                 );
 
@@ -132,7 +127,7 @@ impl DrawOnSheetBehaviour for Selector {
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let total_zoom = camera.total_zoom();
         let mut bez_path = kurbo::BezPath::new();
 

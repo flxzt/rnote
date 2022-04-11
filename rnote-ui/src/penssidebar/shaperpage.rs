@@ -1,8 +1,14 @@
-mod imp {
-    use crate::colorpicker::ColorPicker;
-    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{MenuButton, Popover, SpinButton, Switch, Image, ListBox};
+use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use gtk4::{
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
+    MenuButton, Popover, SpinButton, Switch,
+};
+use rnote_compose::style::rough::RoughOptions;
+use rnote_engine::pens::shaper::ShaperStyle;
+use rnote_engine::utils::GdkRGBAHelpers;
 
+mod imp {
+    use super::*;
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
     pub struct ShaperPage {
@@ -78,13 +84,6 @@ mod imp {
     impl WidgetImpl for ShaperPage {}
 }
 
-use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use gtk4::{gdk, MenuButton, Popover, SpinButton, Switch, ListBox, Image};
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
-use rnote_compose::style::rough::RoughOptions;
-use rnote_engine::pens::shaper::ShaperStyle;
-use rnote_engine::utils::GdkRGBAHelpers;
-
 glib::wrapper! {
     pub struct ShaperPage(ObjectSubclass<imp::ShaperPage>)
         @extends gtk4::Widget;
@@ -109,9 +108,7 @@ impl ShaperPage {
     }
 
     pub fn shaperstyle_menubutton(&self) -> MenuButton {
-        self.imp()
-            .shaperstyle_menubutton
-            .get()
+        self.imp().shaperstyle_menubutton.get()
     }
 
     pub fn shaperstyle_image(&self) -> Image {
@@ -123,71 +120,51 @@ impl ShaperPage {
     }
 
     pub fn shaperstyle_smooth_row(&self) -> adw::ActionRow {
-        self.imp()
-            .shaperstyle_smooth_row
-            .get()
+        self.imp().shaperstyle_smooth_row.get()
     }
 
     pub fn shaperstyle_rough_row(&self) -> adw::ActionRow {
-        self.imp()
-            .shaperstyle_rough_row
-            .get()
+        self.imp().shaperstyle_rough_row.get()
     }
 
     pub fn shapeconfig_menubutton(&self) -> MenuButton {
-        imp::ShaperPage::from_instance(self)
-            .shapeconfig_menubutton
-            .get()
+        self.imp().shapeconfig_menubutton.get()
     }
 
     pub fn shapeconfig_popover(&self) -> Popover {
-        imp::ShaperPage::from_instance(self)
-            .shapeconfig_popover
-            .get()
+        self.imp().shapeconfig_popover.get()
     }
 
     pub fn width_spinbutton(&self) -> SpinButton {
-        imp::ShaperPage::from_instance(self).width_spinbutton.get()
+        self.imp().width_spinbutton.get()
     }
 
     pub fn roughconfig_roughness_spinbutton(&self) -> SpinButton {
-        imp::ShaperPage::from_instance(self)
-            .roughconfig_roughness_spinbutton
-            .get()
+        self.imp().roughconfig_roughness_spinbutton.get()
     }
 
     pub fn roughconfig_bowing_spinbutton(&self) -> SpinButton {
-        imp::ShaperPage::from_instance(self)
-            .roughconfig_bowing_spinbutton
-            .get()
+        self.imp().roughconfig_bowing_spinbutton.get()
     }
 
     pub fn roughconfig_curvestepcount_spinbutton(&self) -> SpinButton {
-        imp::ShaperPage::from_instance(self)
-            .roughconfig_curvestepcount_spinbutton
-            .get()
+        self.imp().roughconfig_curvestepcount_spinbutton.get()
     }
 
     pub fn roughconfig_multistroke_switch(&self) -> Switch {
-        imp::ShaperPage::from_instance(self)
-            .roughconfig_multistroke_switch
-            .get()
+        self.imp().roughconfig_multistroke_switch.get()
     }
 
     pub fn stroke_colorpicker(&self) -> ColorPicker {
-        imp::ShaperPage::from_instance(self)
-            .stroke_colorpicker
-            .get()
+        self.imp().stroke_colorpicker.get()
     }
 
     pub fn fill_colorpicker(&self) -> ColorPicker {
-        imp::ShaperPage::from_instance(self).fill_colorpicker.get()
+        self.imp().fill_colorpicker.get()
     }
 
     pub fn shapetype_menubutton(&self) -> MenuButton {
-        self.imp()
-            .shapetype_menubutton
-            .get()
+        self.imp().shapetype_menubutton.get()
     }
 
     pub fn shapetype_image(&self) -> Image {
@@ -199,21 +176,15 @@ impl ShaperPage {
     }
 
     pub fn shapetype_line_row(&self) -> adw::ActionRow {
-        self.imp()
-            .shapetype_line_row
-            .get()
+        self.imp().shapetype_line_row.get()
     }
 
     pub fn shapetype_rectangle_row(&self) -> adw::ActionRow {
-        self.imp()
-            .shapetype_rectangle_row
-            .get()
+        self.imp().shapetype_rectangle_row.get()
     }
 
     pub fn shapetype_ellipse_row(&self) -> adw::ActionRow {
-        self.imp()
-            .shapetype_ellipse_row
-            .get()
+        self.imp().shapetype_ellipse_row.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

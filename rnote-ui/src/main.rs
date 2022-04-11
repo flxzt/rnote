@@ -1,21 +1,23 @@
 #![warn(missing_debug_implementations)]
 
-pub mod app;
-pub mod appmenu;
-pub mod appwindow;
-pub mod canvas;
-pub mod canvasmenu;
-pub mod colorpicker;
 pub mod config;
 pub mod dialogs;
 pub mod globals;
-pub mod mainheader;
-pub mod penssidebar;
-pub mod selectionmodifier;
-pub mod settingspanel;
-pub mod unitentry;
 pub mod utils;
-pub mod workspacebrowser;
+
+/// Widgets
+mod app;
+mod appmenu;
+mod appwindow;
+mod canvas;
+mod canvasmenu;
+mod colorpicker;
+mod mainheader;
+pub mod penssidebar;
+mod selectionmodifier;
+mod settingspanel;
+mod unitentry;
+mod workspacebrowser;
 
 // Re-exports
 pub use app::RnoteApp;

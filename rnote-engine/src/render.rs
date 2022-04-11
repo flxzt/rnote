@@ -2,7 +2,7 @@ use std::io;
 use std::ops::Deref;
 
 use anyhow::Context;
-use gtk4::{gdk, gio, glib, gsk, prelude::*, graphene, Snapshot};
+use gtk4::{gdk, gio, glib, graphene, gsk, prelude::*, Snapshot};
 use image::io::Reader;
 use image::GenericImageView;
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -136,7 +136,7 @@ impl From<image::DynamicImage> for Image {
 }
 
 impl Image {
-    pub fn assert_valid(&self) -> Result<(), anyhow::Error> {
+    pub fn assert_valid(&self) -> anyhow::Result<()> {
         self.bounds.assert_valid()?;
 
         if self.pixel_width == 0
@@ -156,7 +156,7 @@ impl Image {
         Ok(Image::from(reader.decode()?))
     }
 
-    pub fn convert_to_rgba8pre(&mut self) -> Result<(), anyhow::Error> {
+    pub fn convert_to_rgba8pre(&mut self) -> anyhow::Result<()> {
         match self.memory_format {
             ImageMemoryFormat::R8g8b8a8Premultiplied => {
                 // Already in the correct format
@@ -287,7 +287,6 @@ impl Image {
 
         Ok(snapshot.to_node())
     }
-
 
     pub fn join_images(
         images: Vec<Self>,
@@ -512,13 +511,9 @@ impl Image {
     pub fn gen_images_from_drawable(
         to_be_drawn: &impl DrawBehaviour,
         bounds: AABB,
-        viewport: Option<AABB>,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let mut images = vec![];
-
-        // Use the viewport as bounds if available
-        let bounds = viewport.unwrap_or(bounds);
 
         // .split() Only splits if the split size is larger than the bounds
         for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
@@ -703,7 +698,7 @@ impl Svg {
         svgs: &[Self],
         mut bounds: AABB,
         cx: &cairo::Context,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         bounds.ensure_positive();
         bounds.assert_valid()?;
 

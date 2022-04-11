@@ -6,7 +6,6 @@ use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penpath::Segment;
 use rnote_compose::PenEvent;
 
-use gtk4::glib;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::style::textured::TexturedOptions;
@@ -16,18 +15,13 @@ use serde::{Deserialize, Serialize};
 use super::penbehaviour::PenBehaviour;
 use super::AudioPlayer;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, glib::Enum)]
-#[repr(u32)]
-#[enum_type(name = "BrushStyle")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename = "brush_style")]
 pub enum BrushStyle {
-    #[enum_value(name = "Marker", nick = "marker")]
     #[serde(rename = "marker")]
     Marker,
-    #[enum_value(name = "Solid", nick = "solid")]
     #[serde(rename = "solid")]
     Solid,
-    #[enum_value(name = "Textured", nick = "textured")]
     #[serde(rename = "textured")]
     Textured,
 }
@@ -89,7 +83,7 @@ impl PenBehaviour for Brush {
                     self.start_audio(audioplayer);
 
                     let brushstroke =
-                        Stroke::BrushStroke(BrushStroke::new(Segment::Dot { element }, &self));
+                        Stroke::BrushStroke(BrushStroke::new(Segment::Dot { element }, self));
                     let current_stroke_key = strokes_state.insert_stroke(brushstroke);
                     self.current_stroke_key = Some(current_stroke_key);
 
@@ -102,7 +96,6 @@ impl PenBehaviour for Brush {
 
                     strokes_state.regenerate_rendering_for_stroke_threaded(
                         current_stroke_key,
-                        Some(camera.viewport()),
                         camera.image_scale(),
                     );
                 }
@@ -123,11 +116,13 @@ impl PenBehaviour for Brush {
                                 .add_segment_to_brushstroke(current_stroke_key, new_segment);
                         }
 
-                        strokes_state.append_rendering_last_segments(
+                        if let Err(e) = strokes_state.append_rendering_last_segments(
                             current_stroke_key,
                             no_segments,
                             camera.image_scale(),
-                        );
+                        ) {
+                            log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
+                        }
                     }
                 }
             }
@@ -151,7 +146,6 @@ impl PenBehaviour for Brush {
                 strokes_state.update_geometry_for_stroke(current_stroke_key);
                 strokes_state.regenerate_rendering_for_stroke_threaded(
                     current_stroke_key,
-                    Some(camera.viewport()),
                     camera.image_scale(),
                 );
                 self.current_stroke_key = None;
@@ -168,7 +162,6 @@ impl PenBehaviour for Brush {
                 strokes_state.update_geometry_for_stroke(current_stroke_key);
                 strokes_state.regenerate_rendering_for_stroke_threaded(
                     current_stroke_key,
-                    Some(camera.viewport()),
                     camera.image_scale(),
                 );
                 self.current_stroke_key = None;
@@ -197,7 +190,7 @@ impl DrawOnSheetBehaviour for Brush {
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         _camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         // Different color for debugging
         let smooth_options = self.smooth_options;
         /*         smooth_options.stroke_color = Some(rnote_compose::Color {

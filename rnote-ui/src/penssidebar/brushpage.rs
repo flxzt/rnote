@@ -1,7 +1,16 @@
+use gtk4::{
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
+    MenuButton, Popover, SpinButton,
+};
+
+use crate::{appwindow::RnoteAppWindow, ColorPicker};
+use adw::prelude::*;
+use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
+use rnote_engine::pens::brush::BrushStyle;
+use rnote_engine::utils::GdkRGBAHelpers;
+
 mod imp {
-    use crate::colorpicker::ColorPicker;
-    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, SpinButton};
-    use gtk4::{Image, ListBox, MenuButton, Popover};
+    use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/brushpage.ui")]
@@ -66,14 +75,6 @@ mod imp {
     impl WidgetImpl for BrushPage {}
 }
 
-use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use adw::prelude::*;
-use gtk4::{gdk, Image, ListBox, MenuButton, Popover};
-use gtk4::{glib, glib::clone, subclass::prelude::*, SpinButton};
-use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
-use rnote_engine::pens::brush::BrushStyle;
-use rnote_engine::utils::GdkRGBAHelpers;
-
 glib::wrapper! {
     pub struct BrushPage(ObjectSubclass<imp::BrushPage>)
         @extends gtk4::Widget;
@@ -98,79 +99,59 @@ impl BrushPage {
     }
 
     pub fn width_spinbutton(&self) -> SpinButton {
-        imp::BrushPage::from_instance(self).width_spinbutton.get()
+        self.imp().width_spinbutton.get()
     }
 
     pub fn colorpicker(&self) -> ColorPicker {
-        imp::BrushPage::from_instance(self).colorpicker.get()
+        self.imp().colorpicker.get()
     }
 
     pub fn brushstyle_menubutton(&self) -> MenuButton {
-        imp::BrushPage::from_instance(self)
-            .brushstyle_menubutton
-            .get()
+        self.imp().brushstyle_menubutton.get()
     }
 
     pub fn brushstyle_image(&self) -> Image {
-        imp::BrushPage::from_instance(self).brushstyle_image.get()
+        self.imp().brushstyle_image.get()
     }
 
     pub fn brushstyle_listbox(&self) -> ListBox {
-        imp::BrushPage::from_instance(self).brushstyle_listbox.get()
+        self.imp().brushstyle_listbox.get()
     }
 
     pub fn brushstyle_marker_row(&self) -> adw::ActionRow {
-        imp::BrushPage::from_instance(self)
-            .brushstyle_marker_row
-            .get()
+        self.imp().brushstyle_marker_row.get()
     }
 
     pub fn brushstyle_solid_row(&self) -> adw::ActionRow {
-        imp::BrushPage::from_instance(self)
-            .brushstyle_solid_row
-            .get()
+        self.imp().brushstyle_solid_row.get()
     }
 
     pub fn brushstyle_textured_row(&self) -> adw::ActionRow {
-        imp::BrushPage::from_instance(self)
-            .brushstyle_textured_row
-            .get()
+        self.imp().brushstyle_textured_row.get()
     }
 
     pub fn brushconfig_menubutton(&self) -> MenuButton {
-        imp::BrushPage::from_instance(self)
-            .brushconfig_menubutton
-            .get()
+        self.imp().brushconfig_menubutton.get()
     }
 
     pub fn brushconfig_popover(&self) -> Popover {
-        imp::BrushPage::from_instance(self)
-            .brushconfig_popover
-            .get()
+        self.imp().brushconfig_popover.get()
     }
 
     pub fn texturedstyle_distribution_row(&self) -> adw::ComboRow {
-        imp::BrushPage::from_instance(self)
-            .texturedstyle_distribution_row
-            .clone()
+        self.imp().texturedstyle_distribution_row.clone()
     }
 
     pub fn texturedstyle_density_spinbutton(&self) -> SpinButton {
-        imp::BrushPage::from_instance(self)
-            .texturedstyle_density_spinbutton
-            .clone()
+        self.imp().texturedstyle_density_spinbutton.clone()
     }
 
     pub fn texturedstyle_radius_x_spinbutton(&self) -> SpinButton {
-        imp::BrushPage::from_instance(self)
-            .texturedstyle_radius_x_spinbutton
-            .clone()
+        self.imp().texturedstyle_radius_x_spinbutton.clone()
     }
 
     pub fn texturedstyle_radius_y_spinbutton(&self) -> SpinButton {
-        imp::BrushPage::from_instance(self)
-            .texturedstyle_radius_y_spinbutton
-            .clone()
+        self.imp().texturedstyle_radius_y_spinbutton.clone()
     }
 
     pub fn set_texturedstyle_distribution_variant(&self, distribution: TexturedDotsDistribution) {

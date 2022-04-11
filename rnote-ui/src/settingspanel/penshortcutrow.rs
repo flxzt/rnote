@@ -1,18 +1,18 @@
+use crate::settingspanel::penshortcutmodels::{
+    ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
+};
+use adw::{prelude::*, subclass::prelude::*};
+use gtk4::{
+    glib, glib::clone, glib::subclass::*, subclass::prelude::*, CheckButton, CompositeTemplate,
+};
+use once_cell::sync::Lazy;
+use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::pens::shortcuts::ShortcutAction;
+use std::cell::RefCell;
+
 mod imp {
-    use std::cell::RefCell;
-
-    use adw::{prelude::*, subclass::prelude::*};
-    use gtk4::CheckButton;
-    use gtk4::{glib, glib::clone, glib::subclass::*, subclass::prelude::*, CompositeTemplate};
-    use once_cell::sync::Lazy;
-    use rnote_compose::penevent::ShortcutKey;
-    use rnote_engine::pens::penholder::PenStyle;
-    use rnote_engine::pens::shortcuts::ShortcutAction;
-
-    use crate::settingspanel::penshortcutmodels::{
-        ChangePenStyleIconFactory, ChangePenStyleListFactory, ChangePenStyleListModel,
-    };
-
+    use super::*;
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penshortcutrow.ui")]
     pub struct PenShortcutRow {
@@ -141,10 +141,6 @@ mod imp {
 
     impl PenShortcutRow {}
 }
-use adw::prelude::*;
-use gtk4::{glib, subclass::prelude::*};
-use rnote_compose::penevent::ShortcutKey;
-use rnote_engine::pens::shortcuts::ShortcutAction;
 
 glib::wrapper! {
     pub struct PenShortcutRow(ObjectSubclass<imp::PenShortcutRow>)

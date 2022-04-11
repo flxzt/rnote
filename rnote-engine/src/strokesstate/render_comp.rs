@@ -3,8 +3,8 @@ use super::{Stroke, StrokeKey, StrokesState};
 use crate::strokes::StrokeBehaviour;
 use crate::utils::GrapheneRectHelpers;
 use crate::{render, DrawBehaviour};
-use rnote_compose::helpers::AABBHelpers;
 
+use anyhow::Context;
 use gtk4::{graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::shapes::ShapeBehaviour;
@@ -98,56 +98,37 @@ impl StrokesState {
     pub fn regenerate_rendering_for_stroke(
         &mut self,
         key: StrokeKey,
-        viewport: Option<AABB>,
         image_scale: f64,
-    ) {
+    ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
-            match stroke.gen_images(viewport, image_scale) {
-                Ok(images) => {
-                    match render::Image::images_to_rendernodes(&images) {
-                        Ok(rendernodes) => {
-                            render_comp.rendernodes = rendernodes;
-                            render_comp.images = images;
-                            if let Some(viewport) = viewport {
-                                render_comp.regenerate_flag = !viewport.contains(&stroke.bounds());
-                            } else {
-                                //Only set the flag false if no viewport is provided, because then the images for the entire stroke are generated
-                                render_comp.regenerate_flag = false;
-                            }
-                        }
-                        Err(e) => log::error!("image_to_rendernode() failed in regenerate_rendering_for_stroke() with Err {}", e),
-                    }
-                }
-                Err(e) => {
-                    log::debug!(
-                        "gen_image() failed in regenerate_rendering_for_stroke() for stroke with key: {:?}, {}",
-                        key,
-                        e
-                    )
-                }
-            }
+            let images = stroke
+                .gen_images(image_scale)
+                .context("gen_images() failed  in regenerate_rendering_for_stroke()")?;
+
+            let rendernodes = render::Image::images_to_rendernodes(&images)
+                .context(" image_to_rendernode() failed in regenerate_rendering_for_stroke()")?;
+
+            render_comp.rendernodes = rendernodes;
+            render_comp.images = images;
+            render_comp.regenerate_flag = false;
         }
+        Ok(())
     }
 
     pub fn regenerate_rendering_for_strokes(
         &mut self,
         keys: &[StrokeKey],
-        viewport: Option<AABB>,
         image_scale: f64,
-    ) {
-        keys.iter().for_each(|&key| {
-            self.regenerate_rendering_for_stroke(key, viewport, image_scale);
-        })
+    ) -> anyhow::Result<()> {
+        for key in keys.iter() {
+            self.regenerate_rendering_for_stroke(*key, image_scale)?;
+        }
+        Ok(())
     }
 
-    pub fn regenerate_rendering_for_stroke_threaded(
-        &mut self,
-        key: StrokeKey,
-        viewport: Option<AABB>,
-        image_scale: f64,
-    ) {
+    pub fn regenerate_rendering_for_stroke_threaded(&mut self, key: StrokeKey, image_scale: f64) {
         let tasks_tx = self.tasks_tx.clone();
 
         if let (Some(render_comp), Some(stroke)) =
@@ -155,16 +136,11 @@ impl StrokesState {
         {
             let stroke = stroke.clone();
 
-            if let Some(viewport) = viewport {
-                render_comp.regenerate_flag = !viewport.contains(&stroke.bounds());
-            } else {
-                //Only set the flag false if no viewport is provided, because then the images for the entire stroke are generated
-                render_comp.regenerate_flag = false;
-            }
+            render_comp.regenerate_flag = false;
 
             // Spawn a new thread for image rendering
             self.threadpool.spawn(move || {
-                match stroke.gen_images(viewport, image_scale) {
+                match stroke.gen_images(image_scale) {
                     Ok(images) => {
                         tasks_tx.unbounded_send(StateTask::UpdateStrokeWithImages {
                             key,
@@ -178,19 +154,16 @@ impl StrokesState {
                     }
                 }
             });
-        } else {
-            log::debug!("getting stroke comp, tasks_tx or render_comp returned None in regenerate_rendering_for_stroke_threaded() for stroke {:?}", key);
         }
     }
 
     pub fn regenerate_rendering_for_strokes_threaded(
         &mut self,
         keys: &[StrokeKey],
-        viewport: Option<AABB>,
         image_scale: f64,
     ) {
         keys.iter().for_each(|&key| {
-            self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
+            self.regenerate_rendering_for_stroke_threaded(key, image_scale);
         })
     }
 
@@ -207,7 +180,7 @@ impl StrokesState {
                 (self.strokes.get(key), self.render_components.get_mut(key))
             {
                 // skip and empty image buffer if stroke is not in expanded viewport
-                if !viewport.expand_by(viewport.extents()).intersects(&stroke.bounds()) {
+                if !viewport.intersects(&stroke.bounds()) {
                     render_comp.rendernodes = vec![];
                     render_comp.images = vec![];
                     render_comp.regenerate_flag = true;
@@ -219,12 +192,28 @@ impl StrokesState {
                     return;
                 }
 
-                self.regenerate_rendering_for_stroke_threaded(key, Some(viewport), image_scale)
-            } else {
-                log::debug!(
-                    "get stroke, render_comp returned None in regenerate_rendering_current_view_threaded() for stroke with key {:?}",
-                    key
-                );
+                let tasks_tx = self.tasks_tx.clone();
+                let stroke = stroke.clone();
+
+                // Only set false when viewport intersects stroke bounds
+                render_comp.regenerate_flag = !viewport.intersects(&stroke.bounds());
+
+                // Spawn a new thread for image rendering
+                self.threadpool.spawn(move || {
+                    match stroke.gen_images_in_viewport(viewport, image_scale) {
+                        Ok(images) => {
+                            tasks_tx.unbounded_send(StateTask::UpdateStrokeWithImages {
+                                key,
+                                images,
+                            }).unwrap_or_else(|e| {
+                                log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_in_viewport_threaded() for stroke with key {:?}, with Err, {}",key, e);
+                            });
+                        }
+                        Err(e) => {
+                            log::debug!("stroke.gen_image() failed in regenerate_rendering_in_viewport_threaded() for stroke with key {:?}, with Err {}", key, e);
+                        }
+                    }
+                });
             }
         })
     }
@@ -235,95 +224,44 @@ impl StrokesState {
         key: StrokeKey,
         no_last_segments: usize,
         image_scale: f64,
-    ) {
+    ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
             match stroke {
                 Stroke::BrushStroke(brushstroke) => {
-                    match brushstroke.gen_images_for_last_segments(no_last_segments, image_scale) {
-                        Ok(mut images) => {
-                                match render::Image::images_to_rendernodes(
-                                        &images,
-                                    ) {
-                                        Ok(mut rendernode) => {
-                                            render_comp.rendernodes.append(&mut rendernode);
-                                            render_comp.images.append(&mut images);
-                                            render_comp.regenerate_flag = false;
-                                        }
-                                        Err(e) => log::error!("append_images_to_rendernode() failed in append_rendering_last_segments() with Err {}", e),
-                                    }
-                        }
-                        Err(e) => {
-                            log::error!("gen_images_for_last_segments() in append_rendering_last_segments() failed with Err {}", e);
-                        }
-                    }
+                    let mut images =
+                        brushstroke.gen_images_for_last_segments(no_last_segments, image_scale)?;
+                    let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
+
+                    render_comp.rendernodes.append(&mut rendernodes);
+                    render_comp.images.append(&mut images);
+                    render_comp.regenerate_flag = false;
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                    match stroke.gen_images(None, image_scale) {
-                        Ok(images) => {
-                            match render::Image::images_to_rendernodes(&images) {
-                                Ok(rendernodes) => {
-                                    render_comp.rendernodes = rendernodes;
-                                    render_comp.images = images;
-                                }
-                                Err(e) => log::error!("image_to_rendernode() failed in regenerate_rendering_for_stroke() with Err {}", e),
-                            }
-                        }
-                        Err(e) => {
-                            log::debug!(
-                                "stroke.gen_image() failed in regenerate_rendering_newest_elem() for stroke with key: {:?}, with Err {}",
-                                key,
-                                e
-                            )
-                        }
-                    }
-                }
-            }
-        } else {
-            log::debug!(
-                "get stroke, render_comp returned None for stroke with key {:?}",
-                key
-            );
-        }
-    }
-
-    /// Not setting the regenerate flag, that is the responsibility of the caller
-    pub fn replace_rendering_with_images(&mut self, key: StrokeKey, images: Vec<render::Image>) {
-        if let Some(render_comp) = self.render_components.get_mut(key) {
-            match render::Image::images_to_rendernodes(&images) {
-                Ok(rendernodes) => {
+                    let images = stroke.gen_images(image_scale)?;
+                    let rendernodes = render::Image::images_to_rendernodes(&images)?;
                     render_comp.rendernodes = rendernodes;
                     render_comp.images = images;
                 }
-                Err(e) => log::error!(
-                    "image_to_rendernode() failed in regenerate_rendering_with_images() with Err {}",
-                    e
-                ),
             }
-        } else {
-            log::debug!(
-                    "get render_comp returned None in regenerate_rendering_with_images() for stroke with key {:?}",
-                    key
-                );
         }
+        Ok(())
     }
 
     /// Not setting the regenerate flag, that is the responsibility of the caller
-    pub fn append_images_to_rendering(&mut self, key: StrokeKey, mut images: Vec<render::Image>) {
+    pub fn replace_rendering_with_images(
+        &mut self,
+        key: StrokeKey,
+        images: Vec<render::Image>,
+    ) -> anyhow::Result<()> {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            match render::Image::images_to_rendernodes(&images) {
-                Ok(mut rendernodes) => {
-                    render_comp.rendernodes.append(&mut rendernodes);
-                    render_comp.images.append(&mut images);
-                }
-                Err(e) => log::error!(
-                    "append_images_to_rendernode() failed in append_images_to_rendering() with Err {}",
-                    e
-                ),
-            }
+            let rendernodes = render::Image::images_to_rendernodes(&images)?;
+            render_comp.rendernodes = rendernodes;
+            render_comp.images = images;
         }
+        Ok(())
     }
 
     /// Draws the strokes without the selection
@@ -380,10 +318,10 @@ impl StrokesState {
         _sheet_bounds: AABB,
         viewport: Option<AABB>,
         image_scale: f64,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         self.keys_as_rendered().into_iter().for_each(|key| {
             if let Some(stroke) = self.strokes.get(key) {
-                if let Err(e) = || -> Result<(), anyhow::Error> {
+                if let Err(e) = || -> anyhow::Result<()> {
                     // skip if stroke is not in viewport
                     if let Some(viewport) = viewport {
                         if !viewport.intersects(&stroke.bounds()) {
@@ -415,12 +353,12 @@ impl StrokesState {
         _sheet_bounds: AABB,
         viewport: Option<AABB>,
         image_scale: f64,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         self.selection_keys_as_rendered()
             .into_iter()
             .for_each(|key| {
                 if let Some(stroke) = self.strokes.get(key) {
-                    if let Err(e) = || -> Result<(), anyhow::Error> {
+                    if let Err(e) = || -> anyhow::Result<()> {
                         // skip if stroke is not in viewport
                         if let Some(viewport) = viewport {
                             if !viewport.intersects(&stroke.bounds()) {
@@ -436,7 +374,7 @@ impl StrokesState {
                         Ok(())
                     }() {
                         log::error!(
-                            "drawing stroke in draw_strokes_immediate_w_piet() failed with Err {}",
+                            "drawing stroke in draw_selection_immediate_w_piet() failed with Err {}",
                             e
                         );
                     }

@@ -1,19 +1,25 @@
 pub mod penshortcutmodels;
-pub mod penshortcutrow;
+mod penshortcutrow;
+
+// Re-exports
+pub use penshortcutrow::PenShortcutRow;
+
+use super::appwindow::RnoteAppWindow;
+use crate::unitentry::UnitEntry;
+use adw::prelude::*;
+use gtk4::{
+    gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorButton,
+    CompositeTemplate, ScrolledWindow, ToggleButton, Widget,
+};
+use rnote_compose::penevent::ShortcutKey;
+use rnote_engine::sheet::background::PatternStyle;
+use rnote_engine::sheet::format::{self, Format};
+use rnote_engine::utils::GdkRGBAHelpers;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 mod imp {
-    use std::cell::RefCell;
-    use std::rc::Rc;
-
-    use adw::prelude::*;
-    use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{Adjustment, Button, ColorButton, ScrolledWindow, ToggleButton};
-
-    use crate::unitentry::UnitEntry;
-    use rnote_engine::sheet::{format, Format};
-
-    use super::penshortcutrow::PenShortcutRow;
-
+    use super::*;
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub struct SettingsPanel {
@@ -366,20 +372,6 @@ mod imp {
     }
 }
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
-use adw::prelude::*;
-use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
-use gtk4::{Adjustment, ColorButton, ScrolledWindow, ToggleButton, gdk};
-use rnote_compose::penevent::ShortcutKey;
-use rnote_engine::utils::GdkRGBAHelpers;
-
-use super::appwindow::RnoteAppWindow;
-use crate::unitentry::UnitEntry;
-use rnote_engine::sheet::background::PatternStyle;
-use rnote_engine::sheet::format::{self, Format};
-
 glib::wrapper! {
     pub struct SettingsPanel(ObjectSubclass<imp::SettingsPanel>)
     @extends Widget;
@@ -443,75 +435,51 @@ impl SettingsPanel {
     }
 
     pub fn settings_scroller(&self) -> ScrolledWindow {
-        imp::SettingsPanel::from_instance(self)
-            .settings_scroller
-            .clone()
+        self.imp().settings_scroller.clone()
     }
 
     pub fn general_pdf_import_width_adj(&self) -> Adjustment {
-        imp::SettingsPanel::from_instance(self)
-            .general_pdf_import_width_adj
-            .clone()
+        self.imp().general_pdf_import_width_adj.clone()
     }
 
     pub fn general_pdf_import_as_vector_toggle(&self) -> ToggleButton {
-        imp::SettingsPanel::from_instance(self)
-            .general_pdf_import_as_vector_toggle
-            .clone()
+        self.imp().general_pdf_import_as_vector_toggle.clone()
     }
 
     pub fn general_pdf_import_as_bitmap_toggle(&self) -> ToggleButton {
-        imp::SettingsPanel::from_instance(self)
-            .general_pdf_import_as_bitmap_toggle
-            .clone()
+        self.imp().general_pdf_import_as_bitmap_toggle.clone()
     }
 
     pub fn format_width_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .format_width_unitentry
-            .clone()
+        self.imp().format_width_unitentry.clone()
     }
 
     pub fn format_height_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .format_height_unitentry
-            .clone()
+        self.imp().format_height_unitentry.clone()
     }
 
     pub fn format_dpi_adj(&self) -> Adjustment {
-        imp::SettingsPanel::from_instance(self)
-            .format_dpi_adj
-            .clone()
+        self.imp().format_dpi_adj.clone()
     }
 
     pub fn background_color_choosebutton(&self) -> ColorButton {
-        imp::SettingsPanel::from_instance(self)
-            .background_color_choosebutton
-            .clone()
+        self.imp().background_color_choosebutton.clone()
     }
 
     pub fn background_patterns_row(&self) -> adw::ComboRow {
-        imp::SettingsPanel::from_instance(self)
-            .background_patterns_row
-            .clone()
+        self.imp().background_patterns_row.clone()
     }
 
     pub fn background_pattern_color_choosebutton(&self) -> ColorButton {
-        imp::SettingsPanel::from_instance(self)
-            .background_pattern_color_choosebutton
-            .clone()
+        self.imp().background_pattern_color_choosebutton.clone()
     }
 
     pub fn background_pattern_width_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .background_pattern_width_unitentry
-            .clone()
+        self.imp().background_pattern_width_unitentry.clone()
     }
 
     pub fn background_pattern_height_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .background_pattern_height_unitentry
-            .clone()
+        self.imp().background_pattern_height_unitentry.clone()
     }
 
     pub fn refresh_for_sheet(&self, appwindow: &RnoteAppWindow) {

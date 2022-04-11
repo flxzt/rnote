@@ -1,13 +1,16 @@
-mod imp {
-    use std::cell::RefCell;
+use crate::RnoteAppWindow;
+use gettextrs::gettext;
+use gtk4::pango;
+use gtk4::{
+    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Align, Button,
+    CompositeTemplate, DragSource, Entry, GestureClick, GestureLongPress, Grid, Image, Label,
+    MenuButton, Popover, PopoverMenu, PositionType, Widget,
+};
+use once_cell::sync::Lazy;
+use std::cell::RefCell;
 
-    use gtk4::{
-        gdk, DragSource, GestureClick, GestureLongPress, Image, Label, MenuButton, PopoverMenu,
-    };
-    use gtk4::{
-        gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Widget,
-    };
-    use once_cell::sync::Lazy;
+mod imp {
+    use super::*;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/filerow.ui")]
@@ -148,13 +151,6 @@ mod imp {
         }
     }
 }
-
-use gettextrs::gettext;
-use gtk4::pango;
-use gtk4::{gio, glib, glib::clone, prelude::*, subclass::prelude::*};
-use gtk4::{Align, Button, DragSource, Entry, Grid, Image, Label, Popover, PositionType};
-
-use crate::RnoteAppWindow;
 
 glib::wrapper! {
     pub struct FileRow(ObjectSubclass<imp::FileRow>)

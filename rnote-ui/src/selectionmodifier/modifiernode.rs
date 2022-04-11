@@ -1,5 +1,7 @@
+use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, BinLayout, Image};
+
 mod imp {
-    use gtk4::{gdk, glib, prelude::*, subclass::prelude::*, BinLayout, Image};
+    use super::*;
 
     #[derive(Debug)]
     pub struct ModifierNode {
@@ -45,7 +47,6 @@ mod imp {
     }
     impl WidgetImpl for ModifierNode {}
 }
-use gtk4::{glib, subclass::prelude::*, Image};
 
 glib::wrapper! {
     pub struct ModifierNode(ObjectSubclass<imp::ModifierNode>)
@@ -67,6 +68,6 @@ impl ModifierNode {
     }
 
     pub fn image(&self) -> Image {
-        imp::ModifierNode::from_instance(self).image.clone()
+        self.imp().image.clone()
     }
 }

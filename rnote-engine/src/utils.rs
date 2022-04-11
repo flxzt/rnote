@@ -4,7 +4,6 @@ use gtk4::{gdk, glib, graphene};
 use p2d::bounding_volume::AABB;
 use std::io::prelude::*;
 
-
 pub trait GdkRGBAHelpers
 where
     Self: Sized,

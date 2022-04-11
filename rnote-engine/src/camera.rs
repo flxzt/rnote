@@ -47,8 +47,8 @@ impl Default for Camera {
 }
 
 impl Camera {
-    pub const ZOOM_MIN: f64 = 0.2;
-    pub const ZOOM_MAX: f64 = 8.0;
+    pub const ZOOM_MIN: f64 = 0.3;
+    pub const ZOOM_MAX: f64 = 6.0;
     pub const ZOOM_DEFAULT: f64 = 1.0;
 
     pub fn with_zoom(mut self, zoom: f64) -> Self {
@@ -102,6 +102,12 @@ impl Camera {
             na::Point2::from(self.offset * inv_zoom),
             na::Point2::from((self.offset + self.size) * inv_zoom),
         )
+    }
+
+    /// The viewport, expanded. Used by rendering
+    pub fn viewport_extended(&self) -> AABB {
+        let viewport = self.viewport();
+        viewport.extend_by(viewport.extents() / 2.0)
     }
 
     /// The transform from sheet coords -> surface coords

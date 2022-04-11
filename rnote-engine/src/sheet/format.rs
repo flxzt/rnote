@@ -1,4 +1,4 @@
-use gtk4::{glib, graphene, gsk, Snapshot, gdk};
+use gtk4::{gdk, glib, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -6,6 +6,7 @@ use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::Color;
 
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
+use crate::Camera;
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
@@ -150,30 +151,31 @@ impl Format {
     pub const DPI_MAX: f64 = 5000.0;
     pub const DPI_DEFAULT: f64 = 96.0;
 
-    pub const FORMAT_BORDER_WIDTH: f64 = 1.0;
-    pub const FORMAT_BORDER_COLOR: Color = Color {
-        r: 0.6,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    };
-
     pub fn draw(
         &self,
         snapshot: &Snapshot,
         sheet_bounds: AABB,
-        viewport: Option<AABB>,
-    ) -> Result<(), anyhow::Error> {
+        camera: &Camera,
+    ) -> anyhow::Result<()> {
+        const FORMAT_BORDER_COLOR: Color = Color {
+            r: 0.6,
+            g: 0.0,
+            b: 0.0,
+            a: 1.0,
+        };
+
         if self.draw_borders {
+            let total_zoom = camera.total_zoom();
+            let border_width = 1.0 / total_zoom;
+            let viewport = camera.viewport();
+
             snapshot.push_clip(&graphene::Rect::from_aabb(sheet_bounds.loosened(2.0)));
 
             for page_bounds in
                 sheet_bounds.split_extended_origin_aligned(na::vector![self.width, self.height])
             {
-                if let Some(viewport) = viewport {
-                    if !page_bounds.intersects(&viewport) {
-                        continue;
-                    }
+                if !page_bounds.intersects(&viewport) {
+                    continue;
                 }
 
                 let rounded_rect = gsk::RoundedRect::new(
@@ -187,16 +189,16 @@ impl Format {
                 snapshot.append_border(
                     &rounded_rect,
                     &[
-                        Self::FORMAT_BORDER_WIDTH as f32,
-                        Self::FORMAT_BORDER_WIDTH as f32,
-                        Self::FORMAT_BORDER_WIDTH as f32,
-                        Self::FORMAT_BORDER_WIDTH as f32,
+                        border_width as f32,
+                        border_width as f32,
+                        border_width as f32,
+                        border_width as f32,
                     ],
                     &[
-                        gdk::RGBA::from_compose_color(Self::FORMAT_BORDER_COLOR),
-                        gdk::RGBA::from_compose_color(Self::FORMAT_BORDER_COLOR),
-                        gdk::RGBA::from_compose_color(Self::FORMAT_BORDER_COLOR),
-                        gdk::RGBA::from_compose_color(Self::FORMAT_BORDER_COLOR),
+                        gdk::RGBA::from_compose_color(FORMAT_BORDER_COLOR),
+                        gdk::RGBA::from_compose_color(FORMAT_BORDER_COLOR),
+                        gdk::RGBA::from_compose_color(FORMAT_BORDER_COLOR),
+                        gdk::RGBA::from_compose_color(FORMAT_BORDER_COLOR),
                     ],
                 )
             }

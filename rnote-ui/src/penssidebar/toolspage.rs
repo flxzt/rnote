@@ -1,5 +1,8 @@
+use crate::appwindow::RnoteAppWindow;
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+
 mod imp {
-    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+    use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/toolspage.ui")]
@@ -42,9 +45,6 @@ mod imp {
     impl WidgetImpl for ToolsPage {}
 }
 
-use crate::appwindow::RnoteAppWindow;
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, ToggleButton};
-
 glib::wrapper! {
     pub struct ToolsPage(ObjectSubclass<imp::ToolsPage>)
         @extends gtk4::Widget;
@@ -62,21 +62,15 @@ impl ToolsPage {
     }
 
     pub fn toolstyle_expandsheet_toggle(&self) -> ToggleButton {
-        imp::ToolsPage::from_instance(self)
-            .toolstyle_expandsheet_toggle
-            .get()
+        self.imp().toolstyle_expandsheet_toggle.get()
     }
 
     pub fn toolstyle_dragproximity_toggle(&self) -> ToggleButton {
-        imp::ToolsPage::from_instance(self)
-            .toolstyle_dragproximity_toggle
-            .get()
+        self.imp().toolstyle_dragproximity_toggle.get()
     }
 
     pub fn toolstyle_offsetcamera_toggle(&self) -> ToggleButton {
-        imp::ToolsPage::from_instance(self)
-            .toolstyle_offsetcamera_toggle
-            .get()
+        self.imp().toolstyle_offsetcamera_toggle.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

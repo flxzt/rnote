@@ -13,12 +13,12 @@ pub use trash_comp::TrashComponent;
 use crate::pens::penholder::PenStyle;
 use crate::pens::tools::DragProximityTool;
 use crate::pens::Shaper;
-use crate::render;
 use crate::strokes::BitmapImage;
 use crate::strokes::Stroke;
 use crate::strokes::StrokeBehaviour;
 use crate::strokes::VectorImage;
 use crate::surfaceflags::SurfaceFlags;
+use crate::{render, Camera};
 use rnote_compose::helpers::{self, AABBHelpers};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
@@ -47,11 +47,6 @@ There also is a different category of methods which return filtered keys, e.g. `
 pub enum StateTask {
     /// Replace the images of the render_comp
     UpdateStrokeWithImages {
-        key: StrokeKey,
-        images: Vec<render::Image>,
-    },
-    /// Append images to the render_comp. (e.g. when new segments of brush strokes are inserted)
-    AppendImagesToStroke {
         key: StrokeKey,
         images: Vec<render::Image>,
     },
@@ -140,40 +135,20 @@ impl StrokesState {
         self.chrono_counter = strokes_state.chrono_counter;
     }
 
-    /// processes the received task from tasks_rx.
-    /// Returns surface flags for what to update in the frontend UI.
-    /// An example how to use it:
-    /// ```rust, ignore
-    /// let main_cx = glib::MainContext::default();
-
-    /// main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
-    ///            let mut task_rx = canvas.engine().borrow_mut().strokes_state.tasks_rx.take().unwrap();
-
-    ///           loop {
-    ///              if let Some(task) = task_rx.next().await {
-    ///                    let surface_flags = canvas.engine().borrow_mut().strokes_state.process_received_task(task, canvas.zoom());
-    ///                    appwindow.handle_surface_flags(surface_flags);
-    ///                }
-    ///            }
-    ///        }));
-    /// ```
-    pub fn process_received_task(
+    pub(crate) fn process_received_task(
         &mut self,
         task: StateTask,
-        viewport: AABB,
-        image_scale: f64,
+        camera: &Camera,
     ) -> SurfaceFlags {
+        let viewport_expanded = camera.viewport_extended();
+        let image_scale = camera.image_scale();
         let mut surface_flags = SurfaceFlags::default();
 
         match task {
             StateTask::UpdateStrokeWithImages { key, images } => {
-                self.replace_rendering_with_images(key, images);
-
-                surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
-            }
-            StateTask::AppendImagesToStroke { key, images } => {
-                self.append_images_to_rendering(key, images);
+                if let Err(e) = self.replace_rendering_with_images(key, images) {
+                    log::error!("replace_rendering_with_images() in process_received_task() failed with Err {}", e);
+                }
 
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
@@ -218,7 +193,11 @@ impl StrokesState {
                     }
                 }
 
-                self.regenerate_rendering_in_viewport_threaded(false, viewport, image_scale);
+                self.regenerate_rendering_in_viewport_threaded(
+                    false,
+                    viewport_expanded,
+                    image_scale,
+                );
             }
             StateTask::Quit => {
                 surface_flags.quit = true;

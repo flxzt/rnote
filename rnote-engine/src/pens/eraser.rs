@@ -6,8 +6,8 @@ use rnote_compose::{Color, PenEvent};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-use super::AudioPlayer;
 use super::penbehaviour::PenBehaviour;
+use super::AudioPlayer;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "eraser")]
@@ -97,7 +97,7 @@ impl DrawOnSheetBehaviour for Eraser {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             let fill_rect = bounds.to_kurbo_rect();
             let outline_rect = bounds.tightened(Self::OUTLINE_WIDTH * 0.5).to_kurbo_rect();

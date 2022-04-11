@@ -40,6 +40,7 @@ pub fn filter_stylus_input(_stylus_drawing_gesture: &GestureStylus) -> bool {
     false
 }
 
+#[allow(dead_code)]
 pub fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
     log::debug!(
         "gesture modifier: {:?}, current_button: {:?}, tool_type: {:?}, event.event_type: {:?}",
@@ -54,6 +55,7 @@ pub fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
     );
 }
 
+#[allow(dead_code)]
 pub fn debug_drag_gesture(drag_gesture: &GestureDrag) {
     log::debug!(
         "gesture modifier: {:?}, current_button: {:?}, event.event_type: {:?}",

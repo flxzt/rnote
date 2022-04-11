@@ -74,7 +74,6 @@ mod imp {
             let vadj = canvas.vadjustment().unwrap();
             let new_size = na::vector![f64::from(width), f64::from(height)];
 
-
             // Update the adjustments
             let (h_lower, h_upper) = match expand_mode {
                 ExpandMode::FixedSize | ExpandMode::EndlessVertical => (
@@ -144,12 +143,10 @@ mod imp {
                             canvas.engine().borrow().sheet.format.height
                         ],
                     )
-                    .expand_by(
-                        na::vector![
-                            2.0 * canvas.engine().borrow().sheet.format.width,
-                            2.0 * canvas.engine().borrow().sheet.format.height
-                        ],
-                    );
+                    .extend_by(na::vector![
+                        2.0 * canvas.engine().borrow().sheet.format.width,
+                        2.0 * canvas.engine().borrow().sheet.format.height
+                    ]);
 
                     if !viewport.intersects(&threshold_bounds) {
                         canvas.show_return_to_center_toast()

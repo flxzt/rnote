@@ -102,7 +102,7 @@ where
     /// New AABB, ensuring its mins, maxs are valid (maxs >= mins)
     fn new_positive(start: na::Point2<f64>, end: na::Point2<f64>) -> Self;
     /// Asserts the AABB is valid
-    fn assert_valid(&self) -> Result<(), anyhow::Error>;
+    fn assert_valid(&self) -> anyhow::Result<()>;
     /// Translates the AABB by a offset
     fn translate(&self, offset: na::Vector2<f64>) -> Self;
     /// Shrinks the aabb to the nearest integer of its vertices
@@ -111,8 +111,8 @@ where
     fn ceil(&self) -> Self;
     /// Clamps to the min and max bounds
     fn clamp(&self, min: Option<Self>, max: Option<Self>) -> Self;
-    /// Expands on every side by the given size
-    fn expand_by(&self, expand_by: na::Vector2<f64>) -> Self;
+    /// extends on every side by the given size
+    fn extend_by(&self, expand_by: na::Vector2<f64>) -> Self;
     /// Scales the AABB by the scalefactor
     fn scale(&self, scale: f64) -> Self;
     /// Scales the AABB by the scale vector
@@ -156,7 +156,7 @@ impl AABBHelpers for AABB {
         }
     }
 
-    fn assert_valid(&self) -> Result<(), anyhow::Error> {
+    fn assert_valid(&self) -> anyhow::Result<()> {
         if self.extents()[0] < 0.0
             || self.extents()[1] < 0.0
             || self.maxs[0] < self.mins[0]
@@ -214,7 +214,7 @@ impl AABBHelpers for AABB {
         )
     }
 
-    fn expand_by(&self, size: nalgebra::Vector2<f64>) -> AABB {
+    fn extend_by(&self, size: nalgebra::Vector2<f64>) -> AABB {
         AABB::new(
             na::Point2::from(self.mins.coords - size),
             na::Point2::from(self.maxs.coords + size),
@@ -370,7 +370,6 @@ impl AABBHelpers for AABB {
         )
     }
 }
-
 
 /// Helpers that extend the Affine2 type
 pub trait Affine2Helpers

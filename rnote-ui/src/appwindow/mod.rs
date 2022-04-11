@@ -1,23 +1,42 @@
-pub mod appsettings;
-pub mod appwindowactions;
+mod appsettings;
+mod appwindowactions;
+
+// Re-exports
+
+use std::{
+    cell::{Cell, RefCell},
+    path::Path,
+    rc::Rc,
+};
+
+use adw::{prelude::*, subclass::prelude::*};
+use gtk4::{
+    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, CompositeTemplate,
+    CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
+    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
+    PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
+};
+use once_cell::sync::Lazy;
+
+use crate::{
+    app::RnoteApp,
+    canvas::RnoteCanvas,
+    config,
+    penssidebar::PensSideBar,
+    settingspanel::SettingsPanel,
+    utils,
+    workspacebrowser::WorkspaceBrowser,
+    {dialogs, mainheader::MainHeader},
+};
+use rnote_engine::{
+    pens::penholder::PenStyle,
+    strokes::{BitmapImage, VectorImage},
+    strokesstate::StateTask,
+    Camera, SurfaceFlags,
+};
 
 mod imp {
-    use std::cell::RefCell;
-    use std::{cell::Cell, rc::Rc};
-
-    use adw::{prelude::*, subclass::prelude::*};
-    use gtk4::{
-        gdk, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
-        FileChooserNative, Grid, Inhibit, PackType, ScrolledWindow, StyleContext, ToggleButton,
-    };
-    use gtk4::{gio, GestureDrag, PropagationPhase, Revealer, Separator};
-    use once_cell::sync::Lazy;
-    use rnote_engine::pens::penholder::PenStyle;
-
-    use crate::{
-        canvas::RnoteCanvas, config, dialogs, mainheader::MainHeader, penssidebar::PensSideBar,
-        settingspanel::SettingsPanel, workspacebrowser::WorkspaceBrowser,
-    };
+    use super::*;
 
     #[allow(missing_debug_implementations)]
     #[derive(CompositeTemplate)]
@@ -445,36 +464,6 @@ mod imp {
     }
 }
 
-use std::{
-    cell::{Cell, RefCell},
-    path::Path,
-    rc::Rc,
-};
-
-use adw::prelude::*;
-use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
-    EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme,
-    Inhibit, PropagationPhase, ScrolledWindow, Separator, ToggleButton,
-};
-use gtk4::{EventSequenceState, PolicyType, Revealer};
-use rnote_engine::{Camera, SurfaceFlags};
-
-use crate::{
-    app::RnoteApp,
-    canvas::RnoteCanvas,
-    config,
-    penssidebar::PensSideBar,
-    settingspanel::SettingsPanel,
-    utils,
-    workspacebrowser::WorkspaceBrowser,
-    {dialogs, mainheader::MainHeader},
-};
-use rnote_engine::{
-    strokes::{BitmapImage, VectorImage},
-    strokesstate::StateTask,
-};
-
 // The renderer as a global singleton
 
 glib::wrapper! {
@@ -521,23 +510,16 @@ impl RnoteAppWindow {
     }
 
     pub fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
-        imp::RnoteAppWindow::from_instance(self)
-            .filechoosernative
-            .clone()
+        self.imp().filechoosernative.clone()
     }
 
     pub fn output_file(&self) -> Option<gio::File> {
-        imp::RnoteAppWindow::from_instance(self)
-            .output_file
-            .borrow()
-            .clone()
+        self.imp().output_file.borrow().clone()
     }
 
     pub fn set_output_file(&self, output_file: Option<&gio::File>, appwindow: &RnoteAppWindow) {
         appwindow.mainheader().set_title_for_file(output_file);
-        *imp::RnoteAppWindow::from_instance(self)
-            .output_file
-            .borrow_mut() = output_file.cloned();
+        *self.imp().output_file.borrow_mut() = output_file.cloned();
     }
 
     pub fn unsaved_changes(&self) -> bool {
@@ -549,118 +531,94 @@ impl RnoteAppWindow {
     }
 
     pub fn toast_overlay(&self) -> adw::ToastOverlay {
-        imp::RnoteAppWindow::from_instance(self).toast_overlay.get()
+        self.imp().toast_overlay.get()
     }
 
     pub fn main_grid(&self) -> Grid {
-        imp::RnoteAppWindow::from_instance(self).main_grid.get()
+        self.imp().main_grid.get()
     }
 
     pub fn canvas_box(&self) -> gtk4::Box {
-        imp::RnoteAppWindow::from_instance(self).canvas_box.get()
+        self.imp().canvas_box.get()
     }
 
     pub fn canvas_scroller(&self) -> ScrolledWindow {
-        imp::RnoteAppWindow::from_instance(self)
-            .canvas_scroller
-            .get()
+        self.imp().canvas_scroller.get()
     }
 
     pub fn canvas(&self) -> RnoteCanvas {
-        imp::RnoteAppWindow::from_instance(self).canvas.get()
+        self.imp().canvas.get()
     }
 
     pub fn settings_panel(&self) -> SettingsPanel {
-        imp::RnoteAppWindow::from_instance(self)
-            .settings_panel
-            .get()
+        self.imp().settings_panel.get()
     }
 
     pub fn sidebar_scroller(&self) -> ScrolledWindow {
-        imp::RnoteAppWindow::from_instance(self)
-            .sidebar_scroller
-            .get()
+        self.imp().sidebar_scroller.get()
     }
 
     pub fn sidebar_grid(&self) -> Grid {
-        imp::RnoteAppWindow::from_instance(self).sidebar_grid.get()
+        self.imp().sidebar_grid.get()
     }
 
     pub fn sidebar_sep(&self) -> Separator {
-        imp::RnoteAppWindow::from_instance(self).sidebar_sep.get()
+        self.imp().sidebar_sep.get()
     }
 
     pub fn flap_header(&self) -> adw::HeaderBar {
-        imp::RnoteAppWindow::from_instance(self).flap_header.get()
+        self.imp().flap_header.get()
     }
 
     pub fn workspacebrowser(&self) -> WorkspaceBrowser {
-        imp::RnoteAppWindow::from_instance(self)
-            .workspacebrowser
-            .get()
+        self.imp().workspacebrowser.get()
     }
 
     pub fn flap(&self) -> adw::Flap {
-        imp::RnoteAppWindow::from_instance(self).flap.get()
+        self.imp().flap.get()
     }
 
     pub fn flapreveal_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .flapreveal_toggle
-            .get()
+        self.imp().flapreveal_toggle.get()
     }
 
     pub fn flap_menus_box(&self) -> Box {
-        imp::RnoteAppWindow::from_instance(self)
-            .flap_menus_box
-            .get()
+        self.imp().flap_menus_box.get()
     }
 
     pub fn mainheader(&self) -> MainHeader {
-        imp::RnoteAppWindow::from_instance(self).mainheader.get()
+        self.imp().mainheader.get()
     }
 
     pub fn narrow_pens_toggles_revealer(&self) -> Revealer {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_pens_toggles_revealer
-            .get()
+        self.imp().narrow_pens_toggles_revealer.get()
     }
 
     pub fn narrow_brush_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_brush_toggle
-            .get()
+        self.imp().narrow_brush_toggle.get()
     }
 
     pub fn narrow_shaper_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_shaper_toggle
-            .get()
+        self.imp().narrow_shaper_toggle.get()
     }
 
     pub fn narrow_eraser_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_eraser_toggle
-            .get()
+        self.imp().narrow_eraser_toggle.get()
     }
 
     pub fn narrow_selector_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_selector_toggle
-            .get()
+        self.imp().narrow_selector_toggle.get()
     }
 
     pub fn narrow_tools_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_tools_toggle
-            .get()
+        self.imp().narrow_tools_toggle.get()
     }
 
     pub fn penssidebar(&self) -> PensSideBar {
-        imp::RnoteAppWindow::from_instance(self).penssidebar.get()
+        self.imp().penssidebar.get()
     }
 
-    pub fn save_window_size(&self) -> Result<(), anyhow::Error> {
+    pub fn save_window_size(&self) -> anyhow::Result<()> {
         self.app_settings().set_int("window-width", self.width())?;
         self.app_settings()
             .set_int("window-height", self.height())?;
@@ -1018,7 +976,7 @@ impl RnoteAppWindow {
         &self,
         file: &gio::File,
         target_pos: Option<na::Vector2<f64>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let main_cx = glib::MainContext::default();
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
         let file = file.clone();
@@ -1101,7 +1059,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_rnote_bytes<P>(&self, bytes: &[u8], path: Option<P>) -> Result<(), anyhow::Error>
+    pub fn load_in_rnote_bytes<P>(&self, bytes: &[u8], path: Option<P>) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
     {
@@ -1136,7 +1094,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_xopp_bytes<P>(&self, bytes: &[u8], _path: Option<P>) -> Result<(), anyhow::Error>
+    pub fn load_in_xopp_bytes<P>(&self, bytes: &[u8], _path: Option<P>) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
     {
@@ -1172,7 +1130,7 @@ impl RnoteAppWindow {
         bytes: &[u8],
         // In coordinate space of the sheet
         target_pos: Option<na::Vector2<f64>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
@@ -1205,7 +1163,7 @@ impl RnoteAppWindow {
         bytes: &[u8],
         // In the coordinate space of the sheet
         target_pos: Option<na::Vector2<f64>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
@@ -1232,7 +1190,7 @@ impl RnoteAppWindow {
         bytes: &[u8],
         // In the coordinate space of the sheet
         target_pos: Option<na::Vector2<f64>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
@@ -1265,7 +1223,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn export_sheet_as_svg(&self, file: &gio::File) -> Result<(), anyhow::Error> {
+    pub fn export_sheet_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
         let svg_data = self
             .canvas()
             .engine()
@@ -1309,7 +1267,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> Result<(), anyhow::Error> {
+    pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let pdf_data_receiver = self
                 .canvas()

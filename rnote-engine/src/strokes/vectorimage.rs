@@ -66,11 +66,7 @@ impl StrokeBehaviour for VectorImage {
 // Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().
 // There we use a svg renderer to generate pixel images. In this way we ensure to export an actual svg when calling gen_svgs(), but can also draw it onto piet.
 impl DrawBehaviour for VectorImage {
-    fn draw(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        image_scale: f64,
-    ) -> Result<(), anyhow::Error> {
+    fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         let mut image = match render::Image::join_images(
             render::Image::gen_images_from_svg(self.gen_svg()?, self.bounds(), image_scale)?,
             self.bounds(),
@@ -285,7 +281,7 @@ impl VectorImage {
         let bounds = self.bounds();
 
         match render::Image::join_images(
-            render::Image::gen_images_from_drawable(self, bounds, None, image_scale)?,
+            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
             bounds,
             image_scale,
         )? {

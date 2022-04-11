@@ -1,22 +1,37 @@
-pub mod canvaslayout;
-pub mod input;
+mod canvaslayout;
+mod input;
+
+// Re-exports
+pub use canvaslayout::CanvasLayout;
+
+// Imports
+use std::cell::{Cell, RefCell};
+use std::rc::Rc;
+
+use crate::config;
+use crate::selectionmodifier::SelectionModifier;
+use rnote_engine::RnoteEngine;
+
+use gtk4::{
+    gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
+    Adjustment, DropTarget, EventSequenceState, GestureDrag, GestureStylus, PropagationPhase,
+    Scrollable, ScrollablePolicy, Widget,
+};
+
+use crate::appwindow::RnoteAppWindow;
+use futures::StreamExt;
+use once_cell::sync::Lazy;
+use p2d::bounding_volume::AABB;
+use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::penpath::Element;
+use rnote_engine::Sheet;
+
+use gettextrs::gettext;
+use std::collections::VecDeque;
+use std::time;
 
 mod imp {
-    use std::cell::{Cell, RefCell};
-    use std::rc::Rc;
-
-    use super::canvaslayout::CanvasLayout;
-    use crate::config;
-    use crate::selectionmodifier::SelectionModifier;
-    use rnote_engine::RnoteEngine;
-
-    use gtk4::{
-        gdk, glib, graphene, prelude::*, subclass::prelude::*, GestureDrag, GestureStylus,
-        PropagationPhase, Widget,
-    };
-    use gtk4::{AccessibleRole, Adjustment, Scrollable, ScrollablePolicy};
-
-    use once_cell::sync::Lazy;
+    use super::*;
 
     #[allow(missing_debug_implementations)]
     pub struct RnoteCanvas {
@@ -307,7 +322,7 @@ mod imp {
         // request_mode(), measure(), allocate() overrides happen in the CanvasLayout LayoutManager
 
         fn snapshot(&self, widget: &Self::Type, snapshot: &gtk4::Snapshot) {
-            if let Err(e) = || -> Result<(), anyhow::Error> {
+            if let Err(e) = || -> anyhow::Result<()> {
                 let (clip_x, clip_y, clip_width, clip_height) = if let Some(parent) =
                     widget.parent()
                 {
@@ -356,23 +371,6 @@ mod imp {
 
     impl RnoteCanvas {}
 }
-
-use crate::appwindow::RnoteAppWindow;
-use crate::selectionmodifier::SelectionModifier;
-use futures::StreamExt;
-use p2d::bounding_volume::AABB;
-use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::penpath::Element;
-use rnote_engine::{RnoteEngine, Sheet};
-
-use gettextrs::gettext;
-use std::cell::RefCell;
-use std::collections::VecDeque;
-use std::rc::Rc;
-use std::time;
-
-use gtk4::{gdk, glib, glib::clone, prelude::*, subclass::prelude::*};
-use gtk4::{gio, Adjustment, DropTarget, EventSequenceState, PropagationPhase};
 
 glib::wrapper! {
     pub struct RnoteCanvas(ObjectSubclass<imp::RnoteCanvas>)
@@ -453,9 +451,8 @@ impl RnoteCanvas {
     }
 
     fn set_hadjustment(&self, adj: Option<Adjustment>) {
-        let self_ = imp::RnoteCanvas::from_instance(self);
-        if let Some(signal_id) = self_.hadjustment_signal.borrow_mut().take() {
-            let old_adj = self_.hadjustment.borrow().as_ref().unwrap().clone();
+        if let Some(signal_id) = self.imp().hadjustment_signal.borrow_mut().take() {
+            let old_adj = self.imp().hadjustment.borrow().as_ref().unwrap().clone();
             old_adj.disconnect(signal_id);
         }
 
@@ -466,15 +463,14 @@ impl RnoteCanvas {
                     // Everything is updated in canvaslayout allocate
                 }),
             );
-            self_.hadjustment_signal.replace(Some(signal_id));
+            self.imp().hadjustment_signal.replace(Some(signal_id));
         }
-        self_.hadjustment.replace(adj);
+        self.imp().hadjustment.replace(adj);
     }
 
     fn set_vadjustment(&self, adj: Option<Adjustment>) {
-        let self_ = imp::RnoteCanvas::from_instance(self);
-        if let Some(signal_id) = self_.vadjustment_signal.borrow_mut().take() {
-            let old_adj = self_.vadjustment.borrow().as_ref().unwrap().clone();
+        if let Some(signal_id) = self.imp().vadjustment_signal.borrow_mut().take() {
+            let old_adj = self.imp().vadjustment.borrow().as_ref().unwrap().clone();
             old_adj.disconnect(signal_id);
         }
 
@@ -485,15 +481,13 @@ impl RnoteCanvas {
                     // Everything is updated in canvaslayout allocate
                 }),
             );
-            self_.vadjustment_signal.replace(Some(signal_id));
+            self.imp().vadjustment_signal.replace(Some(signal_id));
         }
-        self_.vadjustment.replace(adj);
+        self.imp().vadjustment.replace(adj);
     }
 
     pub fn selection_modifier(&self) -> SelectionModifier {
-        imp::RnoteCanvas::from_instance(self)
-            .selection_modifier
-            .clone()
+        self.imp().selection_modifier.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -506,11 +500,8 @@ impl RnoteCanvas {
             let mut task_rx = canvas.engine().borrow_mut().strokes_state.tasks_rx.take().unwrap();
 
             loop {
-                let image_scale = canvas.engine().borrow().camera.image_scale();
-                let viewport = canvas.engine().borrow().camera.viewport();
-
                 if let Some(task) = task_rx.next().await {
-                    let surface_flags = canvas.engine().borrow_mut().strokes_state.process_received_task(task, viewport, image_scale);
+                    let surface_flags = canvas.engine().borrow_mut().process_received_task(task);
                     appwindow.handle_surface_flags(surface_flags);
                 }
             }
@@ -543,7 +534,6 @@ impl RnoteCanvas {
             //log::debug!("stylus_drawing_gesture down");
             //input::debug_stylus_gesture(&stylus_drawing_gesture);
 
-            // filter out invalid stylus input
             if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
             stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
 
@@ -562,7 +552,6 @@ impl RnoteCanvas {
             //log::debug!("stylus_drawing_gesture motion");
             //input::debug_stylus_gesture(&stylus_drawing_gesture);
 
-            // filter out invalid stylus input
             if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
 
             let mut data_entries: VecDeque<Element> = input::retreive_stylus_elements(stylus_drawing_gesture, x, y);
@@ -577,7 +566,6 @@ impl RnoteCanvas {
             //log::debug!("stylus_drawing_gesture up");
             //input::debug_stylus_gesture(&stylus_drawing_gesture);
 
-            // filter out invalid stylus input
             if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
 
             let mut data_entries = input::retreive_stylus_elements(stylus_drawing_gesture, x, y);
@@ -596,7 +584,6 @@ impl RnoteCanvas {
             //log::debug!("mouse_drawing_gesture begin");
             //input::debug_drag_gesture(&mouse_drawing_gesture);
 
-            // filter out invalid point input
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
             mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
 
@@ -614,7 +601,6 @@ impl RnoteCanvas {
         self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture motion");
 
-            // filter out invalid point input
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
 
             if let Some(start_point) = mouse_drawing_gesture.start_point() {
@@ -630,7 +616,6 @@ impl RnoteCanvas {
         self.imp().mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture end");
 
-            // filter out invalid point input
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
 
             if let Some(start_point) = mouse_drawing_gesture.start_point() {
@@ -651,7 +636,6 @@ impl RnoteCanvas {
             clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
                 //log::debug!("touch_drawing_gesture begin");
 
-                // filter out invalid stylus input
                 if input::filter_touch_input(touch_drawing_gesture) { return; }
                 touch_drawing_gesture.set_state(EventSequenceState::Claimed);
 
@@ -669,11 +653,11 @@ impl RnoteCanvas {
             if let Some(start_point) = touch_drawing_gesture.start_point() {
                 //log::debug!("touch_drawing_gesture motion");
 
-                // filter out invalid stylus input
                 if input::filter_touch_input(touch_drawing_gesture) { return; }
 
                 let mut data_entries = input::retreive_pointer_elements(touch_drawing_gesture, x, y);
-                Element::transform_elements(&mut data_entries, na::Translation2::new(start_point.0, start_point.1) * canvas.engine().borrow().camera.transform().inverse());
+                Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
+
                 input::process_pen_motion(data_entries, None, &appwindow);
             }
         }));
@@ -683,11 +667,10 @@ impl RnoteCanvas {
                 if let Some(start_point) = touch_drawing_gesture.start_point() {
                     //log::debug!("touch_drawing_gesture end");
 
-                    // filter out invalid stylus input
                     if input::filter_touch_input(touch_drawing_gesture) { return; }
 
                     let mut data_entries = input::retreive_pointer_elements(touch_drawing_gesture, x, y);
-                    Element::transform_elements(&mut data_entries, na::Translation2::new(start_point.0, start_point.1) * canvas.engine().borrow().camera.transform().inverse());
+                    Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
 
                     if let Some(last) = data_entries.pop_back() {
                         input::process_pen_motion(data_entries, None, &appwindow);
@@ -870,12 +853,16 @@ impl RnoteCanvas {
     /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch. redraw: queue canvas redrawing
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
         let image_scale = self.engine().borrow().camera.image_scale();
-        let viewport = self.engine().borrow().camera.viewport();
+        let viewport_extended = self.engine().borrow().camera.viewport_extended();
 
         self.engine()
             .borrow_mut()
             .strokes_state
-            .regenerate_rendering_in_viewport_threaded(force_regenerate, viewport, image_scale);
+            .regenerate_rendering_in_viewport_threaded(
+                force_regenerate,
+                viewport_extended,
+                image_scale,
+            );
 
         if redraw {
             self.queue_resize();

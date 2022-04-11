@@ -73,7 +73,7 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let viewport = camera.viewport();
         let x = viewport.mins[0];
         let y = self.start_pos_y;
@@ -166,7 +166,7 @@ impl DrawOnSheetBehaviour for DragProximityTool {
         cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
         _camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let mut radius = self.radius;
 
         let n_circles = 7;
@@ -215,7 +215,7 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
             cx.transform(kurbo::Affine::scale(1.0 / camera.total_zoom()));
@@ -368,7 +368,7 @@ impl PenBehaviour for Tools {
                         strokes_state.drag_strokes_proximity(&self.dragproximity_tool);
                         strokes_state.regenerate_rendering_in_viewport_threaded(
                             false,
-                            camera.viewport(),
+                            camera.viewport_extended(),
                             camera.image_scale(),
                         );
 
@@ -431,7 +431,7 @@ impl DrawOnSheetBehaviour for Tools {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         match &self.style {
             ToolsStyle::ExpandSheet => {
                 self.expandsheet_tool

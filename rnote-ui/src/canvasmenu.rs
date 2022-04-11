@@ -1,9 +1,13 @@
-mod imp {
-    use gtk4::{
-        gio::MenuModel, glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
-        MenuButton, PopoverMenu,
-    };
+use crate::appwindow::RnoteAppWindow;
 
+use gtk4::{
+    gio, glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, MenuButton,
+    PopoverMenu, Widget,
+};
+use rnote_engine::Camera;
+
+mod imp {
+    use super::*;
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/canvasmenu.ui")]
     pub struct CanvasMenu {
@@ -12,7 +16,7 @@ mod imp {
         #[template_child]
         pub popovermenu: TemplateChild<PopoverMenu>,
         #[template_child]
-        pub menu_model: TemplateChild<MenuModel>,
+        pub menu_model: TemplateChild<gio::MenuModel>,
         #[template_child]
         pub zoom_in_button: TemplateChild<Button>,
         #[template_child]
@@ -62,12 +66,6 @@ mod imp {
     }
 }
 
-use crate::appwindow::RnoteAppWindow;
-
-use gtk4::{gio, MenuButton, PopoverMenu, Widget};
-use gtk4::{glib, prelude::*, subclass::prelude::*, Button};
-use rnote_engine::Camera;
-
 glib::wrapper! {
     pub struct CanvasMenu(ObjectSubclass<imp::CanvasMenu>)
     @extends Widget;
@@ -86,33 +84,31 @@ impl CanvasMenu {
     }
 
     pub fn menubutton(&self) -> MenuButton {
-        imp::CanvasMenu::from_instance(self).menubutton.get()
+        self.imp().menubutton.get()
     }
 
     pub fn popovermenu(&self) -> PopoverMenu {
-        imp::CanvasMenu::from_instance(self).popovermenu.get()
+        self.imp().popovermenu.get()
     }
 
     pub fn menu_model(&self) -> gio::MenuModel {
-        imp::CanvasMenu::from_instance(self).menu_model.get()
+        self.imp().menu_model.get()
     }
 
     pub fn zoomin_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self).zoom_in_button.get()
+        self.imp().zoom_in_button.get()
     }
 
     pub fn zoomout_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self).zoom_out_button.get()
+        self.imp().zoom_out_button.get()
     }
 
     pub fn zoomreset_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self).zoom_reset_button.get()
+        self.imp().zoom_reset_button.get()
     }
 
     pub fn zoom_fit_width_button(&self) -> Button {
-        imp::CanvasMenu::from_instance(self)
-            .zoom_fit_width_button
-            .get()
+        self.imp().zoom_fit_width_button.get()
     }
 
     pub fn init(&self, _appwindow: &RnoteAppWindow) {

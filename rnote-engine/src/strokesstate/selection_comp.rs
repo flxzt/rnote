@@ -248,7 +248,7 @@ impl StrokesState {
             .collect::<Vec<render::Svg>>())
     }
 
-    pub fn export_selection_as_svg(&self, file: gio::File) -> Result<(), anyhow::Error> {
+    pub fn export_selection_as_svg(&self, file: gio::File) -> anyhow::Result<()> {
         let selection_svgs = self.gen_svgs_selection()?;
         let selection_bounds = if let Some(selection_bounds) = self.gen_selection_bounds() {
             selection_bounds

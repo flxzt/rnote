@@ -1,11 +1,19 @@
-pub mod filerow;
+mod filerow;
+
+// Re-exports
+pub use filerow::FileRow;
+
+use crate::appwindow::RnoteAppWindow;
+use gtk4::{
+    gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
+    CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, Entry, FileFilter,
+    FilterChange, FilterListModel, ListItem, ListView, MultiSorter, PropertyExpression, Separator,
+    SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
+};
+use std::path::{Path, PathBuf};
 
 mod imp {
-    use gtk4::{
-        gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, DirectoryList,
-        ListView, Widget,
-    };
-    use gtk4::{Button, Entry, Separator};
+    use super::*;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
@@ -88,17 +96,6 @@ mod imp {
 
     impl WidgetImpl for WorkspaceBrowser {}
 }
-use std::path::{Path, PathBuf};
-
-use crate::appwindow::RnoteAppWindow;
-use gtk4::{
-    gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*,
-    ConstantExpression, CustomSorter, FileFilter, FilterChange, FilterListModel, ListItem,
-    PropertyExpression, SignalListItemFactory, SingleSelection, SortListModel, SorterChange,
-};
-use gtk4::{Button, DirectoryList, Entry, ListView, MultiSorter, Separator, Widget};
-
-use self::filerow::FileRow;
 
 glib::wrapper! {
     pub struct WorkspaceBrowser(ObjectSubclass<imp::WorkspaceBrowser>)
@@ -119,45 +116,31 @@ impl WorkspaceBrowser {
     }
 
     pub fn primary_dirlist(&self) -> DirectoryList {
-        imp::WorkspaceBrowser::from_instance(self)
-            .primary_dirlist
-            .clone()
+        self.imp().primary_dirlist.clone()
     }
 
     pub fn primary_listview(&self) -> ListView {
-        imp::WorkspaceBrowser::from_instance(self)
-            .primary_listview
-            .clone()
+        self.imp().primary_listview.clone()
     }
 
     pub fn workspace_controlbox(&self) -> gtk4::Box {
-        imp::WorkspaceBrowser::from_instance(self)
-            .workspace_controlbox
-            .get()
+        self.imp().workspace_controlbox.get()
     }
 
     pub fn flap_close_buttonbox(&self) -> gtk4::Box {
-        imp::WorkspaceBrowser::from_instance(self)
-            .flap_close_buttonbox
-            .get()
+        self.imp().flap_close_buttonbox.get()
     }
 
     pub fn flap_close_buttonseparator(&self) -> Separator {
-        imp::WorkspaceBrowser::from_instance(self)
-            .flap_close_buttonseparator
-            .get()
+        self.imp().flap_close_buttonseparator.get()
     }
 
     pub fn flap_close_button(&self) -> Button {
-        imp::WorkspaceBrowser::from_instance(self)
-            .flap_close_button
-            .get()
+        self.imp().flap_close_button.get()
     }
 
     pub fn workspace_pathentry(&self) -> Entry {
-        imp::WorkspaceBrowser::from_instance(self)
-            .workspace_pathentry
-            .get()
+        self.imp().workspace_pathentry.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

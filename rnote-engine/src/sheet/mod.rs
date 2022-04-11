@@ -7,10 +7,10 @@ pub use format::Format;
 use rnote_compose::Color;
 
 use crate::strokesstate::StrokesState;
-use crate::utils::{GrapheneRectHelpers, GdkRGBAHelpers};
+use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use rnote_compose::helpers::AABBHelpers;
 
-use gtk4::{graphene, gsk, Snapshot, gdk};
+use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -127,7 +127,7 @@ impl Sheet {
 
         let new_bounds = self
             .bounds()
-            .merged(&viewport.expand_by(na::vector![padding_horizontal, padding_vertical]));
+            .merged(&viewport.extend_by(na::vector![padding_horizontal, padding_vertical]));
 
         self.x = new_bounds.mins[0];
         self.y = new_bounds.mins[1];
@@ -146,14 +146,14 @@ impl Sheet {
         keys.append(&mut strokes_state.selection_keys_as_rendered());
 
         let new_bounds = if let Some(new_bounds) = strokes_state.gen_bounds(&keys) {
-            new_bounds.expand_by(na::vector![padding_horizontal, padding_vertical])
+            new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If sheet is empty, resize to one page with the format size
             AABB::new(
                 na::point![0.0, 0.0],
                 na::point![self.format.width, self.format.height],
             )
-            .expand_by(na::vector![padding_horizontal, padding_vertical])
+            .extend_by(na::vector![padding_horizontal, padding_vertical])
         };
         self.x = new_bounds.mins[0];
         self.y = new_bounds.mins[1];

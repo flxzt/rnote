@@ -26,7 +26,9 @@ mod imp {
         fn default() -> Self {
             Self {
                 css: CssProvider::new(),
-                color: Cell::new(gdk::RGBA::from_compose_color(super::ColorSetter::COLOR_DEFAULT)),
+                color: Cell::new(gdk::RGBA::from_compose_color(
+                    super::ColorSetter::COLOR_DEFAULT,
+                )),
                 position: Cell::new(PositionType::Right),
             }
         }

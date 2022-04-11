@@ -36,24 +36,12 @@ impl Default for BrushStroke {
 }
 
 impl StrokeBehaviour for BrushStroke {
-    fn gen_images(
-        &self,
-        viewport: Option<AABB>,
-        image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
+    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
         let images = match &self.style {
             Style::Smooth(options) => self
                 .path
                 .iter()
                 .filter_map(|segment| {
-                    let composed_bounds = segment.composed_bounds(options);
-
-                    if let Some(viewport) = viewport {
-                        if !composed_bounds.intersects(&viewport) {
-                            return None;
-                        }
-                    }
-
                     match render::Image::gen_from_composable_shape(segment, options, image_scale) {
                         Ok(image) => Some(image),
                         Err(e) => {
@@ -74,13 +62,6 @@ impl StrokeBehaviour for BrushStroke {
                         options.seed = options
                             .seed
                             .map(|seed| rnote_compose::utils::seed_advance(seed));
-                        let composed_bounds = segment.composed_bounds(&options);
-
-                        if let Some(viewport) = viewport {
-                            if !composed_bounds.intersects(&viewport) {
-                                return None;
-                            }
-                        }
 
                         match render::Image::gen_from_composable_shape(
                             segment,
@@ -101,14 +82,61 @@ impl StrokeBehaviour for BrushStroke {
 
         Ok(images)
     }
+    /*
+    fn gen_images_in_viewport(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
+        let images = match &self.style {
+            Style::Smooth(options) => self
+                .path
+                .iter()
+                .filter_map(|segment| {
+                    if !viewport.intersects(&segment.composed_bounds(options)) {
+                        return None;
+                    }
+
+                    render::Image::gen_from_composable_shape(segment, options, image_scale)
+                        .map_err(|e| {
+                            log::error!("gen_images() failed with Err {}", e);
+                        })
+                        .ok()
+                })
+                .flatten()
+                .collect::<Vec<render::Image>>(),
+            Style::Rough(_) => vec![],
+            Style::Textured(options) => {
+                let mut options = options.clone();
+
+                self.path
+                    .iter()
+                    .filter_map(|segment| {
+                        if !viewport.intersects(&segment.composed_bounds(&options)) {
+                            return None;
+                        }
+
+                        options.seed = options
+                            .seed
+                            .map(|seed| rnote_compose::utils::seed_advance(seed));
+
+                        render::Image::gen_from_composable_shape(segment, &options, image_scale)
+                            .map_err(|e| {
+                                log::error!("gen_images() failed with Err {}", e);
+                            })
+                            .ok()
+                    })
+                    .flatten()
+                    .collect::<Vec<render::Image>>()
+            }
+        };
+
+        Ok(images)
+    } */
 }
 
 impl DrawBehaviour for BrushStroke {
-    fn draw(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        _image_scale: f64,
-    ) -> Result<(), anyhow::Error> {
+    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         match &self.style {
             Style::Smooth(options) => self.path.draw_composed(cx, options),
             Style::Rough(_) => {
@@ -161,7 +189,8 @@ impl BrushStroke {
 
         let style = match brush.style {
             BrushStyle::Marker => {
-                let options = brush.smooth_options;
+                let mut options = brush.smooth_options;
+                options.segment_constant_width = true;
 
                 Style::Smooth(options)
             }

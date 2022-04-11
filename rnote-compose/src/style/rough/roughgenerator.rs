@@ -289,11 +289,12 @@ where
     let mut bez_path = kurbo::BezPath::new();
 
     // generate ellipse parameters
-    let psq = (std::f64::consts::PI * 2.0 * (radius_x.powi(2) + radius_y.powi(2)).sqrt() / 2.0)
-        .sqrt();
+    let psq =
+        (std::f64::consts::PI * 2.0 * (radius_x.powi(2) + radius_y.powi(2)).sqrt() / 2.0).sqrt();
     let stepcount = options
         .curve_stepcount
-        .max((options.curve_stepcount / 200.0_f64.sqrt()) * psq).ceil();
+        .max((options.curve_stepcount / 200.0_f64.sqrt()) * psq)
+        .ceil();
 
     let increment = (std::f64::consts::PI * 2.0) / stepcount;
     let curve_fitrandomness = 1.0 - options.curve_fitting;

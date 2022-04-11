@@ -1,6 +1,9 @@
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+
+use crate::appwindow::RnoteAppWindow;
+
 mod imp {
-    use gtk4::ToggleButton;
-    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate};
+    use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/selectorpage.ui")]
@@ -43,10 +46,6 @@ mod imp {
     impl WidgetImpl for SelectorPage {}
 }
 
-use crate::appwindow::RnoteAppWindow;
-use gtk4::ToggleButton;
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*};
-
 glib::wrapper! {
     pub struct SelectorPage(ObjectSubclass<imp::SelectorPage>)
         @extends gtk4::Widget;
@@ -64,21 +63,15 @@ impl SelectorPage {
     }
 
     pub fn selectorstyle_polygon_toggle(&self) -> ToggleButton {
-        imp::SelectorPage::from_instance(self)
-            .selectorstyle_polygon_toggle
-            .get()
+        self.imp().selectorstyle_polygon_toggle.get()
     }
 
     pub fn selectorstyle_rect_toggle(&self) -> ToggleButton {
-        imp::SelectorPage::from_instance(self)
-            .selectorstyle_rect_toggle
-            .get()
+        self.imp().selectorstyle_rect_toggle.get()
     }
 
     pub fn resize_lock_aspectratio_togglebutton(&self) -> ToggleButton {
-        imp::SelectorPage::from_instance(self)
-            .resize_lock_aspectratio_togglebutton
-            .get()
+        self.imp().resize_lock_aspectratio_togglebutton.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

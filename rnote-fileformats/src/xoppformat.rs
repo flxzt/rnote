@@ -82,7 +82,7 @@ pub struct XoppRoot {
 }
 
 impl XmlLoadable for XoppRoot {
-    fn load_from_xml(&mut self, root_node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, root_node: Node) -> anyhow::Result<()> {
         if let Some(fileversion) = root_node.attribute("fileversion") {
             self.fileversion = fileversion.to_string();
         }
@@ -142,7 +142,7 @@ pub struct XoppPage {
 }
 
 impl XmlLoadable for XoppPage {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.width = node
             .attribute("width")
             .ok_or_else(|| {
@@ -320,7 +320,7 @@ pub struct XoppBackground {
 }
 
 impl XmlLoadable for XoppBackground {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.name = node.attribute("name").map(|name| name.to_string());
 
         match node.attribute("type").ok_or_else(|| {
@@ -408,7 +408,7 @@ pub struct XoppLayer {
 }
 
 impl XmlLoadable for XoppLayer {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.name = node.attribute("name").map(|name| name.to_string());
 
         for child in node.children() {
@@ -647,7 +647,7 @@ pub struct XoppStroke {
 }
 
 impl XmlLoadable for XoppStroke {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         match node.attribute("tool").ok_or_else(|| {
             anyhow::anyhow!(
                 "failed to parse `tool` attribute in XoppStroke with id {:?}",
@@ -794,7 +794,7 @@ pub struct XoppText {
 }
 
 impl XmlLoadable for XoppText {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.font = node
             .attribute("font")
             .ok_or_else(|| {
@@ -879,7 +879,7 @@ pub struct XoppImage {
 }
 
 impl XmlLoadable for XoppImage {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         // Left
         self.left = node
             .attribute("left")
@@ -959,7 +959,7 @@ mod tests {
     }
 
     #[test]
-    fn load_simple_xopp() -> Result<(), anyhow::Error> {
+    fn load_simple_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/simple.xopp");
         let to_save = PathBuf::from("./temp/simple.json");
@@ -975,7 +975,7 @@ mod tests {
     }
 
     #[test]
-    fn load_image_xopp() -> Result<(), anyhow::Error> {
+    fn load_image_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/image.xopp");
         let to_save = PathBuf::from("./temp/image.json");
@@ -991,7 +991,7 @@ mod tests {
     }
 
     #[test]
-    fn load_and_save_simple_xopp() -> Result<(), anyhow::Error> {
+    fn load_and_save_simple_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/simple.xopp");
         let to_save = PathBuf::from("./temp/simple-new.xopp");
@@ -1006,7 +1006,7 @@ mod tests {
     }
 
     #[test]
-    fn load_and_save_image_xopp() -> Result<(), anyhow::Error> {
+    fn load_and_save_image_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/image.xopp");
         let to_save = PathBuf::from("./temp/image-new.xopp");

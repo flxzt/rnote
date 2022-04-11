@@ -3,8 +3,8 @@ use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
 
-use crate::Camera;
 use crate::utils::GrapheneRectHelpers;
+use crate::Camera;
 
 /// Trait for types that can draw themselves on the sheet
 /// In the coordinate space of the sheet
@@ -16,7 +16,7 @@ pub trait DrawOnSheetBehaviour {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
-    ) -> Result<(), anyhow::Error>;
+    ) -> anyhow::Result<()>;
 
     /// Expects snapshot untransformed in surface coordinate space.
     fn draw_on_sheet_snapshot(
@@ -24,12 +24,10 @@ pub trait DrawOnSheetBehaviour {
         snapshot: &gtk4::Snapshot,
         sheet_bounds: AABB,
         camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             // Transform the bounds into surface coords
-            let mut bounds_transformed = bounds
-                .scale(camera.zoom())
-                .translate(-camera.offset);
+            let mut bounds_transformed = bounds.scale(camera.zoom()).translate(-camera.offset);
 
             bounds_transformed.ensure_positive();
             bounds_transformed.assert_valid()?;
@@ -51,9 +49,5 @@ pub trait DrawOnSheetBehaviour {
 pub trait DrawBehaviour {
     /// draws itself. the callers are expected to call with save / restore context
     /// image_scale is the scalefactor of generated pixel images within the type. the context should not be zoomed by it!
-    fn draw(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        image_scale: f64,
-    ) -> Result<(), anyhow::Error>;
+    fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()>;
 }

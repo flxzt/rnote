@@ -1,4 +1,4 @@
-pub mod appactions;
+mod appactions;
 
 mod imp {
     use std::{cell::RefCell, path};
@@ -12,15 +12,11 @@ mod imp {
     };
 
     use crate::{
-        appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::RnoteCanvas, canvasmenu::CanvasMenu,
-        colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker, config,
-        mainheader::MainHeader, penssidebar::brushpage::BrushPage,
-        penssidebar::eraserpage::EraserPage, penssidebar::selectorpage::SelectorPage,
-        penssidebar::shaperpage::ShaperPage, penssidebar::toolspage::ToolsPage,
-        penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
-        selectionmodifier::SelectionModifier, settingspanel::penshortcutrow::PenShortcutRow,
-        settingspanel::SettingsPanel, unitentry::UnitEntry, utils,
-        workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
+        colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
+        penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
+        selectionmodifier::ModifierNode, settingspanel::PenShortcutRow, utils,
+        workspacebrowser::FileRow, AppMenu, CanvasMenu, ColorPicker, MainHeader, PensSideBar,
+        RnoteAppWindow, RnoteCanvas, SelectionModifier, SettingsPanel, UnitEntry, WorkspaceBrowser,
     };
 
     #[allow(missing_debug_implementations)]
@@ -138,14 +134,11 @@ impl RnoteApp {
     }
 
     pub fn input_file(&self) -> Option<gio::File> {
-        imp::RnoteApp::from_instance(self)
-            .input_file
-            .borrow()
-            .clone()
+        self.imp().input_file.borrow().clone()
     }
 
     pub fn set_input_file(&self, input_file: Option<gio::File>) {
-        *imp::RnoteApp::from_instance(self).input_file.borrow_mut() = input_file;
+        *self.imp().input_file.borrow_mut() = input_file;
     }
 
     // Anything that needs to be done right before showing the appwindow

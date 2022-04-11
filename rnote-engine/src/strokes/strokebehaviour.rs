@@ -1,7 +1,7 @@
 use crate::render;
 use crate::DrawBehaviour;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::shapes::ShapeBehaviour;
 
 /// Specifing that a type is a stroke.
@@ -27,12 +27,24 @@ where
 
     /// generates pixel images for this stroke
     /// a larger image_scale value renders them in a higher than native resolution (usually set as the camera zoom). the bounds stay the same.
-    fn gen_images(&self, viewport: Option<AABB>, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
         Ok(render::Image::gen_images_from_drawable(
             self,
             self.bounds(),
-            viewport,
             image_scale,
         )?)
+    }
+
+    /// Only generates the images that intersect with the given viewport
+    fn gen_images_in_viewport(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
+        if !viewport.intersects(&self.bounds()) {
+            return Ok(vec![]);
+        }
+
+        self.gen_images(image_scale)
     }
 }

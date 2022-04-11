@@ -38,32 +38,10 @@ impl Default for Stroke {
     }
 }
 
-impl StrokeBehaviour for Stroke {
-    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
-        match self {
-            Self::BrushStroke(brushstroke) => brushstroke.gen_svg(),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_svg(),
-            Self::VectorImage(vectorimage) => vectorimage.gen_svg(),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_svg(),
-        }
-    }
-
-    fn gen_images(&self, viewport: Option<AABB>, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        match self {
-            Self::BrushStroke(brushstroke) => brushstroke.gen_images(viewport, image_scale),
-            Self::ShapeStroke(shapestroke) => shapestroke.gen_images(viewport, image_scale),
-            Self::VectorImage(vectorimage) => vectorimage.gen_images(viewport, image_scale),
-            Self::BitmapImage(bitmapimage) => bitmapimage.gen_images(viewport, image_scale),
-        }
-    }
-}
+impl StrokeBehaviour for Stroke {}
 
 impl DrawBehaviour for Stroke {
-    fn draw(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        image_scale: f64,
-    ) -> Result<(), anyhow::Error> {
+    fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.draw(cx, image_scale),
             Stroke::ShapeStroke(shapestroke) => shapestroke.draw(cx, image_scale),
@@ -263,7 +241,7 @@ impl Stroke {
             Stroke::ShapeStroke(shapestroke) => {
                 let shapestroke_bounds = shapestroke.bounds();
                 let shape_image = render::Image::join_images(
-                    shapestroke.gen_images(None, image_scale).ok()?,
+                    shapestroke.gen_images(image_scale).ok()?,
                     shapestroke_bounds,
                     image_scale,
                 )

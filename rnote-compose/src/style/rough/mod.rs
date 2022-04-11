@@ -153,7 +153,6 @@ impl Composer<RoughOptions> for Rectangle {
 
             cx.stroke(rect_path, &stroke_brush, options.stroke_width)
         }
-
     }
 }
 
@@ -186,11 +185,7 @@ impl Composer<RoughOptions> for Ellipse {
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
 
-            cx.stroke(
-                ellipse_result.bez_path,
-                &stroke_brush,
-                options.stroke_width,
-            )
+            cx.stroke(ellipse_result.bez_path, &stroke_brush, options.stroke_width)
         }
     }
 }
@@ -205,12 +200,7 @@ impl Composer<RoughOptions> for CubicBezier {
         let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
         let bez_path = roughgenerator::cubic_bezier(
-            self.start,
-            self.cp1,
-            self.cp2,
-            self.end,
-            options,
-            &mut rng,
+            self.start, self.cp1, self.cp2, self.end, options, &mut rng,
         );
 
         if let Some(stroke_color) = options.stroke_color {

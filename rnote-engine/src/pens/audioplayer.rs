@@ -85,7 +85,7 @@ impl AudioPlayer {
             Some(brush_sound) => brush_sound,
         };
 
-        let (brush_outputstream,brush_outputstream_handle) = rodio::OutputStream::try_default()?;
+        let (brush_outputstream, brush_outputstream_handle) = rodio::OutputStream::try_default()?;
         let (marker_outputstream, marker_outputstream_handle) = rodio::OutputStream::try_default()?;
 
         Ok(Self {

@@ -1,8 +1,13 @@
+use crate::app::RnoteApp;
+use crate::appwindow::RnoteAppWindow;
+use adw::{prelude::*, subclass::prelude::*};
+use gtk4::{
+    gio, glib, subclass::prelude::*, CompositeTemplate, MenuButton, PopoverMenu, ToggleButton,
+    Widget,
+};
+
 mod imp {
-    use gtk4::{
-        gio::MenuModel, glib, prelude::*, subclass::prelude::*, CompositeTemplate, MenuButton,
-        PopoverMenu, ToggleButton,
-    };
+    use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appmenu.ui")]
@@ -12,7 +17,7 @@ mod imp {
         #[template_child]
         pub popovermenu: TemplateChild<PopoverMenu>,
         #[template_child]
-        pub menu_model: TemplateChild<MenuModel>,
+        pub menu_model: TemplateChild<gio::MenuModel>,
         #[template_child]
         pub default_theme_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -64,11 +69,6 @@ mod imp {
     }
 }
 
-use crate::app::RnoteApp;
-use crate::appwindow::RnoteAppWindow;
-use adw::{prelude::*, subclass::prelude::*};
-use gtk4::{gio, glib, MenuButton, PopoverMenu, ToggleButton, Widget};
-
 glib::wrapper! {
     pub struct AppMenu(ObjectSubclass<imp::AppMenu>)
     @extends Widget;
@@ -87,35 +87,35 @@ impl AppMenu {
     }
 
     pub fn menubutton(&self) -> MenuButton {
-        imp::AppMenu::from_instance(self).menubutton.get()
+        self.imp().menubutton.get()
     }
 
     pub fn popovermenu(&self) -> PopoverMenu {
-        imp::AppMenu::from_instance(self).popovermenu.get()
+        self.imp().popovermenu.get()
     }
 
     pub fn menu_model(&self) -> gio::MenuModel {
-        imp::AppMenu::from_instance(self).menu_model.get()
+        self.imp().menu_model.get()
     }
 
     pub fn default_theme_toggle(&self) -> ToggleButton {
-        imp::AppMenu::from_instance(self).default_theme_toggle.get()
+        self.imp().default_theme_toggle.get()
     }
 
     pub fn light_theme_toggle(&self) -> ToggleButton {
-        imp::AppMenu::from_instance(self).light_theme_toggle.get()
+        self.imp().light_theme_toggle.get()
     }
 
     pub fn dark_theme_toggle(&self) -> ToggleButton {
-        imp::AppMenu::from_instance(self).dark_theme_toggle.get()
+        self.imp().dark_theme_toggle.get()
     }
 
     pub fn lefthanded_toggle(&self) -> ToggleButton {
-        imp::AppMenu::from_instance(self).lefthanded_toggle.get()
+        self.imp().lefthanded_toggle.get()
     }
 
     pub fn righthanded_toggle(&self) -> ToggleButton {
-        imp::AppMenu::from_instance(self).righthanded_toggle.get()
+        self.imp().righthanded_toggle.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

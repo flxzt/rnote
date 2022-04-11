@@ -1,6 +1,6 @@
 use anyhow::Context;
-use gtk4::{glib, gsk, prelude::*, Snapshot, gdk, graphene};
-use p2d::bounding_volume::{AABB, BoundingVolume};
+use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -293,7 +293,11 @@ impl Background {
 
         // Fill with background color just in case there is any space left between the tiles
         rendernodes.push(
-            gsk::ColorNode::new(&gdk::RGBA::from_compose_color(self.color), &graphene::Rect::from_aabb(sheet_bounds)).upcast(),
+            gsk::ColorNode::new(
+                &gdk::RGBA::from_compose_color(self.color),
+                &graphene::Rect::from_aabb(sheet_bounds),
+            )
+            .upcast(),
         );
 
         if let Some(image) = &self.image {
@@ -302,8 +306,11 @@ impl Background {
                 .context("image_to_memtexture() failed in gen_rendernode().")?;
             for splitted_bounds in sheet_bounds.split_extended_origin_aligned(tile_size) {
                 rendernodes.push(
-                    gsk::TextureNode::new(&new_texture, &graphene::Rect::from_aabb(splitted_bounds.ceil().loosened(1.0)))
-                        .upcast(),
+                    gsk::TextureNode::new(
+                        &new_texture,
+                        &graphene::Rect::from_aabb(splitted_bounds.ceil().loosened(1.0)),
+                    )
+                    .upcast(),
                 );
             }
         }
@@ -311,7 +318,7 @@ impl Background {
         Ok(rendernodes)
     }
 
-    pub fn update_rendernodes(&mut self, sheet_bounds: AABB) -> Result<(), anyhow::Error> {
+    pub fn update_rendernodes(&mut self, sheet_bounds: AABB) -> anyhow::Result<()> {
         match self.gen_rendernodes(sheet_bounds) {
             Ok(rendernodes) => {
                 self.rendernodes = rendernodes;
@@ -331,7 +338,7 @@ impl Background {
         &mut self,
         sheet_bounds: AABB,
         image_scale: f64,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 

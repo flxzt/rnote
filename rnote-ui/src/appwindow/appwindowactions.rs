@@ -141,10 +141,8 @@ impl RnoteAppWindow {
         let action_shape_type =
             gio::SimpleAction::new("shape-type", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_shape_type);
-        let action_shaper_style = gio::SimpleAction::new(
-            "shaper-style",
-            Some(&glib::VariantType::new("s").unwrap()),
-        );
+        let action_shaper_style =
+            gio::SimpleAction::new("shaper-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_shaper_style);
         let action_selector_style = gio::SimpleAction::new(
             "selector-style",
@@ -963,7 +961,7 @@ impl RnoteAppWindow {
             print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
                 let cx = print_cx.cairo_context();
 
-                if let Err(e) = || -> Result<(), anyhow::Error> {
+                if let Err(e) = || -> anyhow::Result<()> {
                     let print_zoom = {
                         let width_scale = print_cx.width() / appwindow.canvas().engine().borrow().sheet.format.width;
                         let height_scale = print_cx.height() / appwindow.canvas().engine().borrow().sheet.format.height;

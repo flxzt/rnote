@@ -1,9 +1,12 @@
+use crate::{appmenu::AppMenu, appwindow::RnoteAppWindow, canvasmenu::CanvasMenu};
+use gtk4::{
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label,
+    Revealer, ToggleButton, Widget,
+};
+use rnote_engine::pens::penholder::PenStyle;
+
 mod imp {
-    use crate::{appmenu::AppMenu, canvasmenu::CanvasMenu};
-    use gtk4::{
-        glib, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label, Revealer,
-        ToggleButton, Widget,
-    };
+    use super::*;
 
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/mainheader.ui")]
@@ -79,14 +82,6 @@ mod imp {
     impl WidgetImpl for MainHeader {}
 }
 
-use crate::{appmenu::AppMenu, appwindow::RnoteAppWindow, canvasmenu::CanvasMenu};
-
-use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, Label, Revealer,
-    ToggleButton, Widget,
-};
-use rnote_engine::pens::penholder::PenStyle;
-
 glib::wrapper! {
     pub struct MainHeader(ObjectSubclass<imp::MainHeader>)
         @extends Widget;
@@ -105,87 +100,79 @@ impl MainHeader {
     }
 
     pub fn headerbar(&self) -> adw::HeaderBar {
-        imp::MainHeader::from_instance(self).headerbar.get()
+        self.imp().headerbar.get()
     }
 
     pub fn main_title(&self) -> adw::WindowTitle {
-        imp::MainHeader::from_instance(self).main_title.get()
+        self.imp().main_title.get()
     }
 
     pub fn main_title_unsaved_indicator(&self) -> Label {
-        imp::MainHeader::from_instance(self)
-            .main_title_unsaved_indicator
-            .get()
+        self.imp().main_title_unsaved_indicator.get()
     }
 
     pub fn menus_box(&self) -> gtk4::Box {
-        imp::MainHeader::from_instance(self).menus_box.get()
+        self.imp().menus_box.get()
     }
 
     pub fn quickactions_box(&self) -> gtk4::Box {
-        imp::MainHeader::from_instance(self).quickactions_box.get()
+        self.imp().quickactions_box.get()
     }
 
     pub fn pageedit_revealer(&self) -> Revealer {
-        imp::MainHeader::from_instance(self).pageedit_revealer.get()
+        self.imp().pageedit_revealer.get()
     }
 
     pub fn add_page_button(&self) -> Button {
-        imp::MainHeader::from_instance(self).add_page_button.get()
+        self.imp().add_page_button.get()
     }
 
     pub fn resize_to_format_button(&self) -> Button {
-        imp::MainHeader::from_instance(self)
-            .resize_to_format_button
-            .get()
+        self.imp().resize_to_format_button.get()
     }
 
     pub fn undo_button(&self) -> Button {
-        imp::MainHeader::from_instance(self).undo_button.get()
+        self.imp().undo_button.get()
     }
 
     pub fn redo_button(&self) -> Button {
-        imp::MainHeader::from_instance(self).redo_button.get()
+        self.imp().redo_button.get()
     }
 
     pub fn pens_toggles_placeholderbox(&self) -> gtk4::Box {
-        imp::MainHeader::from_instance(self)
-            .pens_toggles_placeholderbox
-            .get()
+        self.imp().pens_toggles_placeholderbox.get()
     }
 
     pub fn pens_toggles_squeezer(&self) -> adw::Squeezer {
-        imp::MainHeader::from_instance(self)
-            .pens_toggles_squeezer
-            .get()
+        self.imp().pens_toggles_squeezer.get()
     }
 
     pub fn brush_toggle(&self) -> ToggleButton {
-        imp::MainHeader::from_instance(self).brush_toggle.get()
+        self.imp().brush_toggle.get()
     }
 
     pub fn shaper_toggle(&self) -> ToggleButton {
-        imp::MainHeader::from_instance(self).shaper_toggle.get()
+        self.imp().shaper_toggle.get()
     }
 
     pub fn eraser_toggle(&self) -> ToggleButton {
-        imp::MainHeader::from_instance(self).eraser_toggle.get()
+        self.imp().eraser_toggle.get()
     }
 
     pub fn selector_toggle(&self) -> ToggleButton {
-        imp::MainHeader::from_instance(self).selector_toggle.get()
+        self.imp().selector_toggle.get()
     }
 
     pub fn tools_toggle(&self) -> ToggleButton {
-        imp::MainHeader::from_instance(self).tools_toggle.get()
+        self.imp().tools_toggle.get()
     }
 
     pub fn canvasmenu(&self) -> CanvasMenu {
-        imp::MainHeader::from_instance(self).canvasmenu.get()
+        self.imp().canvasmenu.get()
     }
 
     pub fn appmenu(&self) -> AppMenu {
-        imp::MainHeader::from_instance(self).appmenu.get()
+        self.imp().appmenu.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

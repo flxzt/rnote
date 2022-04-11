@@ -34,11 +34,7 @@ impl Default for BitmapImage {
 impl StrokeBehaviour for BitmapImage {}
 
 impl DrawBehaviour for BitmapImage {
-    fn draw(
-        &self,
-        cx: &mut impl piet::RenderContext,
-        _image_scale: f64,
-    ) -> Result<(), anyhow::Error> {
+    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
         let piet_image = cx
             .make_image(
@@ -179,7 +175,7 @@ impl BitmapImage {
         let bounds = self.bounds();
 
         match render::Image::join_images(
-            render::Image::gen_images_from_drawable(self, bounds, None, image_scale)?,
+            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
             bounds,
             image_scale,
         )? {

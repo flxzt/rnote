@@ -1,6 +1,7 @@
 use crate::pens::penholder::PenHolderEvent;
 use crate::sheet::{background, Background, Format};
 use crate::strokes::Stroke;
+use crate::strokesstate::StateTask;
 use crate::utils;
 use crate::{render, DrawOnSheetBehaviour, SurfaceFlags};
 use crate::{Camera, PenHolder, Sheet, StrokesState};
@@ -79,11 +80,34 @@ impl RnoteEngine {
     pub fn set_expand_mode(&mut self, expand_mode: ExpandMode) {
         self.expand_mode = expand_mode;
 
-        let viewport = self.camera.viewport();
-        let image_scale = self.camera.image_scale();
         self.resize_to_fit_strokes();
         self.strokes_state
-            .regenerate_rendering_in_viewport_threaded(false, viewport, image_scale);
+            .regenerate_rendering_in_viewport_threaded(
+                false,
+                self.camera.viewport_extended(),
+                self.camera.image_scale(),
+            );
+    }
+
+    /// processes the received task from tasks_rx.
+    /// Returns surface flags for what to update in the frontend UI.
+    /// An example how to use it:
+    /// ```rust, ignore
+    /// let main_cx = glib::MainContext::default();
+
+    /// main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
+    ///            let mut task_rx = canvas.engine().borrow_mut().strokes_state.tasks_rx.take().unwrap();
+
+    ///           loop {
+    ///              if let Some(task) = task_rx.next().await {
+    ///                    let surface_flags = canvas.engine().borrow_mut().strokes_state.process_received_task(task, canvas.zoom());
+    ///                    appwindow.handle_surface_flags(surface_flags);
+    ///                }
+    ///            }
+    ///        }));
+    /// ```
+    pub fn process_received_task(&mut self, task: StateTask) -> SurfaceFlags {
+        self.strokes_state.process_received_task(task, &self.camera)
     }
 
     /// Public method to handle pen events coming from ui event handlers
@@ -220,7 +244,7 @@ impl RnoteEngine {
         }
     }
 
-    pub fn open_sheet_from_rnote_bytes(&mut self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+    pub fn open_sheet_from_rnote_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
         let decompressed_bytes = utils::decompress_from_gzip(bytes)?;
         let engine: Self = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
 
@@ -232,7 +256,7 @@ impl RnoteEngine {
         Ok(())
     }
 
-    pub fn open_from_xopp_bytes(&mut self, bytes: &[u8]) -> Result<(), anyhow::Error> {
+    pub fn open_from_xopp_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
         let xopp_file = xoppformat::XoppFile::load_from_bytes(bytes)?;
 
         // Extract the largest width of all sheets, add together all heights
@@ -484,7 +508,7 @@ impl RnoteEngine {
 
         // Fill the pdf surface on a new thread to avoid blocking
         rayon::spawn(move || {
-            if let Err(e) = || -> Result<(), anyhow::Error> {
+            if let Err(e) = || -> anyhow::Result<()> {
                 let surface =
                     cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())
                         .context("pdfsurface creation failed")?;
@@ -546,7 +570,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    pub fn draw(&self, snapshot: &Snapshot, _surface_bounds: AABB) -> Result<(), anyhow::Error> {
+    pub fn draw(&self, snapshot: &Snapshot, _surface_bounds: AABB) -> anyhow::Result<()> {
         let sheet_bounds = self.sheet.bounds();
         let viewport = self.camera.viewport();
 
@@ -557,7 +581,7 @@ impl RnoteEngine {
         self.sheet.background.draw(snapshot, sheet_bounds);
         self.sheet
             .format
-            .draw(snapshot, sheet_bounds, Some(viewport))?;
+            .draw(snapshot, sheet_bounds, &self.camera)?;
 
         self.strokes_state
             .draw_strokes(snapshot, sheet_bounds, Some(viewport));
@@ -609,7 +633,7 @@ impl RnoteEngine {
 
 /// module for visual debugging
 pub mod visual_debug {
-    use gtk4::{graphene, gsk, Snapshot, gdk};
+    use gtk4::{gdk, graphene, gsk, Snapshot};
     use p2d::bounding_volume::{BoundingVolume, AABB};
 
     use rnote_compose::shapes::ShapeBehaviour;
@@ -686,7 +710,7 @@ pub mod visual_debug {
                 gdk::RGBA::from_compose_color(color),
                 gdk::RGBA::from_compose_color(color),
                 gdk::RGBA::from_compose_color(color),
-                gdk::RGBA::from_compose_color(color)
+                gdk::RGBA::from_compose_color(color),
             ],
         )
     }
@@ -704,7 +728,10 @@ pub mod visual_debug {
     }
 
     fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
-        snapshot.append_color(&gdk::RGBA::from_compose_color(color), &graphene::Rect::from_aabb(rect));
+        snapshot.append_color(
+            &gdk::RGBA::from_compose_color(color),
+            &graphene::Rect::from_aabb(rect),
+        );
     }
 
     // Draw bounds, positions, .. for visual debugging purposes

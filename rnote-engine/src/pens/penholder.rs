@@ -148,9 +148,14 @@ pub struct PenHolder {
 
 impl Default for PenHolder {
     fn default() -> Self {
-        let audioplayer = AudioPlayer::new().map_err(|e| {
-            log::error!("failed to create a new audio player in PenHolder::default(), Err {}", e);
-        }).ok();
+        let audioplayer = AudioPlayer::new()
+            .map_err(|e| {
+                log::error!(
+                    "failed to create a new audio player in PenHolder::default(), Err {}",
+                    e
+                );
+            })
+            .ok();
 
         Self {
             brush: Brush::default(),
@@ -237,7 +242,12 @@ impl PenHolder {
                     self.change_state_for_shortcut_key(shortcut_key, &mut surface_flags);
                 }
 
-                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
+                surface_flags.merge_with_other(self.handle_pen_event(
+                    pen_event,
+                    sheet,
+                    strokes_state,
+                    camera,
+                ));
 
                 self.state = PenState::Down;
                 self.pen_shown = true;
@@ -246,7 +256,12 @@ impl PenHolder {
                 surface_flags.hide_scrollbars = Some(true);
             }
             (PenState::Down, PenHolderEvent::PenEvent(pen_event @ PenEvent::Down { .. })) => {
-                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
+                surface_flags.merge_with_other(self.handle_pen_event(
+                    pen_event,
+                    sheet,
+                    strokes_state,
+                    camera,
+                ));
 
                 surface_flags.redraw = true;
             }
@@ -256,7 +271,12 @@ impl PenHolder {
                 let all_strokes = strokes_state.keys_sorted_chrono();
                 strokes_state.set_selected_keys(&all_strokes, false);
 
-                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
+                surface_flags.merge_with_other(self.handle_pen_event(
+                    pen_event,
+                    sheet,
+                    strokes_state,
+                    camera,
+                ));
 
                 self.state = PenState::Up;
                 self.pen_shown = false;
@@ -273,10 +293,20 @@ impl PenHolder {
                 surface_flags.hide_scrollbars = Some(false);
             }
             (_, PenHolderEvent::PenEvent(pen_event @ PenEvent::Proximity { .. })) => {
-                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
+                surface_flags.merge_with_other(self.handle_pen_event(
+                    pen_event,
+                    sheet,
+                    strokes_state,
+                    camera,
+                ));
             }
             (_, PenHolderEvent::PenEvent(pen_event @ PenEvent::Cancel)) => {
-                surface_flags.merge_with_other(self.handle_pen_event(pen_event, sheet, strokes_state, camera));
+                surface_flags.merge_with_other(self.handle_pen_event(
+                    pen_event,
+                    sheet,
+                    strokes_state,
+                    camera,
+                ));
 
                 self.state = PenState::Up;
 
@@ -288,7 +318,12 @@ impl PenHolder {
             (PenState::Down, PenHolderEvent::ChangeStyle(new_style)) => {
                 if self.style != new_style {
                     // before changing the style, the current stroke is finished
-                    surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, sheet, strokes_state, camera));
+                    surface_flags.merge_with_other(self.handle_pen_event(
+                        PenEvent::Cancel,
+                        sheet,
+                        strokes_state,
+                        camera,
+                    ));
 
                     self.state = PenState::Up;
                     self.pen_shown = false;
@@ -313,7 +348,12 @@ impl PenHolder {
             (PenState::Down, PenHolderEvent::ChangeStyleOverride(new_style_override)) => {
                 if self.style_override != new_style_override {
                     // before changing the style override, the current stroke is finished
-                    surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, sheet, strokes_state, camera));
+                    surface_flags.merge_with_other(self.handle_pen_event(
+                        PenEvent::Cancel,
+                        sheet,
+                        strokes_state,
+                        camera,
+                    ));
 
                     self.pen_shown = false;
                     self.state = PenState::Up;
@@ -356,26 +396,41 @@ impl PenHolder {
         camera: &mut Camera,
     ) -> SurfaceFlags {
         match self.style_w_override() {
-            PenStyle::Brush => {
-                self.brush
-                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
-            }
-            PenStyle::Shaper => {
-                self.shaper
-                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
-            }
-            PenStyle::Eraser => {
-                self.eraser
-                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
-            }
-            PenStyle::Selector => {
-                self.selector
-                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
-            }
-            PenStyle::Tools => {
-                self.tools
-                    .handle_event(event, sheet, strokes_state, camera, self.audioplayer.as_mut())
-            }
+            PenStyle::Brush => self.brush.handle_event(
+                event,
+                sheet,
+                strokes_state,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Shaper => self.shaper.handle_event(
+                event,
+                sheet,
+                strokes_state,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Eraser => self.eraser.handle_event(
+                event,
+                sheet,
+                strokes_state,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Selector => self.selector.handle_event(
+                event,
+                sheet,
+                strokes_state,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Tools => self.tools.handle_event(
+                event,
+                sheet,
+                strokes_state,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
         }
     }
 
@@ -417,7 +472,7 @@ impl DrawOnSheetBehaviour for PenHolder {
         cx: &mut impl piet::RenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         if self.pen_shown {
             match self.style_w_override() {
                 PenStyle::Brush => self.brush.draw_on_sheet(cx, sheet_bounds, camera),

@@ -1,3 +1,4 @@
+use p2d::bounding_volume::AABB;
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use rayon::slice::ParallelSliceMut;
 use serde::{Deserialize, Serialize};
@@ -79,7 +80,7 @@ impl StrokesState {
                 None
             })
             .collect();
-        sorted.sort_unstable_by(|first, second| first.1.cmp(&second.1));
+        sorted.par_sort_unstable_by(|first, second| first.1.cmp(&second.1));
 
         let last_selection_key = sorted.last().copied();
 
@@ -113,14 +114,36 @@ impl StrokesState {
     pub fn keys_sorted_chrono(&self) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 
-        let mut sorted = chrono_components
-            .iter()
-            .par_bridge()
-            .map(|(key, chrono_comp)| (key, chrono_comp.t))
-            .collect::<Vec<(StrokeKey, u32)>>();
-        sorted.par_sort_unstable_by(|first, second| first.1.cmp(&second.1));
+        let mut keys = self.strokes.keys().collect::<Vec<StrokeKey>>();
 
-        let (keys, _ts): (Vec<StrokeKey>, Vec<u32>) = sorted.into_iter().unzip();
+        keys.par_sort_unstable_by(|&first, &second| {
+            if let (Some(first_chrono), Some(second_chrono)) =
+                (chrono_components.get(first), chrono_components.get(second))
+            {
+                first_chrono.t.cmp(&second_chrono.t)
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+
+        keys
+    }
+
+    pub fn keys_sorted_chrono_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+        let chrono_components = &self.chrono_components;
+
+        let mut keys = self.key_tree.keys_intersecting_bounds(bounds);
+
+        keys.par_sort_unstable_by(|&first, &second| {
+            if let (Some(first_chrono), Some(second_chrono)) =
+                (chrono_components.get(first), chrono_components.get(second))
+            {
+                first_chrono.t.cmp(&second_chrono.t)
+            } else {
+                std::cmp::Ordering::Equal
+            }
+        });
+
         keys
     }
 }

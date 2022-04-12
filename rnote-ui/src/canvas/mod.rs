@@ -9,7 +9,6 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use crate::config;
-use crate::selectionmodifier::SelectionModifier;
 use rnote_engine::RnoteEngine;
 
 use gtk4::{
@@ -47,7 +46,6 @@ mod imp {
         pub stylus_drawing_gesture: GestureStylus,
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
-        pub selection_modifier: SelectionModifier,
         pub return_to_center_toast: RefCell<Option<adw::Toast>>,
 
         pub engine: Rc<RefCell<RnoteEngine>>,
@@ -55,6 +53,7 @@ mod imp {
         pub unsaved_changes: Cell<bool>,
         pub empty: Cell<bool>,
 
+        pub format_borders: Cell<bool>,
         pub touch_drawing: Cell<bool>,
         pub pdf_import_width: Cell<f64>,
         pub pdf_import_as_vector: Cell<bool>,
@@ -122,13 +121,12 @@ mod imp {
                 zoom_timeout_id: RefCell::new(None),
                 return_to_center_toast: RefCell::new(None),
 
-                selection_modifier: SelectionModifier::default(),
-
                 engine: Rc::new(RefCell::new(RnoteEngine::default())),
 
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
+                format_borders: Cell::new(false),
                 touch_drawing: Cell::new(false),
                 pdf_import_width: Cell::new(super::RnoteCanvas::PDF_IMPORT_WIDTH_DEFAULT),
                 pdf_import_as_vector: Cell::new(true),
@@ -156,7 +154,6 @@ mod imp {
     impl ObjectImpl for RnoteCanvas {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-            self.selection_modifier.set_parent(obj);
 
             obj.set_hexpand(false);
             obj.set_vexpand(false);
@@ -193,6 +190,13 @@ mod imp {
                         "empty",
                         "empty",
                         true,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    glib::ParamSpecBoolean::new(
+                        "format-borders",
+                        "format-borders",
+                        "format-borders",
+                        false,
                         glib::ParamFlags::READWRITE,
                     ),
                     // Wether to enable touch drawing
@@ -239,6 +243,7 @@ mod imp {
                 "vadjustment" => self.vadjustment.borrow().to_value(),
                 "hscroll-policy" => self.hscroll_policy.get().to_value(),
                 "vscroll-policy" => self.vscroll_policy.get().to_value(),
+                "format-borders" => self.format_borders.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
                 "pdf-import-width" => self.pdf_import_width.get().to_value(),
                 "pdf-import-as-vector" => self.pdf_import_as_vector.get().to_value(),
@@ -285,6 +290,12 @@ mod imp {
                 "vscroll-policy" => {
                     let vscroll_policy = value.get().unwrap();
                     self.vscroll_policy.replace(vscroll_policy);
+                }
+                "format-borders" => {
+                    let format_borders: bool =
+                        value.get().expect("The value needs to be of type `bool`.");
+                    self.format_borders.replace(format_borders);
+                    self.engine.borrow_mut().sheet.format.show_borders = format_borders;
                 }
                 "touch-drawing" => {
                     let touch_drawing: bool =
@@ -354,10 +365,6 @@ mod imp {
 
                 // Restore original coordinate space
                 snapshot.restore();
-
-                // Draw the children
-                widget.snapshot_child(&self.selection_modifier, snapshot);
-
                 // End the clip of widget bounds
                 snapshot.pop();
                 Ok(())
@@ -442,6 +449,14 @@ impl RnoteCanvas {
         self.set_property("empty", empty.to_value());
     }
 
+    pub fn format_borders(&self) -> bool {
+        self.property::<bool>("format-borders")
+    }
+
+    pub fn set_format_borders(&self, format_borders: bool) {
+        self.set_property("format-borders", format_borders.to_value());
+    }
+
     pub fn touch_drawing(&self) -> bool {
         self.property::<bool>("touch-drawing")
     }
@@ -484,10 +499,6 @@ impl RnoteCanvas {
             self.imp().vadjustment_signal.replace(Some(signal_id));
         }
         self.imp().vadjustment.replace(adj);
-    }
-
-    pub fn selection_modifier(&self) -> SelectionModifier {
-        self.imp().selection_modifier.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {

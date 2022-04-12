@@ -530,6 +530,22 @@ impl RnoteAppWindow {
         self.set_property("unsaved-changes", unsaved_changes.to_value());
     }
 
+    pub fn righthanded(&self) -> bool {
+        self.property::<bool>("righthanded")
+    }
+
+    pub fn set_righthanded(&self, righthanded: bool) {
+        self.set_property("righthanded", righthanded.to_value());
+    }
+
+    pub fn pen_sounds(&self) -> bool {
+        self.property::<bool>("pen-sounds")
+    }
+
+    pub fn set_pen_sounds(&self, pen_sounds: bool) {
+        self.set_property("pen-sounds", pen_sounds.to_value());
+    }
+
     pub fn toast_overlay(&self) -> adw::ToastOverlay {
         self.imp().toast_overlay.get()
     }
@@ -664,16 +680,14 @@ impl RnoteAppWindow {
             );
         }
         if surface_flags.pen_changed {
-            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
+            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
         }
         if surface_flags.sheet_changed {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
         }
         if surface_flags.selection_changed {
-            self.canvas()
-                .selection_modifier()
-                .update_state(&self.canvas());
+            self.canvas().engine().borrow_mut().update_selector();
             self.canvas().queue_resize();
         }
         if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
@@ -685,7 +699,7 @@ impl RnoteAppWindow {
                     .set_policy(PolicyType::Automatic, PolicyType::Automatic);
             }
         }
-        if surface_flags.new_camera_offset {
+        if surface_flags.camera_offset_changed {
             let new_offsets = self.canvas().engine().borrow().camera.offset;
             self.canvas().update_offset(new_offsets);
         }
@@ -707,7 +721,6 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get().selector_page().init(self);
         self.imp().penssidebar.get().tools_page().init(self);
         self.imp().canvas.get().init(self);
-        self.imp().canvas.get().selection_modifier().init(self);
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
         let app_icon_theme = IconTheme::for_display(&self.display());
@@ -1070,7 +1083,7 @@ impl RnoteAppWindow {
             .open_sheet_from_rnote_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
-        self.settings_panel().refresh_for_sheet(self);
+        self.settings_panel().refresh_for_engine(self);
 
         self.canvas().set_unsaved_changes(false);
         app.set_input_file(None);
@@ -1085,11 +1098,7 @@ impl RnoteAppWindow {
         self.canvas().regenerate_background(false);
         self.canvas().regenerate_content(true, true);
 
-        self.canvas()
-            .selection_modifier()
-            .update_state(&self.canvas());
-
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
 
         Ok(())
     }
@@ -1105,7 +1114,7 @@ impl RnoteAppWindow {
             .open_from_xopp_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
-        self.settings_panel().refresh_for_sheet(self);
+        self.settings_panel().refresh_for_engine(self);
 
         app.set_input_file(None);
         self.set_output_file(None, self);
@@ -1116,11 +1125,7 @@ impl RnoteAppWindow {
         self.canvas().regenerate_background(false);
         self.canvas().regenerate_content(true, true);
 
-        self.canvas()
-            .selection_modifier()
-            .update_state(&self.canvas());
-
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
 
         Ok(())
     }
@@ -1147,11 +1152,6 @@ impl RnoteAppWindow {
         app.set_input_file(None);
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
-
-        self.canvas()
-            .selection_modifier()
-            .update_state(&self.canvas());
-
         self.canvas().queue_draw();
 
         Ok(())

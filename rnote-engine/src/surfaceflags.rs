@@ -4,17 +4,26 @@ use crate::pens::penholder::PenStyle;
 #[must_use]
 #[derive(Debug, Clone, Copy)]
 pub struct SurfaceFlags {
+    /// application should be quit
     pub quit: bool,
+    /// needs redrawing
     pub redraw: bool,
+    /// needs resizing
     pub resize: bool,
+    /// Sheet should be resized to fit the strokes
     pub resize_to_fit_strokes: bool,
+    /// Should change to the pen style
     pub change_to_pen: Option<PenStyle>,
+    /// Pen style has changed
     pub pen_changed: bool,
+    /// wether the sheet has changed, i.e. new strokes inserted, modified, etc.
     pub sheet_changed: bool,
+    /// Selection has changed
     pub selection_changed: bool,
     /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
     pub hide_scrollbars: Option<bool>,
-    pub new_camera_offset: bool,
+    /// camera offset changed
+    pub camera_offset_changed: bool,
 }
 
 impl Default for SurfaceFlags {
@@ -29,7 +38,7 @@ impl Default for SurfaceFlags {
             sheet_changed: false,
             selection_changed: false,
             hide_scrollbars: None,
-            new_camera_offset: false,
+            camera_offset_changed: false,
         }
     }
 }
@@ -55,7 +64,7 @@ impl SurfaceFlags {
         } else {
             self.hide_scrollbars
         };
-        self.new_camera_offset |= other.new_camera_offset;
+        self.camera_offset_changed |= other.camera_offset_changed;
 
         self
     }

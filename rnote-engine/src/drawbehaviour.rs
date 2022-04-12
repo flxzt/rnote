@@ -26,8 +26,15 @@ pub trait DrawOnSheetBehaviour {
         camera: &Camera,
     ) -> anyhow::Result<()> {
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
+            let viewport = camera.viewport();
+
+            // Restrict to viewport as maximum bounds. Else cairo will panic for very large bounds
+            let bounds = bounds.clamp(None, Some(viewport));
             // Transform the bounds into surface coords
-            let mut bounds_transformed = bounds.scale(camera.zoom()).translate(-camera.offset);
+            let mut bounds_transformed = bounds
+                .scale(camera.total_zoom())
+                .translate(-camera.offset)
+                .ceil();
 
             bounds_transformed.ensure_positive();
             bounds_transformed.assert_valid()?;

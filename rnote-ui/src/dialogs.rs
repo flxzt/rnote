@@ -66,7 +66,6 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Ok => {
                     appwindow.canvas().engine().borrow_mut().strokes_state.clear();
-                    appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                     appwindow.canvas().set_empty(true);
 
                     appwindow.canvas().regenerate_background(false);
@@ -97,7 +96,6 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.set_output_file(None, &appwindow);
 
                 appwindow.canvas().engine().borrow_mut().strokes_state.clear();
-                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().set_unsaved_changes(false);
                 appwindow.canvas().set_empty(true);
 

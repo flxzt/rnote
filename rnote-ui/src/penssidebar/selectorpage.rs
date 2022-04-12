@@ -88,13 +88,8 @@ impl SelectorPage {
             }
         }));
 
-        self.resize_lock_aspectratio_togglebutton()
-            .bind_property(
-                "active",
-                &appwindow.canvas().selection_modifier(),
-                "resize-lock-aspectratio",
-            )
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
+        self.resize_lock_aspectratio_togglebutton().connect_toggled(clone!(@weak appwindow = > move |resize_lock_aspectratio_togglebutton| {
+            appwindow.canvas().engine().borrow_mut().penholder.selector.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
+        }));
     }
 }

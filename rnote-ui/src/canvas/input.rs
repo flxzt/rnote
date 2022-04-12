@@ -161,9 +161,6 @@ pub fn process_pen_down(
                 .canvas()
                 .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-            // We hide the selection modifier here already, but actually only deselect all strokes when ending the stroke (for performance reasons)
-            appwindow.canvas().selection_modifier().set_visible(false);
-
             PenHolderEvent::PenEvent(PenEvent::Down {
                 element,
                 shortcut_key,

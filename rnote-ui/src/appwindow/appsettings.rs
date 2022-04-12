@@ -114,15 +114,6 @@ impl RnoteAppWindow {
                 "selected",
             )
             .build();
-
-        // lock resize aspectratio
-        self.app_settings()
-            .bind(
-                "resize-lock-aspectratio",
-                &self.canvas().selection_modifier(),
-                "resize-lock-aspectratio",
-            )
-            .build();
     }
 
     /// load settings that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
@@ -233,7 +224,7 @@ impl RnoteAppWindow {
         }
 
         // refresh the UI
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
         Ok(())
     }
 

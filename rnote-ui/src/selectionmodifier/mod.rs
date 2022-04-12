@@ -362,7 +362,7 @@ impl SelectionModifier {
     }
 
     /// Updates the internal state for measuring the widgets size, allocation, etc.
-    pub fn update_state(&self, canvas: &RnoteCanvas) {
+    pub fn update_state(&self, _canvas: &RnoteCanvas) {
         self.set_selection_bounds(
             canvas
                 .engine()
@@ -461,7 +461,7 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
+                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.keys_selection_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
                     appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_in_viewport_threaded(false, viewport_extended, image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
@@ -475,7 +475,8 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
                 start_bounds.set(None);
 
-                appwindow.canvas().engine().borrow_mut().strokes_state.update_geometry_selection_strokes();
+                let selection = appwindow.canvas().engine().borrow().strokes_state.keys_selection_unordered();
+                appwindow.canvas().engine().borrow_mut().strokes_state.update_geometry_for_strokes(&selection);
                 appwindow.canvas().regenerate_content(false, true);
 
                 selection_modifier.update_state(&appwindow.canvas());
@@ -531,7 +532,7 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
+                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.keys_selection_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
                     appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_in_viewport_threaded(false, viewport_extended, image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
@@ -545,7 +546,8 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
                 start_bounds.set(None);
 
-                appwindow.canvas().engine().borrow_mut().strokes_state.update_geometry_selection_strokes();
+                let selection = appwindow.canvas().engine().borrow().strokes_state.keys_selection_unordered();
+                appwindow.canvas().engine().borrow_mut().strokes_state.update_geometry_for_strokes(&selection);
                 appwindow.canvas().regenerate_content(false, true);
 
                 selection_modifier.update_state(&appwindow.canvas());
@@ -601,7 +603,7 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
+                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.keys_selection_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
                     appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_in_viewport_threaded(false, viewport_extended, image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
@@ -615,7 +617,8 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
                 start_bounds.set(None);
 
-                appwindow.canvas().engine().borrow_mut().strokes_state.update_geometry_selection_strokes();
+                let selection = appwindow.canvas().engine().borrow().strokes_state.keys_selection_unordered();
+                appwindow.canvas().engine().borrow_mut().strokes_state.update_geometry_for_strokes(&selection);
                 appwindow.canvas().regenerate_content(false, true);
 
                 selection_modifier.update_state(&appwindow.canvas());
@@ -671,7 +674,7 @@ impl SelectionModifier {
                         ]
                     );
 
-                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
+                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.keys_selection_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.resize_strokes(&selection_keys, selection_bounds, new_bounds);
                     appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_in_viewport_threaded(false, viewport_extended, image_scale);
                     selection_modifier.set_selection_bounds(Some(new_bounds));
@@ -685,7 +688,8 @@ impl SelectionModifier {
             clone!(@strong start_bounds, @weak self as selection_modifier, @weak appwindow => move |_drag_gesture, _x, _y| {
                 start_bounds.set(None);
 
-                appwindow.canvas().engine().borrow_mut().strokes_state.update_geometry_selection_strokes();
+                let selection = appwindow.canvas().engine().borrow().strokes_state.keys_selection_unordered();
+                appwindow.canvas().engine().borrow_mut().strokes_state.update_geometry_for_strokes(&selection);
                 appwindow.canvas().regenerate_content(false, true);
 
                 selection_modifier.update_state(&appwindow.canvas());
@@ -715,7 +719,7 @@ impl SelectionModifier {
                 let zoom = appwindow.canvas().engine().borrow().camera.zoom();
                 let offset = na::vector![x.round() / zoom, y.round() / zoom];
 
-                let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
+                let selection_keys = appwindow.canvas().engine().borrow().strokes_state.keys_selection_as_rendered();
                 appwindow.canvas().engine().borrow_mut().strokes_state.translate_strokes(&selection_keys, offset);
                 selection_modifier.set_selection_bounds(selection_modifier.selection_bounds().map(|selection_bounds| selection_bounds.translate(offset)));
 
@@ -778,7 +782,7 @@ impl SelectionModifier {
 
                     let angle_delta = angle - selection_modifier.imp().current_rotation_angle.get();
 
-                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.selection_keys_as_rendered();
+                    let selection_keys = appwindow.canvas().engine().borrow().strokes_state.keys_selection_as_rendered();
                     appwindow.canvas().engine().borrow_mut().strokes_state.rotate_strokes(&selection_keys, angle_delta, start_bounds.center());
                     appwindow.canvas().engine().borrow_mut().strokes_state.regenerate_rendering_in_viewport_threaded(false, viewport_extended, image_scale);
                     selection_modifier.update_state(&appwindow.canvas());

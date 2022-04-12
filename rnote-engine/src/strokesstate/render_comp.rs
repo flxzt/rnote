@@ -1,5 +1,6 @@
 use super::StateTask;
 use super::{Stroke, StrokeKey, StrokesState};
+use crate::engine::visual_debug;
 use crate::strokes::StrokeBehaviour;
 use crate::utils::GrapheneRectHelpers;
 use crate::{render, DrawBehaviour};
@@ -175,7 +176,7 @@ impl StrokesState {
     ) {
         let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
 
-        keys.iter().for_each(|&key| {
+        keys.into_iter().for_each(|key| {
             if let (Some(stroke), Some(render_comp)) =
                 (self.strokes.get(key), self.render_components.get_mut(key))
             {
@@ -265,84 +266,66 @@ impl StrokesState {
     }
 
     /// Draws the strokes without the selection
-    pub fn draw_strokes(&self, snapshot: &Snapshot, sheet_bounds: AABB, viewport: Option<AABB>) {
+    pub fn draw_strokes_snapshot(&self, snapshot: &Snapshot, sheet_bounds: AABB, viewport: AABB) {
         snapshot.push_clip(&graphene::Rect::from_aabb(sheet_bounds));
 
-        self.keys_as_rendered().iter().for_each(|&key| {
-            if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(key), self.render_components.get(key))
-            {
-                // skip if stroke is not in viewport
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return;
+        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
+            .iter()
+            .for_each(|&key| {
+                if let Some(render_comp) = self.render_components.get(key) {
+                    for rendernode in render_comp.rendernodes.iter() {
+                        snapshot.append_node(rendernode);
                     }
                 }
-
-                for rendernode in render_comp.rendernodes.iter() {
-                    snapshot.append_node(rendernode);
-                }
-            }
-        });
+            });
 
         snapshot.pop();
     }
 
     /// Draws the selection
-    pub fn draw_selection(&self, snapshot: &Snapshot, _sheet_bounds: AABB, viewport: Option<AABB>) {
-        self.selection_keys_as_rendered().iter().for_each(|&key| {
-            let render_comp = self.render_components.get(key).unwrap();
-
-            if let (Some(selection_comp), Some(stroke)) =
-                (self.selection_components.get(key), self.strokes.get(key))
-            {
-                // skip if stroke is not in viewport
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return;
-                    }
-                }
-
-                if selection_comp.selected {
+    pub fn draw_selection_snapshot(
+        &self,
+        snapshot: &Snapshot,
+        _sheet_bounds: AABB,
+        viewport: AABB,
+    ) {
+        self.selection_keys_as_rendered_intersecting_bounds(viewport)
+            .into_iter()
+            .for_each(|key| {
+                if let Some(render_comp) = self.render_components.get(key) {
                     for rendernode in render_comp.rendernodes.iter() {
                         snapshot.append_node(rendernode);
                     }
                 }
-            }
-        });
+            });
     }
 
     pub fn draw_strokes_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
-        viewport: Option<AABB>,
+        viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        self.keys_as_rendered().into_iter().for_each(|key| {
-            if let Some(stroke) = self.strokes.get(key) {
-                if let Err(e) = || -> anyhow::Result<()> {
-                    // skip if stroke is not in viewport
-                    if let Some(viewport) = viewport {
-                        if !viewport.intersects(&stroke.bounds()) {
-                            return Ok(());
-                        }
+        self.keys_sorted_chrono_intersecting_bounds(viewport)
+            .into_iter()
+            .for_each(|key| {
+                if let Some(stroke) = self.strokes.get(key) {
+                    if let Err(e) = || -> anyhow::Result<()> {
+                        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        stroke
+                            .draw(piet_cx, image_scale)
+                            .map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        Ok(())
+                    }() {
+                        log::error!(
+                            "drawing stroke in draw_strokes_immediate_w_piet() failed with Err {}",
+                            e
+                        );
                     }
-
-                    piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
-                    stroke
-                        .draw(piet_cx, image_scale)
-                        .map_err(|e| anyhow::anyhow!("{}", e))?;
-                    piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
-                    Ok(())
-                }() {
-                    log::error!(
-                        "drawing stroke in draw_strokes_immediate_w_piet() failed with Err {}",
-                        e
-                    );
                 }
-            }
-        });
+            });
 
         Ok(())
     }
@@ -351,21 +334,14 @@ impl StrokesState {
         &self,
         piet_cx: &mut impl piet::RenderContext,
         _sheet_bounds: AABB,
-        viewport: Option<AABB>,
+        viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        self.selection_keys_as_rendered()
+        self.selection_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
                 if let Some(stroke) = self.strokes.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
-                        // skip if stroke is not in viewport
-                        if let Some(viewport) = viewport {
-                            if !viewport.intersects(&stroke.bounds()) {
-                                return Ok(());
-                            }
-                        }
-
                         piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
                         stroke
                             .draw(piet_cx, image_scale)
@@ -382,5 +358,88 @@ impl StrokesState {
             });
 
         Ok(())
+    }
+
+    pub fn draw_debug(&self, snapshot: &Snapshot, border_widths: f64) {
+        self.keys_sorted_chrono().into_iter().for_each(|key| {
+            if let Some(stroke) = self.strokes.get(key) {
+                // Push blur and opacity for strokes which are normally hidden
+                if let Some(render_comp) = self.render_components.get(key) {
+                    if let Some(trash_comp) = self.trash_components.get(key) {
+                        if render_comp.render && trash_comp.trashed {
+                            snapshot.push_blur(3.0);
+                            snapshot.push_opacity(0.2);
+                        }
+                    }
+                    if render_comp.regenerate_flag {
+                        visual_debug::draw_fill(
+                            stroke.bounds(),
+                            visual_debug::COLOR_STROKE_REGENERATE_FLAG,
+                            snapshot,
+                        );
+                    }
+                }
+                match stroke {
+                    Stroke::BrushStroke(brushstroke) => {
+                        for element in brushstroke.path.clone().into_elements().iter() {
+                            visual_debug::draw_pos(
+                                element.pos,
+                                visual_debug::COLOR_POS,
+                                snapshot,
+                                border_widths * 4.0,
+                            )
+                        }
+                        for &hitbox_elem in brushstroke.hitboxes.iter() {
+                            visual_debug::draw_bounds(
+                                hitbox_elem,
+                                visual_debug::COLOR_STROKE_HITBOX,
+                                snapshot,
+                                border_widths,
+                            );
+                        }
+                        visual_debug::draw_bounds(
+                            brushstroke.bounds(),
+                            visual_debug::COLOR_STROKE_BOUNDS,
+                            snapshot,
+                            border_widths,
+                        );
+                    }
+                    Stroke::ShapeStroke(shapestroke) => {
+                        visual_debug::draw_bounds(
+                            shapestroke.bounds(),
+                            visual_debug::COLOR_STROKE_BOUNDS,
+                            snapshot,
+                            border_widths,
+                        );
+                    }
+                    Stroke::VectorImage(vectorimage) => {
+                        visual_debug::draw_bounds(
+                            vectorimage.bounds(),
+                            visual_debug::COLOR_STROKE_BOUNDS,
+                            snapshot,
+                            border_widths,
+                        );
+                    }
+                    Stroke::BitmapImage(bitmapimage) => {
+                        visual_debug::draw_bounds(
+                            bitmapimage.bounds(),
+                            visual_debug::COLOR_STROKE_BOUNDS,
+                            snapshot,
+                            border_widths,
+                        );
+                    }
+                }
+                // Pop Blur and opacity for hidden strokes
+                if let (Some(render_comp), Some(trash_comp)) = (
+                    self.render_components.get(key),
+                    self.trash_components.get(key),
+                ) {
+                    if render_comp.render && trash_comp.trashed {
+                        snapshot.pop();
+                        snapshot.pop();
+                    }
+                }
+            }
+        });
     }
 }

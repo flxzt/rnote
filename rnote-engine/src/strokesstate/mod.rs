@@ -1,10 +1,12 @@
 pub mod chrono_comp;
+pub mod keytree;
 pub mod render_comp;
 pub mod selection_comp;
 pub mod trash_comp;
 
 // Re-exports
 pub use chrono_comp::ChronoComponent;
+use keytree::KeyTree;
 pub use render_comp::RenderComponent;
 use rnote_compose::penpath::{Element, Segment};
 pub use selection_comp::SelectionComponent;
@@ -74,15 +76,19 @@ slotmap::new_key_type! {
 pub struct StrokesState {
     // Components
     #[serde(rename = "strokes")]
-    pub(crate) strokes: HopSlotMap<StrokeKey, Stroke>,
+    strokes: HopSlotMap<StrokeKey, Stroke>,
     #[serde(rename = "trash_components")]
-    pub(crate) trash_components: SecondaryMap<StrokeKey, TrashComponent>,
+    trash_components: SecondaryMap<StrokeKey, TrashComponent>,
     #[serde(rename = "selection_components")]
-    pub(crate) selection_components: SecondaryMap<StrokeKey, SelectionComponent>,
+    selection_components: SecondaryMap<StrokeKey, SelectionComponent>,
     #[serde(rename = "chrono_components")]
-    pub(crate) chrono_components: SecondaryMap<StrokeKey, ChronoComponent>,
+    chrono_components: SecondaryMap<StrokeKey, ChronoComponent>,
     #[serde(rename = "render_components")]
-    pub(crate) render_components: SecondaryMap<StrokeKey, RenderComponent>,
+    render_components: SecondaryMap<StrokeKey, RenderComponent>,
+
+    // A rtree backed by the slotmap, for faster spatial queries. Needs to be updated with update_with_key() when strokes changed their geometry of position!
+    #[serde(skip)]
+    key_tree: KeyTree,
 
     // Other state
     /// value is equal chrono_component of the newest inserted or modified stroke.
@@ -95,7 +101,7 @@ pub struct StrokesState {
     #[serde(skip)]
     pub tasks_rx: Option<futures::channel::mpsc::UnboundedReceiver<StateTask>>,
     #[serde(skip, default = "default_threadpool")]
-    pub threadpool: rayon::ThreadPool,
+    threadpool: rayon::ThreadPool,
 }
 
 impl Default for StrokesState {
@@ -110,6 +116,8 @@ impl Default for StrokesState {
             selection_components: SecondaryMap::new(),
             chrono_components: SecondaryMap::new(),
             render_components: SecondaryMap::new(),
+
+            key_tree: KeyTree::default(),
 
             chrono_counter: 0,
 
@@ -133,6 +141,17 @@ impl StrokesState {
         self.chrono_components = strokes_state.chrono_components;
         self.render_components = strokes_state.render_components;
         self.chrono_counter = strokes_state.chrono_counter;
+
+        self.reload_tree();
+    }
+
+    pub fn reload_tree(&mut self) {
+        let tree_objects = self
+            .strokes
+            .iter()
+            .map(|(key, stroke)| (key, stroke.bounds()))
+            .collect();
+        self.key_tree.reload_with_vec(tree_objects);
     }
 
     pub(crate) fn process_received_task(
@@ -209,7 +228,10 @@ impl StrokesState {
 
     /// Needs rendering regeneration after calling
     pub fn insert_stroke(&mut self, stroke: Stroke) -> StrokeKey {
+        let bounds = stroke.bounds();
+
         let key = self.strokes.insert(stroke);
+        self.key_tree.insert_with_key(key, bounds);
         self.chrono_counter += 1;
 
         let mut render_comp = RenderComponent::default();
@@ -231,10 +253,11 @@ impl StrokesState {
         self.chrono_components.remove(key);
         self.render_components.remove(key);
 
+        self.key_tree.remove_with_key(key);
         self.strokes.remove(key)
     }
 
-    /// Needs rendering regeneration after calling
+    /// stroke geometry needs to be updated and rendering regeneration after calling
     pub fn add_segment_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
         if let Some(Stroke::BrushStroke(ref mut brushstroke)) = self.strokes.get_mut(key) {
             brushstroke.push_segment(segment);
@@ -249,6 +272,7 @@ impl StrokesState {
     pub fn update_shapestroke(&mut self, key: StrokeKey, shaper: &mut Shaper, element: Element) {
         if let Some(Stroke::ShapeStroke(ref mut shapestroke)) = self.strokes.get_mut(key) {
             shapestroke.update_shape(shaper, element);
+            self.key_tree.update_with_key(key, shapestroke.bounds());
 
             if let Some(render_comp) = self.render_components.get_mut(key) {
                 render_comp.regenerate_flag = true;
@@ -265,10 +289,15 @@ impl StrokesState {
         self.selection_components.clear();
         self.chrono_components.clear();
         self.render_components.clear();
+        self.key_tree.clear();
+    }
+
+    pub fn keys_unordered(&self) -> Vec<StrokeKey> {
+        self.strokes.keys().collect()
     }
 
     /// Returns the stroke keys in the order that they should be rendered. Does not include the selection keys!
-    pub fn keys_as_rendered(&self) -> Vec<StrokeKey> {
+    pub fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
         keys_sorted_chrono
@@ -286,16 +315,13 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn keys_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
-        self.keys_as_rendered()
-            .iter()
-            .filter_map(|&key| {
-                let stroke = self.strokes.get(key)?;
-                if stroke.bounds().intersects(&bounds) {
-                    Some(key)
-                } else {
-                    None
-                }
+    pub fn stroke_keys_as_rendered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+        self.keys_sorted_chrono_intersecting_bounds(bounds)
+            .into_iter()
+            .filter(|&key| {
+                self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && !(self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
@@ -309,7 +335,7 @@ impl StrokesState {
     pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
         let tasks_tx = self.tasks_tx.clone();
 
-        let all_strokes = self.keys_sorted_chrono();
+        let all_strokes = self.keys_unordered();
         self.set_selected_keys(&all_strokes, false);
 
         self.threadpool.spawn(move || {
@@ -340,7 +366,7 @@ impl StrokesState {
     pub fn insert_bitmapimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
         let tasks_tx = self.tasks_tx.clone();
 
-        let all_strokes = self.keys_sorted_chrono();
+        let all_strokes = self.keys_unordered();
         self.set_selected_keys(&all_strokes, false);
 
         self.threadpool.spawn(move || {
@@ -369,7 +395,7 @@ impl StrokesState {
     ) {
         let tasks_tx = self.tasks_tx.clone();
 
-        let all_strokes = self.keys_sorted_chrono();
+        let all_strokes = self.keys_unordered();
         self.set_selected_keys(&all_strokes, false);
 
         self.threadpool.spawn(move || {
@@ -398,7 +424,7 @@ impl StrokesState {
     ) {
         let tasks_tx = self.tasks_tx.clone();
 
-        let all_strokes = self.keys_sorted_chrono();
+        let all_strokes = self.keys_unordered();
         self.set_selected_keys(&all_strokes, false);
 
         self.threadpool.spawn(move || {
@@ -439,6 +465,7 @@ impl StrokesState {
             match stroke {
                 Stroke::BrushStroke(ref mut brushstroke) => {
                     brushstroke.update_geometry();
+                    self.key_tree.update_with_key(key, stroke.bounds());
 
                     if let Some(render_comp) = self.render_components.get_mut(key) {
                         render_comp.regenerate_flag = true;
@@ -448,25 +475,10 @@ impl StrokesState {
                 Stroke::VectorImage(_) => {}
                 Stroke::BitmapImage(_) => {}
             }
-        } else {
-            log::debug!(
-                "get stroke in update_stroke_geometry() returned None in complete_stroke() for key {:?}",
-                key
-            );
         }
     }
 
-    pub fn update_geometry_all_strokes(&mut self) {
-        let keys: Vec<StrokeKey> = self.strokes.keys().collect();
-
-        keys.iter().for_each(|&key| {
-            self.update_geometry_for_stroke(key);
-        });
-    }
-
-    pub fn update_geometry_selection_strokes(&mut self) {
-        let keys: Vec<StrokeKey> = self.selection_keys_as_rendered();
-
+    pub fn update_geometry_for_strokes(&mut self, keys: &[StrokeKey]) {
         keys.iter().for_each(|&key| {
             self.update_geometry_for_stroke(key);
         });
@@ -499,16 +511,8 @@ impl StrokesState {
     /// Calculates the height needed to fit all strokes
     pub fn calc_height(&self) -> f64 {
         let new_height = if let Some(stroke) = self
-            .strokes
-            .iter()
-            .filter_map(|(key, stroke)| {
-                if let Some(trash_comp) = self.trash_components.get(key) {
-                    if !trash_comp.trashed {
-                        return Some(stroke);
-                    }
-                }
-                None
-            })
+            .stroke_keys_as_rendered().into_iter()
+            .filter_map(|key| self.strokes.get(key))
             .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
         {
             // max_by_key() returns the element, so we need to extract the height again
@@ -540,40 +544,15 @@ impl StrokesState {
         None
     }
 
-    pub fn strokes_bounds(&self, keys: &[StrokeKey]) -> Vec<AABB> {
+    /// Collects all bounds for the given strokes
+    pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Vec<AABB> {
         keys.iter()
             .filter_map(|&key| Some(self.strokes.get(key)?.bounds()))
             .collect::<Vec<AABB>>()
     }
 
-    pub fn gen_svgs_for_bounds(&self, bounds: AABB) -> Vec<render::Svg> {
-        let keys = self.keys_as_rendered();
-
-        keys.iter()
-            .filter_map(|&key| {
-                let stroke = self.strokes.get(key)?;
-                if !stroke.bounds().intersects(&bounds) {
-                    return None;
-                }
-
-                match stroke.gen_svg() {
-                    Ok(svgs) => Some(svgs),
-                    Err(e) => {
-                        log::error!(
-                            "stroke.gen_svgs() failed in gen_svg_for_bounds() with Err {}",
-                            e
-                        );
-                        None
-                    }
-                }
-            })
-            .collect::<Vec<render::Svg>>()
-    }
-
     /// Generates a Svg for all strokes as drawn onto the canvas without xml headers or svg roots. Does not include the selection.
-    pub fn gen_svgs_all_strokes(&self) -> Vec<render::Svg> {
-        let keys = self.keys_as_rendered();
-
+    pub fn gen_svgs_for_strokes(&self, keys: &[StrokeKey]) -> Vec<render::Svg> {
         keys.iter()
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
@@ -597,6 +576,7 @@ impl StrokesState {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 stroke.translate(offset);
+                self.key_tree.update_with_key(key, stroke.bounds());
 
                 if let Some(render_comp) = self.render_components.get_mut(key) {
                     for image in render_comp.images.iter_mut() {
@@ -623,6 +603,7 @@ impl StrokesState {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 stroke.rotate(angle, center);
+                self.key_tree.update_with_key(key, stroke.bounds());
 
                 if let Some(render_comp) = self.render_components.get_mut(key) {
                     render_comp.regenerate_flag = true;
@@ -650,11 +631,13 @@ impl StrokesState {
 
                 stroke.translate(-old_stroke_bounds.center().coords);
 
-                // Translate in relation to the selection
+                // Translate in relation to the outer bounds
                 stroke.translate(rel_offset);
                 stroke.scale(scale);
 
                 stroke.translate(old_stroke_bounds.center().coords);
+
+                self.key_tree.update_with_key(key, stroke.bounds());
 
                 if let Some(render_comp) = self.render_components.get_mut(key) {
                     render_comp.regenerate_flag = true;

@@ -482,7 +482,7 @@ impl SettingsPanel {
         self.imp().background_pattern_height_unitentry.clone()
     }
 
-    pub fn refresh_for_sheet(&self, appwindow: &RnoteAppWindow) {
+    pub fn refresh_for_engine(&self, appwindow: &RnoteAppWindow) {
         self.load_misc(appwindow);
         self.load_format(appwindow);
         self.load_background(appwindow);

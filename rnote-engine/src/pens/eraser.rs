@@ -45,7 +45,11 @@ impl PenBehaviour for Eraser {
             } => {
                 self.current_input = Some(element);
 
-                strokes_state.trash_colliding_strokes(&self, Some(camera.viewport()));
+                let eraser_bounds = AABB::from_half_extents(
+                    na::Point2::from(element.pos),
+                    na::Vector2::repeat(self.width),
+                );
+                strokes_state.trash_colliding_strokes(eraser_bounds, Some(camera.viewport()));
             }
             PenEvent::Up { .. } => self.current_input = None,
             PenEvent::Proximity { .. } => self.current_input = None,

@@ -142,7 +142,7 @@ impl Sheet {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
-        let mut keys = strokes_state.keys_as_rendered();
+        let mut keys = strokes_state.stroke_keys_as_rendered();
         keys.append(&mut strokes_state.selection_keys_as_rendered());
 
         let new_bounds = if let Some(new_bounds) = strokes_state.gen_bounds(&keys) {

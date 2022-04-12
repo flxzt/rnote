@@ -14,9 +14,9 @@ mod imp {
     use crate::{
         colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
         penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
-        selectionmodifier::ModifierNode, settingspanel::PenShortcutRow, utils,
-        workspacebrowser::FileRow, AppMenu, CanvasMenu, ColorPicker, MainHeader, PensSideBar,
-        RnoteAppWindow, RnoteCanvas, SelectionModifier, SettingsPanel, UnitEntry, WorkspaceBrowser,
+        settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow, AppMenu, CanvasMenu,
+        ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas, SettingsPanel,
+        UnitEntry, WorkspaceBrowser,
     };
 
     #[allow(missing_debug_implementations)]
@@ -48,8 +48,6 @@ mod imp {
             RnoteCanvas::static_type();
             ColorPicker::static_type();
             ColorSetter::static_type();
-            SelectionModifier::static_type();
-            ModifierNode::static_type();
             CanvasMenu::static_type();
             SettingsPanel::static_type();
             AppMenu::static_type();

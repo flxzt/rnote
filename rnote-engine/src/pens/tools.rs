@@ -275,13 +275,13 @@ impl Default for ToolsStyle {
 
 #[derive(Debug, Clone, Copy)]
 enum ToolsState {
-    UpState,
-    DownState,
+    Idle,
+    Active,
 }
 
 impl Default for ToolsState {
     fn default() -> Self {
-        Self::UpState
+        Self::Idle
     }
 }
 
@@ -314,7 +314,7 @@ impl PenBehaviour for Tools {
 
         match (self.state, event) {
             (
-                ToolsState::UpState,
+                ToolsState::Idle,
                 PenEvent::Down {
                     element,
                     shortcut_key: _,
@@ -337,10 +337,10 @@ impl PenBehaviour for Tools {
                     }
                 }
 
-                self.state = ToolsState::DownState;
+                self.state = ToolsState::Active;
             }
             (
-                ToolsState::DownState,
+                ToolsState::Active,
                 PenEvent::Down {
                     element,
                     shortcut_key: _,
@@ -388,24 +388,24 @@ impl PenBehaviour for Tools {
 
                     if offset.magnitude() > 1.0 {
                         camera.offset -= offset;
-                        surface_flags.new_camera_offset = true;
+                        surface_flags.camera_offset_changed = true;
                     }
                 }
             },
-            (ToolsState::UpState, PenEvent::Up { .. }) => {}
-            (ToolsState::DownState, PenEvent::Up { .. }) => {
+            (ToolsState::Idle, PenEvent::Up { .. }) => {}
+            (ToolsState::Active, PenEvent::Up { .. }) => {
                 self.reset();
-                self.state = ToolsState::UpState;
+                self.state = ToolsState::Idle;
             }
-            (ToolsState::UpState, PenEvent::Proximity { .. }) => {}
-            (ToolsState::DownState, PenEvent::Proximity { .. }) => {
+            (ToolsState::Idle, PenEvent::Proximity { .. }) => {}
+            (ToolsState::Active, PenEvent::Proximity { .. }) => {
                 self.reset();
-                self.state = ToolsState::UpState;
+                self.state = ToolsState::Idle;
             }
-            (ToolsState::UpState, PenEvent::Cancel) => {}
-            (ToolsState::DownState, PenEvent::Cancel) => {
+            (ToolsState::Idle, PenEvent::Cancel) => {}
+            (ToolsState::Active, PenEvent::Cancel) => {
                 self.reset();
-                self.state = ToolsState::UpState;
+                self.state = ToolsState::Idle;
             }
         }
 
@@ -415,14 +415,19 @@ impl PenBehaviour for Tools {
 
 impl DrawOnSheetBehaviour for Tools {
     fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
-        match self.style {
-            ToolsStyle::ExpandSheet => self.expandsheet_tool.bounds_on_sheet(sheet_bounds, camera),
-            ToolsStyle::DragProximity => self
-                .dragproximity_tool
-                .bounds_on_sheet(sheet_bounds, camera),
-            ToolsStyle::OffsetCamera => {
-                self.offsetcamera_tool.bounds_on_sheet(sheet_bounds, camera)
-            }
+        match self.state {
+            ToolsState::Active => match self.style {
+                ToolsStyle::ExpandSheet => {
+                    self.expandsheet_tool.bounds_on_sheet(sheet_bounds, camera)
+                }
+                ToolsStyle::DragProximity => self
+                    .dragproximity_tool
+                    .bounds_on_sheet(sheet_bounds, camera),
+                ToolsStyle::OffsetCamera => {
+                    self.offsetcamera_tool.bounds_on_sheet(sheet_bounds, camera)
+                }
+            },
+            ToolsState::Idle => None,
         }
     }
 

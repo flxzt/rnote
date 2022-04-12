@@ -60,7 +60,7 @@ impl RnoteAppWindow {
         );
         self.add_action(&action_expand_mode);
         let action_format_borders =
-            gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
+            gio::PropertyAction::new("format-borders", &self.canvas(), "format-borders");
         self.add_action(&action_format_borders);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
@@ -152,8 +152,8 @@ impl RnoteAppWindow {
         let action_tool_style =
             gio::SimpleAction::new("tool-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_tool_style);
-        let action_refresh_ui_for_sheet = gio::SimpleAction::new("refresh-ui-for-sheet", None);
-        self.add_action(&action_refresh_ui_for_sheet);
+        let action_refresh_ui_for_engine = gio::SimpleAction::new("refresh-ui-for-engine", None);
+        self.add_action(&action_refresh_ui_for_engine);
 
         // Close active window
         action_close_active.connect_activate(clone!(@weak self as appwindow => move |_, _| {
@@ -267,14 +267,12 @@ impl RnoteAppWindow {
             }));
 
         // Format borders
-        action_format_borders.connect_activate(
-            clone!(@weak self as appwindow => move |action_format_borders, _target| {
+        action_format_borders.connect_state_notify(
+            clone!(@weak self as appwindow => move |action_format_borders| {
                 let state = action_format_borders.state().unwrap().get::<bool>().unwrap();
 
-                appwindow.canvas().engine().borrow_mut().sheet.format.draw_borders = !state;
+                appwindow.canvas().engine().borrow_mut().sheet.format.show_borders = state;
                 appwindow.canvas().queue_draw();
-
-                action_format_borders.set_state(&(!state).to_variant());
             }),
         );
 
@@ -559,7 +557,7 @@ impl RnoteAppWindow {
             }
 
 
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
         }),
         );
 
@@ -582,7 +580,7 @@ impl RnoteAppWindow {
             }
 
 
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
         }),
         );
 
@@ -607,7 +605,7 @@ impl RnoteAppWindow {
                 _ => { log::error!("set invalid state of action `shaper-style`")}
             }
 
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
         }));
 
         // Selector Style
@@ -625,7 +623,7 @@ impl RnoteAppWindow {
                 _ => { log::error!("set invalid state of action `selector-style`")}
             }
 
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
         }),
         );
 
@@ -647,20 +645,31 @@ impl RnoteAppWindow {
                 _ => { log::error!("set invalid state of action `tool-style`")}
             }
 
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-sheet", None);
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
         }),
         );
 
         // Refresh UI state
-        action_refresh_ui_for_sheet.connect_activate(
+        action_refresh_ui_for_engine.connect_activate(
             clone!(@weak self as appwindow => move |_action_refresh_ui_for_sheet, _| {
                 // Avoids borrow errors
+                let format = appwindow.canvas().engine().borrow().sheet.format.clone();
                 let pen_style = appwindow.canvas().engine().borrow().penholder.style_w_override();
                 let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
                 let shaper = appwindow.canvas().engine().borrow().penholder.shaper.clone();
                 let eraser = appwindow.canvas().engine().borrow().penholder.eraser.clone();
                 let selector = appwindow.canvas().engine().borrow().penholder.selector.clone();
                 let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
+
+                {
+                    // Engine
+                    let pen_sounds = appwindow.canvas().engine().borrow().penholder.audioplayer.as_ref().map(|audioplayer| audioplayer.enabled);
+                    if let Some(pen_sounds) = pen_sounds {
+                        appwindow.set_pen_sounds(pen_sounds);
+                    }
+
+                    appwindow.canvas().set_format_borders(format.show_borders);
+                }
 
                 // Current pen
                 match pen_style {
@@ -778,6 +787,7 @@ impl RnoteAppWindow {
                     SelectorType::Polygon => appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true),
                     SelectorType::Rectangle => appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true),
                 }
+                appwindow.penssidebar().selector_page().resize_lock_aspectratio_togglebutton().set_active(selector.resize_lock_aspectratio);
 
                 // Tools
                 match tools.style {
@@ -787,7 +797,7 @@ impl RnoteAppWindow {
                 }
 
                 // Settings panel
-                appwindow.settings_panel().refresh_for_sheet(&appwindow);
+                appwindow.settings_panel().refresh_for_engine(&appwindow);
             }),
         );
 
@@ -795,9 +805,9 @@ impl RnoteAppWindow {
         action_selection_trash.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_trash, _| {
                 appwindow.canvas().engine().borrow_mut().strokes_state.trash_selection();
-                appwindow.canvas().selection_modifier().set_visible(false);
+                appwindow.canvas().engine().borrow_mut().update_selector();
 
-                appwindow.canvas().queue_draw();
+                appwindow.canvas().regenerate_content(false, true);
             }),
         );
 
@@ -805,8 +815,8 @@ impl RnoteAppWindow {
         action_selection_duplicate.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
                 appwindow.canvas().engine().borrow_mut().strokes_state.duplicate_selection();
+                appwindow.canvas().engine().borrow_mut().update_selector();
 
-                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().regenerate_content(false, true);
             }),
         );
@@ -814,10 +824,10 @@ impl RnoteAppWindow {
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
-                let all_strokes = appwindow.canvas().engine().borrow().strokes_state.keys_sorted_chrono();
+                let all_strokes = appwindow.canvas().engine().borrow().strokes_state.keys_unordered();
                 appwindow.canvas().engine().borrow_mut().strokes_state.set_selected_keys(&all_strokes, true);
+                appwindow.canvas().engine().borrow_mut().update_selector();
 
-                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().regenerate_content(false, true);
             }),
         );
@@ -825,10 +835,10 @@ impl RnoteAppWindow {
         // deselect all strokes
         action_selection_deselect_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
-                let all_strokes = appwindow.canvas().engine().borrow().strokes_state.keys_sorted_chrono();
+                let all_strokes = appwindow.canvas().engine().borrow().strokes_state.keys_unordered();
                 appwindow.canvas().engine().borrow_mut().strokes_state.set_selected_keys(&all_strokes, false);
+                appwindow.canvas().engine().borrow_mut().update_selector();
 
-                appwindow.canvas().selection_modifier().update_state(&appwindow.canvas());
                 appwindow.canvas().regenerate_content(false, true);
             }),
         );

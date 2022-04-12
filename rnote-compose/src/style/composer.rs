@@ -1,11 +1,11 @@
 use p2d::bounding_volume::AABB;
 
-/// Specifies that the implementating type can be composed and drawn with style options
+/// Specifies that the implementing type can be composed and drawn with a style
 pub trait Composer<O>
 where
     O: std::fmt::Debug + Clone,
 {
-    /// the bounds of the composed shape. Styles might need to increase the original bounds to avoid clipping
+    /// the bounds of the composed shape.
     fn composed_bounds(&self, options: &O) -> AABB;
 
     /// composes and draws the shape onto the context, applying the style options to it.

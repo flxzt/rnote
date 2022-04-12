@@ -1,4 +1,3 @@
-use crate::pens::Eraser;
 use crate::strokes::Stroke;
 
 use super::{StrokeKey, StrokesState};
@@ -98,67 +97,54 @@ impl StrokesState {
     }
 
     /// trash strokes that collide with the eraser
-    pub fn trash_colliding_strokes(&mut self, eraser: &Eraser, viewport: Option<AABB>) {
-        if let Some(eraser_current_input) = eraser.current_input {
-            let eraser_bounds = AABB::new(
-                na::Point2::from(
-                    eraser_current_input.pos - na::vector![eraser.width / 2.0, eraser.width / 2.0],
-                ),
-                na::Point2::from(
-                    eraser_current_input.pos + na::vector![eraser.width / 2.0, eraser.width / 2.0],
-                ),
-            );
-
-            self.strokes.iter_mut().for_each(|(key, stroke)| {
-                if let Some(viewport) = viewport {
-                    if !viewport.intersects(&stroke.bounds()) {
-                        return;
-                    }
+    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: Option<AABB>) {
+        self.strokes.iter_mut().for_each(|(key, stroke)| {
+            if let Some(viewport) = viewport {
+                if !viewport.intersects(&stroke.bounds()) {
+                    return;
                 }
-                match stroke {
-                    Stroke::BrushStroke(brushstroke) => {
-                        let brushstroke_bounds = brushstroke.bounds();
+            }
+            match stroke {
+                Stroke::BrushStroke(brushstroke) => {
+                    let brushstroke_bounds = brushstroke.bounds();
 
-                        // First check markerstroke bounds, then conditionally check hitbox
-                        if eraser_bounds.intersects(&brushstroke_bounds) {
-                            for hitbox_elem in brushstroke.hitboxes.iter() {
-                                if eraser_bounds.intersects(hitbox_elem) {
-                                    if let Some(trash_comp) = self.trash_components.get_mut(key) {
-                                        trash_comp.trashed = true;
+                    // First check markerstroke bounds, then conditionally check hitbox
+                    if eraser_bounds.intersects(&brushstroke_bounds) {
+                        for hitbox_elem in brushstroke.hitboxes.iter() {
+                            if eraser_bounds.intersects(hitbox_elem) {
+                                if let Some(trash_comp) = self.trash_components.get_mut(key) {
+                                    trash_comp.trashed = true;
 
-                                        if let Some(chrono_comp) =
-                                            self.chrono_components.get_mut(key)
-                                        {
-                                            self.chrono_counter += 1;
-                                            chrono_comp.t = self.chrono_counter;
-                                        }
+                                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                        self.chrono_counter += 1;
+                                        chrono_comp.t = self.chrono_counter;
                                     }
-
-                                    return;
                                 }
+
+                                return;
                             }
                         }
-                    }
-                    Stroke::ShapeStroke(shapestroke) => {
-                        if eraser_bounds.intersects(&shapestroke.bounds()) {
-                            if let Some(trash_comp) = self.trash_components.get_mut(key) {
-                                trash_comp.trashed = true;
-
-                                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                    self.chrono_counter += 1;
-                                    chrono_comp.t = self.chrono_counter;
-                                }
-                            }
-                        }
-                    }
-                    Stroke::VectorImage(_vectorimage) => {
-                        // Ignore VectorImage when trashing with the Eraser
-                    }
-                    Stroke::BitmapImage(_bitmapimage) => {
-                        // Ignore BitmapImage when trashing with the Eraser
                     }
                 }
-            });
-        }
+                Stroke::ShapeStroke(shapestroke) => {
+                    if eraser_bounds.intersects(&shapestroke.bounds()) {
+                        if let Some(trash_comp) = self.trash_components.get_mut(key) {
+                            trash_comp.trashed = true;
+
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
+                        }
+                    }
+                }
+                Stroke::VectorImage(_vectorimage) => {
+                    // Ignore VectorImage when trashing with the Eraser
+                }
+                Stroke::BitmapImage(_bitmapimage) => {
+                    // Ignore BitmapImage when trashing with the Eraser
+                }
+            }
+        });
     }
 }

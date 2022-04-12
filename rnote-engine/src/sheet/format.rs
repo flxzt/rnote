@@ -111,7 +111,7 @@ impl Default for Orientation {
 }
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
-#[serde(default, rename = "width")]
+#[serde(default, rename = "format")]
 pub struct Format {
     #[serde(rename = "width")]
     pub width: f64,
@@ -122,8 +122,8 @@ pub struct Format {
     #[serde(rename = "orientation")]
     pub orientation: Orientation,
 
-    #[serde(skip)]
-    pub draw_borders: bool,
+    #[serde(rename = "show_borders")]
+    pub show_borders: bool,
 }
 
 impl Default for Format {
@@ -133,7 +133,7 @@ impl Default for Format {
             height: Self::HEIGHT_DEFAULT,
             dpi: Self::DPI_DEFAULT,
             orientation: Orientation::default(),
-            draw_borders: true,
+            show_borders: true,
         }
     }
 }
@@ -164,7 +164,7 @@ impl Format {
             a: 1.0,
         };
 
-        if self.draw_borders {
+        if self.show_borders {
             let total_zoom = camera.total_zoom();
             let border_width = 1.0 / total_zoom;
             let viewport = camera.viewport();

@@ -1,5 +1,4 @@
 mod imp {
-    use gtk4::gdk;
     use gtk4::glib;
     use gtk4::prelude::*;
     use gtk4::subclass::prelude::*;
@@ -12,7 +11,6 @@ mod imp {
     use rnote_engine::Sheet;
 
     use crate::canvas::RnoteCanvas;
-    use crate::selectionmodifier::SelectionModifier;
     use rnote_compose::helpers::AABBHelpers;
 
     #[derive(Debug, Default)]
@@ -154,45 +152,6 @@ mod imp {
                         canvas.dismiss_return_to_center_toast();
                     }
                 }
-            }
-
-            // Allocate the selection_modifier child
-            {
-                canvas
-                    .selection_modifier()
-                    .update_translate_node_size_request(&canvas);
-
-                let (_, selection_modifier_width, _, _) = canvas
-                    .selection_modifier()
-                    .measure(Orientation::Horizontal, -1);
-                let (_, selection_modifier_height, _, _) = canvas
-                    .selection_modifier()
-                    .measure(Orientation::Vertical, -1);
-
-                let (selection_modifier_x, selection_modifier_y) = if let Some(selection_bounds) =
-                    canvas.selection_modifier().selection_bounds()
-                {
-                    let selection_bounds_zoomed = selection_bounds.scale(total_zoom);
-
-                    (
-                        (selection_bounds_zoomed.mins[0] - hadj.value()).ceil() as i32
-                            - SelectionModifier::RESIZE_NODE_SIZE,
-                        (selection_bounds_zoomed.mins[1] - vadj.value()).ceil() as i32
-                            - SelectionModifier::RESIZE_NODE_SIZE,
-                    )
-                } else {
-                    (0, 0)
-                };
-
-                canvas.selection_modifier().size_allocate(
-                    &gdk::Rectangle::new(
-                        selection_modifier_x,
-                        selection_modifier_y,
-                        selection_modifier_width,
-                        selection_modifier_height,
-                    ),
-                    -1,
-                );
             }
         }
     }

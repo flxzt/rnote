@@ -33,8 +33,11 @@ impl Default for ExpandMode {
 
 #[allow(missing_debug_implementations)]
 #[derive(Serialize, Deserialize)]
+#[serde(default, rename = "engine")]
 pub struct RnoteEngine {
+    #[serde(rename = "sheet")]
     pub sheet: Sheet,
+    #[serde(rename = "penholder")]
     pub penholder: PenHolder,
     #[serde(rename = "strokes_state")]
     pub strokes_state: StrokesState,
@@ -43,7 +46,7 @@ pub struct RnoteEngine {
     expand_mode: ExpandMode,
     #[serde(skip)]
     pub camera: Camera,
-
+    #[serde(skip)]
     pub visual_debug: bool,
 }
 
@@ -123,8 +126,8 @@ impl RnoteEngine {
     // Generates bounds for each page which is containing content, extended to fit the sheet format
     pub fn pages_bounds_containing_content(&self) -> Vec<AABB> {
         let sheet_bounds = self.sheet.bounds();
-        let keys = self.strokes_state.keys_as_rendered();
-        let strokes_bounds = self.strokes_state.strokes_bounds(&keys);
+        let keys = self.strokes_state.stroke_keys_as_rendered();
+        let strokes_bounds = self.strokes_state.bounds_for_strokes(&keys);
 
         if self.sheet.format.height > 0.0 && self.sheet.format.width > 0.0 {
             sheet_bounds
@@ -169,7 +172,8 @@ impl RnoteEngine {
 
         svgs.push(self.sheet.background.gen_svg(sheet_bounds.loosened(1.0))?);
 
-        svgs.append(&mut self.strokes_state.gen_svgs_all_strokes());
+        let strokes = self.strokes_state.stroke_keys_as_rendered();
+        svgs.append(&mut self.strokes_state.gen_svgs_for_strokes(&strokes));
 
         Ok(svgs)
     }
@@ -185,7 +189,11 @@ impl RnoteEngine {
         // Background bounds are still sheet bounds, for alignment
         svgs.push(self.sheet.background.gen_svg(sheet_bounds.loosened(1.0))?);
 
-        svgs.append(&mut self.strokes_state.gen_svgs_for_bounds(viewport));
+        let keys = self
+            .strokes_state
+            .stroke_keys_as_rendered_intersecting_bounds(viewport);
+
+        svgs.append(&mut self.strokes_state.gen_svgs_for_strokes(&keys));
 
         Ok(svgs)
     }
@@ -244,6 +252,12 @@ impl RnoteEngine {
         }
     }
 
+    pub fn update_selector(&mut self) {
+        self.penholder
+            .selector
+            .update_selection_from_state(&self.strokes_state);
+    }
+
     pub fn open_sheet_from_rnote_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
         let decompressed_bytes = utils::decompress_from_gzip(bytes)?;
         let engine: Self = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
@@ -252,6 +266,7 @@ impl RnoteEngine {
         self.strokes_state
             .import_strokes_state(engine.strokes_state);
         self.expand_mode = engine.expand_mode;
+        self.update_selector();
 
         Ok(())
     }
@@ -342,6 +357,7 @@ impl RnoteEngine {
 
         self.sheet.import_sheet(sheet);
         self.strokes_state.import_strokes_state(strokes_state);
+        self.update_selector();
 
         Ok(())
     }
@@ -398,7 +414,9 @@ impl RnoteEngine {
             .pages_bounds_containing_content()
             .iter()
             .map(|&page_bounds| {
-                let page_keys = self.strokes_state.keys_intersecting_bounds(page_bounds);
+                let page_keys = self
+                    .strokes_state
+                    .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
 
                 let strokes = self.strokes_state.clone_strokes_for_keys(&page_keys);
 
@@ -584,9 +602,9 @@ impl RnoteEngine {
             .draw(snapshot, sheet_bounds, &self.camera)?;
 
         self.strokes_state
-            .draw_strokes(snapshot, sheet_bounds, Some(viewport));
+            .draw_strokes_snapshot(snapshot, sheet_bounds, viewport);
         self.strokes_state
-            .draw_selection(snapshot, sheet_bounds, Some(viewport));
+            .draw_selection_snapshot(snapshot, sheet_bounds, viewport);
 
         snapshot.restore();
 
@@ -636,58 +654,55 @@ pub mod visual_debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
     use p2d::bounding_volume::{BoundingVolume, AABB};
 
-    use rnote_compose::shapes::ShapeBehaviour;
-    use rnote_compose::Color;
-
     use crate::pens::penholder::PenStyle;
-    use crate::strokes::Stroke;
     use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
     use crate::{DrawOnSheetBehaviour, RnoteEngine};
+    use rnote_compose::Color;
 
-    const COLOR_POS: Color = Color {
+    pub const COLOR_POS: Color = Color {
         r: 1.0,
         g: 0.0,
         b: 0.0,
         a: 1.0,
     };
-    const COLOR_POS_ALT: Color = Color {
+    pub const COLOR_POS_ALT: Color = Color {
         r: 1.0,
         g: 1.0,
         b: 0.0,
         a: 1.0,
     };
-    const COLOR_STROKE_HITBOX: Color = Color {
+    pub const COLOR_STROKE_HITBOX: Color = Color {
         r: 0.0,
         g: 0.8,
         b: 0.2,
         a: 0.5,
     };
-    const COLOR_STROKE_BOUNDS: Color = Color {
+    pub const COLOR_STROKE_BOUNDS: Color = Color {
         r: 0.0,
         g: 0.8,
         b: 0.8,
         a: 1.0,
     };
-    const COLOR_STROKE_REGENERATE_FLAG: Color = Color {
+    pub const COLOR_STROKE_REGENERATE_FLAG: Color = Color {
         r: 0.9,
         g: 0.0,
         b: 0.8,
         a: 0.15,
     };
-    const COLOR_SELECTOR_BOUNDS: Color = Color {
+    pub const COLOR_SELECTOR_BOUNDS: Color = Color {
         r: 1.0,
         g: 0.0,
         b: 0.8,
         a: 1.0,
     };
-    const COLOR_SHEET_BOUNDS: Color = Color {
+    pub const COLOR_SHEET_BOUNDS: Color = Color {
         r: 0.8,
         g: 0.0,
         b: 0.8,
         a: 1.0,
     };
 
-    fn draw_bounds(bounds: AABB, color: Color, snapshot: &Snapshot, width: f64) {
+    pub fn draw_bounds(bounds: AABB, color: Color, snapshot: &Snapshot, width: f64) {
         let bounds = graphene::Rect::new(
             bounds.mins[0] as f32,
             bounds.mins[1] as f32,
@@ -715,7 +730,7 @@ pub mod visual_debug {
         )
     }
 
-    fn draw_pos(pos: na::Vector2<f64>, color: Color, snapshot: &Snapshot, width: f64) {
+    pub fn draw_pos(pos: na::Vector2<f64>, color: Color, snapshot: &Snapshot, width: f64) {
         snapshot.append_color(
             &gdk::RGBA::from_compose_color(color),
             &graphene::Rect::new(
@@ -727,7 +742,7 @@ pub mod visual_debug {
         );
     }
 
-    fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
+    pub fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
         snapshot.append_color(
             &gdk::RGBA::from_compose_color(color),
             &graphene::Rect::from_aabb(rect),
@@ -738,7 +753,6 @@ pub mod visual_debug {
     pub fn draw_debug(engine: &RnoteEngine, snapshot: &Snapshot, border_widths: f64) {
         let viewport = engine.camera.viewport();
         let sheet_bounds = engine.sheet.bounds();
-        let pen_shown = engine.penholder.pen_shown();
 
         draw_bounds(sheet_bounds, COLOR_SHEET_BOUNDS, snapshot, border_widths);
 
@@ -751,109 +765,32 @@ pub mod visual_debug {
         );
 
         // Draw the strokes and selection
-        engine
-            .strokes_state
-            .keys_as_rendered()
-            .iter()
-            .chain(engine.strokes_state.selection_keys_as_rendered().iter())
-            .for_each(|&key| {
-                if let Some(stroke) = engine.strokes_state.strokes.get(key) {
-                    // Push blur and opacity for strokes which are normally hidden
-                    if let Some(render_comp) = engine.strokes_state.render_components.get(key) {
-                        if let Some(trash_comp) = engine.strokes_state.trash_components.get(key) {
-                            if render_comp.render && trash_comp.trashed {
-                                snapshot.push_blur(3.0);
-                                snapshot.push_opacity(0.2);
-                            }
-                        }
-                        if render_comp.regenerate_flag {
-                            draw_fill(stroke.bounds(), COLOR_STROKE_REGENERATE_FLAG, snapshot);
-                        }
-                    }
-                    match stroke {
-                        Stroke::BrushStroke(brushstroke) => {
-                            for element in brushstroke.path.clone().into_elements().iter() {
-                                draw_pos(element.pos, COLOR_POS, snapshot, border_widths * 4.0)
-                            }
-                            for &hitbox_elem in brushstroke.hitboxes.iter() {
-                                draw_bounds(
-                                    hitbox_elem,
-                                    COLOR_STROKE_HITBOX,
-                                    snapshot,
-                                    border_widths,
-                                );
-                            }
-                            draw_bounds(
-                                brushstroke.bounds(),
-                                COLOR_STROKE_BOUNDS,
-                                snapshot,
-                                border_widths,
-                            );
-                        }
-                        Stroke::ShapeStroke(shapestroke) => {
-                            draw_bounds(
-                                shapestroke.bounds(),
-                                COLOR_STROKE_BOUNDS,
-                                snapshot,
-                                border_widths,
-                            );
-                        }
-                        Stroke::VectorImage(vectorimage) => {
-                            draw_bounds(
-                                vectorimage.bounds(),
-                                COLOR_STROKE_BOUNDS,
-                                snapshot,
-                                border_widths,
-                            );
-                        }
-                        Stroke::BitmapImage(bitmapimage) => {
-                            draw_bounds(
-                                bitmapimage.bounds(),
-                                COLOR_STROKE_BOUNDS,
-                                snapshot,
-                                border_widths,
-                            );
-                        }
-                    }
-                    // Pop Blur and opacity for hidden strokes
-                    if let (Some(render_comp), Some(trash_comp)) = (
-                        engine.strokes_state.render_components.get(key),
-                        engine.strokes_state.trash_components.get(key),
-                    ) {
-                        if render_comp.render && trash_comp.trashed {
-                            snapshot.pop();
-                            snapshot.pop();
-                        }
-                    }
-                }
-            });
+        engine.strokes_state.draw_debug(snapshot, border_widths);
 
         // Draw the pens
-        if pen_shown {
-            let current_pen_style = engine.penholder.style_w_override();
+        let current_pen_style = engine.penholder.style_w_override();
 
-            match current_pen_style {
-                PenStyle::Eraser => {
-                    if let Some(current_input) = engine.penholder.eraser.current_input {
-                        draw_pos(
-                            current_input.pos,
-                            COLOR_POS_ALT,
-                            snapshot,
-                            border_widths * 4.0,
-                        );
-                    }
+        match current_pen_style {
+            PenStyle::Eraser => {
+                if let Some(current_input) = engine.penholder.eraser.current_input {
+                    draw_pos(
+                        current_input.pos,
+                        COLOR_POS_ALT,
+                        snapshot,
+                        border_widths * 4.0,
+                    );
                 }
-                PenStyle::Selector => {
-                    if let Some(bounds) = engine
-                        .penholder
-                        .selector
-                        .bounds_on_sheet(sheet_bounds, &engine.camera)
-                    {
-                        draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
-                    }
-                }
-                PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools => {}
             }
+            PenStyle::Selector => {
+                if let Some(bounds) = engine
+                    .penholder
+                    .selector
+                    .bounds_on_sheet(sheet_bounds, &engine.camera)
+                {
+                    draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
+                }
+            }
+            PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools => {}
         }
     }
 }

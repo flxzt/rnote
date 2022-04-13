@@ -208,7 +208,7 @@ pub fn dialog_open_sheet(appwindow: &RnoteAppWindow) {
                         dialog_open_overwrite(&appwindow);
                     } else {
                         log::error!("Can't open file. No file selected.");
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening sheet failed").to_variant()));
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening file failed. No file selected").to_variant()));
                     };
                 },
                 _ => {
@@ -295,7 +295,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                         Some(file) => {
                             match file.basename() {
                                 Some(basename) => {
-                                    match appwindow.canvas().engine().borrow().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {
+                                    match appwindow.canvas().engine().borrow().save_as_rnote_bytes(config::APP_VERSION, &basename.to_string_lossy()) {
                                         Ok(bytes) => {
                                             let main_cx = glib::MainContext::default();
 

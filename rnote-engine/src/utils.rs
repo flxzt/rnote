@@ -1,8 +1,5 @@
-use flate2::read::MultiGzDecoder;
-use flate2::{Compression, GzBuilder};
 use gtk4::{gdk, glib, graphene};
 use p2d::bounding_volume::AABB;
-use std::io::prelude::*;
 
 pub trait GdkRGBAHelpers
 where
@@ -71,36 +68,17 @@ pub fn convert_coord_dpi(
     (coord / current_dpi) * target_dpi
 }
 
-pub fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
-    let compressed_bytes = Vec::<u8>::new();
-
-    let mut encoder = GzBuilder::new()
-        .filename(file_name)
-        .comment("test")
-        .write(compressed_bytes, Compression::default());
-
-    encoder.write_all(to_compress)?;
-
-    Ok(encoder.finish()?)
-}
-
-pub fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut decoder = MultiGzDecoder::new(compressed);
-    let mut bytes: Vec<u8> = Vec::new();
-    decoder.read_to_end(&mut bytes)?;
-
-    Ok(bytes)
-}
-
 pub mod base64 {
     use serde::{Deserialize, Serialize};
     use serde::{Deserializer, Serializer};
 
+    /// Serialize a Vec<u8> as base64 encoded
     pub fn serialize<S: Serializer>(v: &Vec<u8>, s: S) -> Result<S::Ok, S::Error> {
         let base64 = base64::encode(v);
         String::serialize(&base64, s)
     }
 
+    /// Deserialize base64 encoded Vec<u8>
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u8>, D::Error> {
         let base64 = String::deserialize(d)?;
         base64::decode(base64.as_bytes()).map_err(|e| serde::de::Error::custom(e))

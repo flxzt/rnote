@@ -10,6 +10,7 @@ use std::{
 };
 
 use adw::{prelude::*, subclass::prelude::*};
+use gettextrs::gettext;
 use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, CompositeTemplate,
     CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
@@ -48,7 +49,6 @@ mod imp {
         pub output_file: RefCell<Option<gio::File>>,
         pub unsaved_changes: Cell<bool>,
         pub righthanded: Cell<bool>,
-        pub pen_sounds: Cell<bool>,
 
         #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -111,7 +111,6 @@ mod imp {
                 output_file: RefCell::new(None),
                 unsaved_changes: Cell::new(false),
                 righthanded: Cell::new(true),
-                pen_sounds: Cell::new(true),
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 main_grid: TemplateChild::<Grid>::default(),
@@ -222,19 +221,11 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
-                    // Pen sounds
+                    // righthanded
                     glib::ParamSpecBoolean::new(
                         "righthanded",
                         "righthanded",
                         "righthanded",
-                        false,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    // Pen sounds
-                    glib::ParamSpecBoolean::new(
-                        "pen-sounds",
-                        "pen-sounds",
-                        "pen-sounds",
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
@@ -247,14 +238,13 @@ mod imp {
             match pspec.name() {
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
-                "pen-sounds" => self.pen_sounds.get().to_value(),
                 _ => unimplemented!(),
             }
         }
 
         fn set_property(
             &self,
-            obj: &Self::Type,
+            _obj: &Self::Type,
             _id: usize,
             value: &glib::Value,
             pspec: &glib::ParamSpec,
@@ -271,19 +261,6 @@ mod imp {
                         .expect("The value needs to be of type `bool`.");
 
                     self.righthanded.replace(righthanded);
-                }
-                "pen-sounds" => {
-                    let pen_sounds = value
-                        .get::<bool>()
-                        .expect("The value needs to be of type `bool`.");
-
-                    self.pen_sounds.replace(pen_sounds);
-
-                    if let Some(ref mut audioplayer) =
-                        obj.canvas().engine().borrow_mut().penholder.audioplayer
-                    {
-                        audioplayer.enabled = pen_sounds;
-                    }
                 }
                 _ => unimplemented!(),
             }
@@ -536,14 +513,6 @@ impl RnoteAppWindow {
 
     pub fn set_righthanded(&self, righthanded: bool) {
         self.set_property("righthanded", righthanded.to_value());
-    }
-
-    pub fn pen_sounds(&self) -> bool {
-        self.property::<bool>("pen-sounds")
-    }
-
-    pub fn set_pen_sounds(&self, pen_sounds: bool) {
-        self.set_property("pen-sounds", pen_sounds.to_value());
     }
 
     pub fn toast_overlay(&self) -> adw::ToastOverlay {
@@ -1000,6 +969,7 @@ impl RnoteAppWindow {
                     let result = file.load_bytes_future().await;
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_rnote_bytes(&file_bytes, file.path()) {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .rnote file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -1013,6 +983,7 @@ impl RnoteAppWindow {
                     let result = file.load_bytes_future().await;
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_xopp_bytes(&file_bytes, file.path()) {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .xopp file failed.").to_variant()));
                             log::error!(
                                 "load_in_xopp_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -1026,6 +997,7 @@ impl RnoteAppWindow {
                     let result = file.load_bytes_future().await;
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_vectorimage_bytes(&file_bytes, target_pos) {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Vectorimage file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -1039,6 +1011,7 @@ impl RnoteAppWindow {
                     let result = file.load_bytes_future().await;
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_bitmapimage_bytes(&file_bytes, target_pos) {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Bitmapimage file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -1052,6 +1025,7 @@ impl RnoteAppWindow {
                     let result = file.load_bytes_future().await;
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_pdf_bytes(&file_bytes, target_pos) {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -1061,9 +1035,19 @@ impl RnoteAppWindow {
                 }));
             }
             utils::FileType::Folder => {
+                adw::prelude::ActionGroupExt::activate_action(
+                    self,
+                    "error-toast",
+                    Some(&gettext("Error: Tried opening folder as file").to_variant()),
+                );
                 log::warn!("tried to open folder as sheet.");
             }
             utils::FileType::UnknownFile => {
+                adw::prelude::ActionGroupExt::activate_action(
+                    self,
+                    "error-toast",
+                    Some(&gettext("Error: Tried to open a unsupported file type.").to_variant()),
+                );
                 log::warn!("tried to open a unsupported file type.");
                 app.set_input_file(None);
             }
@@ -1080,7 +1064,7 @@ impl RnoteAppWindow {
         self.canvas()
             .engine()
             .borrow_mut()
-            .open_sheet_from_rnote_bytes(bytes)?;
+            .open_from_rnote_bytes(bytes)?;
 
         // Loading the sheet properties into the format settings panel
         self.settings_panel().refresh_for_engine(self);

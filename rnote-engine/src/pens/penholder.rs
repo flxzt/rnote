@@ -138,6 +138,8 @@ pub struct PenHolder {
     style_override: Option<PenStyle>,
     #[serde(rename = "shortcuts")]
     shortcuts: Shortcuts,
+    #[serde(rename = "pen_sounds")]
+    pub pen_sounds: bool,
     #[serde(skip)]
     state: PenState,
     #[serde(skip)]
@@ -165,6 +167,7 @@ impl Default for PenHolder {
             style: PenStyle::default(),
             style_override: None,
             shortcuts: Shortcuts::default(),
+            pen_sounds: false,
             state: PenState::default(),
             audioplayer,
         }
@@ -200,6 +203,19 @@ impl PenHolder {
             .iter()
             .map(|(key, action)| (key.clone(), action.clone()))
             .collect()
+    }
+
+    pub fn pen_sounds(&self) -> bool {
+        self.audioplayer
+            .as_ref()
+            .map(|audioplayer| audioplayer.enabled)
+            .unwrap_or(false)
+    }
+
+    pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
+        if let Some(audioplayer) = self.audioplayer.as_mut() {
+            audioplayer.enabled = pen_sounds;
+        }
     }
 
     /// Changes the internal state according to events

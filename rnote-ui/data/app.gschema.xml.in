@@ -33,26 +33,9 @@
       <default>true</default>
       <summary>Wether the user is righthanded (or lefthanded)</summary>
     </key>
-    <key name="pen-sounds" type="b">
-      <default>false</default>
-      <summary>play sounds when drawing with pens</summary>
-    </key>
     <key name="touch-drawing" type="b">
       <default>false</default>
       <summary>enable drawing with touch input</summary>
-    </key>
-    <key name="expand-mode" type="s">
-      <choices>
-        <choice value="fixed-size"/>
-        <choice value="endless-vertical"/>
-        <choice value="infinite"/>
-      </choices>
-      <default>"infinite"</default>
-      <summary>Expand mode</summary>
-    </key>
-    <key name="format-borders" type="b">
-      <default>true</default>
-      <summary>show format borders</summary>
     </key>
     <key name="pdf-import-width" type="d">
       <default>50.0</default>
@@ -105,22 +88,10 @@
       <default>false</default>
       <summary>if the aspect ratio while resizing is locked</summary>
     </key>
-    <key name="sheet-format" type="s">
-      <default>'
-        {"width":1123,"height":1587,"dpi":96.0,"orientation":"portrait"}
-      '</default>
-      <summary>the sheet format</summary>
-    </key>
-    <key name="sheet-background" type="s">
-      <default>'
-        {"color":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"pattern":"dots","pattern_size":[32.0,32.0],"pattern_color":{"r":0.8,"g":0.9,"b":1.0,"a":1.0}}
-      '</default>
-      <summary>the sheet background</summary>
-    </key>
-    <key name="pens" type="s">
+    <key name="engine-config" type="s">
       <default>'
       '</default>
-      <summary>pen settings</summary>
+      <summary>the engine configuration</summary>
     </key>
   </schema>
 </schemalist>

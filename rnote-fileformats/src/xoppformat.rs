@@ -615,14 +615,14 @@ impl XoppColor {
     }
 }
 
-/// Helper enum to bundle stroke types into one type
+/// Helper to bundle stroke types into one type
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum XoppStrokeType {
-    /// A stroke as strokestyle
+    /// A stroke
     XoppStroke(XoppStroke),
-    /// A text as strokestyle
+    /// A text
     XoppText(XoppText),
-    /// An image as strokestyle
+    /// An image
     XoppImage(XoppImage),
 }
 

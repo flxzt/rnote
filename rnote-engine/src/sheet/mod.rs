@@ -14,11 +14,9 @@ use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "sheet")]
 pub struct Sheet {
-    #[serde(rename = "version")]
-    pub version: String,
     #[serde(rename = "x")]
     pub x: f64,
     #[serde(rename = "y")]
@@ -36,7 +34,6 @@ pub struct Sheet {
 impl Default for Sheet {
     fn default() -> Self {
         Self {
-            version: String::from("0.1"),
             x: 0.0,
             y: 0.0,
             width: Format::default().width,
@@ -55,16 +52,6 @@ impl Sheet {
         b: 0.1,
         a: 0.3,
     };
-
-    // a engine should always be imported with this method, as to not replace the threadpool, channel handlers, ..
-    pub fn import_sheet(&mut self, sheet: Self) {
-        self.x = sheet.x;
-        self.y = sheet.y;
-        self.width = sheet.width;
-        self.height = sheet.height;
-        self.format = sheet.format;
-        self.background = sheet.background;
-    }
 
     pub fn bounds(&self) -> AABB {
         AABB::new(

@@ -10,7 +10,7 @@ use rodio::{Decoder, Source};
 #[allow(missing_debug_implementations, dead_code)]
 pub struct AudioPlayer {
     /// enables / disables the player
-    pub enabled: bool,
+    pub(super) enabled: bool,
     marker_sounds: Vec<rodio::source::Buffered<Decoder<File>>>,
     brush_sound: rodio::source::Buffered<Decoder<File>>,
     // we need to hold the outputstreams

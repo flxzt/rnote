@@ -3,10 +3,6 @@ use std::path::PathBuf;
 use crate::app::RnoteApp;
 use crate::appwindow::RnoteAppWindow;
 use rnote_compose::Color;
-use rnote_engine::engine::ExpandMode;
-use rnote_engine::sheet::Background;
-use rnote_engine::sheet::Format;
-use rnote_engine::PenHolder;
 
 use adw::prelude::*;
 use gtk4::gio;
@@ -64,11 +60,6 @@ impl RnoteAppWindow {
         // righthanded
         self.app_settings()
             .bind("righthanded", self, "righthanded")
-            .build();
-
-        // pen sounds
-        self.app_settings()
-            .bind("pen-sounds", self, "pen-sounds")
             .build();
 
         // touch drawing
@@ -187,40 +178,9 @@ impl RnoteAppWindow {
         }
 
         {
-            // load Expand mode
-            let expand_mode = self.app_settings().string("expand-mode");
-            adw::prelude::ActionGroupExt::activate_action(
-                self,
-                "expand-mode",
-                Some(&expand_mode.to_variant()),
-            );
-        }
-
-        {
-            // Load format
-            if let Ok(loaded_format) =
-                serde_json::from_str::<Format>(self.app_settings().string("sheet-format").as_str())
-            {
-                self.canvas().engine().borrow_mut().sheet.format = loaded_format;
-            }
-        }
-
-        {
-            // Load background
-            if let Ok(loaded_background) = serde_json::from_str::<Background>(
-                self.app_settings().string("sheet-background").as_str(),
-            ) {
-                self.canvas().engine().borrow_mut().sheet.background = loaded_background;
-            }
-        }
-
-        {
-            // Load pens
-            if let Ok(loaded_penholder) =
-                serde_json::from_str::<PenHolder>(self.app_settings().string("pens").as_str())
-            {
-                self.canvas().engine().borrow_mut().penholder = loaded_penholder;
-            }
+            // load engine config
+            let engine_config = self.app_settings().string("engine-config");
+            self.canvas().engine().borrow_mut().load_engine_config(&engine_config)?;
         }
 
         // refresh the UI
@@ -279,45 +239,10 @@ impl RnoteAppWindow {
         }
 
         {
-            // Save expand mode
-            let expand_mode_string = match self.canvas().engine().borrow().expand_mode() {
-                ExpandMode::FixedSize => String::from("fixed-size"),
-                ExpandMode::EndlessVertical => String::from("endless-vertical"),
-                ExpandMode::Infinite => String::from("infinite"),
-            };
+            // Save engine config
+            let engine_config = self.canvas().engine().borrow().save_engine_config()?;
             self.app_settings()
-                .set_string("expand-mode", expand_mode_string.as_str())
-                .unwrap();
-        }
-
-        {
-            // Save format
-            let format_string =
-                serde_json::to_string(&self.canvas().engine().borrow().sheet.format)?;
-            self.app_settings()
-                .set_string("sheet-format", format_string.as_str())?;
-
-            //println!("format:\n{}", format_string);
-        }
-
-        {
-            // Save background
-            let background_string =
-                serde_json::to_string(&self.canvas().engine().borrow().sheet.background)?;
-            self.app_settings()
-                .set_string("sheet-background", background_string.as_str())?;
-
-            //println!("background:\n{}", background_string);
-        }
-
-        {
-            // Save pens
-            let penholder_string =
-                serde_json::to_string(&self.canvas().engine().borrow().penholder)?;
-            self.app_settings()
-                .set_string("pens", penholder_string.as_str())?;
-
-            //println!("pens:\n{}", pens_string);
+                .set_string("engine-config", engine_config.as_str())?;
         }
 
         Ok(())

@@ -9,6 +9,7 @@ use gtk4::Snapshot;
 use num_derive::{FromPrimitive, ToPrimitive};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::transform::TransformBehaviour;
+use rnote_fileformats::rnoteformat::RnoteFile;
 use rnote_fileformats::xoppformat;
 use rnote_fileformats::FileFormatLoader;
 use rnote_fileformats::FileFormatSaver;
@@ -19,15 +20,42 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
+#[serde(rename = "expand_mode")]
 pub enum ExpandMode {
+    #[serde(rename = "fixed_size")]
     FixedSize,
+    #[serde(rename = "endless_vertical")]
     EndlessVertical,
+    #[serde(rename = "infinite")]
     Infinite,
 }
 
 impl Default for ExpandMode {
     fn default() -> Self {
-        Self::FixedSize
+        Self::Infinite
+    }
+}
+
+#[allow(missing_debug_implementations)]
+#[derive(Serialize, Deserialize)]
+#[serde(default, rename = "engine_config")]
+struct EngineConfig {
+    #[serde(rename = "sheet")]
+    sheet: serde_json::Value,
+    #[serde(rename = "penholder")]
+    penholder: serde_json::Value,
+    #[serde(rename = "expand_mode")]
+    expand_mode: serde_json::Value,
+}
+
+impl Default for EngineConfig {
+    fn default() -> Self {
+        let engine = RnoteEngine::default();
+        Self {
+            sheet: serde_json::to_value(&engine.sheet).unwrap(),
+            penholder: serde_json::to_value(&engine.penholder).unwrap(),
+            expand_mode: serde_json::to_value(&engine.expand_mode).unwrap(),
+        }
     }
 }
 
@@ -65,17 +93,6 @@ impl Default for RnoteEngine {
 }
 
 impl RnoteEngine {
-    /// Import and replace the engine. NOT for opening files
-    pub fn import_engine(&mut self, engine: Self) {
-        self.sheet.import_sheet(engine.sheet);
-        self.penholder = engine.penholder;
-        self.strokes_state
-            .import_strokes_state(engine.strokes_state);
-        self.expand_mode = engine.expand_mode;
-        self.camera = engine.camera;
-        self.visual_debug = engine.visual_debug;
-    }
-
     pub fn expand_mode(&self) -> ExpandMode {
         self.expand_mode
     }
@@ -258,17 +275,49 @@ impl RnoteEngine {
             .update_selection_from_state(&self.strokes_state);
     }
 
-    pub fn open_sheet_from_rnote_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
-        let decompressed_bytes = utils::decompress_from_gzip(bytes)?;
-        let engine: Self = serde_json::from_str(&String::from_utf8(decompressed_bytes)?)?;
+    /// Import and replace the engine config. NOT for opening files
+    pub fn load_engine_config(&mut self, serialized_config: &str) -> anyhow::Result<()> {
+        let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
-        self.sheet.import_sheet(engine.sheet);
+        self.sheet = serde_json::from_value(engine_config.sheet)?;
+        self.penholder = serde_json::from_value(engine_config.penholder)?;
+        self.expand_mode = serde_json::from_value(engine_config.expand_mode)?;
+
+        Ok(())
+    }
+
+    pub fn save_engine_config(&self) -> anyhow::Result<String> {
+        let engine_config = EngineConfig {
+            sheet: serde_json::to_value(&self.sheet)?,
+            penholder: serde_json::to_value(&self.penholder)?,
+            expand_mode: serde_json::to_value(&self.expand_mode)?,
+        };
+
+        Ok(serde_json::to_string(&engine_config)?)
+    }
+
+    pub fn open_from_rnote_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
+        let rnote_file = RnoteFile::load_from_bytes(bytes)?;
+
+        self.sheet = serde_json::from_value(rnote_file.sheet)?;
+        self.expand_mode = serde_json::from_value(rnote_file.expand_mode)?;
         self.strokes_state
-            .import_strokes_state(engine.strokes_state);
-        self.expand_mode = engine.expand_mode;
+            .import_strokes_state(serde_json::from_value(rnote_file.strokes_state)?);
+
         self.update_selector();
 
         Ok(())
+    }
+
+    pub fn save_as_rnote_bytes(&self, version: &str, file_name: &str) -> anyhow::Result<Vec<u8>> {
+        let rnote_file = RnoteFile {
+            version: version.to_string(),
+            sheet: serde_json::to_value(&self.sheet)?,
+            expand_mode: serde_json::to_value(&self.expand_mode)?,
+            strokes_state: serde_json::to_value(&self.strokes_state)?,
+        };
+
+        Ok(rnote_file.save_as_bytes(file_name)?)
     }
 
     pub fn open_from_xopp_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
@@ -355,19 +404,13 @@ impl RnoteEngine {
         sheet.background = background;
         sheet.format = format;
 
-        self.sheet.import_sheet(sheet);
+        // Import into engine
+        self.sheet = sheet;
         self.strokes_state.import_strokes_state(strokes_state);
+
         self.update_selector();
 
         Ok(())
-    }
-
-    pub fn save_sheet_as_rnote_bytes(&self, filename: &str) -> Result<Vec<u8>, anyhow::Error> {
-        let json_output = serde_json::to_string(self)?;
-
-        let compressed_bytes = utils::compress_to_gzip(json_output.as_bytes(), filename)?;
-
-        Ok(compressed_bytes)
     }
 
     pub fn export_sheet_as_svg_string(&self) -> Result<String, anyhow::Error> {

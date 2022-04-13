@@ -59,13 +59,14 @@ impl RnoteAppWindow {
             &String::from("infinite").to_variant(),
         );
         self.add_action(&action_expand_mode);
-        let action_format_borders =
-            gio::PropertyAction::new("format-borders", &self.canvas(), "format-borders");
-        self.add_action(&action_format_borders);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
-        let action_pen_sounds = gio::PropertyAction::new("pen-sounds", self, "pen-sounds");
+        let action_pen_sounds =
+            gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
+        let action_format_borders =
+            gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
+        self.add_action(&action_format_borders);
         let action_touch_drawing =
             gio::PropertyAction::new("touch-drawing", &self.canvas(), "touch-drawing");
         self.add_action(&action_touch_drawing);
@@ -259,22 +260,10 @@ impl RnoteAppWindow {
                         return;
                     }
                 }
-
                 appwindow.canvas().queue_resize();
-                appwindow.canvas().return_to_origin_page();
 
                 action_expand_mode.set_state(&expand_mode.to_variant());
             }));
-
-        // Format borders
-        action_format_borders.connect_state_notify(
-            clone!(@weak self as appwindow => move |action_format_borders| {
-                let state = action_format_borders.state().unwrap().get::<bool>().unwrap();
-
-                appwindow.canvas().engine().borrow_mut().sheet.format.show_borders = state;
-                appwindow.canvas().queue_draw();
-            }),
-        );
 
         // Righthanded
         action_righthanded.connect_state_notify(
@@ -446,6 +435,29 @@ impl RnoteAppWindow {
                         .set_direction(ArrowType::Left);
                     appwindow.flap().set_flap_position(PackType::End);
                 }
+            }),
+        );
+
+        // Pen sounds
+        action_pen_sounds.connect_change_state(
+            clone!(@weak self as appwindow => move |action_pen_sounds, state_request| {
+                let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
+
+                appwindow.canvas().engine().borrow_mut().penholder.set_pen_sounds(pen_sounds);
+
+                action_pen_sounds.set_state(&pen_sounds.to_variant());
+            }),
+        );
+
+        // Format borders
+        action_format_borders.connect_change_state(
+            clone!(@weak self as appwindow => move |action_format_borders, state_request| {
+                let format_borders = state_request.unwrap().get::<bool>().unwrap();
+
+                appwindow.canvas().engine().borrow_mut().sheet.format.show_borders = format_borders;
+                appwindow.canvas().queue_draw();
+
+                action_format_borders.set_state(&format_borders.to_variant());
             }),
         );
 
@@ -651,9 +663,11 @@ impl RnoteAppWindow {
 
         // Refresh UI state
         action_refresh_ui_for_engine.connect_activate(
-            clone!(@weak self as appwindow => move |_action_refresh_ui_for_sheet, _| {
+            clone!(@weak self as appwindow, @strong action_pen_sounds, @strong action_expand_mode, @strong action_format_borders => move |_action_refresh_ui_for_sheet, _| {
                 // Avoids borrow errors
                 let format = appwindow.canvas().engine().borrow().sheet.format.clone();
+                let expand_mode = appwindow.canvas().engine().borrow().expand_mode();
+                let pen_sounds = appwindow.canvas().engine().borrow().penholder.pen_sounds();
                 let pen_style = appwindow.canvas().engine().borrow().penholder.style_w_override();
                 let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
                 let shaper = appwindow.canvas().engine().borrow().penholder.shaper.clone();
@@ -663,12 +677,16 @@ impl RnoteAppWindow {
 
                 {
                     // Engine
-                    let pen_sounds = appwindow.canvas().engine().borrow().penholder.audioplayer.as_ref().map(|audioplayer| audioplayer.enabled);
-                    if let Some(pen_sounds) = pen_sounds {
-                        appwindow.set_pen_sounds(pen_sounds);
-                    }
+                    let expand_mode_str = match expand_mode {
+                        ExpandMode::FixedSize => "fixed-size",
+                        ExpandMode::EndlessVertical => "endless-vertical",
+                        ExpandMode::Infinite => "infinite",
+                    };
+                    action_expand_mode.activate(Some(&expand_mode_str.to_variant()));
 
-                    appwindow.canvas().set_format_borders(format.show_borders);
+                    action_pen_sounds.change_state(&pen_sounds.to_variant());
+
+                    action_format_borders.change_state(&format.show_borders.to_variant());
                 }
 
                 // Current pen
@@ -930,7 +948,7 @@ impl RnoteAppWindow {
             if let Some(output_file) = appwindow.output_file() {
                 match output_file.basename() {
                     Some(basename) => {
-                        match appwindow.canvas().engine().borrow().save_sheet_as_rnote_bytes(&basename.to_string_lossy()) {
+                        match appwindow.canvas().engine().borrow().save_as_rnote_bytes(config::APP_VERSION, &basename.to_string_lossy()) {
                             Ok(bytes) => {
                                 if let Err(e) = utils::replace_file_async(bytes, &output_file) {
                                     log::error!("saving sheet as .rnote failed, replace_file_async failed with Err {}", e);

@@ -140,6 +140,7 @@ impl StrokesState {
         self.selection_components = strokes_state.selection_components;
         self.chrono_components = strokes_state.chrono_components;
         self.render_components = strokes_state.render_components;
+
         self.chrono_counter = strokes_state.chrono_counter;
 
         self.reload_tree();

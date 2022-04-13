@@ -1,8 +1,8 @@
 use super::penbehaviour::PenBehaviour;
 use super::AudioPlayer;
 use crate::sheet::Sheet;
-use crate::strokesstate::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, StrokesState, SurfaceFlags};
+use crate::store::StrokeKey;
+use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
@@ -12,7 +12,7 @@ use rnote_compose::{Color, PenEvent};
 use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 enum ResizeCorner {
     TopLeft,
     TopRight,
@@ -20,7 +20,7 @@ enum ResizeCorner {
     BottomRight,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 enum ModifyState {
     Up,
     Translate {
@@ -104,7 +104,7 @@ impl PenBehaviour for Selector {
         &mut self,
         event: PenEvent,
         _sheet: &mut Sheet,
-        strokes_state: &mut StrokesState,
+        store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> SurfaceFlags {
@@ -112,8 +112,9 @@ impl PenBehaviour for Selector {
 
         match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
-                let keys = strokes_state.keys_unordered();
-                strokes_state.set_selected_keys(&keys, false);
+                // Deselect by default
+                let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
+                store.set_selected_keys(&keys, false);
 
                 self.state = SelectorState::Selecting {
                     path: vec![element],
@@ -147,10 +148,7 @@ impl PenBehaviour for Selector {
                         if path.len() < 3 {
                             None
                         } else {
-                            Some(
-                                strokes_state
-                                    .update_selection_for_polygon_path(&path, camera.viewport()),
-                            )
+                            Some(store.update_selection_for_polygon_path(&path, camera.viewport()))
                         }
                     }
                     SelectorType::Rectangle => {
@@ -159,13 +157,13 @@ impl PenBehaviour for Selector {
                                 na::Point2::from(first.pos),
                                 na::Point2::from(last.pos),
                             );
-                            Some(strokes_state.update_selection_for_aabb(aabb, camera.viewport()))
+                            Some(store.update_selection_for_aabb(aabb, camera.viewport()))
                         } else {
                             None
                         }
                     }
                 } {
-                    if let Some(selection_bounds) = strokes_state.gen_bounds(&selection) {
+                    if let Some(selection_bounds) = store.gen_bounds(&selection) {
                         // Change to the modifiy state
                         state = SelectorState::ModifySelection {
                             modify_state: ModifyState::default(),
@@ -266,17 +264,17 @@ impl PenBehaviour for Selector {
                             *modify_state = ModifyState::Translate { pos: element.pos };
                         } else {
                             // If clicking outside the selection, reset
-                            strokes_state.set_selected_keys(selection, false);
+                            store.set_selected_keys(selection, false);
                             self.state = SelectorState::reset();
                         }
                     }
                     ModifyState::Translate { pos } => {
                         let offset = element.pos - *pos;
 
-                        strokes_state.translate_strokes(selection, offset);
+                        store.translate_strokes(selection, offset);
                         *selection_bounds = selection_bounds.translate(offset);
                         // strokes that were far away previously might come into view
-                        strokes_state.regenerate_rendering_in_viewport_threaded(
+                        store.regenerate_rendering_in_viewport_threaded(
                             false,
                             camera.viewport_extended(),
                             camera.image_scale(),
@@ -295,14 +293,14 @@ impl PenBehaviour for Selector {
                         };
                         let angle_delta = new_rotation_angle - *current_rotation_angle;
 
-                        strokes_state.rotate_strokes(selection, angle_delta, *rotation_center);
-                        strokes_state.regenerate_rendering_in_viewport_threaded(
+                        store.rotate_strokes(selection, angle_delta, *rotation_center);
+                        store.regenerate_rendering_in_viewport_threaded(
                             false,
                             camera.viewport_extended(),
                             camera.image_scale(),
                         );
 
-                        if let Some(new_bounds) = strokes_state.gen_bounds(selection) {
+                        if let Some(new_bounds) = store.gen_bounds(selection) {
                             *selection_bounds = new_bounds;
                         }
                         *current_rotation_angle = new_rotation_angle;
@@ -377,8 +375,8 @@ impl PenBehaviour for Selector {
                             ),
                         };
 
-                        strokes_state.resize_strokes(selection, *selection_bounds, new_bounds);
-                        strokes_state.regenerate_rendering_in_viewport_threaded(
+                        store.resize_strokes(selection, *selection_bounds, new_bounds);
+                        store.regenerate_rendering_in_viewport_threaded(
                             false,
                             camera.viewport_extended(),
                             camera.image_scale(),
@@ -400,7 +398,7 @@ impl PenBehaviour for Selector {
                 },
                 PenEvent::Up { .. },
             ) => {
-                if let Some(new_bounds) = strokes_state.gen_bounds(selection) {
+                if let Some(new_bounds) = store.gen_bounds(selection) {
                     *selection_bounds = new_bounds;
                 }
                 *modify_state = ModifyState::Up;
@@ -504,7 +502,7 @@ impl DrawOnSheetBehaviour for Selector {
                 selection_bounds,
                 ..
             } => {
-                Self::draw_selection_overlay(cx, *selection_bounds, camera);
+                Self::draw_selection_overlay(cx, *selection_bounds, modify_state, camera);
 
                 match modify_state {
                     ModifyState::Rotate {
@@ -529,31 +527,37 @@ impl DrawOnSheetBehaviour for Selector {
 }
 
 impl Selector {
-    pub const PATH_WIDTH: f64 = 1.8;
-    pub const OUTLINE_COLOR: Color = Color {
+    const PATH_WIDTH: f64 = 1.8;
+    const OUTLINE_COLOR: Color = Color {
         r: 0.6,
         g: 0.6,
         b: 0.6,
         a: 0.8,
     };
-    pub const FILL_COLOR: Color = Color {
+    const FILL_COLOR: Color = Color {
         r: 0.85,
         g: 0.85,
         b: 0.85,
         a: 0.15,
     };
-    pub const NODE_PATH_WIDTH: f64 = 1.8;
+    const NODE_PATH_WIDTH: f64 = 1.8;
     const NODE_COLOR: Color = Color {
         r: 0.1,
         g: 0.1,
         b: 0.9,
         a: 1.0,
     };
+    const NODE_CURRENT_FILL: Color = Color {
+        r: 0.0,
+        g: 0.3,
+        b: 0.7,
+        a: 0.3,
+    };
 
-    pub const DASH_PATTERN: [f64; 2] = [8.0, 12.0];
+    const DASH_PATTERN: [f64; 2] = [8.0, 12.0];
 
-    pub const NODE_SIZE: f64 = 16.0;
-    pub const NODE_RECT_RADIUS: f64 = 2.0;
+    const NODE_SIZE: f64 = 16.0;
+    const NODE_RECT_RADIUS: f64 = 2.0;
 
     /// Sets the state to a selection
     pub fn set_selection(&mut self, selection: Vec<StrokeKey>, selection_bounds: AABB) {
@@ -568,9 +572,9 @@ impl Selector {
         self.state = SelectorState::reset();
     }
 
-    pub fn update_selection_from_state(&mut self, strokes_state: &StrokesState) {
-        let selection = strokes_state.selection_keys_unordered();
-        let selection_bounds = strokes_state.gen_bounds(&selection);
+    pub fn update_selection_from_state(&mut self, store: &StrokeStore) {
+        let selection = store.selection_keys_unordered();
+        let selection_bounds = store.gen_bounds(&selection);
         if let Some(selection_bounds) = selection_bounds {
             self.set_selection(selection, selection_bounds);
         } else {
@@ -612,6 +616,7 @@ impl Selector {
     fn draw_selection_overlay(
         piet_cx: &mut impl RenderContext,
         selection_bounds: AABB,
+        modify_state: &ModifyState,
         camera: &Camera,
     ) {
         let total_zoom = camera.total_zoom();
@@ -631,60 +636,132 @@ impl Selector {
         );
 
         // Rotate Node
-        let rotate_node = {
-            let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
-            kurbo::Circle::new(
-                rotate_node_sphere.center.coords.to_kurbo_point(),
-                rotate_node_sphere.radius,
-            )
-        };
-        piet_cx.stroke(
-            rotate_node,
-            &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-            Selector::NODE_PATH_WIDTH / total_zoom,
-        );
+        {
+            let rotate_node = {
+                let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
+                kurbo::Circle::new(
+                    rotate_node_sphere.center.coords.to_kurbo_point(),
+                    rotate_node_sphere.radius,
+                )
+            };
+            piet_cx.stroke(
+                rotate_node,
+                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
+                Selector::NODE_PATH_WIDTH / total_zoom,
+            );
+
+            match modify_state {
+                ModifyState::Rotate { .. } => {
+                    piet_cx.fill(
+                        rotate_node,
+                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
+                    );
+                }
+                _ => {}
+            }
+        }
 
         // Resize Nodes
-        let resize_node_tl = kurbo::RoundedRect::from_rect(
-            Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera)
-                .to_kurbo_rect(),
-            Self::NODE_RECT_RADIUS / total_zoom,
-        );
-        piet_cx.stroke(
-            resize_node_tl,
-            &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-            Selector::NODE_PATH_WIDTH / total_zoom,
-        );
-        let resize_node_tr = kurbo::RoundedRect::from_rect(
-            Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera)
-                .to_kurbo_rect(),
-            Self::NODE_RECT_RADIUS / total_zoom,
-        );
-        piet_cx.stroke(
-            resize_node_tr,
-            &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-            Selector::NODE_PATH_WIDTH / total_zoom,
-        );
-        let resize_node_bl = kurbo::RoundedRect::from_rect(
-            Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera)
-                .to_kurbo_rect(),
-            Self::NODE_RECT_RADIUS / total_zoom,
-        );
-        piet_cx.stroke(
-            resize_node_bl,
-            &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-            Selector::NODE_PATH_WIDTH / total_zoom,
-        );
-        let resize_node_br = kurbo::RoundedRect::from_rect(
-            Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera)
-                .to_kurbo_rect(),
-            Self::NODE_RECT_RADIUS / total_zoom,
-        );
-        piet_cx.stroke(
-            resize_node_br,
-            &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-            Selector::NODE_PATH_WIDTH / total_zoom,
-        );
+        {
+            let resize_node_tl = kurbo::RoundedRect::from_rect(
+                Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera)
+                    .to_kurbo_rect(),
+                Self::NODE_RECT_RADIUS / total_zoom,
+            );
+            piet_cx.stroke(
+                resize_node_tl,
+                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
+                Selector::NODE_PATH_WIDTH / total_zoom,
+            );
+
+            match modify_state {
+                ModifyState::Resize {
+                    from_corner: ResizeCorner::TopLeft,
+                    ..
+                } => {
+                    piet_cx.fill(
+                        resize_node_tl,
+                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
+                    );
+                }
+                _ => {}
+            }
+        }
+        {
+            let resize_node_tr = kurbo::RoundedRect::from_rect(
+                Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera)
+                    .to_kurbo_rect(),
+                Self::NODE_RECT_RADIUS / total_zoom,
+            );
+            piet_cx.stroke(
+                resize_node_tr,
+                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
+                Selector::NODE_PATH_WIDTH / total_zoom,
+            );
+
+            match modify_state {
+                ModifyState::Resize {
+                    from_corner: ResizeCorner::TopRight,
+                    ..
+                } => {
+                    piet_cx.fill(
+                        resize_node_tr,
+                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
+                    );
+                }
+                _ => {}
+            }
+        }
+        {
+            let resize_node_bl = kurbo::RoundedRect::from_rect(
+                Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera)
+                    .to_kurbo_rect(),
+                Self::NODE_RECT_RADIUS / total_zoom,
+            );
+            piet_cx.stroke(
+                resize_node_bl,
+                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
+                Selector::NODE_PATH_WIDTH / total_zoom,
+            );
+
+            match modify_state {
+                ModifyState::Resize {
+                    from_corner: ResizeCorner::BottomLeft,
+                    ..
+                } => {
+                    piet_cx.fill(
+                        resize_node_bl,
+                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
+                    );
+                }
+                _ => {}
+            }
+        }
+        {
+            let resize_node_br = kurbo::RoundedRect::from_rect(
+                Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera)
+                    .to_kurbo_rect(),
+                Self::NODE_RECT_RADIUS / total_zoom,
+            );
+            piet_cx.stroke(
+                resize_node_br,
+                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
+                Selector::NODE_PATH_WIDTH / total_zoom,
+            );
+
+            match modify_state {
+                ModifyState::Resize {
+                    from_corner: ResizeCorner::BottomRight,
+                    ..
+                } => {
+                    piet_cx.fill(
+                        resize_node_br,
+                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
+                    );
+                }
+                _ => {}
+            }
+        }
     }
 
     fn draw_rotation_indicator(

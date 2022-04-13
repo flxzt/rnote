@@ -3,7 +3,7 @@ use rayon::iter::{ParallelBridge, ParallelIterator};
 use rayon::slice::ParallelSliceMut;
 use serde::{Deserialize, Serialize};
 
-use super::{StrokeKey, StrokesState};
+use super::{StrokeKey, StrokeStore};
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, Eq, Ord, PartialEq, PartialOrd)]
 #[serde(default, rename = "chrono_component")]
@@ -25,7 +25,7 @@ impl ChronoComponent {
 }
 
 /// Systems that are related to their Chronology.
-impl StrokesState {
+impl StrokeStore {
     pub fn update_chrono_to_last(&mut self, key: StrokeKey) {
         if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
             self.chrono_counter += 1;

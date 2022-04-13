@@ -1,10 +1,10 @@
 use super::penbehaviour::PenBehaviour;
 use super::AudioPlayer;
 use crate::sheet::Sheet;
+use crate::store::StrokeKey;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::strokesstate::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, StrokesState, SurfaceFlags};
+use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::shapes::ShapeType;
@@ -67,7 +67,7 @@ impl PenBehaviour for Shaper {
         &mut self,
         event: PenEvent,
         sheet: &mut Sheet,
-        strokes_state: &mut StrokesState,
+        store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> SurfaceFlags {
@@ -86,9 +86,9 @@ impl PenBehaviour for Shaper {
                     self.rect_current = element.pos;
 
                     let shapestroke = Stroke::ShapeStroke(ShapeStroke::new(element, self));
-                    let current_stroke_key = strokes_state.insert_stroke(shapestroke);
+                    let current_stroke_key = store.insert_stroke(shapestroke);
 
-                    strokes_state.regenerate_rendering_for_stroke_threaded(
+                    store.regenerate_rendering_for_stroke_threaded(
                         current_stroke_key,
                         camera.image_scale(),
                     );
@@ -104,9 +104,9 @@ impl PenBehaviour for Shaper {
                 },
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
-                    strokes_state.update_shapestroke(current_stroke_key, self, element);
+                    store.update_shapestroke(current_stroke_key, self, element);
 
-                    strokes_state.regenerate_rendering_for_stroke_threaded(
+                    store.regenerate_rendering_for_stroke_threaded(
                         current_stroke_key,
                         camera.image_scale(),
                     );
@@ -120,19 +120,19 @@ impl PenBehaviour for Shaper {
                     shortcut_key: _,
                 },
             ) => {
-                strokes_state.update_shapestroke(current_stroke_key, self, element);
+                store.update_shapestroke(current_stroke_key, self, element);
 
-                finish_current_stroke(current_stroke_key, sheet, strokes_state, camera);
+                finish_current_stroke(current_stroke_key, sheet, store, camera);
                 self.current_stroke_key = None;
             }
             (None, PenEvent::Proximity { .. }) => {}
             (Some(current_stroke_key), PenEvent::Proximity { .. }) => {
-                finish_current_stroke(current_stroke_key, sheet, strokes_state, camera);
+                finish_current_stroke(current_stroke_key, sheet, store, camera);
                 self.current_stroke_key = None;
             }
             (None, PenEvent::Cancel) => {}
             (Some(current_stroke_key), PenEvent::Cancel) => {
-                finish_current_stroke(current_stroke_key, sheet, strokes_state, camera);
+                finish_current_stroke(current_stroke_key, sheet, store, camera);
                 self.current_stroke_key = None;
             }
         }
@@ -159,13 +159,12 @@ impl DrawOnSheetBehaviour for Shaper {
 fn finish_current_stroke(
     current_stroke_key: StrokeKey,
     _sheet: &mut Sheet,
-    strokes_state: &mut StrokesState,
+    store: &mut StrokeStore,
     camera: &Camera,
 ) {
-    strokes_state.update_geometry_for_stroke(current_stroke_key);
+    store.update_geometry_for_stroke(current_stroke_key);
 
-    strokes_state
-        .regenerate_rendering_for_stroke_threaded(current_stroke_key, camera.image_scale());
+    store.regenerate_rendering_for_stroke_threaded(current_stroke_key, camera.image_scale());
 }
 
 impl Shaper {

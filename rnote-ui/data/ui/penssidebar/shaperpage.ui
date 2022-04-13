@@ -171,7 +171,7 @@
               <child>
                 <object class="AdwActionRow">
                   <property name="title" translatable="yes">Curve step count</property>
-                  <property name="subtitle" translatable="yes">How many steps make up a curve. Defaults to 9</property>
+                  <property name="subtitle" translatable="yes">How many steps make up a curve. Defaults to 12</property>
                   <child type="suffix">
                     <object class="GtkSpinButton" id="roughconfig_curvestepcount_spinbutton">
                       <property name="valign">center</property>

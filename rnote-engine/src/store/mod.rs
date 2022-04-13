@@ -31,7 +31,7 @@ use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
 /*
-StrokesState implements a Entity - Component - System pattern.
+StrokeStore implements a Entity - Component - System pattern.
 The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
     * 'strokes': Hold geometric data. These components are special in that they are the primary map. A new stroke must have this component. (could also be called geometric components)
     * 'trash_components': Hold state wether the strokes are trashed
@@ -39,14 +39,14 @@ The Entities are the StrokeKey's, which represent a stroke. There are different 
     * 'chrono_components': Hold state about the time, chronological ordering
     * 'render_components': Hold state about the current rendering of the strokes.
 
-The systems are implemented as methods on StrokesState, loosely categorized to the different components (but often modify others as well).
+The systems are implemented as methods on StrokesStore, loosely categorized to the different components (but often modify others as well).
 Most systems take a key or a slice of keys, and iterate with them over the different components.
 There also is a different category of methods which return filtered keys, e.g. `.keys_sorted_chrono` returns the keys in chronological ordering,
-    `.stoke_keys_in_order_rendering` filters and returns keys in the order which they should be rendered.
+    `.stroke_keys_in_order_rendering` filters and returns keys in the order which they should be rendered.
 */
 
 #[derive(Debug, Clone)]
-pub enum StateTask {
+pub enum StoreTask {
     /// Replace the images of the render_comp
     UpdateStrokeWithImages {
         key: StrokeKey,
@@ -58,7 +58,7 @@ pub enum StateTask {
     Quit,
 }
 
-pub fn default_threadpool() -> rayon::ThreadPool {
+fn default_threadpool() -> rayon::ThreadPool {
     rayon::ThreadPoolBuilder::default()
         .build()
         .unwrap_or_else(|e| {
@@ -72,8 +72,8 @@ slotmap::new_key_type! {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-#[serde(default, rename = "strokes_state")]
-pub struct StrokesState {
+#[serde(default, rename = "stroke_store")]
+pub struct StrokeStore {
     // Components
     #[serde(rename = "strokes")]
     strokes: HopSlotMap<StrokeKey, Stroke>,
@@ -96,19 +96,19 @@ pub struct StrokesState {
     chrono_counter: u32,
 
     #[serde(skip)]
-    pub tasks_tx: futures::channel::mpsc::UnboundedSender<StateTask>,
+    pub tasks_tx: futures::channel::mpsc::UnboundedSender<StoreTask>,
     /// To be taken out into a loop which processes the receiver stream. The received tasks should be processed with process_received_task()
     #[serde(skip)]
-    pub tasks_rx: Option<futures::channel::mpsc::UnboundedReceiver<StateTask>>,
+    pub tasks_rx: Option<futures::channel::mpsc::UnboundedReceiver<StoreTask>>,
     #[serde(skip, default = "default_threadpool")]
     threadpool: rayon::ThreadPool,
 }
 
-impl Default for StrokesState {
+impl Default for StrokeStore {
     fn default() -> Self {
         let threadpool = default_threadpool();
 
-        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<StateTask>();
+        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<StoreTask>();
 
         Self {
             strokes: HopSlotMap::with_key(),
@@ -128,22 +128,22 @@ impl Default for StrokesState {
     }
 }
 
-impl StrokesState {
+impl StrokeStore {
     pub fn new() -> Self {
         Self::default()
     }
 
     /// A new strokes state should always be imported with this method, to not replace the threadpool, channel handlers..
     /// needs rendering regeneration after calling
-    pub fn import_strokes_state(&mut self, strokes_state: Self) {
+    pub fn import_store(&mut self, store: Self) {
         self.clear();
-        self.strokes = strokes_state.strokes;
-        self.trash_components = strokes_state.trash_components;
-        self.selection_components = strokes_state.selection_components;
-        self.chrono_components = strokes_state.chrono_components;
-        self.render_components = strokes_state.render_components;
+        self.strokes = store.strokes;
+        self.trash_components = store.trash_components;
+        self.selection_components = store.selection_components;
+        self.chrono_components = store.chrono_components;
+        self.render_components = store.render_components;
 
-        self.chrono_counter = strokes_state.chrono_counter;
+        self.chrono_counter = store.chrono_counter;
 
         self.reload_tree();
     }
@@ -159,7 +159,7 @@ impl StrokesState {
 
     pub(crate) fn process_received_task(
         &mut self,
-        task: StateTask,
+        task: StoreTask,
         camera: &Camera,
     ) -> SurfaceFlags {
         let viewport_expanded = camera.viewport_extended();
@@ -167,7 +167,7 @@ impl StrokesState {
         let mut surface_flags = SurfaceFlags::default();
 
         match task {
-            StateTask::UpdateStrokeWithImages { key, images } => {
+            StoreTask::UpdateStrokeWithImages { key, images } => {
                 if let Err(e) = self.replace_rendering_with_images(key, images) {
                     log::error!("replace_rendering_with_images() in process_received_task() failed with Err {}", e);
                 }
@@ -175,7 +175,7 @@ impl StrokesState {
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
             }
-            StateTask::InsertStroke { stroke } => {
+            StoreTask::InsertStroke { stroke } => {
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {
                         let _inserted = self.insert_stroke(Stroke::BrushStroke(brushstroke));
@@ -221,7 +221,7 @@ impl StrokesState {
                     image_scale,
                 );
             }
-            StateTask::Quit => {
+            StoreTask::Quit => {
                 surface_flags.quit = true;
             }
         }
@@ -369,7 +369,7 @@ impl StrokesState {
                             Ok(vectorimage) => {
                                 let vectorimage = Stroke::VectorImage(vectorimage);
 
-                                tasks_tx.unbounded_send(StateTask::InsertStroke {
+                                tasks_tx.unbounded_send(StoreTask::InsertStroke {
                                     stroke: vectorimage
                                 }).unwrap_or_else(|e| {
                                     log::error!("tasks_tx.send() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
@@ -398,7 +398,7 @@ impl StrokesState {
                     Ok(bitmapimage) => {
                         let bitmapimage = Stroke::BitmapImage(bitmapimage);
 
-                        tasks_tx.unbounded_send(StateTask::InsertStroke {
+                        tasks_tx.unbounded_send(StoreTask::InsertStroke {
                             stroke: bitmapimage
                         }).unwrap_or_else(|e| {
                             log::error!("tasks_tx.send() failed in insert_bitmapimage_bytes_threaded() with Err, {}", e);
@@ -426,7 +426,7 @@ impl StrokesState {
                 match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width) {
                     Ok(images) => {
                         for image in images {
-                            tasks_tx.unbounded_send(StateTask::InsertStroke {
+                            tasks_tx.unbounded_send(StoreTask::InsertStroke {
                                 stroke: Stroke::VectorImage(image)
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() failed in insert_pdf_bytes_as_vector_threaded() with Err, {}", e);
@@ -457,7 +457,7 @@ impl StrokesState {
                         for image in images {
                             let image = Stroke::BitmapImage(image);
 
-                            tasks_tx.unbounded_send(StateTask::InsertStroke {
+                            tasks_tx.unbounded_send(StoreTask::InsertStroke {
                                 stroke: image
                             }).unwrap_or_else(|e| {
                                 log::error!("tasks_tx.send() failed in insert_pdf_bytes_as_bitmap_threaded() with Err, {}", e);

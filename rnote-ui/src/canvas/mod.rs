@@ -480,11 +480,11 @@ impl RnoteCanvas {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
-        // receive strokes_state tasks
+        // receive store tasks
         let main_cx = glib::MainContext::default();
 
         main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
-            let mut task_rx = canvas.engine().borrow_mut().strokes_state.tasks_rx.take().unwrap();
+            let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
 
             loop {
                 if let Some(task) = task_rx.next().await {
@@ -750,7 +750,7 @@ impl RnoteCanvas {
 
         self.engine()
             .borrow_mut()
-            .strokes_state
+            .store
             .reset_regenerate_flag_all_strokes();
 
         self.engine().borrow_mut().resize_autoexpand();
@@ -844,7 +844,7 @@ impl RnoteCanvas {
 
         self.engine()
             .borrow_mut()
-            .strokes_state
+            .store
             .regenerate_rendering_in_viewport_threaded(
                 force_regenerate,
                 viewport_extended,

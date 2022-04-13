@@ -822,7 +822,7 @@ impl RnoteAppWindow {
         // Trash Selection
         action_selection_trash.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_trash, _| {
-                appwindow.canvas().engine().borrow_mut().strokes_state.trash_selection();
+                appwindow.canvas().engine().borrow_mut().store.trash_selection();
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
                 appwindow.canvas().regenerate_content(false, true);
@@ -832,7 +832,7 @@ impl RnoteAppWindow {
         // Duplicate Selection
         action_selection_duplicate.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
-                appwindow.canvas().engine().borrow_mut().strokes_state.duplicate_selection();
+                appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
                 appwindow.canvas().regenerate_content(false, true);
@@ -842,8 +842,8 @@ impl RnoteAppWindow {
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
-                let all_strokes = appwindow.canvas().engine().borrow().strokes_state.keys_unordered();
-                appwindow.canvas().engine().borrow_mut().strokes_state.set_selected_keys(&all_strokes, true);
+                let all_strokes = appwindow.canvas().engine().borrow().store.keys_unordered();
+                appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
                 appwindow.canvas().regenerate_content(false, true);
@@ -853,8 +853,8 @@ impl RnoteAppWindow {
         // deselect all strokes
         action_selection_deselect_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
-                let all_strokes = appwindow.canvas().engine().borrow().strokes_state.keys_unordered();
-                appwindow.canvas().engine().borrow_mut().strokes_state.set_selected_keys(&all_strokes, false);
+                let all_strokes = appwindow.canvas().engine().borrow().store.keys_unordered();
+                appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
                 appwindow.canvas().regenerate_content(false, true);
@@ -868,14 +868,14 @@ impl RnoteAppWindow {
 
         // Undo stroke
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().engine().borrow_mut().strokes_state.undo_last_stroke();
+            appwindow.canvas().engine().borrow_mut().store.undo_last_stroke();
             appwindow.canvas().engine().borrow_mut().resize_autoexpand();
             appwindow.canvas().update_background_rendernodes(true);
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().engine().borrow_mut().strokes_state.redo_last_stroke();
+            appwindow.canvas().engine().borrow_mut().store.redo_last_stroke();
             appwindow.canvas().engine().borrow_mut().resize_autoexpand();
             appwindow.canvas().update_background_rendernodes(true);
         }));
@@ -1067,23 +1067,15 @@ impl RnoteAppWindow {
 
         // Clipboard copy selection
         action_clipboard_copy_selection.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-        let selection_svgs = appwindow.canvas().engine().borrow().strokes_state.gen_svgs_selection();
-        match selection_svgs {
-            Ok(selection_svgs) => {
-                let mut svg_data = selection_svgs
-                    .iter()
-                    .map(|svg| svg.svg_data.as_str())
-                    .collect::<Vec<&str>>()
-                    .join("\n");
-
-                if let Some(selection_bounds) = appwindow.canvas().engine().borrow().strokes_state.gen_selection_bounds() {
-                    svg_data = rnote_compose::utils::wrap_svg_root(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true);
-
-                    let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(svg_data.as_bytes()));
-                    if let Err(e) = appwindow.clipboard().set_content(Some(&svg_content_provider)) {
-                        log::error!("copy selection into clipboard failed in clipboard().set_content(), {}", e);
-                    }
+        match appwindow.canvas().engine().borrow().export_selection_as_svg_string() {
+            Ok(Some(selection_svg_data)) => {
+                let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(selection_svg_data.as_bytes()));
+                if let Err(e) = appwindow.clipboard().set_content(Some(&svg_content_provider)) {
+                    log::error!("copy selection into clipboard failed in clipboard().set_content(), {}", e);
                 }
+            }
+            Ok(None) => {
+                log::debug!("tried to copy empty selection into clipboard");
             }
             Err(e) => {
                 log::error!("copy selection into clipboard failed in gen_svg_selection(), {}", e);

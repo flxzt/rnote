@@ -1,6 +1,6 @@
 use crate::strokes::Stroke;
 
-use super::{StrokeKey, StrokesState};
+use super::{StrokeKey, StrokeStore};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::shapes::ShapeBehaviour;
@@ -20,7 +20,7 @@ impl Default for TrashComponent {
 }
 
 /// Systems that are related to the trash.
-impl StrokesState {
+impl StrokeStore {
     pub fn can_trash(&self, key: StrokeKey) -> bool {
         self.trash_components.get(key).is_some()
     }

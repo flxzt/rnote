@@ -31,8 +31,8 @@ use crate::{
 };
 use rnote_engine::{
     pens::penholder::PenStyle,
+    store::StoreTask,
     strokes::{BitmapImage, VectorImage},
-    strokesstate::StateTask,
     Camera, SurfaceFlags,
 };
 
@@ -469,12 +469,12 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow()
-            .strokes_state
+            .store
             .tasks_tx
-            .unbounded_send(StateTask::Quit)
+            .unbounded_send(StoreTask::Quit)
         {
             log::error!(
-                "failed to send StateTask::Quit on strokes_state tasks_tx, Err {}",
+                "failed to send StateTask::Quit on store tasks_tx, Err {}",
                 e
             );
         }
@@ -1130,7 +1130,7 @@ impl RnoteAppWindow {
         self.canvas()
             .engine()
             .borrow_mut()
-            .strokes_state
+            .store
             .insert_vectorimage_bytes_threaded(pos, bytes.to_vec());
 
         app.set_input_file(None);
@@ -1158,7 +1158,7 @@ impl RnoteAppWindow {
         self.canvas()
             .engine()
             .borrow_mut()
-            .strokes_state
+            .store
             .insert_bitmapimage_bytes_threaded(pos, bytes.to_vec());
 
         app.set_input_file(None);
@@ -1189,13 +1189,13 @@ impl RnoteAppWindow {
             self.canvas()
                 .engine()
                 .borrow_mut()
-                .strokes_state
+                .store
                 .insert_pdf_bytes_as_vector_threaded(pos, Some(page_width), bytes.to_vec());
         } else {
             self.canvas()
                 .engine()
                 .borrow_mut()
-                .strokes_state
+                .store
                 .insert_pdf_bytes_as_bitmap_threaded(pos, Some(page_width), bytes.to_vec());
         }
 
@@ -1247,6 +1247,52 @@ impl RnoteAppWindow {
                 };
             },
         );
+
+        Ok(())
+    }
+
+    pub fn export_selection_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
+        if let Some(selection_svg_data) = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_selection_as_svg_string()?
+        {
+            file.replace_async(
+                None,
+                false,
+                gio::FileCreateFlags::REPLACE_DESTINATION,
+                glib::PRIORITY_HIGH_IDLE,
+                None::<&gio::Cancellable>,
+                move |result| {
+                    let output_stream = match result {
+                        Ok(output_stream) => output_stream,
+                        Err(e) => {
+                            log::error!(
+                                "replace_async() failed in export_selection_as_svg() with Err {}",
+                                e
+                            );
+                            return;
+                        }
+                    };
+
+                    if let Err(e) = output_stream
+                        .write(selection_svg_data.as_bytes(), None::<&gio::Cancellable>)
+                    {
+                        log::error!(
+                        "output_stream().write() failed in export_selection_as_svg() with Err {}",
+                        e
+                    );
+                    };
+                    if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
+                        log::error!(
+                        "output_stream().close() failed in export_selection_as_svg() with Err {}",
+                        e
+                    );
+                    };
+                },
+            );
+        }
 
         Ok(())
     }

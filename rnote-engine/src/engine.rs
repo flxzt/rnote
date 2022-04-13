@@ -1,11 +1,12 @@
 use crate::pens::penholder::PenHolderEvent;
 use crate::sheet::{background, Background, Format};
+use crate::store::StoreTask;
 use crate::strokes::Stroke;
-use crate::strokesstate::StateTask;
 use crate::utils;
 use crate::{render, DrawOnSheetBehaviour, SurfaceFlags};
-use crate::{Camera, PenHolder, Sheet, StrokesState};
+use crate::{Camera, PenHolder, Sheet, StrokeStore};
 use gtk4::Snapshot;
+use itertools::Itertools;
 use num_derive::{FromPrimitive, ToPrimitive};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::transform::TransformBehaviour;
@@ -67,8 +68,8 @@ pub struct RnoteEngine {
     pub sheet: Sheet,
     #[serde(rename = "penholder")]
     pub penholder: PenHolder,
-    #[serde(rename = "strokes_state")]
-    pub strokes_state: StrokesState,
+    #[serde(rename = "store")]
+    pub store: StrokeStore,
 
     #[serde(rename = "expand_mode")]
     expand_mode: ExpandMode,
@@ -83,7 +84,7 @@ impl Default for RnoteEngine {
         Self {
             sheet: Sheet::default(),
             penholder: PenHolder::default(),
-            strokes_state: StrokesState::default(),
+            store: StrokeStore::default(),
 
             expand_mode: ExpandMode::default(),
             camera: Camera::default(),
@@ -101,12 +102,11 @@ impl RnoteEngine {
         self.expand_mode = expand_mode;
 
         self.resize_to_fit_strokes();
-        self.strokes_state
-            .regenerate_rendering_in_viewport_threaded(
-                false,
-                self.camera.viewport_extended(),
-                self.camera.image_scale(),
-            );
+        self.store.regenerate_rendering_in_viewport_threaded(
+            false,
+            self.camera.viewport_extended(),
+            self.camera.image_scale(),
+        );
     }
 
     /// processes the received task from tasks_rx.
@@ -116,35 +116,31 @@ impl RnoteEngine {
     /// let main_cx = glib::MainContext::default();
 
     /// main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
-    ///            let mut task_rx = canvas.engine().borrow_mut().strokes_state.tasks_rx.take().unwrap();
+    ///            let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
 
     ///           loop {
     ///              if let Some(task) = task_rx.next().await {
-    ///                    let surface_flags = canvas.engine().borrow_mut().strokes_state.process_received_task(task, canvas.zoom());
+    ///                    let surface_flags = canvas.engine().borrow_mut().store.process_received_task(task, canvas.zoom());
     ///                    appwindow.handle_surface_flags(surface_flags);
     ///                }
     ///            }
     ///        }));
     /// ```
-    pub fn process_received_task(&mut self, task: StateTask) -> SurfaceFlags {
-        self.strokes_state.process_received_task(task, &self.camera)
+    pub fn process_received_task(&mut self, task: StoreTask) -> SurfaceFlags {
+        self.store.process_received_task(task, &self.camera)
     }
 
     /// Public method to handle pen events coming from ui event handlers
     pub fn handle_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
-        self.penholder.handle_event(
-            event,
-            &mut self.sheet,
-            &mut self.strokes_state,
-            &mut self.camera,
-        )
+        self.penholder
+            .handle_event(event, &mut self.sheet, &mut self.store, &mut self.camera)
     }
 
     // Generates bounds for each page which is containing content, extended to fit the sheet format
     pub fn pages_bounds_containing_content(&self) -> Vec<AABB> {
         let sheet_bounds = self.sheet.bounds();
-        let keys = self.strokes_state.stroke_keys_as_rendered();
-        let strokes_bounds = self.strokes_state.bounds_for_strokes(&keys);
+        let keys = self.store.stroke_keys_as_rendered();
+        let strokes_bounds = self.store.bounds_for_strokes(&keys);
 
         if self.sheet.format.height > 0.0 && self.sheet.format.width > 0.0 {
             sheet_bounds
@@ -189,8 +185,8 @@ impl RnoteEngine {
 
         svgs.push(self.sheet.background.gen_svg(sheet_bounds.loosened(1.0))?);
 
-        let strokes = self.strokes_state.stroke_keys_as_rendered();
-        svgs.append(&mut self.strokes_state.gen_svgs_for_strokes(&strokes));
+        let strokes = self.store.stroke_keys_as_rendered();
+        svgs.append(&mut self.store.gen_svgs_for_strokes(&strokes));
 
         Ok(svgs)
     }
@@ -207,10 +203,10 @@ impl RnoteEngine {
         svgs.push(self.sheet.background.gen_svg(sheet_bounds.loosened(1.0))?);
 
         let keys = self
-            .strokes_state
+            .store
             .stroke_keys_as_rendered_intersecting_bounds(viewport);
 
-        svgs.append(&mut self.strokes_state.gen_svgs_for_strokes(&keys));
+        svgs.append(&mut self.store.gen_svgs_for_strokes(&keys));
 
         Ok(svgs)
     }
@@ -219,15 +215,14 @@ impl RnoteEngine {
     pub fn resize_to_fit_strokes(&mut self) {
         match self.expand_mode {
             ExpandMode::FixedSize => {
-                self.sheet.resize_sheet_mode_fixed_size(&self.strokes_state);
+                self.sheet.resize_sheet_mode_fixed_size(&self.store);
             }
             ExpandMode::EndlessVertical => {
-                self.sheet
-                    .resize_sheet_mode_endless_vertical(&self.strokes_state);
+                self.sheet.resize_sheet_mode_endless_vertical(&self.store);
             }
             ExpandMode::Infinite => {
                 self.sheet
-                    .resize_sheet_mode_infinite_to_fit_strokes(&self.strokes_state);
+                    .resize_sheet_mode_infinite_to_fit_strokes(&self.store);
                 self.sheet
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
@@ -241,12 +236,11 @@ impl RnoteEngine {
                 // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.
             }
             ExpandMode::EndlessVertical => {
-                self.sheet
-                    .resize_sheet_mode_endless_vertical(&self.strokes_state);
+                self.sheet.resize_sheet_mode_endless_vertical(&self.store);
             }
             ExpandMode::Infinite => {
                 self.sheet
-                    .resize_sheet_mode_infinite_to_fit_strokes(&self.strokes_state);
+                    .resize_sheet_mode_infinite_to_fit_strokes(&self.store);
                 self.sheet
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
@@ -259,8 +253,7 @@ impl RnoteEngine {
                 // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.
             }
             ExpandMode::EndlessVertical => {
-                self.sheet
-                    .resize_sheet_mode_endless_vertical(&self.strokes_state);
+                self.sheet.resize_sheet_mode_endless_vertical(&self.store);
             }
             ExpandMode::Infinite => {
                 self.sheet
@@ -272,7 +265,7 @@ impl RnoteEngine {
     pub fn update_selector(&mut self) {
         self.penholder
             .selector
-            .update_selection_from_state(&self.strokes_state);
+            .update_selection_from_state(&self.store);
     }
 
     /// Import and replace the engine config. NOT for opening files
@@ -301,8 +294,8 @@ impl RnoteEngine {
 
         self.sheet = serde_json::from_value(rnote_file.sheet)?;
         self.expand_mode = serde_json::from_value(rnote_file.expand_mode)?;
-        self.strokes_state
-            .import_strokes_state(serde_json::from_value(rnote_file.strokes_state)?);
+        self.store
+            .import_store(serde_json::from_value(rnote_file.store)?);
 
         self.update_selector();
 
@@ -314,7 +307,7 @@ impl RnoteEngine {
             version: version.to_string(),
             sheet: serde_json::to_value(&self.sheet)?,
             expand_mode: serde_json::to_value(&self.expand_mode)?,
-            strokes_state: serde_json::to_value(&self.strokes_state)?,
+            store: serde_json::to_value(&self.store)?,
         };
 
         Ok(rnote_file.save_as_bytes(file_name)?)
@@ -338,7 +331,7 @@ impl RnoteEngine {
         let mut sheet = Sheet::default();
         let mut format = Format::default();
         let mut background = Background::default();
-        let mut strokes_state = StrokesState::default();
+        let mut store = StrokeStore::default();
         // We set the sheet dpi to the hardcoded xournal++ dpi, so no need to convert values or coordinates anywhere
         sheet.format.dpi = xoppformat::XoppFile::DPI;
 
@@ -370,7 +363,7 @@ impl RnoteEngine {
                 for new_xoppstroke in layers.strokes.into_iter() {
                     match Stroke::from_xoppstroke(new_xoppstroke, offset) {
                         Ok(new_stroke) => {
-                            strokes_state.insert_stroke(new_stroke);
+                            store.insert_stroke(new_stroke);
                         }
                         Err(e) => {
                             log::error!(
@@ -385,7 +378,7 @@ impl RnoteEngine {
                 for new_xoppimage in layers.images.into_iter() {
                     match Stroke::from_xoppimage(new_xoppimage, offset) {
                         Ok(new_image) => {
-                            strokes_state.insert_stroke(new_image);
+                            store.insert_stroke(new_image);
                         }
                         Err(e) => {
                             log::error!(
@@ -406,7 +399,7 @@ impl RnoteEngine {
 
         // Import into engine
         self.sheet = sheet;
-        self.strokes_state.import_strokes_state(strokes_state);
+        self.store.import_store(store);
 
         self.update_selector();
 
@@ -440,6 +433,28 @@ impl RnoteEngine {
         Ok(svg_data)
     }
 
+    pub fn export_selection_as_svg_string(&self) -> anyhow::Result<Option<String>> {
+        let selection_keys = self.store.selection_keys_as_rendered();
+        if let Some(selection_bounds) = self.store.gen_bounds(&selection_keys) {
+            let mut svg_data = self
+                .store
+                .gen_svgs_for_strokes(&selection_keys)
+                .into_iter()
+                .map(|svg| svg.svg_data)
+                .join("\n");
+
+            svg_data = rnote_compose::utils::wrap_svg_root(
+                svg_data.as_str(),
+                Some(selection_bounds),
+                Some(selection_bounds),
+                true,
+            );
+            Ok(Some(svg_data))
+        } else {
+            Ok(None)
+        }
+    }
+
     pub fn export_sheet_as_xopp_bytes(&self, filename: &str) -> Result<Vec<u8>, anyhow::Error> {
         let current_dpi = self.sheet.format.dpi;
 
@@ -458,10 +473,10 @@ impl RnoteEngine {
             .iter()
             .map(|&page_bounds| {
                 let page_keys = self
-                    .strokes_state
+                    .store
                     .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
 
-                let strokes = self.strokes_state.clone_strokes(&page_keys);
+                let strokes = self.store.clone_strokes(&page_keys);
 
                 // Translate strokes to to page mins and convert to XoppStrokStyle
                 let xopp_strokestyles = strokes
@@ -643,9 +658,9 @@ impl RnoteEngine {
             .format
             .draw(snapshot, sheet_bounds, &self.camera)?;
 
-        self.strokes_state
+        self.store
             .draw_strokes_snapshot(snapshot, sheet_bounds, viewport);
-        self.strokes_state
+        self.store
             .draw_selection_snapshot(snapshot, sheet_bounds, viewport);
 
         snapshot.restore();
@@ -665,7 +680,7 @@ impl RnoteEngine {
             piet_cx.transform(self.camera.transform().to_kurbo());
 
             piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
-            self.strokes_state
+            self.store
                 .draw_strokes_immediate_w_piet(&mut piet_cx, sheet_bounds, Some(viewport), zoom)?;
             piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
 
@@ -807,7 +822,7 @@ pub mod visual_debug {
         );
 
         // Draw the strokes and selection
-        engine.strokes_state.draw_debug(snapshot, border_widths);
+        engine.store.draw_debug(snapshot, border_widths);
 
         // Draw the pens
         let current_pen_style = engine.penholder.style_w_override();

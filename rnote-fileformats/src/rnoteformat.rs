@@ -35,8 +35,8 @@ pub struct RnoteFile {
     pub sheet: serde_json::Value,
     /// expand mode
     pub expand_mode: serde_json::Value,
-    /// strokes state
-    pub strokes_state: serde_json::Value,
+    /// strokes store
+    pub store: serde_json::Value,
 }
 
 impl FileFormatLoader for RnoteFile {

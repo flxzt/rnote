@@ -247,7 +247,7 @@ impl Stroke {
                 )
                 .map_err(|e| {
                     log::error!(
-                        "concat_images() failed in to_xopp() for shapestroke with Err {}",
+                        "join_images() failed in to_xopp() for shapestroke with Err {}",
                         e
                     )
                 })
@@ -257,7 +257,7 @@ impl Stroke {
                     .into_encoded_bytes(image::ImageOutputFormat::Png)
                     .map_err(|e| {
                         log::error!(
-                            "image_to_bytes() failed in to_xopp() for shapestroke with Err {}",
+                            "into_encoded_bytes() failed in to_xopp() for shapestroke with Err {}",
                             e
                         )
                     })

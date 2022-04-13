@@ -151,7 +151,7 @@ impl RoughOptions {
     /// Curve stepcount max
     pub const CURVESTEPCOUNT_MAX: f64 = 1000.0;
     /// Curve stepcount default
-    pub const CURVESTEPCOUNT_DEFAULT: f64 = 9.0;
+    pub const CURVESTEPCOUNT_DEFAULT: f64 = 12.0;
 }
 
 /// available Fill styles

@@ -1,5 +1,5 @@
-use super::StateTask;
-use super::{Stroke, StrokeKey, StrokesState};
+use super::StoreTask;
+use super::{Stroke, StrokeKey, StrokeStore};
 use crate::engine::visual_debug;
 use crate::strokes::StrokeBehaviour;
 use crate::utils::GrapheneRectHelpers;
@@ -35,7 +35,7 @@ impl Default for RenderComponent {
     }
 }
 
-impl StrokesState {
+impl StrokeStore {
     /// Returns false if rendering is not supported
     pub fn can_render(&self, key: StrokeKey) -> bool {
         self.render_components.get(key).is_some()
@@ -143,7 +143,7 @@ impl StrokesState {
             self.threadpool.spawn(move || {
                 match stroke.gen_images(image_scale) {
                     Ok(images) => {
-                        tasks_tx.unbounded_send(StateTask::UpdateStrokeWithImages {
+                        tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
                             key,
                             images,
                         }).unwrap_or_else(|e| {
@@ -234,7 +234,7 @@ impl StrokesState {
                 self.threadpool.spawn(move || {
                     match stroke.gen_images(image_scale) {
                         Ok(images) => {
-                            tasks_tx.unbounded_send(StateTask::UpdateStrokeWithImages {
+                            tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
                                 key,
                                 images,
                             }).unwrap_or_else(|e| {

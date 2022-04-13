@@ -1,7 +1,7 @@
+use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use crate::strokesstate::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokesState, SurfaceFlags};
+use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penpath::Segment;
 use rnote_compose::PenEvent;
@@ -65,7 +65,7 @@ impl PenBehaviour for Brush {
         &mut self,
         event: PenEvent,
         sheet: &mut Sheet,
-        strokes_state: &mut StrokesState,
+        store: &mut StrokeStore,
         camera: &mut Camera,
         audioplayer: Option<&mut AudioPlayer>,
     ) -> SurfaceFlags {
@@ -84,17 +84,16 @@ impl PenBehaviour for Brush {
 
                     let brushstroke =
                         Stroke::BrushStroke(BrushStroke::new(Segment::Dot { element }, self));
-                    let current_stroke_key = strokes_state.insert_stroke(brushstroke);
+                    let current_stroke_key = store.insert_stroke(brushstroke);
                     self.current_stroke_key = Some(current_stroke_key);
 
                     if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
                         for new_segment in new_segments {
-                            strokes_state
-                                .add_segment_to_brushstroke(current_stroke_key, new_segment);
+                            store.add_segment_to_brushstroke(current_stroke_key, new_segment);
                         }
                     }
 
-                    strokes_state.regenerate_rendering_for_stroke_threaded(
+                    store.regenerate_rendering_for_stroke_threaded(
                         current_stroke_key,
                         camera.image_scale(),
                     );
@@ -112,11 +111,10 @@ impl PenBehaviour for Brush {
                         let no_segments = new_segments.len();
 
                         for new_segment in new_segments {
-                            strokes_state
-                                .add_segment_to_brushstroke(current_stroke_key, new_segment);
+                            store.add_segment_to_brushstroke(current_stroke_key, new_segment);
                         }
 
-                        if let Err(e) = strokes_state.append_rendering_last_segments(
+                        if let Err(e) = store.append_rendering_last_segments(
                             current_stroke_key,
                             no_segments,
                             camera.image_scale(),
@@ -138,13 +136,13 @@ impl PenBehaviour for Brush {
 
                 if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
                     for new_segment in new_segments {
-                        strokes_state.add_segment_to_brushstroke(current_stroke_key, new_segment);
+                        store.add_segment_to_brushstroke(current_stroke_key, new_segment);
                     }
                 }
 
                 // Finish up the last stroke
-                strokes_state.update_geometry_for_stroke(current_stroke_key);
-                strokes_state.regenerate_rendering_for_stroke_threaded(
+                store.update_geometry_for_stroke(current_stroke_key);
+                store.regenerate_rendering_for_stroke_threaded(
                     current_stroke_key,
                     camera.image_scale(),
                 );
@@ -159,8 +157,8 @@ impl PenBehaviour for Brush {
                 self.path_builder.handle_event(pen_event);
 
                 // Finish up the last stroke
-                strokes_state.update_geometry_for_stroke(current_stroke_key);
-                strokes_state.regenerate_rendering_for_stroke_threaded(
+                store.update_geometry_for_stroke(current_stroke_key);
+                store.regenerate_rendering_for_stroke_threaded(
                     current_stroke_key,
                     camera.image_scale(),
                 );

@@ -1,4 +1,4 @@
-use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokesState, SurfaceFlags};
+use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
 use rnote_compose::{Color, PenEvent};
@@ -32,7 +32,7 @@ impl PenBehaviour for Eraser {
         &mut self,
         event: PenEvent,
         _sheet: &mut Sheet,
-        strokes_state: &mut StrokesState,
+        store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> SurfaceFlags {
@@ -49,7 +49,7 @@ impl PenBehaviour for Eraser {
                     na::Point2::from(element.pos),
                     na::Vector2::repeat(self.width),
                 );
-                strokes_state.trash_colliding_strokes(eraser_bounds, camera.viewport());
+                store.trash_colliding_strokes(eraser_bounds, camera.viewport());
             }
             PenEvent::Up { .. } => self.current_input = None,
             PenEvent::Proximity { .. } => self.current_input = None,

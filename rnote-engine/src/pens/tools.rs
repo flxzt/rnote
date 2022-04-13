@@ -1,6 +1,6 @@
 use crate::sheet::Sheet;
-use crate::strokesstate::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, StrokesState, SurfaceFlags};
+use crate::store::StrokeKey;
+use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 use rnote_compose::{Color, PenEvent};
 
@@ -306,7 +306,7 @@ impl PenBehaviour for Tools {
         &mut self,
         event: PenEvent,
         _sheet: &mut Sheet,
-        strokes_state: &mut StrokesState,
+        store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> SurfaceFlags {
@@ -326,7 +326,7 @@ impl PenBehaviour for Tools {
                         self.expandsheet_tool.current_pos_y = element.pos[1];
 
                         self.expandsheet_tool.strokes_below =
-                            strokes_state.keys_below_y_pos(self.expandsheet_tool.current_pos_y);
+                            store.keys_below_y_pos(self.expandsheet_tool.current_pos_y);
                     }
                     ToolsStyle::DragProximity => {
                         self.dragproximity_tool.pos = element.pos;
@@ -350,7 +350,7 @@ impl PenBehaviour for Tools {
                     let y_offset = element.pos[1] - self.expandsheet_tool.current_pos_y;
 
                     if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
-                        strokes_state.translate_strokes(
+                        store.translate_strokes(
                             &self.expandsheet_tool.strokes_below,
                             na::vector![0.0, y_offset],
                         );
@@ -365,8 +365,8 @@ impl PenBehaviour for Tools {
                     if self.dragproximity_tool.offset.magnitude()
                         > DragProximityTool::OFFSET_MAGN_THRESHOLD
                     {
-                        strokes_state.drag_strokes_proximity(&self.dragproximity_tool);
-                        strokes_state.regenerate_rendering_in_viewport_threaded(
+                        store.drag_strokes_proximity(&self.dragproximity_tool);
+                        store.regenerate_rendering_in_viewport_threaded(
                             false,
                             camera.viewport_extended(),
                             camera.image_scale(),

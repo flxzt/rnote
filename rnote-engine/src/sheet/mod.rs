@@ -6,8 +6,8 @@ pub use background::Background;
 pub use format::Format;
 use rnote_compose::Color;
 
-use crate::strokesstate::StrokesState;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
+use crate::StrokeStore;
 use rnote_compose::helpers::AABBHelpers;
 
 use gtk4::{gdk, graphene, gsk, Snapshot};
@@ -82,13 +82,12 @@ impl Sheet {
         }
     }
 
-    pub(crate) fn resize_sheet_mode_fixed_size(&mut self, strokes_state: &StrokesState) {
+    pub(crate) fn resize_sheet_mode_fixed_size(&mut self, store: &StrokeStore) {
         let format_height = self.format.height;
 
         let new_width = self.format.width;
         // +1.0 because then 'fraction'.ceil() is at least 1
-        let new_height = (f64::from(strokes_state.calc_height() + 1.0) / f64::from(format_height))
-            .ceil()
+        let new_height = (f64::from(store.calc_height() + 1.0) / f64::from(format_height)).ceil()
             * format_height;
 
         self.x = 0.0;
@@ -97,9 +96,9 @@ impl Sheet {
         self.height = new_height;
     }
 
-    pub(crate) fn resize_sheet_mode_endless_vertical(&mut self, strokes_state: &StrokesState) {
+    pub(crate) fn resize_sheet_mode_endless_vertical(&mut self, store: &StrokeStore) {
         let padding_bottom = self.format.height;
-        let new_height = strokes_state.calc_height() + padding_bottom;
+        let new_height = store.calc_height() + padding_bottom;
         let new_width = self.format.width;
 
         self.x = 0.0;
@@ -122,17 +121,14 @@ impl Sheet {
         self.height = new_bounds.extents()[1];
     }
 
-    pub(crate) fn resize_sheet_mode_infinite_to_fit_strokes(
-        &mut self,
-        strokes_state: &StrokesState,
-    ) {
+    pub(crate) fn resize_sheet_mode_infinite_to_fit_strokes(&mut self, store: &StrokeStore) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
-        let mut keys = strokes_state.stroke_keys_as_rendered();
-        keys.append(&mut strokes_state.selection_keys_as_rendered());
+        let mut keys = store.stroke_keys_as_rendered();
+        keys.append(&mut store.selection_keys_as_rendered());
 
-        let new_bounds = if let Some(new_bounds) = strokes_state.gen_bounds(&keys) {
+        let new_bounds = if let Some(new_bounds) = store.gen_bounds(&keys) {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If sheet is empty, resize to one page with the format size

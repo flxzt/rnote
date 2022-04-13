@@ -1,10 +1,7 @@
-use super::{Stroke, StrokeKey, StrokesState};
-use crate::render;
-use crate::strokes::StrokeBehaviour;
+use super::{Stroke, StrokeKey, StrokeStore};
 use rnote_compose::helpers::AABBHelpers;
 
 use geo::prelude::*;
-use gtk4::{gio, glib, prelude::*};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rayon::prelude::*;
 use rnote_compose::penpath::Element;
@@ -33,7 +30,7 @@ impl SelectionComponent {
     }
 }
 
-impl StrokesState {
+impl StrokeStore {
     /// Returns false if selecting is unsupported
     pub fn can_select(&self, key: StrokeKey) -> bool {
         self.selection_components.get(key).is_some()
@@ -187,6 +184,10 @@ impl StrokesState {
                         let brushstroke_bounds = brushstroke.bounds();
 
                         if selector_polygon.contains(&brushstroke_bounds.to_geo_polygon()) {
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
                             selection_comp.selected = true;
                             return Some(key);
                         } else if selector_polygon.intersects(&brushstroke_bounds.to_geo_polygon())
@@ -263,6 +264,10 @@ impl StrokesState {
                         let brushstroke_bounds = brushstroke.bounds();
 
                         if aabb.contains(&brushstroke_bounds) {
+                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                self.chrono_counter += 1;
+                                chrono_comp.t = self.chrono_counter;
+                            }
                             selection_comp.selected = true;
                             return Some(key);
                         } else if aabb.intersects(&brushstroke_bounds) {
@@ -315,76 +320,5 @@ impl StrokesState {
                 None
             })
             .collect()
-    }
-
-    /// the svgs of the current selection, without xml header or svg root
-    pub fn gen_svgs_selection(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
-        Ok(self
-            .selection_keys_as_rendered()
-            .iter()
-            .filter_map(|&key| {
-                let stroke = self.strokes.get(key)?;
-
-                stroke.gen_svg().ok()
-            })
-            .collect::<Vec<render::Svg>>())
-    }
-
-    pub fn export_selection_as_svg(&self, file: gio::File) -> anyhow::Result<()> {
-        let selection_svgs = self.gen_svgs_selection()?;
-        let selection_bounds = if let Some(selection_bounds) = self.gen_selection_bounds() {
-            selection_bounds
-        } else {
-            return Ok(());
-        };
-
-        let mut svg_data = selection_svgs
-            .iter()
-            .map(|svg| svg.svg_data.as_str())
-            .collect::<Vec<&str>>()
-            .join("\n");
-
-        svg_data = rnote_compose::utils::wrap_svg_root(
-            svg_data.as_str(),
-            Some(selection_bounds),
-            Some(selection_bounds),
-            true,
-        );
-
-        file.replace_async(
-            None,
-            false,
-            gio::FileCreateFlags::REPLACE_DESTINATION,
-            glib::PRIORITY_HIGH_IDLE,
-            None::<&gio::Cancellable>,
-            move |result| {
-                let output_stream = match result {
-                    Ok(output_stream) => output_stream,
-                    Err(e) => {
-                        log::error!(
-                            "replace_async() failed in export_selection_as_svg() with Err {}",
-                            e
-                        );
-                        return;
-                    }
-                };
-
-                if let Err(e) = output_stream.write(svg_data.as_bytes(), None::<&gio::Cancellable>)
-                {
-                    log::error!(
-                        "output_stream().write() failed in export_selection_as_svg() with Err {}",
-                        e
-                    );
-                };
-                if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                    log::error!(
-                        "output_stream().close() failed in export_selection_as_svg() with Err {}",
-                        e
-                    );
-                };
-            },
-        );
-
-        Ok(())
     }
 }

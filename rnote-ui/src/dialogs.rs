@@ -65,7 +65,7 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
         clone!(@weak appwindow => move |dialog_clear_sheet, responsetype| {
             match responsetype {
                 ResponseType::Ok => {
-                    appwindow.canvas().engine().borrow_mut().strokes_state.clear();
+                    appwindow.canvas().engine().borrow_mut().store.clear();
                     appwindow.canvas().set_empty(true);
 
                     appwindow.canvas().regenerate_background(false);
@@ -95,7 +95,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
                 appwindow.set_output_file(None, &appwindow);
 
-                appwindow.canvas().engine().borrow_mut().strokes_state.clear();
+                appwindow.canvas().engine().borrow_mut().store.clear();
                 appwindow.canvas().set_unsaved_changes(false);
                 appwindow.canvas().set_empty(true);
 
@@ -423,8 +423,8 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     match dialog_export_selection.file() {
                         Some(file) => {
-                            if let Err(e) = appwindow.canvas().engine().borrow().strokes_state.export_selection_as_svg(file) {
-                                log::error!("exporting selection failed with error `{}`", e);
+                            if let Err(e) = appwindow.export_selection_as_svg(&file) {
+                                log::error!("exporting sheet failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection as SVG failed").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported selection as SVG successfully").to_variant()));

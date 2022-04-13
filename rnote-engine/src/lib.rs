@@ -10,8 +10,8 @@ pub mod engine;
 pub mod pens;
 pub mod render;
 pub mod sheet;
+pub mod store;
 pub mod strokes;
-pub mod strokesstate;
 pub mod surfaceflags;
 pub mod utils;
 
@@ -22,7 +22,7 @@ pub use drawbehaviour::DrawOnSheetBehaviour;
 pub use engine::RnoteEngine;
 pub use pens::PenHolder;
 pub use sheet::Sheet;
-pub use strokesstate::StrokesState;
+pub use store::StrokeStore;
 pub use surfaceflags::SurfaceFlags;
 
 extern crate nalgebra as na;

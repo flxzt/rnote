@@ -82,57 +82,6 @@ impl StrokeBehaviour for BrushStroke {
 
         Ok(images)
     }
-    /*
-    fn gen_images_in_viewport(
-        &self,
-        viewport: AABB,
-        image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
-        let images = match &self.style {
-            Style::Smooth(options) => self
-                .path
-                .iter()
-                .filter_map(|segment| {
-                    if !viewport.intersects(&segment.composed_bounds(options)) {
-                        return None;
-                    }
-
-                    render::Image::gen_from_composable_shape(segment, options, image_scale)
-                        .map_err(|e| {
-                            log::error!("gen_images() failed with Err {}", e);
-                        })
-                        .ok()
-                })
-                .flatten()
-                .collect::<Vec<render::Image>>(),
-            Style::Rough(_) => vec![],
-            Style::Textured(options) => {
-                let mut options = options.clone();
-
-                self.path
-                    .iter()
-                    .filter_map(|segment| {
-                        if !viewport.intersects(&segment.composed_bounds(&options)) {
-                            return None;
-                        }
-
-                        options.seed = options
-                            .seed
-                            .map(|seed| rnote_compose::utils::seed_advance(seed));
-
-                        render::Image::gen_from_composable_shape(segment, &options, image_scale)
-                            .map_err(|e| {
-                                log::error!("gen_images() failed with Err {}", e);
-                            })
-                            .ok()
-                    })
-                    .flatten()
-                    .collect::<Vec<render::Image>>()
-            }
-        };
-
-        Ok(images)
-    } */
 }
 
 impl DrawBehaviour for BrushStroke {

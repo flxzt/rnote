@@ -109,7 +109,6 @@ impl PenBehaviour for Selector {
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
-        let image_scale = camera.image_scale();
 
         match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
@@ -297,8 +296,9 @@ impl PenBehaviour for Selector {
                         let angle_delta = new_rotation_angle - *current_rotation_angle;
 
                         strokes_state.rotate_strokes(selection, angle_delta, *rotation_center);
-                        strokes_state.regenerate_rendering_for_strokes_threaded(
-                            selection,
+                        strokes_state.regenerate_rendering_in_viewport_threaded(
+                            false,
+                            camera.viewport_extended(),
                             camera.image_scale(),
                         );
 
@@ -381,7 +381,7 @@ impl PenBehaviour for Selector {
                         strokes_state.regenerate_rendering_in_viewport_threaded(
                             false,
                             camera.viewport_extended(),
-                            image_scale,
+                            camera.image_scale(),
                         );
 
                         *resize_pos = element.pos;

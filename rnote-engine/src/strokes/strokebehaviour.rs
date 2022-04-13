@@ -1,7 +1,6 @@
 use crate::render;
 use crate::DrawBehaviour;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::shapes::ShapeBehaviour;
 
 /// Specifing that a type is a stroke.
@@ -33,18 +32,5 @@ where
             self.bounds(),
             image_scale,
         )?)
-    }
-
-    /// Only generates the images that intersect with the given viewport
-    fn gen_images_in_viewport(
-        &self,
-        viewport: AABB,
-        image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
-        if !viewport.intersects(&self.bounds()) {
-            return Ok(vec![]);
-        }
-
-        self.gen_images(image_scale)
     }
 }

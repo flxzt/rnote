@@ -32,8 +32,6 @@ impl Default for VectorImage {
 
 impl StrokeBehaviour for VectorImage {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
-        let transform_string = self.rectangle.transform.to_svg_transform_attr_str();
-
         let svg_root = svg::node::element::SVG::new()
             .set("x", -self.rectangle.cuboid.half_extents[0])
             .set("y", -self.rectangle.cuboid.half_extents[1])
@@ -50,7 +48,10 @@ impl StrokeBehaviour for VectorImage {
             .add(svg::node::Text::new(self.svg_data.clone()));
 
         let group = svg::node::element::Group::new()
-            .set("transform", transform_string)
+            .set(
+                "transform",
+                self.rectangle.transform.to_svg_transform_attr_str(),
+            )
             .add(svg_root);
 
         let svg_data = rnote_compose::utils::svg_node_to_string(&group)?;

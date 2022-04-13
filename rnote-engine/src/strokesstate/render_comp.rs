@@ -168,6 +168,37 @@ impl StrokesState {
         })
     }
 
+    pub fn regenerate_rendering_in_viewport(
+        &mut self,
+        force_regenerate: bool,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> anyhow::Result<()> {
+        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
+
+        for key in keys {
+            if let (Some(stroke), Some(render_comp)) =
+                (self.strokes.get(key), self.render_components.get_mut(key))
+            {
+                // skip and empty image buffer if stroke is not in expanded viewport
+                if !viewport.intersects(&stroke.bounds()) {
+                    render_comp.rendernodes = vec![];
+                    render_comp.images = vec![];
+                    render_comp.regenerate_flag = true;
+
+                    continue;
+                }
+                // or does not need regeneration
+                if !force_regenerate && !render_comp.regenerate_flag {
+                    continue;
+                }
+
+                self.regenerate_rendering_for_stroke(key, image_scale)?;
+            }
+        }
+        Ok(())
+    }
+
     pub fn regenerate_rendering_in_viewport_threaded(
         &mut self,
         force_regenerate: bool,
@@ -197,11 +228,11 @@ impl StrokesState {
                 let stroke = stroke.clone();
 
                 // Only set false when viewport intersects stroke bounds
-                render_comp.regenerate_flag = !viewport.intersects(&stroke.bounds());
+                render_comp.regenerate_flag = false;
 
                 // Spawn a new thread for image rendering
                 self.threadpool.spawn(move || {
-                    match stroke.gen_images_in_viewport(viewport, image_scale) {
+                    match stroke.gen_images(image_scale) {
                         Ok(images) => {
                             tasks_tx.unbounded_send(StateTask::UpdateStrokeWithImages {
                                 key,
@@ -237,7 +268,6 @@ impl StrokesState {
 
                     render_comp.rendernodes.append(&mut rendernodes);
                     render_comp.images.append(&mut images);
-                    render_comp.regenerate_flag = false;
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {

@@ -298,7 +298,7 @@ impl ShaperPage {
 
         // Multistroke
         self.imp().roughconfig_multistroke_switch.get().connect_state_notify(clone!(@weak appwindow => move |roughconfig_multistroke_switch| {
-            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.disable_multistroke = roughconfig_multistroke_switch.state();
+            appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.disable_multistroke = !roughconfig_multistroke_switch.state();
         }));
 
         // Smooth / Rough shaper style

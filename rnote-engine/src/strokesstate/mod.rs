@@ -133,8 +133,10 @@ impl StrokesState {
         Self::default()
     }
 
-    // A new strokes state should always be imported with this method, to not replace the threadpool, channel handlers..
+    /// A new strokes state should always be imported with this method, to not replace the threadpool, channel handlers..
+    /// needs rendering regeneration after calling
     pub fn import_strokes_state(&mut self, strokes_state: Self) {
+        self.clear();
         self.strokes = strokes_state.strokes;
         self.trash_components = strokes_state.trash_components;
         self.selection_components = strokes_state.selection_components;
@@ -270,9 +272,14 @@ impl StrokesState {
     }
 
     /// Needs rendering regeneration after calling
-    pub fn update_shapestroke(&mut self, key: StrokeKey, shaper: &mut Shaper, element: Element) {
+    pub fn update_shapestroke(
+        &mut self,
+        key: StrokeKey,
+        shaper: &mut Shaper,
+        new_element: Element,
+    ) {
         if let Some(Stroke::ShapeStroke(ref mut shapestroke)) = self.strokes.get_mut(key) {
-            shapestroke.update_shape(shaper, element);
+            shapestroke.update_shape(shaper, new_element);
             self.key_tree.update_with_key(key, shapestroke.bounds());
 
             if let Some(render_comp) = self.render_components.get_mut(key) {
@@ -293,17 +300,33 @@ impl StrokesState {
         self.key_tree.clear();
     }
 
+    /// All keys
     pub fn keys_unordered(&self) -> Vec<StrokeKey> {
         self.strokes.keys().collect()
     }
 
-    /// Returns the stroke keys in the order that they should be rendered. Does not include the selection keys!
-    pub fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
-        let keys_sorted_chrono = self.keys_sorted_chrono();
+    /// All stroke keys, not including the selection
+    pub fn stroke_keys_unordered(&self) -> Vec<StrokeKey> {
+        self.strokes
+            .keys()
+            .filter_map(|key| {
+                if self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && !(self.selected(key).unwrap_or(false))
+                {
+                    Some(key)
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
 
-        keys_sorted_chrono
-            .iter()
-            .filter_map(|&key| {
+    /// Returns the stroke keys in the order that they should be rendered. Does not include the selection.
+    pub fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
+        self.keys_sorted_chrono()
+            .into_iter()
+            .filter_map(|key| {
                 if self.does_render(key).unwrap_or(false)
                     && !(self.trashed(key).unwrap_or(false))
                     && !(self.selected(key).unwrap_or(false))
@@ -327,7 +350,7 @@ impl StrokesState {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn clone_strokes_for_keys(&self, keys: &[StrokeKey]) -> Vec<Stroke> {
+    pub fn clone_strokes(&self, keys: &[StrokeKey]) -> Vec<Stroke> {
         keys.iter()
             .filter_map(|&key| Some(self.strokes.get(key)?.clone()))
             .collect::<Vec<Stroke>>()
@@ -449,18 +472,6 @@ impl StrokesState {
     }
 
     /// Needs rendering regeneration after calling
-    pub fn import_state(&mut self, strokes_state: &Self) {
-        self.clear();
-        self.chrono_counter = strokes_state.chrono_counter;
-
-        self.strokes = strokes_state.strokes.clone();
-        self.trash_components = strokes_state.trash_components.clone();
-        self.selection_components = strokes_state.selection_components.clone();
-        self.chrono_components = strokes_state.chrono_components.clone();
-        self.render_components = strokes_state.render_components.clone();
-    }
-
-    /// Needs rendering regeneration after calling
     pub fn update_geometry_for_stroke(&mut self, key: StrokeKey) {
         if let Some(stroke) = self.strokes.get_mut(key) {
             match stroke {
@@ -512,7 +523,8 @@ impl StrokesState {
     /// Calculates the height needed to fit all strokes
     pub fn calc_height(&self) -> f64 {
         let new_height = if let Some(stroke) = self
-            .stroke_keys_as_rendered().into_iter()
+            .stroke_keys_unordered()
+            .into_iter()
             .filter_map(|key| self.strokes.get(key))
             .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
         {
@@ -562,7 +574,7 @@ impl StrokesState {
                     Ok(svgs) => Some(svgs),
                     Err(e) => {
                         log::error!(
-                            "stroke.gen_svgs() failed in gen_svg_all_strokes() with Err {}",
+                            "stroke.gen_svg() failed in gen_svg_for_strokes() with Err {}",
                             e
                         );
                         None
@@ -647,7 +659,7 @@ impl StrokesState {
         });
     }
 
-    /// Returns all strokes below the y_pos
+    /// Returns all keys below the y_pos
     pub fn keys_below_y_pos(&self, y_pos: f64) -> Vec<StrokeKey> {
         self.strokes
             .iter()

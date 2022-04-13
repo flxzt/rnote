@@ -26,7 +26,7 @@ impl ChronoComponent {
 
 /// Systems that are related to their Chronology.
 impl StrokesState {
-    pub fn set_chrono_to_last(&mut self, key: StrokeKey) {
+    pub fn update_chrono_to_last(&mut self, key: StrokeKey) {
         if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
             self.chrono_counter += 1;
             chrono_comp.t = self.chrono_counter;
@@ -54,37 +54,11 @@ impl StrokesState {
                 None
             })
             .collect();
-        sorted.sort_unstable_by(|first, second| first.1.cmp(&second.1));
+        sorted.par_sort_unstable_by(|first, second| first.1.cmp(&second.1));
 
         let last_stroke_key = sorted.last().copied();
 
         last_stroke_key.map(|(last_stroke_key, _i)| last_stroke_key)
-    }
-
-    pub fn last_selection_key(&self) -> Option<StrokeKey> {
-        let chrono_components = &self.chrono_components;
-        let trash_components = &self.trash_components;
-        let selection_components = &self.selection_components;
-
-        let mut sorted: Vec<(StrokeKey, u32)> = chrono_components
-            .iter()
-            .par_bridge()
-            .filter_map(|(key, chrono_comp)| {
-                if let (Some(trash_comp), Some(selection_comp)) =
-                    (trash_components.get(key), selection_components.get(key))
-                {
-                    if !trash_comp.trashed && selection_comp.selected {
-                        return Some((key, chrono_comp.t));
-                    }
-                }
-                None
-            })
-            .collect();
-        sorted.par_sort_unstable_by(|first, second| first.1.cmp(&second.1));
-
-        let last_selection_key = sorted.last().copied();
-
-        last_selection_key.map(|(last_selection_key, _i)| last_selection_key)
     }
 
     pub fn last_trashed_key(&self) -> Option<StrokeKey> {

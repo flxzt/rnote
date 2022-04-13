@@ -461,7 +461,7 @@ impl RnoteEngine {
                     .strokes_state
                     .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
 
-                let strokes = self.strokes_state.clone_strokes_for_keys(&page_keys);
+                let strokes = self.strokes_state.clone_strokes(&page_keys);
 
                 // Translate strokes to to page mins and convert to XoppStrokStyle
                 let xopp_strokestyles = strokes
@@ -547,8 +547,11 @@ impl RnoteEngine {
     }
 
     /// Returns the receiver to be awaited on for the bytes
-    pub fn export_sheet_as_pdf_bytes(&self, title: String) -> oneshot::Receiver<Vec<u8>> {
-        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<Vec<u8>>();
+    pub fn export_sheet_as_pdf_bytes(
+        &self,
+        title: String,
+    ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
 
         let pages = self
             .pages_bounds_containing_content()
@@ -569,7 +572,7 @@ impl RnoteEngine {
 
         // Fill the pdf surface on a new thread to avoid blocking
         rayon::spawn(move || {
-            if let Err(e) = || -> anyhow::Result<()> {
+            let result = || -> anyhow::Result<Vec<u8>> {
                 let surface =
                     cairo::PdfSurface::for_stream(format_size[0], format_size[1], Vec::<u8>::new())
                         .context("pdfsurface creation failed")?;
@@ -616,15 +619,11 @@ impl RnoteEngine {
                         )
                     })?;
 
-                oneshot_sender.send(data).map_err(|e| {
-                    anyhow::anyhow!(
-                        "oneshot_sender.send() failed in export_sheet_as_pdf_bytes with Err {:?}",
-                        e
-                    )
-                })?;
-                Ok(())
-            }() {
-                log::error!("export_sheet_as pdf_bytes() failed with Err, {}", e);
+                Ok(data)
+            };
+
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result from export_sheet_as_pdf_bytes to oneshot_receiver failed. Receiving end already dropped.");
             }
         });
 

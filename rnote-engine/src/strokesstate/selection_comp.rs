@@ -78,7 +78,10 @@ impl StrokesState {
         self.strokes
             .keys()
             .filter_map(|key| {
-                if self.selection_components.get(key)?.selected {
+                if self.does_render(key).unwrap_or(false)
+                    && !(self.trashed(key).unwrap_or(false))
+                    && (self.selected(key).unwrap_or(false))
+                {
                     Some(key)
                 } else {
                     None
@@ -107,8 +110,9 @@ impl StrokesState {
     }
 
     pub fn selection_keys_as_rendered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
-        self
-            .keys_sorted_chrono_intersecting_bounds(bounds).into_iter().filter(|&key| {
+        self.keys_sorted_chrono_intersecting_bounds(bounds)
+            .into_iter()
+            .filter(|&key| {
                 self.does_render(key).unwrap_or(false)
                     && !(self.trashed(key).unwrap_or(false))
                     && (self.selected(key).unwrap_or(false))
@@ -239,11 +243,7 @@ impl StrokesState {
     }
 
     /// Updates the selected strokes for a given aabb. Returns the selected keys
-    pub fn update_selection_for_aabb(
-        &mut self,
-        aabb: AABB,
-        viewport: AABB,
-    ) -> Vec<StrokeKey> {
+    pub fn update_selection_for_aabb(&mut self, aabb: AABB, viewport: AABB) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(viewport)
             .iter()
             .filter_map(|&key| {

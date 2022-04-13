@@ -78,6 +78,7 @@ impl StrokesState {
     }
 
     pub fn trash_selection(&mut self) {
+        // have to be in rendered order, to ensure consistent chrono_comp t value
         self.selection_keys_as_rendered().iter().for_each(|&key| {
             if let Some(selection_comp) = self.selection_components.get_mut(key) {
                 if selection_comp.selected {
@@ -96,22 +97,39 @@ impl StrokesState {
         });
     }
 
-    /// trash strokes that collide with the eraser
-    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: Option<AABB>) {
-        self.strokes.iter_mut().for_each(|(key, stroke)| {
-            if let Some(viewport) = viewport {
-                if !viewport.intersects(&stroke.bounds()) {
-                    return;
-                }
-            }
-            match stroke {
-                Stroke::BrushStroke(brushstroke) => {
-                    let brushstroke_bounds = brushstroke.bounds();
+    /// trash strokes that collide with the given bounds
+    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: AABB) {
+        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
+            .into_iter()
+            .for_each(|key| {
+                if let Some(stroke) = self.strokes.get(key) {
+                    match stroke {
+                        Stroke::BrushStroke(brushstroke) => {
+                            let brushstroke_bounds = brushstroke.bounds();
 
-                    // First check markerstroke bounds, then conditionally check hitbox
-                    if eraser_bounds.intersects(&brushstroke_bounds) {
-                        for hitbox_elem in brushstroke.hitboxes.iter() {
-                            if eraser_bounds.intersects(hitbox_elem) {
+                            // First check markerstroke bounds, then conditionally check hitbox
+                            if eraser_bounds.intersects(&brushstroke_bounds) {
+                                for hitbox_elem in brushstroke.hitboxes.iter() {
+                                    if eraser_bounds.intersects(hitbox_elem) {
+                                        if let Some(trash_comp) = self.trash_components.get_mut(key)
+                                        {
+                                            trash_comp.trashed = true;
+
+                                            if let Some(chrono_comp) =
+                                                self.chrono_components.get_mut(key)
+                                            {
+                                                self.chrono_counter += 1;
+                                                chrono_comp.t = self.chrono_counter;
+                                            }
+                                        }
+
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        Stroke::ShapeStroke(shapestroke) => {
+                            if eraser_bounds.intersects(&shapestroke.bounds()) {
                                 if let Some(trash_comp) = self.trash_components.get_mut(key) {
                                     trash_comp.trashed = true;
 
@@ -120,31 +138,16 @@ impl StrokesState {
                                         chrono_comp.t = self.chrono_counter;
                                     }
                                 }
-
-                                return;
                             }
+                        }
+                        Stroke::VectorImage(_vectorimage) => {
+                            // Ignore vector images when trashing with the Eraser
+                        }
+                        Stroke::BitmapImage(_bitmapimage) => {
+                            // Ignore bitmap images when trashing with the Eraser
                         }
                     }
                 }
-                Stroke::ShapeStroke(shapestroke) => {
-                    if eraser_bounds.intersects(&shapestroke.bounds()) {
-                        if let Some(trash_comp) = self.trash_components.get_mut(key) {
-                            trash_comp.trashed = true;
-
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                        }
-                    }
-                }
-                Stroke::VectorImage(_vectorimage) => {
-                    // Ignore VectorImage when trashing with the Eraser
-                }
-                Stroke::BitmapImage(_bitmapimage) => {
-                    // Ignore BitmapImage when trashing with the Eraser
-                }
-            }
-        });
+            });
     }
 }

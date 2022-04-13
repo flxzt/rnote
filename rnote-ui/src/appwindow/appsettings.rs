@@ -180,7 +180,10 @@ impl RnoteAppWindow {
         {
             // load engine config
             let engine_config = self.app_settings().string("engine-config");
-            self.canvas().engine().borrow_mut().load_engine_config(&engine_config)?;
+            self.canvas()
+                .engine()
+                .borrow_mut()
+                .load_engine_config(&engine_config)?;
         }
 
         // refresh the UI

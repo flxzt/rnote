@@ -46,7 +46,7 @@ impl FileFormatLoader for RnoteFile {
 
         // Conversions for older file format versions happens here
         match file.version.as_str() {
-            "0.4.0" => Ok(file),
+            "0.5.0" => Ok(file),
             version => Err(anyhow::anyhow!(
                 "failed to load rnote file from bytes, invalid version: {}",
                 version

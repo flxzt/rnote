@@ -1011,7 +1011,6 @@ impl RnoteAppWindow {
                     );
                     cx.clip();
 
-                    // We zoom on the context, so 1.0 here
                     render::Svg::draw_svgs_to_cairo_context(&page_svgs, sheet_bounds, &cx)?;
                     Ok(())
                 }() {
@@ -1081,12 +1080,8 @@ impl RnoteAppWindow {
                     svg_data = rnote_compose::utils::wrap_svg_root(svg_data.as_str(), Some(selection_bounds), Some(selection_bounds), true);
 
                     let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(svg_data.as_bytes()));
-                    match appwindow.clipboard().set_content(Some(&svg_content_provider)) {
-                        Ok(_) => {
-                        }
-                        Err(e) => {
-                            log::error!("copy selection into clipboard failed in clipboard().set_content(), {}", e);
-                        }
+                    if let Err(e) = appwindow.clipboard().set_content(Some(&svg_content_provider)) {
+                        log::error!("copy selection into clipboard failed in clipboard().set_content(), {}", e);
                     }
                 }
             }

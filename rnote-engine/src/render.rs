@@ -157,6 +157,8 @@ impl Image {
     }
 
     pub fn convert_to_rgba8pre(&mut self) -> anyhow::Result<()> {
+        self.assert_valid()?;
+
         match self.memory_format {
             ImageMemoryFormat::R8g8b8a8Premultiplied => {
                 // Already in the correct format
@@ -189,6 +191,8 @@ impl Image {
     }
 
     pub fn to_imgbuf(self) -> Result<image::ImageBuffer<image::Rgba<u8>, Vec<u8>>, anyhow::Error> {
+        self.assert_valid()?;
+
         match self.memory_format {
             ImageMemoryFormat::R8g8b8a8Premultiplied => {
                 image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data).ok_or(
@@ -218,6 +222,7 @@ impl Image {
         self,
         format: image::ImageOutputFormat,
     ) -> Result<Vec<u8>, anyhow::Error> {
+        self.assert_valid()?;
         let mut bytes_buf: Vec<u8> = vec![];
 
         let dynamic_image = image::DynamicImage::ImageRgba8(
@@ -290,12 +295,15 @@ impl Image {
 
     pub fn join_images(
         images: Vec<Self>,
-        bounds: AABB,
+        mut bounds: AABB,
         image_scale: f64,
     ) -> Result<Option<Image>, anyhow::Error> {
         if images.is_empty() {
             return Ok(None);
         }
+        bounds.ensure_positive();
+        bounds.ceil();
+        bounds.assert_valid()?;
 
         let mut target_image = image::RgbaImage::new(
             (bounds.extents()[0] * image_scale).round() as u32,
@@ -332,16 +340,18 @@ impl Image {
         bounds: AABB,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        Self::gen_images_from_svg_librsvg(svg, bounds, image_scale)
+        Self::gen_images_from_svg_resvg(svg, bounds, image_scale)
     }
 
     // With librsvg
+    #[allow(unused)]
     fn gen_images_from_svg_librsvg(
         svg: Svg,
         mut bounds: AABB,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
         bounds.ensure_positive();
+        bounds.ceil();
         bounds.assert_valid()?;
 
         let mut images = vec![];
@@ -354,13 +364,7 @@ impl Image {
         );
 
         // .split() Only splits if the split size is larger than the bounds
-        for mut splitted_bounds in svg.bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
-            splitted_bounds.ensure_positive();
-            if splitted_bounds.assert_valid().is_err() {
-                continue;
-            }
-            splitted_bounds.loosen(1.0);
-
+        for splitted_bounds in svg.bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
             let splitted_width_scaled =
                 ((splitted_bounds.extents()[0]) * image_scale).round() as u32;
             let splitted_height_scaled =
@@ -451,10 +455,10 @@ impl Image {
         mut bounds: AABB,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        bounds.ensure_positive();
-        bounds.assert_valid()?;
-
         let mut images = vec![];
+        bounds.ensure_positive();
+        bounds.ceil();
+        bounds.assert_valid()?;
 
         let svg_data = rnote_compose::utils::wrap_svg_root(
             svg.svg_data.as_str(),
@@ -466,12 +470,6 @@ impl Image {
 
         // .split() Only splits if the split size is larger than the bounds
         for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
-            splitted_bounds.ensure_positive();
-            if splitted_bounds.assert_valid().is_err() {
-                continue;
-            }
-            splitted_bounds.loosen(1.0);
-
             let splitted_width_scaled =
                 ((splitted_bounds.extents()[0]) * image_scale).round() as u32;
             let splitted_height_scaled =
@@ -510,18 +508,16 @@ impl Image {
     /// if viewport is Some, only generates the images that intersect it.
     pub fn gen_images_from_drawable(
         to_be_drawn: &impl DrawBehaviour,
-        bounds: AABB,
+        mut bounds: AABB,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let mut images = vec![];
+        bounds.ensure_positive();
+        bounds.ceil();
+        bounds.assert_valid()?;
 
         // .split() Only splits if the split size is larger than the bounds
-        for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
-            splitted_bounds.ensure_positive();
-            if splitted_bounds.assert_valid().is_err() {
-                continue;
-            }
-
+        for splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
             let splitted_width_scaled =
                 ((splitted_bounds.extents()[0]) * image_scale).round() as u32;
             let splitted_height_scaled =
@@ -595,15 +591,13 @@ impl Image {
         O: std::fmt::Debug + Clone,
     {
         let mut images = vec![];
-        let bounds = shape.composed_bounds(options);
+        let mut bounds = shape.composed_bounds(options);
+        bounds.ensure_positive();
+        bounds.ceil();
+        bounds.assert_valid()?;
 
         // .split() Only splits if the split size is larger than the bounds
-        for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
-            splitted_bounds.ensure_positive();
-            if splitted_bounds.assert_valid().is_err() {
-                continue;
-            }
-
+        for splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
             let splitted_width_scaled =
                 ((splitted_bounds.extents()[0]) * image_scale).round() as u32;
             let splitted_height_scaled =

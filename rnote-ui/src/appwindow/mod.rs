@@ -1258,7 +1258,7 @@ impl RnoteAppWindow {
                 .engine()
                 .borrow()
                 .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string());
-            let pdf_data = pdf_data_receiver.await?;
+            let pdf_data = pdf_data_receiver.await??;
 
             let output_stream = file
                 .replace_future(
@@ -1271,13 +1271,13 @@ impl RnoteAppWindow {
 
             if let Err(e) = output_stream.write(&pdf_data, None::<&gio::Cancellable>) {
                 log::error!(
-                    "output_stream().write() failed in export_sheet_as_pdf() with Err {}",
+                    "output_stream.write() failed in export_sheet_as_pdf() with Err {}",
                     e
                 );
             };
             if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
                 log::error!(
-                    "output_stream().close() failed in export_sheet_as_pdf() with Err {}",
+                    "output_stream.close() failed in export_sheet_as_pdf() with Err {}",
                     e
                 );
             };

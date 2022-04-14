@@ -7,11 +7,11 @@ use rnote_compose::penpath::Segment;
 use rnote_compose::{PenEvent, Style};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use rand::{Rng, SeedableRng};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::style::textured::TexturedOptions;
 use rnote_compose::style::Composer;
 use serde::{Deserialize, Serialize};
-use rand::{Rng, SeedableRng};
 
 use super::penbehaviour::PenBehaviour;
 use super::AudioPlayer;
@@ -90,8 +90,14 @@ impl PenBehaviour for Brush {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     Self::start_audio(style, audioplayer);
 
-                    let brushstroke =
-                        Stroke::BrushStroke(BrushStroke::new(Segment::Dot { element }, self.gen_style_for_current_options()));
+                    // A new seed for a new brush stroke
+                    let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+                    self.textured_options.seed = seed;
+
+                    let brushstroke = Stroke::BrushStroke(BrushStroke::new(
+                        Segment::Dot { element },
+                        self.gen_style_for_current_options(),
+                    ));
                     let current_stroke_key = store.insert_stroke(brushstroke);
 
                     let mut path_builder = PenPathBuilder::start(element);
@@ -102,10 +108,11 @@ impl PenBehaviour for Brush {
                         }
                     }
 
-                    store.regenerate_rendering_for_stroke_threaded(
-                        current_stroke_key,
-                        camera.image_scale(),
-                    );
+                    if let Err(e) = store
+                        .regenerate_rendering_for_stroke(current_stroke_key, camera.image_scale())
+                    {
+                        log::error!("regenerate_rendering_for_stroke() failed after inserting brush stroke, Err {}", e);
+                    }
 
                     self.state = BrushState::Drawing {
                         path_builder,
@@ -162,10 +169,11 @@ impl PenBehaviour for Brush {
 
                 // Finish up the last stroke
                 store.update_geometry_for_stroke(*current_stroke_key);
-                store.regenerate_rendering_for_stroke_threaded(
-                    *current_stroke_key,
-                    camera.image_scale(),
-                );
+                if let Err(e) =
+                    store.regenerate_rendering_for_stroke(*current_stroke_key, camera.image_scale())
+                {
+                    log::error!("regenerate_rendering_for_stroke() failed after finishing brush stroke, Err {}", e);
+                }
 
                 self.state = BrushState::Idle;
             }
@@ -267,8 +275,6 @@ impl Brush {
     }
 
     pub fn gen_style_for_current_options(&self) -> Style {
-        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
-
         match &self.style {
             BrushStyle::Marker => {
                 let mut options = self.smooth_options.clone();
@@ -282,8 +288,7 @@ impl Brush {
                 Style::Smooth(options)
             }
             BrushStyle::Textured => {
-                let mut options = self.textured_options.clone();
-                options.seed = seed;
+                let options = self.textured_options.clone();
 
                 Style::Textured(options)
             }

@@ -109,6 +109,7 @@ impl PenBehaviour for Selector {
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
+        let total_zoom = camera.total_zoom();
 
         match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
@@ -271,16 +272,18 @@ impl PenBehaviour for Selector {
                     ModifyState::Translate { pos } => {
                         let offset = element.pos - *pos;
 
-                        store.translate_strokes(selection, offset);
-                        *selection_bounds = selection_bounds.translate(offset);
-                        // strokes that were far away previously might come into view
-                        store.regenerate_rendering_in_viewport_threaded(
-                            false,
-                            camera.viewport_extended(),
-                            camera.image_scale(),
-                        );
+                        if offset.magnitude() > Self::TRANSLATE_MAGNITUDE_THRESHOLD / total_zoom {
+                            store.translate_strokes(selection, offset);
+                            *selection_bounds = selection_bounds.translate(offset);
+                            // strokes that were far away previously might come into view
+                            store.regenerate_rendering_in_viewport_threaded(
+                                false,
+                                camera.viewport_extended(),
+                                camera.image_scale(),
+                            );
 
-                        *pos = element.pos;
+                            *pos = element.pos;
+                        }
                     }
                     ModifyState::Rotate {
                         rotation_center,
@@ -293,17 +296,19 @@ impl PenBehaviour for Selector {
                         };
                         let angle_delta = new_rotation_angle - *current_rotation_angle;
 
-                        store.rotate_strokes(selection, angle_delta, *rotation_center);
-                        store.regenerate_rendering_in_viewport_threaded(
-                            false,
-                            camera.viewport_extended(),
-                            camera.image_scale(),
-                        );
+                        if angle_delta.abs() > Self::ROTATE_ANGLE_THRESHOLD {
+                            store.rotate_strokes(selection, angle_delta, *rotation_center);
+                            store.regenerate_rendering_in_viewport_threaded(
+                                false,
+                                camera.viewport_extended(),
+                                camera.image_scale(),
+                            );
 
-                        if let Some(new_bounds) = store.gen_bounds(selection) {
-                            *selection_bounds = new_bounds;
+                            if let Some(new_bounds) = store.gen_bounds(selection) {
+                                *selection_bounds = new_bounds;
+                            }
+                            *current_rotation_angle = new_rotation_angle;
                         }
-                        *current_rotation_angle = new_rotation_angle;
                     }
                     ModifyState::Resize {
                         from_corner,
@@ -325,65 +330,67 @@ impl PenBehaviour for Selector {
                             }
                         };
 
-                        let new_extents = if self.resize_lock_aspectratio {
-                            // Lock aspectratio
-                            rnote_compose::helpers::scale_w_locked_aspectratio(
-                                start_bounds.extents(),
-                                selection_bounds.extents() + pos_offset,
-                            )
-                        } else {
-                            selection_bounds.extents() + pos_offset
+                        if pos_offset.magnitude() > Self::RESIZE_MAGNITUDE_THRESHOLD / total_zoom {
+                            let new_extents = if self.resize_lock_aspectratio {
+                                // Lock aspectratio
+                                rnote_compose::helpers::scale_w_locked_aspectratio(
+                                    start_bounds.extents(),
+                                    selection_bounds.extents() + pos_offset,
+                                )
+                            } else {
+                                selection_bounds.extents() + pos_offset
+                            }
+                            .maxs(&na::Vector2::repeat(
+                                (Self::NODE_SIZE * 2.0) / camera.total_zoom(),
+                            ));
+
+                            let new_bounds = match from_corner {
+                                ResizeCorner::TopLeft => AABB::new(
+                                    na::point![
+                                        start_bounds.maxs[0] - new_extents[0],
+                                        start_bounds.maxs[1] - new_extents[1]
+                                    ],
+                                    na::point![start_bounds.maxs[0], start_bounds.maxs[1]],
+                                ),
+                                ResizeCorner::TopRight => AABB::new(
+                                    na::point![
+                                        start_bounds.mins[0],
+                                        start_bounds.maxs[1] - new_extents[1]
+                                    ],
+                                    na::point![
+                                        start_bounds.mins[0] + new_extents[0],
+                                        start_bounds.maxs[1]
+                                    ],
+                                ),
+                                ResizeCorner::BottomLeft => AABB::new(
+                                    na::point![
+                                        start_bounds.maxs[0] - new_extents[0],
+                                        start_bounds.mins[1]
+                                    ],
+                                    na::point![
+                                        start_bounds.maxs[0],
+                                        start_bounds.mins[1] + new_extents[1]
+                                    ],
+                                ),
+                                ResizeCorner::BottomRight => AABB::new(
+                                    na::point![start_bounds.mins[0], start_bounds.mins[1]],
+                                    na::point![
+                                        start_bounds.mins[0] + new_extents[0],
+                                        start_bounds.mins[1] + new_extents[1]
+                                    ],
+                                ),
+                            };
+
+                            store.resize_strokes(selection, *selection_bounds, new_bounds);
+                            store.regenerate_rendering_in_viewport_threaded(
+                                false,
+                                camera.viewport_extended(),
+                                camera.image_scale(),
+                            );
+
+                            *resize_pos = element.pos;
+                            *selection_bounds = new_bounds;
                         }
-                        .maxs(&na::Vector2::repeat(
-                            (Self::NODE_SIZE * 2.0) / camera.total_zoom(),
-                        ));
-
-                        let new_bounds = match from_corner {
-                            ResizeCorner::TopLeft => AABB::new(
-                                na::point![
-                                    start_bounds.maxs[0] - new_extents[0],
-                                    start_bounds.maxs[1] - new_extents[1]
-                                ],
-                                na::point![start_bounds.maxs[0], start_bounds.maxs[1]],
-                            ),
-                            ResizeCorner::TopRight => AABB::new(
-                                na::point![
-                                    start_bounds.mins[0],
-                                    start_bounds.maxs[1] - new_extents[1]
-                                ],
-                                na::point![
-                                    start_bounds.mins[0] + new_extents[0],
-                                    start_bounds.maxs[1]
-                                ],
-                            ),
-                            ResizeCorner::BottomLeft => AABB::new(
-                                na::point![
-                                    start_bounds.maxs[0] - new_extents[0],
-                                    start_bounds.mins[1]
-                                ],
-                                na::point![
-                                    start_bounds.maxs[0],
-                                    start_bounds.mins[1] + new_extents[1]
-                                ],
-                            ),
-                            ResizeCorner::BottomRight => AABB::new(
-                                na::point![start_bounds.mins[0], start_bounds.mins[1]],
-                                na::point![
-                                    start_bounds.mins[0] + new_extents[0],
-                                    start_bounds.mins[1] + new_extents[1]
-                                ],
-                            ),
-                        };
-
-                        store.resize_strokes(selection, *selection_bounds, new_bounds);
-                        store.regenerate_rendering_in_viewport_threaded(
-                            false,
-                            camera.viewport_extended(),
-                            camera.image_scale(),
-                        );
-
-                        *resize_pos = element.pos;
-                        *selection_bounds = new_bounds;
                     }
                 }
 
@@ -527,6 +534,13 @@ impl DrawOnSheetBehaviour for Selector {
 }
 
 impl Selector {
+    /// The threshold where a translation is applied ( in offset magnitude, surface coords )
+    const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.0;
+    /// The threshold angle (rad) where a rotation is applied
+    const ROTATE_ANGLE_THRESHOLD: f64 = (2.0 * std::f64::consts::PI) / 360.0;
+    /// The threshold where a resize is applied ( in offset magnitude, surface coords )
+    const RESIZE_MAGNITUDE_THRESHOLD: f64 = 1.0;
+
     const PATH_WIDTH: f64 = 1.8;
     const OUTLINE_COLOR: Color = Color {
         r: 0.6,

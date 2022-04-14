@@ -6,7 +6,9 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 // Re-exports
 pub use roughoptions::RoughOptions;
 
-use crate::helpers::Affine2Helpers;
+use crate::builders::fociellipsebuilder::FociEllipseBuilderState;
+use crate::builders::{EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder};
+use crate::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
@@ -53,7 +55,6 @@ impl Composer<RoughOptions> for Rectangle {
 
         let mut rect_path = kurbo::BezPath::new();
 
-        // Applying the transform at the end
         let top_left = -self.cuboid.half_extents;
         let bottom_right = self.cuboid.half_extents;
 
@@ -234,4 +235,87 @@ fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> kurbo:
     let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
     roughgenerator::fill_polygon(coords, options, &mut rng)
+}
+
+impl Composer<RoughOptions> for LineBuilder {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        self.state_as_line().composed_bounds(options)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        let line = self.state_as_line();
+        line.draw_composed(cx, options);
+    }
+}
+
+impl Composer<RoughOptions> for RectangleBuilder {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        self.state_as_rect().composed_bounds(options)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        let rect = self.state_as_rect();
+        rect.draw_composed(cx, options);
+    }
+}
+
+impl Composer<RoughOptions> for EllipseBuilder {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        self.state_as_ellipse().composed_bounds(options)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        let ellipse = self.state_as_ellipse();
+        ellipse.draw_composed(cx, options);
+    }
+}
+
+impl Composer<RoughOptions> for FociEllipseBuilder {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        match &self.state {
+            FociEllipseBuilderState::First(point) => AABB::from_half_extents(
+                na::Point2::from(*point),
+                na::Vector2::repeat(options.stroke_width),
+            ),
+            FociEllipseBuilderState::Foci(foci) => {
+                AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
+                    .loosened(options.stroke_width * 500.0)
+            }
+            FociEllipseBuilderState::FociAndPoint { foci, point } => {
+                let mut bounds =
+                    AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
+                        .loosened(options.stroke_width * 500.0);
+                bounds.take_point(na::Point2::from(*point));
+
+                bounds
+            }
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        match &self.state {
+            FociEllipseBuilderState::First(point) => {
+                let circle = kurbo::Circle::new(point.to_kurbo_point(), 2.0);
+                cx.stroke(circle, &piet::Color::MAROON, 1.0);
+            }
+            FociEllipseBuilderState::Foci(foci) => {
+                let first_circle = kurbo::Circle::new(foci[0].to_kurbo_point(), 2.0);
+                let second_circle = kurbo::Circle::new(foci[1].to_kurbo_point(), 2.0);
+
+                cx.stroke(first_circle, &piet::Color::MAROON, 1.0);
+                cx.stroke(second_circle, &piet::Color::MAROON, 1.0);
+            }
+            FociEllipseBuilderState::FociAndPoint { foci, point } => {
+                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
+
+                ellipse.draw_composed(cx, options);
+
+                let first_circle = kurbo::Circle::new(foci[0].to_kurbo_point(), 2.0);
+                let second_circle = kurbo::Circle::new(foci[1].to_kurbo_point(), 2.0);
+
+                cx.stroke(first_circle, &piet::Color::MAROON, 1.0);
+                cx.stroke(second_circle, &piet::Color::MAROON, 1.0);
+            }
+        }
+    }
 }

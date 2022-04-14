@@ -89,28 +89,34 @@ impl PenBehaviour for Shaper {
         let surface_flags = SurfaceFlags::default();
 
         match (&mut self.state, event) {
-            (ShaperState::Idle, PenEvent::Down { element, .. }) => match self.builder_type {
-                ShapeBuilderType::Line => {
-                    self.state = ShaperState::BuildLine {
-                        line_builder: LineBuilder::start(element),
+            (ShaperState::Idle, PenEvent::Down { element, .. }) => {
+                // A new seed for a new shape
+                let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+                self.rough_options.seed = seed;
+
+                match self.builder_type {
+                    ShapeBuilderType::Line => {
+                        self.state = ShaperState::BuildLine {
+                            line_builder: LineBuilder::start(element),
+                        }
+                    }
+                    ShapeBuilderType::Rectangle => {
+                        self.state = ShaperState::BuildRectangle {
+                            rect_builder: RectangleBuilder::start(element),
+                        }
+                    }
+                    ShapeBuilderType::Ellipse => {
+                        self.state = ShaperState::BuildEllipse {
+                            ellipse_builder: EllipseBuilder::start(element),
+                        }
+                    }
+                    ShapeBuilderType::FociEllipse => {
+                        self.state = ShaperState::BuildFociEllipse {
+                            foci_ellipse_builder: FociEllipseBuilder::start(element),
+                        }
                     }
                 }
-                ShapeBuilderType::Rectangle => {
-                    self.state = ShaperState::BuildRectangle {
-                        rect_builder: RectangleBuilder::start(element),
-                    }
-                }
-                ShapeBuilderType::Ellipse => {
-                    self.state = ShaperState::BuildEllipse {
-                        ellipse_builder: EllipseBuilder::start(element),
-                    }
-                }
-                ShapeBuilderType::FociEllipse => {
-                    self.state = ShaperState::BuildFociEllipse {
-                        foci_ellipse_builder: FociEllipseBuilder::start(element),
-                    }
-                }
-            },
+            }
             (ShaperState::Idle, _) => {}
             (ShaperState::BuildLine { line_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
@@ -125,7 +131,9 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        store.regenerate_rendering_for_stroke_threaded(key, camera.image_scale());
+                        if let Err(e) = store.regenerate_rendering_for_stroke(key, camera.image_scale()) {
+                            log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
+                        }
                     }
                 }
 
@@ -145,14 +153,16 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        store.regenerate_rendering_for_stroke_threaded(key, camera.image_scale());
+                        if let Err(e) = store.regenerate_rendering_for_stroke(key, camera.image_scale()) {
+                            log::error!("regenerate_rendering_for_stroke() failed after inserting new rectangle, Err {}", e);
+                        }
                     }
                 }
 
                 self.state = ShaperState::Idle;
             }
             (ShaperState::BuildRectangle { .. }, ..) => self.state = ShaperState::Idle,
-            (ShaperState::BuildEllipse { ellipse_builder }, event@PenEvent::Down { .. }) => {
+            (ShaperState::BuildEllipse { ellipse_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 ellipse_builder.handle_event(event);
             }
@@ -165,7 +175,9 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        store.regenerate_rendering_for_stroke_threaded(key, camera.image_scale());
+                        if let Err(e) = store.regenerate_rendering_for_stroke(key, camera.image_scale()) {
+                            log::error!("regenerate_rendering_for_stroke() failed after inserting new ellipse, Err {}", e);
+                        }
                     }
                 }
 
@@ -195,14 +207,18 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        store.regenerate_rendering_for_stroke_threaded(key, camera.image_scale());
+                        if let Err(e) = store.regenerate_rendering_for_stroke(key, camera.image_scale()) {
+                            log::error!("regenerate_rendering_for_stroke() failed after inserting new foci ellipse, Err {}", e);
+                        }
                     }
 
                     self.state = ShaperState::Idle;
                 }
             }
-            (ShaperState::BuildFociEllipse { .. }, PenEvent::Proximity {..}) => {},
-            (ShaperState::BuildFociEllipse { .. }, PenEvent::Cancel) => self.state = ShaperState::Idle,
+            (ShaperState::BuildFociEllipse { .. }, PenEvent::Proximity { .. }) => {}
+            (ShaperState::BuildFociEllipse { .. }, PenEvent::Cancel) => {
+                self.state = ShaperState::Idle
+            }
         }
 
         surface_flags
@@ -217,23 +233,21 @@ impl DrawOnSheetBehaviour for Shaper {
             (ShaperState::BuildLine { line_builder }, ShaperStyle::Smooth) => {
                 Some(line_builder.composed_bounds(&self.smooth_options))
             }
-            (ShaperState::BuildLine { line_builder: _ }, ShaperStyle::Rough) => None,
+            (ShaperState::BuildLine { line_builder }, ShaperStyle::Rough) => {
+                Some(line_builder.composed_bounds(&self.rough_options))
+            }
             (ShaperState::BuildRectangle { rect_builder }, ShaperStyle::Smooth) => {
                 Some(rect_builder.composed_bounds(&self.smooth_options))
             }
-            (ShaperState::BuildRectangle { rect_builder: _ }, ShaperStyle::Rough) => None,
-            (
-                ShaperState::BuildEllipse {
-                    ellipse_builder,
-                },
-                ShaperStyle::Smooth,
-            ) => Some(ellipse_builder.composed_bounds(&self.smooth_options)),
-            (
-                ShaperState::BuildEllipse {
-                    ellipse_builder: _,
-                },
-                ShaperStyle::Rough,
-            ) => None,
+            (ShaperState::BuildRectangle { rect_builder }, ShaperStyle::Rough) => {
+                Some(rect_builder.composed_bounds(&self.rough_options))
+            }
+            (ShaperState::BuildEllipse { ellipse_builder }, ShaperStyle::Smooth) => {
+                Some(ellipse_builder.composed_bounds(&self.smooth_options))
+            }
+            (ShaperState::BuildEllipse { ellipse_builder }, ShaperStyle::Rough) => {
+                Some(ellipse_builder.composed_bounds(&self.rough_options))
+            }
             (
                 ShaperState::BuildFociEllipse {
                     foci_ellipse_builder,
@@ -242,10 +256,10 @@ impl DrawOnSheetBehaviour for Shaper {
             ) => Some(foci_ellipse_builder.composed_bounds(&self.smooth_options)),
             (
                 ShaperState::BuildFociEllipse {
-                    foci_ellipse_builder: _,
+                    foci_ellipse_builder,
                 },
                 ShaperStyle::Rough,
-            ) => None,
+            ) => Some(foci_ellipse_builder.composed_bounds(&self.rough_options)),
         }
     }
 
@@ -260,30 +274,20 @@ impl DrawOnSheetBehaviour for Shaper {
             (ShaperState::BuildLine { line_builder }, ShaperStyle::Smooth) => {
                 line_builder.draw_composed(cx, &self.smooth_options);
             }
-            (ShaperState::BuildLine { line_builder: _ }, ShaperStyle::Rough) => {
-                // TODO
+            (ShaperState::BuildLine { line_builder }, ShaperStyle::Rough) => {
+                line_builder.draw_composed(cx, &self.rough_options);
             }
             (ShaperState::BuildRectangle { rect_builder }, ShaperStyle::Smooth) => {
                 rect_builder.draw_composed(cx, &self.smooth_options);
             }
-            (ShaperState::BuildRectangle { rect_builder: _ }, ShaperStyle::Rough) => {
-                // TODO
+            (ShaperState::BuildRectangle { rect_builder }, ShaperStyle::Rough) => {
+                rect_builder.draw_composed(cx, &self.rough_options);
             }
-            (
-                ShaperState::BuildEllipse {
-                    ellipse_builder,
-                },
-                ShaperStyle::Smooth,
-            ) => {
+            (ShaperState::BuildEllipse { ellipse_builder }, ShaperStyle::Smooth) => {
                 ellipse_builder.draw_composed(cx, &self.smooth_options);
             }
-            (
-                ShaperState::BuildEllipse {
-                    ellipse_builder: _,
-                },
-                ShaperStyle::Rough,
-            ) => {
-                // TODO
+            (ShaperState::BuildEllipse { ellipse_builder }, ShaperStyle::Rough) => {
+                ellipse_builder.draw_composed(cx, &self.rough_options);
             }
             (
                 ShaperState::BuildFociEllipse {
@@ -295,11 +299,11 @@ impl DrawOnSheetBehaviour for Shaper {
             }
             (
                 ShaperState::BuildFociEllipse {
-                    foci_ellipse_builder: _,
+                    foci_ellipse_builder,
                 },
                 ShaperStyle::Rough,
             ) => {
-                // TODO
+                foci_ellipse_builder.draw_composed(cx, &self.rough_options);
             }
         }
         Ok(())
@@ -310,8 +314,6 @@ impl Shaper {
     pub const INPUT_OVERSHOOT: f64 = 30.0;
 
     pub fn gen_style_for_current_options(&self) -> Style {
-        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
-
         match &self.style {
             ShaperStyle::Smooth => {
                 let options = self.smooth_options.clone();
@@ -319,8 +321,7 @@ impl Shaper {
                 Style::Smooth(options)
             }
             ShaperStyle::Rough => {
-                let mut options = self.rough_options.clone();
-                options.seed = seed;
+                let options = self.rough_options.clone();
 
                 Style::Rough(options)
             }

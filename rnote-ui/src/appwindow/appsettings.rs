@@ -112,7 +112,20 @@ impl RnoteAppWindow {
         let _app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         // appwindow
-        self.load_window_size();
+        {
+            let window_width = self.app_settings().int("window-width");
+            let window_height = self.app_settings().int("window-height");
+            let is_maximized = self.app_settings().boolean("is-maximized");
+
+            self.set_default_size(window_width, window_height);
+
+            if is_maximized {
+                self.maximize();
+            }
+
+            self.flap_box()
+                .set_width_request(self.app_settings().int("flap-width"));
+        }
 
         // colorscheme
         // Set the buttons, as the style manager colorscheme property may not be changed from the binding
@@ -193,7 +206,17 @@ impl RnoteAppWindow {
 
     /// Save all state that is not bound in setup_settings
     pub fn save_to_settings(&self) -> anyhow::Result<()> {
-        self.save_window_size()?;
+        {
+            // Appwindow
+            self.app_settings().set_int("window-width", self.width())?;
+            self.app_settings()
+                .set_int("window-height", self.height())?;
+            self.app_settings()
+                .set_boolean("is-maximized", self.is_maximized())?;
+
+            self.app_settings()
+                .set_int("flap-width", self.flap_box().width())?;
+        }
 
         {
             // Brush page

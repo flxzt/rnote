@@ -13,6 +13,10 @@
       <default>false</default>
       <summary>Default window maximized behaviour</summary>
     </key>
+    <key name="flap-width" type="i">
+      <default>500</default>
+      <summary>flap width</summary>
+    </key>
     <key name='color-scheme' type='s'>
       <choices>
         <choice value="default" />

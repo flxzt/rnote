@@ -551,6 +551,10 @@ impl RnoteAppWindow {
         self.imp().sidebar_sep.get()
     }
 
+    pub fn flap_box(&self) -> gtk4::Box {
+        self.imp().flap_box.get()
+    }
+
     pub fn flap_header(&self) -> adw::HeaderBar {
         self.imp().flap_header.get()
     }
@@ -601,28 +605,6 @@ impl RnoteAppWindow {
 
     pub fn penssidebar(&self) -> PensSideBar {
         self.imp().penssidebar.get()
-    }
-
-    pub fn save_window_size(&self) -> anyhow::Result<()> {
-        self.app_settings().set_int("window-width", self.width())?;
-        self.app_settings()
-            .set_int("window-height", self.height())?;
-        self.app_settings()
-            .set_boolean("is-maximized", self.is_maximized())?;
-
-        Ok(())
-    }
-
-    pub fn load_window_size(&self) {
-        let width = self.app_settings().int("window-width");
-        let height = self.app_settings().int("window-height");
-        let is_maximized = self.app_settings().boolean("is-maximized");
-
-        self.set_default_size(width, height);
-
-        if is_maximized {
-            self.maximize();
-        }
     }
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (Mainloop, or event loop in another thread)

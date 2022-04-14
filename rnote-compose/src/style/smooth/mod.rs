@@ -3,9 +3,11 @@ mod smoothoptions;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
 
+use crate::builders::fociellipsebuilder::FociEllipseBuilderState;
+use crate::builders::linebuilder::LineBuilder;
 use crate::builders::penpathbuilder::PenPathBuilderState;
-use crate::builders::PenPathBuilder;
-use crate::helpers::{Affine2Helpers, Vector2Helpers};
+use crate::builders::{EllipseBuilder, FociEllipseBuilder, PenPathBuilder, RectangleBuilder};
+use crate::helpers::{AABBHelpers, Vector2Helpers};
 use crate::penpath::Segment;
 use crate::shapes::CubicBezier;
 use crate::shapes::Ellipse;
@@ -227,37 +229,11 @@ impl Composer<SmoothOptions> for Line {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let line = kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point());
+        let line = self.to_kurbo();
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
             cx.stroke(line, &stroke_brush, options.width);
-        }
-    }
-}
-
-impl Composer<SmoothOptions> for Ellipse {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        cx.transform(self.transform.affine.to_kurbo());
-
-        let ellipse = kurbo::Ellipse::new(
-            kurbo::Point { x: 0.0, y: 0.0 },
-            self.radii.to_kurbo_vec(),
-            0.0,
-        );
-
-        if let Some(fill_color) = options.fill_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(ellipse.clone(), &fill_brush);
-        }
-
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(ellipse, &stroke_brush, options.width);
         }
     }
 }
@@ -268,24 +244,7 @@ impl Composer<SmoothOptions> for Rectangle {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let shape = {
-            let tl = self.transform.affine
-                * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
-            let tr = self.transform.affine
-                * na::point![self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
-            let bl = self.transform.affine
-                * na::point![-self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
-            let br = self.transform.affine
-                * na::point![self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
-
-            kurbo::BezPath::from_vec(vec![
-                kurbo::PathEl::MoveTo(tl.coords.to_kurbo_point()),
-                kurbo::PathEl::LineTo(tr.coords.to_kurbo_point()),
-                kurbo::PathEl::LineTo(br.coords.to_kurbo_point()),
-                kurbo::PathEl::LineTo(bl.coords.to_kurbo_point()),
-                kurbo::PathEl::ClosePath,
-            ])
-        };
+        let shape = self.to_kurbo();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
@@ -295,6 +254,26 @@ impl Composer<SmoothOptions> for Rectangle {
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
             cx.stroke(shape, &stroke_brush, options.width);
+        }
+    }
+}
+
+impl Composer<SmoothOptions> for Ellipse {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        let ellipse = self.to_kurbo();
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(ellipse.clone(), &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(ellipse, &stroke_brush, options.width);
         }
     }
 }
@@ -350,5 +329,88 @@ impl Composer<SmoothOptions> for PenPathBuilder {
         };
 
         penpath.draw_composed(cx, options);
+    }
+}
+
+impl Composer<SmoothOptions> for LineBuilder {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.state_as_line().composed_bounds(options)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        let line = self.state_as_line();
+        line.draw_composed(cx, options);
+    }
+}
+
+impl Composer<SmoothOptions> for RectangleBuilder {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.state_as_rect().composed_bounds(options)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        let rect = self.state_as_rect();
+        rect.draw_composed(cx, options);
+    }
+}
+
+impl Composer<SmoothOptions> for EllipseBuilder {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.state_as_ellipse().composed_bounds(options)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        let ellipse = self.state_as_ellipse();
+        ellipse.draw_composed(cx, options);
+    }
+}
+
+impl Composer<SmoothOptions> for FociEllipseBuilder {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        match &self.state {
+            FociEllipseBuilderState::First(point) => AABB::from_half_extents(
+                na::Point2::from(*point),
+                na::Vector2::repeat(options.width),
+            ),
+            FociEllipseBuilderState::Foci(foci) => {
+                AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
+                    .loosened(options.width * 500.0)
+            }
+            FociEllipseBuilderState::FociAndPoint { foci, point } => {
+                let mut bounds =
+                    AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
+                        .loosened(options.width * 500.0);
+                bounds.take_point(na::Point2::from(*point));
+
+                bounds
+            }
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        match &self.state {
+            FociEllipseBuilderState::First(point) => {
+                let circle = kurbo::Circle::new(point.to_kurbo_point(), 2.0);
+                cx.stroke(circle, &piet::Color::MAROON, 1.0);
+            }
+            FociEllipseBuilderState::Foci(foci) => {
+                let first_circle = kurbo::Circle::new(foci[0].to_kurbo_point(), 2.0);
+                let second_circle = kurbo::Circle::new(foci[1].to_kurbo_point(), 2.0);
+
+                cx.stroke(first_circle, &piet::Color::MAROON, 1.0);
+                cx.stroke(second_circle, &piet::Color::MAROON, 1.0);
+            }
+            FociEllipseBuilderState::FociAndPoint { foci, point } => {
+                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
+
+                ellipse.draw_composed(cx, options);
+
+                let first_circle = kurbo::Circle::new(foci[0].to_kurbo_point(), 2.0);
+                let second_circle = kurbo::Circle::new(foci[1].to_kurbo_point(), 2.0);
+
+                cx.stroke(first_circle, &piet::Color::MAROON, 1.0);
+                cx.stroke(second_circle, &piet::Color::MAROON, 1.0);
+            }
+        }
     }
 }

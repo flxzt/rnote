@@ -1,6 +1,7 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
+use crate::helpers::Vector2Helpers;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
@@ -33,7 +34,8 @@ impl ShapeBehaviour for Rectangle {
         let half_extents = na::Vector2::from_homogeneous(
             self.transform.affine.into_inner().abs() * self.cuboid.half_extents.to_homogeneous(),
         )
-        .unwrap();
+        .unwrap()
+        .abs();
 
         AABB::from_half_extents(center, half_extents)
     }
@@ -50,5 +52,27 @@ impl TransformBehaviour for Rectangle {
 
     fn scale(&mut self, scale: na::Vector2<f64>) {
         self.transform.append_scale_mut(scale);
+    }
+}
+
+impl Rectangle {
+    /// to kurbo
+    pub fn to_kurbo(&self) -> kurbo::BezPath {
+        let tl = self.transform.affine
+            * na::point![-self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
+        let tr = self.transform.affine
+            * na::point![self.cuboid.half_extents[0], -self.cuboid.half_extents[1]];
+        let bl = self.transform.affine
+            * na::point![-self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
+        let br = self.transform.affine
+            * na::point![self.cuboid.half_extents[0], self.cuboid.half_extents[1]];
+
+        kurbo::BezPath::from_vec(vec![
+            kurbo::PathEl::MoveTo(tl.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(tr.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(br.coords.to_kurbo_point()),
+            kurbo::PathEl::LineTo(bl.coords.to_kurbo_point()),
+            kurbo::PathEl::ClosePath,
+        ])
     }
 }

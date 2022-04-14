@@ -1,6 +1,4 @@
 use super::StrokeBehaviour;
-use crate::pens::brush::BrushStyle;
-use crate::pens::Brush;
 use crate::render::{self};
 use crate::DrawBehaviour;
 use rnote_compose::penpath::{Element, Segment};
@@ -10,7 +8,6 @@ use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{PenPath, Style};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
-use rand::{Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -30,7 +27,7 @@ impl Default for BrushStroke {
             Segment::Dot {
                 element: Element::default(),
             },
-            &Brush::default(),
+            Style::default(),
         )
     }
 }
@@ -127,35 +124,13 @@ impl TransformBehaviour for BrushStroke {
 impl BrushStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
 
-    pub fn new(segment: Segment, brush: &Brush) -> Self {
+    pub fn new(segment: Segment, style: Style) -> Self {
         let path = PenPath::new_w_segment(segment);
 
-        Self::from_penpath(path, brush)
+        Self::from_penpath(path, style)
     }
 
-    pub fn from_penpath(path: PenPath, brush: &Brush) -> Self {
-        let seed = rand_pcg::Pcg64::from_entropy().gen();
-
-        let style = match brush.style {
-            BrushStyle::Marker => {
-                let mut options = brush.smooth_options;
-                options.segment_constant_width = true;
-
-                Style::Smooth(options)
-            }
-            BrushStyle::Solid => {
-                let options = brush.smooth_options;
-
-                Style::Smooth(options)
-            }
-            BrushStyle::Textured => {
-                let mut options = brush.textured_options;
-                options.seed = Some(seed);
-
-                Style::Textured(options)
-            }
-        };
-
+    pub fn from_penpath(path: PenPath, style: Style) -> Self {
         let hitboxes = Vec::new();
 
         Self {

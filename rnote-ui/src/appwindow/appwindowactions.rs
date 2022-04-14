@@ -4,7 +4,7 @@ use crate::{
     app::RnoteApp,
     utils, {dialogs, RnoteCanvas},
 };
-use rnote_compose::shapes::ShapeType;
+use rnote_compose::builders::ShapeBuilderType;
 use rnote_engine::engine::ExpandMode;
 use rnote_engine::pens::brush::BrushStyle;
 use rnote_engine::pens::penholder::{PenHolderEvent, PenStyle};
@@ -139,9 +139,11 @@ impl RnoteAppWindow {
         let action_brush_style =
             gio::SimpleAction::new("brush-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_brush_style);
-        let action_shape_type =
-            gio::SimpleAction::new("shape-type", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_shape_type);
+        let action_shape_buildertype = gio::SimpleAction::new(
+            "shape-buildertype",
+            Some(&glib::VariantType::new("s").unwrap()),
+        );
+        self.add_action(&action_shape_buildertype);
         let action_shaper_style =
             gio::SimpleAction::new("shaper-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_shaper_style);
@@ -574,21 +576,24 @@ impl RnoteAppWindow {
         );
 
         // Shape type
-        action_shape_type.connect_activate(
+        action_shape_buildertype.connect_activate(
         clone!(@weak self as appwindow => move |_action_shaper_type, target| {
             let shape_type = target.unwrap().str().unwrap();
 
             match shape_type {
                 "line" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.shape_type = ShapeType::Line;
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::Line;
                 },
                 "rectangle" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.shape_type = ShapeType::Rectangle;
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::Rectangle;
                 },
                 "ellipse" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.shape_type = ShapeType::Ellipse;
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::Ellipse;
                 },
-                _ => { log::error!("set invalid state of action `shape-type`")}
+                "fociellipse" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::FociEllipse;
+                },
+                _ => { log::error!("set invalid state of action `shape-buildertype`")}
             }
 
 
@@ -764,18 +769,22 @@ impl RnoteAppWindow {
                     .roughconfig_multistroke_switch()
                     .set_active(!shaper.rough_options.disable_multistroke);
 
-                match shaper.shape_type {
-                    ShapeType::Line => {
-                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_line_row()));
-                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-line-symbolic"));
+                match shaper.builder_type {
+                    ShapeBuilderType::Line => {
+                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_line_row()));
+                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-line-symbolic"));
                     }
-                    ShapeType::Rectangle => {
-                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_rectangle_row()));
-                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-rectangle-symbolic"));
+                    ShapeBuilderType::Rectangle => {
+                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_rectangle_row()));
+                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-rectangle-symbolic"));
                     }
-                    ShapeType::Ellipse => {
-                        appwindow.penssidebar().shaper_page().shapetype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapetype_ellipse_row()));
-                        appwindow.penssidebar().shaper_page().shapetype_image().set_icon_name(Some("shape-ellipse-symbolic"));
+                    ShapeBuilderType::Ellipse => {
+                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_ellipse_row()));
+                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-ellipse-symbolic"));
+                    }
+                    ShapeBuilderType::FociEllipse => {
+                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_fociellipse_row()));
+                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-fociellipse-symbolic"));
                     }
                 }
                 match shaper.style {

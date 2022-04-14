@@ -8,13 +8,12 @@ pub mod trash_comp;
 pub use chrono_comp::ChronoComponent;
 use keytree::KeyTree;
 pub use render_comp::RenderComponent;
-use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::penpath::Segment;
 pub use selection_comp::SelectionComponent;
 pub use trash_comp::TrashComponent;
 
 use crate::pens::penholder::PenStyle;
 use crate::pens::tools::DragProximityTool;
-use crate::pens::Shaper;
 use crate::strokes::BitmapImage;
 use crate::strokes::Stroke;
 use crate::strokes::StrokeBehaviour;
@@ -264,23 +263,6 @@ impl StrokeStore {
     pub fn add_segment_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
         if let Some(Stroke::BrushStroke(ref mut brushstroke)) = self.strokes.get_mut(key) {
             brushstroke.push_segment(segment);
-
-            if let Some(render_comp) = self.render_components.get_mut(key) {
-                render_comp.regenerate_flag = true;
-            }
-        }
-    }
-
-    /// Needs rendering regeneration after calling
-    pub fn update_shapestroke(
-        &mut self,
-        key: StrokeKey,
-        shaper: &mut Shaper,
-        new_element: Element,
-    ) {
-        if let Some(Stroke::ShapeStroke(ref mut shapestroke)) = self.strokes.get_mut(key) {
-            shapestroke.update_shape(shaper, new_element);
-            self.key_tree.update_with_key(key, shapestroke.bounds());
 
             if let Some(render_comp) = self.render_components.get_mut(key) {
                 render_comp.regenerate_flag = true;

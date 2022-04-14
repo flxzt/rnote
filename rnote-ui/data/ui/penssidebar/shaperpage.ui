@@ -225,15 +225,15 @@
         <property name="orientation">vertical</property>
         <property name="vexpand">false</property>
         <child>
-          <object class="GtkMenuButton" id="shapetype_menubutton">
+          <object class="GtkMenuButton" id="shapebuildertype_menubutton">
             <property name="hexpand">true</property>
             <property name="halign">fill</property>
             <property name="height-request">48</property>
             <property name="direction">left</property>
             <property name="tooltip_text" translatable="yes">Shape types</property>
-            <property name="popover">shapetype_popover</property>
+            <property name="popover">shapebuildertype_popover</property>
             <child>
-              <object class="GtkImage" id="shapetype_image">
+              <object class="GtkImage" id="shapebuildertype_image">
                 <property name="icon-name">shape-line-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
@@ -242,7 +242,7 @@
         </child>
       </object>
     </child>
-    <object class="GtkPopover" id="shapetype_popover">
+    <object class="GtkPopover" id="shapebuildertype_popover">
       <child>
         <object class="GtkBox">
           <property name="orientation">vertical</property>
@@ -251,7 +251,7 @@
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
-              <property name="label" translatable="yes">Shape type</property>
+              <property name="label" translatable="yes">Shape builder type</property>
               <property name="halign">center</property>
               <property name="margin-bottom">12</property>
               <style>
@@ -260,7 +260,7 @@
             </object>
           </child>
           <child>
-            <object class="GtkListBox" id="shapetype_listbox">
+            <object class="GtkListBox" id="shapebuildertype_listbox">
               <property name="width-request">300</property>
               <property name="selection-mode">single</property>
               <style>
@@ -268,7 +268,7 @@
                 <class name="large" />
               </style>
               <child>
-                <object class="AdwActionRow" id="shapetype_line_row">
+                <object class="AdwActionRow" id="shapebuildertype_line_row">
                   <property name="title" translatable="yes">Line</property>
                   <child type="prefix">
                     <object class="GtkImage">
@@ -279,7 +279,7 @@
                 </object>
               </child>
               <child>
-                <object class="AdwActionRow" id="shapetype_rectangle_row">
+                <object class="AdwActionRow" id="shapebuildertype_rectangle_row">
                   <property name="title" translatable="yes">Rectangle</property>
                   <child type="prefix">
                     <object class="GtkImage">
@@ -290,11 +290,22 @@
                 </object>
               </child>
               <child>
-                <object class="AdwActionRow" id="shapetype_ellipse_row">
+                <object class="AdwActionRow" id="shapebuildertype_ellipse_row">
                   <property name="title" translatable="yes">Ellipse</property>
                   <child type="prefix">
                     <object class="GtkImage">
                       <property name="icon-name">shape-ellipse-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_fociellipse_row">
+                  <property name="title" translatable="yes">Ellipse with Foci</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-fociellipse-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>

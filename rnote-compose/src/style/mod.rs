@@ -25,3 +25,9 @@ pub enum Style {
     /// A textured style
     Textured(TexturedOptions),
 }
+
+impl Default for Style {
+    fn default() -> Self {
+        Self::Smooth(SmoothOptions::default())
+    }
+}

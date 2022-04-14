@@ -41,17 +41,19 @@ mod imp {
         #[template_child]
         pub fill_colorpicker: TemplateChild<ColorPicker>,
         #[template_child]
-        pub shapetype_menubutton: TemplateChild<MenuButton>,
+        pub shapebuildertype_menubutton: TemplateChild<MenuButton>,
         #[template_child]
-        pub shapetype_image: TemplateChild<Image>,
+        pub shapebuildertype_image: TemplateChild<Image>,
         #[template_child]
-        pub shapetype_listbox: TemplateChild<ListBox>,
+        pub shapebuildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub shapetype_line_row: TemplateChild<adw::ActionRow>,
+        pub shapebuildertype_line_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapetype_rectangle_row: TemplateChild<adw::ActionRow>,
+        pub shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
         #[template_child]
-        pub shapetype_ellipse_row: TemplateChild<adw::ActionRow>,
+        pub shapebuildertype_ellipse_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub shapebuildertype_fociellipse_row: TemplateChild<adw::ActionRow>,
     }
 
     #[glib::object_subclass]
@@ -163,28 +165,32 @@ impl ShaperPage {
         self.imp().fill_colorpicker.get()
     }
 
-    pub fn shapetype_menubutton(&self) -> MenuButton {
-        self.imp().shapetype_menubutton.get()
+    pub fn shapebuildertype_menubutton(&self) -> MenuButton {
+        self.imp().shapebuildertype_menubutton.get()
     }
 
-    pub fn shapetype_image(&self) -> Image {
-        self.imp().shapetype_image.get()
+    pub fn shapebuildertype_image(&self) -> Image {
+        self.imp().shapebuildertype_image.get()
     }
 
-    pub fn shapetype_listbox(&self) -> ListBox {
-        self.imp().shapetype_listbox.get()
+    pub fn shapebuildertype_listbox(&self) -> ListBox {
+        self.imp().shapebuildertype_listbox.get()
     }
 
-    pub fn shapetype_line_row(&self) -> adw::ActionRow {
-        self.imp().shapetype_line_row.get()
+    pub fn shapebuildertype_line_row(&self) -> adw::ActionRow {
+        self.imp().shapebuildertype_line_row.get()
     }
 
-    pub fn shapetype_rectangle_row(&self) -> adw::ActionRow {
-        self.imp().shapetype_rectangle_row.get()
+    pub fn shapebuildertype_rectangle_row(&self) -> adw::ActionRow {
+        self.imp().shapebuildertype_rectangle_row.get()
     }
 
-    pub fn shapetype_ellipse_row(&self) -> adw::ActionRow {
-        self.imp().shapetype_ellipse_row.get()
+    pub fn shapebuildertype_ellipse_row(&self) -> adw::ActionRow {
+        self.imp().shapebuildertype_ellipse_row.get()
+    }
+
+    pub fn shapebuildertype_fociellipse_row(&self) -> adw::ActionRow {
+        self.imp().shapebuildertype_fociellipse_row.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -320,22 +326,26 @@ impl ShaperPage {
             }),
         );
 
-        // shape type
-        self.shapetype_listbox().connect_row_selected(
+        // shape builder type
+        self.shapebuildertype_listbox().connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shapetype_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
                     match selected_row.index() {
                         // Line
                         0 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-type", Some(&"line".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"line".to_variant()));
                         }
                         // Rectangle
                         1 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-type", Some(&"rectangle".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"rectangle".to_variant()));
                         }
                         // Ellipse
                         2 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-type", Some(&"ellipse".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"ellipse".to_variant()));
+                        }
+                        // Ellipse
+                        3 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"fociellipse".to_variant()));
                         }
                         _ => {}
                     }

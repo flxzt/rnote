@@ -13,5 +13,4 @@ pub use line::Line;
 pub use quadbez::QuadraticBezier;
 pub use rectangle::Rectangle;
 pub use shape::Shape;
-pub use shape::ShapeType;
 pub use shapebehaviour::ShapeBehaviour;

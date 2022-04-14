@@ -4,13 +4,14 @@ use crate::strokes::Stroke;
 use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penpath::Segment;
-use rnote_compose::PenEvent;
+use rnote_compose::{PenEvent, Style};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::style::textured::TexturedOptions;
 use rnote_compose::style::Composer;
 use serde::{Deserialize, Serialize};
+use rand::{Rng, SeedableRng};
 
 use super::penbehaviour::PenBehaviour;
 use super::AudioPlayer;
@@ -32,6 +33,15 @@ impl Default for BrushStyle {
     }
 }
 
+#[derive(Debug, Clone)]
+enum BrushState {
+    Idle,
+    Drawing {
+        path_builder: PenPathBuilder,
+        current_stroke_key: StrokeKey,
+    },
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "brush")]
 pub struct Brush {
@@ -43,9 +53,7 @@ pub struct Brush {
     pub textured_options: TexturedOptions,
 
     #[serde(skip)]
-    current_stroke_key: Option<StrokeKey>,
-    #[serde(skip)]
-    path_builder: PenPathBuilder,
+    state: BrushState,
 }
 
 impl Default for Brush {
@@ -54,8 +62,7 @@ impl Default for Brush {
             style: BrushStyle::default(),
             smooth_options: SmoothOptions::default(),
             textured_options: TexturedOptions::default(),
-            current_stroke_key: None,
-            path_builder: PenPathBuilder::default(),
+            state: BrushState::Idle,
         }
     }
 }
@@ -70,24 +77,26 @@ impl PenBehaviour for Brush {
         audioplayer: Option<&mut AudioPlayer>,
     ) -> SurfaceFlags {
         let surface_flags = SurfaceFlags::default();
+        let style = self.style;
 
-        match (self.current_stroke_key, event) {
+        match (&mut self.state, event) {
             (
-                None,
+                BrushState::Idle,
                 pen_event @ PenEvent::Down {
                     element,
                     shortcut_key: _,
                 },
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
-                    self.start_audio(audioplayer);
+                    Self::start_audio(style, audioplayer);
 
                     let brushstroke =
-                        Stroke::BrushStroke(BrushStroke::new(Segment::Dot { element }, self));
+                        Stroke::BrushStroke(BrushStroke::new(Segment::Dot { element }, self.gen_style_for_current_options()));
                     let current_stroke_key = store.insert_stroke(brushstroke);
-                    self.current_stroke_key = Some(current_stroke_key);
 
-                    if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
+                    let mut path_builder = PenPathBuilder::start(element);
+
+                    if let Some(new_segments) = path_builder.handle_event(pen_event) {
                         for new_segment in new_segments {
                             store.add_segment_to_brushstroke(current_stroke_key, new_segment);
                         }
@@ -97,25 +106,34 @@ impl PenBehaviour for Brush {
                         current_stroke_key,
                         camera.image_scale(),
                     );
+
+                    self.state = BrushState::Drawing {
+                        path_builder,
+                        current_stroke_key,
+                    };
                 }
             }
+            (BrushState::Idle, PenEvent::Up { .. }) => Self::stop_audio(style, audioplayer),
             (
-                Some(current_stroke_key),
+                BrushState::Drawing {
+                    path_builder,
+                    current_stroke_key,
+                },
                 pen_event @ PenEvent::Down {
                     element,
                     shortcut_key: _,
                 },
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
-                    if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
+                    if let Some(new_segments) = path_builder.handle_event(pen_event) {
                         let no_segments = new_segments.len();
 
                         for new_segment in new_segments {
-                            store.add_segment_to_brushstroke(current_stroke_key, new_segment);
+                            store.add_segment_to_brushstroke(*current_stroke_key, new_segment);
                         }
 
                         if let Err(e) = store.append_rendering_last_segments(
-                            current_stroke_key,
+                            *current_stroke_key,
                             no_segments,
                             camera.image_scale(),
                         ) {
@@ -124,48 +142,54 @@ impl PenBehaviour for Brush {
                     }
                 }
             }
-            (None, PenEvent::Up { .. }) => self.stop_audio(audioplayer),
             (
-                Some(current_stroke_key),
+                BrushState::Drawing {
+                    ref mut path_builder,
+                    current_stroke_key,
+                },
                 pen_event @ PenEvent::Up {
                     element: _,
                     shortcut_key: _,
                 },
             ) => {
-                self.stop_audio(audioplayer);
+                Self::stop_audio(style, audioplayer);
 
-                if let Some(new_segments) = self.path_builder.handle_event(pen_event) {
+                if let Some(new_segments) = path_builder.handle_event(pen_event) {
                     for new_segment in new_segments {
-                        store.add_segment_to_brushstroke(current_stroke_key, new_segment);
+                        store.add_segment_to_brushstroke(*current_stroke_key, new_segment);
                     }
                 }
 
                 // Finish up the last stroke
-                store.update_geometry_for_stroke(current_stroke_key);
+                store.update_geometry_for_stroke(*current_stroke_key);
                 store.regenerate_rendering_for_stroke_threaded(
-                    current_stroke_key,
+                    *current_stroke_key,
                     camera.image_scale(),
                 );
-                self.current_stroke_key = None;
+
+                self.state = BrushState::Idle;
             }
-            (None, pen_event @ PenEvent::Cancel) => {
-                self.stop_audio(audioplayer);
-                self.path_builder.handle_event(pen_event);
+            (BrushState::Idle, PenEvent::Cancel) => {
+                Self::stop_audio(style, audioplayer);
             }
-            (Some(current_stroke_key), pen_event @ PenEvent::Cancel) => {
-                self.stop_audio(audioplayer);
-                self.path_builder.handle_event(pen_event);
+            (
+                BrushState::Drawing {
+                    current_stroke_key, ..
+                },
+                PenEvent::Cancel,
+            ) => {
+                Self::stop_audio(style, audioplayer);
 
                 // Finish up the last stroke
-                store.update_geometry_for_stroke(current_stroke_key);
+                store.update_geometry_for_stroke(*current_stroke_key);
                 store.regenerate_rendering_for_stroke_threaded(
-                    current_stroke_key,
+                    *current_stroke_key,
                     camera.image_scale(),
                 );
-                self.current_stroke_key = None;
+
+                self.state = BrushState::Idle;
             }
-            (None, PenEvent::Proximity { .. }) => {}
-            (Some(_), PenEvent::Proximity { .. }) => {}
+            (_, PenEvent::Proximity { .. }) => {}
         }
 
         surface_flags
@@ -174,13 +198,18 @@ impl PenBehaviour for Brush {
 
 impl DrawOnSheetBehaviour for Brush {
     fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
-        let bounds = match self.style {
-            BrushStyle::Marker => self.path_builder.composed_bounds(&self.smooth_options),
-            BrushStyle::Solid => self.path_builder.composed_bounds(&self.smooth_options),
-            BrushStyle::Textured => self.path_builder.composed_bounds(&self.textured_options),
-        };
-
-        Some(bounds)
+        match (&self.state, self.style) {
+            (BrushState::Idle, _) => None,
+            (BrushState::Drawing { path_builder, .. }, BrushStyle::Marker) => {
+                Some(path_builder.composed_bounds(&self.smooth_options))
+            }
+            (BrushState::Drawing { path_builder, .. }, BrushStyle::Solid) => {
+                Some(path_builder.composed_bounds(&self.smooth_options))
+            }
+            (BrushState::Drawing { path_builder, .. }, BrushStyle::Textured) => {
+                Some(path_builder.composed_bounds(&self.textured_options))
+            }
+        }
     }
 
     fn draw_on_sheet(
@@ -198,16 +227,17 @@ impl DrawOnSheetBehaviour for Brush {
             a: 1.0,
         }); */
 
-        match self.style {
-            BrushStyle::Marker => {
-                self.path_builder.draw_composed(cx, &smooth_options);
+        match (&self.state, self.style) {
+            (BrushState::Drawing { path_builder, .. }, BrushStyle::Marker) => {
+                path_builder.draw_composed(cx, &smooth_options);
             }
-            BrushStyle::Solid => {
-                self.path_builder.draw_composed(cx, &smooth_options);
+            (BrushState::Drawing { path_builder, .. }, BrushStyle::Solid) => {
+                path_builder.draw_composed(cx, &smooth_options);
             }
-            BrushStyle::Textured => {
-                self.path_builder.draw_composed(cx, &self.textured_options);
+            (BrushState::Drawing { path_builder, .. }, BrushStyle::Textured) => {
+                path_builder.draw_composed(cx, &self.textured_options);
             }
+            _ => {}
         }
 
         Ok(())
@@ -217,9 +247,9 @@ impl DrawOnSheetBehaviour for Brush {
 impl Brush {
     pub const INPUT_OVERSHOOT: f64 = 30.0;
 
-    fn start_audio(&self, audioplayer: Option<&mut AudioPlayer>) {
+    fn start_audio(style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {
-            match self.style {
+            match style {
                 BrushStyle::Marker => {
                     audioplayer.play_random_marker_sound();
                 }
@@ -230,9 +260,33 @@ impl Brush {
         }
     }
 
-    fn stop_audio(&self, audioplayer: Option<&mut AudioPlayer>) {
+    fn stop_audio(_style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {
             audioplayer.stop_random_brush_sond();
+        }
+    }
+
+    pub fn gen_style_for_current_options(&self) -> Style {
+        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+
+        match &self.style {
+            BrushStyle::Marker => {
+                let mut options = self.smooth_options.clone();
+                options.segment_constant_width = true;
+
+                Style::Smooth(options)
+            }
+            BrushStyle::Solid => {
+                let options = self.smooth_options.clone();
+
+                Style::Smooth(options)
+            }
+            BrushStyle::Textured => {
+                let mut options = self.textured_options.clone();
+                options.seed = seed;
+
+                Style::Textured(options)
+            }
         }
     }
 }

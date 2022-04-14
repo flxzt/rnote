@@ -157,7 +157,7 @@ impl Stroke {
             .collect::<PenPath>();
 
         Ok(Stroke::BrushStroke(BrushStroke::from_penpath(
-            penpath, &brush,
+            penpath, brush.gen_style_for_current_options(),
         )))
     }
 

@@ -1,7 +1,7 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::AABBHelpers;
+use crate::helpers::{AABBHelpers, Vector2Helpers};
 use crate::shapes::Rectangle;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
@@ -56,5 +56,10 @@ impl Line {
             cuboid: p2d::shape::Cuboid::new(na::vector![magn / 2.0, width / 2.0]),
             transform: Transform::new_w_isometry(na::Isometry2::new(self.start + vec / 2.0, angle)),
         }
+    }
+
+    /// to kurbo
+    pub fn to_kurbo(&self) -> kurbo::Line {
+        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point())
     }
 }

@@ -4,27 +4,6 @@ use serde::{Deserialize, Serialize};
 use super::{Ellipse, Line, Rectangle, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
-#[serde(rename = "shape_type")]
-/// A choice of a shape type
-pub enum ShapeType {
-    #[serde(rename = "line")]
-    /// A line shape
-    Line,
-    #[serde(rename = "rectangle")]
-    /// A rectangle shape
-    Rectangle,
-    #[serde(rename = "ellipse")]
-    /// An ellipse shape
-    Ellipse,
-}
-
-impl Default for ShapeType {
-    fn default() -> Self {
-        Self::Line
-    }
-}
-
 // Container type to store shapes
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shape")]

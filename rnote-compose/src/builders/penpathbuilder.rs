@@ -13,25 +13,26 @@ pub(crate) enum PenPathBuilderState {
     During,
 }
 
-impl Default for PenPathBuilderState {
-    fn default() -> Self {
-        Self::Start
-    }
-}
-
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(default, rename = "penpathbuilder")]
+#[derive(Debug, Clone)]
 /// The pen path builder
 pub struct PenPathBuilder {
-    #[serde(rename = "state")]
     pub(crate) state: PenPathBuilderState,
-    #[serde(rename = "buffer")]
     /// Buffered elements, which is filled up by new pen events and used to try to build path segments
     pub buffer: VecDeque<Element>,
 }
 
 impl ShapeBuilderBehaviour for PenPathBuilder {
     type BuildedShape = Segment;
+
+    fn start(element: Element) -> Self {
+        let mut buffer = VecDeque::new();
+        buffer.push_back(element);
+
+        Self {
+            state: PenPathBuilderState::Start,
+            buffer,
+        }
+    }
 
     fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
         /*         log::debug!(

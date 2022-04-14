@@ -5,8 +5,6 @@ pub use transformbehaviour::TransformBehaviour;
 
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::Vector2Helpers;
-
 /// To be used as state in a stroke to help implement the StrokeBehaviour trait
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "transform")]
@@ -52,22 +50,14 @@ impl Transform {
         (self.affine * na::point![0.0, 0.0]).coords
     }
 
-    /// Returns the rotation part of the transform
-    pub fn rotation_part(&self) -> f64 {
-        na::Vector2::x().angle_ahead(&(self.affine * na::Vector2::x()))
-    }
-
-    /// Returns the scale part of the transform
-    pub fn scale_part(&self) -> na::Vector2<f64> {
-        let scale_x = (self.affine * na::Vector2::x()).magnitude();
-        let scale_y = (self.affine * na::Vector2::y()).magnitude();
-
-        na::vector![scale_x, scale_y]
-    }
-
     /// transforms a point by the transform
     pub fn transform_point(&self, point: na::Point2<f64>) -> na::Point2<f64> {
         self.affine * point
+    }
+
+    /// transform a vec ( translation will be ignored! )
+    pub fn transform_vec(&self, vec: na::Vector2<f64>) -> na::Vector2<f64> {
+        self.affine * vec
     }
 
     /// appends a translation to the transform

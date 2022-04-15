@@ -57,6 +57,9 @@ impl StrokeBehaviour for BitmapImage {
 impl DrawBehaviour for BitmapImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
+
+        cx.transform(self.rectangle.transform.affine.to_kurbo());
+
         let piet_image = cx
             .make_image(
                 self.image.pixel_width as usize,
@@ -65,8 +68,6 @@ impl DrawBehaviour for BitmapImage {
                 piet_image_format,
             )
             .map_err(|e| anyhow::anyhow!("{}", e))?;
-
-        cx.transform(self.rectangle.transform.affine.to_kurbo());
 
         let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
         cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);

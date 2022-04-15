@@ -25,6 +25,8 @@ pub trait DrawOnSheetBehaviour {
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        snapshot.save();
+
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             let viewport = camera.viewport();
 
@@ -47,6 +49,8 @@ pub trait DrawOnSheetBehaviour {
 
             self.draw_on_sheet(&mut piet_cx, sheet_bounds, camera)?;
         }
+
+        snapshot.restore();
 
         Ok(())
     }

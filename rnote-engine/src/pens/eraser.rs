@@ -1,7 +1,7 @@
 use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
-use rnote_compose::{Color, PenEvent};
+use rnote_compose::{color, PenEvent};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
@@ -62,18 +62,9 @@ impl PenBehaviour for Eraser {
 
 impl Eraser {
     const OUTLINE_WIDTH: f64 = 2.0;
-    const OUTLINE_COLOR: Color = Color {
-        r: 0.8,
-        g: 0.1,
-        b: 0.0,
-        a: 0.5,
-    };
-    const FILL_COLOR: Color = Color {
-        r: 0.7,
-        g: 0.2,
-        b: 0.1,
-        a: 0.5,
-    };
+    const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(0xf0);
+    const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x30);
+
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 30.0;
@@ -106,10 +97,10 @@ impl DrawOnSheetBehaviour for Eraser {
             let fill_rect = bounds.to_kurbo_rect();
             let outline_rect = bounds.tightened(Self::OUTLINE_WIDTH * 0.5).to_kurbo_rect();
 
-            cx.fill(fill_rect, &piet::PaintBrush::Color(Self::FILL_COLOR.into()));
+            cx.fill(fill_rect, &piet::PaintBrush::Color(Self::FILL_COLOR));
             cx.stroke(
                 outline_rect,
-                &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
+                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
                 Self::OUTLINE_WIDTH,
             );
         }

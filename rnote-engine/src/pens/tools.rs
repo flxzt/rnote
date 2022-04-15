@@ -2,7 +2,7 @@ use crate::sheet::Sheet;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::{Color, PenEvent};
+use rnote_compose::{color, PenEvent};
 
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
@@ -33,25 +33,11 @@ impl Default for ExpandSheetTool {
 
 impl ExpandSheetTool {
     pub const Y_OFFSET_THRESHOLD: f64 = 2.0;
-    pub const FILL_COLOR: Color = Color {
-        r: 0.7,
-        g: 0.8,
-        b: 0.9,
-        a: 0.15,
-    };
-    pub const THRESHOLD_LINE_COLOR: Color = Color {
-        r: 0.5,
-        g: 0.7,
-        b: 0.7,
-        a: 1.0,
-    };
+    pub const FILL_COLOR: piet::Color = color::GNOME_BLUES[0].with_a8(0x16);
+    pub const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(0xf0);
+    pub const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
+
     pub const THRESHOLD_LINE_WIDTH: f64 = 4.0;
-    pub const OFFSET_LINE_COLOR: Color = Color {
-        r: 0.0,
-        g: 0.7,
-        b: 1.0,
-        a: 1.0,
-    };
     pub const OFFSET_LINE_WIDTH: f64 = 2.0;
 }
 
@@ -85,17 +71,14 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
             tool_bounds.mins.coords.to_kurbo_point(),
             tool_bounds.maxs.coords.to_kurbo_point(),
         );
-        cx.fill(
-            tool_bounds_rect,
-            &piet::PaintBrush::Color(Self::FILL_COLOR.into()),
-        );
+        cx.fill(tool_bounds_rect, &piet::PaintBrush::Color(Self::FILL_COLOR));
 
         let threshold_line =
             kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y));
 
         cx.stroke_styled(
             threshold_line,
-            &piet::PaintBrush::Color(Self::THRESHOLD_LINE_COLOR.into()),
+            &piet::PaintBrush::Color(Self::THRESHOLD_LINE_COLOR),
             Self::THRESHOLD_LINE_WIDTH,
             &piet::StrokeStyle::new().dash_pattern(&[12.0, 6.0]),
         );
@@ -106,7 +89,7 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
         );
         cx.stroke(
             offset_line,
-            &piet::PaintBrush::Color(Self::OFFSET_LINE_COLOR.into()),
+            &piet::PaintBrush::Color(Self::OFFSET_LINE_COLOR),
             Self::OFFSET_LINE_WIDTH,
         );
 
@@ -136,20 +119,11 @@ impl Default for DragProximityTool {
 }
 
 impl DragProximityTool {
-    pub const OFFSET_MAGN_THRESHOLD: f64 = 4.0;
-    pub const OUTLINE_COLOR: Color = Color {
-        r: 0.5,
-        g: 0.7,
-        b: 0.7,
-        a: 1.0,
-    };
+    const OFFSET_MAGNITUDE_THRESHOLD: f64 = 4.0;
+    const OUTLINE_COLOR: piet::Color = color::GNOME_GREENS[4];
+    const FILL_COLOR: piet::Color = color::GNOME_BLUES[1].with_a8(0x60);
+
     pub const OUTLINE_WIDTH: f64 = 1.0;
-    pub const FILL_COLOR: Color = Color {
-        r: 0.8,
-        g: 0.8,
-        b: 0.8,
-        a: 0.2,
-    };
     pub const RADIUS_DEFAULT: f64 = 60.0;
 }
 
@@ -175,10 +149,10 @@ impl DrawOnSheetBehaviour for DragProximityTool {
 
             let circle = kurbo::Circle::new(self.pos.to_kurbo_point(), radius);
 
-            cx.fill(circle, &piet::PaintBrush::Color(Self::FILL_COLOR.into()));
+            cx.fill(circle, &piet::PaintBrush::Color(Self::FILL_COLOR));
             cx.stroke(
                 circle,
-                &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
+                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
                 Self::OUTLINE_WIDTH,
             );
         }
@@ -200,6 +174,13 @@ impl Default for OffsetCameraTool {
             start: na::Vector2::zeros(),
         }
     }
+}
+
+impl OffsetCameraTool {
+    const DRAW_SIZE: na::Vector2<f64> = na::vector![28.0, 28.0];
+    const PATH_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(0xf0);
+    const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(0xf0);
+    const PATH_WIDTH: f64 = 2.0;
 }
 
 impl DrawOnSheetBehaviour for OffsetCameraTool {
@@ -226,34 +207,17 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
 
             cx.stroke(
                 bez_path.clone(),
-                &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
+                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
                 Self::PATH_WIDTH,
             );
             cx.stroke(
                 bez_path,
-                &piet::PaintBrush::Color(Self::PATH_COLOR.into()),
+                &piet::PaintBrush::Color(Self::PATH_COLOR),
                 Self::PATH_WIDTH * 0.5,
             );
         }
         Ok(())
     }
-}
-
-impl OffsetCameraTool {
-    const DRAW_SIZE: na::Vector2<f64> = na::vector![28.0, 28.0];
-    const PATH_COLOR: Color = Color {
-        r: 0.5,
-        g: 0.7,
-        b: 0.7,
-        a: 1.0,
-    };
-    const OUTLINE_COLOR: Color = Color {
-        r: 0.9,
-        g: 0.9,
-        b: 0.9,
-        a: 0.8,
-    };
-    const PATH_WIDTH: f64 = 2.0;
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -363,7 +327,7 @@ impl PenBehaviour for Tools {
                     self.dragproximity_tool.offset = offset;
 
                     if self.dragproximity_tool.offset.magnitude()
-                        > DragProximityTool::OFFSET_MAGN_THRESHOLD
+                        > DragProximityTool::OFFSET_MAGNITUDE_THRESHOLD
                     {
                         store.drag_strokes_proximity(&self.dragproximity_tool);
                         store.regenerate_rendering_in_viewport_threaded(

@@ -227,7 +227,7 @@ impl DrawOnSheetBehaviour for Brush {
         _camera: &Camera,
     ) -> anyhow::Result<()> {
         // Different color for debugging
-        let smooth_options = self.smooth_options;
+        let smooth_options = self.smooth_options.clone();
         /*         smooth_options.stroke_color = Some(rnote_compose::Color {
             r: 1.0,
             g: 0.0,

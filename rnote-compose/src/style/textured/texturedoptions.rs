@@ -6,7 +6,7 @@ use super::textureddotsdistribution::TexturedDotsDistribution;
 
 /// The Options of how a textured shape should look
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "textured_options")]
 pub struct TexturedOptions {
     /// An optional seed to generate reproducable strokes
@@ -38,7 +38,7 @@ impl Default for TexturedOptions {
             seed: None,
             width: Self::WIDTH_DEFAULT,
             density: Self::DENSITY_DEFAULT,
-            stroke_color: Some(Self::COLOR_DEFAULT),
+            stroke_color: Some(Color::BLACK),
             radii: Self::RADII_DEFAULT,
             distribution: TexturedDotsDistribution::default(),
             segment_constant_width: false,
@@ -49,13 +49,6 @@ impl Default for TexturedOptions {
 impl TexturedOptions {
     /// The default width
     pub const WIDTH_DEFAULT: f64 = 1.0;
-    /// The default color
-    pub const COLOR_DEFAULT: Color = Color {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    };
     /// Density default
     pub const DENSITY_DEFAULT: f64 = 5.0;
     /// Radii default

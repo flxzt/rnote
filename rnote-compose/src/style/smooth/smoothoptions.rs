@@ -2,7 +2,7 @@ use crate::Color;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "smooth_options")]
 /// Options for shapes that can be drawn smoothly (plain)
 pub struct SmoothOptions {
@@ -24,7 +24,7 @@ impl Default for SmoothOptions {
     fn default() -> Self {
         Self {
             width: Self::WIDTH_DEFAULT,
-            stroke_color: Some(Self::COLOR_DEFAULT),
+            stroke_color: Some(Color::BLACK),
             fill_color: None,
             segment_constant_width: false,
         }
@@ -38,11 +38,4 @@ impl SmoothOptions {
     pub const WIDTH_MIN: f64 = 0.1;
     /// The max width
     pub const WIDTH_MAX: f64 = 1000.0;
-    /// The default color
-    pub const COLOR_DEFAULT: Color = Color {
-        r: 0.0,
-        g: 0.0,
-        b: 0.0,
-        a: 1.0,
-    };
 }

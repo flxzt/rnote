@@ -152,6 +152,8 @@ impl Stroke {
         brush.style = BrushStyle::Solid;
         brush.smooth_options = smooth_options;
 
+        let absolute_width = brush.smooth_options.width;
+
         let elements = stroke
             .coords
             .into_iter()
@@ -161,7 +163,7 @@ impl Stroke {
                 // Defaulting to PRESSURE_DEFAULT if width iterator is shorter than the coords vec
                 let pressure = width_iter
                     .next()
-                    .map(|width| width / smooth_options.width)
+                    .map(|width| width / absolute_width)
                     .unwrap_or(Element::PRESSURE_DEFAULT);
 
                 Element::new(coords, pressure)

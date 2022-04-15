@@ -37,6 +37,8 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
     }
 
     fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
+        //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
+
         match (&mut self.state, event) {
             (FociEllipseBuilderState::First(first), PenEvent::Down { element, .. }) => {
                 *first = element.pos;

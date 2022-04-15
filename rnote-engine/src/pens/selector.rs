@@ -7,7 +7,8 @@ use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 use rnote_compose::penpath::Element;
-use rnote_compose::{Color, PenEvent};
+use rnote_compose::style::drawhelpers::{self, NodeState};
+use rnote_compose::{color, Color, PenEvent};
 
 use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
@@ -340,9 +341,7 @@ impl PenBehaviour for Selector {
                             } else {
                                 selection_bounds.extents() + pos_offset
                             }
-                            .maxs(&na::Vector2::repeat(
-                                (Self::NODE_SIZE * 2.0) / camera.total_zoom(),
-                            ));
+                            .maxs(&((Self::RESIZE_NODE_SIZE * 2.0) / camera.total_zoom()));
 
                             let new_bounds = match from_corner {
                                 ResizeCorner::TopLeft => AABB::new(
@@ -434,13 +433,13 @@ impl DrawOnSheetBehaviour for Selector {
                 if let Some(first) = path_iter.next() {
                     let mut new_bounds = AABB::from_half_extents(
                         na::Point2::from(first.pos),
-                        na::Vector2::repeat(Self::PATH_WIDTH / total_zoom),
+                        na::Vector2::repeat(Self::SELECTION_OUTLINE_WIDTH / total_zoom),
                     );
 
                     path_iter.for_each(|element| {
                         let pos_bounds = AABB::from_half_extents(
                             na::Point2::from(element.pos),
-                            na::Vector2::repeat(Self::PATH_WIDTH / total_zoom),
+                            na::Vector2::repeat(Self::SELECTION_OUTLINE_WIDTH / total_zoom),
                         );
                         new_bounds.merge(&pos_bounds);
                     });
@@ -452,7 +451,7 @@ impl DrawOnSheetBehaviour for Selector {
             }
             SelectorState::ModifySelection {
                 selection_bounds, ..
-            } => Some(selection_bounds.loosened(Self::NODE_SIZE / total_zoom)),
+            } => Some(selection_bounds.extend_by(Self::RESIZE_NODE_SIZE / total_zoom)),
         }
     }
 
@@ -493,13 +492,13 @@ impl DrawOnSheetBehaviour for Selector {
 
                 cx.fill(
                     bez_path.clone(),
-                    &piet::PaintBrush::Color(Self::FILL_COLOR.into()),
+                    &piet::PaintBrush::Color(Self::SELECTION_FILL_COLOR.into()),
                 );
                 cx.stroke_styled(
                     bez_path,
                     &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
-                    Self::PATH_WIDTH / total_zoom,
-                    &piet::StrokeStyle::new().dash_pattern(&Self::DASH_PATTERN),
+                    Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+                    &piet::StrokeStyle::new().dash_pattern(&Self::SELECTING_DASH_PATTERN),
                 );
 
                 Ok(())
@@ -541,37 +540,13 @@ impl Selector {
     /// The threshold where a resize is applied ( in offset magnitude, surface coords )
     const RESIZE_MAGNITUDE_THRESHOLD: f64 = 1.0;
 
-    const PATH_WIDTH: f64 = 1.8;
-    const OUTLINE_COLOR: Color = Color {
-        r: 0.6,
-        g: 0.6,
-        b: 0.6,
-        a: 0.8,
-    };
-    const FILL_COLOR: Color = Color {
-        r: 0.85,
-        g: 0.85,
-        b: 0.85,
-        a: 0.15,
-    };
-    const NODE_PATH_WIDTH: f64 = 1.8;
-    const NODE_COLOR: Color = Color {
-        r: 0.1,
-        g: 0.1,
-        b: 0.9,
-        a: 1.0,
-    };
-    const NODE_CURRENT_FILL: Color = Color {
-        r: 0.0,
-        g: 0.3,
-        b: 0.7,
-        a: 0.3,
-    };
+    const SELECTION_OUTLINE_WIDTH: f64 = 1.8;
+    const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(0xf0);
+    const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x16);
+    const SELECTING_DASH_PATTERN: [f64; 2] = [8.0, 12.0];
 
-    const DASH_PATTERN: [f64; 2] = [8.0, 12.0];
-
-    const NODE_SIZE: f64 = 16.0;
-    const NODE_RECT_RADIUS: f64 = 2.0;
+    const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
+    const ROTATE_NODE_SIZE: f64 = 16.0;
 
     /// Sets the state to a selection
     pub fn set_selection(&mut self, selection: Vec<StrokeKey>, selection_bounds: AABB) {
@@ -601,19 +576,19 @@ impl Selector {
         match position {
             ResizeCorner::TopLeft => AABB::from_half_extents(
                 na::point![selection_bounds.mins[0], selection_bounds.mins[1]],
-                na::Vector2::repeat(Self::NODE_SIZE * 0.5 / total_zoom),
+                Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::TopRight => AABB::from_half_extents(
                 na::point![selection_bounds.maxs[0], selection_bounds.mins[1]],
-                na::Vector2::repeat(Self::NODE_SIZE * 0.5 / total_zoom),
+                Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::BottomLeft => AABB::from_half_extents(
                 na::point![selection_bounds.mins[0], selection_bounds.maxs[1]],
-                na::Vector2::repeat(Self::NODE_SIZE * 0.5 / total_zoom),
+                Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
             ResizeCorner::BottomRight => AABB::from_half_extents(
                 na::point![selection_bounds.maxs[0], selection_bounds.maxs[1]],
-                na::Vector2::repeat(Self::NODE_SIZE * 0.5 / total_zoom),
+                Self::RESIZE_NODE_SIZE * 0.5 / total_zoom,
             ),
         }
     }
@@ -624,7 +599,7 @@ impl Selector {
             selection_bounds.maxs[0],
             (selection_bounds.maxs[1] + selection_bounds.mins[1]) * 0.5
         ];
-        BoundingSphere::new(pos, Self::NODE_SIZE * 0.5 / total_zoom)
+        BoundingSphere::new(pos, Self::ROTATE_NODE_SIZE * 0.5 / total_zoom)
     }
 
     fn draw_selection_overlay(
@@ -635,146 +610,105 @@ impl Selector {
     ) {
         let total_zoom = camera.total_zoom();
 
-        let rect = selection_bounds
-            .tightened(Selector::PATH_WIDTH / total_zoom)
-            .to_kurbo_rect();
+        // Selection rect
+        {
+            let rect = selection_bounds
+                .tightened(Selector::SELECTION_OUTLINE_WIDTH / total_zoom)
+                .to_kurbo_rect();
 
-        piet_cx.fill(
-            rect.clone(),
-            &piet::PaintBrush::Color(Selector::FILL_COLOR.into()),
-        );
-        piet_cx.stroke(
-            rect,
-            &piet::PaintBrush::Color(Selector::OUTLINE_COLOR.into()),
-            Selector::PATH_WIDTH / total_zoom,
-        );
+            piet_cx.fill(
+                rect.clone(),
+                &piet::PaintBrush::Color(Selector::SELECTION_FILL_COLOR.into()),
+            );
+            piet_cx.stroke(
+                rect,
+                &piet::PaintBrush::Color(Selector::OUTLINE_COLOR.into()),
+                Selector::SELECTION_OUTLINE_WIDTH / total_zoom,
+            );
+        }
 
         // Rotate Node
         {
-            let rotate_node = {
-                let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
-                kurbo::Circle::new(
-                    rotate_node_sphere.center.coords.to_kurbo_point(),
-                    rotate_node_sphere.radius,
-                )
+            let rotate_node_state = match modify_state {
+                ModifyState::Rotate { .. } => NodeState::Down,
+                _ => NodeState::Up,
             };
-            piet_cx.stroke(
-                rotate_node,
-                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-                Selector::NODE_PATH_WIDTH / total_zoom,
-            );
 
-            match modify_state {
-                ModifyState::Rotate { .. } => {
-                    piet_cx.fill(
-                        rotate_node,
-                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
-                    );
-                }
-                _ => {}
-            }
+            drawhelpers::draw_circular_node(
+                piet_cx,
+                rotate_node_state,
+                Self::rotate_node_sphere(selection_bounds, camera),
+                total_zoom,
+            );
         }
 
         // Resize Nodes
         {
-            let resize_node_tl = kurbo::RoundedRect::from_rect(
-                Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera)
-                    .to_kurbo_rect(),
-                Self::NODE_RECT_RADIUS / total_zoom,
-            );
-            piet_cx.stroke(
-                resize_node_tl,
-                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-                Selector::NODE_PATH_WIDTH / total_zoom,
-            );
-
-            match modify_state {
+            let tl_node_state = match modify_state {
                 ModifyState::Resize {
                     from_corner: ResizeCorner::TopLeft,
                     ..
-                } => {
-                    piet_cx.fill(
-                        resize_node_tl,
-                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
-                    );
-                }
-                _ => {}
-            }
-        }
-        {
-            let resize_node_tr = kurbo::RoundedRect::from_rect(
-                Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera)
-                    .to_kurbo_rect(),
-                Self::NODE_RECT_RADIUS / total_zoom,
-            );
-            piet_cx.stroke(
-                resize_node_tr,
-                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-                Selector::NODE_PATH_WIDTH / total_zoom,
-            );
+                } => NodeState::Down,
+                _ => NodeState::Up,
+            };
 
-            match modify_state {
+            drawhelpers::draw_rectangular_node(
+                piet_cx,
+                tl_node_state,
+                Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera),
+                total_zoom,
+            );
+        }
+
+        {
+            let tr_node_state = match modify_state {
                 ModifyState::Resize {
                     from_corner: ResizeCorner::TopRight,
                     ..
-                } => {
-                    piet_cx.fill(
-                        resize_node_tr,
-                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
-                    );
-                }
-                _ => {}
-            }
-        }
-        {
-            let resize_node_bl = kurbo::RoundedRect::from_rect(
-                Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera)
-                    .to_kurbo_rect(),
-                Self::NODE_RECT_RADIUS / total_zoom,
-            );
-            piet_cx.stroke(
-                resize_node_bl,
-                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-                Selector::NODE_PATH_WIDTH / total_zoom,
-            );
+                } => NodeState::Down,
+                _ => NodeState::Up,
+            };
 
-            match modify_state {
+            drawhelpers::draw_rectangular_node(
+                piet_cx,
+                tr_node_state,
+                Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera),
+                total_zoom,
+            );
+        }
+
+        {
+            let bl_node_state = match modify_state {
                 ModifyState::Resize {
                     from_corner: ResizeCorner::BottomLeft,
                     ..
-                } => {
-                    piet_cx.fill(
-                        resize_node_bl,
-                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
-                    );
-                }
-                _ => {}
-            }
-        }
-        {
-            let resize_node_br = kurbo::RoundedRect::from_rect(
-                Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera)
-                    .to_kurbo_rect(),
-                Self::NODE_RECT_RADIUS / total_zoom,
-            );
-            piet_cx.stroke(
-                resize_node_br,
-                &piet::PaintBrush::Color(Selector::NODE_COLOR.into()),
-                Selector::NODE_PATH_WIDTH / total_zoom,
-            );
+                } => NodeState::Down,
+                _ => NodeState::Up,
+            };
 
-            match modify_state {
+            drawhelpers::draw_rectangular_node(
+                piet_cx,
+                bl_node_state,
+                Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera),
+                total_zoom,
+            );
+        }
+
+        {
+            let br_node_state = match modify_state {
                 ModifyState::Resize {
                     from_corner: ResizeCorner::BottomRight,
                     ..
-                } => {
-                    piet_cx.fill(
-                        resize_node_br,
-                        &piet::PaintBrush::Color(Selector::NODE_CURRENT_FILL.into()),
-                    );
-                }
-                _ => {}
-            }
+                } => NodeState::Down,
+                _ => NodeState::Up,
+            };
+
+            drawhelpers::draw_rectangular_node(
+                piet_cx,
+                br_node_state,
+                Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera),
+                total_zoom,
+            );
         }
     }
 

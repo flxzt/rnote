@@ -33,4 +33,5 @@ rnote_compose_sources = files(
     'style/textured/mod.rs',
     'style/textured/texturedoptions.rs',
     'style/textured/textureddotsdistribution.rs',
+    'style/drawhelpers.rs',
 )

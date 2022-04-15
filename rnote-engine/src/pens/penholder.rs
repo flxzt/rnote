@@ -405,12 +405,19 @@ impl DrawOnSheetBehaviour for PenHolder {
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save()
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match self.style_w_override() {
             PenStyle::Brush => self.brush.draw_on_sheet(cx, sheet_bounds, camera),
             PenStyle::Shaper => self.shaper.draw_on_sheet(cx, sheet_bounds, camera),
             PenStyle::Eraser => self.eraser.draw_on_sheet(cx, sheet_bounds, camera),
             PenStyle::Selector => self.selector.draw_on_sheet(cx, sheet_bounds, camera),
             PenStyle::Tools => self.tools.draw_on_sheet(cx, sheet_bounds, camera),
-        }
+        }?;
+
+        cx.restore()
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
+        Ok(())
     }
 }

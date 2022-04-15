@@ -31,6 +31,6 @@ cairo-rs = {version = "0.15.10", features = ["png", "svg", "pdf"]}
 svg = "0.10.0"
 gettext-rs = { version = "0.7.0", features = ["gettext-system"] }
 kurbo = {version = "0.8.2", features = ["serde"] }
-piet = { path = "../piet/piet"}
+piet = { path = "../piet/piet", features = ["serde"]}
 piet-svg = { path = "../piet/piet-svg"}
 piet-cairo = { path = "../piet/piet-cairo"}

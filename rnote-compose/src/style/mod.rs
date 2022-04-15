@@ -5,10 +5,11 @@ pub mod rough;
 pub mod smooth;
 /// The textured module for textured styles
 pub mod textured;
+/// Draw helpers
+pub mod drawhelpers;
 
 // Re exports
 pub use composer::Composer;
-
 use self::rough::RoughOptions;
 use self::smooth::SmoothOptions;
 use self::textured::TexturedOptions;

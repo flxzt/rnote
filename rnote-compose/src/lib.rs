@@ -5,7 +5,8 @@
 
 /// module for shape builders
 pub mod builders;
-mod color;
+/// colors
+pub mod color;
 /// module for helper traits that extend foreign types
 pub mod helpers;
 /// module for pen events

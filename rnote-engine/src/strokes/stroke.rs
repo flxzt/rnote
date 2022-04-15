@@ -38,7 +38,25 @@ impl Default for Stroke {
     }
 }
 
-impl StrokeBehaviour for Stroke {}
+impl StrokeBehaviour for Stroke {
+    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+        match self {
+            Stroke::BrushStroke(brushstroke) => brushstroke.gen_svg(),
+            Stroke::ShapeStroke(shapestroke) => shapestroke.gen_svg(),
+            Stroke::VectorImage(vectorimage) => vectorimage.gen_svg(),
+            Stroke::BitmapImage(bitmapimage) => bitmapimage.gen_svg(),
+        }
+    }
+
+    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+        match self {
+            Stroke::BrushStroke(brushstroke) => brushstroke.gen_images(image_scale),
+            Stroke::ShapeStroke(shapestroke) => shapestroke.gen_images(image_scale),
+            Stroke::VectorImage(vectorimage) => vectorimage.gen_images(image_scale),
+            Stroke::BitmapImage(bitmapimage) => bitmapimage.gen_images(image_scale),
+        }
+    }
+}
 
 impl DrawBehaviour for Stroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
@@ -157,7 +175,8 @@ impl Stroke {
             .collect::<PenPath>();
 
         Ok(Stroke::BrushStroke(BrushStroke::from_penpath(
-            penpath, brush.gen_style_for_current_options(),
+            penpath,
+            brush.gen_style_for_current_options(),
         )))
     }
 

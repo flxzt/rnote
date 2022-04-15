@@ -1,7 +1,7 @@
 use super::StrokeBehaviour;
-use crate::DrawBehaviour;
+use crate::{render, DrawBehaviour};
+use rnote_compose::shapes::Shape;
 use rnote_compose::shapes::ShapeBehaviour;
-use rnote_compose::shapes::{ Shape};
 use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::Style;
@@ -18,7 +18,28 @@ pub struct ShapeStroke {
     pub style: Style,
 }
 
-impl StrokeBehaviour for ShapeStroke {}
+impl StrokeBehaviour for ShapeStroke {
+    fn gen_svg(&self) -> Result<crate::render::Svg, anyhow::Error> {
+        let bounds = self.bounds();
+        let mut cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
+            bounds.extents()[0],
+            bounds.extents()[1],
+        ));
+
+        self.draw(&mut cx, 1.0)?;
+        let svg_data = rnote_compose::utils::piet_svg_cx_to_svg(cx)?;
+
+        Ok(render::Svg { svg_data, bounds })
+    }
+
+    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+        Ok(render::Image::gen_images_from_drawable(
+            self,
+            self.bounds(),
+            image_scale,
+        )?)
+    }
+}
 
 impl DrawBehaviour for ShapeStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
@@ -80,9 +101,6 @@ impl TransformBehaviour for ShapeStroke {
 
 impl ShapeStroke {
     pub fn new(shape: Shape, style: Style) -> Self {
-        Self {
-            shape,
-            style,
-        }
+        Self { shape, style }
     }
 }

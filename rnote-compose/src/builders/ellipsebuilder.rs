@@ -1,9 +1,8 @@
 use crate::penpath::Element;
-use crate::shapes::{Ellipse};
+use crate::shapes::Ellipse;
 use crate::{PenEvent, Shape, Transform};
 
 use super::ShapeBuilderBehaviour;
-
 
 /// line builder
 #[derive(Debug, Clone)]
@@ -46,9 +45,6 @@ impl EllipseBuilder {
         let transform = Transform::new_w_isometry(na::Isometry2::new(self.start, 0.0));
         let radii = (self.current - self.start).abs();
 
-        Ellipse {
-            radii,
-            transform
-        }
+        Ellipse { radii, transform }
     }
 }

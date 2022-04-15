@@ -62,6 +62,14 @@ impl StrokeBehaviour for VectorImage {
 
         Ok(svg)
     }
+
+    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+        Ok(render::Image::gen_images_from_drawable(
+            self,
+            self.bounds(),
+            image_scale,
+        )?)
+    }
 }
 
 // Because we can't render svgs directly in piet, so we need to overwrite the gen_svgs() default implementation and call it in draw().

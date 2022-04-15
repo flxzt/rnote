@@ -1,4 +1,3 @@
-
 use crate::penpath::Element;
 use crate::shapes::ShapeBehaviour;
 use crate::PenEvent;
@@ -7,7 +6,7 @@ use crate::PenEvent;
 pub enum BuilderProgress {
     InProgress,
     EmitContinue(Option<Vec<Box<dyn ShapeBehaviour>>>),
-    Finished(Option<Vec<Box<dyn ShapeBehaviour>>>)
+    Finished(Option<Vec<Box<dyn ShapeBehaviour>>>),
 }
 
 /// Types that are shape builders.

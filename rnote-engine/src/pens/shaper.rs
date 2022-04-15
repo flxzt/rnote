@@ -131,7 +131,9 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        if let Err(e) = store.regenerate_rendering_for_stroke(key, camera.image_scale()) {
+                        if let Err(e) =
+                            store.regenerate_rendering_for_stroke(key, camera.image_scale())
+                        {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
                         }
                     }
@@ -153,7 +155,9 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        if let Err(e) = store.regenerate_rendering_for_stroke(key, camera.image_scale()) {
+                        if let Err(e) =
+                            store.regenerate_rendering_for_stroke(key, camera.image_scale())
+                        {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new rectangle, Err {}", e);
                         }
                     }
@@ -175,7 +179,9 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        if let Err(e) = store.regenerate_rendering_for_stroke(key, camera.image_scale()) {
+                        if let Err(e) =
+                            store.regenerate_rendering_for_stroke(key, camera.image_scale())
+                        {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new ellipse, Err {}", e);
                         }
                     }
@@ -207,7 +213,9 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        if let Err(e) = store.regenerate_rendering_for_stroke(key, camera.image_scale()) {
+                        if let Err(e) =
+                            store.regenerate_rendering_for_stroke(key, camera.image_scale())
+                        {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new foci ellipse, Err {}", e);
                         }
                     }

@@ -1,18 +1,18 @@
 mod composer;
+/// Draw helpers
+pub mod drawhelpers;
 /// The rough module for rough styles
 pub mod rough;
 /// The smooth module for smooth styles
 pub mod smooth;
 /// The textured module for textured styles
 pub mod textured;
-/// Draw helpers
-pub mod drawhelpers;
 
 // Re exports
-pub use composer::Composer;
 use self::rough::RoughOptions;
 use self::smooth::SmoothOptions;
 use self::textured::TexturedOptions;
+pub use composer::Composer;
 
 use serde::{Deserialize, Serialize};
 

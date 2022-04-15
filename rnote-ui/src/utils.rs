@@ -1,11 +1,13 @@
 use crate::config;
 
+use anyhow::Context;
 use gtk4::{gio, glib, prelude::*, Widget};
 use p2d::bounding_volume::AABB;
 use std::fs;
 use std::path::PathBuf;
 
-pub fn app_config_base_dirpath() -> Option<PathBuf> {
+/// Returns the path to the app config dir
+pub fn app_config_dir() -> Option<PathBuf> {
     let mut app_config_dirpath = glib::user_config_dir();
     app_config_dirpath.push(config::APP_NAME);
     let app_config_dir = gio::File::for_path(app_config_dirpath.clone());
@@ -117,39 +119,31 @@ pub fn translate_aabb_to_widget(
     Some(AABB::new(mins, maxs))
 }
 
-pub fn replace_file_async(bytes: Vec<u8>, file: &gio::File) -> anyhow::Result<()> {
-    file.replace_async(
-        None,
-        false,
-        gio::FileCreateFlags::REPLACE_DESTINATION,
-        glib::PRIORITY_HIGH_IDLE,
-        None::<&gio::Cancellable>,
-        move |result| {
-            let output_stream = match result {
-                Ok(output_stream) => output_stream,
-                Err(e) => {
-                    log::error!(
-                        "replace_async() failed in save_sheet_to_file() with Err {}",
-                        e
-                    );
-                    return;
-                }
-            };
+/// Replac a file asynchronously
+pub async fn replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Result<()> {
+    let output_stream = file
+        .replace_future(
+            None,
+            false,
+            gio::FileCreateFlags::REPLACE_DESTINATION,
+            glib::PRIORITY_HIGH_IDLE,
+        )
+        .await
+        .context("replace_future() failed in replace_file_future()")?;
 
-            if let Err(e) = output_stream.write(&bytes, None::<&gio::Cancellable>) {
-                log::error!(
-                    "output_stream().write() failed in save_sheet_to_file() with Err {}",
-                    e
-                );
-            };
-            if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                log::error!(
-                    "output_stream().close() failed in save_sheet_to_file() with Err {}",
-                    e
-                );
-            };
-        },
-    );
+    output_stream
+        .write_all_future(bytes, glib::PRIORITY_HIGH_IDLE)
+        .await
+        .map_err(|(_, e)| {
+            anyhow::anyhow!(
+                "output_stream write_all_future() failed in replace_file_future(), Err {}",
+                e
+            )
+        })?;
+    output_stream
+        .close_future(glib::PRIORITY_HIGH_IDLE)
+        .await
+        .context("output_stream close_future() failed in replace_file_future()")?;
 
     Ok(())
 }

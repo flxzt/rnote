@@ -1,7 +1,7 @@
 use gtk4::{graphene, gsk};
 use p2d::bounding_volume::AABB;
 use rnote_compose::helpers::AABBHelpers;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 /* pub enum Coordinate {
     Surface(na::Vector2<f64>),

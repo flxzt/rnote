@@ -25,14 +25,13 @@ fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     Ok(bytes)
 }
 
-
 /// The rnote file wrapper. used to extract and match to the version up front, before deserializing the actual data.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename="rnotefile_wrapper")]
+#[serde(rename = "rnotefile_wrapper")]
 struct RnotefileWrapper {
-    #[serde(rename="version")]
+    #[serde(rename = "version")]
     version: semver::Version,
-    #[serde(rename="data")]
+    #[serde(rename = "data")]
     data: serde_json::Value,
 }
 
@@ -60,8 +59,13 @@ impl FileFormatLoader for RnotefileMaj0Min5 {
         let wrapped_rnote_file = serde_json::from_str::<RnotefileWrapper>(decompressed.as_str())?;
 
         // Conversions for older file format versions happens here
-        if semver::VersionReq::parse(">=0.5.0").unwrap().matches(&wrapped_rnote_file.version) {
-            Ok(serde_json::from_value::<RnotefileMaj0Min5>(wrapped_rnote_file.data)?)
+        if semver::VersionReq::parse(">=0.5.0")
+            .unwrap()
+            .matches(&wrapped_rnote_file.version)
+        {
+            Ok(serde_json::from_value::<RnotefileMaj0Min5>(
+                wrapped_rnote_file.data,
+            )?)
         } else {
             Err(anyhow::anyhow!(
                 "failed to load rnote file from bytes, invalid version",
@@ -74,13 +78,10 @@ impl FileFormatSaver for RnotefileMaj0Min5 {
     fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let output = RnotefileWrapper {
             version: semver::Version::parse("0.5.0").unwrap(),
-            data: serde_json::to_value(self)?
+            data: serde_json::to_value(self)?,
         };
 
-        let compressed = compress_to_gzip(
-            serde_json::to_string(&output)?.as_bytes(),
-            file_name,
-        )?;
+        let compressed = compress_to_gzip(serde_json::to_string(&output)?.as_bytes(), file_name)?;
 
         Ok(compressed)
     }

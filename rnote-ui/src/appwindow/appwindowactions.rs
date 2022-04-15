@@ -2,7 +2,7 @@ use super::RnoteAppWindow;
 use crate::config;
 use crate::{
     app::RnoteApp,
-    utils, {dialogs, RnoteCanvas},
+    {dialogs, RnoteCanvas},
 };
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_engine::engine::ExpandMode;
@@ -244,9 +244,11 @@ impl RnoteAppWindow {
         );
 
         // Export engine state
-        action_debug_export_engine_state.connect_activate(clone!(@weak self as appwindow => move |_action_debug_export_engine_state, _target| {
-            dialogs::dialog_export_engine_state(&appwindow);
-        }));
+        action_debug_export_engine_state.connect_activate(
+            clone!(@weak self as appwindow => move |_action_debug_export_engine_state, _target| {
+                dialogs::dialog_export_engine_state(&appwindow);
+            }),
+        );
 
         // Expand Mode
         action_expand_mode.connect_activate(
@@ -964,23 +966,15 @@ impl RnoteAppWindow {
             }
 
             if let Some(output_file) = appwindow.output_file() {
-                match output_file.basename() {
-                    Some(basename) => {
-                        match appwindow.canvas().engine().borrow().save_as_rnote_bytes(&basename.to_string_lossy()) {
-                            Ok(bytes) => {
-                                if let Err(e) = utils::replace_file_async(bytes, &output_file) {
-                                    log::error!("saving sheet as .rnote failed, replace_file_async failed with Err {}", e);
-                                } else {
-                                    appwindow.canvas().set_unsaved_changes(false);
-                                }
-                            },
-                            Err(e) => log::error!("saving sheet as .rnote failed with error `{}`", e),
-                        }
+                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    if let Err(e) = appwindow.save_sheet_to_file(&output_file).await {
+                        appwindow.set_output_file(None);
+
+                        log::error!("saving sheet failed with error `{}`", e);
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving sheet failed.").to_variant()));
                     }
-                    None => {
-                        log::error!("basename for file is None while trying to save sheet as .rnote");
-                    }
-                }
+                }));
+                // No success toast on saving without dialog, success is already indicated in the header title
             }
         }));
 

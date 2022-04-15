@@ -494,8 +494,8 @@ impl RnoteAppWindow {
         self.imp().output_file.borrow().clone()
     }
 
-    pub fn set_output_file(&self, output_file: Option<&gio::File>, appwindow: &RnoteAppWindow) {
-        appwindow.mainheader().set_title_for_file(output_file);
+    pub fn set_output_file(&self, output_file: Option<&gio::File>) {
+        self.mainheader().set_title_for_file(output_file);
         *self.imp().output_file.borrow_mut() = output_file.cloned();
     }
 
@@ -1055,7 +1055,7 @@ impl RnoteAppWindow {
         app.set_input_file(None);
         if let Some(path) = path {
             let file = gio::File::for_path(path);
-            self.set_output_file(Some(&file), self);
+            self.set_output_file(Some(&file));
         }
 
         self.canvas().set_unsaved_changes(false);
@@ -1073,7 +1073,6 @@ impl RnoteAppWindow {
     where
         P: AsRef<Path>,
     {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
         self.canvas()
             .engine()
             .borrow_mut()
@@ -1082,8 +1081,12 @@ impl RnoteAppWindow {
         // Loading the sheet properties into the format settings panel
         self.settings_panel().refresh_for_engine(self);
 
-        app.set_input_file(None);
-        self.set_output_file(None, self);
+        self.application()
+            .unwrap()
+            .downcast::<RnoteApp>()
+            .unwrap()
+            .set_input_file(None);
+        self.set_output_file(None);
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
@@ -1189,91 +1192,56 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn export_sheet_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn save_sheet_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
+        if let Some(basename) = file.basename() {
+            let bytes = self
+                .canvas()
+                .engine()
+                .borrow()
+                .save_as_rnote_bytes(&basename.to_string_lossy())?;
+
+            utils::replace_file_future(bytes, file).await?;
+
+            self.set_output_file(Some(&file));
+            self.canvas().set_unsaved_changes(false);
+        }
+        Ok(())
+    }
+
+    pub async fn export_sheet_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
         let svg_data = self
             .canvas()
             .engine()
             .borrow()
             .export_sheet_as_svg_string()?;
 
-        file.replace_async(
-            None,
-            false,
-            gio::FileCreateFlags::REPLACE_DESTINATION,
-            glib::PRIORITY_HIGH_IDLE,
-            None::<&gio::Cancellable>,
-            move |result| {
-                let output_stream = match result {
-                    Ok(output_stream) => output_stream,
-                    Err(e) => {
-                        log::error!(
-                            "replace_async() failed in export_sheet_as_svg() with Err {}",
-                            e
-                        );
-                        return;
-                    }
-                };
-
-                if let Err(e) = output_stream.write(svg_data.as_bytes(), None::<&gio::Cancellable>)
-                {
-                    log::error!(
-                        "output_stream().write() failed in export_sheet_as_svg() with Err {}",
-                        e
-                    );
-                };
-                if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                    log::error!(
-                        "output_stream().close() failed in export_sheet_as_svg() with Err {}",
-                        e
-                    );
-                };
-            },
-        );
+        utils::replace_file_future(svg_data.into_bytes(), file).await?;
 
         Ok(())
     }
 
-    pub fn export_selection_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn export_selection_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
         if let Some(selection_svg_data) = self
             .canvas()
             .engine()
             .borrow()
             .export_selection_as_svg_string()?
         {
-            file.replace_async(
-                None,
-                false,
-                gio::FileCreateFlags::REPLACE_DESTINATION,
-                glib::PRIORITY_HIGH_IDLE,
-                None::<&gio::Cancellable>,
-                move |result| {
-                    let output_stream = match result {
-                        Ok(output_stream) => output_stream,
-                        Err(e) => {
-                            log::error!(
-                                "replace_async() failed in export_selection_as_svg() with Err {}",
-                                e
-                            );
-                            return;
-                        }
-                    };
+            utils::replace_file_future(selection_svg_data.into_bytes(), file).await?;
+        }
 
-                    if let Err(e) = output_stream
-                        .write(selection_svg_data.as_bytes(), None::<&gio::Cancellable>)
-                    {
-                        log::error!(
-                        "output_stream().write() failed in export_selection_as_svg() with Err {}",
-                        e
-                    );
-                    };
-                    if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                        log::error!(
-                        "output_stream().close() failed in export_selection_as_svg() with Err {}",
-                        e
-                    );
-                    };
-                },
-            );
+        Ok(())
+    }
+
+    pub async fn export_sheet_as_xopp(&self, file: &gio::File) -> anyhow::Result<()> {
+        if let Some(basename) = file.basename() {
+            let bytes = self
+                .canvas()
+                .engine()
+                .borrow()
+                .export_sheet_as_xopp_bytes(&basename.to_string_lossy())?;
+
+            utils::replace_file_future(bytes, file).await?;
         }
 
         Ok(())
@@ -1286,75 +1254,19 @@ impl RnoteAppWindow {
                 .engine()
                 .borrow()
                 .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string());
-            let pdf_data = pdf_data_receiver.await??;
+            let bytes = pdf_data_receiver.await??;
 
-            let output_stream = file
-                .replace_future(
-                    None,
-                    false,
-                    gio::FileCreateFlags::REPLACE_DESTINATION,
-                    glib::PRIORITY_HIGH_IDLE,
-                )
-                .await?;
-
-            if let Err(e) = output_stream.write(&pdf_data, None::<&gio::Cancellable>) {
-                log::error!(
-                    "output_stream.write() failed in export_sheet_as_pdf() with Err {}",
-                    e
-                );
-            };
-            if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                log::error!(
-                    "output_stream.close() failed in export_sheet_as_pdf() with Err {}",
-                    e
-                );
-            };
+            utils::replace_file_future(bytes, file).await?;
         }
 
         Ok(())
     }
 
     /// exports the engine state as json into the file. Only for debugging!
-    pub fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
-        let exported_engine_state = self
-            .canvas()
-            .engine()
-            .borrow().export_state_as_json()?;
+    pub async fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
+        let exported_engine_state = self.canvas().engine().borrow().export_state_as_json()?;
 
-        file.replace_async(
-            None,
-            false,
-            gio::FileCreateFlags::REPLACE_DESTINATION,
-            glib::PRIORITY_HIGH_IDLE,
-            None::<&gio::Cancellable>,
-            move |result| {
-                let output_stream = match result {
-                    Ok(output_stream) => output_stream,
-                    Err(e) => {
-                        log::error!(
-                            "replace_async() failed in export_engine_state() with Err {}",
-                            e
-                        );
-                        return;
-                    }
-                };
-
-                if let Err(e) =
-                    output_stream.write(exported_engine_state.as_bytes(), None::<&gio::Cancellable>)
-                {
-                    log::error!(
-                        "output_stream().write() failed in export_engine_state() with Err {}",
-                        e
-                    );
-                };
-                if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                    log::error!(
-                        "output_stream().close() failed in export_engine_state() with Err {}",
-                        e
-                    );
-                };
-            },
-        );
+        utils::replace_file_future(exported_engine_state.into_bytes(), file).await?;
 
         Ok(())
     }

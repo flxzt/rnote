@@ -1,5 +1,4 @@
 #[allow(unused)]
-
 use rnote_fileformats::xoppformat;
 
 use serde::{Deserialize, Serialize};

@@ -312,8 +312,9 @@ impl RnoteEngine {
         Ok(rnote_file.save_as_bytes(file_name)?)
     }
 
+    /// for debugging the current engine state
     pub fn export_state_as_json(&self) -> anyhow::Result<String> {
-        Ok(serde_json::to_string(self)?)
+        Ok(serde_json::to_string_pretty(self)?)
     }
 
     pub fn open_from_xopp_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {

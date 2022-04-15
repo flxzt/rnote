@@ -52,6 +52,10 @@
       <menu id="filerow_menu_model">
         <section>
           <item>
+            <attribute name="label" translatable="yes">Open</attribute>
+            <attribute name="action">filerow.open-file</attribute>
+          </item>
+          <item>
             <attribute name="label" translatable="yes">Rename</attribute>
             <attribute name="action">filerow.rename-file</attribute>
           </item>

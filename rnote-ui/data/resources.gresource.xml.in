@@ -54,6 +54,7 @@
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-expandsheettool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-dragproximitytool-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-tools-offsetcameratool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selector-polygon-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selector-rectangle-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
@@ -76,6 +77,7 @@
         <file compressed="true">icons/scalable/actions/shape-line-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-rectangle-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-ellipse-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-fociellipse-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stroke-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacebrowser-symbolic.svg</file>

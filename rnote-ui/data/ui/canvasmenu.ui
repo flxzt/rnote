@@ -127,6 +127,7 @@
               <child>
                 <object class="GtkButton" id="zoom_out_button">
                   <property name="icon_name">zoom-out-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Zoom out</property>
                   <property name="width_request">50</property>
                   <property name="hexpand">false</property>
                   <property name="action-name">win.zoom-out</property>
@@ -134,13 +135,15 @@
               </child>
               <child>
                 <object class="GtkButton" id="zoom_reset_button">
-                  <property name="hexpand">true</property>
                   <property name="action-name">win.zoom-reset</property>
+                  <property name="tooltip_text" translatable="yes">Reset the zoom</property>
+                  <property name="hexpand">true</property>
                 </object>
               </child>
               <child>
                 <object class="GtkButton" id="zoom_in_button">
                   <property name="icon_name">zoom-in-symbolic</property>
+                  <property name="tooltip_text" translatable="yes">Zoom in</property>
                   <property name="width_request">50</property>
                   <property name="hexpand">false</property>
                   <property name="action-name">win.zoom-in</property>

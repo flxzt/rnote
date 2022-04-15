@@ -23,9 +23,7 @@
         <property name="vexpand">true</property>
         <property name="valign">fill</property>
         <property name="halign">fill</property>
-        <property name="width-request">400</property>
         <property name="hscrollbar-policy">never</property>
-        <property name="min-content-width">100</property>
         <child>
           <object class="GtkListView" id="primary_listview">
             <style>

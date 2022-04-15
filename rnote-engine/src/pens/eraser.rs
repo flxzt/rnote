@@ -1,17 +1,13 @@
-use std::collections::VecDeque;
-use std::sync::{Arc, RwLock};
+use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
+use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::penpath::Element;
+use rnote_compose::{color, PenEvent};
 
-use crate::compose::color::Color;
-use crate::compose::geometry::AABBHelpers;
-use crate::render::Renderer;
-use crate::sheet::Sheet;
-use crate::strokes::inputdata::InputData;
-
-use gtk4::{graphene, gsk, Snapshot};
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenBehaviour;
+use super::AudioPlayer;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "eraser")]
@@ -19,7 +15,7 @@ pub struct Eraser {
     #[serde(rename = "width")]
     pub width: f64,
     #[serde(skip)]
-    pub current_input: Option<InputData>,
+    pub current_input: Option<Element>,
 }
 
 impl Default for Eraser {
@@ -32,87 +28,43 @@ impl Default for Eraser {
 }
 
 impl PenBehaviour for Eraser {
-    fn begin(
+    fn handle_event(
         &mut self,
-        mut data_entries: VecDeque<InputData>,
+        event: PenEvent,
         _sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
-        self.current_input = data_entries.pop_back();
-    }
+        store: &mut StrokeStore,
+        camera: &mut Camera,
+        _audioplayer: Option<&mut AudioPlayer>,
+    ) -> SurfaceFlags {
+        let surface_flags = SurfaceFlags::default();
 
-    fn motion(
-        &mut self,
-        mut data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
-        self.current_input = data_entries.pop_back();
+        match event {
+            PenEvent::Down {
+                element,
+                shortcut_key: _,
+            } => {
+                self.current_input = Some(element);
 
-        sheet.strokes_state.trash_colliding_strokes(&self, viewport);
-    }
-
-    fn end(
-        &mut self,
-        _data_entries: VecDeque<InputData>,
-        _sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
-        self.current_input = None;
-    }
-
-    fn draw(
-        &self,
-        snapshot: &Snapshot,
-        _sheet: &Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) -> Result<(), anyhow::Error> {
-        if let Some(bounds) = self.gen_bounds(zoom) {
-            let border_color = Self::OUTLINE_COLOR_DEFAULT.to_gdk();
-            let border_width = 2.0;
-
-            snapshot.append_color(
-                &Self::FILL_COLOR_DEFAULT.to_gdk(),
-                &bounds.to_graphene_rect(),
-            );
-
-            snapshot.append_border(
-                &gsk::RoundedRect::new(
-                    bounds.to_graphene_rect(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                    graphene::Size::zero(),
-                ),
-                &[border_width, border_width, border_width, border_width],
-                &[border_color, border_color, border_color, border_color],
-            );
+                let eraser_bounds = AABB::from_half_extents(
+                    na::Point2::from(element.pos),
+                    na::Vector2::repeat(self.width),
+                );
+                store.trash_colliding_strokes(eraser_bounds, camera.viewport());
+            }
+            PenEvent::Up { .. } => self.current_input = None,
+            PenEvent::Proximity { .. } => self.current_input = None,
+            PenEvent::Cancel => self.current_input = None,
         }
-        Ok(())
+
+        surface_flags
     }
 }
 
 impl Eraser {
-    pub const OUTLINE_COLOR_DEFAULT: Color = Color {
-        r: 0.8,
-        g: 0.1,
-        b: 0.0,
-        a: 0.5,
-    };
-    pub const FILL_COLOR_DEFAULT: Color = Color {
-        r: 0.7,
-        g: 0.2,
-        b: 0.1,
-        a: 0.5,
-    };
+    const OUTLINE_WIDTH: f64 = 2.0;
+    const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(0xf0);
+    const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x30);
+
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 30.0;
@@ -123,22 +75,36 @@ impl Eraser {
             current_input: None,
         }
     }
+}
 
-    pub fn gen_bounds(&self, zoom: f64) -> Option<AABB> {
-        self.current_input.map_or_else(
-            || None,
-            |current_input| {
-                Some(AABB::new(
-                    na::point![
-                        ((current_input.pos()[0]) - self.width / 2.0) * zoom,
-                        ((current_input.pos()[1]) - self.width / 2.0) * zoom
-                    ],
-                    na::point![
-                        ((current_input.pos()[0]) + self.width / 2.0) * zoom,
-                        ((current_input.pos()[1]) + self.width / 2.0) * zoom
-                    ],
-                ))
-            },
-        )
+impl DrawOnSheetBehaviour for Eraser {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
+        self.current_input.map(|current_input| {
+            AABB::from_half_extents(
+                na::Point2::from(current_input.pos),
+                na::Vector2::from_element(self.width * 0.5),
+            )
+        })
+    }
+
+    fn draw_on_sheet(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        sheet_bounds: AABB,
+        camera: &Camera,
+    ) -> anyhow::Result<()> {
+        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
+            let fill_rect = bounds.to_kurbo_rect();
+            let outline_rect = bounds.tightened(Self::OUTLINE_WIDTH * 0.5).to_kurbo_rect();
+
+            cx.fill(fill_rect, &piet::PaintBrush::Color(Self::FILL_COLOR));
+            cx.stroke(
+                outline_rect,
+                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
+                Self::OUTLINE_WIDTH,
+            );
+        }
+
+        Ok(())
     }
 }

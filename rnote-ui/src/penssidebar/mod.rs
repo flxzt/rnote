@@ -1,19 +1,26 @@
-pub mod brushpage;
-pub mod eraserpage;
-pub mod selectorpage;
-pub mod shaperpage;
-pub mod toolspage;
+mod brushpage;
+mod eraserpage;
+mod selectorpage;
+mod shaperpage;
+mod toolspage;
+
+// Re-exports
+pub use brushpage::BrushPage;
+pub use eraserpage::EraserPage;
+use rnote_engine::pens::penholder::PenStyle;
+pub use selectorpage::SelectorPage;
+pub use shaperpage::ShaperPage;
+pub use toolspage::ToolsPage;
+
+use gtk4::{
+    glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage,
+    Widget,
+};
+
+use crate::RnoteAppWindow;
 
 mod imp {
-    use super::toolspage::ToolsPage;
-    use super::{
-        brushpage::BrushPage, eraserpage::EraserPage, selectorpage::SelectorPage,
-        shaperpage::ShaperPage,
-    };
-
-    use gtk4::{
-        glib, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage, Widget,
-    };
+    use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/penssidebar.ui")]
@@ -71,17 +78,6 @@ mod imp {
     impl WidgetImpl for PensSideBar {}
 }
 
-use crate::appwindow::RnoteAppWindow;
-
-use brushpage::BrushPage;
-use eraserpage::EraserPage;
-use selectorpage::SelectorPage;
-use shaperpage::ShaperPage;
-
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, Stack, StackPage};
-
-use self::toolspage::ToolsPage;
-
 glib::wrapper! {
     pub struct PensSideBar(ObjectSubclass<imp::PensSideBar>)
         @extends gtk4::Widget;
@@ -101,45 +97,43 @@ impl PensSideBar {
     }
 
     pub fn sidebar_stack(&self) -> Stack {
-        imp::PensSideBar::from_instance(self).sidebar_stack.get()
+        self.imp().sidebar_stack.get()
     }
 
     pub fn brush_stackpage(&self) -> StackPage {
-        imp::PensSideBar::from_instance(self).brush_stackpage.get()
+        self.imp().brush_stackpage.get()
     }
 
     pub fn brush_page(&self) -> BrushPage {
-        imp::PensSideBar::from_instance(self).brush_page.get()
+        self.imp().brush_page.get()
     }
 
     pub fn shaper_page(&self) -> ShaperPage {
-        imp::PensSideBar::from_instance(self).shaper_page.get()
+        self.imp().shaper_page.get()
     }
 
     pub fn eraser_stackpage(&self) -> StackPage {
-        imp::PensSideBar::from_instance(self).eraser_stackpage.get()
+        self.imp().eraser_stackpage.get()
     }
 
     pub fn eraser_page(&self) -> EraserPage {
-        imp::PensSideBar::from_instance(self).eraser_page.get()
+        self.imp().eraser_page.get()
     }
 
     pub fn selector_stackpage(&self) -> StackPage {
-        imp::PensSideBar::from_instance(self)
-            .selector_stackpage
-            .get()
+        self.imp().selector_stackpage.get()
     }
 
     pub fn selector_page(&self) -> SelectorPage {
-        imp::PensSideBar::from_instance(self).selector_page.get()
+        self.imp().selector_page.get()
     }
 
     pub fn tools_stackpage(&self) -> StackPage {
-        imp::PensSideBar::from_instance(self).tools_stackpage.get()
+        self.imp().tools_stackpage.get()
     }
 
     pub fn tools_page(&self) -> ToolsPage {
-        imp::PensSideBar::from_instance(self).tools_page.get()
+        self.imp().tools_page.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -148,19 +142,19 @@ impl PensSideBar {
                 if let Some(child_name) = sidebar_stack.visible_child_name() {
                     match child_name.to_value().get::<String>().unwrap().as_str() {
                         "brush_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"brush_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
                         },
                         "shaper_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"shaper_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
                         },
                         "eraser_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"eraser_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
                         }
                         "selector_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"selector_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
                         }
                         "tools_page" => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&"tools_style".to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
                         }
                         _ => {}
                     };

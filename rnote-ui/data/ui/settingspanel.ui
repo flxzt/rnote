@@ -17,7 +17,7 @@
         <property name="vexpand">true</property>
         <property name="halign">fill</property>
         <property name="valign">fill</property>
-        <property name="propagate-natural-width">false</property>
+        <property name="propagate-natural-width">true</property>
         <property name="propagate-natural-height">false</property>
         <property name="window-placement">top-left</property>
         <child>

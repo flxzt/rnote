@@ -96,7 +96,7 @@ impl FileType {
     }
 }
 
-pub fn str_to_file(string: &str, file_path: &str) -> Result<(), anyhow::Error> {
+pub fn str_to_file(string: &str, file_path: &str) -> anyhow::Result<()> {
     Ok(fs::write(PathBuf::from(file_path), string)?)
 }
 
@@ -117,7 +117,7 @@ pub fn translate_aabb_to_widget(
     Some(AABB::new(mins, maxs))
 }
 
-pub fn replace_file_async(bytes: Vec<u8>, file: &gio::File) -> Result<(), anyhow::Error> {
+pub fn replace_file_async(bytes: Vec<u8>, file: &gio::File) -> anyhow::Result<()> {
     file.replace_async(
         None,
         false,

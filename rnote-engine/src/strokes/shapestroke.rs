@@ -1,245 +1,106 @@
-use crate::compose;
-use crate::compose::geometry::AABBHelpers;
-use crate::compose::rough::roughoptions::RoughOptions;
-use crate::compose::smooth::SmoothOptions;
-use crate::compose::transformable::{Transform, Transformable};
-use crate::compose::{curves, rough, shapes};
-use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::shaper::{ShaperConstraintRatio, ShaperDrawStyle};
-use crate::render;
-use crate::strokes::element::Element;
-use crate::strokes::inputdata::InputData;
-use crate::{pens::shaper::Shaper, pens::shaper::ShaperStyle};
+use super::StrokeBehaviour;
+use crate::{render, DrawBehaviour};
+use rnote_compose::shapes::Shape;
+use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::style::Composer;
+use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::Style;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
-use rand::{Rng, SeedableRng};
+use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "shape")]
-pub enum Shape {
-    #[serde(rename = "line")]
-    Line(curves::Line),
-    #[serde(rename = "rectangle")]
-    Rectangle(shapes::Rectangle),
-    #[serde(rename = "ellipse")]
-    Ellipse(shapes::Ellipse),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "shape_drawstyle")]
-pub enum ShapeDrawStyle {
-    #[serde(rename = "smooth")]
-    Smooth {
-        #[serde(rename = "options")]
-        options: SmoothOptions,
-    },
-    #[serde(rename = "rough")]
-    Rough {
-        #[serde(rename = "options")]
-        options: RoughOptions,
-    },
-}
-
-impl Transformable for Shape {
-    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
-        match self {
-            Self::Line(line) => {
-                line.translate(offset);
-            }
-            Self::Rectangle(rectangle) => {
-                rectangle.translate(offset);
-            }
-            Self::Ellipse(ellipse) => {
-                ellipse.translate(offset);
-            }
-        }
-    }
-
-    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
-        match self {
-            Self::Line(line) => {
-                line.rotate(angle, center);
-            }
-            Self::Rectangle(rectangle) => {
-                rectangle.rotate(angle, center);
-            }
-            Self::Ellipse(ellipse) => {
-                ellipse.rotate(angle, center);
-            }
-        }
-    }
-
-    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
-        match self {
-            Self::Line(line) => {
-                line.scale(scale);
-            }
-            Self::Rectangle(rectangle) => {
-                rectangle.scale(scale);
-            }
-            Self::Ellipse(ellipse) => {
-                ellipse.scale(scale);
-            }
-        }
-    }
-}
-
-impl Shape {
-    pub fn bounds(&self) -> AABB {
-        match self {
-            Self::Line(line) => line.global_aabb(),
-            Self::Rectangle(rectangle) => rectangle.global_aabb(),
-            Self::Ellipse(ellipse) => ellipse.global_aabb(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default, rename = "shapestroke")]
+#[serde(rename = "shapestroke")]
 pub struct ShapeStroke {
-    #[serde(rename = "seed")]
-    pub seed: Option<u64>,
     #[serde(rename = "shape")]
     pub shape: Shape,
-    #[serde(rename = "drawstyle")]
-    pub drawstyle: ShapeDrawStyle,
-    #[serde(rename = "bounds")]
-    pub bounds: AABB,
-    #[serde(skip)]
-    pub ratio: ShaperConstraintRatio,
+    #[serde(rename = "style")]
+    pub style: Style,
 }
 
-impl Default for ShapeStroke {
-    fn default() -> Self {
-        Self::new(Element::new(InputData::default()), &Shaper::default())
+impl StrokeBehaviour for ShapeStroke {
+    fn gen_svg(&self) -> Result<crate::render::Svg, anyhow::Error> {
+        let bounds = self.bounds();
+        let mut cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
+            bounds.extents()[0],
+            bounds.extents()[1],
+        ));
+
+        self.draw(&mut cx, 1.0)?;
+        let svg_data = rnote_compose::utils::piet_svg_cx_to_svg(cx)?;
+
+        Ok(render::Svg { svg_data, bounds })
+    }
+
+    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+        Ok(render::Image::gen_images_from_drawable(
+            self,
+            self.bounds(),
+            image_scale,
+        )?)
     }
 }
 
 impl DrawBehaviour for ShapeStroke {
-    fn bounds(&self) -> AABB {
-        self.bounds
-    }
-
-    fn set_bounds(&mut self, bounds: AABB) {
-        self.bounds = bounds;
-    }
-
-    fn gen_bounds(&self) -> Option<AABB> {
-        match &self.drawstyle {
-            ShapeDrawStyle::Smooth { options } => {
-                let width = options.width;
-                Some(
-                    self.shape
-                        .bounds()
-                        .loosened(width * 0.5 + ShaperDrawStyle::SMOOTH_MARGIN),
-                )
-            }
-            ShapeDrawStyle::Rough { options } => {
-                let width = options.stroke_width();
-                Some(
-                    self.shape
-                        .bounds()
-                        .loosened(width * 0.5 + ShaperDrawStyle::ROUGH_MARGIN),
-                )
-            }
-        }
-    }
-
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let element: svg::node::element::Element = match self.shape {
-            Shape::Line(ref line) => {
-                let line = curves::Line {
-                    start: line.start + offset,
-                    end: line.end + offset,
-                };
-
-                match &self.drawstyle {
-                    ShapeDrawStyle::Smooth { options } => {
-                        let color = if let Some(color) = options.stroke_color {
-                            color.to_css_color()
-                        } else {
-                            String::from("none")
-                        };
-
-                        let fill = if let Some(fill) = options.fill_color {
-                            fill.to_css_color()
-                        } else {
-                            String::from("none")
-                        };
-
-                        svg::node::element::Line::new()
-                            .set("x1", line.start[0])
-                            .set("y1", line.start[1])
-                            .set("x2", line.end[0])
-                            .set("y2", line.end[1])
-                            .set("stroke", color)
-                            .set("stroke-width", options.width)
-                            .set("fill", fill)
-                            .into()
-                    }
-                    ShapeDrawStyle::Rough { options } => svg::node::element::Group::new()
-                        .add(rough::line(line, options))
-                        .into(),
+    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        match self.shape {
+            Shape::Line(ref line) => match &self.style {
+                Style::Smooth(options) => {
+                    line.draw_composed(cx, options);
                 }
-            }
-            Shape::Rectangle(ref rectangle) => {
-                let mut rectangle = rectangle.clone();
-                rectangle.transform.append_translation_mut(offset);
-
-                match &self.drawstyle {
-                    ShapeDrawStyle::Smooth { options } => {
-                        compose::smooth::compose_rectangle(rectangle, &options)
-                    }
-                    ShapeDrawStyle::Rough { options } => {
-                        rough::rectangle(rectangle, options).into()
-                    }
+                Style::Rough(options) => {
+                    line.draw_composed(cx, options);
                 }
-            }
-            Shape::Ellipse(ref ellipse) => {
-                let mut ellipse = ellipse.clone();
-                ellipse.transform.append_translation_mut(offset);
-
-                match &self.drawstyle {
-                    ShapeDrawStyle::Smooth { options } => {
-                        compose::smooth::compose_ellipse(ellipse, &options)
-                    }
-                    ShapeDrawStyle::Rough { options } => rough::ellipse(ellipse, options).into(),
+                Style::Textured(_) => {}
+            },
+            Shape::Rectangle(ref rectangle) => match &self.style {
+                Style::Smooth(options) => {
+                    rectangle.draw_composed(cx, options);
                 }
-            }
+                Style::Rough(options) => {
+                    rectangle.draw_composed(cx, options);
+                }
+                Style::Textured(_) => {}
+            },
+            Shape::Ellipse(ref ellipse) => match &self.style {
+                Style::Smooth(options) => {
+                    ellipse.draw_composed(cx, options);
+                }
+                Style::Rough(options) => {
+                    ellipse.draw_composed(cx, options);
+                }
+                Style::Textured(_) => {}
+            },
         };
 
-        let svg_data = compose::svg_node_to_string(&element).map_err(|e| {
-            anyhow::anyhow!(
-                "node_to_string() failed in gen_svg_data() for a shapestroke, {}",
-                e
-            )
-        })?;
-
-        let svg = render::Svg {
-            bounds: self.bounds.translate(offset),
-            svg_data,
-        };
-        Ok(vec![svg])
+        Ok(())
     }
 }
 
-impl Transformable for ShapeStroke {
+impl ShapeBehaviour for ShapeStroke {
+    fn bounds(&self) -> AABB {
+        match &self.style {
+            Style::Smooth(options) => self.shape.composed_bounds(options),
+            Style::Rough(options) => self.shape.composed_bounds(options),
+            Style::Textured(_) => self.shape.bounds(),
+        }
+    }
+}
+
+impl TransformBehaviour for ShapeStroke {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.shape.translate(offset);
-        self.update_geometry();
     }
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
         self.shape.rotate(angle, center);
-        self.update_geometry();
     }
     fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
         self.shape.scale(scale);
-        self.update_geometry();
     }
 }
 
 impl ShapeStroke {
+<<<<<<< HEAD
     pub fn new(element: Element, shaper: &Shaper) -> Self {
         let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
 
@@ -329,6 +190,10 @@ impl ShapeStroke {
         if let Some(new_bounds) = self.gen_bounds() {
             self.bounds = new_bounds;
         }
+=======
+    pub fn new(shape: Shape, style: Style) -> Self {
+        Self { shape, style }
+>>>>>>> 26b5fbea4fb1225b97449ca1e1a6726cc071e1d8
     }
 
     fn constrain(pos: na::Vector2<f64>, ratio: ShaperConstraintRatio) -> na::Vector2<f64> {

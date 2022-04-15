@@ -1,5 +1,10 @@
+use crate::appwindow::RnoteAppWindow;
+use adw::prelude::*;
+use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, SpinButton};
+use rnote_engine::pens::eraser::Eraser;
+
 mod imp {
-    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, SpinButton};
+    use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
@@ -38,10 +43,6 @@ mod imp {
     impl WidgetImpl for EraserPage {}
 }
 
-use crate::appwindow::RnoteAppWindow;
-use gtk4::{glib, glib::clone, subclass::prelude::*, SpinButton};
-use rnote_engine::pens::eraser::Eraser;
-
 glib::wrapper! {
     pub struct EraserPage(ObjectSubclass<imp::EraserPage>)
         @extends gtk4::Widget;
@@ -59,7 +60,7 @@ impl EraserPage {
     }
 
     pub fn width_spinbutton(&self) -> SpinButton {
-        imp::EraserPage::from_instance(self).width_spinbutton.get()
+        self.imp().width_spinbutton.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -70,7 +71,7 @@ impl EraserPage {
 
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                appwindow.canvas().pens().borrow_mut().eraser.width = width_spinbutton.value();
+                appwindow.canvas().engine().borrow_mut().penholder.eraser.width = width_spinbutton.value();
             }),
         );
     }

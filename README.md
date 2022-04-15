@@ -46,7 +46,6 @@ $ flatpak mask --remove com.github.flxzt.rnote
 Then the sheets can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
 ## Screenshots
-
 ![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)
 ![main_window_light](./rnote-ui/data/screenshots/main_window_light.png)
 ![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)
@@ -56,6 +55,13 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 * Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
 * odd location for current file: when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
     Again, granting them in Flatseal fixes this issue.
+* Stylus buttons move canvas / are not functional: make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
+
+## Credits
+- Thanks to all the translators and their contributions!
+- [Freesound](https://freesound.org/) is the source for the pen sounds. The individual sounds are credited in `sounds/Licenses.md`
+- [Rough.js](https://roughjs.com/) provided the algorithms for implementation of Rnote's rough shapes.
+- [Pizarra](https://pizarra.categulario.tk/en/) is a innovative drawing app with advanced shaping and featuring a infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
 
 ## Community
 If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  

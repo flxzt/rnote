@@ -1,7 +1,31 @@
+use std::io::{Read, Write};
+
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
 
 use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
+
+/// Compress bytes with gzip
+fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
+    let compressed_bytes = Vec::<u8>::new();
+
+    let mut encoder = flate2::GzBuilder::new()
+        .filename(file_name)
+        .write(compressed_bytes, flate2::Compression::default());
+
+    encoder.write_all(to_compress)?;
+
+    Ok(encoder.finish()?)
+}
+
+/// Decompress from gzip
+fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
+    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
+    let mut bytes: Vec<u8> = Vec::new();
+    decoder.read_to_end(&mut bytes)?;
+
+    Ok(bytes)
+}
 
 /// Represents a Xournal++ `.xopp` file.
 /// The original Xournal spec can be found here: <http://xournal.sourceforge.net/manual.html#file-format>
@@ -14,7 +38,7 @@ pub struct XoppFile {
 
 impl FileFormatLoader for XoppFile {
     fn load_from_bytes(bytes: &[u8]) -> Result<Self, anyhow::Error> {
-        let decompressed = String::from_utf8(super::decompress_from_gzip(&bytes)?)?;
+        let decompressed = String::from_utf8(decompress_from_gzip(&bytes)?)?;
 
         let options = roxmltree::ParsingOptions::default();
         let parsed_doc = roxmltree::Document::parse_with_options(decompressed.as_str(), options)?;
@@ -33,7 +57,7 @@ impl FileFormatSaver for XoppFile {
         self.xopp_root.write_to_xml(&mut xml_writer);
         let output = xml_writer.end_document();
 
-        let compressed = super::compress_to_gzip(output.as_bytes(), file_name)?;
+        let compressed = compress_to_gzip(output.as_bytes(), file_name)?;
 
         Ok(compressed)
     }
@@ -58,7 +82,7 @@ pub struct XoppRoot {
 }
 
 impl XmlLoadable for XoppRoot {
-    fn load_from_xml(&mut self, root_node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, root_node: Node) -> anyhow::Result<()> {
         if let Some(fileversion) = root_node.attribute("fileversion") {
             self.fileversion = fileversion.to_string();
         }
@@ -118,7 +142,7 @@ pub struct XoppPage {
 }
 
 impl XmlLoadable for XoppPage {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.width = node
             .attribute("width")
             .ok_or_else(|| {
@@ -296,7 +320,7 @@ pub struct XoppBackground {
 }
 
 impl XmlLoadable for XoppBackground {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.name = node.attribute("name").map(|name| name.to_string());
 
         match node.attribute("type").ok_or_else(|| {
@@ -384,7 +408,7 @@ pub struct XoppLayer {
 }
 
 impl XmlLoadable for XoppLayer {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.name = node.attribute("name").map(|name| name.to_string());
 
         for child in node.children() {
@@ -591,14 +615,14 @@ impl XoppColor {
     }
 }
 
-/// Helper enum to bundle stroke types into one type
+/// Helper to bundle stroke types into one type
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum XoppStrokeStyle {
-    /// A stroke as strokestyle
+pub enum XoppStrokeType {
+    /// A stroke
     XoppStroke(XoppStroke),
-    /// A text as strokestyle
+    /// A text
     XoppText(XoppText),
-    /// An image as strokestyle
+    /// An image
     XoppImage(XoppImage),
 }
 
@@ -623,7 +647,7 @@ pub struct XoppStroke {
 }
 
 impl XmlLoadable for XoppStroke {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         match node.attribute("tool").ok_or_else(|| {
             anyhow::anyhow!(
                 "failed to parse `tool` attribute in XoppStroke with id {:?}",
@@ -770,7 +794,7 @@ pub struct XoppText {
 }
 
 impl XmlLoadable for XoppText {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.font = node
             .attribute("font")
             .ok_or_else(|| {
@@ -855,7 +879,7 @@ pub struct XoppImage {
 }
 
 impl XmlLoadable for XoppImage {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         // Left
         self.left = node
             .attribute("left")
@@ -935,7 +959,7 @@ mod tests {
     }
 
     #[test]
-    fn load_simple_xopp() -> Result<(), anyhow::Error> {
+    fn load_simple_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/simple.xopp");
         let to_save = PathBuf::from("./temp/simple.json");
@@ -951,7 +975,7 @@ mod tests {
     }
 
     #[test]
-    fn load_image_xopp() -> Result<(), anyhow::Error> {
+    fn load_image_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/image.xopp");
         let to_save = PathBuf::from("./temp/image.json");
@@ -967,7 +991,7 @@ mod tests {
     }
 
     #[test]
-    fn load_and_save_simple_xopp() -> Result<(), anyhow::Error> {
+    fn load_and_save_simple_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/simple.xopp");
         let to_save = PathBuf::from("./temp/simple-new.xopp");
@@ -982,7 +1006,7 @@ mod tests {
     }
 
     #[test]
-    fn load_and_save_image_xopp() -> Result<(), anyhow::Error> {
+    fn load_and_save_image_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/image.xopp");
         let to_save = PathBuf::from("./temp/image-new.xopp");

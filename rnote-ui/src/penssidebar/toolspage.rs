@@ -1,5 +1,8 @@
+use crate::appwindow::RnoteAppWindow;
+use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+
 mod imp {
-    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+    use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/toolspage.ui")]
@@ -8,6 +11,8 @@ mod imp {
         pub toolstyle_expandsheet_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub toolstyle_dragproximity_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub toolstyle_offsetcamera_toggle: TemplateChild<ToggleButton>,
     }
 
     #[glib::object_subclass]
@@ -40,9 +45,6 @@ mod imp {
     impl WidgetImpl for ToolsPage {}
 }
 
-use crate::appwindow::RnoteAppWindow;
-use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, ToggleButton};
-
 glib::wrapper! {
     pub struct ToolsPage(ObjectSubclass<imp::ToolsPage>)
         @extends gtk4::Widget;
@@ -60,15 +62,15 @@ impl ToolsPage {
     }
 
     pub fn toolstyle_expandsheet_toggle(&self) -> ToggleButton {
-        imp::ToolsPage::from_instance(self)
-            .toolstyle_expandsheet_toggle
-            .get()
+        self.imp().toolstyle_expandsheet_toggle.get()
     }
 
     pub fn toolstyle_dragproximity_toggle(&self) -> ToggleButton {
-        imp::ToolsPage::from_instance(self)
-            .toolstyle_dragproximity_toggle
-            .get()
+        self.imp().toolstyle_dragproximity_toggle.get()
+    }
+
+    pub fn toolstyle_offsetcamera_toggle(&self) -> ToggleButton {
+        self.imp().toolstyle_offsetcamera_toggle.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -81,6 +83,12 @@ impl ToolsPage {
         self.toolstyle_dragproximity_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_dragproximity_toggle| {
             if toolstyle_dragproximity_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"dragproximity".to_variant()));
+            }
+        }));
+
+        self.toolstyle_offsetcamera_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
+            if toolstyle_offsetcamera_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"offsetcamera".to_variant()));
             }
         }));
     }

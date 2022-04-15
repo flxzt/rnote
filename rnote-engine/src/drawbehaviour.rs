@@ -1,47 +1,64 @@
-use std::sync::{Arc, RwLock};
+use gtk4::graphene;
+use p2d::bounding_volume::AABB;
+use piet::RenderContext;
+use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
 
-use crate::render::{self, Renderer};
+use crate::utils::GrapheneRectHelpers;
+use crate::Camera;
 
-use p2d::bounding_volume::{BoundingVolume, AABB};
+/// Trait for types that can draw themselves on the sheet
+/// In the coordinate space of the sheet
+pub trait DrawOnSheetBehaviour {
+    fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB>;
+    /// draws itself on the sheet. the callers are expected to call with save / restore context
+    fn draw_on_sheet(
+        &self,
+        cx: &mut impl piet::RenderContext,
+        sheet_bounds: AABB,
+        camera: &Camera,
+    ) -> anyhow::Result<()>;
 
-/// Specifing that a type can be drawn
-pub trait DrawBehaviour {
-    /// returns the current bounds of this stroke
-    fn bounds(&self) -> AABB;
-    /// sets the bounds of this stroke
-    fn set_bounds(&mut self, bounds: AABB);
-    /// generates the bounds of this stroke
-    /// Implementation may implement a more efficient way of generating the bounds, without generating every Svg
-    fn gen_bounds(&self) -> Option<AABB> {
-        if let Ok(svgs) = self.gen_svgs(na::vector![0.0, 0.0]) {
-            let mut svgs_iter = svgs.iter();
-            if let Some(first) = svgs_iter.next() {
-                let mut new_bounds = first.bounds;
+    /// Expects snapshot untransformed in surface coordinate space.
+    fn draw_on_sheet_snapshot(
+        &self,
+        snapshot: &gtk4::Snapshot,
+        sheet_bounds: AABB,
+        camera: &Camera,
+    ) -> anyhow::Result<()> {
+        snapshot.save();
 
-                svgs_iter.for_each(|svg| {
-                    new_bounds.merge(&svg.bounds);
-                });
+        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
+            let viewport = camera.viewport();
 
-                return Some(new_bounds);
-            }
+            // Restrict to viewport as maximum bounds. Else cairo will panic for very large bounds
+            let bounds = bounds.clamp(None, Some(viewport));
+            // Transform the bounds into surface coords
+            let mut bounds_transformed = bounds
+                .scale(camera.total_zoom())
+                .translate(-camera.offset)
+                .ceil();
+
+            bounds_transformed.ensure_positive();
+            bounds_transformed.assert_valid()?;
+
+            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_aabb(bounds_transformed));
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+            // Transform to sheet coordinate space
+            piet_cx.transform(camera.transform().to_kurbo());
+
+            self.draw_on_sheet(&mut piet_cx, sheet_bounds, camera)?;
         }
 
-        None
-    }
-    /// generates the svg elements, without the xml header or the svg root.
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error>;
-    /// generates the image for this stroke
-    fn gen_images(
-        &self,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
-        let offset = na::vector![0.0, 0.0];
-        let svgs = self.gen_svgs(offset)?;
+        snapshot.restore();
 
-        renderer
-            .read()
-            .unwrap()
-            .gen_images(zoom, svgs, self.bounds())
+        Ok(())
     }
+}
+
+/// Trait for types that can draw themselves on a piet RenderContext.
+pub trait DrawBehaviour {
+    /// draws itself. the callers are expected to call with save / restore context
+    /// image_scale is the scalefactor of generated pixel images within the type. the context should not be zoomed by it!
+    fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()>;
 }

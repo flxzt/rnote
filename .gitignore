@@ -1,6 +1,7 @@
 /build
 /_build
 /_mesonbuild
+/com.github.flxzt.rnote.Devel.flatpak
 /.flatpak
 /.flatpak-builder
 /flatpak-repo

@@ -13,6 +13,10 @@
       <default>false</default>
       <summary>Default window maximized behaviour</summary>
     </key>
+    <key name="flap-width" type="i">
+      <default>500</default>
+      <summary>flap width</summary>
+    </key>
     <key name='color-scheme' type='s'>
       <choices>
         <choice value="default" />
@@ -33,26 +37,9 @@
       <default>true</default>
       <summary>Wether the user is righthanded (or lefthanded)</summary>
     </key>
-    <key name="pen-sounds" type="b">
-      <default>false</default>
-      <summary>play sounds when drawing with pens</summary>
-    </key>
     <key name="touch-drawing" type="b">
       <default>false</default>
       <summary>enable drawing with touch input</summary>
-    </key>
-    <key name="expand-mode" type="s">
-      <choices>
-        <choice value="fixed-size"/>
-        <choice value="endless-vertical"/>
-        <choice value="infinite"/>
-      </choices>
-      <default>"infinite"</default>
-      <summary>Expand mode</summary>
-    </key>
-    <key name="format-borders" type="b">
-      <default>true</default>
-      <summary>show format borders</summary>
     </key>
     <key name="pdf-import-width" type="d">
       <default>50.0</default>
@@ -105,23 +92,10 @@
       <default>false</default>
       <summary>if the aspect ratio while resizing is locked</summary>
     </key>
-    <key name="sheet-format" type="s">
+    <key name="engine-config" type="s">
       <default>'
-        {"width":1123,"height":1587,"dpi":96.0,"orientation":"portrait"}
       '</default>
-      <summary>the sheet format</summary>
-    </key>
-    <key name="sheet-background" type="s">
-      <default>'
-        {"color":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"pattern":"dots","pattern_size":[32.0,32.0],"pattern_color":{"r":0.8,"g":0.9,"b":1.0,"a":1.0}}
-      '</default>
-      <summary>the sheet background</summary>
-    </key>
-    <key name="pens" type="s">
-      <default>'
-        {"current_pen":"brush_style","marker":{"options":{"seed":null,"width":4.400000000000001,"stroke_color":{"r":0.0,"g":0.0,"b":0.0,"a":1.0},"fill_color":null}},"brush":{"style":"solid","smooth_options":{"seed":null,"width":3.8000000000000025,"stroke_color":{"r":0.0,"g":0.0,"b":0.0,"a":1.0},"fill_color":null},"textured_options":{"seed":null,"width":1.0,"stroke_color":{"r":0.0,"g":0.0,"b":0.0,"a":1.0},"density":5.0,"radii":[2.0,0.3],"distribution":"Normal"}},"shaper":{"style":"line","drawstyle":"smooth","smooth_options":{"seed":null,"width":1.5000000000000004,"stroke_color":{"r":0.0,"g":0.0,"b":0.0,"a":1.0},"fill_color":{"r":0.0,"g":0.0,"b":0.0,"a":1.0}},"rough_options":{"max_randomness_offset":2.0,"roughness":1.0,"bowing":1.0,"seed":null,"stroke":{"r":0.0,"g":0.0,"b":0.0,"a":1.0},"stroke_width":1.5000000000000004,"fill":{"r":0.9647058844566345,"g":0.3803921639919281,"b":0.3176470696926117,"a":1.0},"fill_style":"Hachure","fill_weight":0.5,"hachure_angle":-41.0,"hachure_gap":4.0,"curve_stepcount":9.0,"curve_fitting":0.95,"curve_tightness":0.0,"stroke_line_dash":[],"stroke_line_dash_offset":0.0,"fill_line_dash":[],"fill_line_dash_offset":0.0,"disable_multistroke":false,"disable_multistroke_fill":false,"simplification":0.0,"dash_offset":0.0,"dash_gap":4.0,"zigzag_offset":4.0,"preserve_vertices":false}},"eraser":{"width":30.0},"selector":{"style":"polygon"},"tools":{"style":"expandsheet"}}
-      '</default>
-      <summary>pen settings</summary>
+      <summary>the engine configuration</summary>
     </key>
   </schema>
 </schemalist>

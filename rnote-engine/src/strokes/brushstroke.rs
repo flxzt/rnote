@@ -1,162 +1,135 @@
-use crate::compose::geometry::AABBHelpers;
-use crate::compose::smooth::SmoothOptions;
-use crate::compose::textured::TexturedOptions;
-use crate::compose::transformable::Transformable;
-use crate::compose::{self, curves, smooth, textured};
-use crate::drawbehaviour::DrawBehaviour;
-use crate::pens::brush::Brush;
-use crate::pens::brush::BrushStyle;
-use crate::strokes::inputdata::InputData;
-use crate::{render, utils};
+use super::StrokeBehaviour;
+use crate::render::{self};
+use crate::DrawBehaviour;
+use rnote_compose::penpath::{Element, Segment};
+use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::style::Composer;
+use rnote_compose::transform::TransformBehaviour;
+use rnote_compose::{PenPath, Style};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
-use rand::{Rng, SeedableRng};
-use rayon::iter::{IndexedParallelIterator, IntoParallelRefIterator, ParallelIterator};
 use serde::{Deserialize, Serialize};
-use svg::node::element::path;
-
-use super::element::Element;
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "brushstroke_style")]
-pub enum BrushStrokeStyle {
-    #[serde(rename = "marker")]
-    Marker {
-        #[serde(rename = "options")]
-        options: SmoothOptions,
-    },
-    #[serde(rename = "solid")]
-    Solid {
-        #[serde(rename = "options")]
-        options: SmoothOptions,
-    },
-    #[serde(rename = "textured")]
-    Textured {
-        #[serde(rename = "options")]
-        options: TexturedOptions,
-    },
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "brushstroke")]
 pub struct BrushStroke {
-    #[serde(rename = "elements")]
-    pub elements: Vec<Element>,
+    #[serde(rename = "path")]
+    pub path: PenPath,
     #[serde(rename = "style")]
-    pub style: BrushStrokeStyle,
-    #[serde(rename = "bounds")]
-    pub bounds: AABB,
+    pub style: Style,
     #[serde(skip)]
     pub hitboxes: Vec<AABB>,
 }
 
 impl Default for BrushStroke {
     fn default() -> Self {
-        Self::new(Element::new(InputData::default()), &Brush::default())
+        Self::new(
+            Segment::Dot {
+                element: Element::default(),
+            },
+            Style::default(),
+        )
+    }
+}
+
+impl StrokeBehaviour for BrushStroke {
+    fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
+        let bounds = self.bounds();
+        let mut cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
+            bounds.extents()[0],
+            bounds.extents()[1],
+        ));
+
+        self.draw(&mut cx, 1.0)?;
+        let svg_data = rnote_compose::utils::piet_svg_cx_to_svg(cx)?;
+
+        Ok(render::Svg { svg_data, bounds })
+    }
+
+    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+        let images = match &self.style {
+            Style::Smooth(options) => self
+                .path
+                .iter()
+                .filter_map(|segment| {
+                    match render::Image::gen_from_composable_shape(segment, options, image_scale) {
+                        Ok(image) => Some(image),
+                        Err(e) => {
+                            log::error!("gen_images() failed with Err {}", e);
+                            None
+                        }
+                    }
+                })
+                .flatten()
+                .collect::<Vec<render::Image>>(),
+            Style::Rough(_) => vec![],
+            Style::Textured(options) => {
+                let mut options = options.clone();
+
+                self.path
+                    .iter()
+                    .filter_map(|segment| {
+                        options.seed = options
+                            .seed
+                            .map(|seed| rnote_compose::utils::seed_advance(seed));
+
+                        match render::Image::gen_from_composable_shape(
+                            segment,
+                            &options,
+                            image_scale,
+                        ) {
+                            Ok(image) => Some(image),
+                            Err(e) => {
+                                log::error!("gen_images() failed with Err {}", e);
+                                None
+                            }
+                        }
+                    })
+                    .flatten()
+                    .collect::<Vec<render::Image>>()
+            }
+        };
+
+        Ok(images)
     }
 }
 
 impl DrawBehaviour for BrushStroke {
-    fn bounds(&self) -> AABB {
-        self.bounds
-    }
-
-    fn set_bounds(&mut self, bounds: AABB) {
-        self.bounds = bounds;
-    }
-
-    fn gen_bounds(&self) -> Option<AABB> {
-        if let Some(&first) = self.elements.iter().peekable().peek() {
-            let mut bounds = AABB::new_invalid();
-            bounds.take_point(na::Point2::from(first.inputdata.pos()));
-
-            bounds.merge(
-                &self
-                    .elements
-                    .par_iter()
-                    .zip(self.elements.par_iter().skip(1))
-                    .zip(self.elements.par_iter().skip(2))
-                    .zip(self.elements.par_iter().skip(3))
-                    .filter_map(|(((first, second), third), forth)| {
-                        let mut bounds = AABB::new_invalid();
-
-                        let width = match &self.style {
-                            BrushStrokeStyle::Marker { options } => options.width,
-                            BrushStrokeStyle::Solid { options } => options.width,
-                            BrushStrokeStyle::Textured { options } => options.width,
-                        };
-
-                        if let Some(cubbez) = curves::gen_cubbez_w_catmull_rom(
-                            first.inputdata.pos(),
-                            second.inputdata.pos(),
-                            third.inputdata.pos(),
-                            forth.inputdata.pos(),
-                        ) {
-                            // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-                            bounds.take_point(na::Point2::from(cubbez.start));
-                            bounds.take_point(na::Point2::from(cubbez.cp1));
-                            bounds.take_point(na::Point2::from(cubbez.cp2));
-                            bounds.take_point(na::Point2::from(cubbez.end));
-                        } else if let Some(line) =
-                            curves::gen_line(second.inputdata.pos(), third.inputdata.pos())
-                        {
-                            bounds.take_point(na::Point2::from(line.start));
-                            bounds.take_point(na::Point2::from(line.end));
-                        } else {
-                            return None;
-                        }
-
-                        bounds.loosen(width + 1.0);
-
-                        Some(bounds)
-                    })
-                    .reduce(AABB::new_invalid, |i, next| i.merged(&next)),
-            );
-            Some(bounds)
-        } else {
-            None
-        }
-    }
-
-    fn gen_svgs(&self, offset: na::Vector2<f64>) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let svg_root = false;
-
-        match self.style {
-            BrushStrokeStyle::Marker { options } => self.gen_svgs_marker(options, offset, svg_root),
-            BrushStrokeStyle::Solid { options } => self.gen_svgs_solid(options, offset, svg_root),
-            BrushStrokeStyle::Textured { options } => {
-                self.gen_svgs_textured(options, offset, svg_root)
+    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        match &self.style {
+            Style::Smooth(options) => self.path.draw_composed(cx, options),
+            Style::Rough(_) => {
+                // Rough style currently unsupported for pen paths
             }
+            Style::Textured(options) => self.path.draw_composed(cx, options),
+        };
+
+        Ok(())
+    }
+}
+
+impl ShapeBehaviour for BrushStroke {
+    fn bounds(&self) -> AABB {
+        match &self.style {
+            Style::Smooth(options) => self.path.composed_bounds(options),
+            // TODO: Needs fixing
+            Style::Rough(_options) => self.path.bounds(),
+            Style::Textured(options) => self.path.composed_bounds(options),
         }
     }
 }
 
-impl Transformable for BrushStroke {
+impl TransformBehaviour for BrushStroke {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
-        self.elements.iter_mut().for_each(|element| {
-            element.inputdata.set_pos(element.inputdata.pos() + offset);
-        });
+        self.path.translate(offset);
         self.update_geometry();
     }
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
-        let mut isometry = na::Isometry2::identity();
-        isometry.append_rotation_wrt_point_mut(&na::UnitComplex::new(angle), &center);
-
-        self.elements.iter_mut().for_each(|element| {
-            element
-                .inputdata
-                .set_pos((isometry * na::Point2::from(element.inputdata.pos())).coords);
-        });
+        self.path.rotate(angle, center);
         self.update_geometry();
     }
     fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
-        let center = self.bounds.center().coords;
-
-        self.elements.iter_mut().for_each(|element| {
-            element
-                .inputdata
-                .set_pos(((element.inputdata.pos() - center).component_mul(&scale)) + center);
-        });
+        self.path.scale(scale);
         self.update_geometry();
     }
 }
@@ -164,484 +137,98 @@ impl Transformable for BrushStroke {
 impl BrushStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
 
-    pub fn new(element: Element, brush: &Brush) -> Self {
-        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+    pub fn new(segment: Segment, style: Style) -> Self {
+        let path = PenPath::new_w_segment(segment);
 
-        let style = match brush.style {
-            BrushStyle::Marker => {
-                let mut options = brush.smooth_options;
-                options.seed = seed;
-
-                BrushStrokeStyle::Marker { options }
-            }
-            BrushStyle::Solid => {
-                let mut options = brush.smooth_options;
-                options.seed = seed;
-
-                BrushStrokeStyle::Solid { options }
-            }
-            BrushStyle::Textured => {
-                let mut options = brush.textured_options;
-                options.seed = seed;
-
-                BrushStrokeStyle::Textured { options }
-            }
-        };
-        let elements = Vec::with_capacity(4);
-        let bounds = AABB::new(
-            na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
-            na::point![element.inputdata.pos()[0], element.inputdata.pos()[1]],
-        );
-        let hitbox = Vec::new();
-
-        let mut brushstroke = Self {
-            elements,
-            style,
-            bounds,
-            hitboxes: hitbox,
-        };
-
-        // Pushing with push_elem() instead filling vector, because bounds are getting updated there too
-        brushstroke.push_elem(element);
-
-        brushstroke
+        Self::from_penpath(path, style)
     }
 
-    pub fn new_w_elements(
-        mut elements: impl Iterator<Item = Element>,
-        brush: &Brush,
-    ) -> Option<Self> {
-        if let Some(first) = elements.next() {
-            let mut brushstroke = Self::new(first, brush);
+    pub fn from_penpath(path: PenPath, style: Style) -> Self {
+        let hitboxes = Vec::new();
 
-            for element in elements {
-                brushstroke.elements.push(element);
-            }
-            brushstroke.update_geometry();
-
-            Some(brushstroke)
-        } else {
-            None
+        Self {
+            path,
+            style,
+            hitboxes,
         }
     }
 
-    pub fn push_elem(&mut self, element: Element) {
-        self.elements.push(element);
-
-        self.update_bounds_to_last_elem();
-    }
-
-    pub fn pop_elem(&mut self) -> Option<Element> {
-        let element = self.elements.pop();
-
-        self.update_geometry();
-
-        element
+    pub fn push_segment(&mut self, segment: Segment) {
+        self.path.push_back(segment);
     }
 
     pub fn update_geometry(&mut self) {
-        if let Some(new_bounds) = self.gen_bounds() {
-            self.set_bounds(new_bounds);
-        }
         self.hitboxes = self.gen_hitboxes();
     }
 
-    fn update_bounds_to_last_elem(&mut self) {
-        if let Some(last) = self.elements.last() {
-            let width = match self.style {
-                BrushStrokeStyle::Marker { options } => options.width,
-                BrushStrokeStyle::Solid { options } => options.width,
-                BrushStrokeStyle::Textured { options } => options.width,
-            };
-
-            self.bounds.merge(&AABB::new(
-                na::Point2::from(last.inputdata.pos() - na::Vector2::from_element(width)),
-                na::Point2::from(last.inputdata.pos() + na::Vector2::from_element(width)),
-            ));
-        }
-    }
-
     fn gen_hitboxes(&self) -> Vec<AABB> {
-        let mut hitbox: Vec<AABB> = Vec::with_capacity(self.elements.len() as usize);
-        let mut elements_iter = self.elements.iter().peekable();
-        while let Some(first) = elements_iter.next() {
-            let second = if let Some(&second) = elements_iter.peek() {
-                Some(second)
-            } else {
-                None
-            };
-            hitbox.push(self.gen_hitbox_for_elems(first, second));
-        }
-
-        hitbox
-    }
-
-    fn gen_hitbox_for_elems(&self, first: &Element, second: Option<&Element>) -> AABB {
-        let width = match self.style {
-            BrushStrokeStyle::Marker { options } => options.width,
-            BrushStrokeStyle::Solid { options } => options.width,
-            BrushStrokeStyle::Textured { options } => options.width,
+        let width = match &self.style {
+            Style::Smooth(options) => Some(options.width),
+            Style::Rough(_) => None,
+            Style::Textured(options) => Some(options.width),
         };
 
-        let first = first.inputdata.pos();
-        if let Some(second) = second {
-            let second = second.inputdata.pos();
-
-            let delta = second - first;
-            let brush_x = if delta[0] < 0.0 { -width } else { width };
-            let brush_y = if delta[1] < 0.0 { -width } else { width };
-
-            AABB::new_positive(
-                na::Point2::from(first - na::vector![brush_x / 2.0, brush_y / 2.0]),
-                na::Point2::from(first + delta + na::vector![brush_x / 2.0, brush_y / 2.0]),
-            )
+        if let Some(width) = width {
+            self.path
+                .iter()
+                .map(|segment| segment.bounds().loosened(width))
+                .collect()
         } else {
-            AABB::new_positive(
-                na::Point2::from(
-                    first
-                        - na::vector![
-                            (Self::HITBOX_DEFAULT + width) / 2.0,
-                            (Self::HITBOX_DEFAULT + width / 2.0)
-                        ],
-                ),
-                na::Point2::from(
-                    first + na::vector![Self::HITBOX_DEFAULT + width, Self::HITBOX_DEFAULT + width],
-                ),
-            )
+            vec![]
         }
     }
 
-    pub fn gen_svg_for_elems(
+    pub fn gen_images_for_last_segments(
         &self,
-        elements: (&Element, &Element, &Element, &Element),
-        offset: na::Vector2<f64>,
-        svg_root: bool,
-    ) -> Result<Option<render::Svg>, anyhow::Error> {
-        match self.style {
-            BrushStrokeStyle::Marker { mut options } => {
-                let mut seed = options.seed;
-                // Advance the seed (skip first three elements) so that stroke keeps generating the same patterns
-                for _ in 3..self.elements.len() {
-                    seed = seed.map(|seed| utils::seed_advance(seed));
-                }
-                options.seed = seed;
+        no_last_segments: usize,
+        image_scale: f64,
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
+        let images = match &self.style {
+            Style::Smooth(options) => self
+                .path
+                .iter()
+                .rev()
+                .take(no_last_segments)
+                .rev()
+                .filter_map(|segment| {
+                    match render::Image::gen_from_composable_shape(segment, options, image_scale) {
+                        Ok(image) => Some(image),
+                        Err(e) => {
+                            log::error!("gen_images_for_last_segments() failed with Err {}", e);
+                            None
+                        }
+                    }
+                })
+                .flatten()
+                .collect::<Vec<render::Image>>(),
+            Style::Rough(_) => vec![],
+            Style::Textured(options) => self
+                .path
+                .iter()
+                .enumerate()
+                .rev()
+                .take(no_last_segments)
+                .rev()
+                .filter_map(|(i, segment)| {
+                    let mut options = options.clone();
+                    (0..=i).for_each(|_| {
+                        options.seed = options
+                            .seed
+                            .map(|seed| rnote_compose::utils::seed_advance(seed))
+                    });
 
-                Ok(Self::gen_svg_elem_marker(
-                    &options, elements, offset, svg_root,
-                ))
-            }
-            BrushStrokeStyle::Solid { mut options } => {
-                let mut seed = options.seed;
-                // Advance the seed (skip first three elements) so that stroke keeps generating the same patterns
-                for _ in 3..self.elements.len() {
-                    seed = seed.map(|seed| utils::seed_advance(seed));
-                }
-                options.seed = seed;
-
-                Ok(Self::gen_svg_elem_solid(
-                    &options, elements, offset, svg_root,
-                ))
-            }
-            BrushStrokeStyle::Textured { mut options } => {
-                let mut seed = options.seed;
-                // Advance the seed (skip first three elements) so that stroke keeps generating the same patterns
-                for _ in 3..self.elements.len() {
-                    seed = seed.map(|seed| utils::seed_advance(seed));
-                }
-                options.seed = seed;
-
-                Ok(Self::gen_svg_elem_textured(
-                    &options, elements, offset, svg_root,
-                ))
-            }
-        }
-    }
-
-    pub fn gen_svg_elem_marker(
-        options: &SmoothOptions,
-        elements: (&Element, &Element, &Element, &Element),
-        offset: na::Vector2<f64>,
-        svg_root: bool,
-    ) -> Option<render::Svg> {
-        let mut commands = Vec::new();
-        let width = options.width;
-
-        let mut bounds = AABB::new_invalid();
-
-        if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(
-            elements.0.inputdata.pos(),
-            elements.1.inputdata.pos(),
-            elements.2.inputdata.pos(),
-            elements.3.inputdata.pos(),
-        ) {
-            cubbez.start += offset;
-            cubbez.cp1 += offset;
-            cubbez.cp2 += offset;
-            cubbez.end += offset;
-
-            // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-            bounds.take_point(na::Point2::from(cubbez.start));
-            bounds.take_point(na::Point2::from(cubbez.cp1));
-            bounds.take_point(na::Point2::from(cubbez.cp2));
-            bounds.take_point(na::Point2::from(cubbez.end));
-
-            commands.append(&mut smooth::compose_cubbez(cubbez, true, options));
-        } else if let Some(mut line) =
-            curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
-        {
-            line.start += offset;
-            line.end += offset;
-
-            bounds.take_point(na::Point2::from(line.start));
-            bounds.take_point(na::Point2::from(line.end));
-
-            commands.append(&mut smooth::compose_line(line, true, options));
-        } else {
-            return None;
-        }
-
-        bounds.loosen(width + 1.0);
-
-        let color = options
-            .stroke_color
-            .map_or(String::from(""), |color| color.to_css_color());
-
-        let path = svg::node::element::Path::new()
-            .set("stroke", color)
-            .set("stroke-width", width)
-            .set("stroke-linejoin", "round")
-            .set("stroke-linecap", "round")
-            .set("fill", "none")
-            .set("d", path::Data::from(commands));
-
-        let mut svg_data = compose::svg_node_to_string(&path)
-            .map_err(|e| {
-                anyhow::anyhow!(
-                    "node_to_string() failed in gen_svg_elem() of markerstroke with Err `{}`",
-                    e
-                )
-            })
-            .ok()?;
-
-        if svg_root {
-            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true);
-        }
-        Some(render::Svg { svg_data, bounds })
-    }
-
-    pub fn gen_svgs_marker(
-        &self,
-        options: SmoothOptions,
-        offset: na::Vector2<f64>,
-        svg_root: bool,
-    ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let svgs: Vec<render::Svg> = self
-            .elements
-            .iter()
-            .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
-            .filter_map(|(((first, second), third), forth)| {
-                Self::gen_svg_elem_marker(&options, (first, second, third, forth), offset, svg_root)
-            })
-            .collect();
-
-        Ok(svgs)
-    }
-
-    pub fn gen_svg_elem_solid(
-        options: &SmoothOptions,
-        elements: (&Element, &Element, &Element, &Element),
-        offset: na::Vector2<f64>,
-        svg_root: bool,
-    ) -> Option<render::Svg> {
-        let mut commands = Vec::new();
-
-        let width = options.width;
-        let start_width = elements.1.inputdata.pressure() * options.width;
-        let end_width = elements.2.inputdata.pressure() * options.width;
-
-        let mut bounds = AABB::new_invalid();
-
-        if let Some(mut cubbez) = curves::gen_cubbez_w_catmull_rom(
-            elements.0.inputdata.pos(),
-            elements.1.inputdata.pos(),
-            elements.2.inputdata.pos(),
-            elements.3.inputdata.pos(),
-        ) {
-            cubbez.start += offset;
-            cubbez.cp1 += offset;
-            cubbez.cp2 += offset;
-            cubbez.end += offset;
-
-            // Bounds are definitely inside the polygon of the control points. (Could be improved with the second derivative of the bezier curve)
-            bounds.take_point(na::Point2::from(cubbez.start));
-            bounds.take_point(na::Point2::from(cubbez.cp1));
-            bounds.take_point(na::Point2::from(cubbez.cp2));
-            bounds.take_point(na::Point2::from(cubbez.end));
-
-            let n_splits = 5;
-            // Number of splits for the bezier curve approximation
-            let lines = curves::approx_cubbez_with_lines(cubbez, n_splits);
-            let n_lines = lines.len() as i32;
-
-            for (i, line) in lines.iter().enumerate() {
-                // splitted line start / end widths are a linear interpolation between the start and end width / n splits.
-                // Not mathematically correct, TODO to carry the t of the splits through approx_offsetted_cubbez_with_lines_w_subdivion()
-                let line_start_width = start_width
-                    + (end_width - start_width) * (f64::from(i as i32) / f64::from(n_lines));
-                let line_end_width = start_width
-                    + (end_width - start_width) * (f64::from(i as i32 + 1) / f64::from(n_lines));
-
-                commands.append(&mut smooth::compose_line_variable_width(
-                    *line,
-                    line_start_width,
-                    line_end_width,
-                    true,
-                    options,
-                ));
-            }
-        } else if let Some(mut line) =
-            curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
-        {
-            line.start += offset;
-            line.end += offset;
-
-            bounds.take_point(na::Point2::from(line.start));
-            bounds.take_point(na::Point2::from(line.end));
-
-            commands.append(&mut smooth::compose_line_variable_width(
-                line,
-                start_width,
-                end_width,
-                true,
-                options,
-            ));
-        } else {
-            return None;
-        }
-
-        bounds.loosen(width + 1.0);
-
-        let fill = options
-            .stroke_color
-            .map_or(String::from(""), |color| color.to_css_color());
-
-        let path = svg::node::element::Path::new()
-            .set("stroke", "none")
-            //.set("stroke", self.brush.color.to_css_color())
-            //.set("stroke-width", 1.0)
-            .set("fill", fill)
-            .set("d", path::Data::from(commands));
-
-        let mut svg_data = compose::svg_node_to_string(&path)
-            .map_err(|e| {
-                anyhow::anyhow!(
-                    "node_to_string() failed in gen_svg_elem_solid() of brushstroke with Err `{}`",
-                    e
-                )
-            })
-            .ok()?;
-
-        if svg_root {
-            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true);
-        }
-        Some(render::Svg { svg_data, bounds })
-    }
-
-    pub fn gen_svgs_solid(
-        &self,
-        options: SmoothOptions,
-        offset: na::Vector2<f64>,
-        svg_root: bool,
-    ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let svgs: Vec<render::Svg> = self
-            .elements
-            .iter()
-            .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
-            .filter_map(|(((first, second), third), forth)| {
-                Self::gen_svg_elem_solid(&options, (first, second, third, forth), offset, svg_root)
-            })
-            .collect();
-
-        Ok(svgs)
-    }
-
-    pub fn gen_svg_elem_textured(
-        options: &TexturedOptions,
-        elements: (&Element, &Element, &Element, &Element),
-        offset: na::Vector2<f64>,
-        svg_root: bool,
-    ) -> Option<render::Svg> {
-        let width = options.width;
-        let start_width = elements.1.inputdata.pressure() * options.width;
-        let end_width = elements.2.inputdata.pressure() * options.width;
-        let mid_width = (start_width + end_width) * 0.5;
-
-        let mut bounds = AABB::new_invalid();
-
-        // Configure the textured Configuration
-        let element = if let Some(mut line) =
-            curves::gen_line(elements.1.inputdata.pos(), elements.2.inputdata.pos())
-        {
-            line.start += offset;
-            line.end += offset;
-
-            bounds.take_point(na::Point2::from(line.start));
-            bounds.take_point(na::Point2::from(line.end));
-
-            textured::compose_line(line, mid_width, &options)
-        } else {
-            return None;
+                    match render::Image::gen_from_composable_shape(segment, &options, image_scale) {
+                        Ok(image) => Some(image),
+                        Err(e) => {
+                            log::error!("gen_images_for_last_segments() failed with Err {}", e);
+                            None
+                        }
+                    }
+                })
+                .flatten()
+                .collect::<Vec<render::Image>>(),
         };
 
-        bounds.loosen(width + 1.0);
-
-        let mut svg_data = compose::svg_node_to_string(&element)
-            .map_err(|e| {
-                anyhow::anyhow!(
-                    "node_to_string() failed in gen_svg_elem_textured() of brushstroke with Err `{}`",
-                    e
-                )
-            })
-            .ok()?;
-
-        if svg_root {
-            svg_data = compose::wrap_svg_root(&svg_data, Some(bounds), Some(bounds), true);
-        }
-
-        Some(render::Svg { svg_data, bounds })
-    }
-
-    pub fn gen_svgs_textured(
-        &self,
-        mut options: TexturedOptions,
-        offset: na::Vector2<f64>,
-        svg_root: bool,
-    ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let mut seed = options.seed;
-
-        let svgs: Vec<render::Svg> = self
-            .elements
-            .iter()
-            .zip(self.elements.iter().skip(1))
-            .zip(self.elements.iter().skip(2))
-            .zip(self.elements.iter().skip(3))
-            .filter_map(|(((first, second), third), forth)| {
-                seed = seed.map(|seed| utils::seed_advance(seed));
-                options.seed = seed;
-
-                Self::gen_svg_elem_textured(
-                    &options,
-                    (first, second, third, forth),
-                    offset,
-                    svg_root,
-                )
-            })
-            .collect();
-
-        Ok(svgs)
+        Ok(images)
     }
 }

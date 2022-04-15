@@ -71,14 +71,14 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
             tool_bounds.mins.coords.to_kurbo_point(),
             tool_bounds.maxs.coords.to_kurbo_point(),
         );
-        cx.fill(tool_bounds_rect, &piet::PaintBrush::Color(Self::FILL_COLOR));
+        cx.fill(tool_bounds_rect, &Self::FILL_COLOR);
 
         let threshold_line =
             kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y));
 
         cx.stroke_styled(
             threshold_line,
-            &piet::PaintBrush::Color(Self::THRESHOLD_LINE_COLOR),
+            &Self::THRESHOLD_LINE_COLOR,
             Self::THRESHOLD_LINE_WIDTH,
             &piet::StrokeStyle::new().dash_pattern(&[12.0, 6.0]),
         );
@@ -89,7 +89,7 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
         );
         cx.stroke(
             offset_line,
-            &piet::PaintBrush::Color(Self::OFFSET_LINE_COLOR),
+            &Self::OFFSET_LINE_COLOR,
             Self::OFFSET_LINE_WIDTH,
         );
 
@@ -149,10 +149,10 @@ impl DrawOnSheetBehaviour for DragProximityTool {
 
             let circle = kurbo::Circle::new(self.pos.to_kurbo_point(), radius);
 
-            cx.fill(circle, &piet::PaintBrush::Color(Self::FILL_COLOR));
+            cx.fill(circle, &Self::FILL_COLOR);
             cx.stroke(
                 circle,
-                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
+                &Self::OUTLINE_COLOR,
                 Self::OUTLINE_WIDTH,
             );
         }
@@ -207,12 +207,12 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
 
             cx.stroke(
                 bez_path.clone(),
-                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
+                &Self::OUTLINE_COLOR,
                 Self::PATH_WIDTH,
             );
             cx.stroke(
                 bez_path,
-                &piet::PaintBrush::Color(Self::PATH_COLOR),
+                &Self::PATH_COLOR,
                 Self::PATH_WIDTH * 0.5,
             );
         }

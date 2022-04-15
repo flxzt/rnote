@@ -31,7 +31,7 @@ pub enum FileType {
     VectorImageFile,
     BitmapImageFile,
     PdfFile,
-    UnknownFile,
+    Unsupported,
 }
 
 impl FileType {
@@ -70,7 +70,7 @@ impl FileType {
                 }
                 _ => {
                     log::warn!("unkown file type");
-                    return Self::UnknownFile;
+                    return Self::Unsupported;
                 }
             }
         } else {
@@ -94,7 +94,7 @@ impl FileType {
             log::warn!("no path for file");
         };
 
-        Self::UnknownFile
+        Self::Unsupported
     }
 }
 

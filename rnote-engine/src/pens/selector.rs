@@ -490,13 +490,10 @@ impl DrawOnSheetBehaviour for Selector {
                 }
                 bez_path.close_path();
 
-                cx.fill(
-                    bez_path.clone(),
-                    &piet::PaintBrush::Color(Self::SELECTION_FILL_COLOR.into()),
-                );
+                cx.fill(bez_path.clone(), &Self::SELECTION_FILL_COLOR);
                 cx.stroke_styled(
                     bez_path,
-                    &piet::PaintBrush::Color(Self::OUTLINE_COLOR.into()),
+                    &Self::OUTLINE_COLOR,
                     Self::SELECTION_OUTLINE_WIDTH / total_zoom,
                     &piet::StrokeStyle::new().dash_pattern(&Self::SELECTING_DASH_PATTERN),
                 );
@@ -542,8 +539,8 @@ impl Selector {
 
     const SELECTION_OUTLINE_WIDTH: f64 = 1.8;
     const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(0xf0);
-    const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x16);
-    const SELECTING_DASH_PATTERN: [f64; 2] = [8.0, 12.0];
+    const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x17);
+    const SELECTING_DASH_PATTERN: [f64; 2] = [12.0, 6.0];
 
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
     const ROTATE_NODE_SIZE: f64 = 16.0;
@@ -616,13 +613,10 @@ impl Selector {
                 .tightened(Selector::SELECTION_OUTLINE_WIDTH / total_zoom)
                 .to_kurbo_rect();
 
-            piet_cx.fill(
-                rect.clone(),
-                &piet::PaintBrush::Color(Selector::SELECTION_FILL_COLOR.into()),
-            );
+            piet_cx.fill(rect.clone(), &Selector::SELECTION_FILL_COLOR);
             piet_cx.stroke(
                 rect,
-                &piet::PaintBrush::Color(Selector::OUTLINE_COLOR.into()),
+                &Selector::OUTLINE_COLOR,
                 Selector::SELECTION_OUTLINE_WIDTH / total_zoom,
             );
         }

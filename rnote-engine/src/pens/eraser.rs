@@ -97,10 +97,10 @@ impl DrawOnSheetBehaviour for Eraser {
             let fill_rect = bounds.to_kurbo_rect();
             let outline_rect = bounds.tightened(Self::OUTLINE_WIDTH * 0.5).to_kurbo_rect();
 
-            cx.fill(fill_rect, &piet::PaintBrush::Color(Self::FILL_COLOR));
+            cx.fill(fill_rect, &Self::FILL_COLOR);
             cx.stroke(
                 outline_rect,
-                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
+                &Self::OUTLINE_COLOR,
                 Self::OUTLINE_WIDTH,
             );
         }

@@ -929,13 +929,13 @@ impl RnoteAppWindow {
                     self.workspacebrowser().set_primary_path(Some(&path));
                 }
             }
-            utils::FileType::UnknownFile => {
-                log::warn!("tried to open unsupported file type.");
+            utils::FileType::Unsupported => {
+                log::error!("tried to open unsupported file type.");
             }
         }
     }
 
-    /// Loads in a file of any supported type into the current sheet.
+    /// Loads in a file of any supported type into the engine.
     pub fn load_in_file(
         &self,
         file: &gio::File,
@@ -1017,21 +1017,22 @@ impl RnoteAppWindow {
                 }));
             }
             utils::FileType::Folder => {
+                app.set_input_file(None);
+                log::error!("tried to open a folder as a file.");
                 adw::prelude::ActionGroupExt::activate_action(
                     self,
                     "error-toast",
                     Some(&gettext("Error: Tried opening folder as file").to_variant()),
                 );
-                log::warn!("tried to open folder as sheet.");
             }
-            utils::FileType::UnknownFile => {
+            utils::FileType::Unsupported => {
+                app.set_input_file(None);
+                log::error!("tried to open a unsupported file type.");
                 adw::prelude::ActionGroupExt::activate_action(
                     self,
                     "error-toast",
-                    Some(&gettext("Error: Tried to open a unsupported file type.").to_variant()),
+                    Some(&gettext("Failed to open file, is a unsupported file type.").to_variant()),
                 );
-                log::warn!("tried to open a unsupported file type.");
-                app.set_input_file(None);
             }
         }
 

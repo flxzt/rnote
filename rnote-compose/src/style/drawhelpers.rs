@@ -70,7 +70,7 @@ pub fn draw_rectangular_node(
     const OUTLINE_WIDTH: f64 = 1.8;
     const RECT_RADIUS: f64 = 2.0;
     const OUTLINE_COLOR: piet::Color = color::GNOME_BLUES[4];
-    const FILL_STATE_DOWN: piet::Color = color::GNOME_BLUES[0].with_a8(0x80);
+    const FILL_COLOR_STATE_DOWN: piet::Color = color::GNOME_BLUES[0].with_a8(0x80);
 
     let node_rect = kurbo::RoundedRect::from_rect(bounds.to_kurbo_rect(), RECT_RADIUS / zoom);
 
@@ -78,13 +78,13 @@ pub fn draw_rectangular_node(
         NodeState::Up => {}
         NodeState::Proximity => {}
         NodeState::Down => {
-            cx.fill(node_rect, &piet::PaintBrush::Color(FILL_STATE_DOWN));
+            cx.fill(node_rect, &FILL_COLOR_STATE_DOWN);
         }
     }
 
     cx.stroke(
         node_rect,
-        &piet::PaintBrush::Color(OUTLINE_COLOR),
+        &OUTLINE_COLOR,
         OUTLINE_WIDTH / zoom,
     );
 }
@@ -106,7 +106,7 @@ pub fn draw_circular_node(
     );
     cx.stroke(
         node_circle,
-        &piet::PaintBrush::Color(OUTLINE_COLOR),
+        &OUTLINE_COLOR,
         OUTLINE_WIDTH / zoom,
     );
 
@@ -114,7 +114,7 @@ pub fn draw_circular_node(
         NodeState::Up => {}
         NodeState::Proximity => {}
         NodeState::Down => {
-            cx.fill(node_circle, &piet::PaintBrush::Color(FILL_STATE_DOWN));
+            cx.fill(node_circle, &FILL_STATE_DOWN);
         }
     }
 }

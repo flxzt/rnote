@@ -3010,6 +3010,7 @@ dependencies = [
  "rnote-fileformats",
  "rodio",
  "rstar 0.9.3",
+ "semver 1.0.7",
  "serde",
  "serde_json",
  "slotmap",
@@ -3028,6 +3029,7 @@ dependencies = [
  "nalgebra 0.30.1",
  "pretty_env_logger",
  "roxmltree",
+ "semver 1.0.7",
  "serde",
  "serde_json",
  "xmlwriter",
@@ -3235,6 +3237,9 @@ name = "semver"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d65bd28f48be7196d222d95b9243287f48d27aca604e08497513019ff0502cc4"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "semver-parser"

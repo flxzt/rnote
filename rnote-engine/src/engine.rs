@@ -10,7 +10,7 @@ use itertools::Itertools;
 use num_derive::{FromPrimitive, ToPrimitive};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::transform::TransformBehaviour;
-use rnote_fileformats::rnoteformat::RnoteFile;
+use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
 use rnote_fileformats::xoppformat;
 use rnote_fileformats::FileFormatLoader;
 use rnote_fileformats::FileFormatSaver;
@@ -73,7 +73,7 @@ pub struct RnoteEngine {
 
     #[serde(rename = "expand_mode")]
     expand_mode: ExpandMode,
-    #[serde(skip)]
+    #[serde(rename = "camera")]
     pub camera: Camera,
     #[serde(skip)]
     pub visual_debug: bool,
@@ -290,7 +290,7 @@ impl RnoteEngine {
     }
 
     pub fn open_from_rnote_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
-        let rnote_file = RnoteFile::load_from_bytes(bytes)?;
+        let rnote_file = RnotefileMaj0Min5::load_from_bytes(bytes)?;
 
         self.sheet = serde_json::from_value(rnote_file.sheet)?;
         self.expand_mode = serde_json::from_value(rnote_file.expand_mode)?;
@@ -302,15 +302,18 @@ impl RnoteEngine {
         Ok(())
     }
 
-    pub fn save_as_rnote_bytes(&self, version: &str, file_name: &str) -> anyhow::Result<Vec<u8>> {
-        let rnote_file = RnoteFile {
-            version: version.to_string(),
+    pub fn save_as_rnote_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
+        let rnote_file = RnotefileMaj0Min5 {
             sheet: serde_json::to_value(&self.sheet)?,
             expand_mode: serde_json::to_value(&self.expand_mode)?,
             store: serde_json::to_value(&self.store)?,
         };
 
         Ok(rnote_file.save_as_bytes(file_name)?)
+    }
+
+    pub fn export_state_as_json(&self) -> anyhow::Result<String> {
+        Ok(serde_json::to_string(self)?)
     }
 
     pub fn open_from_xopp_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {

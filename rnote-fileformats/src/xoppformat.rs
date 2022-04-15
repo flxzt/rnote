@@ -37,7 +37,7 @@ pub struct XoppFile {
 }
 
 impl FileFormatLoader for XoppFile {
-    fn load_from_bytes(bytes: &[u8]) -> Result<Self, anyhow::Error> {
+    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
         let decompressed = String::from_utf8(decompress_from_gzip(&bytes)?)?;
 
         let options = roxmltree::ParsingOptions::default();
@@ -51,7 +51,7 @@ impl FileFormatLoader for XoppFile {
 }
 
 impl FileFormatSaver for XoppFile {
-    fn save_as_bytes(&self, file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
+    fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let options = xmlwriter::Options::default();
         let mut xml_writer = xmlwriter::XmlWriter::new(options);
         self.xopp_root.write_to_xml(&mut xml_writer);

@@ -26,7 +26,7 @@ extern crate nalgebra as na;
 /// The file format loader trait, implemented by <Format>File types
 pub trait FileFormatLoader {
     /// load type from bytes
-    fn load_from_bytes(bytes: &[u8]) -> Result<Self, anyhow::Error>
+    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
     where
         Self: Sized;
 }
@@ -34,7 +34,7 @@ pub trait FileFormatLoader {
 /// The file format saver trait, implemented by <Format>File types
 pub trait FileFormatSaver {
     /// Save type as bytes
-    fn save_as_bytes(&self, file_name: &str) -> Result<Vec<u8>, anyhow::Error>;
+    fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>>;
 }
 
 /// Implemented on types that are loadable from a XML. Using roxmltree as parser

@@ -53,6 +53,10 @@ impl RnoteAppWindow {
         let action_visual_debug =
             gio::SimpleAction::new_stateful("visual-debug", None, &false.to_variant());
         self.add_action(&action_visual_debug);
+        let action_debug_export_engine_state =
+            gio::SimpleAction::new("debug-export-engine-state", None);
+        self.add_action(&action_debug_export_engine_state);
+
         let action_expand_mode = gio::SimpleAction::new_stateful(
             "expand-mode",
             Some(&glib::VariantType::new("s").unwrap()),
@@ -238,6 +242,11 @@ impl RnoteAppWindow {
                 action_visual_debug.set_state(&requested_state.to_variant());
             }),
         );
+
+        // Export engine state
+        action_debug_export_engine_state.connect_activate(clone!(@weak self as appwindow => move |_action_debug_export_engine_state, _target| {
+            dialogs::dialog_export_engine_state(&appwindow);
+        }));
 
         // Expand Mode
         action_expand_mode.connect_activate(
@@ -957,7 +966,7 @@ impl RnoteAppWindow {
             if let Some(output_file) = appwindow.output_file() {
                 match output_file.basename() {
                     Some(basename) => {
-                        match appwindow.canvas().engine().borrow().save_as_rnote_bytes(config::APP_VERSION, &basename.to_string_lossy()) {
+                        match appwindow.canvas().engine().borrow().save_as_rnote_bytes(&basename.to_string_lossy()) {
                             Ok(bytes) => {
                                 if let Err(e) = utils::replace_file_async(bytes, &output_file) {
                                     log::error!("saving sheet as .rnote failed, replace_file_async failed with Err {}", e);

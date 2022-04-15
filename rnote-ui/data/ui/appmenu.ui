@@ -34,6 +34,10 @@
                 <attribute name="label" translatable="yes">Visual debugging</attribute>
                 <attribute name="action">win.visual-debug</attribute>
               </item>
+              <item>
+                <attribute name="label" translatable="yes">Export engine state</attribute>
+                <attribute name="action">win.debug-export-engine-state</attribute>
+              </item>
             </section>
           </submenu>
         </section>

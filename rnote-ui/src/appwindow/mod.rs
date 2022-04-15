@@ -1313,4 +1313,49 @@ impl RnoteAppWindow {
 
         Ok(())
     }
+
+    /// exports the engine state as json into the file. Only for debugging!
+    pub fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
+        let exported_engine_state = self
+            .canvas()
+            .engine()
+            .borrow().export_state_as_json()?;
+
+        file.replace_async(
+            None,
+            false,
+            gio::FileCreateFlags::REPLACE_DESTINATION,
+            glib::PRIORITY_HIGH_IDLE,
+            None::<&gio::Cancellable>,
+            move |result| {
+                let output_stream = match result {
+                    Ok(output_stream) => output_stream,
+                    Err(e) => {
+                        log::error!(
+                            "replace_async() failed in export_engine_state() with Err {}",
+                            e
+                        );
+                        return;
+                    }
+                };
+
+                if let Err(e) =
+                    output_stream.write(exported_engine_state.as_bytes(), None::<&gio::Cancellable>)
+                {
+                    log::error!(
+                        "output_stream().write() failed in export_engine_state() with Err {}",
+                        e
+                    );
+                };
+                if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
+                    log::error!(
+                        "output_stream().close() failed in export_engine_state() with Err {}",
+                        e
+                    );
+                };
+            },
+        );
+
+        Ok(())
+    }
 }

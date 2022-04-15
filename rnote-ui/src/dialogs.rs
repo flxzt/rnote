@@ -295,7 +295,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                         Some(file) => {
                             match file.basename() {
                                 Some(basename) => {
-                                    match appwindow.canvas().engine().borrow().save_as_rnote_bytes(config::APP_VERSION, &basename.to_string_lossy()) {
+                                    match appwindow.canvas().engine().borrow().save_as_rnote_bytes(&basename.to_string_lossy()) {
                                         Ok(bytes) => {
                                             let main_cx = glib::MainContext::default();
 
@@ -597,4 +597,53 @@ pub fn dialog_export_sheet_as_xopp(appwindow: &RnoteAppWindow) {
     dialog_export_sheet.show();
     // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_sheet);
+}
+
+
+pub fn dialog_export_engine_state(appwindow: &RnoteAppWindow) {
+    let filter = FileFilter::new();
+    filter.add_mime_type("application/json");
+    filter.add_pattern("*.json");
+    filter.set_name(Some(&gettext("JSON file")));
+
+    let dialog_export_engine_state: FileChooserNative = FileChooserNative::builder()
+        .title(&gettext("Export engine state"))
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label(&gettext("Export"))
+        .cancel_label(&gettext("Cancel"))
+        .action(FileChooserAction::Save)
+        .select_multiple(false)
+        .build();
+    dialog_export_engine_state.add_filter(&filter);
+
+    dialog_export_engine_state.set_current_name(
+        format!("{}_engine_state.json", rnote_engine::utils::now_formatted_string()).as_str(),
+    );
+
+    dialog_export_engine_state.connect_response(
+        clone!(@weak appwindow => move |dialog_export_engine_state, responsetype| {
+            match responsetype {
+                ResponseType::Accept => {
+                    match dialog_export_engine_state.file() {
+                        Some(file) => {
+                            if let Err(e) = appwindow.export_engine_state(&file) {
+                                log::error!("exporting engine state failed with error `{}`", e);
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export engine state failed").to_variant()));
+                            } else {
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported engine state successfully").to_variant()));
+                            }
+                        },
+                        None => { log::error!("Can't export engine state. No file selected.")},
+                    }
+                }
+                _ => {
+                }
+            }
+        }),
+    );
+
+    dialog_export_engine_state.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_engine_state);
 }

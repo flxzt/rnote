@@ -1,6 +1,7 @@
 use gtk4::{graphene, gsk};
 use p2d::bounding_volume::AABB;
 use rnote_compose::helpers::AABBHelpers;
+use serde::{Serialize, Deserialize};
 
 /* pub enum Coordinate {
     Surface(na::Vector2<f64>),
@@ -16,7 +17,7 @@ impl Coordinate {
 } */
 
 #[allow(unused)]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 /// e.g. when
 /// offset = (10.0, 10.0); zoom = 2.0;,
 /// then (50.0, 20.0) on the surface is -> (60.0, 30.0) -> (30.0, 10.0) on the sheet

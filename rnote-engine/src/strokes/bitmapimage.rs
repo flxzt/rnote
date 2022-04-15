@@ -104,7 +104,10 @@ impl BitmapImage {
         bytes: &[u8],
         pos: na::Vector2<f64>,
     ) -> Result<Self, anyhow::Error> {
-        let image = render::Image::try_from_encoded_bytes(bytes)?;
+        let mut image = render::Image::try_from_encoded_bytes(bytes)?;
+        // Ensure we are in rgba8-remultiplied format, to be able to draw to piet
+        image.convert_to_rgba8pre()?;
+
         let size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
 
         let rectangle = Rectangle {

@@ -85,9 +85,8 @@ impl DrawBehaviour for VectorImage {
             None => return Ok(()),
         };
 
-        // piet needs rgba8-prem. the gen_images() func might produces bgra8-prem format, so we need to convert the image first
+        // piet needs rgba8-prem. the gen_images() func might produces bgra8-prem format (when using librsvg as renderer backend), so we might need to convert the image first
         image.convert_to_rgba8pre()?;
-
         let piet_image_format = piet::ImageFormat::try_from(image.memory_format)?;
 
         let piet_image = cx

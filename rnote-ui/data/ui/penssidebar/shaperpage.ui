@@ -230,7 +230,7 @@
             <property name="halign">fill</property>
             <property name="height-request">48</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape types</property>
+            <property name="tooltip_text" translatable="yes">Shape builders</property>
             <property name="popover">shapebuildertype_popover</property>
             <child>
               <object class="GtkImage" id="shapebuildertype_image">
@@ -251,7 +251,7 @@
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
-              <property name="label" translatable="yes">Shape builder type</property>
+              <property name="label" translatable="yes">Shape builders</property>
               <property name="halign">center</property>
               <property name="margin-bottom">12</property>
               <style>

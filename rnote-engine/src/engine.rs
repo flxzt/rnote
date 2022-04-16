@@ -277,7 +277,7 @@ impl RnoteEngine {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
         self.sheet = serde_json::from_value(engine_config.sheet)?;
-        self.penholder = serde_json::from_value(engine_config.penholder)?;
+        self.penholder.import(serde_json::from_value(engine_config.penholder)?);
         self.expand_mode = serde_json::from_value(engine_config.expand_mode)?;
 
         Ok(())

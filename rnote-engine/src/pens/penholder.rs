@@ -127,9 +127,10 @@ pub struct PenHolder {
     #[serde(rename = "shortcuts")]
     shortcuts: Shortcuts,
     #[serde(rename = "pen_sounds")]
-    pub pen_sounds: bool,
+    // we need this state outside of the audioplayer, because we skip (de) serializing it.
+    pen_sounds: bool,
     #[serde(skip)]
-    pub audioplayer: Option<AudioPlayer>,
+    audioplayer: Option<AudioPlayer>,
 }
 
 impl Default for PenHolder {
@@ -165,6 +166,12 @@ impl Default for PenHolder {
 }
 
 impl PenHolder {
+    /// Use this to import and overwrite self (e.g. when loading from settings)
+    pub fn import(&mut self, penholder: Self) {
+        *self = penholder;
+        // Set the pen sounds to update the audioplayer
+        self.set_pen_sounds(self.pen_sounds)
+    }
     /// gets the pen style. May be overriden by style_override.
     pub fn style(&self) -> PenStyle {
         self.style
@@ -196,13 +203,11 @@ impl PenHolder {
     }
 
     pub fn pen_sounds(&self) -> bool {
-        self.audioplayer
-            .as_ref()
-            .map(|audioplayer| audioplayer.enabled)
-            .unwrap_or(false)
+        self.pen_sounds
     }
 
     pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
+        self.pen_sounds = pen_sounds;
         if let Some(audioplayer) = self.audioplayer.as_mut() {
             audioplayer.enabled = pen_sounds;
         }

@@ -37,7 +37,7 @@ pub(super) enum ModifyState {
     Resize {
         from_corner: ResizeCorner,
         start_bounds: AABB,
-        resize_pos: na::Vector2<f64>,
+        start_pos: na::Vector2<f64>,
     },
 }
 
@@ -226,7 +226,7 @@ impl PenBehaviour for Selector {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::TopLeft,
                                 start_bounds: *selection_bounds,
-                                resize_pos: element.pos,
+                                start_pos: element.pos,
                             }
                         } else if Self::resize_node_bounds(
                             ResizeCorner::TopRight,
@@ -238,7 +238,7 @@ impl PenBehaviour for Selector {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::TopRight,
                                 start_bounds: *selection_bounds,
-                                resize_pos: element.pos,
+                                start_pos: element.pos,
                             }
                         } else if Self::resize_node_bounds(
                             ResizeCorner::BottomLeft,
@@ -250,7 +250,7 @@ impl PenBehaviour for Selector {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::BottomLeft,
                                 start_bounds: *selection_bounds,
-                                resize_pos: element.pos,
+                                start_pos: element.pos,
                             }
                         } else if Self::resize_node_bounds(
                             ResizeCorner::BottomRight,
@@ -262,7 +262,7 @@ impl PenBehaviour for Selector {
                             *modify_state = ModifyState::Resize {
                                 from_corner: ResizeCorner::BottomRight,
                                 start_bounds: *selection_bounds,
-                                resize_pos: element.pos,
+                                start_pos: element.pos,
                             }
                         } else if selection_bounds
                             .contains_local_point(&na::Point2::from(element.pos))
@@ -320,10 +320,10 @@ impl PenBehaviour for Selector {
                     ModifyState::Resize {
                         from_corner,
                         start_bounds,
-                        resize_pos,
+                        start_pos,
                     } => {
                         let pos_offset = {
-                            let pos_offset = element.pos - *resize_pos;
+                            let pos_offset = element.pos - *start_pos;
 
                             match from_corner {
                                 ResizeCorner::TopLeft => -pos_offset,
@@ -342,10 +342,10 @@ impl PenBehaviour for Selector {
                                 // Lock aspectratio
                                 rnote_compose::helpers::scale_w_locked_aspectratio(
                                     start_bounds.extents(),
-                                    selection_bounds.extents() + pos_offset,
+                                    start_bounds.extents() + pos_offset,
                                 )
                             } else {
-                                selection_bounds.extents() + pos_offset
+                                start_bounds.extents() + pos_offset
                             }
                             .maxs(&((Self::RESIZE_NODE_SIZE * 2.0) / camera.total_zoom()));
 
@@ -393,7 +393,6 @@ impl PenBehaviour for Selector {
                                 camera.image_scale(),
                             );
 
-                            *resize_pos = element.pos;
                             *selection_bounds = new_bounds;
                         }
                     }

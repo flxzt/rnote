@@ -4,7 +4,7 @@ rnote_compose_sources = files(
     'utils.rs',
     'helpers.rs',
     'color.rs',
-    'penevent.rs',
+    'penhelpers.rs',
     'transform/mod.rs',
     'transform/transformbehaviour.rs',
     'builders/mod.rs',

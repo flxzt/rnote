@@ -240,34 +240,49 @@ fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> kurbo:
 
 impl Composer<RoughOptions> for LineBuilder {
     fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.state_as_line().composed_bounds(options)
+        self.state_as_line()
+            .composed_bounds(options)
+            .loosened(drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         let line = self.state_as_line();
         line.draw_composed(cx, options);
+
+        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
+        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
     }
 }
 
 impl Composer<RoughOptions> for RectangleBuilder {
     fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.state_as_rect().composed_bounds(options)
+        self.state_as_rect()
+            .composed_bounds(options)
+            .loosened(drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         let rect = self.state_as_rect();
         rect.draw_composed(cx, options);
+
+        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
+        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
     }
 }
 
 impl Composer<RoughOptions> for EllipseBuilder {
     fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.state_as_ellipse().composed_bounds(options)
+        self.state_as_ellipse()
+            .composed_bounds(options)
+            .loosened(drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         let ellipse = self.state_as_ellipse();
         ellipse.draw_composed(cx, options);
+
+        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
+        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
     }
 }
 
@@ -276,15 +291,24 @@ impl Composer<RoughOptions> for FociEllipseBuilder {
         match &self.state {
             FociEllipseBuilderState::First(point) => AABB::from_half_extents(
                 na::Point2::from(*point),
-                na::Vector2::repeat(options.stroke_width + drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH),
+                na::Vector2::repeat(
+                    options.stroke_width
+                        + drawhelpers::POS_INDICATOR_RADIUS
+                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                ),
             ),
             FociEllipseBuilderState::Foci(foci) => {
-                AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                    .loosened(options.stroke_width + drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH)
+                AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1])).loosened(
+                    options.stroke_width
+                        + drawhelpers::POS_INDICATOR_RADIUS
+                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                )
             }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
-                ellipse.composed_bounds(options).loosened(drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH)
+                ellipse.composed_bounds(options).loosened(
+                    drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                )
             }
         }
     }
@@ -306,10 +330,10 @@ impl Composer<RoughOptions> for FociEllipseBuilder {
                 ellipse.draw_composed(cx, options);
                 cx.restore().unwrap();
 
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], 1.0);
                 drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[0], *point, 1.0);
                 drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[1], *point, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], 1.0);
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
             }
         }

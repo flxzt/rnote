@@ -7,7 +7,6 @@ use crate::color;
 use crate::helpers::{AABBHelpers, Vector2Helpers};
 use crate::penhelpers::PenState;
 
-
 /// the radius
 pub const POS_INDICATOR_RADIUS: f64 = 3.0;
 /// the outline width
@@ -31,9 +30,12 @@ pub fn draw_pos_indicator(
             cx.fill(indicator_circle, &FILL_COLOR);
         }
     }
-    cx.stroke(indicator_circle, &OUTLINE_COLOR, POS_INDICATOR_OUTLINE_WIDTH / zoom);
+    cx.stroke(
+        indicator_circle,
+        &OUTLINE_COLOR,
+        POS_INDICATOR_OUTLINE_WIDTH / zoom,
+    );
 }
-
 
 /// the line width
 pub const VEC_INDICATOR_LINE_WIDTH: f64 = 1.8;
@@ -46,7 +48,6 @@ pub fn draw_vec_indicator(
     end: na::Vector2<f64>,
     zoom: f64,
 ) {
-
     let line = kurbo::Line::new(start.to_kurbo_point(), end.to_kurbo_point());
     let line_color = match node_state {
         PenState::Up => color::GNOME_BRIGHTS[3].with_a8(0x60),
@@ -56,7 +57,6 @@ pub fn draw_vec_indicator(
 
     cx.stroke(line, &line_color, VEC_INDICATOR_LINE_WIDTH / zoom);
 }
-
 
 /// the outline width
 pub const RECTANGULAR_NODE_OUTLINE_WIDTH: f64 = 1.8;
@@ -82,7 +82,11 @@ pub fn draw_rectangular_node(
         }
     }
 
-    cx.stroke(node_rect, &OUTLINE_COLOR, RECTANGULAR_NODE_OUTLINE_WIDTH / zoom);
+    cx.stroke(
+        node_rect,
+        &OUTLINE_COLOR,
+        RECTANGULAR_NODE_OUTLINE_WIDTH / zoom,
+    );
 }
 
 /// the outline width
@@ -102,7 +106,11 @@ pub fn draw_circular_node(
         bounding_sphere.center.coords.to_kurbo_point(),
         bounding_sphere.radius,
     );
-    cx.stroke(node_circle, &OUTLINE_COLOR, CIRCULAR_NODE_OUTLINE_WIDTH / zoom);
+    cx.stroke(
+        node_circle,
+        &OUTLINE_COLOR,
+        CIRCULAR_NODE_OUTLINE_WIDTH / zoom,
+    );
 
     match node_state {
         PenState::Up => {}

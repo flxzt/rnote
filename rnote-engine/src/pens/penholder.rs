@@ -134,12 +134,17 @@ pub struct PenHolder {
 
 impl Default for PenHolder {
     fn default() -> Self {
+        let pen_sounds = false;
         let audioplayer = AudioPlayer::new()
             .map_err(|e| {
                 log::error!(
                     "failed to create a new audio player in PenHolder::default(), Err {}",
                     e
                 );
+            })
+            .map(|mut audioplayer| {
+                audioplayer.enabled = pen_sounds;
+                audioplayer
             })
             .ok();
 
@@ -153,7 +158,7 @@ impl Default for PenHolder {
             style: PenStyle::default(),
             style_override: None,
             shortcuts: Shortcuts::default(),
-            pen_sounds: false,
+            pen_sounds,
             audioplayer,
         }
     }

@@ -131,9 +131,9 @@ impl RnoteEngine {
     }
 
     /// Public method to handle pen events coming from ui event handlers
-    pub fn handle_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
+    pub fn handle_penholder_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
         self.penholder
-            .handle_event(event, &mut self.sheet, &mut self.store, &mut self.camera)
+            .handle_penholder_event(event, &mut self.sheet, &mut self.store, &mut self.camera)
     }
 
     // Generates bounds for each page which is containing content, extended to fit the sheet format
@@ -715,6 +715,7 @@ pub mod visual_debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
     use p2d::bounding_volume::{BoundingVolume, AABB};
 
+    use crate::pens::eraser::EraserState;
     use crate::pens::penholder::PenStyle;
     use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
     use crate::{DrawOnSheetBehaviour, RnoteEngine};
@@ -833,9 +834,9 @@ pub mod visual_debug {
 
         match current_pen_style {
             PenStyle::Eraser => {
-                if let Some(current_input) = engine.penholder.eraser.current_input {
+                if let EraserState::Down(current_element) = engine.penholder.eraser.state {
                     draw_pos(
-                        current_input.pos,
+                        current_element.pos,
                         COLOR_POS_ALT,
                         snapshot,
                         border_widths * 4.0,

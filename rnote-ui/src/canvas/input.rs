@@ -151,28 +151,33 @@ pub fn process_pen_down(
     shortcut_key: Option<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    let pen_event = match shortcut_key {
-        // Stylus button presses are emitting separate down / up events, so we handle them here differently to only change the pen, not start / stop drawing
-        Some(ShortcutKey::StylusPrimaryButton) | Some(ShortcutKey::StylusSecondaryButton) => {
-            PenHolderEvent::PressedShortcutkey(shortcut_key.unwrap())
-        }
-        _ => {
+    let mut surface_flags = SurfaceFlags::default();
+
+    // Shortcut keys as seperate events
+    if let Some(shortcut_key) = shortcut_key {
+        surface_flags.merge_with_other(
             appwindow
                 .canvas()
-                .set_cursor(Some(&appwindow.canvas().motion_cursor()));
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(shortcut_key)),
+        );
+    }
 
-            PenHolderEvent::PenEvent(PenEvent::Down {
+    appwindow
+        .canvas()
+        .set_cursor(Some(&appwindow.canvas().motion_cursor()));
+
+    surface_flags.merge_with_other(
+        appwindow
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
                 element,
                 shortcut_key,
-            })
-        }
-    };
-
-    let surface_flags = appwindow
-        .canvas()
-        .engine()
-        .borrow_mut()
-        .handle_event(pen_event);
+            })),
+    );
 
     appwindow.handle_surface_flags(surface_flags);
 }
@@ -190,7 +195,7 @@ pub fn process_pen_motion(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_event(PenHolderEvent::PenEvent(PenEvent::Down {
+                .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
                     element,
                     shortcut_key,
                 }))
@@ -206,28 +211,14 @@ pub fn process_pen_up(
     shortcut_key: Option<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    let pen_event = match shortcut_key {
-        // Stylus button presses are emitting separate down / up events, so we handle them here differently to only change the pen, not start /stop drawing
-        Some(ShortcutKey::StylusPrimaryButton) | Some(ShortcutKey::StylusSecondaryButton) => {
-            PenHolderEvent::PressedShortcutkey(shortcut_key.unwrap())
-        }
-        _ => {
-            appwindow
-                .canvas()
-                .set_cursor(Some(&appwindow.canvas().cursor()));
-
-            PenHolderEvent::PenEvent(PenEvent::Up {
-                element,
-                shortcut_key,
-            })
-        }
-    };
-
     let surface_flags = appwindow
         .canvas()
         .engine()
         .borrow_mut()
-        .handle_event(pen_event);
+        .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Up {
+            element,
+            shortcut_key,
+        }));
 
     appwindow.handle_surface_flags(surface_flags);
 }

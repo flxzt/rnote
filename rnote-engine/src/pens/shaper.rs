@@ -1,4 +1,4 @@
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 use crate::sheet::Sheet;
 use crate::strokes::ShapeStroke;
@@ -85,10 +85,10 @@ impl PenBehaviour for Shaper {
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) -> SurfaceFlags {
+    ) -> (PenProgress, SurfaceFlags) {
         let surface_flags = SurfaceFlags::default();
 
-        match (&mut self.state, event) {
+        let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
                 // A new seed for a new shape
                 let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
@@ -116,11 +116,16 @@ impl PenBehaviour for Shaper {
                         }
                     }
                 }
+                PenProgress::InProgress
             }
-            (ShaperState::Idle, _) => {}
+            (ShaperState::Idle, _) => {
+                PenProgress::Idle
+            }
             (ShaperState::BuildLine { line_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 line_builder.handle_event(event);
+
+                PenProgress::InProgress
             }
             (ShaperState::BuildLine { line_builder }, event @ PenEvent::Up { .. }) => {
                 if let Some(shapes) = line_builder.handle_event(event) {
@@ -140,11 +145,17 @@ impl PenBehaviour for Shaper {
                 }
 
                 self.state = ShaperState::Idle;
+                PenProgress::Finished
             }
-            (ShaperState::BuildLine { .. }, _) => self.state = ShaperState::Idle,
+            (ShaperState::BuildLine { .. }, _) => {
+                self.state = ShaperState::Idle;
+                PenProgress::Finished
+            }
             (ShaperState::BuildRectangle { rect_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 rect_builder.handle_event(event);
+
+                PenProgress::InProgress
             }
             (ShaperState::BuildRectangle { rect_builder }, PenEvent::Up { .. }) => {
                 if let Some(shapes) = rect_builder.handle_event(event) {
@@ -164,11 +175,17 @@ impl PenBehaviour for Shaper {
                 }
 
                 self.state = ShaperState::Idle;
+                PenProgress::Finished
             }
-            (ShaperState::BuildRectangle { .. }, ..) => self.state = ShaperState::Idle,
+            (ShaperState::BuildRectangle { .. }, ..) => {
+                self.state = ShaperState::Idle;
+                PenProgress::Finished
+            }
             (ShaperState::BuildEllipse { ellipse_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 ellipse_builder.handle_event(event);
+
+                PenProgress::InProgress
             }
             (ShaperState::BuildEllipse { ellipse_builder }, PenEvent::Up { .. }) => {
                 if let Some(shapes) = ellipse_builder.handle_event(event) {
@@ -188,8 +205,12 @@ impl PenBehaviour for Shaper {
                 }
 
                 self.state = ShaperState::Idle;
+                PenProgress::Finished
             }
-            (ShaperState::BuildEllipse { .. }, ..) => self.state = ShaperState::Idle,
+            (ShaperState::BuildEllipse { .. }, ..) => {
+                self.state = ShaperState::Idle;
+                PenProgress::Finished
+            }
             (
                 ShaperState::BuildFociEllipse {
                     foci_ellipse_builder,
@@ -198,6 +219,7 @@ impl PenBehaviour for Shaper {
             ) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 foci_ellipse_builder.handle_event(event);
+                PenProgress::InProgress
             }
             (
                 ShaperState::BuildFociEllipse {
@@ -205,6 +227,7 @@ impl PenBehaviour for Shaper {
                 },
                 PenEvent::Up { .. },
             ) => {
+                let mut pen_progress = PenProgress::InProgress;
                 if let Some(shapes) = foci_ellipse_builder.handle_event(event) {
                     let drawstyle = self.gen_style_for_current_options();
 
@@ -221,15 +244,18 @@ impl PenBehaviour for Shaper {
                     }
 
                     self.state = ShaperState::Idle;
+                    pen_progress = PenProgress::Finished
                 }
-            }
-            (ShaperState::BuildFociEllipse { .. }, PenEvent::Proximity { .. }) => {}
-            (ShaperState::BuildFociEllipse { .. }, PenEvent::Cancel) => {
-                self.state = ShaperState::Idle
-            }
-        }
 
-        surface_flags
+                pen_progress
+            }
+            (ShaperState::BuildFociEllipse { .. }, _) => {
+                self.state = ShaperState::Idle;
+                PenProgress::Finished
+            }
+        };
+
+        (pen_progress, surface_flags)
     }
 }
 

@@ -6,8 +6,14 @@ use rnote_compose::{color, PenEvent};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
+
+#[derive(Debug, Clone, Copy)]
+pub enum EraserState {
+    Up,
+    Down(Element),
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "eraser")]
@@ -15,14 +21,14 @@ pub struct Eraser {
     #[serde(rename = "width")]
     pub width: f64,
     #[serde(skip)]
-    pub current_input: Option<Element>,
+    pub(crate) state: EraserState,
 }
 
 impl Default for Eraser {
     fn default() -> Self {
         Self {
             width: Self::WIDTH_DEFAULT,
-            current_input: None,
+            state: EraserState::Up,
         }
     }
 }
@@ -35,28 +41,52 @@ impl PenBehaviour for Eraser {
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) -> SurfaceFlags {
+    ) -> (PenProgress, SurfaceFlags) {
         let surface_flags = SurfaceFlags::default();
 
-        match event {
-            PenEvent::Down {
-                element,
-                shortcut_key: _,
-            } => {
-                self.current_input = Some(element);
-
+        let pen_progress = match (&mut self.state, event) {
+            (
+                EraserState::Up,
+                PenEvent::Down {
+                    element,
+                    shortcut_key: _,
+                },
+            ) => {
                 let eraser_bounds = AABB::from_half_extents(
                     na::Point2::from(element.pos),
                     na::Vector2::repeat(self.width),
                 );
                 store.trash_colliding_strokes(eraser_bounds, camera.viewport());
-            }
-            PenEvent::Up { .. } => self.current_input = None,
-            PenEvent::Proximity { .. } => self.current_input = None,
-            PenEvent::Cancel => self.current_input = None,
-        }
 
-        surface_flags
+                self.state = EraserState::Down(element);
+                PenProgress::InProgress
+            }
+            (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
+                let eraser_bounds = AABB::from_half_extents(
+                    na::Point2::from(element.pos),
+                    na::Vector2::repeat(self.width),
+                );
+                store.trash_colliding_strokes(eraser_bounds, camera.viewport());
+
+                *current_element = element;
+                PenProgress::InProgress
+            }
+            (EraserState::Up, _) => PenProgress::Idle,
+            (EraserState::Down { .. }, PenEvent::Up { .. }) => {
+                self.state = EraserState::Up;
+                PenProgress::Finished
+            }
+            (EraserState::Down { .. }, PenEvent::Proximity { .. }) => {
+                self.state = EraserState::Up;
+                PenProgress::Finished
+            }
+            (EraserState::Down { .. }, PenEvent::Cancel) => {
+                self.state = EraserState::Up;
+                PenProgress::Finished
+            }
+        };
+
+        (pen_progress, surface_flags)
     }
 }
 
@@ -72,19 +102,20 @@ impl Eraser {
     pub fn new(width: f64) -> Self {
         Self {
             width,
-            current_input: None,
+            state: EraserState::Up,
         }
     }
 }
 
 impl DrawOnSheetBehaviour for Eraser {
     fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
-        self.current_input.map(|current_input| {
-            AABB::from_half_extents(
-                na::Point2::from(current_input.pos),
+        match &self.state {
+            EraserState::Up => None,
+            EraserState::Down(current_element) => Some(AABB::from_half_extents(
+                na::Point2::from(current_element.pos),
                 na::Vector2::from_element(self.width * 0.5),
-            )
-        })
+            )),
+        }
     }
 
     fn draw_on_sheet(
@@ -98,11 +129,7 @@ impl DrawOnSheetBehaviour for Eraser {
             let outline_rect = bounds.tightened(Self::OUTLINE_WIDTH * 0.5).to_kurbo_rect();
 
             cx.fill(fill_rect, &Self::FILL_COLOR);
-            cx.stroke(
-                outline_rect,
-                &Self::OUTLINE_COLOR,
-                Self::OUTLINE_WIDTH,
-            );
+            cx.stroke(outline_rect, &Self::OUTLINE_COLOR, Self::OUTLINE_WIDTH);
         }
 
         Ok(())

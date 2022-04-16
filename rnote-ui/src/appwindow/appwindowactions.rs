@@ -504,10 +504,10 @@ impl RnoteAppWindow {
                 if let Some(new_pen_style) = new_pen_style {
                     // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
                     if new_pen_style != appwindow.canvas().engine().borrow().penholder.style_w_override() {
-                        let mut surface_flags = appwindow.canvas().engine().borrow_mut().handle_event(
+                        let mut surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(
                             PenHolderEvent::ChangeStyle(new_pen_style),
                         );
-                        surface_flags = surface_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().handle_event(
+                        surface_flags = surface_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().handle_penholder_event(
                             PenHolderEvent::ChangeStyleOverride(None),
                         ));
 
@@ -549,7 +549,7 @@ impl RnoteAppWindow {
                 };
 
                 if let Some(change_pen_style_override_event) = change_pen_style_override_event {
-                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_event(
+                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(
                         change_pen_style_override_event,
                     );
                     appwindow.handle_surface_flags(surface_flags);

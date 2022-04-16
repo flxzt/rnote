@@ -1,4 +1,4 @@
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 use crate::sheet::Sheet;
 use crate::store::StrokeKey;
@@ -14,7 +14,7 @@ use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-enum ResizeCorner {
+pub(super) enum ResizeCorner {
     TopLeft,
     TopRight,
     BottomLeft,
@@ -22,7 +22,7 @@ enum ResizeCorner {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-enum ModifyState {
+pub(super) enum ModifyState {
     Up,
     Translate {
         pos: na::Vector2<f64>,
@@ -46,7 +46,7 @@ impl Default for ModifyState {
 }
 
 #[derive(Clone, Debug)]
-enum SelectorState {
+pub(super) enum SelectorState {
     Idle,
     Selecting {
         path: Vec<Element>,
@@ -87,7 +87,7 @@ pub struct Selector {
     #[serde(rename = "resize_lock_aspectratio")]
     pub resize_lock_aspectratio: bool,
     #[serde(skip)]
-    state: SelectorState,
+    pub(super) state: SelectorState,
 }
 
 impl Default for Selector {
@@ -108,11 +108,11 @@ impl PenBehaviour for Selector {
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) -> SurfaceFlags {
+    ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
         let total_zoom = camera.total_zoom();
 
-        match (&mut self.state, event) {
+        let pen_progress = match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
                 // Deselect by default
                 let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
@@ -121,29 +121,28 @@ impl PenBehaviour for Selector {
                 self.state = SelectorState::Selecting {
                     path: vec![element],
                 };
+
+                surface_flags.redraw = true;
+                surface_flags.hide_scrollbars = Some(true);
+
+                PenProgress::InProgress
             }
             (SelectorState::Idle, _) => {
                 // already idle, so nothing to do
+                PenProgress::Idle
             }
             (SelectorState::Selecting { path }, PenEvent::Down { element, .. }) => {
-                match self.style {
-                    SelectorType::Polygon => {
-                        path.push(element);
-                    }
-                    SelectorType::Rectangle => {
-                        path.push(element);
-
-                        if path.len() > 2 {
-                            path.resize(2, Element::default());
-                            path.insert(1, element);
-                        }
-                    }
-                }
-
+                Self::add_to_select_path(self.style, path, element);
                 surface_flags.redraw = true;
+
+                PenProgress::InProgress
+            }
+            (SelectorState::Selecting { .. }, PenEvent::Proximity { .. }) => {
+                PenProgress::InProgress
             }
             (SelectorState::Selecting { path }, PenEvent::Up { .. }) => {
-                let mut state = SelectorState::default();
+                let mut state = SelectorState::reset();
+                let mut pen_progress = PenProgress::Finished;
 
                 if let Some(selection) = match self.style {
                     SelectorType::Polygon => {
@@ -171,23 +170,24 @@ impl PenBehaviour for Selector {
                             modify_state: ModifyState::default(),
                             selection,
                             selection_bounds,
-                        }
+                        };
+                        pen_progress = PenProgress::InProgress;
                     }
                 }
 
                 self.state = state;
 
                 surface_flags.redraw = true;
-            }
-            (SelectorState::Selecting { .. }, PenEvent::Proximity { .. }) => {
-                self.state = SelectorState::reset();
+                surface_flags.hide_scrollbars = Some(false);
 
-                surface_flags.redraw = true;
+                pen_progress
             }
             (SelectorState::Selecting { .. }, PenEvent::Cancel) => {
                 self.state = SelectorState::reset();
 
                 surface_flags.redraw = true;
+                surface_flags.hide_scrollbars = Some(false);
+                PenProgress::Finished
             }
             (
                 SelectorState::ModifySelection {
@@ -197,6 +197,8 @@ impl PenBehaviour for Selector {
                 },
                 PenEvent::Down { element, .. },
             ) => {
+                let mut pen_progress = PenProgress::InProgress;
+
                 match modify_state {
                     ModifyState::Up => {
                         if Self::rotate_node_sphere(*selection_bounds, camera)
@@ -268,6 +270,8 @@ impl PenBehaviour for Selector {
                             // If clicking outside the selection, reset
                             store.set_selected_keys(selection, false);
                             self.state = SelectorState::reset();
+
+                            pen_progress = PenProgress::Finished;
                         }
                     }
                     ModifyState::Translate { pos } => {
@@ -394,6 +398,9 @@ impl PenBehaviour for Selector {
                 }
 
                 surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
+
+                pen_progress
             }
             (
                 SelectorState::ModifySelection {
@@ -410,14 +417,22 @@ impl PenBehaviour for Selector {
                 *modify_state = ModifyState::Up;
 
                 surface_flags.redraw = true;
-            }
-            (SelectorState::ModifySelection { .. }, PenEvent::Proximity { .. }) => {}
-            (SelectorState::ModifySelection { .. }, PenEvent::Cancel) => {
-                self.state = SelectorState::default();
-            }
-        }
+                surface_flags.sheet_changed = true;
+                surface_flags.resize_to_fit_strokes = true;
 
-        surface_flags
+                PenProgress::InProgress
+            }
+            (SelectorState::ModifySelection { .. }, PenEvent::Proximity { .. }) => {
+                PenProgress::InProgress
+            }
+            (SelectorState::ModifySelection { .. }, PenEvent::Cancel) => {
+                self.state = SelectorState::reset();
+
+                PenProgress::Finished
+            }
+        };
+
+        (pen_progress, surface_flags)
     }
 }
 
@@ -565,6 +580,22 @@ impl Selector {
             self.set_selection(selection, selection_bounds);
         } else {
             self.reset();
+        }
+    }
+
+    fn add_to_select_path(style: SelectorType, path: &mut Vec<Element>, element: Element) {
+        match style {
+            SelectorType::Polygon => {
+                path.push(element);
+            }
+            SelectorType::Rectangle => {
+                path.push(element);
+
+                if path.len() > 2 {
+                    path.resize(2, Element::default());
+                    path.insert(1, element);
+                }
+            }
         }
     }
 

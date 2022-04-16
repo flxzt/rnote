@@ -199,7 +199,7 @@ impl StrokeStore {
                         surface_flags.resize_to_fit_strokes = true;
                         surface_flags.change_to_pen = Some(PenStyle::Selector);
                         surface_flags.sheet_changed = true;
-                        surface_flags.selection_changed = true;
+                        surface_flags.update_selector = true;
                     }
                     Stroke::BitmapImage(bitmapimage) => {
                         let inserted = self.insert_stroke(Stroke::BitmapImage(bitmapimage));
@@ -210,7 +210,7 @@ impl StrokeStore {
                         surface_flags.resize_to_fit_strokes = true;
                         surface_flags.change_to_pen = Some(PenStyle::Selector);
                         surface_flags.sheet_changed = true;
-                        surface_flags.selection_changed = true;
+                        surface_flags.update_selector = true;
                     }
                 }
 

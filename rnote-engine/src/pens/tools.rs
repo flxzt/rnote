@@ -7,7 +7,7 @@ use rnote_compose::{color, PenEvent};
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -150,11 +150,7 @@ impl DrawOnSheetBehaviour for DragProximityTool {
             let circle = kurbo::Circle::new(self.pos.to_kurbo_point(), radius);
 
             cx.fill(circle, &Self::FILL_COLOR);
-            cx.stroke(
-                circle,
-                &Self::OUTLINE_COLOR,
-                Self::OUTLINE_WIDTH,
-            );
+            cx.stroke(circle, &Self::OUTLINE_COLOR, Self::OUTLINE_WIDTH);
         }
 
         Ok(())
@@ -205,16 +201,8 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
                 kurbo::BezPath::from_svg(include_str!("../../data/images/hand-grab-path.txt"))
                     .unwrap();
 
-            cx.stroke(
-                bez_path.clone(),
-                &Self::OUTLINE_COLOR,
-                Self::PATH_WIDTH,
-            );
-            cx.stroke(
-                bez_path,
-                &Self::PATH_COLOR,
-                Self::PATH_WIDTH * 0.5,
-            );
+            cx.stroke(bez_path.clone(), &Self::OUTLINE_COLOR, Self::PATH_WIDTH);
+            cx.stroke(bez_path, &Self::PATH_COLOR, Self::PATH_WIDTH * 0.5);
         }
         Ok(())
     }
@@ -273,10 +261,10 @@ impl PenBehaviour for Tools {
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) -> SurfaceFlags {
+    ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 
-        match (self.state, event) {
+        let pen_progress = match (self.state, event) {
             (
                 ToolsState::Idle,
                 PenEvent::Down {
@@ -302,6 +290,8 @@ impl PenBehaviour for Tools {
                 }
 
                 self.state = ToolsState::Active;
+
+                PenProgress::InProgress
             }
             (
                 ToolsState::Active,
@@ -321,6 +311,8 @@ impl PenBehaviour for Tools {
 
                         self.expandsheet_tool.current_pos_y = element.pos[1];
                     }
+
+                    PenProgress::InProgress
                 }
                 ToolsStyle::DragProximity => {
                     let offset = element.pos - self.dragproximity_tool.pos;
@@ -339,6 +331,8 @@ impl PenBehaviour for Tools {
                         self.dragproximity_tool.pos = element.pos;
                         self.dragproximity_tool.offset = na::Vector2::zeros();
                     }
+
+                    PenProgress::InProgress
                 }
                 ToolsStyle::OffsetCamera => {
                     let offset = camera
@@ -354,26 +348,29 @@ impl PenBehaviour for Tools {
                         camera.offset -= offset;
                         surface_flags.camera_offset_changed = true;
                     }
+
+                    PenProgress::InProgress
                 }
             },
-            (ToolsState::Idle, PenEvent::Up { .. }) => {}
             (ToolsState::Active, PenEvent::Up { .. }) => {
                 self.reset();
                 self.state = ToolsState::Idle;
+                PenProgress::Finished
             }
-            (ToolsState::Idle, PenEvent::Proximity { .. }) => {}
             (ToolsState::Active, PenEvent::Proximity { .. }) => {
                 self.reset();
                 self.state = ToolsState::Idle;
+                PenProgress::Finished
             }
-            (ToolsState::Idle, PenEvent::Cancel) => {}
             (ToolsState::Active, PenEvent::Cancel) => {
                 self.reset();
                 self.state = ToolsState::Idle;
+                PenProgress::Finished
             }
-        }
+            (ToolsState::Idle, _) => PenProgress::Finished,
+        };
 
-        surface_flags
+        (pen_progress, surface_flags)
     }
 }
 

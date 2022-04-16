@@ -637,7 +637,7 @@ impl RnoteAppWindow {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
         }
-        if surface_flags.selection_changed {
+        if surface_flags.update_selector {
             self.canvas().engine().borrow_mut().update_selector();
             self.canvas().queue_resize();
         }

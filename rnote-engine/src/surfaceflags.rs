@@ -19,7 +19,7 @@ pub struct SurfaceFlags {
     /// wether the sheet has changed, i.e. new strokes inserted, modified, etc.
     pub sheet_changed: bool,
     /// Selection has changed
-    pub selection_changed: bool,
+    pub update_selector: bool,
     /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
     pub hide_scrollbars: Option<bool>,
     /// camera offset changed
@@ -36,7 +36,7 @@ impl Default for SurfaceFlags {
             change_to_pen: None,
             pen_changed: false,
             sheet_changed: false,
-            selection_changed: false,
+            update_selector: false,
             hide_scrollbars: None,
             camera_offset_changed: false,
         }
@@ -58,7 +58,7 @@ impl SurfaceFlags {
 
         self.pen_changed |= other.pen_changed;
         self.sheet_changed |= other.sheet_changed;
-        self.selection_changed |= other.selection_changed;
+        self.update_selector |= other.update_selector;
         self.hide_scrollbars = if other.hide_scrollbars.is_some() {
             other.hide_scrollbars
         } else {

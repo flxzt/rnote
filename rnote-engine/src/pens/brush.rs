@@ -13,7 +13,7 @@ use rnote_compose::style::textured::TexturedOptions;
 use rnote_compose::style::Composer;
 use serde::{Deserialize, Serialize};
 
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -75,11 +75,11 @@ impl PenBehaviour for Brush {
         store: &mut StrokeStore,
         camera: &mut Camera,
         audioplayer: Option<&mut AudioPlayer>,
-    ) -> SurfaceFlags {
-        let surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, SurfaceFlags) {
+        let mut surface_flags = SurfaceFlags::default();
         let style = self.style;
 
-        match (&mut self.state, event) {
+        let pen_progress = match (&mut self.state, event) {
             (
                 BrushState::Idle,
                 pen_event @ PenEvent::Down {
@@ -87,6 +87,8 @@ impl PenBehaviour for Brush {
                     shortcut_key: _,
                 },
             ) => {
+                let mut pen_progress = PenProgress::Idle;
+
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     Self::start_audio(style, audioplayer);
 
@@ -118,9 +120,17 @@ impl PenBehaviour for Brush {
                         path_builder,
                         current_stroke_key,
                     };
+
+                    surface_flags.redraw = true;
+                    surface_flags.hide_scrollbars = Some(true);
+                    surface_flags.sheet_changed = true;
+
+                    pen_progress = PenProgress::InProgress;
                 }
+
+                pen_progress
             }
-            (BrushState::Idle, PenEvent::Up { .. }) => Self::stop_audio(style, audioplayer),
+            (BrushState::Idle, PenEvent::Up { .. }) => PenProgress::Idle,
             (
                 BrushState::Drawing {
                     path_builder,
@@ -147,7 +157,11 @@ impl PenBehaviour for Brush {
                             log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
                         }
                     }
+
+                    surface_flags.redraw = true;
+                    surface_flags.sheet_changed = true;
                 }
+                PenProgress::InProgress
             }
             (
                 BrushState::Drawing {
@@ -176,10 +190,15 @@ impl PenBehaviour for Brush {
                 }
 
                 self.state = BrushState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
+                PenProgress::Finished
             }
-            (BrushState::Idle, PenEvent::Cancel) => {
-                Self::stop_audio(style, audioplayer);
-            }
+            (BrushState::Idle, PenEvent::Cancel) => PenProgress::Idle,
             (
                 BrushState::Drawing {
                     current_stroke_key, ..
@@ -196,11 +215,18 @@ impl PenBehaviour for Brush {
                 );
 
                 self.state = BrushState::Idle;
-            }
-            (_, PenEvent::Proximity { .. }) => {}
-        }
 
-        surface_flags
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
+                PenProgress::Finished
+            }
+            (_, PenEvent::Proximity { .. }) => PenProgress::InProgress,
+        };
+
+        (pen_progress, surface_flags)
     }
 }
 

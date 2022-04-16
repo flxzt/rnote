@@ -296,7 +296,7 @@ impl PenHolder {
 
             self.style = new_style;
 
-            surface_flags.pen_changed = true;
+            surface_flags.penholder_changed = true;
             surface_flags.redraw = true;
         }
     }
@@ -324,7 +324,7 @@ impl PenHolder {
 
             self.style_override = new_style_override;
 
-            surface_flags.pen_changed = true;
+            surface_flags.penholder_changed = true;
             surface_flags.redraw = true;
         }
     }
@@ -336,7 +336,7 @@ impl PenHolder {
             PenProgress::Finished => {
                 // Disable the style override when pen is finished
                 if self.style_override.take().is_some() {
-                    surface_flags.pen_changed = true;
+                    surface_flags.penholder_changed = true;
                 }
             }
         }

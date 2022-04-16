@@ -630,7 +630,7 @@ impl RnoteAppWindow {
                 Some(&new_pen_style.nick().to_variant()),
             );
         }
-        if surface_flags.pen_changed {
+        if surface_flags.penholder_changed {
             adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
         }
         if surface_flags.sheet_changed {

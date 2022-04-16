@@ -408,6 +408,16 @@ impl StrokeStore {
                             snapshot,
                         );
                     }
+
+                    render_comp.images.iter().for_each(|image| {
+                        visual_debug::draw_bounds(
+                            // a little tightened not to overlap with other bounds
+                            image.bounds.tightened(2.0 * border_widths),
+                            visual_debug::COLOR_IMAGE_BOUNDS,
+                            snapshot,
+                            border_widths
+                        )
+                    });
                 }
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {

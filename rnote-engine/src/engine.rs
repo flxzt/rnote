@@ -749,6 +749,12 @@ pub mod visual_debug {
         b: 0.8,
         a: 1.0,
     };
+    pub const COLOR_IMAGE_BOUNDS: Color = Color {
+        r: 0.0,
+        g: 0.5,
+        b: 1.0,
+        a: 1.0,
+    };
     pub const COLOR_STROKE_REGENERATE_FLAG: Color = Color {
         r: 0.9,
         g: 0.0,

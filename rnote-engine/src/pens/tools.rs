@@ -173,8 +173,8 @@ impl Default for OffsetCameraTool {
 }
 
 impl OffsetCameraTool {
-    const DRAW_SIZE: na::Vector2<f64> = na::vector![28.0, 28.0];
-    const PATH_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(0xf0);
+    const DRAW_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
+    const FILL_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(0xf0);
     const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(0xf0);
     const PATH_WIDTH: f64 = 2.0;
 }
@@ -183,7 +183,7 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
     fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.start),
-            (Self::DRAW_SIZE * 0.5 + na::Vector2::repeat(Self::PATH_WIDTH)) / camera.total_zoom(),
+            ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5) / camera.total_zoom(),
         ))
     }
 
@@ -198,11 +198,11 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
             cx.transform(kurbo::Affine::scale(1.0 / camera.total_zoom()));
 
             let bez_path =
-                kurbo::BezPath::from_svg(include_str!("../../data/images/hand-grab-path.txt"))
+                kurbo::BezPath::from_svg(include_str!("../../data/images/sheet-drag-path.txt"))
                     .unwrap();
 
             cx.stroke(bez_path.clone(), &Self::OUTLINE_COLOR, Self::PATH_WIDTH);
-            cx.stroke(bez_path, &Self::PATH_COLOR, Self::PATH_WIDTH * 0.5);
+            cx.fill(bez_path, &Self::FILL_COLOR);
         }
         Ok(())
     }

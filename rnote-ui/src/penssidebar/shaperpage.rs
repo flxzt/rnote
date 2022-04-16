@@ -205,7 +205,7 @@ impl ShaperPage {
                 let shaper_style = appwindow.canvas().engine().borrow_mut().penholder.shaper.style;
 
                 match shaper_style {
-                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.width = width_spinbutton.value(),
+                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_width = width_spinbutton.value(),
                     ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_width = width_spinbutton.value(),
                 }
             }),

@@ -145,14 +145,14 @@ impl Stroke {
 
         // The first element is the absolute width, every following is the relative width (between 0.0 and 1.0)
         if let Some(width) = width_iter.next() {
-            smooth_options.width = width;
+            smooth_options.stroke_width = width;
         }
 
         let mut brush = Brush::default();
         brush.style = BrushStyle::Solid;
         brush.smooth_options = smooth_options;
 
-        let absolute_width = brush.smooth_options.width;
+        let absolute_width = brush.smooth_options.stroke_width;
 
         let elements = stroke
             .coords
@@ -210,9 +210,11 @@ impl Stroke {
             Stroke::BrushStroke(brushstroke) => {
                 let (width, color): (f64, XoppColor) = match brushstroke.style {
                     // Return early if color is None
-                    Style::Smooth(options) => (options.width, options.stroke_color?.into()),
+                    Style::Smooth(options) => (options.stroke_width, options.stroke_color?.into()),
                     Style::Rough(options) => (options.stroke_width, options.stroke_color?.into()),
-                    Style::Textured(options) => (options.width, options.stroke_color?.into()),
+                    Style::Textured(options) => {
+                        (options.stroke_width, options.stroke_color?.into())
+                    }
                 };
 
                 let tool = xoppformat::XoppTool::Pen;

@@ -280,15 +280,11 @@ impl Composer<RoughOptions> for FociEllipseBuilder {
             ),
             FociEllipseBuilderState::Foci(foci) => {
                 AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                    .loosened(options.stroke_width * 500.0)
+                    .loosened(options.stroke_width)
             }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
-                let mut bounds =
-                    AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                        .loosened(options.stroke_width * 500.0);
-                bounds.take_point(na::Point2::from(*point));
-
-                bounds
+                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
+                ellipse.composed_bounds(options)
             }
         }
     }

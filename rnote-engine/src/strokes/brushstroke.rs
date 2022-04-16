@@ -163,9 +163,9 @@ impl BrushStroke {
 
     fn gen_hitboxes(&self) -> Vec<AABB> {
         let width = match &self.style {
-            Style::Smooth(options) => Some(options.width),
+            Style::Smooth(options) => Some(options.stroke_width),
             Style::Rough(_) => None,
-            Style::Textured(options) => Some(options.width),
+            Style::Textured(options) => Some(options.stroke_width),
         };
 
         if let Some(width) = width {

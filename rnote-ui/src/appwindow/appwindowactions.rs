@@ -565,17 +565,17 @@ impl RnoteAppWindow {
             match brush_style {
                 "marker" => {
                     appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Marker;
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
                     appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
                 },
                 "solid" => {
                     appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Solid;
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
                     appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
                 },
                 "textured" => {
                     appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Textured;
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.width = appwindow.penssidebar().brush_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
                     appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
                 },
                 _ => { log::error!("set invalid state of action `brush-style`")}
@@ -620,7 +620,7 @@ impl RnoteAppWindow {
             match shaper_drawstyle {
                 "smooth" => {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.style = shaper::ShaperStyle::Smooth;
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
                 },
@@ -745,21 +745,21 @@ impl RnoteAppWindow {
                 match brush.style {
                     BrushStyle::Marker => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_marker_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.width);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.stroke_width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
                         appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-marker-symbolic"));
                     },
                     BrushStyle::Solid => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.width);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.stroke_width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
                         appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-solid-symbolic"));
                     },
                     BrushStyle::Textured => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.textured_options.width);
+                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.textured_options.stroke_width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.textured_options.stroke_color);
                         appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(true);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-textured-symbolic"));
@@ -801,7 +801,7 @@ impl RnoteAppWindow {
                 match shaper.style {
                     ShaperStyle::Smooth => {
                         appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_smooth_row()));
-                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper.smooth_options.width);
+                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper.smooth_options.stroke_width);
                         appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(shaper.smooth_options.stroke_color);
                         appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(shaper.smooth_options.fill_color);
                         appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(false);

@@ -194,9 +194,9 @@ impl BrushPage {
                 let brush_style = appwindow.canvas().engine().borrow_mut().penholder.brush.style;
 
                 match brush_style {
-                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.width = brush_widthscale_spinbutton.value(),
-                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.width = brush_widthscale_spinbutton.value(),
-                    BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.width = brush_widthscale_spinbutton.value(),
+                    BrushStyle::Marker => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_width = brush_widthscale_spinbutton.value(),
+                    BrushStyle::Solid => appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_width = brush_widthscale_spinbutton.value(),
+                    BrushStyle::Textured => appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_width = brush_widthscale_spinbutton.value(),
                 }
             }),
         );

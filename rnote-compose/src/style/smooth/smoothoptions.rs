@@ -6,9 +6,9 @@ use serde::{Deserialize, Serialize};
 #[serde(default, rename = "smooth_options")]
 /// Options for shapes that can be drawn smoothly (plain)
 pub struct SmoothOptions {
-    #[serde(rename = "width")]
+    #[serde(rename = "stroke_width")]
     /// The stroke width
-    pub width: f64,
+    pub stroke_width: f64,
     #[serde(rename = "stroke_color")]
     /// The stroke color
     pub stroke_color: Option<Color>,
@@ -23,7 +23,7 @@ pub struct SmoothOptions {
 impl Default for SmoothOptions {
     fn default() -> Self {
         Self {
-            width: Self::WIDTH_DEFAULT,
+            stroke_width: Self::WIDTH_DEFAULT,
             stroke_color: Some(Color::BLACK),
             fill_color: None,
             segment_constant_width: false,

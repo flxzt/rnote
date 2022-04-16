@@ -86,7 +86,7 @@ fn compose_line_variable_width(
 
 impl Composer<SmoothOptions> for Segment {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
+        self.bounds().loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -94,18 +94,21 @@ impl Composer<SmoothOptions> for Segment {
             match self {
                 Segment::Dot { element } => {
                     let radii = if options.segment_constant_width {
-                        na::Vector2::from_element(options.width / 2.0)
+                        na::Vector2::from_element(options.stroke_width / 2.0)
                     } else {
-                        na::Vector2::from_element(element.pressure * (options.width / 2.0))
+                        na::Vector2::from_element(element.pressure * (options.stroke_width / 2.0))
                     };
                     kurbo::Ellipse::new(element.pos.to_kurbo_point(), radii.to_kurbo_vec(), 0.0)
                         .into_path(0.1)
                 }
                 Segment::Line { start, end } => {
                     let (line_width_start, line_width_end) = if options.segment_constant_width {
-                        (options.width, options.width)
+                        (options.stroke_width, options.stroke_width)
                     } else {
-                        (start.pressure * options.width, end.pressure * options.width)
+                        (
+                            start.pressure * options.stroke_width,
+                            end.pressure * options.stroke_width,
+                        )
                     };
                     let line = Line {
                         start: start.pos,
@@ -116,9 +119,12 @@ impl Composer<SmoothOptions> for Segment {
                 }
                 Segment::QuadBez { start, cp, end } => {
                     let (width_start, width_end) = if options.segment_constant_width {
-                        (options.width, options.width)
+                        (options.stroke_width, options.stroke_width)
                     } else {
-                        (start.pressure * options.width, end.pressure * options.width)
+                        (
+                            start.pressure * options.stroke_width,
+                            end.pressure * options.stroke_width,
+                        )
                     };
                     let n_splits = 5;
 
@@ -160,9 +166,12 @@ impl Composer<SmoothOptions> for Segment {
                     end,
                 } => {
                     let (width_start, width_end) = if options.segment_constant_width {
-                        (options.width, options.width)
+                        (options.stroke_width, options.stroke_width)
                     } else {
-                        (start.pressure * options.width, end.pressure * options.width)
+                        (
+                            start.pressure * options.stroke_width,
+                            end.pressure * options.stroke_width,
+                        )
                     };
                     let n_splits = 5;
 
@@ -226,7 +235,7 @@ impl Composer<SmoothOptions> for PenPath {
 
 impl Composer<SmoothOptions> for Line {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
+        self.bounds().loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -234,14 +243,14 @@ impl Composer<SmoothOptions> for Line {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(line, &stroke_brush, options.width);
+            cx.stroke(line, &stroke_brush, options.stroke_width);
         }
     }
 }
 
 impl Composer<SmoothOptions> for Rectangle {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
+        self.bounds().loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -254,14 +263,14 @@ impl Composer<SmoothOptions> for Rectangle {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(shape, &stroke_brush, options.width);
+            cx.stroke(shape, &stroke_brush, options.stroke_width);
         }
     }
 }
 
 impl Composer<SmoothOptions> for Ellipse {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
+        self.bounds().loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -274,7 +283,7 @@ impl Composer<SmoothOptions> for Ellipse {
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(ellipse, &stroke_brush, options.width);
+            cx.stroke(ellipse, &stroke_brush, options.stroke_width);
         }
     }
 }
@@ -301,7 +310,7 @@ impl Composer<SmoothOptions> for PenPathBuilder {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
         self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
             acc.take_point(na::Point2::from(x.pos));
-            acc.loosened(options.width)
+            acc.loosened(options.stroke_width)
         })
     }
 
@@ -371,19 +380,15 @@ impl Composer<SmoothOptions> for FociEllipseBuilder {
         match &self.state {
             FociEllipseBuilderState::First(point) => AABB::from_half_extents(
                 na::Point2::from(*point),
-                na::Vector2::repeat(options.width),
+                na::Vector2::repeat(options.stroke_width),
             ),
             FociEllipseBuilderState::Foci(foci) => {
                 AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                    .loosened(options.width * 500.0)
+                    .loosened(options.stroke_width)
             }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
-                let mut bounds =
-                    AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                        .loosened(options.width * 500.0);
-                bounds.take_point(na::Point2::from(*point));
-
-                bounds
+                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
+                ellipse.composed_bounds(options)
             }
         }
     }

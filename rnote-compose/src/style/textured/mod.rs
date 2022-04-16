@@ -19,7 +19,7 @@ use super::Composer;
 
 impl Composer<TexturedOptions> for Line {
     fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        self.bounds().loosened(options.width)
+        self.bounds().loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
@@ -33,7 +33,7 @@ impl Composer<TexturedOptions> for Line {
 
             let line_vec = self.end - self.start;
 
-            let line_rect = self.line_w_width_to_rect(options.width);
+            let line_rect = self.line_w_width_to_rect(options.stroke_width);
 
             let area = 4.0 * line_rect.cuboid.half_extents[0] * line_rect.cuboid.half_extents[1];
 
@@ -96,16 +96,16 @@ impl Composer<TexturedOptions> for Line {
 
 impl Composer<TexturedOptions> for Segment {
     fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        self.bounds().loosened(options.width)
+        self.bounds().loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
         match self {
             Self::Dot { element } => {
                 let radii = if options.segment_constant_width {
-                    na::Vector2::from_element(options.width / 2.0)
+                    na::Vector2::from_element(options.stroke_width / 2.0)
                 } else {
-                    na::Vector2::from_element(element.pressure * (options.width / 2.0))
+                    na::Vector2::from_element(element.pressure * (options.stroke_width / 2.0))
                 };
                 let shape =
                     kurbo::Ellipse::new(element.pos.to_kurbo_point(), radii.to_kurbo_vec(), 0.0)
@@ -173,7 +173,7 @@ impl Composer<TexturedOptions> for PenPathBuilder {
     fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
         self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
             acc.take_point(na::Point2::from(x.pos));
-            acc.loosened(options.width)
+            acc.loosened(options.stroke_width)
         })
     }
 

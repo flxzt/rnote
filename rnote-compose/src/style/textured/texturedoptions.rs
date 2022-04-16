@@ -13,8 +13,8 @@ pub struct TexturedOptions {
     #[serde(rename = "seed")]
     pub seed: Option<u64>,
     /// The width
-    #[serde(rename = "width")]
-    pub width: f64,
+    #[serde(rename = "stroke_width")]
+    pub stroke_width: f64,
     /// The color of the stroke
     #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
@@ -36,7 +36,7 @@ impl Default for TexturedOptions {
     fn default() -> Self {
         Self {
             seed: None,
-            width: Self::WIDTH_DEFAULT,
+            stroke_width: Self::WIDTH_DEFAULT,
             density: Self::DENSITY_DEFAULT,
             stroke_color: Some(Color::BLACK),
             radii: Self::RADII_DEFAULT,

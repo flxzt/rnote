@@ -132,8 +132,12 @@ impl RnoteEngine {
 
     /// Public method to handle pen events coming from ui event handlers
     pub fn handle_penholder_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
-        self.penholder
-            .handle_penholder_event(event, &mut self.sheet, &mut self.store, &mut self.camera)
+        self.penholder.handle_penholder_event(
+            event,
+            &mut self.sheet,
+            &mut self.store,
+            &mut self.camera,
+        )
     }
 
     // Generates bounds for each page which is containing content, extended to fit the sheet format

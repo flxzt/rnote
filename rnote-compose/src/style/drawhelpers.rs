@@ -5,35 +5,25 @@ use piet::RenderContext;
 
 use crate::color;
 use crate::helpers::{AABBHelpers, Vector2Helpers};
-
-/// The node state
-#[derive(Debug, Clone, Copy)]
-pub enum NodeState {
-    /// Up
-    Up,
-    /// Proximity
-    Proximity,
-    /// Down
-    Down,
-}
+use crate::penhelpers::PenState;
 
 /// Draw a position indicator
 pub fn draw_pos_indicator(
     cx: &mut impl RenderContext,
-    node_state: NodeState,
+    node_state: PenState,
     pos: na::Vector2<f64>,
     zoom: f64,
 ) {
     const RADIUS: f64 = 3.0;
-    const FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x80);
+    const FILL_COLOR: piet::Color = color::GNOME_REDS[3].with_a8(0xb0);
     const OUTLINE_WIDTH: f64 = 1.8;
     const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[4];
 
     let indicator_circle = kurbo::Circle::new(pos.to_kurbo_point(), RADIUS / zoom);
     match node_state {
-        NodeState::Up => {}
-        NodeState::Proximity => {}
-        NodeState::Down => {
+        PenState::Up => {}
+        PenState::Proximity => {}
+        PenState::Down => {
             cx.fill(indicator_circle, &FILL_COLOR);
         }
     }
@@ -43,7 +33,7 @@ pub fn draw_pos_indicator(
 /// Draw a vec indicator
 pub fn draw_vec_indicator(
     cx: &mut impl RenderContext,
-    node_state: NodeState,
+    node_state: PenState,
     start: na::Vector2<f64>,
     end: na::Vector2<f64>,
     zoom: f64,
@@ -52,9 +42,9 @@ pub fn draw_vec_indicator(
 
     let line = kurbo::Line::new(start.to_kurbo_point(), end.to_kurbo_point());
     let line_color = match node_state {
-        NodeState::Up => color::GNOME_BRIGHTS[3].with_a8(0x60),
-        NodeState::Proximity => color::GNOME_BRIGHTS[3].with_a8(0xa0),
-        NodeState::Down => color::GNOME_DARKS[0].with_a8(0xa0),
+        PenState::Up => color::GNOME_BRIGHTS[3].with_a8(0x60),
+        PenState::Proximity => color::GNOME_BRIGHTS[3].with_a8(0xa0),
+        PenState::Down => color::GNOME_DARKS[0].with_a8(0xa0),
     };
 
     cx.stroke(line, &line_color, LINE_WIDTH / zoom);
@@ -63,7 +53,7 @@ pub fn draw_vec_indicator(
 /// Draw a rectangular node
 pub fn draw_rectangular_node(
     cx: &mut impl RenderContext,
-    node_state: NodeState,
+    node_state: PenState,
     bounds: AABB,
     zoom: f64,
 ) {
@@ -75,24 +65,20 @@ pub fn draw_rectangular_node(
     let node_rect = kurbo::RoundedRect::from_rect(bounds.to_kurbo_rect(), RECT_RADIUS / zoom);
 
     match node_state {
-        NodeState::Up => {}
-        NodeState::Proximity => {}
-        NodeState::Down => {
+        PenState::Up => {}
+        PenState::Proximity => {}
+        PenState::Down => {
             cx.fill(node_rect, &FILL_COLOR_STATE_DOWN);
         }
     }
 
-    cx.stroke(
-        node_rect,
-        &OUTLINE_COLOR,
-        OUTLINE_WIDTH / zoom,
-    );
+    cx.stroke(node_rect, &OUTLINE_COLOR, OUTLINE_WIDTH / zoom);
 }
 
 /// Draw a circular node
 pub fn draw_circular_node(
     cx: &mut impl RenderContext,
-    node_state: NodeState,
+    node_state: PenState,
     bounding_sphere: BoundingSphere,
     zoom: f64,
 ) {
@@ -104,16 +90,12 @@ pub fn draw_circular_node(
         bounding_sphere.center.coords.to_kurbo_point(),
         bounding_sphere.radius,
     );
-    cx.stroke(
-        node_circle,
-        &OUTLINE_COLOR,
-        OUTLINE_WIDTH / zoom,
-    );
+    cx.stroke(node_circle, &OUTLINE_COLOR, OUTLINE_WIDTH / zoom);
 
     match node_state {
-        NodeState::Up => {}
-        NodeState::Proximity => {}
-        NodeState::Down => {
+        PenState::Up => {}
+        PenState::Proximity => {}
+        PenState::Down => {
             cx.fill(node_circle, &FILL_STATE_DOWN);
         }
     }

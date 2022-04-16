@@ -1,8 +1,9 @@
 use crate::sheet::Sheet;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::{color, PenEvent};
+use rnote_compose::penhelpers::PenEvent;
 
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};

@@ -3,8 +3,9 @@ use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
+use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
-use rnote_compose::{PenEvent, Style};
+use rnote_compose::Style;
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rand::{Rng, SeedableRng};

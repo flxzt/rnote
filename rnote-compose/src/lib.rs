@@ -9,8 +9,8 @@ pub mod builders;
 pub mod color;
 /// module for helper traits that extend foreign types
 pub mod helpers;
-/// module for pen events
-pub mod penevent;
+/// module for pen helpers
+pub mod penhelpers;
 /// module for pen paths
 pub mod penpath;
 /// module for shapes
@@ -24,7 +24,6 @@ pub mod utils;
 
 // Re-exports
 pub use color::Color;
-pub use penevent::PenEvent;
 pub use penpath::PenPath;
 pub use shapes::Shape;
 pub use style::Style;

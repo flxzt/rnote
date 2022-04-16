@@ -65,12 +65,13 @@ impl Ellipse {
         let v = foci[1] - foci[0];
 
         let center = (foci[0] + foci[1]) / 2.0;
-        let angle = v.angle_ahead(&na::Vector2::x());
+        let angle = na::Vector2::x().angle_ahead(&v);
 
         let semimajor = if semimajor == 0.0 { 1.0 } else { semimajor };
-        let semiminor = if semiminor == 0.0 { 1.0 } else { semimajor };
+        let semiminor = if semiminor == 0.0 { 1.0 } else { semiminor };
 
         let radii = na::vector![semimajor, semiminor];
+
         let transform = Transform::new_w_isometry(na::Isometry2::new(center, angle));
 
         Self { radii, transform }

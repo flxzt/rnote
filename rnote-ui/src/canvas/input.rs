@@ -1,7 +1,7 @@
 use gtk4::{gdk, prelude::*, GestureDrag, GestureStylus};
-use rnote_compose::penevent::ShortcutKey;
+use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::penhelpers::ShortcutKey;
 use rnote_compose::penpath::Element;
-use rnote_compose::PenEvent;
 use rnote_engine::pens::penholder::PenHolderEvent;
 use rnote_engine::SurfaceFlags;
 use std::collections::VecDeque;

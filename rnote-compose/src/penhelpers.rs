@@ -51,3 +51,14 @@ pub enum ShortcutKey {
     /// the secondary mouse button, usually right click
     MouseSecondaryButton,
 }
+
+/// The current pen state. Used wherever the we have internal state
+#[derive(Debug, Clone, Copy)]
+pub enum PenState {
+    /// Up
+    Up,
+    /// Proximity
+    Proximity,
+    /// Down
+    Down,
+}

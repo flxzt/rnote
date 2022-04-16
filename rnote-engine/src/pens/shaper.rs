@@ -11,10 +11,11 @@ use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::builders::{
     EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
+use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::style::Composer;
-use rnote_compose::{PenEvent, Style};
+use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
@@ -118,9 +119,7 @@ impl PenBehaviour for Shaper {
                 }
                 PenProgress::InProgress
             }
-            (ShaperState::Idle, _) => {
-                PenProgress::Idle
-            }
+            (ShaperState::Idle, _) => PenProgress::Idle,
             (ShaperState::BuildLine { line_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 line_builder.handle_event(event);

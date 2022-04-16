@@ -6,9 +6,11 @@ use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
+use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::penhelpers::PenState;
 use rnote_compose::penpath::Element;
-use rnote_compose::style::drawhelpers::{self, NodeState};
-use rnote_compose::{color, Color, PenEvent};
+use rnote_compose::style::drawhelpers;
+use rnote_compose::{color, Color};
 
 use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
@@ -655,8 +657,8 @@ impl Selector {
         // Rotate Node
         {
             let rotate_node_state = match modify_state {
-                ModifyState::Rotate { .. } => NodeState::Down,
-                _ => NodeState::Up,
+                ModifyState::Rotate { .. } => PenState::Down,
+                _ => PenState::Up,
             };
 
             drawhelpers::draw_circular_node(
@@ -673,8 +675,8 @@ impl Selector {
                 ModifyState::Resize {
                     from_corner: ResizeCorner::TopLeft,
                     ..
-                } => NodeState::Down,
-                _ => NodeState::Up,
+                } => PenState::Down,
+                _ => PenState::Up,
             };
 
             drawhelpers::draw_rectangular_node(
@@ -690,8 +692,8 @@ impl Selector {
                 ModifyState::Resize {
                     from_corner: ResizeCorner::TopRight,
                     ..
-                } => NodeState::Down,
-                _ => NodeState::Up,
+                } => PenState::Down,
+                _ => PenState::Up,
             };
 
             drawhelpers::draw_rectangular_node(
@@ -707,8 +709,8 @@ impl Selector {
                 ModifyState::Resize {
                     from_corner: ResizeCorner::BottomLeft,
                     ..
-                } => NodeState::Down,
-                _ => NodeState::Up,
+                } => PenState::Down,
+                _ => PenState::Up,
             };
 
             drawhelpers::draw_rectangular_node(
@@ -724,8 +726,8 @@ impl Selector {
                 ModifyState::Resize {
                     from_corner: ResizeCorner::BottomRight,
                     ..
-                } => NodeState::Down,
-                _ => NodeState::Up,
+                } => PenState::Down,
+                _ => PenState::Up,
             };
 
             drawhelpers::draw_rectangular_node(

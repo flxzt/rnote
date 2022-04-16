@@ -1,6 +1,6 @@
+use crate::penhelpers::PenEvent;
 use crate::penpath::Element;
 use crate::shapes::ShapeBehaviour;
-use crate::PenEvent;
 
 #[allow(missing_debug_implementations, dead_code)]
 pub enum BuilderProgress {

@@ -1,6 +1,7 @@
+use crate::penhelpers::PenEvent;
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
-use crate::{PenEvent, Shape};
+use crate::Shape;
 
 use super::ShapeBuilderBehaviour;
 

@@ -11,7 +11,7 @@ use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorButton,
     CompositeTemplate, ScrolledWindow, ToggleButton, Widget,
 };
-use rnote_compose::penevent::ShortcutKey;
+use rnote_compose::penhelpers::ShortcutKey;
 use rnote_engine::sheet::background::PatternStyle;
 use rnote_engine::sheet::format::{self, Format};
 use rnote_engine::utils::GdkRGBAHelpers;

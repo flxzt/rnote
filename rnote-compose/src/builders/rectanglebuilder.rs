@@ -1,8 +1,9 @@
 use p2d::shape::Cuboid;
 
+use crate::penhelpers::PenEvent;
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
-use crate::{PenEvent, Shape, Transform};
+use crate::{Shape, Transform};
 
 use super::ShapeBuilderBehaviour;
 

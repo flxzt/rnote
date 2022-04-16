@@ -14,7 +14,8 @@ use crate::shapes::Line;
 use crate::shapes::Rectangle;
 use crate::shapes::{CubicBezier, ShapeBehaviour};
 
-use super::Composer;
+use super::{drawhelpers, Composer};
+use crate::penhelpers::PenState;
 
 /// This is a (incomplete) port of the [Rough.js](https://roughjs.com/) javascript library to Rust.
 /// Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
@@ -299,22 +300,21 @@ impl Composer<RoughOptions> for FociEllipseBuilder {
                 cx.stroke(circle, &piet::Color::MAROON, 1.0);
             }
             FociEllipseBuilderState::Foci(foci) => {
-                let first_circle = kurbo::Circle::new(foci[0].to_kurbo_point(), 2.0);
-                let second_circle = kurbo::Circle::new(foci[1].to_kurbo_point(), 2.0);
-
-                cx.stroke(first_circle, &piet::Color::MAROON, 1.0);
-                cx.stroke(second_circle, &piet::Color::MAROON, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], 1.0);
             }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
 
+                cx.save().unwrap();
                 ellipse.draw_composed(cx, options);
+                cx.restore().unwrap();
 
-                let first_circle = kurbo::Circle::new(foci[0].to_kurbo_point(), 2.0);
-                let second_circle = kurbo::Circle::new(foci[1].to_kurbo_point(), 2.0);
-
-                cx.stroke(first_circle, &piet::Color::MAROON, 1.0);
-                cx.stroke(second_circle, &piet::Color::MAROON, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], 1.0);
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[0], *point, 1.0);
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[1], *point, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
             }
         }
     }

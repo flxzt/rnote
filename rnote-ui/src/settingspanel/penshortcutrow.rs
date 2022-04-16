@@ -6,7 +6,7 @@ use gtk4::{
     glib, glib::clone, glib::subclass::*, subclass::prelude::*, CheckButton, CompositeTemplate,
 };
 use once_cell::sync::Lazy;
-use rnote_compose::penevent::ShortcutKey;
+use rnote_compose::penhelpers::ShortcutKey;
 use rnote_engine::pens::penholder::PenStyle;
 use rnote_engine::pens::shortcuts::ShortcutAction;
 use std::cell::RefCell;

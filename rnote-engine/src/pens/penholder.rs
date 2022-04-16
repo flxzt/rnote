@@ -4,8 +4,7 @@ use crate::pens::Tools;
 use crate::sheet::Sheet;
 use crate::surfaceflags::SurfaceFlags;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore};
-use rnote_compose::penevent::ShortcutKey;
-use rnote_compose::PenEvent;
+use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 
 use gtk4::{glib, glib::prelude::*};
 use num_derive::FromPrimitive;
@@ -97,7 +96,7 @@ impl PenStyle {
 
 #[derive(Debug, Clone)]
 pub enum PenHolderEvent {
-    PenEvent(rnote_compose::PenEvent),
+    PenEvent(PenEvent),
     ChangeStyle(PenStyle),
     ChangeStyleOverride(Option<PenStyle>),
     PressedShortcutkey(ShortcutKey),

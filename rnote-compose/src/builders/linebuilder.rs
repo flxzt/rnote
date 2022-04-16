@@ -1,6 +1,7 @@
+use crate::penhelpers::PenEvent;
 use crate::penpath::Element;
 use crate::shapes::Line;
-use crate::{PenEvent, Shape};
+use crate::Shape;
 
 use super::ShapeBuilderBehaviour;
 
@@ -25,17 +26,17 @@ impl ShapeBuilderBehaviour for LineBuilder {
 
     fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
         match event {
-            crate::PenEvent::Down { element, .. } => {
+            PenEvent::Down { element, .. } => {
                 self.current = element.pos;
             }
-            crate::PenEvent::Up { .. } => {
+            PenEvent::Up { .. } => {
                 return Some(vec![Shape::Line(Line {
                     start: self.start,
                     end: self.current,
                 })]);
             }
-            crate::PenEvent::Proximity { .. } => {}
-            crate::PenEvent::Cancel => {}
+            PenEvent::Proximity { .. } => {}
+            PenEvent::Cancel => {}
         }
 
         None

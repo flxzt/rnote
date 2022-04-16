@@ -1,9 +1,9 @@
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
+use crate::penhelpers::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
-use crate::PenEvent;
 
 use super::ShapeBuilderBehaviour;
 

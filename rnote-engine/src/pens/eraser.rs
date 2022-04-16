@@ -1,7 +1,8 @@
 use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
+use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Element;
-use rnote_compose::{color, PenEvent};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};

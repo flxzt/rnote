@@ -20,8 +20,8 @@ use crate::PenPath;
 use kurbo::Shape;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 
-use super::drawhelpers::NodeState;
 use super::{drawhelpers, Composer};
+use crate::penhelpers::PenState;
 
 // Composes a Bezier path with variable width from the line. Must be drawn with only a fill
 fn compose_line_variable_width(
@@ -395,18 +395,19 @@ impl Composer<SmoothOptions> for FociEllipseBuilder {
                 cx.stroke(circle, &piet::Color::MAROON, 1.0);
             }
             FociEllipseBuilderState::Foci(foci) => {
-                drawhelpers::draw_pos_indicator(cx, NodeState::Up, foci[0], 1.0);
-                drawhelpers::draw_pos_indicator(cx, NodeState::Up, foci[1], 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], 1.0);
             }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
 
                 ellipse.draw_composed(cx, options);
 
-                drawhelpers::draw_pos_indicator(cx, NodeState::Up, foci[0], 1.0);
-                drawhelpers::draw_pos_indicator(cx, NodeState::Up, foci[1], 1.0);
-                drawhelpers::draw_vec_indicator(cx, NodeState::Down, foci[0], *point, 1.0);
-                drawhelpers::draw_vec_indicator(cx, NodeState::Down, foci[1], *point, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], 1.0);
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[0], *point, 1.0);
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[1], *point, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
             }
         }
     }

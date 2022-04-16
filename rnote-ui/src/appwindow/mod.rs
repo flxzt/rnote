@@ -1109,8 +1109,9 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            self.canvas().engine().borrow().camera.transform().inverse()
-                * (na::point![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]).coords
+            (self.canvas().engine().borrow().camera.transform().inverse()
+                * na::point![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT])
+            .coords
         });
 
         self.canvas()
@@ -1137,8 +1138,9 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            self.canvas().engine().borrow().camera.transform().inverse()
-                * (na::point![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT]).coords
+            (self.canvas().engine().borrow().camera.transform().inverse()
+                * na::point![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT])
+            .coords
         });
 
         self.canvas()
@@ -1164,8 +1166,9 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            self.canvas().engine().borrow().camera.transform().inverse()
-                * (na::point![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT]).coords
+            (self.canvas().engine().borrow().camera.transform().inverse()
+                * na::point![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT])
+            .coords
         });
         let page_width = (f64::from(self.canvas().engine().borrow().sheet.format.width)
             * (self.canvas().pdf_import_width() / 100.0))

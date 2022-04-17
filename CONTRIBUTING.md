@@ -15,10 +15,10 @@ Use Gnome Builder or vscode with the flatpak extension to build and run the appl
 
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 
-First the Gnome 41 SDK is needed:
+First the Gnome 42 SDK and some extensions are needed:
 
 ```bash
-flatpak install org.gnome.Sdk//41 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//41
+flatpak install org.gnome.Sdk//42 org.freedesktop.Sdk.Extension.rust-stable//21.08 org.gnome.Platform//42
 ```
 
 **Build**  

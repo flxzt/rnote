@@ -8,9 +8,9 @@ use crate::helpers::{AABBHelpers, Vector2Helpers};
 use crate::penhelpers::PenState;
 
 /// the radius
-pub const POS_INDICATOR_RADIUS: f64 = 3.0;
+pub const POS_INDICATOR_RADIUS: f64 = 2.0;
 /// the outline width
-pub const POS_INDICATOR_OUTLINE_WIDTH: f64 = 1.6;
+pub const POS_INDICATOR_OUTLINE_WIDTH: f64 = 1.5;
 
 /// Draw a position indicator
 pub fn draw_pos_indicator(
@@ -38,7 +38,7 @@ pub fn draw_pos_indicator(
 }
 
 /// the line width
-pub const VEC_INDICATOR_LINE_WIDTH: f64 = 1.8;
+pub const VEC_INDICATOR_LINE_WIDTH: f64 = 1.0;
 
 /// Draw a vec indicator
 pub fn draw_vec_indicator(
@@ -50,9 +50,9 @@ pub fn draw_vec_indicator(
 ) {
     let line = kurbo::Line::new(start.to_kurbo_point(), end.to_kurbo_point());
     let line_color = match node_state {
-        PenState::Up => color::GNOME_BRIGHTS[3].with_a8(0x60),
-        PenState::Proximity => color::GNOME_BRIGHTS[3].with_a8(0xa0),
-        PenState::Down => color::GNOME_DARKS[0].with_a8(0xa0),
+        PenState::Up => color::GNOME_BRIGHTS[3].with_a8(0x90),
+        PenState::Proximity => color::GNOME_BRIGHTS[3].with_a8(0xb0),
+        PenState::Down => color::GNOME_DARKS[0].with_a8(0xb0),
     };
 
     cx.stroke(line, &line_color, VEC_INDICATOR_LINE_WIDTH / zoom);

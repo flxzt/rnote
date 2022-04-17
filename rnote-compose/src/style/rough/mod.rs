@@ -8,7 +8,7 @@ pub use roughoptions::RoughOptions;
 
 use crate::builders::fociellipsebuilder::FociEllipseBuilderState;
 use crate::builders::{EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder};
-use crate::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
+use crate::helpers::{AABBHelpers, Affine2Helpers};
 use crate::shapes::Ellipse;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
@@ -316,8 +316,7 @@ impl Composer<RoughOptions> for FociEllipseBuilder {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
         match &self.state {
             FociEllipseBuilderState::First(point) => {
-                let circle = kurbo::Circle::new(point.to_kurbo_point(), 2.0);
-                cx.stroke(circle, &piet::Color::MAROON, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
             }
             FociEllipseBuilderState::Foci(foci) => {
                 drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);

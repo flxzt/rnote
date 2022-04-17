@@ -420,8 +420,7 @@ impl Composer<SmoothOptions> for FociEllipseBuilder {
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         match &self.state {
             FociEllipseBuilderState::First(point) => {
-                let circle = kurbo::Circle::new(point.to_kurbo_point(), 2.0);
-                cx.stroke(circle, &piet::Color::MAROON, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
             }
             FociEllipseBuilderState::Foci(foci) => {
                 drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);

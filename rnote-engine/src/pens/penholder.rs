@@ -107,7 +107,6 @@ pub enum PenHolderEvent {
 #[derive(Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
-    // brushes are configurable from the public
     #[serde(rename = "brush")]
     pub brush: Brush,
     #[serde(rename = "shaper")]
@@ -119,7 +118,6 @@ pub struct PenHolder {
     #[serde(rename = "tools")]
     pub tools: Tools,
 
-    // Managed by the internal state machine
     #[serde(rename = "style")]
     style: PenStyle,
     #[serde(skip)]
@@ -127,7 +125,7 @@ pub struct PenHolder {
     #[serde(rename = "shortcuts")]
     shortcuts: Shortcuts,
     #[serde(rename = "pen_sounds")]
-    // we need this state outside of the audioplayer, because we skip (de) serializing it.
+    // we need this outside of the audioplayer, because we skip (de) serializing it.
     pen_sounds: bool,
     #[serde(skip)]
     audioplayer: Option<AudioPlayer>,

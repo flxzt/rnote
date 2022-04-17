@@ -415,7 +415,7 @@ impl StrokeStore {
                             image.bounds.tightened(2.0 * border_widths),
                             visual_debug::COLOR_IMAGE_BOUNDS,
                             snapshot,
-                            border_widths
+                            border_widths,
                         )
                     });
                 }

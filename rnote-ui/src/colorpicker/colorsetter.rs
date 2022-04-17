@@ -1,12 +1,15 @@
-mod imp {
-    use std::cell::Cell;
+use std::cell::Cell;
 
-    use gtk4::{
-        gdk, glib, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, CssProvider,
-        PositionType, ToggleButton,
-    };
-    use once_cell::sync::Lazy;
-    use rnote_engine::utils::GdkRGBAHelpers;
+use gtk4::{
+    gdk, glib, glib::translate::IntoGlib, prelude::*, subclass::prelude::*, Button, CssProvider,
+    PositionType, ToggleButton, Widget,
+};
+use once_cell::sync::Lazy;
+use rnote_compose::Color;
+use rnote_engine::utils::GdkRGBAHelpers;
+
+mod imp {
+    use super::*;
 
     #[derive(Debug)]
     pub struct ColorSetter {
@@ -210,10 +213,6 @@ mod imp {
         }
     }
 }
-
-use gtk4::{gdk, glib, prelude::*, Button, PositionType, ToggleButton, Widget};
-
-use rnote_compose::Color;
 
 glib::wrapper! {
     pub struct ColorSetter(ObjectSubclass<imp::ColorSetter>)

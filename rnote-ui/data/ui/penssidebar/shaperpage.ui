@@ -302,7 +302,7 @@
               </child>
               <child>
                 <object class="AdwActionRow" id="shapebuildertype_fociellipse_row">
-                  <property name="title" translatable="yes">Ellipse with Foci</property>
+                  <property name="title" translatable="yes">Ellipse with foci</property>
                   <child type="prefix">
                     <object class="GtkImage">
                       <property name="icon-name">shape-fociellipse-symbolic</property>

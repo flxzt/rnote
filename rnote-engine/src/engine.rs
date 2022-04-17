@@ -130,7 +130,7 @@ impl RnoteEngine {
         self.store.process_received_task(task, &self.camera)
     }
 
-    /// Public method to handle pen events coming from ui event handlers
+    /// Public method to call to handle pen events and to change pen holder state 
     pub fn handle_penholder_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
         self.penholder.handle_penholder_event(
             event,
@@ -277,7 +277,8 @@ impl RnoteEngine {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
         self.sheet = serde_json::from_value(engine_config.sheet)?;
-        self.penholder.import(serde_json::from_value(engine_config.penholder)?);
+        self.penholder
+            .import(serde_json::from_value(engine_config.penholder)?);
         self.expand_mode = serde_json::from_value(engine_config.expand_mode)?;
 
         Ok(())

@@ -4,7 +4,6 @@ use gtk4::{gio, glib, glib::clone};
 
 impl RnoteApp {
     pub fn setup_actions(&self) {
-        // Actions Definitions
         let action_quit = gio::SimpleAction::new("quit", None);
         self.add_action(&action_quit);
 
@@ -21,7 +20,7 @@ impl RnoteApp {
         }));
     }
 
-    // ### Accelerators / Keyboard Shortcuts
+    // Accelerators / Keyboard Shortcuts
     pub fn setup_action_accels(&self) {
         self.set_accels_for_action("app.quit", &["<Ctrl>q"]);
     }

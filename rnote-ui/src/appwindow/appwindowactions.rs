@@ -65,15 +65,15 @@ impl RnoteAppWindow {
         self.add_action(&action_expand_mode);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
+        let action_touch_drawing =
+            gio::PropertyAction::new("touch-drawing", &self.canvas(), "touch-drawing");
+        self.add_action(&action_touch_drawing);
         let action_pen_sounds =
             gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
         let action_format_borders =
             gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
-        let action_touch_drawing =
-            gio::PropertyAction::new("touch-drawing", &self.canvas(), "touch-drawing");
-        self.add_action(&action_touch_drawing);
 
         let action_undo_stroke = gio::SimpleAction::new("undo-stroke", None);
         self.add_action(&action_undo_stroke);
@@ -199,7 +199,7 @@ impl RnoteAppWindow {
             }),
         );
 
-        // Error
+        // Error toast
         action_error_toast.connect_activate(
             clone!(@weak self as appwindow => move |_action_error_toast, parameter| {
                 let error_text = parameter.unwrap().get::<String>().unwrap();
@@ -476,7 +476,7 @@ impl RnoteAppWindow {
 
         // Pen style
         action_pen_style.connect_activate(
-            clone!(@weak self as appwindow => move |_action_current_pen, target| {
+            clone!(@weak self as appwindow => move |_action_pen_style, target| {
                 let pen_style = target.unwrap().str().unwrap();
 
                 let new_pen_style = match pen_style {
@@ -614,10 +614,10 @@ impl RnoteAppWindow {
 
         // Shaper style
         action_shaper_style.connect_activate(
-        clone!(@weak self as appwindow => move |_action_shaper_drawstyle, target| {
-            let shaper_drawstyle = target.unwrap().str().unwrap();
+        clone!(@weak self as appwindow => move |_action_shaper_style, target| {
+            let shaper_style = target.unwrap().str().unwrap();
 
-            match shaper_drawstyle {
+            match shaper_style {
                 "smooth" => {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.style = shaper::ShaperStyle::Smooth;
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();

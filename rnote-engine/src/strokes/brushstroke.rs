@@ -52,7 +52,16 @@ impl StrokeBehaviour for BrushStroke {
                 .path
                 .iter()
                 .filter_map(|segment| {
-                    match render::Image::gen_from_composable_shape(segment, options, image_scale) {
+                    let image = render::Image::gen_with_piet(
+                        |piet_cx| {
+                            segment.draw_composed(piet_cx, options);
+                            Ok(())
+                        },
+                        segment.composed_bounds(options),
+                        image_scale,
+                    );
+
+                    match image {
                         Ok(image) => Some(image),
                         Err(e) => {
                             log::error!("gen_images() failed with Err {}", e);
@@ -73,11 +82,16 @@ impl StrokeBehaviour for BrushStroke {
                             .seed
                             .map(|seed| rnote_compose::utils::seed_advance(seed));
 
-                        match render::Image::gen_from_composable_shape(
-                            segment,
-                            &options,
+                        let image = render::Image::gen_with_piet(
+                            |piet_cx| {
+                                segment.draw_composed(piet_cx, &options);
+                                Ok(())
+                            },
+                            segment.composed_bounds(&options),
                             image_scale,
-                        ) {
+                        );
+
+                        match image {
                             Ok(image) => Some(image),
                             Err(e) => {
                                 log::error!("gen_images() failed with Err {}", e);
@@ -191,7 +205,16 @@ impl BrushStroke {
                 .take(no_last_segments)
                 .rev()
                 .filter_map(|segment| {
-                    match render::Image::gen_from_composable_shape(segment, options, image_scale) {
+                    let image = render::Image::gen_with_piet(
+                        |piet_cx| {
+                            segment.draw_composed(piet_cx, options);
+                            Ok(())
+                        },
+                        segment.composed_bounds(options),
+                        image_scale,
+                    );
+
+                    match image {
                         Ok(image) => Some(image),
                         Err(e) => {
                             log::error!("gen_images_for_last_segments() failed with Err {}", e);
@@ -217,7 +240,16 @@ impl BrushStroke {
                             .map(|seed| rnote_compose::utils::seed_advance(seed))
                     });
 
-                    match render::Image::gen_from_composable_shape(segment, &options, image_scale) {
+                    let image = render::Image::gen_with_piet(
+                        |piet_cx| {
+                            segment.draw_composed(piet_cx, &options);
+                            Ok(())
+                        },
+                        segment.composed_bounds(&options),
+                        image_scale,
+                    );
+
+                    match image {
                         Ok(image) => Some(image),
                         Err(e) => {
                             log::error!("gen_images_for_last_segments() failed with Err {}", e);

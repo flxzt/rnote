@@ -7,11 +7,9 @@ use image::io::Reader;
 use image::GenericImageView;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
-use rnote_compose::style::Composer;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::{base64, GrapheneRectHelpers};
-use crate::DrawBehaviour;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 
 lazy_static! {
@@ -282,8 +280,6 @@ impl Image {
         }
 
         for image in images {
-            image.assert_valid()?;
-
             snapshot.append_node(
                 &image
                     .to_rendernode()
@@ -303,7 +299,7 @@ impl Image {
             return Ok(None);
         }
         bounds.ensure_positive();
-        bounds.ceil();
+        bounds = bounds.ceil();
         bounds.assert_valid()?;
 
         let mut target_image = image::RgbaImage::new(
@@ -335,7 +331,7 @@ impl Image {
         }))
     }
 
-    // Public method
+    // Public method to create an image from an svg
     pub fn gen_images_from_svg(
         svg: Svg,
         bounds: AABB,
@@ -351,10 +347,6 @@ impl Image {
         mut bounds: AABB,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        bounds.ensure_positive();
-        bounds.ceil();
-        bounds.assert_valid()?;
-
         let mut images = vec![];
 
         let svg_data = rnote_compose::utils::wrap_svg_root(
@@ -365,7 +357,11 @@ impl Image {
         );
 
         // .split() Only splits if the split size is larger than the bounds
-        for splitted_bounds in svg.bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
+        for mut splitted_bounds in svg.bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
+            splitted_bounds.ensure_positive();
+            splitted_bounds = splitted_bounds.ceil();
+            splitted_bounds.assert_valid()?;
+
             let splitted_width_scaled =
                 ((splitted_bounds.extents()[0]) * image_scale).round() as u32;
             let splitted_height_scaled =
@@ -378,7 +374,7 @@ impl Image {
             )
             .map_err(|e| {
                 anyhow::anyhow!(
-                    "create ImageSurface with dimensions ({}, {}) failed, {}",
+                    "create ImageSurface with dimensions ({}, {}) failed in gen_image_from_svg_librsvg(), Err {}",
                     splitted_width_scaled,
                     splitted_height_scaled,
                     e
@@ -387,7 +383,8 @@ impl Image {
 
             // Context in new scope, else accessing the surface data fails with a borrow error
             {
-                let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
+                let cx = cairo::Context::new(&surface)
+                    .context("new cairo::Context failed in gen_image_from_svg_librsvg()")?;
                 cx.scale(image_scale, image_scale);
                 cx.translate(-splitted_bounds.mins[0], -splitted_bounds.mins[1]);
 
@@ -405,7 +402,9 @@ impl Image {
                     .read_stream::<gio::MemoryInputStream, gio::File, gio::Cancellable>(
                         &stream, None, None,
                     )
-                    .context("read stream to librsvg Loader failed")?;
+                    .context(
+                        "read stream to librsvg Loader failed in gen_image_from_svg_librsvg()",
+                    )?;
                 let renderer = librsvg::CairoRenderer::new(&handle);
                 renderer
                     .render_document(
@@ -419,7 +418,7 @@ impl Image {
                     )
                     .map_err(|e| {
                         anyhow::Error::msg(format!(
-                            "librsvg render_document() failed in gen_image_librsvg() with Err {}",
+                            "librsvg render_document() failed in gen_image_from_svg_librsvg() with Err {}",
                             e
                         ))
                     })?;
@@ -431,7 +430,7 @@ impl Image {
                 .data()
                 .map_err(|e| {
                     anyhow::Error::msg(format!(
-                        "accessing imagesurface data failed in gen_image_librsvg() with Err {}",
+                        "accessing imagesurface data failed in gen_image_from_svg_librsvg() with Err {}",
                         e
                     ))
                 })?
@@ -453,13 +452,10 @@ impl Image {
     #[allow(unused)]
     fn gen_images_from_svg_resvg(
         svg: Svg,
-        mut bounds: AABB,
+        bounds: AABB,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let mut images = vec![];
-        bounds.ensure_positive();
-        bounds.ceil();
-        bounds.assert_valid()?;
 
         let svg_data = rnote_compose::utils::wrap_svg_root(
             svg.svg_data.as_str(),
@@ -471,6 +467,10 @@ impl Image {
 
         // .split() Only splits if the split size is larger than the bounds
         for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
+            splitted_bounds.ensure_positive();
+            splitted_bounds = splitted_bounds.ceil();
+            splitted_bounds.assert_valid()?;
+
             let splitted_width_scaled =
                 ((splitted_bounds.extents()[0]) * image_scale).round() as u32;
             let splitted_height_scaled =
@@ -479,7 +479,9 @@ impl Image {
 
             let mut pixmap = tiny_skia::Pixmap::new(splitted_width_scaled, splitted_height_scaled)
                 .ok_or_else(|| {
-                    anyhow::Error::msg("tiny_skia::Pixmap::new() failed in gen_image_resvg()")
+                    anyhow::Error::msg(
+                        "tiny_skia::Pixmap::new() failed in gen_image_from_svg_resvg()",
+                    )
                 })?;
 
             resvg::render(
@@ -489,7 +491,9 @@ impl Image {
                     .post_scale(image_scale as f32, image_scale as f32),
                 pixmap.as_mut(),
             )
-            .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_resvg."))?;
+            .ok_or_else(|| {
+                anyhow::Error::msg("resvg::render failed in gen_image_from_svg_resvg.")
+            })?;
 
             let data = pixmap.data().to_vec();
 
@@ -505,20 +509,20 @@ impl Image {
         Ok(images)
     }
 
-    /// generates images for a type that implements the DrawBehaviour trait.
-    /// if viewport is Some, only generates the images that intersect it.
-    pub fn gen_images_from_drawable(
-        to_be_drawn: &impl DrawBehaviour,
-        mut bounds: AABB,
+    /// Renders an image with a function that draws onto a piet CairoRenderContext
+    pub fn gen_with_piet(
+        mut draw_func: impl FnMut(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
+        bounds: AABB,
         image_scale: f64,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let mut images = vec![];
-        bounds.ensure_positive();
-        bounds.ceil();
-        bounds.assert_valid()?;
 
         // .split() Only splits if the split size is larger than the bounds
-        for splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
+        for mut splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
+            splitted_bounds.ensure_positive();
+            splitted_bounds = splitted_bounds.ceil();
+            splitted_bounds.assert_valid()?;
+
             let splitted_width_scaled =
                 ((splitted_bounds.extents()[0]) * image_scale).round() as u32;
             let splitted_height_scaled =
@@ -531,7 +535,7 @@ impl Image {
             )
             .map_err(|e| {
                 anyhow::anyhow!(
-                    "create ImageSurface with dimensions ({}, {}) failed, {}",
+                    "create ImageSurface with dimensions ({}, {}) failed in Image gen_with_piet(), {}",
                     splitted_width_scaled,
                     splitted_height_scaled,
                     e
@@ -547,11 +551,12 @@ impl Image {
                     -splitted_bounds.mins.coords.to_kurbo_vec(),
                 ));
 
-                to_be_drawn.draw(&mut piet_cx, image_scale)?;
+                // Apply the draw function
+                draw_func(&mut piet_cx)?;
 
                 piet_cx.finish().map_err(|e| {
                     anyhow::anyhow!(
-                        "piet_cx.finish() failed in image.gen_from_drawable() with Err {}",
+                        "piet_cx.finish() failed in image.gen_with_piet() with Err {}",
                         e
                     )
                 })?;
@@ -563,87 +568,7 @@ impl Image {
                 .data()
                 .map_err(|e| {
                     anyhow::Error::msg(format!(
-                "accessing imagesurface data failed in strokebehaviour image.gen_from_drawable() with Err {}",
-                e
-            ))
-                })?
-                .to_vec();
-
-            images.push(Image {
-                data,
-                bounds: splitted_bounds,
-                pixel_width: splitted_width_scaled,
-                pixel_height: splitted_height_scaled,
-                memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
-            })
-        }
-
-        Ok(images)
-    }
-
-    /// Renders an image from a shape that implements the Composer trait
-    pub fn gen_from_composable_shape<S, O>(
-        shape: &S,
-        options: &O,
-        image_scale: f64,
-    ) -> Result<Vec<Self>, anyhow::Error>
-    where
-        S: Composer<O>,
-        O: std::fmt::Debug + Clone,
-    {
-        let mut images = vec![];
-        let mut bounds = shape.composed_bounds(options);
-        bounds.ensure_positive();
-        bounds.ceil();
-        bounds.assert_valid()?;
-
-        // .split() Only splits if the split size is larger than the bounds
-        for splitted_bounds in bounds.split(CAIRO_IMGSURFACE_SPLIT_SIZE / image_scale) {
-            let splitted_width_scaled =
-                ((splitted_bounds.extents()[0]) * image_scale).round() as u32;
-            let splitted_height_scaled =
-                ((splitted_bounds.extents()[1]) * image_scale).round() as u32;
-
-            let mut image_surface = cairo::ImageSurface::create(
-                cairo::Format::ARgb32,
-                splitted_width_scaled as i32,
-                splitted_height_scaled as i32,
-            )
-            .map_err(|e| {
-                anyhow::anyhow!(
-                    "create ImageSurface with dimensions ({}, {}) failed, {}",
-                    splitted_width_scaled,
-                    splitted_height_scaled,
-                    e
-                )
-            })?;
-
-            {
-                let cairo_cx = cairo::Context::new(&image_surface)?;
-                let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-                piet_cx.transform(kurbo::Affine::scale(image_scale));
-                piet_cx.transform(kurbo::Affine::translate(
-                    -splitted_bounds.mins.coords.to_kurbo_vec(),
-                ));
-
-                shape.draw_composed(&mut piet_cx, options);
-
-                piet_cx.finish().map_err(|e| {
-                    anyhow::anyhow!(
-                        "piet_cx.finish() failed in image.gen_from_composable_shape() with Err {}",
-                        e
-                    )
-                })?;
-            }
-            // Surface needs to be flushed before accessing its data
-            image_surface.flush();
-
-            let data = image_surface
-                .data()
-                .map_err(|e| {
-                    anyhow::Error::msg(format!(
-                "accessing imagesurface data failed in strokebehaviour image.gen_from_composable_shape() with Err {}",
+                "accessing imagesurface data failed in strokebehaviour image.gen_with_piet() with Err {}",
                 e
             ))
                 })?

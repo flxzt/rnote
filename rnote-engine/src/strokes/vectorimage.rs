@@ -64,8 +64,8 @@ impl StrokeBehaviour for VectorImage {
     }
 
     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        Ok(render::Image::gen_images_from_drawable(
-            self,
+        Ok(render::Image::gen_with_piet(
+            |piet_cx| self.draw(piet_cx, image_scale),
             self.bounds(),
             image_scale,
         )?)
@@ -288,11 +288,13 @@ impl VectorImage {
     ) -> Result<Vec<u8>, anyhow::Error> {
         let bounds = self.bounds();
 
-        match render::Image::join_images(
-            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
-            bounds,
+        let image = render::Image::gen_with_piet(
+            |piet_cx| self.draw(piet_cx, image_scale),
+            self.bounds(),
             image_scale,
-        )? {
+        )?;
+
+        match render::Image::join_images(image, bounds, image_scale)? {
             Some(image) => Ok(image.into_encoded_bytes(format)?),
             None => Ok(vec![]),
         }

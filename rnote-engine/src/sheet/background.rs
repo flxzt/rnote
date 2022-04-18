@@ -1,13 +1,14 @@
 use anyhow::Context;
 use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use piet::RenderContext;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-use crate::render;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
+use crate::{render, Camera};
 use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::Color;
+use rnote_compose::{color, Color};
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
@@ -193,10 +194,10 @@ impl Default for Background {
 }
 
 impl Background {
-    pub const TILE_MAX_SIZE: f64 = 192.0;
-    pub const COLOR_DEFAULT: Color = Color::WHITE;
-    pub const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
-    pub const PATTERN_COLOR_DEFAULT: Color = Color {
+    const TILE_MAX_SIZE: f64 = 192.0;
+    const COLOR_DEFAULT: Color = Color::WHITE;
+    const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
+    const PATTERN_COLOR_DEFAULT: Color = Color {
         r: 0.8,
         g: 0.9,
         b: 1.0,
@@ -269,6 +270,42 @@ impl Background {
             .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
 
         Ok(render::Svg { svg_data, bounds })
+    }
+
+    fn draw_origin_indicator(camera: &Camera) -> anyhow::Result<gsk::RenderNode> {
+        const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
+        let indicator_size: na::Vector2<f64> = na::Vector2::repeat(6.0) / camera.total_zoom();
+        let path_width: f64 = 1.0 / camera.total_zoom();
+
+        let indicator_rect = AABB::from_half_extents(na::point![0.0, 0.0], indicator_size);
+
+        let cairo_node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(indicator_rect));
+        let cairo_cx = cairo_node.draw_context();
+        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+        let mut indicator_path = kurbo::BezPath::new();
+        indicator_path.move_to(kurbo::Point::new(
+            indicator_rect.mins[0],
+            indicator_rect.mins[1],
+        ));
+        indicator_path.line_to(kurbo::Point::new(
+            indicator_rect.maxs[0],
+            indicator_rect.maxs[1],
+        ));
+        indicator_path.move_to(kurbo::Point::new(
+            indicator_rect.mins[0],
+            indicator_rect.maxs[1],
+        ));
+        indicator_path.line_to(kurbo::Point::new(
+            indicator_rect.maxs[0],
+            indicator_rect.mins[1],
+        ));
+
+        piet_cx.stroke(indicator_path, &PATH_COLOR, path_width);
+
+        piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        Ok(cairo_node.upcast())
     }
 
     fn gen_image(
@@ -350,13 +387,22 @@ impl Background {
         Ok(())
     }
 
-    pub fn draw(&self, snapshot: &Snapshot, sheet_bounds: AABB) {
+    pub fn draw(
+        &self,
+        snapshot: &Snapshot,
+        sheet_bounds: AABB,
+        camera: &Camera,
+    ) -> anyhow::Result<()> {
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
 
         self.rendernodes.iter().for_each(|rendernode| {
             snapshot.append_node(rendernode);
         });
 
+        // Draw an indicator at the origin
+        snapshot.append_node(&Self::draw_origin_indicator(camera)?);
+
         snapshot.pop();
+        Ok(())
     }
 }

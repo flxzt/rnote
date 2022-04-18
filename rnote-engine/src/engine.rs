@@ -662,7 +662,7 @@ impl RnoteEngine {
         snapshot.transform(Some(&self.camera.transform_as_gsk()));
 
         self.sheet.draw_shadow(snapshot);
-        self.sheet.background.draw(snapshot, sheet_bounds);
+        self.sheet.background.draw(snapshot, sheet_bounds, &self.camera)?;
         self.sheet
             .format
             .draw(snapshot, sheet_bounds, &self.camera)?;

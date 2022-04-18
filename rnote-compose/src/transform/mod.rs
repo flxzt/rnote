@@ -5,6 +5,8 @@ pub use transformbehaviour::TransformBehaviour;
 
 use serde::{Deserialize, Serialize};
 
+use crate::helpers::Affine2Helpers;
+
 /// To be used as state in a stroke to help implement the StrokeBehaviour trait
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "transform")]
@@ -99,5 +101,10 @@ impl Transform {
             matrix[(0, 2)],
             matrix[(1, 2)],
         )
+    }
+
+    /// To kurbo affine
+    pub fn to_kurbo(&self) -> kurbo::Affine {
+        self.affine.to_kurbo()
     }
 }

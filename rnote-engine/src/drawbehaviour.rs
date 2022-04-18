@@ -41,7 +41,7 @@ pub trait DrawOnSheetBehaviour {
             bounds_transformed.ensure_positive();
             bounds_transformed.assert_valid()?;
 
-            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_aabb(bounds_transformed));
+            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_transformed));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
             // Transform to sheet coordinate space

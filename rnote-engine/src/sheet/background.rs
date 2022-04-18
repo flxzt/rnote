@@ -277,11 +277,11 @@ impl Background {
         image_scale: f64,
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let svg = self.gen_svg(bounds)?;
-        Ok(render::Image::join_images(
-            render::Image::gen_images_from_svg(svg, bounds, image_scale)?,
+        Ok(Some(render::Image::gen_image_from_svg(
+            svg,
             bounds,
             image_scale,
-        )?)
+        )?))
     }
 
     fn gen_rendernodes(
@@ -295,20 +295,22 @@ impl Background {
         rendernodes.push(
             gsk::ColorNode::new(
                 &gdk::RGBA::from_compose_color(self.color),
-                &graphene::Rect::from_aabb(sheet_bounds),
+                &graphene::Rect::from_p2d_aabb(sheet_bounds),
             )
             .upcast(),
         );
 
         if let Some(image) = &self.image {
+            // Only creat the texture once, it is expensive
             let new_texture = image
                 .to_memtexture()
-                .context("image_to_memtexture() failed in gen_rendernode().")?;
+                .context("image to_memtexture() failed in gen_rendernode() of background.")?;
+
             for splitted_bounds in sheet_bounds.split_extended_origin_aligned(tile_size) {
                 rendernodes.push(
                     gsk::TextureNode::new(
                         &new_texture,
-                        &graphene::Rect::from_aabb(splitted_bounds.ceil().loosened(1.0)),
+                        &graphene::Rect::from_p2d_aabb(splitted_bounds.ceil().loosened(1.0)),
                     )
                     .upcast(),
                 );
@@ -349,7 +351,7 @@ impl Background {
     }
 
     pub fn draw(&self, snapshot: &Snapshot, sheet_bounds: AABB) {
-        snapshot.push_clip(&graphene::Rect::from_aabb(sheet_bounds));
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
 
         self.rendernodes.iter().for_each(|rendernode| {
             snapshot.append_node(rendernode);

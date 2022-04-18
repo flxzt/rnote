@@ -1,12 +1,12 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::Vector2Helpers;
+use crate::helpers::{AABBHelpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "rectangle")]
 /// A rectangle
 pub struct Rectangle {
@@ -32,7 +32,8 @@ impl ShapeBehaviour for Rectangle {
         let center = self.transform.affine * na::point![0.0, 0.0];
         // using a vector to ignore the translation
         let half_extents = na::Vector2::from_homogeneous(
-            self.transform.affine.into_inner().abs() * self.cuboid.half_extents.to_homogeneous(),
+            self.transform.affine.into_inner().abs()
+                * self.cuboid.half_extents.abs().to_homogeneous(),
         )
         .unwrap()
         .abs();
@@ -56,6 +57,15 @@ impl TransformBehaviour for Rectangle {
 }
 
 impl Rectangle {
+    /// New from bounds
+    pub fn from_bounds(mut bounds: AABB) -> Self {
+        bounds.ensure_positive();
+        let cuboid = p2d::shape::Cuboid::new(bounds.half_extents());
+        let transform = Transform::new_w_isometry(na::Isometry2::new(bounds.center().coords, 0.0));
+
+        Self { cuboid, transform }
+    }
+
     /// to kurbo
     pub fn to_kurbo(&self) -> kurbo::BezPath {
         let tl = self.transform.affine

@@ -297,7 +297,7 @@ impl StrokeStore {
 
     /// Draws the strokes without the selection
     pub fn draw_strokes_snapshot(&self, snapshot: &Snapshot, sheet_bounds: AABB, viewport: AABB) {
-        snapshot.push_clip(&graphene::Rect::from_aabb(sheet_bounds));
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .iter()
@@ -412,7 +412,7 @@ impl StrokeStore {
                     render_comp.images.iter().for_each(|image| {
                         visual_debug::draw_bounds(
                             // a little tightened not to overlap with other bounds
-                            image.bounds.tightened(2.0 * border_widths),
+                            image.rect.bounds().tightened(2.0 * border_widths),
                             visual_debug::COLOR_IMAGE_BOUNDS,
                             snapshot,
                             border_widths,

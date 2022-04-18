@@ -152,7 +152,7 @@ impl Sheet {
             graphene::Size::new(shadow_width as f32 / 4.0, shadow_width as f32 / 4.0);
 
         let rounded_rect = gsk::RoundedRect::new(
-            graphene::Rect::from_aabb(bounds),
+            graphene::Rect::from_p2d_aabb(bounds),
             corner_radius.clone(),
             corner_radius.clone(),
             corner_radius.clone(),

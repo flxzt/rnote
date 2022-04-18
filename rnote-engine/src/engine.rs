@@ -818,7 +818,7 @@ pub mod visual_debug {
     pub fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
         snapshot.append_color(
             &gdk::RGBA::from_compose_color(color),
-            &graphene::Rect::from_aabb(rect),
+            &graphene::Rect::from_p2d_aabb(rect),
         );
     }
 

@@ -33,13 +33,13 @@ impl StrokeBehaviour for ShapeStroke {
     }
 
     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        Ok(render::Image::gen_with_piet(
+        Ok(vec![render::Image::gen_with_piet(
             |piet_cx| {
                 self.draw(piet_cx, image_scale)
             },
             self.bounds(),
             image_scale,
-        )?)
+        )?])
     }
 }
 

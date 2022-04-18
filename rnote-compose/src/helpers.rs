@@ -415,8 +415,8 @@ pub fn scale_w_locked_aspectratio(
     src_size * ratio
 }
 
-/// Scales some inner bounds to new outer bounds
-pub fn scale_inner_bounds_to_new_outer_bounds(
+/// Scales inner bounds in context to new outer bounds
+pub fn scale_inner_bounds_in_context_new_outer_bounds(
     old_inner_bounds: AABB,
     old_outer_bounds: AABB,
     new_outer_bounds: AABB,

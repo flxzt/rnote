@@ -305,11 +305,6 @@ impl PenBehaviour for Selector {
 
                         if angle_delta.abs() > Self::ROTATE_ANGLE_THRESHOLD {
                             store.rotate_strokes(selection, angle_delta, *rotation_center);
-                            store.regenerate_rendering_in_viewport_threaded(
-                                false,
-                                camera.viewport_extended(),
-                                camera.image_scale(),
-                            );
 
                             if let Some(new_bounds) = store.gen_bounds(selection) {
                                 *selection_bounds = new_bounds;
@@ -387,11 +382,6 @@ impl PenBehaviour for Selector {
                             };
 
                             store.resize_strokes(selection, *selection_bounds, new_bounds);
-                            store.regenerate_rendering_in_viewport_threaded(
-                                false,
-                                camera.viewport_extended(),
-                                camera.image_scale(),
-                            );
 
                             *selection_bounds = new_bounds;
                         }
@@ -412,10 +402,17 @@ impl PenBehaviour for Selector {
                 },
                 PenEvent::Up { .. },
             ) => {
+                store.regenerate_rendering_in_viewport_threaded(
+                    false,
+                    camera.viewport_extended(),
+                    camera.image_scale(),
+                );
+
                 if let Some(new_bounds) = store.gen_bounds(selection) {
                     *selection_bounds = new_bounds;
                 }
                 *modify_state = ModifyState::Up;
+
 
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
@@ -549,7 +546,7 @@ impl Selector {
     /// The threshold where a translation is applied ( in offset magnitude, surface coords )
     const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.0;
     /// The threshold angle (rad) where a rotation is applied
-    const ROTATE_ANGLE_THRESHOLD: f64 = (2.0 * std::f64::consts::PI) / 360.0;
+    const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
     /// The threshold where a resize is applied ( in offset magnitude, surface coords )
     const RESIZE_MAGNITUDE_THRESHOLD: f64 = 1.0;
 

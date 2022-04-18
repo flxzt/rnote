@@ -69,7 +69,6 @@ impl StrokeBehaviour for BrushStroke {
                         }
                     }
                 })
-                .flatten()
                 .collect::<Vec<render::Image>>(),
             Style::Rough(_) => vec![],
             Style::Textured(options) => {
@@ -99,7 +98,6 @@ impl StrokeBehaviour for BrushStroke {
                             }
                         }
                     })
-                    .flatten()
                     .collect::<Vec<render::Image>>()
             }
         };
@@ -222,7 +220,6 @@ impl BrushStroke {
                         }
                     }
                 })
-                .flatten()
                 .collect::<Vec<render::Image>>(),
             Style::Rough(_) => vec![],
             Style::Textured(options) => self
@@ -257,7 +254,6 @@ impl BrushStroke {
                         }
                     }
                 })
-                .flatten()
                 .collect::<Vec<render::Image>>(),
         };
 

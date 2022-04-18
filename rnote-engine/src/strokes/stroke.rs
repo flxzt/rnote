@@ -261,7 +261,9 @@ impl Stroke {
                     },
                 ))
             }
-            Stroke::ShapeStroke(shapestroke) => {
+            Stroke::ShapeStroke(_shapestroke) => {
+                None
+/* 
                 let shapestroke_bounds = shapestroke.bounds();
                 let shape_image = render::Image::join_images(
                     shapestroke.gen_images(image_scale).ok()?,
@@ -311,6 +313,7 @@ impl Stroke {
                         data: base64::encode(&image_bytes),
                     },
                 ))
+ */
             }
             Stroke::VectorImage(vectorimage) => {
                 let png_data = match vectorimage

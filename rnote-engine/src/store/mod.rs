@@ -20,7 +20,7 @@ use crate::strokes::StrokeBehaviour;
 use crate::strokes::VectorImage;
 use crate::surfaceflags::SurfaceFlags;
 use crate::{render, Camera};
-use rnote_compose::helpers::{self, AABBHelpers};
+use rnote_compose::helpers::{self};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 
@@ -570,12 +570,16 @@ impl StrokeStore {
     pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
-                stroke.translate(offset);
-                self.key_tree.update_with_key(key, stroke.bounds());
+                {
+                    // translate the stroke geometry
+                    stroke.translate(offset);
+                    self.key_tree.update_with_key(key, stroke.bounds());
+                }
 
+                // translate the images
                 if let Some(render_comp) = self.render_components.get_mut(key) {
                     for image in render_comp.images.iter_mut() {
-                        image.bounds = image.bounds.translate(offset);
+                        image.rect.translate(offset);
                     }
 
                     match render::Image::images_to_rendernodes(&render_comp.images) {
@@ -597,11 +601,30 @@ impl StrokeStore {
     pub fn rotate_strokes(&mut self, strokes: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
-                stroke.rotate(angle, center);
-                self.key_tree.update_with_key(key, stroke.bounds());
+                {
+                    // rotate the stroke geometry
+                    stroke.rotate(angle, center);
+                    self.key_tree.update_with_key(key, stroke.bounds());
+                }
 
+                // rotate the images
                 if let Some(render_comp) = self.render_components.get_mut(key) {
                     render_comp.regenerate_flag = true;
+
+                    for image in render_comp.images.iter_mut() {
+                        image.rect.rotate(angle, center);
+                    }
+
+                    render_comp.regenerate_flag = true;
+                    match render::Image::images_to_rendernodes(&render_comp.images) {
+                        Ok(rendernodes) => {
+                            render_comp.rendernodes = rendernodes;
+                        }
+                        Err(e) => log::error!(
+                            "images_to_rendernode() failed in rotate_strokes() with Err {}",
+                            e
+                        ),
+                    }
                 }
             }
         });
@@ -612,30 +635,63 @@ impl StrokeStore {
     pub fn resize_strokes(&mut self, strokes: &[StrokeKey], old_bounds: AABB, new_bounds: AABB) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
-                let old_stroke_bounds = stroke.bounds();
-                let new_stroke_bounds = helpers::scale_inner_bounds_to_new_outer_bounds(
-                    stroke.bounds(),
-                    old_bounds,
-                    new_bounds,
-                );
+                {
+                    // resize the stroke geometry
+                    let old_stroke_bounds = stroke.bounds();
+                    let new_stroke_bounds = helpers::scale_inner_bounds_in_context_new_outer_bounds(
+                        old_stroke_bounds,
+                        old_bounds,
+                        new_bounds,
+                    );
+                    let scale = new_stroke_bounds
+                        .extents()
+                        .component_div(&old_stroke_bounds.extents());
+                    let rel_offset = new_stroke_bounds.center() - old_stroke_bounds.center();
 
-                let rel_offset = new_stroke_bounds.center() - old_stroke_bounds.center();
-                let scale = new_stroke_bounds
-                    .extents()
-                    .component_div(&old_stroke_bounds.extents());
+                    // Translate in relation to the outer bounds
+                    stroke.translate(rel_offset - old_stroke_bounds.center().coords);
+                    stroke.scale(scale);
+                    stroke.translate(old_stroke_bounds.center().coords);
 
-                stroke.translate(-old_stroke_bounds.center().coords);
+                    self.key_tree.update_with_key(key, stroke.bounds());
+                }
 
-                // Translate in relation to the outer bounds
-                stroke.translate(rel_offset);
-                stroke.scale(scale);
-
-                stroke.translate(old_stroke_bounds.center().coords);
-
-                self.key_tree.update_with_key(key, stroke.bounds());
-
+                // resize the images
                 if let Some(render_comp) = self.render_components.get_mut(key) {
                     render_comp.regenerate_flag = true;
+
+                    for image in render_comp.images.iter_mut() {
+                        // resize the stroke geometry
+                        let old_image_bounds = image.rect.bounds();
+                        let new_image_bounds =
+                            helpers::scale_inner_bounds_in_context_new_outer_bounds(
+                                old_image_bounds,
+                                old_bounds,
+                                new_bounds,
+                            );
+                        let scale = new_image_bounds
+                            .extents()
+                            .component_div(&old_image_bounds.extents());
+                        let rel_offset = new_image_bounds.center() - old_image_bounds.center();
+
+                        // Translate in relation to the outer bounds
+                        image
+                            .rect
+                            .translate(rel_offset - old_image_bounds.center().coords);
+                        image.rect.scale(scale);
+                        image.rect.translate(old_image_bounds.center().coords);
+                    }
+
+                    render_comp.regenerate_flag = true;
+                    match render::Image::images_to_rendernodes(&render_comp.images) {
+                        Ok(rendernodes) => {
+                            render_comp.rendernodes = rendernodes;
+                        }
+                        Err(e) => log::error!(
+                            "images_to_rendernode() failed in resize_strokes() with Err {}",
+                            e
+                        ),
+                    }
                 }
             }
         });

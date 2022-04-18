@@ -1,5 +1,6 @@
-use gtk4::{gdk, glib, graphene};
+use gtk4::{gdk, glib, graphene, gsk};
 use p2d::bounding_volume::AABB;
+use rnote_compose::Transform;
 
 pub trait GdkRGBAHelpers
 where
@@ -32,11 +33,11 @@ pub trait GrapheneRectHelpers
 where
     Self: Sized,
 {
-    fn from_aabb(aabb: AABB) -> Self;
+    fn from_p2d_aabb(aabb: AABB) -> Self;
 }
 
 impl GrapheneRectHelpers for graphene::Rect {
-    fn from_aabb(aabb: AABB) -> Self {
+    fn from_p2d_aabb(aabb: AABB) -> Self {
         graphene::Rect::new(
             aabb.mins[0] as f32,
             aabb.mins[1] as f32,
@@ -66,6 +67,17 @@ pub fn convert_coord_dpi(
     target_dpi: f64,
 ) -> na::Vector2<f64> {
     (coord / current_dpi) * target_dpi
+}
+
+pub fn transform_to_gsk(transform: &Transform) -> gsk::Transform {
+    gsk::Transform::new().matrix(&graphene::Matrix::from_2d(
+        transform.affine[(0, 0)],
+        transform.affine[(1, 0)],
+        transform.affine[(0, 1)],
+        transform.affine[(1, 1)],
+        transform.affine[(0, 2)],
+        transform.affine[(1, 2)],
+    ))
 }
 
 pub mod base64 {

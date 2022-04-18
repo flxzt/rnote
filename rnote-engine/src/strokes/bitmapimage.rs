@@ -46,11 +46,13 @@ impl StrokeBehaviour for BitmapImage {
     }
 
     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        Ok(render::Image::gen_with_piet(
-            |piet_cx| self.draw(piet_cx, image_scale),
+        Ok(vec![render::Image::gen_with_piet(
+            |piet_cx| {
+                self.draw(piet_cx, image_scale)
+            },
             self.bounds(),
             image_scale,
-        )?)
+        )?])
     }
 }
 
@@ -197,17 +199,12 @@ impl BitmapImage {
         format: image::ImageOutputFormat,
         image_scale: f64,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        let bounds = self.bounds();
-
         let image = render::Image::gen_with_piet(
             |piet_cx| self.draw(piet_cx, image_scale),
             self.bounds(),
             image_scale,
         )?;
 
-        match render::Image::join_images(image, bounds, image_scale)? {
-            Some(image) => Ok(image.into_encoded_bytes(format)?),
-            None => Ok(vec![]),
-        }
+        Ok(image.into_encoded_bytes(format)?)
     }
 }

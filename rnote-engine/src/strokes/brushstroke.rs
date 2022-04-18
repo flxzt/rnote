@@ -47,58 +47,114 @@ impl StrokeBehaviour for BrushStroke {
     }
 
     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        let images = match &self.style {
-            Style::Smooth(options) => self
-                .path
-                .iter()
-                .filter_map(|segment| {
+        let bounds = self.bounds();
+
+        let images = if bounds.extents()[0] < Self::IMAGES_SEGMENTS_THRESHOLD
+            && bounds.extents()[1] < Self::IMAGES_SEGMENTS_THRESHOLD
+        {
+            // generate a single image when bounds are below threshold
+            match &self.style {
+                Style::Smooth(options) => {
                     let image = render::Image::gen_with_piet(
                         |piet_cx| {
-                            segment.draw_composed(piet_cx, options);
+                            self.path.draw_composed(piet_cx, options);
                             Ok(())
                         },
-                        segment.composed_bounds(options),
+                        bounds,
                         image_scale,
                     );
 
                     match image {
-                        Ok(image) => Some(image),
+                        Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("gen_images() failed with Err {}", e);
-                            None
+                            log::error!("gen_images() in brushstroke failed with Err {}", e);
+                            vec![]
                         }
                     }
-                })
-                .collect::<Vec<render::Image>>(),
-            Style::Rough(_) => vec![],
-            Style::Textured(options) => {
-                let mut options = options.clone();
+                }
+                Style::Rough(_options) => {
+                    // Unsupported
+                    vec![]
+                }
+                Style::Textured(options) => {
+                    let image = render::Image::gen_with_piet(
+                        |piet_cx| {
+                            self.path.draw_composed(piet_cx, options);
+                            Ok(())
+                        },
+                        bounds,
+                        image_scale,
+                    );
 
-                self.path
+                    match image {
+                        Ok(image) => vec![image],
+                        Err(e) => {
+                            log::error!("gen_images() in brushstroke failed with Err {}", e);
+                            vec![]
+                        }
+                    }
+                }
+            }
+        } else {
+            match &self.style {
+                Style::Smooth(options) => self
+                    .path
                     .iter()
                     .filter_map(|segment| {
-                        options.seed = options
-                            .seed
-                            .map(|seed| rnote_compose::utils::seed_advance(seed));
-
                         let image = render::Image::gen_with_piet(
                             |piet_cx| {
-                                segment.draw_composed(piet_cx, &options);
+                                segment.draw_composed(piet_cx, options);
                                 Ok(())
                             },
-                            segment.composed_bounds(&options),
+                            segment.composed_bounds(options),
                             image_scale,
                         );
 
                         match image {
                             Ok(image) => Some(image),
                             Err(e) => {
-                                log::error!("gen_images() failed with Err {}", e);
+                                log::error!("gen_images() in brushstroke failed with Err {}", e);
                                 None
                             }
                         }
                     })
-                    .collect::<Vec<render::Image>>()
+                    .collect::<Vec<render::Image>>(),
+                Style::Rough(_) => {
+                    // Unsupported
+                    vec![]
+                }
+                Style::Textured(options) => {
+                    let mut options = options.clone();
+
+                    self.path
+                        .iter()
+                        .filter_map(|segment| {
+                            options.seed = options
+                                .seed
+                                .map(|seed| rnote_compose::utils::seed_advance(seed));
+
+                            let image = render::Image::gen_with_piet(
+                                |piet_cx| {
+                                    segment.draw_composed(piet_cx, &options);
+                                    Ok(())
+                                },
+                                segment.composed_bounds(&options),
+                                image_scale,
+                            );
+
+                            match image {
+                                Ok(image) => Some(image),
+                                Err(e) => {
+                                    log::error!(
+                                        "gen_images() in brushstroke failed with Err {}",
+                                        e
+                                    );
+                                    None
+                                }
+                            }
+                        })
+                        .collect::<Vec<render::Image>>()
+                }
             }
         };
 
@@ -148,6 +204,8 @@ impl TransformBehaviour for BrushStroke {
 
 impl BrushStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
+    /// when one of the extents of the stroke is above the threshold, images are generated indivdually for the stroke segments (to avoid very large images)
+    pub const IMAGES_SEGMENTS_THRESHOLD: f64 = 1000.0;
 
     pub fn new(segment: Segment, style: Style) -> Self {
         let path = PenPath::new_w_segment(segment);

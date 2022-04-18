@@ -49,8 +49,8 @@ impl StrokeBehaviour for BrushStroke {
     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
         let bounds = self.bounds();
 
-        let images = if bounds.extents()[0] < Self::IMAGES_SEGMENTS_THRESHOLD
-            && bounds.extents()[1] < Self::IMAGES_SEGMENTS_THRESHOLD
+        let images = if bounds.extents()[0] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
+            && bounds.extents()[1] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
         {
             // generate a single image when bounds are below threshold
             match &self.style {

@@ -16,6 +16,7 @@ use gtk4::{
     PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
+use rnote_engine::pens::penholder::PenHolderEvent;
 
 use crate::{
     app::RnoteApp,
@@ -1112,6 +1113,12 @@ impl RnoteAppWindow {
             .coords
         });
 
+        let surface_flags = self.canvas()
+            .engine()
+            .borrow_mut()
+            .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
+        self.handle_surface_flags(surface_flags);
+
         self.canvas()
             .engine()
             .borrow_mut()
@@ -1140,6 +1147,12 @@ impl RnoteAppWindow {
                 * na::point![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT])
             .coords
         });
+
+        let surface_flags = self.canvas()
+            .engine()
+            .borrow_mut()
+            .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
+        self.handle_surface_flags(surface_flags);
 
         self.canvas()
             .engine()
@@ -1171,6 +1184,12 @@ impl RnoteAppWindow {
         let page_width = (f64::from(self.canvas().engine().borrow().sheet.format.width)
             * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
+
+        let surface_flags = self.canvas()
+            .engine()
+            .borrow_mut()
+            .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
+        self.handle_surface_flags(surface_flags);
 
         if self.canvas().pdf_import_as_vector() {
             self.canvas()

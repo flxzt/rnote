@@ -127,7 +127,7 @@ impl Camera {
     // The gsk transform for the GTK snapshot func
     // GTKs transformations are applied on its coordinate system, so we need to reverse the order (translate, then scale)
     // To have the inverse, call .invert()
-    pub fn transform_as_gsk(&self) -> gsk::Transform {
+    pub fn transform_for_gtk_snapshot(&self) -> gsk::Transform {
         let total_zoom = self.total_zoom();
 
         gsk::Transform::new()

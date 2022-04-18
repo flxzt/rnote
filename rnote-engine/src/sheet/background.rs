@@ -177,7 +177,7 @@ pub struct Background {
     #[serde(skip)]
     pub image: Option<render::Image>,
     #[serde(skip)]
-    rendernodes: Vec<gsk::RenderNode>,
+    rendernodes: Vec<(gsk::RenderNode, AABB)>,
 }
 
 impl Default for Background {
@@ -274,31 +274,33 @@ impl Background {
 
     fn draw_origin_indicator(camera: &Camera) -> anyhow::Result<gsk::RenderNode> {
         const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
-        let indicator_size: na::Vector2<f64> = na::Vector2::repeat(6.0) / camera.total_zoom();
         let path_width: f64 = 1.0 / camera.total_zoom();
 
-        let indicator_rect = AABB::from_half_extents(na::point![0.0, 0.0], indicator_size);
+        let indicator_bounds = AABB::from_half_extents(
+            na::point![0.0, 0.0],
+            na::Vector2::repeat(6.0 / camera.total_zoom()),
+        );
 
-        let cairo_node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(indicator_rect));
+        let cairo_node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(indicator_bounds));
         let cairo_cx = cairo_node.draw_context();
         let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
         let mut indicator_path = kurbo::BezPath::new();
         indicator_path.move_to(kurbo::Point::new(
-            indicator_rect.mins[0],
-            indicator_rect.mins[1],
+            indicator_bounds.mins[0],
+            indicator_bounds.mins[1],
         ));
         indicator_path.line_to(kurbo::Point::new(
-            indicator_rect.maxs[0],
-            indicator_rect.maxs[1],
+            indicator_bounds.maxs[0],
+            indicator_bounds.maxs[1],
         ));
         indicator_path.move_to(kurbo::Point::new(
-            indicator_rect.mins[0],
-            indicator_rect.maxs[1],
+            indicator_bounds.mins[0],
+            indicator_bounds.maxs[1],
         ));
         indicator_path.line_to(kurbo::Point::new(
-            indicator_rect.maxs[0],
-            indicator_rect.mins[1],
+            indicator_bounds.maxs[0],
+            indicator_bounds.mins[1],
         ));
 
         piet_cx.stroke(indicator_path, &PATH_COLOR, path_width);
@@ -324,18 +326,9 @@ impl Background {
     fn gen_rendernodes(
         &mut self,
         sheet_bounds: AABB,
-    ) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
+    ) -> Result<Vec<(gsk::RenderNode, AABB)>, anyhow::Error> {
         let tile_size = self.tile_size();
-        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
-
-        // Fill with background color just in case there is any space left between the tiles
-        rendernodes.push(
-            gsk::ColorNode::new(
-                &gdk::RGBA::from_compose_color(self.color),
-                &graphene::Rect::from_p2d_aabb(sheet_bounds),
-            )
-            .upcast(),
-        );
+        let mut rendernodes: Vec<(gsk::RenderNode, AABB)> = vec![];
 
         if let Some(image) = &self.image {
             // Only creat the texture once, it is expensive
@@ -344,13 +337,14 @@ impl Background {
                 .context("image to_memtexture() failed in gen_rendernode() of background.")?;
 
             for splitted_bounds in sheet_bounds.split_extended_origin_aligned(tile_size) {
-                rendernodes.push(
+                rendernodes.push((
                     gsk::TextureNode::new(
                         &new_texture,
                         &graphene::Rect::from_p2d_aabb(splitted_bounds.ceil().loosened(1.0)),
                     )
                     .upcast(),
-                );
+                    splitted_bounds,
+                ));
             }
         }
 
@@ -395,8 +389,21 @@ impl Background {
     ) -> anyhow::Result<()> {
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
 
+        // Fill with background color just in case there is any space left between the tiles
+        snapshot.append_node(
+            &gsk::ColorNode::new(
+                &gdk::RGBA::from_compose_color(self.color),
+                &graphene::Rect::from_p2d_aabb(sheet_bounds),
+            )
+            .upcast(),
+        );
+
         self.rendernodes.iter().for_each(|rendernode| {
-            snapshot.append_node(rendernode);
+            // Skip rendernodes that are not in view
+            if !camera.viewport().intersects(&rendernode.1) {
+                return;
+            }
+            snapshot.append_node(&rendernode.0);
         });
 
         // Draw an indicator at the origin

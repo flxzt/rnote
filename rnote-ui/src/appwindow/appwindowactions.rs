@@ -865,6 +865,8 @@ impl RnoteAppWindow {
                 let all_strokes = appwindow.canvas().engine().borrow().store.keys_unordered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
                 appwindow.canvas().engine().borrow_mut().update_selector();
+                let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
+                appwindow.handle_surface_flags(surface_flags);
 
                 appwindow.canvas().regenerate_content(false, true);
             }),

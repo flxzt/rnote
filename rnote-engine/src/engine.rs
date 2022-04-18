@@ -659,13 +659,16 @@ impl RnoteEngine {
         let viewport = self.camera.viewport();
 
         snapshot.save();
-        snapshot.transform(Some(&self.camera.transform_as_gsk()));
+        snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
 
         self.sheet.draw_shadow(snapshot);
+
         self.sheet.background.draw(snapshot, sheet_bounds, &self.camera)?;
+ 
         self.sheet
             .format
             .draw(snapshot, sheet_bounds, &self.camera)?;
+
 
         self.store
             .draw_strokes_snapshot(snapshot, sheet_bounds, viewport);
@@ -702,7 +705,7 @@ impl RnoteEngine {
         } */
         snapshot.save();
 
-        snapshot.transform(Some(&self.camera.transform_as_gsk()));
+        snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
 
         // visual debugging
         if self.visual_debug {

@@ -168,16 +168,21 @@ pub fn process_pen_down(
         .canvas()
         .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-    surface_flags.merge_with_other(
-        appwindow
-            .canvas()
-            .engine()
-            .borrow_mut()
-            .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
-                element,
-                shortcut_key,
-            })),
-    );
+    // GTK emits separate events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a DownEvent
+    if shortcut_key != Some(ShortcutKey::StylusPrimaryButton)
+        && shortcut_key != Some(ShortcutKey::StylusSecondaryButton)
+    {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
+                    element,
+                    shortcut_key,
+                })),
+        );
+    }
 
     appwindow.handle_surface_flags(surface_flags);
 }
@@ -211,14 +216,19 @@ pub fn process_pen_up(
     shortcut_key: Option<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    let surface_flags = appwindow
-        .canvas()
-        .engine()
-        .borrow_mut()
-        .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Up {
-            element,
-            shortcut_key,
-        }));
+    // GTK emits separate events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a UpEvent
+    if shortcut_key != Some(ShortcutKey::StylusPrimaryButton)
+        && shortcut_key != Some(ShortcutKey::StylusSecondaryButton)
+    {
+        let surface_flags = appwindow
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Up {
+                element,
+                shortcut_key,
+            }));
 
-    appwindow.handle_surface_flags(surface_flags);
+        appwindow.handle_surface_flags(surface_flags);
+    }
 }

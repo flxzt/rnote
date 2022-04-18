@@ -144,7 +144,7 @@ impl PenBehaviour for Brush {
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     if let Some(new_segments) = path_builder.handle_event(pen_event) {
-                        let no_segments = new_segments.len();
+                        let n_segments = new_segments.len();
 
                         for new_segment in new_segments {
                             store.add_segment_to_brushstroke(*current_stroke_key, new_segment);
@@ -152,7 +152,7 @@ impl PenBehaviour for Brush {
 
                         if let Err(e) = store.append_rendering_last_segments(
                             *current_stroke_key,
-                            no_segments,
+                            n_segments,
                             camera.image_scale(),
                         ) {
                             log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);

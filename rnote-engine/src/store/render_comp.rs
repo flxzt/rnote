@@ -254,7 +254,7 @@ impl StrokeStore {
     pub fn append_rendering_last_segments(
         &mut self,
         key: StrokeKey,
-        no_last_segments: usize,
+        n_segments: usize,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) =
@@ -263,7 +263,7 @@ impl StrokeStore {
             match stroke {
                 Stroke::BrushStroke(brushstroke) => {
                     let mut images =
-                        brushstroke.gen_images_for_last_segments(no_last_segments, image_scale)?;
+                        brushstroke.gen_images_for_last_segments(n_segments, image_scale)?;
                     let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
 
                     render_comp.rendernodes.append(&mut rendernodes);

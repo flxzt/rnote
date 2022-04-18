@@ -33,7 +33,7 @@ impl Default for ExpandSheetTool {
 }
 
 impl ExpandSheetTool {
-    pub const Y_OFFSET_THRESHOLD: f64 = 2.0;
+    pub const Y_OFFSET_THRESHOLD: f64 = 0.1;
     pub const FILL_COLOR: piet::Color = color::GNOME_BLUES[0].with_a8(0x16);
     pub const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(0xf0);
     pub const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];

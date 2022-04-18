@@ -115,12 +115,12 @@ impl RnoteEngine {
     /// ```rust, ignore
     /// let main_cx = glib::MainContext::default();
 
-    /// main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
+    /// main_cx.spawn_local(clone!(@strong canvas, @strong appwindow => async move {
     ///            let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
 
     ///           loop {
     ///              if let Some(task) = task_rx.next().await {
-    ///                    let surface_flags = canvas.engine().borrow_mut().store.process_received_task(task, canvas.zoom());
+    ///                    let surface_flags = canvas.engine().borrow_mut().process_received_task(task);
     ///                    appwindow.handle_surface_flags(surface_flags);
     ///                }
     ///            }

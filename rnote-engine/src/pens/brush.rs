@@ -253,21 +253,15 @@ impl DrawOnSheetBehaviour for Brush {
         _sheet_bounds: AABB,
         _camera: &Camera,
     ) -> anyhow::Result<()> {
-        // Different color for debugging
-        let smooth_options = self.smooth_options.clone();
-        /*         smooth_options.stroke_color = Some(rnote_compose::Color {
-            r: 1.0,
-            g: 0.0,
-            b: 1.0,
-            a: 1.0,
-        }); */
-
         match (&self.state, self.style) {
             (BrushState::Drawing { path_builder, .. }, BrushStyle::Marker) => {
+                let mut smooth_options = self.smooth_options.clone();
+                smooth_options.segment_constant_width = true;
+
                 path_builder.draw_composed(cx, &smooth_options);
             }
             (BrushState::Drawing { path_builder, .. }, BrushStyle::Solid) => {
-                path_builder.draw_composed(cx, &smooth_options);
+                path_builder.draw_composed(cx, &self.smooth_options);
             }
             (BrushState::Drawing { path_builder, .. }, BrushStyle::Textured) => {
                 path_builder.draw_composed(cx, &self.textured_options);

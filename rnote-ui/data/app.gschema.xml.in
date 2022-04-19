@@ -83,8 +83,8 @@
     </key>
     <key name="shaperpage-fills" type="(uu)">
       <default>(
-        0x000000ff,
-        0x00000000
+        0x00000000,
+        0x99c1f1ff
       )</default>
       <summary>the shaper page fill colors</summary>
     </key>

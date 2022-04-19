@@ -11,6 +11,7 @@ use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
 use serde::{Deserialize, Serialize};
 
 use crate::utils::{base64, GrapheneRectHelpers};
+use crate::DrawBehaviour;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 
 lazy_static! {
@@ -133,6 +134,34 @@ impl From<image::DynamicImage> for Image {
             pixel_height,
             memory_format,
         }
+    }
+}
+
+impl DrawBehaviour for Image {
+    /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
+    /// image_scale has no meaning here, as the image pixels are already provided
+    fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        let piet_image_format = piet::ImageFormat::try_from(self.memory_format)?;
+
+        let piet_image = cx
+            .make_image(
+                self.pixel_width as usize,
+                self.pixel_height as usize,
+                &self.data,
+                piet_image_format,
+            )
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.transform(self.rect.transform.to_kurbo());
+
+        cx.draw_image(
+            &piet_image,
+            self.rect.cuboid.local_aabb().to_kurbo_rect(),
+            piet::InterpolationMode::Bilinear,
+        );
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        Ok(())
     }
 }
 
@@ -306,59 +335,55 @@ impl Image {
         Ok(snapshot.to_node())
     }
 
-    /*     pub fn join_images(
-           images: Vec<Self>,
-           image_scale: f64,
-       ) -> Result<Option<Image>, anyhow::Error> {
-           if images.is_empty() {
-               return Ok(None);
-           }
-           let new_bounds = images
-               .iter()
-               .map(|image| image.rect.bounds())
-               .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
-               .ceil();
+    pub fn join_images(images: Vec<Self>) -> Result<Option<Image>, anyhow::Error> {
+        if images.is_empty() {
+            return Ok(None);
+        }
 
-           new_bounds.assert_valid()?;
+        let mut bounds = images
+            .iter()
+            .map(|image| image.rect.bounds())
+            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
+            .ceil();
+        bounds.ensure_positive();
+        bounds = bounds.ceil();
+        bounds.assert_valid()?;
 
-           let width_scaled = (new_bounds[0] * image_scale).round() as u32;
-           let height_scaled = (new_bounds[1] * image_scale).round() as u32;
+        let width = bounds.extents()[0].round() as u32;
+        let height = bounds.extents()[1].round() as u32;
 
-           let mut image_surface = cairo::ImageSurface::create(
-               cairo::Format::ARgb32,
-               width_scaled as i32,
-               height_scaled as i32,
-           )
-           .map_err(|e| {
-               anyhow::anyhow!(
-                   "create ImageSurface with dimensions ({}, {}) failed in Image join_images(), {}",
-                   width_scaled,
-                   height_scaled,
-                   e
-               )
-           })?;
+        let mut image_surface =
+            cairo::ImageSurface::create(cairo::Format::ARgb32, width as i32, height as i32)
+                .map_err(|e| {
+                    anyhow::anyhow!(
+                "create ImageSurface with dimensions ({}, {}) failed in Image join_images(), {}",
+                width,
+                height,
+                e
+            )
+                })?;
 
-           {
-               let cairo_cx = cairo::Context::new(&image_surface)?;
-               let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+        {
+            let cairo_cx = cairo::Context::new(&image_surface)?;
 
-               piet_cx.transform(kurbo::Affine::scale(image_scale));
-               piet_cx.transform(kurbo::Affine::translate(
-                   -new_bounds.mins.coords.to_kurbo_vec(),
-               ));
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+            piet_cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
 
+            for image in images {
+                image.draw(&mut piet_cx, 1.0)?;
+            }
 
-               piet_cx.finish().map_err(|e| {
-                   anyhow::anyhow!(
-                       "piet_cx.finish() failed in image.gen_with_piet() with Err {}",
-                       e
-                   )
-               })?;
-           }
-           // Surface needs to be flushed before accessing its data
-           image_surface.flush();
+            piet_cx.finish().map_err(|e| {
+                anyhow::anyhow!(
+                    "piet_cx.finish() failed in image.gen_with_piet() with Err {}",
+                    e
+                )
+            })?;
+        }
+        // Surface needs to be flushed before accessing its data
+        image_surface.flush();
 
-           let data = image_surface
+        let data = image_surface
                    .data()
                    .map_err(|e| {
                        anyhow::Error::msg(format!(
@@ -368,15 +393,15 @@ impl Image {
                    })?
                    .to_vec();
 
-           Ok(Some(Self {
-               data,
-               rect: Rectangle::from_bounds(new_bounds),
-               pixel_width: splitted_width_scaled,
-               pixel_height: splitted_height_scaled,
-               memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
-           }))
-       }
-    */
+        Ok(Some(Self {
+            data,
+            rect: Rectangle::from_bounds(bounds),
+            pixel_width: width,
+            pixel_height: height,
+            memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
+        }))
+    }
+
     // Public method to create an image from an svg
     pub fn gen_image_from_svg(svg: Svg, bounds: AABB, image_scale: f64) -> anyhow::Result<Self> {
         Self::gen_image_from_svg_resvg(svg, bounds, image_scale)

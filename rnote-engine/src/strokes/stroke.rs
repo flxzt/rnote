@@ -261,32 +261,17 @@ impl Stroke {
                     },
                 ))
             }
-            Stroke::ShapeStroke(_shapestroke) => {
-                None
-/* 
+            Stroke::ShapeStroke(shapestroke) => {
+                let png_data = match shapestroke
+                    .export_as_image_bytes(image::ImageOutputFormat::Png, image_scale)
+                {
+                    Ok(image_bytes) => image_bytes,
+                    Err(e) => {
+                        log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() with Err `{}`", e);
+                        return None;
+                    }
+                };
                 let shapestroke_bounds = shapestroke.bounds();
-                let shape_image = render::Image::join_images(
-                    shapestroke.gen_images(image_scale).ok()?,
-                    shapestroke_bounds,
-                    image_scale,
-                )
-                .map_err(|e| {
-                    log::error!(
-                        "join_images() failed in to_xopp() for shapestroke with Err {}",
-                        e
-                    )
-                })
-                .ok()??;
-
-                let image_bytes = shape_image
-                    .into_encoded_bytes(image::ImageOutputFormat::Png)
-                    .map_err(|e| {
-                        log::error!(
-                            "into_encoded_bytes() failed in to_xopp() for shapestroke with Err {}",
-                            e
-                        )
-                    })
-                    .ok()?;
 
                 Some(xoppformat::XoppStrokeType::XoppImage(
                     xoppformat::XoppImage {
@@ -310,10 +295,9 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&image_bytes),
+                        data: base64::encode(&png_data),
                     },
                 ))
- */
             }
             Stroke::VectorImage(vectorimage) => {
                 let png_data = match vectorimage
@@ -321,7 +305,7 @@ impl Stroke {
                 {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("bitmapimage.export_as_bytes() failed in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err `{}`", e);
                         return None;
                     }
                 };
@@ -359,7 +343,7 @@ impl Stroke {
                 {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("bitmapimage.export_as_bytes() failed in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() with Err `{}`", e);
                         return None;
                     }
                 };

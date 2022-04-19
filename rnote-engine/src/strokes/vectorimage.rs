@@ -79,28 +79,9 @@ impl DrawBehaviour for VectorImage {
         let mut image =
             render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
 
-        // piet needs rgba8-prem. the gen_images() func might produces bgra8-prem format (when using librsvg as renderer backend), so we might need to convert the image first
+        // draw() needs rgba8-prem. the gen_images() func might produces bgra8-prem format (when using librsvg as renderer backend), so we might need to convert the image first
         image.convert_to_rgba8pre()?;
-        let piet_image_format = piet::ImageFormat::try_from(image.memory_format)?;
-
-        let piet_image = cx
-            .make_image(
-                image.pixel_width as usize,
-                image.pixel_height as usize,
-                &image.data,
-                piet_image_format,
-            )
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
-        
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
-        cx.transform(image.rect.transform.to_kurbo());
-
-        cx.draw_image(
-            &piet_image,
-            image.rect.cuboid.local_aabb().to_kurbo_rect(),
-            piet::InterpolationMode::Bilinear,
-        );
-        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        image.draw(cx, image_scale)?;
 
         Ok(())
     }
@@ -277,19 +258,5 @@ impl VectorImage {
         );
 
         Ok(export_svg_data)
-    }
-
-    pub fn export_as_image_bytes(
-        &self,
-        format: image::ImageOutputFormat,
-        image_scale: f64,
-    ) -> Result<Vec<u8>, anyhow::Error> {
-        let image = render::Image::gen_with_piet(
-            |piet_cx| self.draw(piet_cx, image_scale),
-            self.bounds(),
-            image_scale,
-        )?;
-
-        Ok(image.into_encoded_bytes(format)?)
     }
 }

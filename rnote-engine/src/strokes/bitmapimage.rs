@@ -193,18 +193,4 @@ impl BitmapImage {
 
         Ok(images)
     }
-
-    pub fn export_as_image_bytes(
-        &self,
-        format: image::ImageOutputFormat,
-        image_scale: f64,
-    ) -> Result<Vec<u8>, anyhow::Error> {
-        let image = render::Image::gen_with_piet(
-            |piet_cx| self.draw(piet_cx, image_scale),
-            self.bounds(),
-            image_scale,
-        )?;
-
-        Ok(image.into_encoded_bytes(format)?)
-    }
 }

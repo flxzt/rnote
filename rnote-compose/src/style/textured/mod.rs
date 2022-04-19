@@ -32,7 +32,6 @@ impl Composer<TexturedOptions> for Line {
             let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
             let line_vec = self.end - self.start;
-
             let line_rect = self.line_w_width_to_rect(options.stroke_width);
 
             let area = 4.0 * line_rect.cuboid.half_extents[0] * line_rect.cuboid.half_extents[1];
@@ -101,23 +100,8 @@ impl Composer<TexturedOptions> for Segment {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
         match self {
-            Self::Dot { element } => {
-                let radii = if options.segment_constant_width {
-                    na::Vector2::from_element(options.stroke_width / 2.0)
-                } else {
-                    na::Vector2::from_element(element.pressure * (options.stroke_width / 2.0))
-                };
-                let shape =
-                    kurbo::Ellipse::new(element.pos.to_kurbo_point(), radii.to_kurbo_vec(), 0.0)
-                        .into_path(0.1);
-
-                if let Some(fill_color) = options.stroke_color {
-                    // Outlines for debugging
-                    //let stroke_brush = cx.solid_brush(piet::Color::RED);
-                    //cx.stroke(segment.clone(), &stroke_brush, 0.4);
-                    let fill_brush = cx.solid_brush(fill_color.into());
-                    cx.fill(shape, &fill_brush);
-                }
+            Self::Dot { .. } => {
+                // Dont draw dots for textured segments. They stand out
             }
             Self::Line { start, end } => {
                 let line = Line {
@@ -125,15 +109,34 @@ impl Composer<TexturedOptions> for Segment {
                     end: end.pos,
                 };
 
-                line.draw_composed(cx, options);
+                let options = if options.segment_constant_width {
+                    options.clone()
+                } else {
+                    let mut options = options.clone();
+                    // Line width with the mean of the start and end pressure
+                    options.stroke_width =
+                        options.stroke_width * ((start.pressure + end.pressure) * 0.5);
+                    options
+                };
+
+                line.draw_composed(cx, &options);
             }
             Self::QuadBez { start, cp: _, end } => {
                 let line = Line {
                     start: start.pos,
                     end: end.pos,
                 };
+                let options = if options.segment_constant_width {
+                    options.clone()
+                } else {
+                    let mut options = options.clone();
+                    // Line width with the mean of the start and end pressure
+                    options.stroke_width =
+                        options.stroke_width * ((start.pressure + end.pressure) * 0.5);
+                    options
+                };
 
-                line.draw_composed(cx, options);
+                line.draw_composed(cx, &options);
             }
             Self::CubBez {
                 start,
@@ -145,8 +148,17 @@ impl Composer<TexturedOptions> for Segment {
                     start: start.pos,
                     end: end.pos,
                 };
+                let options = if options.segment_constant_width {
+                    options.clone()
+                } else {
+                    let mut options = options.clone();
+                    // Line width with the mean of the start and end pressure
+                    options.stroke_width =
+                        options.stroke_width * ((start.pressure + end.pressure) * 0.5);
+                    options
+                };
 
-                line.draw_composed(cx, options);
+                line.draw_composed(cx, &options);
             }
         }
     }

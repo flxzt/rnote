@@ -20,6 +20,12 @@ pub enum Shape {
     Ellipse(Ellipse),
 }
 
+impl Default for Shape {
+    fn default() -> Self {
+        Self::Line(Line::default())
+    }
+}
+
 impl TransformBehaviour for Shape {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         match self {

@@ -9,8 +9,8 @@ use rnote_compose::Style;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "shapestroke")]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[serde(default, rename = "shapestroke")]
 pub struct ShapeStroke {
     #[serde(rename = "shape")]
     pub shape: Shape,

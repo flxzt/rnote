@@ -92,6 +92,6 @@ impl FileFormatSaver for RnotefileMaj0Min5 {
 // Then TryFrom is implemented to allow conversions and chaining from older to newer versions.
 
 /* #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RnoteFileV04 {
+pub struct RnoteFileMaj0Min4 {
     sheet: serde_json::Value,
 } */

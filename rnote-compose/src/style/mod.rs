@@ -18,12 +18,16 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 /// A style choice holding the style options inside its variants
+#[serde(rename = "style")]
 pub enum Style {
     /// A smooth style
+    #[serde(rename = "smooth")]
     Smooth(SmoothOptions),
     /// A rough style
+    #[serde(rename = "rough")]
     Rough(RoughOptions),
     /// A textured style
+    #[serde(rename = "textured")]
     Textured(TexturedOptions),
 }
 

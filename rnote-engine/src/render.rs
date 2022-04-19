@@ -83,6 +83,7 @@ impl TryFrom<ImageMemoryFormat> for piet::ImageFormat {
 
 /// A pixel image
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default, rename = "image")]
 pub struct Image {
     /// The image data. is (de) serialized in base64 encoding
     #[serde(rename = "data", with = "base64")]

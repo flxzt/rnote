@@ -1048,9 +1048,6 @@ impl RnoteAppWindow {
             .borrow_mut()
             .open_from_rnote_bytes(bytes)?;
 
-        // Loading the sheet properties into the format settings panel
-        self.settings_panel().refresh_for_engine(self);
-
         self.canvas().set_unsaved_changes(false);
         app.set_input_file(None);
         if let Some(path) = path {
@@ -1077,9 +1074,6 @@ impl RnoteAppWindow {
             .engine()
             .borrow_mut()
             .open_from_xopp_bytes(bytes)?;
-
-        // Loading the sheet properties into the format settings panel
-        self.settings_panel().refresh_for_engine(self);
 
         self.application()
             .unwrap()

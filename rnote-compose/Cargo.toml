@@ -24,6 +24,5 @@ piet = { path = "../piet/piet", features = ["serde"]}
 piet-svg = { path = "../piet/piet-svg"}
 image = "0.23.14"
 svg = "0.10.0"
-geo = "0.19.0"
 
 [dev-dependencies]

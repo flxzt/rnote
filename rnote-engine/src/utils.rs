@@ -1,3 +1,4 @@
+use geo::line_string;
 use gtk4::{gdk, glib, graphene, gsk};
 use p2d::bounding_volume::AABB;
 use rnote_compose::Transform;
@@ -78,6 +79,18 @@ pub fn transform_to_gsk(transform: &Transform) -> gsk::Transform {
         transform.affine[(0, 2)],
         transform.affine[(1, 2)],
     ))
+}
+
+    /// Converts a AABB to a geo::Polygon
+pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
+    let line_string = line_string![
+        (x: aabb.mins[0], y: aabb.mins[1]),
+        (x: aabb.maxs[0], y: aabb.mins[1]),
+        (x: aabb.maxs[0], y: aabb.maxs[1]),
+        (x: aabb.mins[0], y: aabb.maxs[1]),
+        (x: aabb.mins[0], y: aabb.mins[1]),
+    ];
+    geo::Polygon::new(line_string, vec![])
 }
 
 pub mod base64 {

@@ -1,5 +1,4 @@
 use super::{Stroke, StrokeKey, StrokeStore};
-use rnote_compose::helpers::AABBHelpers;
 
 use geo::prelude::*;
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -183,17 +182,22 @@ impl StrokeStore {
                     Stroke::BrushStroke(brushstroke) => {
                         let brushstroke_bounds = brushstroke.bounds();
 
-                        if selector_polygon.contains(&brushstroke_bounds.to_geo_polygon()) {
+                        if selector_polygon
+                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(brushstroke_bounds))
+                        {
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
                                 self.chrono_counter += 1;
                                 chrono_comp.t = self.chrono_counter;
                             }
                             selection_comp.selected = true;
                             return Some(key);
-                        } else if selector_polygon.intersects(&brushstroke_bounds.to_geo_polygon())
+                        } else if selector_polygon
+                            .intersects(&crate::utils::p2d_aabb_to_geo_polygon(brushstroke_bounds))
                         {
                             for &hitbox_elem in brushstroke.hitboxes.iter() {
-                                if !selector_polygon.contains(&hitbox_elem.to_geo_polygon()) {
+                                if !selector_polygon
+                                    .contains(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
+                                {
                                     return None;
                                 }
                             }
@@ -207,7 +211,9 @@ impl StrokeStore {
                         }
                     }
                     Stroke::ShapeStroke(shapestroke) => {
-                        if selector_polygon.contains(&shapestroke.bounds().to_geo_polygon()) {
+                        if selector_polygon
+                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(shapestroke.bounds()))
+                        {
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
                                 self.chrono_counter += 1;
                                 chrono_comp.t = self.chrono_counter;
@@ -217,7 +223,9 @@ impl StrokeStore {
                         }
                     }
                     Stroke::VectorImage(vectorimage) => {
-                        if selector_polygon.contains(&vectorimage.bounds().to_geo_polygon()) {
+                        if selector_polygon
+                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(vectorimage.bounds()))
+                        {
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
                                 self.chrono_counter += 1;
                                 chrono_comp.t = self.chrono_counter;
@@ -227,7 +235,9 @@ impl StrokeStore {
                         }
                     }
                     Stroke::BitmapImage(bitmapimage) => {
-                        if selector_polygon.contains(&bitmapimage.bounds().to_geo_polygon()) {
+                        if selector_polygon
+                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(bitmapimage.bounds()))
+                        {
                             if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
                                 self.chrono_counter += 1;
                                 chrono_comp.t = self.chrono_counter;

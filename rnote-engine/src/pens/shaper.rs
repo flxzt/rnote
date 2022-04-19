@@ -87,7 +87,7 @@ impl PenBehaviour for Shaper {
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags) {
-        let surface_flags = SurfaceFlags::default();
+        let mut surface_flags = SurfaceFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
@@ -117,12 +117,19 @@ impl PenBehaviour for Shaper {
                         }
                     }
                 }
+
+                surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::InProgress
             }
             (ShaperState::Idle, _) => PenProgress::Idle,
             (ShaperState::BuildLine { line_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 line_builder.handle_event(event);
+
+                surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
             }
@@ -143,16 +150,28 @@ impl PenBehaviour for Shaper {
                     }
                 }
 
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
                 self.state = ShaperState::Idle;
                 PenProgress::Finished
             }
             (ShaperState::BuildLine { .. }, _) => {
                 self.state = ShaperState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::Finished
             }
             (ShaperState::BuildRectangle { rect_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 rect_builder.handle_event(event);
+
+                surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
             }
@@ -174,15 +193,28 @@ impl PenBehaviour for Shaper {
                 }
 
                 self.state = ShaperState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::Finished
             }
             (ShaperState::BuildRectangle { .. }, ..) => {
                 self.state = ShaperState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::Finished
             }
             (ShaperState::BuildEllipse { ellipse_builder }, event @ PenEvent::Down { .. }) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 ellipse_builder.handle_event(event);
+
+                surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
             }
@@ -204,10 +236,20 @@ impl PenBehaviour for Shaper {
                 }
 
                 self.state = ShaperState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::Finished
             }
             (ShaperState::BuildEllipse { .. }, ..) => {
                 self.state = ShaperState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::Finished
             }
             (
@@ -218,6 +260,10 @@ impl PenBehaviour for Shaper {
             ) => {
                 // we know the builder only emits a shape on up events, so we don't handle the return
                 foci_ellipse_builder.handle_event(event);
+
+                surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::InProgress
             }
             (
@@ -243,6 +289,11 @@ impl PenBehaviour for Shaper {
                     }
 
                     self.state = ShaperState::Idle;
+
+                    surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
+
                     pen_progress = PenProgress::Finished
                 }
 
@@ -250,6 +301,11 @@ impl PenBehaviour for Shaper {
             }
             (ShaperState::BuildFociEllipse { .. }, _) => {
                 self.state = ShaperState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::Finished
             }
         };

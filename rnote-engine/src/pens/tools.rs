@@ -292,83 +292,104 @@ impl PenBehaviour for Tools {
 
                 self.state = ToolsState::Active;
 
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(true);
+
                 PenProgress::InProgress
             }
+            (ToolsState::Idle, _) => PenProgress::Idle,
             (
                 ToolsState::Active,
                 PenEvent::Down {
                     element,
                     shortcut_key: _,
                 },
-            ) => match self.style {
-                ToolsStyle::ExpandSheet => {
-                    let y_offset = element.pos[1] - self.expandsheet_tool.current_pos_y;
+            ) => {
+                let pen_progress = match self.style {
+                    ToolsStyle::ExpandSheet => {
+                        let y_offset = element.pos[1] - self.expandsheet_tool.current_pos_y;
 
-                    if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
-                        store.translate_strokes(
-                            &self.expandsheet_tool.strokes_below,
-                            na::vector![0.0, y_offset],
-                        );
+                        if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
+                            store.translate_strokes(
+                                &self.expandsheet_tool.strokes_below,
+                                na::vector![0.0, y_offset],
+                            );
 
-                        self.expandsheet_tool.current_pos_y = element.pos[1];
+                            self.expandsheet_tool.current_pos_y = element.pos[1];
+                        }
+
+                        PenProgress::InProgress
                     }
+                    ToolsStyle::DragProximity => {
+                        let offset = element.pos - self.dragproximity_tool.pos;
+                        self.dragproximity_tool.offset = offset;
 
-                    PenProgress::InProgress
-                }
-                ToolsStyle::DragProximity => {
-                    let offset = element.pos - self.dragproximity_tool.pos;
-                    self.dragproximity_tool.offset = offset;
+                        if self.dragproximity_tool.offset.magnitude()
+                            > DragProximityTool::OFFSET_MAGNITUDE_THRESHOLD
+                        {
+                            store.drag_strokes_proximity(&self.dragproximity_tool);
+                            store.regenerate_rendering_in_viewport_threaded(
+                                false,
+                                camera.viewport_extended(),
+                                camera.image_scale(),
+                            );
 
-                    if self.dragproximity_tool.offset.magnitude()
-                        > DragProximityTool::OFFSET_MAGNITUDE_THRESHOLD
-                    {
-                        store.drag_strokes_proximity(&self.dragproximity_tool);
-                        store.regenerate_rendering_in_viewport_threaded(
-                            false,
-                            camera.viewport_extended(),
-                            camera.image_scale(),
-                        );
+                            self.dragproximity_tool.pos = element.pos;
+                            self.dragproximity_tool.offset = na::Vector2::zeros();
+                        }
 
-                        self.dragproximity_tool.pos = element.pos;
-                        self.dragproximity_tool.offset = na::Vector2::zeros();
+                        PenProgress::InProgress
                     }
-
-                    PenProgress::InProgress
-                }
-                ToolsStyle::OffsetCamera => {
-                    let offset = camera
-                        .transform()
-                        .transform_point(&na::Point2::from(element.pos))
-                        .coords
-                        - camera
+                    ToolsStyle::OffsetCamera => {
+                        let offset = camera
                             .transform()
-                            .transform_point(&na::Point2::from(self.offsetcamera_tool.start))
-                            .coords;
+                            .transform_point(&na::Point2::from(element.pos))
+                            .coords
+                            - camera
+                                .transform()
+                                .transform_point(&na::Point2::from(self.offsetcamera_tool.start))
+                                .coords;
 
-                    if offset.magnitude() > 1.0 {
-                        camera.offset -= offset;
-                        surface_flags.camera_offset_changed = true;
+                        if offset.magnitude() > 1.0 {
+                            camera.offset -= offset;
+                            surface_flags.camera_offset_changed = true;
+                        }
+
+                        PenProgress::InProgress
                     }
+                };
 
-                    PenProgress::InProgress
-                }
-            },
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
+                pen_progress
+            }
             (ToolsState::Active, PenEvent::Up { .. }) => {
                 self.reset();
                 self.state = ToolsState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
                 PenProgress::Finished
             }
-            (ToolsState::Active, PenEvent::Proximity { .. }) => {
-                self.reset();
-                self.state = ToolsState::Idle;
-                PenProgress::Finished
-            }
+            (ToolsState::Active, PenEvent::Proximity { .. }) => PenProgress::InProgress,
             (ToolsState::Active, PenEvent::Cancel) => {
                 self.reset();
                 self.state = ToolsState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
                 PenProgress::Finished
             }
-            (ToolsState::Idle, _) => PenProgress::Finished,
         };
 
         (pen_progress, surface_flags)

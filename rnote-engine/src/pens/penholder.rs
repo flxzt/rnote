@@ -235,19 +235,18 @@ impl PenHolder {
                 let (pen_progress, pen_surface_flags) =
                     self.handle_pen_event(pen_event, sheet, store, camera);
                 surface_flags.merge_with_other(pen_surface_flags);
-                self.handle_pen_progress(pen_progress, &mut surface_flags);
+                surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
             }
             PenHolderEvent::ChangeStyle(new_style) => {
-                self.change_style(new_style, sheet, store, camera, &mut surface_flags);
+                surface_flags.merge_with_other(self.change_style(new_style, sheet, store, camera));
             }
             PenHolderEvent::ChangeStyleOverride(new_style_override) => {
-                self.change_style_override(
+                surface_flags.merge_with_other(self.change_style_override(
                     new_style_override,
                     sheet,
                     store,
                     camera,
-                    &mut surface_flags,
-                );
+                ));
             }
             PenHolderEvent::PressedShortcutkey(shortcut_key) => {
                 if let Some(&action) = self.shortcuts.get(&shortcut_key) {
@@ -257,21 +256,16 @@ impl PenHolder {
                             permanent,
                         } => {
                             if permanent {
-                                self.change_style(
-                                    new_style,
-                                    sheet,
-                                    store,
-                                    camera,
-                                    &mut surface_flags,
+                                surface_flags.merge_with_other(
+                                    self.change_style(new_style, sheet, store, camera),
                                 );
                             } else {
-                                self.change_style_override(
+                                surface_flags.merge_with_other(self.change_style_override(
                                     Some(new_style),
                                     sheet,
                                     store,
                                     camera,
-                                    &mut surface_flags,
-                                );
+                                ));
                             }
                         }
                     }
@@ -282,20 +276,23 @@ impl PenHolder {
         surface_flags
     }
 
+    #[must_use]
     fn change_style(
         &mut self,
         new_style: PenStyle,
         sheet: &mut crate::sheet::Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
-        surface_flags: &mut SurfaceFlags,
-    ) {
+    ) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         if self.style != new_style {
             // Cancel current pen
             let (pen_progress, pen_surface_flags) =
                 self.handle_pen_event(PenEvent::Cancel, sheet, store, camera);
             surface_flags.merge_with_other(pen_surface_flags);
-            self.handle_pen_progress(pen_progress, surface_flags);
+
+            surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
             // Deselecting when changing the style
             let all_strokes = store.keys_sorted_chrono();
@@ -306,16 +303,20 @@ impl PenHolder {
             surface_flags.penholder_changed = true;
             surface_flags.redraw = true;
         }
+
+        surface_flags
     }
 
+    #[must_use]
     fn change_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
         sheet: &mut crate::sheet::Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
-        surface_flags: &mut SurfaceFlags,
-    ) {
+    ) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         //log::debug!("current_style_override: {:?}, new_style_override: {:?}", self.style_override, new_style_override);
 
         if self.style_override != new_style_override {
@@ -323,7 +324,7 @@ impl PenHolder {
             let (pen_progress, pen_surface_flags) =
                 self.handle_pen_event(PenEvent::Cancel, sheet, store, camera);
             surface_flags.merge_with_other(pen_surface_flags);
-            self.handle_pen_progress(pen_progress, surface_flags);
+            surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
             // Deselecting when changing the style override
             let all_strokes = store.keys_sorted_chrono();
@@ -334,9 +335,14 @@ impl PenHolder {
             surface_flags.penholder_changed = true;
             surface_flags.redraw = true;
         }
+
+        surface_flags
     }
 
-    fn handle_pen_progress(&mut self, pen_progress: PenProgress, surface_flags: &mut SurfaceFlags) {
+    #[must_use]
+    fn handle_pen_progress(&mut self, pen_progress: PenProgress) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         match pen_progress {
             PenProgress::Idle => {}
             PenProgress::InProgress => {}
@@ -347,6 +353,8 @@ impl PenHolder {
                 }
             }
         }
+
+        surface_flags
     }
 
     fn handle_pen_event(

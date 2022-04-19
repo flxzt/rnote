@@ -135,6 +135,7 @@ impl PenBehaviour for Selector {
             }
             (SelectorState::Selecting { path }, PenEvent::Down { element, .. }) => {
                 Self::add_to_select_path(self.style, path, element);
+
                 surface_flags.redraw = true;
 
                 PenProgress::InProgress
@@ -180,6 +181,7 @@ impl PenBehaviour for Selector {
                 self.state = state;
 
                 surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 pen_progress
@@ -188,7 +190,9 @@ impl PenBehaviour for Selector {
                 self.state = SelectorState::reset();
 
                 surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
+
                 PenProgress::Finished
             }
             (
@@ -390,6 +394,7 @@ impl PenBehaviour for Selector {
 
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(true);
 
                 pen_progress
             }
@@ -413,10 +418,10 @@ impl PenBehaviour for Selector {
                 }
                 *modify_state = ModifyState::Up;
 
-
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
                 surface_flags.resize_to_fit_strokes = true;
+                surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::InProgress
             }
@@ -425,6 +430,11 @@ impl PenBehaviour for Selector {
             }
             (SelectorState::ModifySelection { .. }, PenEvent::Cancel) => {
                 self.state = SelectorState::reset();
+
+                surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.resize_to_fit_strokes = true;
+                surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }

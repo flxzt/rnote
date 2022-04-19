@@ -43,7 +43,7 @@ impl PenBehaviour for Eraser {
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags) {
-        let surface_flags = SurfaceFlags::default();
+        let mut surface_flags = SurfaceFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
             (
@@ -53,36 +53,54 @@ impl PenBehaviour for Eraser {
                     shortcut_key: _,
                 },
             ) => {
-                let eraser_bounds = AABB::from_half_extents(
-                    na::Point2::from(element.pos),
-                    na::Vector2::repeat(self.width),
+                store.trash_colliding_strokes(
+                    Self::eraser_bounds(self.width, element),
+                    camera.viewport(),
                 );
-                store.trash_colliding_strokes(eraser_bounds, camera.viewport());
 
                 self.state = EraserState::Down(element);
+
+                surface_flags.redraw = true;
+                surface_flags.hide_scrollbars = Some(true);
+                surface_flags.sheet_changed = true;
+
                 PenProgress::InProgress
             }
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
-                let eraser_bounds = AABB::from_half_extents(
-                    na::Point2::from(element.pos),
-                    na::Vector2::repeat(self.width),
+                store.trash_colliding_strokes(
+                    Self::eraser_bounds(self.width, element),
+                    camera.viewport(),
                 );
-                store.trash_colliding_strokes(eraser_bounds, camera.viewport());
 
                 *current_element = element;
+
+                surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
+
                 PenProgress::InProgress
             }
             (EraserState::Up, _) => PenProgress::Idle,
-            (EraserState::Down { .. }, PenEvent::Up { .. }) => {
+            (EraserState::Down { .. }, PenEvent::Proximity { .. }) => PenProgress::InProgress,
+            (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
+                store.trash_colliding_strokes(
+                    Self::eraser_bounds(self.width, element),
+                    camera.viewport(),
+                );
+
                 self.state = EraserState::Up;
-                PenProgress::Finished
-            }
-            (EraserState::Down { .. }, PenEvent::Proximity { .. }) => {
-                self.state = EraserState::Up;
+
+                surface_flags.redraw = true;
+                surface_flags.hide_scrollbars = Some(false);
+                surface_flags.sheet_changed = true;
+
                 PenProgress::Finished
             }
             (EraserState::Down { .. }, PenEvent::Cancel) => {
                 self.state = EraserState::Up;
+
+                surface_flags.redraw = true;
+                surface_flags.hide_scrollbars = Some(false);
+
                 PenProgress::Finished
             }
         };
@@ -105,6 +123,13 @@ impl Eraser {
             width,
             state: EraserState::Up,
         }
+    }
+
+    fn eraser_bounds(eraser_width: f64, element: Element) -> AABB {
+        AABB::from_half_extents(
+            na::Point2::from(element.pos),
+            na::Vector2::repeat(eraser_width),
+        )
     }
 }
 

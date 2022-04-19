@@ -123,8 +123,8 @@ impl PenBehaviour for Brush {
                     };
 
                     surface_flags.redraw = true;
-                    surface_flags.hide_scrollbars = Some(true);
                     surface_flags.sheet_changed = true;
+                    surface_flags.hide_scrollbars = Some(true);
 
                     pen_progress = PenProgress::InProgress;
                 }
@@ -199,7 +199,7 @@ impl PenBehaviour for Brush {
 
                 PenProgress::Finished
             }
-            (BrushState::Idle, PenEvent::Cancel) => PenProgress::Idle,
+            (BrushState::Idle, _) => PenProgress::Idle,
             (
                 BrushState::Drawing {
                     current_stroke_key, ..
@@ -224,7 +224,7 @@ impl PenBehaviour for Brush {
 
                 PenProgress::Finished
             }
-            (_, PenEvent::Proximity { .. }) => PenProgress::InProgress,
+            (BrushState::Drawing { .. }, PenEvent::Proximity { .. }) => PenProgress::InProgress,
         };
 
         (pen_progress, surface_flags)

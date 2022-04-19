@@ -45,7 +45,6 @@ mod imp {
         pub app_settings: gio::Settings,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
 
-        pub output_file: RefCell<Option<gio::File>>,
         pub unsaved_changes: Cell<bool>,
         pub righthanded: Cell<bool>,
 
@@ -107,7 +106,6 @@ mod imp {
                 app_settings: gio::Settings::new(config::APP_ID),
                 filechoosernative: Rc::new(RefCell::new(None)),
 
-                output_file: RefCell::new(None),
                 unsaved_changes: Cell::new(false),
                 righthanded: Cell::new(true),
 
@@ -487,15 +485,6 @@ impl RnoteAppWindow {
 
     pub fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
         self.imp().filechoosernative.clone()
-    }
-
-    pub fn output_file(&self) -> Option<gio::File> {
-        self.imp().output_file.borrow().clone()
-    }
-
-    pub fn set_output_file(&self, output_file: Option<&gio::File>) {
-        self.mainheader().set_title_for_file(output_file);
-        *self.imp().output_file.borrow_mut() = output_file.cloned();
     }
 
     pub fn unsaved_changes(&self) -> bool {
@@ -1052,7 +1041,7 @@ impl RnoteAppWindow {
         app.set_input_file(None);
         if let Some(path) = path {
             let file = gio::File::for_path(path);
-            self.set_output_file(Some(&file));
+            self.canvas().set_output_file(Some(file));
         }
 
         self.canvas().set_unsaved_changes(false);
@@ -1080,7 +1069,7 @@ impl RnoteAppWindow {
             .downcast::<RnoteApp>()
             .unwrap()
             .set_input_file(None);
-        self.set_output_file(None);
+        self.canvas().set_output_file(None);
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
@@ -1217,7 +1206,7 @@ impl RnoteAppWindow {
 
             utils::replace_file_future(bytes, file).await?;
 
-            self.set_output_file(Some(&file));
+            self.canvas().set_output_file(Some(file.to_owned()));
             self.canvas().set_unsaved_changes(false);
         }
         Ok(())

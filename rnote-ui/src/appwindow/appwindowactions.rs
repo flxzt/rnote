@@ -963,14 +963,15 @@ impl RnoteAppWindow {
 
         // Save sheet
         action_save_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            if appwindow.output_file().is_none() {
+            if appwindow.canvas().output_file().is_none() {
                 dialogs::dialog_save_sheet_as(&appwindow);
             }
 
-            if let Some(output_file) = appwindow.output_file() {
+            // check again if a file was selected from the dialog
+            if let Some(output_file) = appwindow.canvas().output_file() {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                     if let Err(e) = appwindow.save_sheet_to_file(&output_file).await {
-                        appwindow.set_output_file(None);
+                        appwindow.canvas().set_output_file(None);
 
                         log::error!("saving sheet failed with error `{}`", e);
                         adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving sheet failed.").to_variant()));

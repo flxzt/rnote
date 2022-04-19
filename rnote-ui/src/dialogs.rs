@@ -98,7 +98,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.canvas().set_unsaved_changes(false);
                 appwindow.canvas().set_empty(true);
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
-                appwindow.set_output_file(None);
+                appwindow.canvas().set_output_file(None);
 
                 appwindow.canvas().regenerate_background(false);
                 appwindow.canvas().regenerate_content(true, true);
@@ -288,7 +288,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
                             if let Err(e) = appwindow.save_sheet_to_file(&file).await {
-                                appwindow.set_output_file(None);
+                                appwindow.canvas().set_output_file(None);
 
                                 log::error!("saving sheet failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving sheet failed.").to_variant()));

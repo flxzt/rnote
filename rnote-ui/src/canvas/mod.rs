@@ -50,6 +50,7 @@ mod imp {
 
         pub engine: Rc<RefCell<RnoteEngine>>,
 
+        pub output_file: RefCell<Option<gio::File>>,
         pub unsaved_changes: Cell<bool>,
         pub empty: Cell<bool>,
 
@@ -122,6 +123,7 @@ mod imp {
 
                 engine: Rc::new(RefCell::new(RnoteEngine::default())),
 
+                output_file: RefCell::new(None),
                 unsaved_changes: Cell::new(false),
                 empty: Cell::new(true),
 
@@ -175,6 +177,13 @@ mod imp {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
                     // Flag for any unsaved changes on the canvas. Propagates to the application 'unsaved-changes' property
+                    glib::ParamSpecObject::new(
+                        "output-file",
+                        "output-file",
+                        "output-file",
+                        Option::<gio::File>::static_type(),
+                        glib::ParamFlags::READWRITE,
+                    ),
                     glib::ParamSpecBoolean::new(
                         "unsaved-changes",
                         "unsaved-changes",
@@ -228,6 +237,7 @@ mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
+                "output-file" => self.output_file.borrow().to_value(),
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
                 "empty" => self.empty.get().to_value(),
                 "hadjustment" => self.hadjustment.borrow().to_value(),
@@ -253,6 +263,12 @@ mod imp {
             .map(|parent| parent.downcast::<ScrolledWindow>().unwrap()); */
 
             match pspec.name() {
+                "output-file" => {
+                    let output_file = value
+                        .get::<Option<gio::File>>()
+                        .expect("The value needs to be of type `Option<gio::File>`.");
+                    self.output_file.replace(output_file);
+                }
                 "unsaved-changes" => {
                     let unsaved_changes: bool =
                         value.get().expect("The value needs to be of type `bool`.");
@@ -401,6 +417,14 @@ impl RnoteCanvas {
         self.imp().engine.clone()
     }
 
+    pub fn output_file(&self) -> Option<gio::File> {
+        self.property::<Option<gio::File>>("output-file")
+    }
+
+    pub fn set_output_file(&self, output_file: Option<gio::File>) {
+        self.set_property("output-file", output_file.to_value());
+    }
+
     pub fn pdf_import_width(&self) -> f64 {
         self.property::<f64>("pdf-import-width")
     }
@@ -492,6 +516,10 @@ impl RnoteCanvas {
                     appwindow.handle_surface_flags(surface_flags);
                 }
             }
+        }));
+
+        self.connect_notify_local(Some("output-file"), clone!(@weak appwindow => move |canvas, _pspec| {
+            appwindow.mainheader().set_title_for_file(canvas.output_file().as_ref());
         }));
 
         self.bind_property("unsaved-changes", appwindow, "unsaved-changes")

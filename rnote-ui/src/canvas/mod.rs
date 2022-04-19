@@ -535,6 +535,9 @@ impl RnoteCanvas {
             }
         }));
 
+        // set at startup
+        self.engine().borrow_mut().camera.scale_factor = f64::from(self.scale_factor());
+        // and connect
         self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
             let scale_factor = f64::from(canvas.scale_factor());
             canvas.engine().borrow_mut().camera.scale_factor = scale_factor;

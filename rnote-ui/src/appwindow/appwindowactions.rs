@@ -510,7 +510,6 @@ impl RnoteAppWindow {
                         surface_flags = surface_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().handle_penholder_event(
                             PenHolderEvent::ChangeStyleOverride(None),
                         ));
-                        dbg!(&surface_flags);
 
                         appwindow.handle_surface_flags(surface_flags);
                     }

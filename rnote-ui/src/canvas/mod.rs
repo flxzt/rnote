@@ -518,9 +518,12 @@ impl RnoteCanvas {
             }
         }));
 
-        self.connect_notify_local(Some("output-file"), clone!(@weak appwindow => move |canvas, _pspec| {
-            appwindow.mainheader().set_title_for_file(canvas.output_file().as_ref());
-        }));
+        self.connect_notify_local(
+            Some("output-file"),
+            clone!(@weak appwindow => move |canvas, _pspec| {
+                appwindow.mainheader().set_title_for_file(canvas.output_file().as_ref());
+            }),
+        );
 
         self.bind_property("unsaved-changes", appwindow, "unsaved-changes")
             .flags(glib::BindingFlags::DEFAULT)
@@ -595,6 +598,20 @@ impl RnoteCanvas {
                 input::process_pen_motion(data_entries, shortcut_key.clone(), &appwindow);
                 input::process_pen_up(last, shortcut_key, &appwindow);
             }
+        }));
+
+        self.imp().stylus_drawing_gesture.connect_proximity(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
+            //log::debug!("stylus_drawing_gesture proximity");
+            //input::debug_stylus_gesture(&stylus_drawing_gesture);
+
+            if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
+
+            let mut data_entries = input::retreive_stylus_elements(stylus_drawing_gesture, x, y);
+            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
+
+            let shortcut_key = input::retreive_stylus_shortcut_key(&stylus_drawing_gesture);
+
+            input::process_pen_proximity(data_entries, shortcut_key.clone(), &appwindow);
         }));
 
         // Mouse drawing

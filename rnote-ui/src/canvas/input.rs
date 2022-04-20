@@ -168,7 +168,7 @@ pub fn process_pen_down(
         .canvas()
         .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-    // GTK emits separate events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a DownEvent
+    // GTK emits separate down events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a DownEvent
     if shortcut_key != Some(ShortcutKey::StylusPrimaryButton)
         && shortcut_key != Some(ShortcutKey::StylusSecondaryButton)
     {
@@ -231,4 +231,27 @@ pub fn process_pen_up(
 
         appwindow.handle_surface_flags(surface_flags);
     }
+}
+
+/// Process "Pen proximity"
+pub fn process_pen_proximity(
+    data_entries: VecDeque<Element>,
+    shortcut_key: Option<ShortcutKey>,
+    appwindow: &RnoteAppWindow,
+) {
+    let surface_flags = data_entries
+        .into_iter()
+        .map(|element| {
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Proximity {
+                    element,
+                    shortcut_key,
+                }))
+        })
+        .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x));
+
+    appwindow.handle_surface_flags(surface_flags);
 }

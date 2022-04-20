@@ -43,6 +43,21 @@ impl ShapeBehaviour for Line {
     fn bounds(&self) -> AABB {
         AABBHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        let steps = super::hitbox_elems_for_len((self.end - self.start).magnitude());
+
+        (0..steps)
+            .map(|i| {
+                let sub_start = self.start.lerp(&self.end, f64::from(i) / f64::from(steps));
+                let sub_end = self
+                    .start
+                    .lerp(&self.end, f64::from(i + 1) / f64::from(steps));
+
+                AABB::new_positive(na::Point2::from(sub_start), na::Point2::from(sub_end))
+            })
+            .collect::<Vec<AABB>>()
+    }
 }
 
 impl Line {

@@ -1,8 +1,10 @@
 use crate::helpers::AABBHelpers;
-use crate::shapes::ShapeBehaviour;
+use crate::shapes::{cubbez, quadbez, ShapeBehaviour, Line};
 use crate::transform::TransformBehaviour;
 
+use cubbez::CubicBezier;
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use quadbez::QuadraticBezier;
 use serde::{Deserialize, Serialize};
 
 use super::Element;
@@ -86,6 +88,41 @@ impl ShapeBehaviour for Segment {
                 aabb.take_point(na::Point2::from(*cp1));
                 aabb.take_point(na::Point2::from(*cp2));
                 aabb
+            }
+        }
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        match self {
+            Segment::Dot { element } => vec![AABB::from_half_extents(
+                na::Point2::from(element.pos),
+                na::Vector2::repeat(0.5),
+            )],
+            Segment::Line { start, end } => {
+                let line = Line {start: start.pos, end: end.pos};
+                line.hitboxes()
+            }
+            Segment::QuadBez { start, cp, end } => {
+                let quad_bez = QuadraticBezier {
+                    start: start.pos,
+                    cp: *cp,
+                    end: end.pos,
+                };
+                quad_bez.hitboxes()
+            }
+            Segment::CubBez {
+                start,
+                cp1,
+                cp2,
+                end,
+            } => {
+                let cubbez = CubicBezier {
+                    start: start.pos,
+                    cp1: *cp1,
+                    cp2: *cp2,
+                    end: end.pos,
+                };
+                cubbez.hitboxes()
             }
         }
     }

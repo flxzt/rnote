@@ -91,6 +91,10 @@ impl ShapeBehaviour for VectorImage {
     fn bounds(&self) -> AABB {
         self.rectangle.bounds()
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        vec![self.bounds()]
+    }
 }
 
 impl TransformBehaviour for VectorImage {

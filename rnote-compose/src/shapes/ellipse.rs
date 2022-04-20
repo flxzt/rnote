@@ -52,6 +52,10 @@ impl ShapeBehaviour for Ellipse {
 
         AABB::from_half_extents(center, half_extents)
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        vec![self.bounds()]
+    }
 }
 
 impl Ellipse {

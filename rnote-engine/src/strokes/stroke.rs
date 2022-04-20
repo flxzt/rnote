@@ -78,6 +78,15 @@ impl ShapeBehaviour for Stroke {
             Self::BitmapImage(bitmapimage) => bitmapimage.bounds(),
         }
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        match self {
+            Self::BrushStroke(brushstroke) => brushstroke.hitboxes(),
+            Self::ShapeStroke(shapestroke) => shapestroke.hitboxes(),
+            Self::VectorImage(vectorimage) => vectorimage.hitboxes(),
+            Self::BitmapImage(bitmapimage) => bitmapimage.hitboxes(),
+        }
+    }
 }
 
 impl TransformBehaviour for Stroke {

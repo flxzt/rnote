@@ -6,7 +6,7 @@ use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::Style;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{AABB, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -34,9 +34,7 @@ impl StrokeBehaviour for ShapeStroke {
 
     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
         Ok(vec![render::Image::gen_with_piet(
-            |piet_cx| {
-                self.draw(piet_cx, image_scale)
-            },
+            |piet_cx| self.draw(piet_cx, image_scale),
             self.bounds(),
             image_scale,
         )?])
@@ -86,6 +84,20 @@ impl ShapeBehaviour for ShapeStroke {
             Style::Rough(options) => self.shape.composed_bounds(options),
             Style::Textured(_) => self.shape.bounds(),
         }
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        let width = match &self.style {
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width,
+            Style::Textured(options) => options.stroke_width,
+        };
+
+        self.shape
+            .hitboxes()
+            .into_iter()
+            .map(|hitbox| hitbox.loosened(width / 2.0))
+            .collect()
     }
 }
 

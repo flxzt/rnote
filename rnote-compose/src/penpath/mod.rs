@@ -39,6 +39,10 @@ impl ShapeBehaviour for PenPath {
             .map(|segment| segment.bounds())
             .fold(AABB::new_invalid(), |prev, next| prev.merged(&next))
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        self.iter().map(|segment| segment.hitboxes()).flatten().collect()
+    }
 }
 
 impl TransformBehaviour for PenPath {

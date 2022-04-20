@@ -40,6 +40,10 @@ impl ShapeBehaviour for Rectangle {
 
         AABB::from_half_extents(center, half_extents)
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        vec![self.bounds()]
+    }
 }
 
 impl TransformBehaviour for Rectangle {

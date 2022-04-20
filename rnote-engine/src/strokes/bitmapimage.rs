@@ -82,6 +82,10 @@ impl ShapeBehaviour for BitmapImage {
     fn bounds(&self) -> AABB {
         self.rectangle.bounds()
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        vec![self.bounds()]
+    }
 }
 
 impl TransformBehaviour for BitmapImage {

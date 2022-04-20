@@ -78,4 +78,11 @@ impl ShapeBehaviour for Shape {
             Self::Ellipse(ellipse) => ellipse.bounds(),
         }
     }
+    fn hitboxes(&self) -> Vec<AABB> {
+        match self {
+            Self::Line(line) => line.hitboxes(),
+            Self::Rectangle(rectangle) => rectangle.hitboxes(),
+            Self::Ellipse(ellipse) => ellipse.hitboxes(),
+        }
+    }
 }

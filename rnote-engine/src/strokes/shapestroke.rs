@@ -6,7 +6,7 @@ use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::Style;
 
-use p2d::bounding_volume::{AABB, BoundingVolume};
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
@@ -43,6 +43,8 @@ impl StrokeBehaviour for ShapeStroke {
 
 impl DrawBehaviour for ShapeStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match self.shape {
             Shape::Line(ref line) => match &self.style {
                 Style::Smooth(options) => {
@@ -73,6 +75,7 @@ impl DrawBehaviour for ShapeStroke {
             },
         };
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

@@ -23,6 +23,7 @@ impl Composer<TexturedOptions> for Line {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
+        cx.save().unwrap();
         let bez_path = {
             // Return early if line has no length, else Uniform::new() will panic for range with low >= high
             if (self.end - self.start).magnitude() <= 0.0 {
@@ -90,6 +91,7 @@ impl Composer<TexturedOptions> for Line {
             let fill_brush = cx.solid_brush(fill_color.into());
             cx.fill(bez_path, &fill_brush);
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -99,6 +101,7 @@ impl Composer<TexturedOptions> for Segment {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
+        cx.save().unwrap();
         match self {
             Self::Dot { .. } => {
                 // Dont draw dots for textured segments. They stand out
@@ -161,6 +164,7 @@ impl Composer<TexturedOptions> for Segment {
                 line.draw_composed(cx, &options);
             }
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -172,12 +176,14 @@ impl Composer<TexturedOptions> for PenPath {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
+        cx.save().unwrap();
         let mut options = options.clone();
 
         for segment in self.iter() {
             options.seed = options.seed.map(|seed| crate::utils::seed_advance(seed));
             segment.draw_composed(cx, &options);
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -190,6 +196,7 @@ impl Composer<TexturedOptions> for PenPathBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
+        cx.save().unwrap();
         let penpath = self
             .buffer
             .iter()
@@ -201,5 +208,6 @@ impl Composer<TexturedOptions> for PenPathBuilder {
             .collect::<PenPath>();
 
         penpath.draw_composed(cx, options);
+        cx.restore().unwrap();
     }
 }

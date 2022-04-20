@@ -165,6 +165,8 @@ impl StrokeBehaviour for BrushStroke {
 
 impl DrawBehaviour for BrushStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match &self.style {
             Style::Smooth(options) => self.path.draw_composed(cx, options),
             Style::Rough(_) => {
@@ -173,6 +175,7 @@ impl DrawBehaviour for BrushStroke {
             Style::Textured(options) => self.path.draw_composed(cx, options),
         };
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

@@ -145,6 +145,8 @@ impl DrawOnSheetBehaviour for Eraser {
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(0xf0);
         const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x80);
         let outline_width = 2.0 / camera.total_zoom();
@@ -157,6 +159,7 @@ impl DrawOnSheetBehaviour for Eraser {
             cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
         }
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

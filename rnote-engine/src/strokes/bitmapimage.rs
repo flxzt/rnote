@@ -47,9 +47,7 @@ impl StrokeBehaviour for BitmapImage {
 
     fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
         Ok(vec![render::Image::gen_with_piet(
-            |piet_cx| {
-                self.draw(piet_cx, image_scale)
-            },
+            |piet_cx| self.draw(piet_cx, image_scale),
             self.bounds(),
             image_scale,
         )?])
@@ -58,6 +56,8 @@ impl StrokeBehaviour for BitmapImage {
 
 impl DrawBehaviour for BitmapImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
 
         cx.transform(self.rectangle.transform.affine.to_kurbo());
@@ -74,6 +74,7 @@ impl DrawBehaviour for BitmapImage {
         let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
         cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

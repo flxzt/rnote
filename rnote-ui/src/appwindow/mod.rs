@@ -1096,7 +1096,8 @@ impl RnoteAppWindow {
             .coords
         });
 
-        let surface_flags = self.canvas()
+        let surface_flags = self
+            .canvas()
             .engine()
             .borrow_mut()
             .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
@@ -1131,7 +1132,8 @@ impl RnoteAppWindow {
             .coords
         });
 
-        let surface_flags = self.canvas()
+        let surface_flags = self
+            .canvas()
             .engine()
             .borrow_mut()
             .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
@@ -1168,7 +1170,8 @@ impl RnoteAppWindow {
             * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
 
-        let surface_flags = self.canvas()
+        let surface_flags = self
+            .canvas()
             .engine()
             .borrow_mut()
             .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));

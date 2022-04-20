@@ -14,8 +14,8 @@ use crate::{
     colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
     penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
     settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow, AppMenu, CanvasMenu,
-    ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas,
-    SettingsPanel, UnitEntry, WorkspaceBrowser,
+    ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas, SettingsPanel, UnitEntry,
+    WorkspaceBrowser,
 };
 
 mod imp {

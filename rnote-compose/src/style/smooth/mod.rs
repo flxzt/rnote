@@ -90,6 +90,7 @@ impl Composer<SmoothOptions> for Segment {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let shape = {
             match self {
                 Segment::Dot { element } => {
@@ -216,6 +217,7 @@ impl Composer<SmoothOptions> for Segment {
             let fill_brush = cx.solid_brush(fill_color.into());
             cx.fill(shape, &fill_brush);
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -227,9 +229,11 @@ impl Composer<SmoothOptions> for PenPath {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         for segment in self.iter() {
             segment.draw_composed(cx, options);
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -239,12 +243,14 @@ impl Composer<SmoothOptions> for Line {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let line = self.to_kurbo();
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
             cx.stroke(line, &stroke_brush, options.stroke_width);
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -254,6 +260,7 @@ impl Composer<SmoothOptions> for Rectangle {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let shape = self.to_kurbo();
 
         if let Some(fill_color) = options.fill_color {
@@ -265,6 +272,7 @@ impl Composer<SmoothOptions> for Rectangle {
             let stroke_brush = cx.solid_brush(stroke_color.into());
             cx.stroke(shape, &stroke_brush, options.stroke_width);
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -274,6 +282,7 @@ impl Composer<SmoothOptions> for Ellipse {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let ellipse = self.to_kurbo();
 
         if let Some(fill_color) = options.fill_color {
@@ -285,6 +294,7 @@ impl Composer<SmoothOptions> for Ellipse {
             let stroke_brush = cx.solid_brush(stroke_color.into());
             cx.stroke(ellipse, &stroke_brush, options.stroke_width);
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -315,6 +325,7 @@ impl Composer<SmoothOptions> for PenPathBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let penpath = match &self.state {
             PenPathBuilderState::Start => self
                 .buffer
@@ -339,6 +350,7 @@ impl Composer<SmoothOptions> for PenPathBuilder {
         };
 
         penpath.draw_composed(cx, options);
+        cx.restore().unwrap();
     }
 }
 
@@ -350,11 +362,13 @@ impl Composer<SmoothOptions> for LineBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let line = self.state_as_line();
         line.draw_composed(cx, options);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
         drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
+        cx.restore().unwrap();
     }
 }
 
@@ -366,11 +380,13 @@ impl Composer<SmoothOptions> for RectangleBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let rect = self.state_as_rect();
         rect.draw_composed(cx, options);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
         drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
+        cx.restore().unwrap();
     }
 }
 
@@ -382,11 +398,13 @@ impl Composer<SmoothOptions> for EllipseBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let ellipse = self.state_as_ellipse();
         ellipse.draw_composed(cx, options);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
         drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
+        cx.restore().unwrap();
     }
 }
 
@@ -418,6 +436,7 @@ impl Composer<SmoothOptions> for FociEllipseBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         match &self.state {
             FociEllipseBuilderState::First(point) => {
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
@@ -438,5 +457,6 @@ impl Composer<SmoothOptions> for FociEllipseBuilder {
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
             }
         }
+        cx.restore().unwrap();
     }
 }

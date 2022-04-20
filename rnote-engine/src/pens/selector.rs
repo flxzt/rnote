@@ -484,10 +484,11 @@ impl DrawOnSheetBehaviour for Selector {
         _sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let total_zoom = camera.total_zoom();
 
         match &self.state {
-            SelectorState::Idle => Ok(()),
+            SelectorState::Idle => {}
             SelectorState::Selecting { path } => {
                 let mut bez_path = kurbo::BezPath::new();
 
@@ -520,8 +521,6 @@ impl DrawOnSheetBehaviour for Selector {
                     Self::SELECTION_OUTLINE_WIDTH / total_zoom,
                     &piet::StrokeStyle::new().dash_pattern(&Self::SELECTING_DASH_PATTERN),
                 );
-
-                Ok(())
             }
             SelectorState::ModifySelection {
                 modify_state,
@@ -546,9 +545,11 @@ impl DrawOnSheetBehaviour for Selector {
                     }
                     _ => {}
                 }
-                Ok(())
             }
         }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        Ok(())
     }
 }
 
@@ -748,6 +749,7 @@ impl Selector {
         current_rotation_angle: f64,
         camera: &Camera,
     ) {
+        piet_cx.save().unwrap();
         const CENTER_CROSS_COLOR: Color = Color {
             r: 0.964,
             g: 0.380,
@@ -772,7 +774,6 @@ impl Selector {
             (rotation_center.coords + na::vector![0.0, center_cross_radius]).to_kurbo_point(),
         );
 
-        piet_cx.save().unwrap();
         piet_cx.transform(
             kurbo::Affine::translate(rotation_center.coords.to_kurbo_vec())
                 * kurbo::Affine::rotate(current_rotation_angle - start_rotation_angle)

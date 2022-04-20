@@ -360,6 +360,8 @@ impl DrawOnSheetBehaviour for Shaper {
         _sheet_bounds: AABB,
         _camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match (&self.state, &self.style) {
             (ShaperState::Idle, _) => {}
             (ShaperState::BuildLine { line_builder }, ShaperStyle::Smooth) => {
@@ -397,6 +399,8 @@ impl DrawOnSheetBehaviour for Shaper {
                 foci_ellipse_builder.draw_composed(cx, &self.rough_options);
             }
         }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

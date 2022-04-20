@@ -76,6 +76,8 @@ impl StrokeBehaviour for VectorImage {
 // There we use a svg renderer to generate pixel images. In this way we ensure to export an actual svg when calling gen_svgs(), but can also draw it onto piet.
 impl DrawBehaviour for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         let mut image =
             render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
 
@@ -83,6 +85,7 @@ impl DrawBehaviour for VectorImage {
         image.convert_to_rgba8pre()?;
         image.draw(cx, image_scale)?;
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

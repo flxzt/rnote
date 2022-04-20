@@ -141,6 +141,7 @@ impl DrawBehaviour for Image {
     /// Expects image to be in rgba8-premultiplied format, else drawing will fail.
     /// image_scale has no meaning here, as the image pixels are already provided
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let piet_image_format = piet::ImageFormat::try_from(self.memory_format)?;
 
         let piet_image = cx
@@ -152,7 +153,6 @@ impl DrawBehaviour for Image {
             )
             .map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         cx.transform(self.rect.transform.to_kurbo());
 
         cx.draw_image(

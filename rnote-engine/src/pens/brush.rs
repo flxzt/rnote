@@ -252,6 +252,8 @@ impl DrawOnSheetBehaviour for Brush {
         _sheet_bounds: AABB,
         _camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match (&self.state, self.style) {
             (BrushState::Drawing { path_builder, .. }, BrushStyle::Marker) => {
                 let mut smooth_options = self.smooth_options.clone();
@@ -268,6 +270,7 @@ impl DrawOnSheetBehaviour for Brush {
             _ => {}
         }
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

@@ -61,6 +61,8 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
         _sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         let viewport = camera.viewport();
         let x = viewport.mins[0];
         let y = self.start_pos_y;
@@ -94,6 +96,7 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
             Self::OFFSET_LINE_WIDTH,
         );
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -142,6 +145,7 @@ impl DrawOnSheetBehaviour for DragProximityTool {
         _sheet_bounds: AABB,
         _camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let mut radius = self.radius;
 
         let n_circles = 7;
@@ -154,6 +158,7 @@ impl DrawOnSheetBehaviour for DragProximityTool {
             cx.stroke(circle, &Self::OUTLINE_COLOR, Self::OUTLINE_WIDTH);
         }
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -194,6 +199,8 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
             cx.transform(kurbo::Affine::scale(1.0 / camera.total_zoom()));
@@ -205,6 +212,8 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
             cx.stroke(bez_path.clone(), &Self::OUTLINE_COLOR, Self::PATH_WIDTH);
             cx.fill(bez_path, &Self::FILL_COLOR);
         }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -420,20 +429,25 @@ impl DrawOnSheetBehaviour for Tools {
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match &self.style {
             ToolsStyle::ExpandSheet => {
                 self.expandsheet_tool
-                    .draw_on_sheet(cx, sheet_bounds, camera)
+                    .draw_on_sheet(cx, sheet_bounds, camera)?;
             }
             ToolsStyle::DragProximity => {
                 self.dragproximity_tool
-                    .draw_on_sheet(cx, sheet_bounds, camera)
+                    .draw_on_sheet(cx, sheet_bounds, camera)?;
             }
             ToolsStyle::OffsetCamera => {
                 self.offsetcamera_tool
-                    .draw_on_sheet(cx, sheet_bounds, camera)
+                    .draw_on_sheet(cx, sheet_bounds, camera)?;
             }
         }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        Ok(())
     }
 }
 

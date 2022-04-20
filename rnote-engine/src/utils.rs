@@ -81,7 +81,7 @@ pub fn transform_to_gsk(transform: &Transform) -> gsk::Transform {
     ))
 }
 
-    /// Converts a AABB to a geo::Polygon
+/// Converts a AABB to a geo::Polygon
 pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
     let line_string = line_string![
         (x: aabb.mins[0], y: aabb.mins[1]),

@@ -130,7 +130,7 @@ impl RnoteEngine {
         self.store.process_received_task(task, &self.camera)
     }
 
-    /// Public method to call to handle pen events and to change pen holder state 
+    /// Public method to call to handle pen events and to change pen holder state
     pub fn handle_penholder_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
         self.penholder.handle_penholder_event(
             event,
@@ -663,12 +663,13 @@ impl RnoteEngine {
 
         self.sheet.draw_shadow(snapshot);
 
-        self.sheet.background.draw(snapshot, sheet_bounds, &self.camera)?;
- 
+        self.sheet
+            .background
+            .draw(snapshot, sheet_bounds, &self.camera)?;
+
         self.sheet
             .format
             .draw(snapshot, sheet_bounds, &self.camera)?;
-
 
         self.store
             .draw_strokes_snapshot(snapshot, sheet_bounds, viewport);

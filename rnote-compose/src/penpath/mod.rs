@@ -41,7 +41,10 @@ impl ShapeBehaviour for PenPath {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        self.iter().map(|segment| segment.hitboxes()).flatten().collect()
+        self.iter()
+            .map(|segment| segment.hitboxes())
+            .flatten()
+            .collect()
     }
 }
 

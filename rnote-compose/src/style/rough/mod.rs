@@ -27,6 +27,7 @@ impl Composer<RoughOptions> for Line {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
         let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
         let bez_path = if !options.disable_multistroke {
@@ -40,6 +41,8 @@ impl Composer<RoughOptions> for Line {
 
             cx.stroke(bez_path, &stroke_brush, options.stroke_width)
         }
+
+        cx.restore().unwrap();
     }
 }
 
@@ -50,6 +53,7 @@ impl Composer<RoughOptions> for Rectangle {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
         let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
         cx.transform(self.transform.affine.to_kurbo());
@@ -155,6 +159,8 @@ impl Composer<RoughOptions> for Rectangle {
 
             cx.stroke(rect_path, &stroke_brush, options.stroke_width)
         }
+
+        cx.restore().unwrap();
     }
 }
 
@@ -165,6 +171,7 @@ impl Composer<RoughOptions> for Ellipse {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
         let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
         cx.transform(self.transform.affine.to_kurbo());
@@ -189,6 +196,8 @@ impl Composer<RoughOptions> for Ellipse {
 
             cx.stroke(ellipse_result.bez_path, &stroke_brush, options.stroke_width)
         }
+
+        cx.restore().unwrap();
     }
 }
 
@@ -199,6 +208,7 @@ impl Composer<RoughOptions> for CubicBezier {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
         let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
         let bez_path = roughgenerator::cubic_bezier(
@@ -210,6 +220,8 @@ impl Composer<RoughOptions> for CubicBezier {
 
             cx.stroke(bez_path, &stroke_brush, options.stroke_width)
         }
+
+        cx.restore().unwrap();
     }
 }
 
@@ -238,6 +250,8 @@ fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> kurbo:
     roughgenerator::fill_polygon(coords, options, &mut rng)
 }
 
+// Implementations of the Composer trait
+
 impl Composer<RoughOptions> for LineBuilder {
     fn composed_bounds(&self, options: &RoughOptions) -> AABB {
         self.state_as_line()
@@ -246,11 +260,13 @@ impl Composer<RoughOptions> for LineBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
         let line = self.state_as_line();
         line.draw_composed(cx, options);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
         drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
+        cx.restore().unwrap();
     }
 }
 
@@ -262,11 +278,13 @@ impl Composer<RoughOptions> for RectangleBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
         let rect = self.state_as_rect();
         rect.draw_composed(cx, options);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
         drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
+        cx.restore().unwrap();
     }
 }
 
@@ -278,11 +296,13 @@ impl Composer<RoughOptions> for EllipseBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
         let ellipse = self.state_as_ellipse();
         ellipse.draw_composed(cx, options);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
         drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
+        cx.restore().unwrap();
     }
 }
 
@@ -314,6 +334,7 @@ impl Composer<RoughOptions> for FociEllipseBuilder {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
         match &self.state {
             FociEllipseBuilderState::First(point) => {
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
@@ -336,5 +357,6 @@ impl Composer<RoughOptions> for FociEllipseBuilder {
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
             }
         }
+        cx.restore().unwrap();
     }
 }

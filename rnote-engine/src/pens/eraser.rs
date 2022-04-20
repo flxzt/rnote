@@ -110,10 +110,6 @@ impl PenBehaviour for Eraser {
 }
 
 impl Eraser {
-    const OUTLINE_WIDTH: f64 = 2.0;
-    const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(0xf0);
-    const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x30);
-
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
     pub const WIDTH_DEFAULT: f64 = 20.0;
@@ -128,7 +124,7 @@ impl Eraser {
     fn eraser_bounds(eraser_width: f64, element: Element) -> AABB {
         AABB::from_half_extents(
             na::Point2::from(element.pos),
-            na::Vector2::repeat(eraser_width),
+            na::Vector2::repeat(eraser_width / 2.0),
         )
     }
 }
@@ -137,10 +133,9 @@ impl DrawOnSheetBehaviour for Eraser {
     fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
         match &self.state {
             EraserState::Up => None,
-            EraserState::Down(current_element) => Some(AABB::from_half_extents(
-                na::Point2::from(current_element.pos),
-                na::Vector2::from_element(self.width * 0.5),
-            )),
+            EraserState::Down(current_element) => {
+                Some(Self::eraser_bounds(self.width, *current_element))
+            }
         }
     }
 
@@ -150,12 +145,16 @@ impl DrawOnSheetBehaviour for Eraser {
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(0xf0);
+        const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x80);
+        let outline_width = 2.0 / camera.total_zoom();
+
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             let fill_rect = bounds.to_kurbo_rect();
-            let outline_rect = bounds.tightened(Self::OUTLINE_WIDTH * 0.5).to_kurbo_rect();
+            let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
 
-            cx.fill(fill_rect, &Self::FILL_COLOR);
-            cx.stroke(outline_rect, &Self::OUTLINE_COLOR, Self::OUTLINE_WIDTH);
+            cx.fill(fill_rect, &FILL_COLOR);
+            cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
         }
 
         Ok(())

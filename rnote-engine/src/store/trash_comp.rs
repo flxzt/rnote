@@ -102,25 +102,22 @@ impl StrokeStore {
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
-                if let Some(stroke) = self.strokes.get(key) {
+                if let (Some(stroke), Some(trash_comp)) =
+                    (self.strokes.get(key), self.trash_components.get_mut(key))
+                {
                     match stroke {
                         Stroke::BrushStroke(brushstroke) => {
-                            let brushstroke_bounds = brushstroke.bounds();
-
-                            // First check markerstroke bounds, then conditionally check hitbox
-                            if eraser_bounds.intersects(&brushstroke_bounds) {
+                            // First check if eraser even intersects stroke bounds, avoiding unnecessary work
+                            if eraser_bounds.intersects(&brushstroke.bounds()) {
                                 for hitbox_elem in brushstroke.hitboxes.iter() {
                                     if eraser_bounds.intersects(hitbox_elem) {
-                                        if let Some(trash_comp) = self.trash_components.get_mut(key)
-                                        {
-                                            trash_comp.trashed = true;
+                                        trash_comp.trashed = true;
 
-                                            if let Some(chrono_comp) =
-                                                self.chrono_components.get_mut(key)
-                                            {
-                                                self.chrono_counter += 1;
-                                                chrono_comp.t = self.chrono_counter;
-                                            }
+                                        if let Some(chrono_comp) =
+                                            self.chrono_components.get_mut(key)
+                                        {
+                                            self.chrono_counter += 1;
+                                            chrono_comp.t = self.chrono_counter;
                                         }
 
                                         return;
@@ -130,13 +127,11 @@ impl StrokeStore {
                         }
                         Stroke::ShapeStroke(shapestroke) => {
                             if eraser_bounds.intersects(&shapestroke.bounds()) {
-                                if let Some(trash_comp) = self.trash_components.get_mut(key) {
-                                    trash_comp.trashed = true;
+                                trash_comp.trashed = true;
 
-                                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                        self.chrono_counter += 1;
-                                        chrono_comp.t = self.chrono_counter;
-                                    }
+                                if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                                    self.chrono_counter += 1;
+                                    chrono_comp.t = self.chrono_counter;
                                 }
                             }
                         }

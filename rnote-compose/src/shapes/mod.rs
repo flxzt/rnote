@@ -1,7 +1,9 @@
-mod cubbez;
+/// Cubic bezier curves
+pub mod cubbez;
 mod ellipse;
 mod line;
-mod quadbez;
+/// Quadratic bezier curves
+pub mod quadbez;
 mod rectangle;
 mod shape;
 mod shapebehaviour;

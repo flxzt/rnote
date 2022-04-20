@@ -1,8 +1,9 @@
 use super::StrokeBehaviour;
 use crate::render::{self};
 use crate::DrawBehaviour;
+use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::{Element, Segment};
-use rnote_compose::shapes::ShapeBehaviour;
+use rnote_compose::shapes::{cubbez, quadbez, ShapeBehaviour};
 use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{PenPath, Style};
@@ -238,10 +239,84 @@ impl BrushStroke {
             Style::Textured(options) => Some(options.stroke_width),
         };
 
+        const STEPS: i32 = 5;
+
         if let Some(width) = width {
             self.path
                 .iter()
-                .map(|segment| segment.bounds().loosened(width))
+                .map(|segment| match segment {
+                    Segment::Dot { element } => vec![AABB::from_half_extents(
+                        na::Point2::from(element.pos),
+                        na::Vector2::repeat(width / 2.0),
+                    )],
+                    Segment::Line { start, end } => (0..STEPS)
+                        .map(|i| {
+                            let sub_start =
+                                start.pos.lerp(&end.pos, f64::from(i) / f64::from(STEPS));
+                            let sub_end = start
+                                .pos
+                                .lerp(&end.pos, f64::from(i + 1) / f64::from(STEPS));
+
+                            AABB::new_positive(
+                                na::Point2::from(sub_start),
+                                na::Point2::from(sub_end),
+                            )
+                            .loosened(width)
+                        })
+                        .collect::<Vec<AABB>>(),
+                    Segment::QuadBez { start, cp, end } => (0..STEPS)
+                        .map(|i| {
+                            let sub_start = quadbez::quadbez_calc(
+                                start.pos,
+                                *cp,
+                                end.pos,
+                                f64::from(i) / f64::from(STEPS),
+                            );
+                            let sub_end = quadbez::quadbez_calc(
+                                start.pos,
+                                *cp,
+                                end.pos,
+                                f64::from(i + 1) / f64::from(STEPS),
+                            );
+
+                            AABB::new_positive(
+                                na::Point2::from(sub_start),
+                                na::Point2::from(sub_end),
+                            )
+                            .loosened(width)
+                        })
+                        .collect::<Vec<AABB>>(),
+                    Segment::CubBez {
+                        start,
+                        cp1,
+                        cp2,
+                        end,
+                    } => (0..STEPS)
+                        .map(|i| {
+                            let sub_start = cubbez::cubbez_calc(
+                                start.pos,
+                                *cp1,
+                                *cp2,
+                                end.pos,
+                                f64::from(i) / f64::from(STEPS),
+                            );
+                            let sub_end = cubbez::cubbez_calc(
+                                start.pos,
+                                *cp1,
+                                *cp2,
+                                end.pos,
+                                f64::from(i + 1) / f64::from(STEPS),
+                            );
+
+                            AABB::new_positive(
+                                na::Point2::from(sub_start),
+                                na::Point2::from(sub_end),
+                            )
+                            .loosened(width)
+                        })
+                        .collect::<Vec<AABB>>(),
+                })
+                .flatten()
                 .collect()
         } else {
             vec![]

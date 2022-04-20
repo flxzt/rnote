@@ -88,8 +88,6 @@ impl PenBehaviour for Brush {
                     shortcut_key: _,
                 },
             ) => {
-                let mut pen_progress = PenProgress::Idle;
-
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     Self::start_audio(style, audioplayer);
 
@@ -109,6 +107,8 @@ impl PenBehaviour for Brush {
                         for new_segment in new_segments {
                             store.add_segment_to_brushstroke(current_stroke_key, new_segment);
                         }
+
+                        surface_flags.sheet_changed = true;
                     }
 
                     if let Err(e) = store
@@ -123,15 +123,14 @@ impl PenBehaviour for Brush {
                     };
 
                     surface_flags.redraw = true;
-                    surface_flags.sheet_changed = true;
                     surface_flags.hide_scrollbars = Some(true);
 
-                    pen_progress = PenProgress::InProgress;
+                    PenProgress::InProgress
+                } else {
+                    PenProgress::Idle
                 }
-
-                pen_progress
             }
-            (BrushState::Idle, PenEvent::Up { .. }) => PenProgress::Idle,
+            (BrushState::Idle, _) => PenProgress::Idle,
             (
                 BrushState::Drawing {
                     path_builder,
@@ -157,11 +156,13 @@ impl PenBehaviour for Brush {
                         ) {
                             log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
                         }
+
+                        surface_flags.sheet_changed = true;
                     }
 
                     surface_flags.redraw = true;
-                    surface_flags.sheet_changed = true;
                 }
+
                 PenProgress::InProgress
             }
             (
@@ -184,11 +185,10 @@ impl PenBehaviour for Brush {
 
                 // Finish up the last stroke
                 store.update_geometry_for_stroke(*current_stroke_key);
-                if let Err(e) =
-                    store.regenerate_rendering_for_stroke(*current_stroke_key, camera.image_scale())
-                {
-                    log::error!("regenerate_rendering_for_stroke() failed after finishing brush stroke, Err {}", e);
-                }
+                store.regenerate_rendering_for_stroke_threaded(
+                    *current_stroke_key,
+                    camera.image_scale(),
+                );
 
                 self.state = BrushState::Idle;
 
@@ -199,7 +199,7 @@ impl PenBehaviour for Brush {
 
                 PenProgress::Finished
             }
-            (BrushState::Idle, _) => PenProgress::Idle,
+            (BrushState::Drawing { .. }, PenEvent::Proximity { .. }) => PenProgress::InProgress,
             (
                 BrushState::Drawing {
                     current_stroke_key, ..
@@ -224,7 +224,6 @@ impl PenBehaviour for Brush {
 
                 PenProgress::Finished
             }
-            (BrushState::Drawing { .. }, PenEvent::Proximity { .. }) => PenProgress::InProgress,
         };
 
         (pen_progress, surface_flags)

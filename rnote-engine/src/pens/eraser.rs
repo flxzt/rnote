@@ -66,6 +66,7 @@ impl PenBehaviour for Eraser {
 
                 PenProgress::InProgress
             }
+            (EraserState::Up, _) => PenProgress::Idle,
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 store.trash_colliding_strokes(
                     Self::eraser_bounds(self.width, element),
@@ -79,8 +80,6 @@ impl PenBehaviour for Eraser {
 
                 PenProgress::InProgress
             }
-            (EraserState::Up, _) => PenProgress::Idle,
-            (EraserState::Down { .. }, PenEvent::Proximity { .. }) => PenProgress::InProgress,
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
                 store.trash_colliding_strokes(
                     Self::eraser_bounds(self.width, element),
@@ -95,6 +94,7 @@ impl PenBehaviour for Eraser {
 
                 PenProgress::Finished
             }
+            (EraserState::Down { .. }, PenEvent::Proximity { .. }) => PenProgress::InProgress,
             (EraserState::Down { .. }, PenEvent::Cancel) => {
                 self.state = EraserState::Up;
 

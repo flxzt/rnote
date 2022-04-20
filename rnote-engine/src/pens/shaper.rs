@@ -119,7 +119,6 @@ impl PenBehaviour for Shaper {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
             }
@@ -129,7 +128,6 @@ impl PenBehaviour for Shaper {
                 line_builder.handle_event(event);
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
             }
@@ -148,21 +146,21 @@ impl PenBehaviour for Shaper {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
                         }
                     }
+
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
 
                 self.state = ShaperState::Idle;
                 PenProgress::Finished
             }
-            (ShaperState::BuildLine { .. }, _) => {
+            (ShaperState::BuildLine { .. }, PenEvent::Proximity { .. }) => PenProgress::InProgress,
+            (ShaperState::BuildLine { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::Finished
             }
@@ -171,7 +169,6 @@ impl PenBehaviour for Shaper {
                 rect_builder.handle_event(event);
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
             }
@@ -190,22 +187,24 @@ impl PenBehaviour for Shaper {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new rectangle, Err {}", e);
                         }
                     }
+
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
                 }
 
                 self.state = ShaperState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::Finished
             }
-            (ShaperState::BuildRectangle { .. }, ..) => {
+            (ShaperState::BuildRectangle { .. }, PenEvent::Proximity { .. }) => {
+                PenProgress::InProgress
+            }
+            (ShaperState::BuildRectangle { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::Finished
             }
@@ -214,7 +213,6 @@ impl PenBehaviour for Shaper {
                 ellipse_builder.handle_event(event);
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
             }
@@ -233,22 +231,24 @@ impl PenBehaviour for Shaper {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new ellipse, Err {}", e);
                         }
                     }
+
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
                 }
 
                 self.state = ShaperState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::Finished
             }
-            (ShaperState::BuildEllipse { .. }, ..) => {
+            (ShaperState::BuildEllipse { .. }, PenEvent::Proximity { .. }) => {
+                PenProgress::InProgress
+            }
+            (ShaperState::BuildEllipse { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::Finished
             }
@@ -262,7 +262,6 @@ impl PenBehaviour for Shaper {
                 foci_ellipse_builder.handle_event(event);
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
             }
@@ -273,6 +272,7 @@ impl PenBehaviour for Shaper {
                 PenEvent::Up { .. },
             ) => {
                 let mut pen_progress = PenProgress::InProgress;
+
                 if let Some(shapes) = foci_ellipse_builder.handle_event(event) {
                     let drawstyle = self.gen_style_for_current_options();
 
@@ -286,25 +286,27 @@ impl PenBehaviour for Shaper {
                         {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new foci ellipse, Err {}", e);
                         }
+
+                        surface_flags.resize = true;
+                        surface_flags.sheet_changed = true;
                     }
 
                     self.state = ShaperState::Idle;
 
                     surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.sheet_changed = true;
 
                     pen_progress = PenProgress::Finished
                 }
 
                 pen_progress
             }
-            (ShaperState::BuildFociEllipse { .. }, _) => {
+            (ShaperState::BuildFociEllipse { .. }, PenEvent::Proximity { .. }) => {
+                PenProgress::InProgress
+            }
+            (ShaperState::BuildFociEllipse { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
 
                 PenProgress::Finished
             }

@@ -265,7 +265,7 @@ impl PenBehaviour for Tools {
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 
-        let pen_progress = match (self.state, event) {
+        let pen_progress = match (&mut self.state, event) {
             (
                 ToolsState::Idle,
                 PenEvent::Down {

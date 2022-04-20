@@ -62,12 +62,6 @@ pub(super) enum SelectorState {
 
 impl Default for SelectorState {
     fn default() -> Self {
-        Self::Selecting { path: vec![] }
-    }
-}
-
-impl SelectorState {
-    fn reset() -> Self {
         Self::Idle
     }
 }
@@ -112,11 +106,12 @@ impl PenBehaviour for Selector {
         _audioplayer: Option<&mut AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
-        let total_zoom = camera.total_zoom();
+
+        //log::debug!("selector state: {:?}, event: {:?}", &self.state, &event);
 
         let pen_progress = match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
-                // Deselect by default
+                // Deselect when starting
                 let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
                 store.set_selected_keys(&keys, false);
 
@@ -125,14 +120,12 @@ impl PenBehaviour for Selector {
                 };
 
                 surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
                 surface_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
             }
-            (SelectorState::Idle, _) => {
-                // already idle, so nothing to do
-                PenProgress::Idle
-            }
+            (SelectorState::Idle, _) => PenProgress::Idle,
             (SelectorState::Selecting { path }, PenEvent::Down { element, .. }) => {
                 Self::add_to_select_path(self.style, path, element);
 
@@ -140,11 +133,8 @@ impl PenBehaviour for Selector {
 
                 PenProgress::InProgress
             }
-            (SelectorState::Selecting { .. }, PenEvent::Proximity { .. }) => {
-                PenProgress::InProgress
-            }
             (SelectorState::Selecting { path }, PenEvent::Up { .. }) => {
-                let mut state = SelectorState::reset();
+                let mut state = SelectorState::Idle;
                 let mut pen_progress = PenProgress::Finished;
 
                 if let Some(selection) = match self.style {
@@ -186,8 +176,15 @@ impl PenBehaviour for Selector {
 
                 pen_progress
             }
+            (SelectorState::Selecting { .. }, PenEvent::Proximity { .. }) => {
+                PenProgress::InProgress
+            }
             (SelectorState::Selecting { .. }, PenEvent::Cancel) => {
-                self.state = SelectorState::reset();
+                self.state = SelectorState::Idle;
+
+                // Deselect on cancel
+                let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
+                store.set_selected_keys(&keys, false);
 
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
@@ -275,7 +272,7 @@ impl PenBehaviour for Selector {
                         } else {
                             // If clicking outside the selection, reset
                             store.set_selected_keys(selection, false);
-                            self.state = SelectorState::reset();
+                            self.state = SelectorState::Idle;
 
                             pen_progress = PenProgress::Finished;
                         }
@@ -283,7 +280,9 @@ impl PenBehaviour for Selector {
                     ModifyState::Translate { pos } => {
                         let offset = element.pos - *pos;
 
-                        if offset.magnitude() > Self::TRANSLATE_MAGNITUDE_THRESHOLD / total_zoom {
+                        if offset.magnitude()
+                            > Self::TRANSLATE_MAGNITUDE_THRESHOLD / camera.total_zoom()
+                        {
                             store.translate_strokes(selection, offset);
                             *selection_bounds = selection_bounds.translate(offset);
                             // strokes that were far away previously might come into view
@@ -336,7 +335,9 @@ impl PenBehaviour for Selector {
                             }
                         };
 
-                        if pos_offset.magnitude() > Self::RESIZE_MAGNITUDE_THRESHOLD / total_zoom {
+                        if pos_offset.magnitude()
+                            > Self::RESIZE_MAGNITUDE_THRESHOLD / camera.total_zoom()
+                        {
                             let new_extents = if self.resize_lock_aspectratio {
                                 // Lock aspectratio
                                 rnote_compose::helpers::scale_w_locked_aspectratio(
@@ -394,7 +395,6 @@ impl PenBehaviour for Selector {
 
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
-                surface_flags.hide_scrollbars = Some(true);
 
                 pen_progress
             }
@@ -419,9 +419,8 @@ impl PenBehaviour for Selector {
                 *modify_state = ModifyState::Up;
 
                 surface_flags.redraw = true;
+                surface_flags.resize = true;
                 surface_flags.sheet_changed = true;
-                surface_flags.resize_to_fit_strokes = true;
-                surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::InProgress
             }
@@ -429,12 +428,11 @@ impl PenBehaviour for Selector {
                 PenProgress::InProgress
             }
             (SelectorState::ModifySelection { .. }, PenEvent::Cancel) => {
-                self.state = SelectorState::reset();
+                self.state = SelectorState::Idle;
 
                 surface_flags.redraw = true;
+                surface_flags.resize = true;
                 surface_flags.sheet_changed = true;
-                surface_flags.resize_to_fit_strokes = true;
-                surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
@@ -577,17 +575,13 @@ impl Selector {
         };
     }
 
-    pub fn reset(&mut self) {
-        self.state = SelectorState::reset();
-    }
-
     pub fn update_selection_from_state(&mut self, store: &StrokeStore) {
         let selection = store.selection_keys_unordered();
         let selection_bounds = store.gen_bounds(&selection);
         if let Some(selection_bounds) = selection_bounds {
             self.set_selection(selection, selection_bounds);
         } else {
-            self.reset();
+            self.state = SelectorState::Idle;
         }
     }
 

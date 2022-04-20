@@ -3,7 +3,6 @@ use crate::config;
 use anyhow::Context;
 use gtk4::{gio, glib, prelude::*, Widget};
 use p2d::bounding_volume::AABB;
-use std::fs;
 use std::path::PathBuf;
 
 /// Returns the path to the app config dir
@@ -98,10 +97,6 @@ impl FileType {
     }
 }
 
-pub fn str_to_file(string: &str, file_path: &str) -> anyhow::Result<()> {
-    Ok(fs::write(PathBuf::from(file_path), string)?)
-}
-
 /// Translates a AABB to the coordinate space of the dest_widget. None if the widgets don't have a common ancestor
 pub fn translate_aabb_to_widget(
     aabb: AABB,
@@ -119,7 +114,7 @@ pub fn translate_aabb_to_widget(
     Some(AABB::new(mins, maxs))
 }
 
-/// Replac a file asynchronously
+/// Replace a file asynchronously
 pub async fn replace_file_future(bytes: Vec<u8>, file: &gio::File) -> anyhow::Result<()> {
     let output_stream = file
         .replace_future(

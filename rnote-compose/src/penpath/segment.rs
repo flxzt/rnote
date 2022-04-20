@@ -1,10 +1,8 @@
 use crate::helpers::AABBHelpers;
-use crate::shapes::{cubbez, quadbez, ShapeBehaviour, Line};
+use crate::shapes::{CubicBezier, Line, QuadraticBezier, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
 
-use cubbez::CubicBezier;
 use p2d::bounding_volume::{BoundingVolume, AABB};
-use quadbez::QuadraticBezier;
 use serde::{Deserialize, Serialize};
 
 use super::Element;
@@ -99,16 +97,33 @@ impl ShapeBehaviour for Segment {
                 na::Vector2::repeat(0.5),
             )],
             Segment::Line { start, end } => {
-                let line = Line {start: start.pos, end: end.pos};
-                line.hitboxes()
+                let no_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
+
+                let line = Line {
+                    start: start.pos,
+                    end: end.pos,
+                };
+
+                line.split(no_splits)
+                    .into_iter()
+                    .map(|line| line.bounds())
+                    .collect()
             }
             Segment::QuadBez { start, cp, end } => {
-                let quad_bez = QuadraticBezier {
+                // TODO: basing this off of the actual curve len
+                let no_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
+
+                let quadbez = QuadraticBezier {
                     start: start.pos,
                     cp: *cp,
                     end: end.pos,
                 };
-                quad_bez.hitboxes()
+
+                quadbez
+                    .approx_with_lines(no_splits)
+                    .into_iter()
+                    .map(|line| line.bounds())
+                    .collect()
             }
             Segment::CubBez {
                 start,
@@ -116,13 +131,20 @@ impl ShapeBehaviour for Segment {
                 cp2,
                 end,
             } => {
+                let no_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
+
                 let cubbez = CubicBezier {
                     start: start.pos,
                     cp1: *cp1,
                     cp2: *cp2,
                     end: end.pos,
                 };
-                cubbez.hitboxes()
+
+                cubbez
+                    .approx_with_lines(no_splits)
+                    .into_iter()
+                    .map(|line| line.bounds())
+                    .collect()
             }
         }
     }
@@ -214,5 +236,19 @@ impl TransformBehaviour for Segment {
                 end.pos = end.pos.component_mul(&scale);
             }
         }
+    }
+}
+
+/// Calculates the number hitbox elems for the given length capped with a maximum no of hitbox elemens
+fn hitbox_elems_for_segment_len(len: f64) -> i32 {
+    // Maximum hitbox diagonal ( below the threshold )
+    const MAX_HITBOX_DIAGONAL: f64 = 15.0;
+    const MAX_ELEMS: i32 = 6;
+
+    if len < MAX_HITBOX_DIAGONAL * f64::from(MAX_ELEMS) {
+        ((len / MAX_HITBOX_DIAGONAL).ceil() as i32).max(1)
+    } else {
+        // capping the no of elements for bigger len's, avoiding huge amounts of hitboxes for large strokes that are drawn when zoomed out
+        MAX_ELEMS
     }
 }

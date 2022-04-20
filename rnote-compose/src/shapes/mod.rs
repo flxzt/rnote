@@ -17,16 +17,10 @@ pub use rectangle::Rectangle;
 pub use shape::Shape;
 pub use shapebehaviour::ShapeBehaviour;
 
-/// Calculatese the hitbox steps for the given length
-pub(super) fn hitbox_elems_for_len(len: f64) -> i32 {
-    if len < 5.0 {
-        1
-    } else if len < 10.0 {
-        4
-    } else if len < 20.0 {
-        8
-    } else {
-        // capping the no of elements for bigger len's, avoiding huge amounts of hitboxes for huge strokes that are drawn when zoomed out
-        10
-    }
+/// Calculates the number hitbox elems for the given length ( e.g. length of a line, curve, etc.)
+fn hitbox_elems_for_shape_len(len: f64) -> i32 {
+    // Maximum hitbox diagonal
+    const MAX_HITBOX_DIAGONAL: f64 = 15.0;
+
+    ((len / MAX_HITBOX_DIAGONAL).ceil() as i32).max(1)
 }

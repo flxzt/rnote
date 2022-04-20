@@ -419,7 +419,25 @@ impl StrokeStore {
                         )
                     });
                 }
+
+                for &hitbox_elem in stroke.hitboxes().iter() {
+                    visual_debug::draw_bounds(
+                        hitbox_elem,
+                        visual_debug::COLOR_STROKE_HITBOX,
+                        snapshot,
+                        border_widths,
+                    );
+                }
+
+                visual_debug::draw_bounds(
+                    stroke.bounds(),
+                    visual_debug::COLOR_STROKE_BOUNDS,
+                    snapshot,
+                    border_widths,
+                );
+
                 match stroke {
+                    // Draw positions for brushstrokes
                     Stroke::BrushStroke(brushstroke) => {
                         for element in brushstroke.path.clone().into_elements().iter() {
                             visual_debug::draw_pos(
@@ -429,46 +447,10 @@ impl StrokeStore {
                                 border_widths * 4.0,
                             )
                         }
-                        for &hitbox_elem in brushstroke.hitboxes.iter() {
-                            visual_debug::draw_bounds(
-                                hitbox_elem,
-                                visual_debug::COLOR_STROKE_HITBOX,
-                                snapshot,
-                                border_widths,
-                            );
-                        }
-                        visual_debug::draw_bounds(
-                            brushstroke.bounds(),
-                            visual_debug::COLOR_STROKE_BOUNDS,
-                            snapshot,
-                            border_widths,
-                        );
                     }
-                    Stroke::ShapeStroke(shapestroke) => {
-                        visual_debug::draw_bounds(
-                            shapestroke.bounds(),
-                            visual_debug::COLOR_STROKE_BOUNDS,
-                            snapshot,
-                            border_widths,
-                        );
-                    }
-                    Stroke::VectorImage(vectorimage) => {
-                        visual_debug::draw_bounds(
-                            vectorimage.bounds(),
-                            visual_debug::COLOR_STROKE_BOUNDS,
-                            snapshot,
-                            border_widths,
-                        );
-                    }
-                    Stroke::BitmapImage(bitmapimage) => {
-                        visual_debug::draw_bounds(
-                            bitmapimage.bounds(),
-                            visual_debug::COLOR_STROKE_BOUNDS,
-                            snapshot,
-                            border_widths,
-                        );
-                    }
+                    _ => {}
                 }
+
                 // Pop Blur and opacity for hidden strokes
                 if let (Some(render_comp), Some(trash_comp)) = (
                     self.render_components.get(key),

@@ -1,7 +1,6 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::AABBHelpers;
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 
@@ -62,28 +61,12 @@ impl ShapeBehaviour for CubicBezier {
 
     fn hitboxes(&self) -> Vec<AABB> {
         // TODO: should be dependend on the actual curve length
-        let steps = super::hitbox_elems_for_len((self.end - self.start).magnitude());
+        let no_splits = super::hitbox_elems_for_shape_len((self.end - self.start).magnitude());
 
-        (0..steps)
-            .map(|i| {
-                let sub_start = cubbez_calc(
-                    self.start,
-                    self.cp1,
-                    self.cp2,
-                    self.end,
-                    f64::from(i) / f64::from(steps),
-                );
-                let sub_end = cubbez_calc(
-                    self.start,
-                    self.cp1,
-                    self.cp2,
-                    self.end,
-                    f64::from(i + 1) / f64::from(steps),
-                );
-
-                AABB::new_positive(na::Point2::from(sub_start), na::Point2::from(sub_end))
-            })
-            .collect::<Vec<AABB>>()
+        self.approx_with_lines(no_splits)
+            .into_iter()
+            .map(|line| line.bounds())
+            .collect()
     }
 }
 

@@ -18,7 +18,7 @@ pub struct BrushStroke {
     #[serde(rename = "style")]
     pub style: Style,
     #[serde(skip)]
-    // since the path can have many hitboxes, we store them for faster queries, and update them when we change the strokes geometry
+    // since the path can have many hitboxes, we store them for faster queries and update them when we the stroke geometry changes
     pub hitboxes: Vec<AABB>,
 }
 
@@ -188,37 +188,19 @@ impl ShapeBehaviour for BrushStroke {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        let width = match &self.style {
-            Style::Smooth(options) => options.stroke_width,
-            Style::Rough(options) => options.stroke_width,
-            Style::Textured(options) => options.stroke_width,
-        };
-
-        self.path
-            .iter()
-            .map(|segment| {
-                segment
-                    .hitboxes()
-                    .into_iter()
-                    .map(|hitbox| hitbox.loosened(width / 2.0))
-            })
-            .flatten()
-            .collect()
+        self.hitboxes.clone()
     }
 }
 
 impl TransformBehaviour for BrushStroke {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.path.translate(offset);
-        self.update_geometry();
     }
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
         self.path.rotate(angle, center);
-        self.update_geometry();
     }
     fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
         self.path.scale(scale);
-        self.update_geometry();
     }
 }
 
@@ -248,7 +230,27 @@ impl BrushStroke {
     }
 
     pub fn update_geometry(&mut self) {
-        self.hitboxes = self.hitboxes();
+        self.hitboxes = self.gen_hitboxes();
+    }
+
+    // internal method generating the current hitboxes.
+    fn gen_hitboxes(&self) -> Vec<AABB> {
+        let width = match &self.style {
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width,
+            Style::Textured(options) => options.stroke_width,
+        };
+
+        self.path
+            .iter()
+            .map(|segment| {
+                segment
+                    .hitboxes()
+                    .into_iter()
+                    .map(|hitbox| hitbox.loosened(width / 2.0))
+            })
+            .flatten()
+            .collect()
     }
 
     pub fn gen_images_for_last_segments(

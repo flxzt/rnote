@@ -413,6 +413,8 @@ impl PenBehaviour for Selector {
                     camera.image_scale(),
                 );
 
+                store.update_geometry_for_strokes(&selection);
+
                 if let Some(new_bounds) = store.gen_bounds(selection) {
                     *selection_bounds = new_bounds;
                 }

@@ -51,6 +51,11 @@ pub enum StoreTask {
         key: StrokeKey,
         images: Vec<render::Image>,
     },
+    /// Appends the images to the rendering of the stroke
+    AppendImagesToStroke {
+        key: StrokeKey,
+        images: Vec<render::Image>,
+    },
     /// Inserts a new stroke to the store
     InsertStroke { stroke: Stroke },
     /// indicates that the application is in the process of quitting
@@ -169,6 +174,14 @@ impl StrokeStore {
             StoreTask::UpdateStrokeWithImages { key, images } => {
                 if let Err(e) = self.replace_rendering_with_images(key, images) {
                     log::error!("replace_rendering_with_images() in process_received_task() failed with Err {}", e);
+                }
+
+                surface_flags.redraw = true;
+                surface_flags.sheet_changed = true;
+            }
+            StoreTask::AppendImagesToStroke { key, images } => {
+                if let Err(e) = self.append_rendering_images(key, images) {
+                    log::error!("append_rendering_images() in process_received_task() failed with Err {}", e);
                 }
 
                 surface_flags.redraw = true;

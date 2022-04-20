@@ -271,17 +271,66 @@ impl StrokeStore {
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                    let images = stroke.gen_images(image_scale)?;
-                    let rendernodes = render::Image::images_to_rendernodes(&images)?;
-                    render_comp.rendernodes = rendernodes;
-                    render_comp.images = images;
+                    self.regenerate_rendering_for_stroke_threaded(key, image_scale);
                 }
             }
         }
         Ok(())
     }
 
-    /// Not setting the regenerate flag, that is the responsibility of the caller
+    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes all rendering is regenerated
+    #[allow(unused)]
+    pub fn append_rendering_last_segments_threaded(
+        &mut self,
+        key: StrokeKey,
+        n_segments: usize,
+        image_scale: f64,
+    ) -> anyhow::Result<()> {
+        if let Some(stroke) = self.strokes.get(key) {
+            let tasks_tx = self.tasks_tx.clone();
+            let stroke = stroke.clone();
+
+            // Spawn a new thread for image rendering
+            self.threadpool.spawn(move || {
+                match stroke {
+                    Stroke::BrushStroke(brushstroke) => {
+                        match brushstroke.gen_images_for_last_segments(n_segments, image_scale) {
+                            Ok(images) => {
+                                tasks_tx.unbounded_send(StoreTask::AppendImagesToStroke {
+                                    key,
+                                    images,
+                                }).unwrap_or_else(|e| {
+                                    log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
+                                });
+                            }
+                            Err(e) => {
+                                log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
+                            }
+                        }
+                    }
+                    // regenerate everything for strokes that don't support generating svgs for the last added elements
+                    Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
+                        match stroke.gen_images(image_scale) {
+                            Ok(images) => {
+                                tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
+                                    key,
+                                    images,
+                                }).unwrap_or_else(|e| {
+                                    log::error!("tasks_tx.send() UpdateStrokeWithImages failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
+                                });
+                            }
+                            Err(e) => {
+                                log::debug!("stroke.gen_image() failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err {}", key, e);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        Ok(())
+    }
+
+    /// Not changing the regenerate flag, that is the responsibility of the caller
     pub fn replace_rendering_with_images(
         &mut self,
         key: StrokeKey,
@@ -291,6 +340,20 @@ impl StrokeStore {
             let rendernodes = render::Image::images_to_rendernodes(&images)?;
             render_comp.rendernodes = rendernodes;
             render_comp.images = images;
+        }
+        Ok(())
+    }
+
+    /// Not changing the regenerate flag, that is the responsibility of the caller
+    pub fn append_rendering_images(
+        &mut self,
+        key: StrokeKey,
+        mut images: Vec<render::Image>,
+    ) -> anyhow::Result<()> {
+        if let Some(render_comp) = self.render_components.get_mut(key) {
+            let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
+            render_comp.rendernodes.append(&mut rendernodes);
+            render_comp.images.append(&mut images);
         }
         Ok(())
     }

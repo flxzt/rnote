@@ -98,26 +98,26 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
         let stroke_width = style.stroke_width();
 
         match &self.state {
             crate::builders::quadbezbuilder::QuadBezBuilderState::Start(start) => {
                 AABB::from_half_extents(
                     na::Point2::from(*start),
-                    na::Vector2::repeat(stroke_width + drawhelpers::POS_INDICATOR_RADIUS),
+                    na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
                 )
             }
             crate::builders::quadbezbuilder::QuadBezBuilderState::Cp { start, cp } => {
                 AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp))
-                    .loosened(stroke_width + drawhelpers::POS_INDICATOR_RADIUS)
+                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom)
             }
             crate::builders::quadbezbuilder::QuadBezBuilderState::End { start, cp, end } => {
                 let stroke_width = style.stroke_width();
 
                 let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*end));
                 aabb.take_point(na::Point2::from(*cp));
-                aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS))
+                aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom)
             }
         }
     }

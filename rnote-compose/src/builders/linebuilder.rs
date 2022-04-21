@@ -47,10 +47,10 @@ impl ShapeBuilderBehaviour for LineBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
         self.state_as_line()
             .composed_bounds(style)
-            .loosened(drawhelpers::POS_INDICATOR_RADIUS)
+            .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
     }
 
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {

@@ -47,10 +47,10 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
         self.state_as_rect()
             .composed_bounds(style)
-            .loosened(drawhelpers::POS_INDICATOR_RADIUS)
+            .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
     }
 
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {

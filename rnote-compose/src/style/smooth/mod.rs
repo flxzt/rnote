@@ -78,7 +78,6 @@ fn compose_line_variable_width(
     bez_path
 }
 
-
 impl Composer<SmoothOptions> for Line {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
         self.bounds().loosened(options.stroke_width)

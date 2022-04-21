@@ -199,12 +199,14 @@ impl PenBehaviour for Shaper {
 }
 
 impl DrawOnSheetBehaviour for Shaper {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
             ShaperState::Idle => None,
-            ShaperState::BuildShape { builder } => Some(builder.bounds(&style)),
+            ShaperState::BuildShape { builder } => {
+                Some(builder.bounds(&style, camera.total_zoom()))
+            }
         }
     }
 

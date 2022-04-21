@@ -111,9 +111,11 @@ impl PenBehaviour for Brush {
                         surface_flags.sheet_changed = true;
                     }
 
-                    if let Err(e) = store
-                        .regenerate_rendering_for_stroke(current_stroke_key, camera.image_scale())
-                    {
+                    if let Err(e) = store.regenerate_rendering_for_stroke(
+                        current_stroke_key,
+                        camera.viewport_extended(),
+                        camera.image_scale(),
+                    ) {
                         log::error!("regenerate_rendering_for_stroke() failed after inserting brush stroke, Err {}", e);
                     }
 
@@ -152,6 +154,7 @@ impl PenBehaviour for Brush {
                         if let Err(e) = store.append_rendering_last_segments(
                             *current_stroke_key,
                             n_segments,
+                            camera.viewport_extended(),
                             camera.image_scale(),
                         ) {
                             log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
@@ -187,6 +190,7 @@ impl PenBehaviour for Brush {
                 store.update_geometry_for_stroke(*current_stroke_key);
                 store.regenerate_rendering_for_stroke_threaded(
                     *current_stroke_key,
+                    camera.viewport_extended(),
                     camera.image_scale(),
                 );
 
@@ -212,6 +216,7 @@ impl PenBehaviour for Brush {
                 store.update_geometry_for_stroke(*current_stroke_key);
                 store.regenerate_rendering_for_stroke_threaded(
                     *current_stroke_key,
+                    camera.viewport_extended(),
                     camera.image_scale(),
                 );
 

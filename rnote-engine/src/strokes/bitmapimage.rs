@@ -45,10 +45,14 @@ impl StrokeBehaviour for BitmapImage {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+    fn gen_images(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
         Ok(vec![render::Image::gen_with_piet(
             |piet_cx| self.draw(piet_cx, image_scale),
-            self.bounds(),
+            self.bounds().clamp(None, Some(viewport)),
             image_scale,
         )?])
     }

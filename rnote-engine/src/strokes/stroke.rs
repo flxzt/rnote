@@ -48,12 +48,16 @@ impl StrokeBehaviour for Stroke {
         }
     }
 
-    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+    fn gen_images(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
         match self {
-            Stroke::BrushStroke(brushstroke) => brushstroke.gen_images(image_scale),
-            Stroke::ShapeStroke(shapestroke) => shapestroke.gen_images(image_scale),
-            Stroke::VectorImage(vectorimage) => vectorimage.gen_images(image_scale),
-            Stroke::BitmapImage(bitmapimage) => bitmapimage.gen_images(image_scale),
+            Stroke::BrushStroke(brushstroke) => brushstroke.gen_images(viewport, image_scale),
+            Stroke::ShapeStroke(shapestroke) => shapestroke.gen_images(viewport, image_scale),
+            Stroke::VectorImage(vectorimage) => vectorimage.gen_images(viewport, image_scale),
+            Stroke::BitmapImage(bitmapimage) => bitmapimage.gen_images(viewport, image_scale),
         }
     }
 }

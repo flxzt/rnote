@@ -99,13 +99,14 @@ impl StrokeStore {
     pub fn regenerate_rendering_for_stroke(
         &mut self,
         key: StrokeKey,
+        viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
             let images = stroke
-                .gen_images(image_scale)
+                .gen_images(viewport, image_scale)
                 .context("gen_images() failed  in regenerate_rendering_for_stroke()")?;
 
             let rendernodes = render::Image::images_to_rendernodes(&images)
@@ -113,7 +114,7 @@ impl StrokeStore {
 
             render_comp.rendernodes = rendernodes;
             render_comp.images = images;
-            render_comp.regenerate_flag = false;
+            render_comp.regenerate_flag = !viewport.contains(&stroke.bounds());
         }
         Ok(())
     }
@@ -121,15 +122,21 @@ impl StrokeStore {
     pub fn regenerate_rendering_for_strokes(
         &mut self,
         keys: &[StrokeKey],
+        viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         for key in keys.iter() {
-            self.regenerate_rendering_for_stroke(*key, image_scale)?;
+            self.regenerate_rendering_for_stroke(*key, viewport, image_scale)?;
         }
         Ok(())
     }
 
-    pub fn regenerate_rendering_for_stroke_threaded(&mut self, key: StrokeKey, image_scale: f64) {
+    pub fn regenerate_rendering_for_stroke_threaded(
+        &mut self,
+        key: StrokeKey,
+        viewport: AABB,
+        image_scale: f64,
+    ) {
         let tasks_tx = self.tasks_tx.clone();
 
         if let (Some(render_comp), Some(stroke)) =
@@ -137,11 +144,11 @@ impl StrokeStore {
         {
             let stroke = stroke.clone();
 
-            render_comp.regenerate_flag = false;
+            render_comp.regenerate_flag = !viewport.contains(&stroke.bounds());
 
             // Spawn a new thread for image rendering
             self.threadpool.spawn(move || {
-                match stroke.gen_images(image_scale) {
+                match stroke.gen_images(viewport, image_scale) {
                     Ok(images) => {
                         tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
                             key,
@@ -161,10 +168,11 @@ impl StrokeStore {
     pub fn regenerate_rendering_for_strokes_threaded(
         &mut self,
         keys: &[StrokeKey],
+        viewport: AABB,
         image_scale: f64,
     ) {
         keys.iter().for_each(|&key| {
-            self.regenerate_rendering_for_stroke_threaded(key, image_scale);
+            self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
         })
     }
 
@@ -193,7 +201,7 @@ impl StrokeStore {
                     continue;
                 }
 
-                self.regenerate_rendering_for_stroke(key, image_scale)?;
+                self.regenerate_rendering_for_stroke(key, viewport, image_scale)?;
             }
         }
         Ok(())
@@ -227,12 +235,12 @@ impl StrokeStore {
                 let tasks_tx = self.tasks_tx.clone();
                 let stroke = stroke.clone();
 
-                // Only set false when viewport intersects stroke bounds
-                render_comp.regenerate_flag = false;
+                // Only set false when viewport contains stroke bounds
+                render_comp.regenerate_flag = !viewport.contains(&stroke.bounds());
 
                 // Spawn a new thread for image rendering
                 self.threadpool.spawn(move || {
-                    match stroke.gen_images(image_scale) {
+                    match stroke.gen_images(viewport, image_scale) {
                         Ok(images) => {
                             tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
                                 key,
@@ -255,6 +263,7 @@ impl StrokeStore {
         &mut self,
         key: StrokeKey,
         n_segments: usize,
+        viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) =
@@ -271,7 +280,7 @@ impl StrokeStore {
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                    self.regenerate_rendering_for_stroke_threaded(key, image_scale);
+                    self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
                 }
             }
         }
@@ -284,6 +293,7 @@ impl StrokeStore {
         &mut self,
         key: StrokeKey,
         n_segments: usize,
+        viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let Some(stroke) = self.strokes.get(key) {
@@ -310,7 +320,7 @@ impl StrokeStore {
                     }
                     // regenerate everything for strokes that don't support generating svgs for the last added elements
                     Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                        match stroke.gen_images(image_scale) {
+                        match stroke.gen_images(viewport, image_scale) {
                             Ok(images) => {
                                 tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
                                     key,

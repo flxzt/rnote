@@ -1,6 +1,7 @@
 use super::StrokeBehaviour;
 use crate::render::{self};
 use crate::DrawBehaviour;
+use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::Composer;
@@ -47,8 +48,12 @@ impl StrokeBehaviour for BrushStroke {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        let bounds = self.bounds();
+    fn gen_images(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
+        let bounds = self.bounds().clamp(None, Some(viewport));
 
         let images = if bounds.extents()[0] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
             && bounds.extents()[1] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale

@@ -3,6 +3,7 @@ use super::AudioPlayer;
 use crate::sheet::Sheet;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use kurbo::Shape;
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
@@ -527,7 +528,7 @@ impl DrawOnSheetBehaviour for Selector {
                 selection_bounds,
                 ..
             } => {
-                Self::draw_selection_overlay(cx, *selection_bounds, modify_state, camera);
+                Self::draw_selection_overlay(cx, *selection_bounds, modify_state, camera)?;
 
                 match modify_state {
                     ModifyState::Rotate {
@@ -541,7 +542,7 @@ impl DrawOnSheetBehaviour for Selector {
                             *start_rotation_angle,
                             *current_rotation_angle,
                             camera,
-                        );
+                        )?;
                     }
                     _ => {}
                 }
@@ -561,13 +562,13 @@ impl Selector {
     /// The threshold where a resize is applied ( in offset magnitude, surface coords )
     const RESIZE_MAGNITUDE_THRESHOLD: f64 = 1.0;
 
-    const SELECTION_OUTLINE_WIDTH: f64 = 1.8;
+    const SELECTION_OUTLINE_WIDTH: f64 = 1.5;
     const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(0xf0);
     const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x17);
     const SELECTING_DASH_PATTERN: [f64; 2] = [12.0, 6.0];
 
-    const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
-    const ROTATE_NODE_SIZE: f64 = 16.0;
+    const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
+    const ROTATE_NODE_SIZE: f64 = 18.0;
 
     /// Sets the state to a selection
     pub fn set_selection(&mut self, selection: Vec<StrokeKey>, selection_bounds: AABB) {
@@ -640,106 +641,153 @@ impl Selector {
         selection_bounds: AABB,
         modify_state: &ModifyState,
         camera: &Camera,
-    ) {
+    ) -> anyhow::Result<()> {
+        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let total_zoom = camera.total_zoom();
 
-        // Selection rect
-        {
-            let rect = selection_bounds
-                .tightened(Selector::SELECTION_OUTLINE_WIDTH / total_zoom)
-                .to_kurbo_rect();
+        let rotate_node_state = match modify_state {
+            ModifyState::Rotate { .. } => PenState::Down,
+            _ => PenState::Up,
+        };
+        let rotate_node_sphere = Self::rotate_node_sphere(selection_bounds, camera);
 
-            piet_cx.fill(rect.clone(), &Selector::SELECTION_FILL_COLOR);
-            piet_cx.stroke(
-                rect,
-                &Selector::OUTLINE_COLOR,
-                Selector::SELECTION_OUTLINE_WIDTH / total_zoom,
-            );
-        }
+        let resize_tl_node_state = match modify_state {
+            ModifyState::Resize {
+                from_corner: ResizeCorner::TopLeft,
+                ..
+            } => PenState::Down,
+            _ => PenState::Up,
+        };
+        let resize_tl_node_bounds =
+            Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera);
+
+        let resize_tr_node_state = match modify_state {
+            ModifyState::Resize {
+                from_corner: ResizeCorner::TopRight,
+                ..
+            } => PenState::Down,
+            _ => PenState::Up,
+        };
+        let resize_tr_node_bounds =
+            Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera);
+
+        let resize_bl_node_state = match modify_state {
+            ModifyState::Resize {
+                from_corner: ResizeCorner::BottomLeft,
+                ..
+            } => PenState::Down,
+            _ => PenState::Up,
+        };
+        let resize_bl_node_bounds =
+            Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera);
+
+        let resize_br_node_state = match modify_state {
+            ModifyState::Resize {
+                from_corner: ResizeCorner::BottomRight,
+                ..
+            } => PenState::Down,
+            _ => PenState::Up,
+        };
+        let resize_br_node_bounds =
+            Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera);
+
+        // Selection rect
+        let selection_rect = selection_bounds.to_kurbo_rect();
+
+        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        let mut clip_path = kurbo::BezPath::new();
+        clip_path.extend(
+            drawhelpers::rectangular_node_shape(
+                resize_tl_node_state,
+                resize_tl_node_bounds,
+                total_zoom,
+            )
+            .path_elements(0.1),
+        );
+        clip_path.extend(
+            drawhelpers::rectangular_node_shape(
+                resize_tr_node_state,
+                resize_tr_node_bounds,
+                total_zoom,
+            )
+            .path_elements(0.1),
+        );
+        clip_path.extend(
+            drawhelpers::rectangular_node_shape(
+                resize_bl_node_state,
+                resize_bl_node_bounds,
+                total_zoom,
+            )
+            .path_elements(0.1),
+        );
+        clip_path.extend(
+            drawhelpers::rectangular_node_shape(
+                resize_br_node_state,
+                resize_br_node_bounds,
+                total_zoom,
+            )
+            .path_elements(0.1),
+        );
+
+        clip_path.extend(
+            drawhelpers::circular_node_shape(rotate_node_state, rotate_node_sphere, total_zoom)
+                .path_elements(0.1),
+        );
+        // enclosing the shapes with the selector (!) bounds ( in reversed winding ),
+        // so that the inner shapes become the exterior for correct clipping
+        clip_path.extend(
+            kurbo::Rect::new(
+                selection_bounds.maxs[0] + Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+                selection_bounds.mins[1] - Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+                selection_bounds.mins[0] - Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+                selection_bounds.maxs[1] + Self::SELECTION_OUTLINE_WIDTH / total_zoom,
+            )
+            .path_elements(0.1),
+        );
+
+        piet_cx.clip(clip_path);
+
+        piet_cx.fill(selection_rect.clone(), &Selector::SELECTION_FILL_COLOR);
+        piet_cx.stroke(
+            selection_rect,
+            &Selector::OUTLINE_COLOR,
+            Selector::SELECTION_OUTLINE_WIDTH / total_zoom,
+        );
+
+        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         // Rotate Node
-        {
-            let rotate_node_state = match modify_state {
-                ModifyState::Rotate { .. } => PenState::Down,
-                _ => PenState::Up,
-            };
-
-            drawhelpers::draw_circular_node(
-                piet_cx,
-                rotate_node_state,
-                Self::rotate_node_sphere(selection_bounds, camera),
-                total_zoom,
-            );
-        }
+        drawhelpers::draw_circular_node(piet_cx, rotate_node_state, rotate_node_sphere, total_zoom);
 
         // Resize Nodes
-        {
-            let tl_node_state = match modify_state {
-                ModifyState::Resize {
-                    from_corner: ResizeCorner::TopLeft,
-                    ..
-                } => PenState::Down,
-                _ => PenState::Up,
-            };
+        drawhelpers::draw_rectangular_node(
+            piet_cx,
+            resize_tl_node_state,
+            resize_tl_node_bounds,
+            total_zoom,
+        );
+        drawhelpers::draw_rectangular_node(
+            piet_cx,
+            resize_tr_node_state,
+            resize_tr_node_bounds,
+            total_zoom,
+        );
+        drawhelpers::draw_rectangular_node(
+            piet_cx,
+            resize_bl_node_state,
+            resize_bl_node_bounds,
+            total_zoom,
+        );
+        drawhelpers::draw_rectangular_node(
+            piet_cx,
+            resize_br_node_state,
+            resize_br_node_bounds,
+            total_zoom,
+        );
 
-            drawhelpers::draw_rectangular_node(
-                piet_cx,
-                tl_node_state,
-                Self::resize_node_bounds(ResizeCorner::TopLeft, selection_bounds, camera),
-                total_zoom,
-            );
-        }
-
-        {
-            let tr_node_state = match modify_state {
-                ModifyState::Resize {
-                    from_corner: ResizeCorner::TopRight,
-                    ..
-                } => PenState::Down,
-                _ => PenState::Up,
-            };
-
-            drawhelpers::draw_rectangular_node(
-                piet_cx,
-                tr_node_state,
-                Self::resize_node_bounds(ResizeCorner::TopRight, selection_bounds, camera),
-                total_zoom,
-            );
-        }
-
-        {
-            let bl_node_state = match modify_state {
-                ModifyState::Resize {
-                    from_corner: ResizeCorner::BottomLeft,
-                    ..
-                } => PenState::Down,
-                _ => PenState::Up,
-            };
-
-            drawhelpers::draw_rectangular_node(
-                piet_cx,
-                bl_node_state,
-                Self::resize_node_bounds(ResizeCorner::BottomLeft, selection_bounds, camera),
-                total_zoom,
-            );
-        }
-
-        {
-            let br_node_state = match modify_state {
-                ModifyState::Resize {
-                    from_corner: ResizeCorner::BottomRight,
-                    ..
-                } => PenState::Down,
-                _ => PenState::Up,
-            };
-
-            drawhelpers::draw_rectangular_node(
-                piet_cx,
-                br_node_state,
-                Self::resize_node_bounds(ResizeCorner::BottomRight, selection_bounds, camera),
-                total_zoom,
-            );
-        }
+        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        Ok(())
     }
 
     fn draw_rotation_indicator(
@@ -748,8 +796,8 @@ impl Selector {
         start_rotation_angle: f64,
         current_rotation_angle: f64,
         camera: &Camera,
-    ) {
-        piet_cx.save().unwrap();
+    ) -> anyhow::Result<()> {
+        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         const CENTER_CROSS_COLOR: Color = Color {
             r: 0.964,
             g: 0.380,
@@ -757,21 +805,23 @@ impl Selector {
             a: 1.0,
         };
         let total_zoom = camera.total_zoom();
-        let center_cross_radius: f64 = 10.0 / total_zoom;
-        let center_cross_path_width: f64 = 1.0 / total_zoom;
+        let center_cross_half_extents: f64 = 10.0 / total_zoom;
+        let center_cross_path_width: f64 = 1.5 / total_zoom;
 
         let mut center_cross = kurbo::BezPath::new();
         center_cross.move_to(
-            (rotation_center.coords + na::vector![-center_cross_radius, 0.0]).to_kurbo_point(),
+            (rotation_center.coords + na::vector![-center_cross_half_extents, 0.0])
+                .to_kurbo_point(),
         );
         center_cross.line_to(
-            (rotation_center.coords + na::vector![center_cross_radius, 0.0]).to_kurbo_point(),
+            (rotation_center.coords + na::vector![center_cross_half_extents, 0.0]).to_kurbo_point(),
         );
         center_cross.move_to(
-            (rotation_center.coords + na::vector![0.0, -center_cross_radius]).to_kurbo_point(),
+            (rotation_center.coords + na::vector![0.0, -center_cross_half_extents])
+                .to_kurbo_point(),
         );
         center_cross.line_to(
-            (rotation_center.coords + na::vector![0.0, center_cross_radius]).to_kurbo_point(),
+            (rotation_center.coords + na::vector![0.0, center_cross_half_extents]).to_kurbo_point(),
         );
 
         piet_cx.transform(
@@ -785,6 +835,8 @@ impl Selector {
             &piet::Color::from(CENTER_CROSS_COLOR),
             center_cross_path_width,
         );
-        piet_cx.restore().unwrap();
+        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        Ok(())
     }
 }

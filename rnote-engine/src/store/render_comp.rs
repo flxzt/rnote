@@ -119,6 +119,7 @@ impl StrokeStore {
 
                     render_comp.rendernodes = rendernodes;
                     render_comp.images = images;
+                    // we set the flag cause its not async so tasks cant queue up
                     render_comp.regenerate_flag = true;
                 }
                 GeneratedStrokeImages::Full(images) => {
@@ -296,6 +297,7 @@ impl StrokeStore {
 
                             render_comp.rendernodes.append(&mut rendernodes);
                             render_comp.images.append(&mut images);
+                            // not async, tasks cant queue up
                             render_comp.regenerate_flag = true;
                         }
                         GeneratedStrokeImages::Full(mut images) => {
@@ -381,7 +383,6 @@ impl StrokeStore {
                     let rendernodes = render::Image::images_to_rendernodes(&images)?;
                     render_comp.rendernodes = rendernodes;
                     render_comp.images = images;
-                    render_comp.regenerate_flag = true;
                 }
                 GeneratedStrokeImages::Full(images) => {
                     let rendernodes = render::Image::images_to_rendernodes(&images)?;
@@ -466,12 +467,10 @@ impl StrokeStore {
     }
 
     fn draw_stroke_placeholder(snapshot: &Snapshot, bounds: AABB) {
-        snapshot.push_blur(4.0);
         snapshot.append_color(
             &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_a8(0x90)),
             &graphene::Rect::from_p2d_aabb(bounds),
         );
-        snapshot.pop();
     }
 
     pub fn draw_strokes_immediate_w_piet(
@@ -541,7 +540,6 @@ impl StrokeStore {
                 if let Some(render_comp) = self.render_components.get(key) {
                     if let Some(trash_comp) = self.trash_components.get(key) {
                         if render_comp.render && trash_comp.trashed {
-                            snapshot.push_blur(3.0);
                             snapshot.push_opacity(0.2);
                         }
                     }
@@ -601,7 +599,6 @@ impl StrokeStore {
                     self.trash_components.get(key),
                 ) {
                     if render_comp.render && trash_comp.trashed {
-                        snapshot.pop();
                         snapshot.pop();
                     }
                 }

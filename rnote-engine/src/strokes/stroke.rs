@@ -1,6 +1,7 @@
 use super::bitmapimage::BitmapImage;
 use super::brushstroke::BrushStroke;
 use super::shapestroke::ShapeStroke;
+use super::strokebehaviour::GeneratedStrokeImages;
 use super::vectorimage::VectorImage;
 use super::StrokeBehaviour;
 use crate::pens::brush::BrushStyle;
@@ -52,7 +53,7 @@ impl StrokeBehaviour for Stroke {
         &self,
         viewport: AABB,
         image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         match self {
             Stroke::BrushStroke(brushstroke) => brushstroke.gen_images(viewport, image_scale),
             Stroke::ShapeStroke(shapestroke) => shapestroke.gen_images(viewport, image_scale),

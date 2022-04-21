@@ -911,7 +911,7 @@ impl RnoteCanvas {
             let return_to_center_toast = adw::Toast::builder()
                 .title(&gettext("Return to origin"))
                 .timeout(0)
-                .button_label(&gettext("Return"))
+                .button_label(&gettext("Ok"))
                 .priority(adw::ToastPriority::Normal)
                 .action_name("win.return-origin-page")
                 .build();

@@ -1,7 +1,7 @@
+use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::render::{self};
 use crate::DrawBehaviour;
-use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::Composer;
@@ -52,8 +52,14 @@ impl StrokeBehaviour for BrushStroke {
         &self,
         viewport: AABB,
         image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
-        let bounds = self.bounds().clamp(None, Some(viewport));
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+        let bounds = self.bounds();
+
+        let (bounds, partial) = if viewport.contains(&bounds) {
+            (bounds, false)
+        } else {
+            (viewport, true)
+        };
 
         let images = if bounds.extents()[0] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
             && bounds.extents()[1] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
@@ -164,7 +170,11 @@ impl StrokeBehaviour for BrushStroke {
             }
         };
 
-        Ok(images)
+        if partial {
+            Ok(GeneratedStrokeImages::Partial(images))
+        } else {
+            Ok(GeneratedStrokeImages::Full(images))
+        }
     }
 }
 
@@ -265,7 +275,7 @@ impl BrushStroke {
         &self,
         no_last_segments: usize,
         image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let images = match &self.style {
             Style::Smooth(options) => self
                 .path
@@ -328,6 +338,6 @@ impl BrushStroke {
                 .collect::<Vec<render::Image>>(),
         };
 
-        Ok(images)
+        Ok(GeneratedStrokeImages::Partial(images))
     }
 }

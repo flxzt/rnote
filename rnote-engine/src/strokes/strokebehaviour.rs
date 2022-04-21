@@ -4,6 +4,15 @@ use crate::DrawBehaviour;
 use p2d::bounding_volume::AABB;
 use rnote_compose::shapes::ShapeBehaviour;
 
+#[derive(Debug, Clone)]
+/// Generated stroke images.
+pub enum GeneratedStrokeImages {
+    /// only part of the stroke was rendered (e.g. part of it is out of the given viewport)
+    Partial(Vec<render::Image>),
+    /// All stroke images were rendered
+    Full(Vec<render::Image>),
+}
+
 /// Specifing that a type is a stroke.
 /// Also needs to implement drawbehaviour, as some methods have default implementation based on it.
 pub trait StrokeBehaviour: DrawBehaviour + ShapeBehaviour
@@ -19,7 +28,7 @@ where
         &self,
         viewport: AABB,
         image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error>;
+    ) -> Result<GeneratedStrokeImages, anyhow::Error>;
 
     fn export_as_image_bytes(
         &self,

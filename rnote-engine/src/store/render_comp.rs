@@ -1,13 +1,15 @@
 use super::StoreTask;
 use super::{Stroke, StrokeKey, StrokeStore};
 use crate::engine::visual_debug;
+use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::StrokeBehaviour;
-use crate::utils::GrapheneRectHelpers;
+use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{render, DrawBehaviour};
 
 use anyhow::Context;
-use gtk4::{graphene, gsk, Snapshot};
+use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use rnote_compose::color;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 
@@ -109,12 +111,26 @@ impl StrokeStore {
                 .gen_images(viewport, image_scale)
                 .context("gen_images() failed  in regenerate_rendering_for_stroke()")?;
 
-            let rendernodes = render::Image::images_to_rendernodes(&images)
-                .context(" image_to_rendernode() failed in regenerate_rendering_for_stroke()")?;
+            match images {
+                GeneratedStrokeImages::Partial(images) => {
+                    let rendernodes = render::Image::images_to_rendernodes(&images).context(
+                        " image_to_rendernode() failed in regenerate_rendering_for_stroke()",
+                    )?;
 
-            render_comp.rendernodes = rendernodes;
-            render_comp.images = images;
-            render_comp.regenerate_flag = !viewport.contains(&stroke.bounds());
+                    render_comp.rendernodes = rendernodes;
+                    render_comp.images = images;
+                    render_comp.regenerate_flag = true;
+                }
+                GeneratedStrokeImages::Full(images) => {
+                    let rendernodes = render::Image::images_to_rendernodes(&images).context(
+                        " image_to_rendernode() failed in regenerate_rendering_for_stroke()",
+                    )?;
+
+                    render_comp.rendernodes = rendernodes;
+                    render_comp.images = images;
+                    render_comp.regenerate_flag = false;
+                }
+            }
         }
         Ok(())
     }
@@ -271,12 +287,25 @@ impl StrokeStore {
         {
             match stroke {
                 Stroke::BrushStroke(brushstroke) => {
-                    let mut images =
+                    let images =
                         brushstroke.gen_images_for_last_segments(n_segments, image_scale)?;
-                    let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
 
-                    render_comp.rendernodes.append(&mut rendernodes);
-                    render_comp.images.append(&mut images);
+                    match images {
+                        GeneratedStrokeImages::Partial(mut images) => {
+                            let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
+
+                            render_comp.rendernodes.append(&mut rendernodes);
+                            render_comp.images.append(&mut images);
+                            render_comp.regenerate_flag = true;
+                        }
+                        GeneratedStrokeImages::Full(mut images) => {
+                            let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
+
+                            render_comp.rendernodes.append(&mut rendernodes);
+                            render_comp.images.append(&mut images);
+                            render_comp.regenerate_flag = false;
+                        }
+                    }
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
@@ -344,12 +373,23 @@ impl StrokeStore {
     pub fn replace_rendering_with_images(
         &mut self,
         key: StrokeKey,
-        images: Vec<render::Image>,
+        images: GeneratedStrokeImages,
     ) -> anyhow::Result<()> {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            let rendernodes = render::Image::images_to_rendernodes(&images)?;
-            render_comp.rendernodes = rendernodes;
-            render_comp.images = images;
+            match images {
+                GeneratedStrokeImages::Partial(images) => {
+                    let rendernodes = render::Image::images_to_rendernodes(&images)?;
+                    render_comp.rendernodes = rendernodes;
+                    render_comp.images = images;
+                    render_comp.regenerate_flag = true;
+                }
+                GeneratedStrokeImages::Full(images) => {
+                    let rendernodes = render::Image::images_to_rendernodes(&images)?;
+                    render_comp.rendernodes = rendernodes;
+                    render_comp.images = images;
+                    render_comp.regenerate_flag = false;
+                }
+            }
         }
         Ok(())
     }
@@ -358,12 +398,22 @@ impl StrokeStore {
     pub fn append_rendering_images(
         &mut self,
         key: StrokeKey,
-        mut images: Vec<render::Image>,
+        images: GeneratedStrokeImages,
     ) -> anyhow::Result<()> {
         if let Some(render_comp) = self.render_components.get_mut(key) {
-            let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
-            render_comp.rendernodes.append(&mut rendernodes);
-            render_comp.images.append(&mut images);
+            match images {
+                GeneratedStrokeImages::Partial(mut images) => {
+                    let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
+
+                    render_comp.rendernodes.append(&mut rendernodes);
+                    render_comp.images.append(&mut images);
+                }
+                GeneratedStrokeImages::Full(mut images) => {
+                    let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
+                    render_comp.rendernodes.append(&mut rendernodes);
+                    render_comp.images.append(&mut images);
+                }
+            }
         }
         Ok(())
     }
@@ -375,7 +425,13 @@ impl StrokeStore {
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .iter()
             .for_each(|&key| {
-                if let Some(render_comp) = self.render_components.get(key) {
+                if let (Some(stroke), Some(render_comp)) =
+                    (self.strokes.get(key), self.render_components.get(key))
+                {
+                    if render_comp.rendernodes.is_empty() {
+                        Self::draw_stroke_placeholder(snapshot, stroke.bounds())
+                    }
+
                     for rendernode in render_comp.rendernodes.iter() {
                         snapshot.append_node(rendernode);
                     }
@@ -395,12 +451,27 @@ impl StrokeStore {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
-                if let Some(render_comp) = self.render_components.get(key) {
+                if let (Some(stroke), Some(render_comp)) =
+                    (self.strokes.get(key), self.render_components.get(key))
+                {
+                    if render_comp.rendernodes.is_empty() {
+                        Self::draw_stroke_placeholder(snapshot, stroke.bounds())
+                    }
+
                     for rendernode in render_comp.rendernodes.iter() {
                         snapshot.append_node(rendernode);
                     }
                 }
             });
+    }
+
+    fn draw_stroke_placeholder(snapshot: &Snapshot, bounds: AABB) {
+        snapshot.push_blur(4.0);
+        snapshot.append_color(
+            &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_a8(0x90)),
+            &graphene::Rect::from_p2d_aabb(bounds),
+        );
+        snapshot.pop();
     }
 
     pub fn draw_strokes_immediate_w_piet(

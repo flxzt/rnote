@@ -1,3 +1,4 @@
+use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::render;
 use crate::DrawBehaviour;
@@ -47,14 +48,19 @@ impl StrokeBehaviour for BitmapImage {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        _viewport: AABB,
         image_scale: f64,
-    ) -> Result<Vec<render::Image>, anyhow::Error> {
-        Ok(vec![render::Image::gen_with_piet(
-            |piet_cx| self.draw(piet_cx, image_scale),
-            self.bounds().clamp(None, Some(viewport)),
-            image_scale,
-        )?])
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+        let bounds = self.bounds();
+
+        // Always generate full stroke images for bitmapimages, as they are too expensive to be repeatetly rendered
+        Ok(GeneratedStrokeImages::Full(vec![
+            render::Image::gen_with_piet(
+                |piet_cx| self.draw(piet_cx, image_scale),
+                bounds,
+                image_scale,
+            )?,
+        ]))
     }
 }
 

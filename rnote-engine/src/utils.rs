@@ -9,6 +9,8 @@ where
 {
     fn from_compose_color(color: rnote_compose::Color) -> Self;
     fn into_compose_color(self) -> rnote_compose::Color;
+    fn from_piet_color(color: piet::Color) -> Self;
+    fn into_piet_color(self) -> piet::Color;
 }
 
 impl GdkRGBAHelpers for gdk::RGBA {
@@ -27,6 +29,20 @@ impl GdkRGBAHelpers for gdk::RGBA {
             b: f64::from(self.blue()),
             a: f64::from(self.alpha()),
         }
+    }
+
+    fn from_piet_color(color: piet::Color) -> Self {
+        let (r, g, b, a) = color.as_rgba();
+        gdk::RGBA::new(r as f32, g as f32, b as f32, a as f32)
+    }
+
+    fn into_piet_color(self) -> piet::Color {
+        piet::Color::rgba(
+            f64::from(self.red()),
+            f64::from(self.green()),
+            f64::from(self.blue()),
+            f64::from(self.alpha()),
+        )
     }
 }
 

@@ -14,6 +14,7 @@ pub use trash_comp::TrashComponent;
 
 use crate::pens::penholder::PenStyle;
 use crate::pens::tools::DragProximityTool;
+use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::BitmapImage;
 use crate::strokes::Stroke;
 use crate::strokes::StrokeBehaviour;
@@ -49,12 +50,12 @@ pub enum StoreTask {
     /// Replace the images of the render_comp
     UpdateStrokeWithImages {
         key: StrokeKey,
-        images: Vec<render::Image>,
+        images: GeneratedStrokeImages,
     },
     /// Appends the images to the rendering of the stroke
     AppendImagesToStroke {
         key: StrokeKey,
-        images: Vec<render::Image>,
+        images: GeneratedStrokeImages,
     },
     /// Inserts a new stroke to the store
     InsertStroke { stroke: Stroke },

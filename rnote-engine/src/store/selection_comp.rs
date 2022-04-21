@@ -1,4 +1,4 @@
-use super::{Stroke, StrokeKey, StrokeStore};
+use super::{StrokeKey, StrokeStore};
 
 use geo::prelude::*;
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -169,7 +169,6 @@ impl StrokeStore {
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
                 let selection_comp = self.selection_components.get_mut(key)?;
-                selection_comp.selected = false;
 
                 // skip if stroke is trashed
                 if let Some(trash_comp) = self.trash_components.get(key) {
@@ -177,75 +176,35 @@ impl StrokeStore {
                         return None;
                     }
                 }
+                selection_comp.selected = false;
 
-                match stroke {
-                    Stroke::BrushStroke(brushstroke) => {
-                        let brushstroke_bounds = brushstroke.bounds();
+                let stroke_bounds = stroke.bounds();
 
-                        if selector_polygon
-                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(brushstroke_bounds))
+                if selector_polygon.contains(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                {
+                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                        self.chrono_counter += 1;
+                        chrono_comp.t = self.chrono_counter;
+                    }
+                    selection_comp.selected = true;
+                    return Some(key);
+                } else if selector_polygon
+                    .intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                {
+                    for &hitbox_elem in stroke.hitboxes().iter() {
+                        if !selector_polygon
+                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
                         {
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        } else if selector_polygon
-                            .intersects(&crate::utils::p2d_aabb_to_geo_polygon(brushstroke_bounds))
-                        {
-                            for &hitbox_elem in brushstroke.hitboxes.iter() {
-                                if !selector_polygon
-                                    .contains(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
-                                {
-                                    return None;
-                                }
-                            }
+                            return None;
+                        }
+                    }
 
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        }
+                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                        self.chrono_counter += 1;
+                        chrono_comp.t = self.chrono_counter;
                     }
-                    Stroke::ShapeStroke(shapestroke) => {
-                        if selector_polygon
-                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(shapestroke.bounds()))
-                        {
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        }
-                    }
-                    Stroke::VectorImage(vectorimage) => {
-                        if selector_polygon
-                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(vectorimage.bounds()))
-                        {
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        }
-                    }
-                    Stroke::BitmapImage(bitmapimage) => {
-                        if selector_polygon
-                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(bitmapimage.bounds()))
-                        {
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        }
-                    }
+                    selection_comp.selected = true;
+                    return Some(key);
                 }
 
                 None
@@ -260,7 +219,6 @@ impl StrokeStore {
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
                 let selection_comp = self.selection_components.get_mut(key)?;
-                selection_comp.selected = false;
 
                 // skip if stroke is trashed
                 if let Some(trash_comp) = self.trash_components.get(key) {
@@ -269,62 +227,30 @@ impl StrokeStore {
                     }
                 }
 
-                match stroke {
-                    Stroke::BrushStroke(brushstroke) => {
-                        let brushstroke_bounds = brushstroke.bounds();
+                selection_comp.selected = false;
 
-                        if aabb.contains(&brushstroke_bounds) {
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        } else if aabb.intersects(&brushstroke_bounds) {
-                            for &hitbox_elem in brushstroke.hitboxes.iter() {
-                                if !aabb.contains(&hitbox_elem) {
-                                    return None;
-                                }
-                            }
+                let stroke_bounds = stroke.bounds();
 
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
+                if aabb.contains(&stroke_bounds) {
+                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                        self.chrono_counter += 1;
+                        chrono_comp.t = self.chrono_counter;
+                    }
+                    selection_comp.selected = true;
+                    return Some(key);
+                } else if aabb.intersects(&stroke_bounds) {
+                    for &hitbox_elem in stroke.hitboxes().iter() {
+                        if !aabb.contains(&hitbox_elem) {
+                            return None;
                         }
                     }
-                    Stroke::ShapeStroke(shapestroke) => {
-                        if aabb.contains(&shapestroke.bounds()) {
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        }
+
+                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                        self.chrono_counter += 1;
+                        chrono_comp.t = self.chrono_counter;
                     }
-                    Stroke::VectorImage(vectorimage) => {
-                        if aabb.contains(&vectorimage.bounds()) {
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        }
-                    }
-                    Stroke::BitmapImage(bitmapimage) => {
-                        if aabb.contains(&bitmapimage.bounds()) {
-                            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                                self.chrono_counter += 1;
-                                chrono_comp.t = self.chrono_counter;
-                            }
-                            selection_comp.selected = true;
-                            return Some(key);
-                        }
-                    }
+                    selection_comp.selected = true;
+                    return Some(key);
                 }
 
                 None

@@ -108,7 +108,7 @@ impl Camera {
     /// The viewport, extended. Used for rendering with some margin around the viewport, so there are no artifacts at the edges
     pub fn viewport_extended(&self) -> AABB {
         let viewport = self.viewport();
-        viewport.extend_by(na::Vector2::repeat(200.0))
+        viewport.extend_by(na::Vector2::repeat(500.0))
     }
 
     /// The transform from sheet coords -> surface coords

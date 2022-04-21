@@ -2959,6 +2959,7 @@ dependencies = [
  "nalgebra 0.30.1",
  "parry2d-f64",
  "piet",
+ "piet-cairo",
  "piet-svg",
  "pretty_env_logger",
  "rand 0.8.5",

@@ -1,8 +1,13 @@
-use crate::penhelpers::PenEvent;
+use p2d::bounding_volume::{BoundingVolume, AABB};
+
+use crate::helpers::AABBHelpers;
+use crate::penhelpers::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::QuadraticBezier;
-use crate::Shape;
+use crate::style::{drawhelpers, Composer};
+use crate::{Shape, Style};
 
+use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::ShapeBuilderBehaviour;
 
 #[derive(Debug, Clone)]
@@ -35,16 +40,16 @@ pub struct QuadBezBuilder {
     pub state: QuadBezBuilderState,
 }
 
-impl ShapeBuilderBehaviour for QuadBezBuilder {
-    type BuildedShape = Shape;
-
+impl ShapeBuilderCreator for QuadBezBuilder {
     fn start(element: Element) -> Self {
         Self {
             state: QuadBezBuilderState::Start(element.pos),
         }
     }
+}
 
-    fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
+impl ShapeBuilderBehaviour for QuadBezBuilder {
+    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
@@ -79,14 +84,74 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                 *end = element.pos;
             }
             (QuadBezBuilderState::End { start, cp, end }, PenEvent::Up { .. }) => {
-                return Some(vec![Shape::QuadraticBezier(QuadraticBezier {
-                    start: *start,
-                    cp: *cp,
-                    end: *end,
-                })]);
+                return BuilderProgress::Finished(Some(vec![Shape::QuadraticBezier(
+                    QuadraticBezier {
+                        start: *start,
+                        cp: *cp,
+                        end: *end,
+                    },
+                )]));
             }
             (QuadBezBuilderState::End { .. }, ..) => {}
         }
-        None
+
+        BuilderProgress::InProgress
+    }
+
+    fn bounds(&self, style: &Style) -> AABB {
+        let stroke_width = match style {
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width,
+            Style::Textured(options) => options.stroke_width,
+        };
+
+        match &self.state {
+            crate::builders::quadbezbuilder::QuadBezBuilderState::Start(start) => {
+                AABB::from_half_extents(
+                    na::Point2::from(*start),
+                    na::Vector2::repeat(stroke_width + drawhelpers::POS_INDICATOR_RADIUS),
+                )
+            }
+            crate::builders::quadbezbuilder::QuadBezBuilderState::Cp { start, cp } => {
+                AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp))
+                    .loosened(stroke_width + drawhelpers::POS_INDICATOR_RADIUS)
+            }
+            crate::builders::quadbezbuilder::QuadBezBuilderState::End { start, cp, end } => {
+                let quadbez = QuadraticBezier {
+                    start: *start,
+                    cp: *cp,
+                    end: *end,
+                };
+                quadbez
+                    .composed_bounds(style)
+                    .loosened(drawhelpers::POS_INDICATOR_RADIUS)
+            }
+        }
+    }
+
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+        match &self.state {
+            QuadBezBuilderState::Start(start) => {
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, zoom);
+            }
+            QuadBezBuilderState::Cp { start, cp } => {
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp, zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp, zoom);
+            }
+            QuadBezBuilderState::End { start, cp, end } => {
+                let quadbez = QuadraticBezier {
+                    start: *start,
+                    cp: *cp,
+                    end: *end,
+                };
+                quadbez.draw_composed(cx, style);
+
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp, zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp, zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *end, zoom);
+            }
+        }
     }
 }

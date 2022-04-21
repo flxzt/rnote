@@ -692,7 +692,6 @@ impl RnoteAppWindow {
                 let pen_sounds = appwindow.canvas().engine().borrow().penholder.pen_sounds();
                 let pen_style = appwindow.canvas().engine().borrow().penholder.style_w_override();
                 let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
-                let shaper = appwindow.canvas().engine().borrow().penholder.shaper.clone();
                 let eraser = appwindow.canvas().engine().borrow().penholder.eraser.clone();
                 let selector = appwindow.canvas().engine().borrow().penholder.selector.clone();
                 let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
@@ -773,63 +772,70 @@ impl RnoteAppWindow {
                 }
 
                 // Shaper
-                appwindow.penssidebar().shaper_page()
-                    .roughconfig_roughness_spinbutton()
-                    .set_value(shaper.rough_options.roughness);
-                appwindow.penssidebar().shaper_page()
-                    .roughconfig_bowing_spinbutton()
-                    .set_value(shaper.rough_options.bowing);
-                appwindow.penssidebar().shaper_page()
-                    .roughconfig_curvestepcount_spinbutton()
-                    .set_value(shaper.rough_options.curve_stepcount);
-                appwindow.penssidebar().shaper_page()
-                    .roughconfig_multistroke_switch()
-                    .set_active(!shaper.rough_options.disable_multistroke);
+                {
+                    let builder_type = appwindow.canvas().engine().borrow().penholder.shaper.builder_type.clone();
+                    let style = appwindow.canvas().engine().borrow().penholder.shaper.style.clone();
+                    let rough_options = appwindow.canvas().engine().borrow().penholder.shaper.rough_options.clone();
+                    let smooth_options = appwindow.canvas().engine().borrow().penholder.shaper.smooth_options.clone();
 
-                match shaper.builder_type {
-                    ShapeBuilderType::Line => {
-                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_line_row()));
-                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-line-symbolic"));
-                    }
-                    ShapeBuilderType::Rectangle => {
-                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_rectangle_row()));
-                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-rectangle-symbolic"));
-                    }
-                    ShapeBuilderType::Ellipse => {
-                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_ellipse_row()));
-                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-ellipse-symbolic"));
-                    }
-                    ShapeBuilderType::FociEllipse => {
-                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_fociellipse_row()));
-                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-fociellipse-symbolic"));
-                    }
-                    ShapeBuilderType::QuadBez => {
-                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_quadbez_row()));
-                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-quadbez-symbolic"));
-                    }
-                    ShapeBuilderType::CubBez => {
-                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_cubbez_row()));
-                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-cubbez-symbolic"));
-                    }
-                }
+                    appwindow.penssidebar().shaper_page()
+                        .roughconfig_roughness_spinbutton()
+                        .set_value(rough_options.roughness);
+                    appwindow.penssidebar().shaper_page()
+                        .roughconfig_bowing_spinbutton()
+                        .set_value(rough_options.bowing);
+                    appwindow.penssidebar().shaper_page()
+                        .roughconfig_curvestepcount_spinbutton()
+                        .set_value(rough_options.curve_stepcount);
+                    appwindow.penssidebar().shaper_page()
+                        .roughconfig_multistroke_switch()
+                        .set_active(!rough_options.disable_multistroke);
 
-                match shaper.style {
-                    ShaperStyle::Smooth => {
-                        appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_smooth_row()));
-                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper.smooth_options.stroke_width);
-                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(shaper.smooth_options.stroke_color);
-                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(shaper.smooth_options.fill_color);
-                        appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(false);
-                        appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
-                    },
-                    ShaperStyle::Rough => {
-                        appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_rough_row()));
-                        appwindow.penssidebar().shaper_page().width_spinbutton().set_value(shaper.rough_options.stroke_width);
-                        appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(shaper.rough_options.stroke_color);
-                        appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(shaper.rough_options.fill_color);
-                        appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(true);
-                        appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-rough-symbolic"));
-                    },
+                    match builder_type {
+                        ShapeBuilderType::Line => {
+                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_line_row()));
+                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-line-symbolic"));
+                        }
+                        ShapeBuilderType::Rectangle => {
+                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_rectangle_row()));
+                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-rectangle-symbolic"));
+                        }
+                        ShapeBuilderType::Ellipse => {
+                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_ellipse_row()));
+                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-ellipse-symbolic"));
+                        }
+                        ShapeBuilderType::FociEllipse => {
+                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_fociellipse_row()));
+                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-fociellipse-symbolic"));
+                        }
+                        ShapeBuilderType::QuadBez => {
+                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_quadbez_row()));
+                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-quadbez-symbolic"));
+                        }
+                        ShapeBuilderType::CubBez => {
+                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_cubbez_row()));
+                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-cubbez-symbolic"));
+                        }
+                    }
+
+                    match style {
+                        ShaperStyle::Smooth => {
+                            appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_smooth_row()));
+                            appwindow.penssidebar().shaper_page().width_spinbutton().set_value(smooth_options.stroke_width);
+                            appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(smooth_options.stroke_color);
+                            appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(smooth_options.fill_color);
+                            appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(false);
+                            appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
+                        },
+                        ShaperStyle::Rough => {
+                            appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_rough_row()));
+                            appwindow.penssidebar().shaper_page().width_spinbutton().set_value(rough_options.stroke_width);
+                            appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(rough_options.stroke_color);
+                            appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(rough_options.fill_color);
+                            appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(true);
+                            appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-rough-symbolic"));
+                        },
+                    }
                 }
 
                 // Eraser

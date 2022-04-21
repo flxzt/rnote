@@ -1,10 +1,14 @@
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use p2d::shape::Cuboid;
+use piet::RenderContext;
 
-use crate::penhelpers::PenEvent;
+use crate::penhelpers::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Rectangle;
-use crate::{Shape, Transform};
+use crate::style::{drawhelpers, Composer};
+use crate::{Shape, Style, Transform};
 
+use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::ShapeBuilderBehaviour;
 
 /// rect builder
@@ -16,29 +20,47 @@ pub struct RectangleBuilder {
     pub current: na::Vector2<f64>,
 }
 
-impl ShapeBuilderBehaviour for RectangleBuilder {
-    type BuildedShape = Shape;
-
+impl ShapeBuilderCreator for RectangleBuilder {
     fn start(element: Element) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
         }
     }
+}
 
-    fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
+impl ShapeBuilderBehaviour for RectangleBuilder {
+    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = element.pos;
             }
             PenEvent::Up { .. } => {
-                return Some(vec![Shape::Rectangle(self.state_as_rect())]);
+                return BuilderProgress::Finished(Some(vec![Shape::Rectangle(
+                    self.state_as_rect(),
+                )]));
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}
         }
 
-        None
+        BuilderProgress::InProgress
+    }
+
+    fn bounds(&self, style: &Style) -> AABB {
+        self.state_as_rect()
+            .composed_bounds(style)
+            .loosened(drawhelpers::POS_INDICATOR_RADIUS)
+    }
+
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+        cx.save().unwrap();
+        let rect = self.state_as_rect();
+        rect.draw_composed(cx, style);
+
+        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
+        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
+        cx.restore().unwrap();
     }
 }
 

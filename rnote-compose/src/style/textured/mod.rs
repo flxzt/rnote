@@ -7,7 +7,6 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 pub use textureddotsdistribution::TexturedDotsDistribution;
 pub use texturedoptions::TexturedOptions;
 
-use crate::builders::PenPathBuilder;
 use crate::helpers::Vector2Helpers;
 use crate::penpath::Segment;
 use crate::shapes::{Line, ShapeBehaviour};
@@ -183,31 +182,6 @@ impl Composer<TexturedOptions> for PenPath {
             options.seed = options.seed.map(|seed| crate::utils::seed_advance(seed));
             segment.draw_composed(cx, &options);
         }
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<TexturedOptions> for PenPathBuilder {
-    fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
-            acc.take_point(na::Point2::from(x.pos));
-            acc.loosened(options.stroke_width)
-        })
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
-        cx.save().unwrap();
-        let penpath = self
-            .buffer
-            .iter()
-            .zip(self.buffer.iter().skip(1))
-            .map(|(start, end)| Segment::Line {
-                start: *start,
-                end: *end,
-            })
-            .collect::<PenPath>();
-
-        penpath.draw_composed(cx, options);
         cx.restore().unwrap();
     }
 }

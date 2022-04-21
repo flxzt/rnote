@@ -10,9 +10,9 @@ use crate::penhelpers::PenState;
 /// ## Pos indicator
 
 /// the radius
-pub const POS_INDICATOR_RADIUS: f64 = 2.0;
+pub const POS_INDICATOR_RADIUS: f64 = 5.0;
 /// the outline width
-pub const POS_INDICATOR_OUTLINE_WIDTH: f64 = 1.0;
+pub const POS_INDICATOR_OUTLINE_WIDTH: f64 = 2.0;
 
 /// the pos indicator shape
 pub fn pos_indicator_shape(
@@ -55,7 +55,7 @@ pub fn draw_pos_indicator(
 /// ## Vec indicator
 
 /// the line width
-pub const VEC_INDICATOR_LINE_WIDTH: f64 = 1.0;
+pub const VEC_INDICATOR_LINE_WIDTH: f64 = 1.5;
 
 /// vec indicator shape
 pub fn vec_indicator_shape(
@@ -101,7 +101,7 @@ pub fn rectangular_node_shape(
 
     kurbo::RoundedRect::from_rect(
         bounds
-            .tightened(RECTANGULAR_NODE_OUTLINE_WIDTH / 2.0)
+            .tightened(RECTANGULAR_NODE_OUTLINE_WIDTH / 2.0 / zoom)
             .to_kurbo_rect(),
         CORNER_RADIUS / zoom,
     )
@@ -143,9 +143,9 @@ pub const CIRCULAR_NODE_OUTLINE_WIDTH: f64 = 1.5;
 pub fn circular_node_shape(
     _node_state: PenState,
     mut bounding_sphere: BoundingSphere,
-    _zoom: f64,
+    zoom: f64,
 ) -> kurbo::Circle {
-    bounding_sphere.tighten(CIRCULAR_NODE_OUTLINE_WIDTH / 2.0);
+    bounding_sphere.tighten(CIRCULAR_NODE_OUTLINE_WIDTH / 2.0 / zoom);
 
     kurbo::Circle::new(
         bounding_sphere.center.coords.to_kurbo_point(),

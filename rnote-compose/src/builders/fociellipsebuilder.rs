@@ -1,8 +1,14 @@
-use crate::penhelpers::PenEvent;
+use p2d::bounding_volume::{BoundingVolume, AABB};
+use piet::RenderContext;
+
+use crate::helpers::AABBHelpers;
+use crate::penhelpers::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
-use crate::Shape;
+use crate::style::{drawhelpers, Composer};
+use crate::{Shape, Style};
 
+use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::ShapeBuilderBehaviour;
 
 #[derive(Debug, Clone)]
@@ -28,16 +34,16 @@ pub struct FociEllipseBuilder {
     pub state: FociEllipseBuilderState,
 }
 
-impl ShapeBuilderBehaviour for FociEllipseBuilder {
-    type BuildedShape = Shape;
-
+impl ShapeBuilderCreator for FociEllipseBuilder {
     fn start(element: Element) -> Self {
         Self {
             state: FociEllipseBuilderState::First(element.pos),
         }
     }
+}
 
-    fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
+impl ShapeBuilderBehaviour for FociEllipseBuilder {
+    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
@@ -67,10 +73,61 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             (FociEllipseBuilderState::FociAndPoint { foci, point }, PenEvent::Up { .. }) => {
                 let shape = Ellipse::from_foci_and_point(*foci, *point);
 
-                return Some(vec![Shape::Ellipse(shape)]);
+                return BuilderProgress::Finished(Some(vec![Shape::Ellipse(shape)]));
             }
             (FociEllipseBuilderState::FociAndPoint { .. }, _) => {}
         }
-        None
+
+        BuilderProgress::InProgress
+    }
+
+    fn bounds(&self, style: &Style) -> AABB {
+        let stroke_width = match style {
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width,
+            Style::Textured(options) => options.stroke_width,
+        };
+
+        match &self.state {
+            FociEllipseBuilderState::First(point) => AABB::from_half_extents(
+                na::Point2::from(*point),
+                na::Vector2::repeat(stroke_width + drawhelpers::POS_INDICATOR_RADIUS),
+            ),
+            FociEllipseBuilderState::Foci(foci) => {
+                AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
+                    .loosened(stroke_width + drawhelpers::POS_INDICATOR_RADIUS)
+            }
+            FociEllipseBuilderState::FociAndPoint { foci, point } => {
+                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
+                ellipse
+                    .composed_bounds(style)
+                    .loosened(drawhelpers::POS_INDICATOR_RADIUS)
+            }
+        }
+    }
+
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+        cx.save().unwrap();
+        match &self.state {
+            FociEllipseBuilderState::First(point) => {
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, zoom);
+            }
+            FociEllipseBuilderState::Foci(foci) => {
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], zoom);
+            }
+            FociEllipseBuilderState::FociAndPoint { foci, point } => {
+                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
+
+                ellipse.draw_composed(cx, style);
+
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[0], *point, zoom);
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[1], *point, zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, zoom);
+            }
+        }
+        cx.restore().unwrap();
     }
 }

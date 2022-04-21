@@ -481,7 +481,7 @@ impl DrawOnSheetBehaviour for Selector {
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         _sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
@@ -567,7 +567,9 @@ impl Selector {
     const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x17);
     const SELECTING_DASH_PATTERN: [f64; 2] = [12.0, 6.0];
 
+    /// size when zoom = 1.0, keep constant surface size, so are scaled with zoom!
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
+    /// size when zoom = 1.0, keep constant surface size, so are scaled with zoom!
     const ROTATE_NODE_SIZE: f64 = 18.0;
 
     /// Sets the state to a selection

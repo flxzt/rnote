@@ -4,6 +4,7 @@ use crate::pens::Tools;
 use crate::sheet::Sheet;
 use crate::surfaceflags::SurfaceFlags;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore};
+use piet::RenderContext;
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 
 use gtk4::{glib, glib::prelude::*};
@@ -401,7 +402,7 @@ impl DrawOnSheetBehaviour for PenHolder {
     }
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {

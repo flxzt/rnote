@@ -13,7 +13,7 @@ pub trait DrawOnSheetBehaviour {
     /// draws itself on the sheet. the implementors are expected save / restore context
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()>;

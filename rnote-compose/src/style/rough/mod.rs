@@ -6,21 +6,14 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 // Re-exports
 pub use roughoptions::RoughOptions;
 
-use crate::builders::cubbezbuilder::CubBezBuilderState;
-use crate::builders::fociellipsebuilder::FociEllipseBuilderState;
-use crate::builders::quadbezbuilder::QuadBezBuilderState;
-use crate::builders::{
-    CubBezBuilder, EllipseBuilder, FociEllipseBuilder, LineBuilder, QuadBezBuilder,
-    RectangleBuilder,
-};
-use crate::helpers::{AABBHelpers, Affine2Helpers};
+use super::Composer;
+use crate::helpers::{Affine2Helpers, Vector2Helpers};
+use crate::penpath::Segment;
 use crate::shapes::Line;
 use crate::shapes::Rectangle;
 use crate::shapes::{CubicBezier, ShapeBehaviour};
 use crate::shapes::{Ellipse, QuadraticBezier};
-
-use super::{drawhelpers, Composer};
-use crate::penhelpers::PenState;
+use crate::PenPath;
 
 /// This is a (incomplete) port of the [Rough.js](https://roughjs.com/) javascript library to Rust.
 /// Rough.js is a small (<9kB gzipped) graphics library that lets you draw in a sketchy, hand-drawn-like, style.
@@ -33,6 +26,96 @@ fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> kurbo:
 }
 
 // Composer implementations
+
+impl Composer<RoughOptions> for Segment {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
+        let mut options = options.clone();
+        options.disable_multistroke = true;
+        options.preserve_vertices = true;
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+
+            match self {
+                Segment::Dot { element } => {
+                    let radii = na::Vector2::from_element(options.stroke_width / 2.0);
+                    let dot_ellipse = kurbo::Ellipse::new(
+                        element.pos.to_kurbo_point(),
+                        radii.to_kurbo_vec(),
+                        0.0,
+                    );
+
+                    cx.fill(dot_ellipse, &stroke_brush);
+                }
+                Segment::Line { start, end } => {
+                    let line = Line {
+                        start: start.pos,
+                        end: end.pos,
+                    };
+
+                    line.draw_composed(cx, &options)
+                }
+                Segment::QuadBez { start, cp, end } => {
+                    let n_splits = 5;
+
+                    let quadbez = QuadraticBezier {
+                        start: start.pos,
+                        cp: *cp,
+                        end: end.pos,
+                    };
+
+                    let lines = quadbez.approx_with_lines(n_splits);
+
+                    lines
+                        .iter()
+                        .for_each(|line| line.draw_composed(cx, &options));
+                }
+                Segment::CubBez {
+                    start,
+                    cp1,
+                    cp2,
+                    end,
+                } => {
+                    let n_splits = 5;
+
+                    let cubbez = CubicBezier {
+                        start: start.pos,
+                        cp1: *cp1,
+                        cp2: *cp2,
+                        end: end.pos,
+                    };
+                    let lines = cubbez.approx_with_lines(n_splits);
+
+                    lines
+                        .iter()
+                        .for_each(|line| line.draw_composed(cx, &options));
+                }
+            }
+        }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<RoughOptions> for PenPath {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        self.iter()
+            .map(|segment| segment.composed_bounds(options))
+            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
+        for segment in self.iter() {
+            segment.draw_composed(cx, options);
+        }
+        cx.restore().unwrap();
+    }
+}
 
 impl Composer<RoughOptions> for Line {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
@@ -270,6 +353,7 @@ impl Composer<RoughOptions> for crate::Shape {
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
             crate::Shape::QuadraticBezier(quadbez) => quadbez.composed_bounds(options),
             crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
+            crate::Shape::Segment(segment) => segment.composed_bounds(options),
         }
     }
 
@@ -280,268 +364,7 @@ impl Composer<RoughOptions> for crate::Shape {
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
             crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
             crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
-        }
-    }
-}
-
-impl Composer<RoughOptions> for LineBuilder {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.state_as_line()
-            .composed_bounds(options)
-            .loosened(drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-        let line = self.state_as_line();
-        line.draw_composed(cx, options);
-
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<RoughOptions> for RectangleBuilder {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.state_as_rect()
-            .composed_bounds(options)
-            .loosened(drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-        let rect = self.state_as_rect();
-        rect.draw_composed(cx, options);
-
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<RoughOptions> for EllipseBuilder {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.state_as_ellipse()
-            .composed_bounds(options)
-            .loosened(drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-        let ellipse = self.state_as_ellipse();
-        ellipse.draw_composed(cx, options);
-
-        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, 1.0);
-        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, 1.0);
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<RoughOptions> for FociEllipseBuilder {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        match &self.state {
-            FociEllipseBuilderState::First(point) => AABB::from_half_extents(
-                na::Point2::from(*point),
-                na::Vector2::repeat(
-                    options.stroke_width
-                        + drawhelpers::POS_INDICATOR_RADIUS
-                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                ),
-            ),
-            FociEllipseBuilderState::Foci(foci) => {
-                AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1])).loosened(
-                    options.stroke_width
-                        + drawhelpers::POS_INDICATOR_RADIUS
-                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                )
-            }
-            FociEllipseBuilderState::FociAndPoint { foci, point } => {
-                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
-                ellipse.composed_bounds(options).loosened(
-                    drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                )
-            }
-        }
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-        match &self.state {
-            FociEllipseBuilderState::First(point) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
-            }
-            FociEllipseBuilderState::Foci(foci) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], 1.0);
-            }
-            FociEllipseBuilderState::FociAndPoint { foci, point } => {
-                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
-
-                cx.save().unwrap();
-                ellipse.draw_composed(cx, options);
-                cx.restore().unwrap();
-
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[0], *point, 1.0);
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, foci[1], *point, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *point, 1.0);
-            }
-        }
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<RoughOptions> for QuadBezBuilder {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        match &self.state {
-            QuadBezBuilderState::Start(start) => AABB::from_half_extents(
-                na::Point2::from(*start),
-                na::Vector2::repeat(
-                    options.stroke_width
-                        + drawhelpers::POS_INDICATOR_RADIUS
-                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                ),
-            ),
-            QuadBezBuilderState::Cp { start, cp } => {
-                AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp)).loosened(
-                    options.stroke_width
-                        + drawhelpers::POS_INDICATOR_RADIUS
-                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                )
-            }
-            QuadBezBuilderState::End { start, cp, end } => {
-                let quadbez = QuadraticBezier {
-                    start: *start,
-                    cp: *cp,
-                    end: *end,
-                };
-                quadbez.composed_bounds(options).loosened(
-                    drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                )
-            }
-        }
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        match &self.state {
-            QuadBezBuilderState::Start(start) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, 1.0);
-            }
-            QuadBezBuilderState::Cp { start, cp } => {
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp, 1.0);
-            }
-            QuadBezBuilderState::End { start, cp, end } => {
-                let quadbez = QuadraticBezier {
-                    start: *start,
-                    cp: *cp,
-                    end: *end,
-                };
-                quadbez.draw_composed(cx, options);
-
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *end, 1.0);
-            }
-        }
-    }
-}
-
-impl Composer<RoughOptions> for CubBezBuilder {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        match &self.state {
-            CubBezBuilderState::Start(start) => AABB::from_half_extents(
-                na::Point2::from(*start),
-                na::Vector2::repeat(
-                    options.stroke_width
-                        + drawhelpers::POS_INDICATOR_RADIUS
-                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                ),
-            ),
-            CubBezBuilderState::Cp1 { start, cp1 } => {
-                AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp1)).loosened(
-                    options.stroke_width
-                        + drawhelpers::POS_INDICATOR_RADIUS
-                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                )
-            }
-            CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
-                let quadbez = QuadraticBezier {
-                    start: *start,
-                    cp: *cp1,
-                    end: *cp2,
-                };
-                quadbez.composed_bounds(options).loosened(
-                    drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                )
-            }
-            CubBezBuilderState::End {
-                start,
-                cp1,
-                cp2,
-                end,
-            } => {
-                let cubbez = CubicBezier {
-                    start: *start,
-                    cp1: *cp1,
-                    cp2: *cp2,
-                    end: *end,
-                };
-                cubbez.composed_bounds(options).loosened(
-                    drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
-                )
-            }
-        }
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        match &self.state {
-            CubBezBuilderState::Start(start) => {
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, 1.0);
-            }
-            CubBezBuilderState::Cp1 { start, cp1 } => {
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp1, 1.0);
-            }
-            CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
-                let quadbez = QuadraticBezier {
-                    start: *start,
-                    cp: *cp1,
-                    end: *cp2,
-                };
-                quadbez.draw_composed(cx, options);
-
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp1, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp2, 1.0);
-            }
-            CubBezBuilderState::End {
-                start,
-                cp1,
-                cp2,
-                end,
-            } => {
-                let cubbez = CubicBezier {
-                    start: *start,
-                    cp1: *cp1,
-                    cp2: *cp2,
-                    end: *end,
-                };
-                cubbez.draw_composed(cx, options);
-
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, 1.0);
-                drawhelpers::draw_vec_indicator(cx, PenState::Down, *cp2, *end, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp1, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp2, 1.0);
-                drawhelpers::draw_pos_indicator(cx, PenState::Down, *end, 1.0);
-            }
+            crate::Shape::Segment(segment) => segment.draw_composed(cx, options),
         }
     }
 }

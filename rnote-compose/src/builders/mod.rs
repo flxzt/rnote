@@ -13,7 +13,7 @@ pub mod quadbezbuilder;
 /// Rectangle builder
 pub mod rectanglebuilder;
 /// shape builder behaviour
-mod shapebuilderbehaviour;
+pub mod shapebuilderbehaviour;
 
 // Re-exports
 pub use cubbezbuilder::CubBezBuilder;

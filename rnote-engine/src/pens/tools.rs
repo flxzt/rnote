@@ -1,6 +1,7 @@
 use crate::sheet::Sheet;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 use rnote_compose::penhelpers::PenEvent;
@@ -57,7 +58,7 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         _sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
@@ -141,7 +142,7 @@ impl DrawOnSheetBehaviour for DragProximityTool {
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         _sheet_bounds: AABB,
         _camera: &Camera,
     ) -> anyhow::Result<()> {
@@ -195,7 +196,7 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
@@ -425,7 +426,7 @@ impl DrawOnSheetBehaviour for Tools {
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {

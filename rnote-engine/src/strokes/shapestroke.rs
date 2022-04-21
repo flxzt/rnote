@@ -96,6 +96,17 @@ impl DrawBehaviour for ShapeStroke {
                 }
                 Style::Textured(_) => {}
             },
+            Shape::Segment(ref segment) => match &self.style {
+                Style::Smooth(options) => {
+                    segment.draw_composed(cx, options);
+                }
+                Style::Rough(options) => {
+                    segment.draw_composed(cx, options);
+                }
+                Style::Textured(options) => {
+                    segment.draw_composed(cx, options);
+                }
+            },
         };
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;

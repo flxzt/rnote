@@ -35,28 +35,36 @@ impl StrokeBehaviour for ShapeStroke {
 
     fn gen_images(
         &self,
-        viewport: AABB,
+        _viewport: AABB,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
-
-        if viewport.contains(&bounds) {
-            Ok(GeneratedStrokeImages::Full(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    bounds,
-                    image_scale,
-                )?,
-            ]))
-        } else {
-            Ok(GeneratedStrokeImages::Partial(vec![
-                render::Image::gen_with_piet(
-                    |piet_cx| self.draw(piet_cx, image_scale),
-                    viewport,
-                    image_scale,
-                )?,
-            ]))
-        }
+        /*
+               if viewport.contains(&bounds) {
+                   Ok(GeneratedStrokeImages::Full(vec![
+                       render::Image::gen_with_piet(
+                           |piet_cx| self.draw(piet_cx, image_scale),
+                           bounds,
+                           image_scale,
+                       )?,
+                   ]))
+               } else {
+                   Ok(GeneratedStrokeImages::Partial(vec![
+                       render::Image::gen_with_piet(
+                           |piet_cx| self.draw(piet_cx, image_scale),
+                           viewport,
+                           image_scale,
+                       )?,
+                   ]))
+               }
+        */
+        Ok(GeneratedStrokeImages::Full(vec![
+            render::Image::gen_with_piet(
+                |piet_cx| self.draw(piet_cx, image_scale),
+                bounds,
+                image_scale,
+            )?,
+        ]))
     }
 }
 

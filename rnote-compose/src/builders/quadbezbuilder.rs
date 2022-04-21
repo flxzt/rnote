@@ -99,11 +99,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
     }
 
     fn bounds(&self, style: &Style) -> AABB {
-        let stroke_width = match style {
-            Style::Smooth(options) => options.stroke_width,
-            Style::Rough(options) => options.stroke_width,
-            Style::Textured(options) => options.stroke_width,
-        };
+        let stroke_width = style.stroke_width();
 
         match &self.state {
             crate::builders::quadbezbuilder::QuadBezBuilderState::Start(start) => {
@@ -117,14 +113,11 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                     .loosened(stroke_width + drawhelpers::POS_INDICATOR_RADIUS)
             }
             crate::builders::quadbezbuilder::QuadBezBuilderState::End { start, cp, end } => {
-                let quadbez = QuadraticBezier {
-                    start: *start,
-                    cp: *cp,
-                    end: *end,
-                };
-                quadbez
-                    .composed_bounds(style)
-                    .loosened(drawhelpers::POS_INDICATOR_RADIUS)
+                let stroke_width = style.stroke_width();
+
+                let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*end));
+                aabb.take_point(na::Point2::from(*cp));
+                aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS))
             }
         }
     }

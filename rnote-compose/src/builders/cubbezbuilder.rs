@@ -129,30 +129,21 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
     }
 
     fn bounds(&self, style: &Style) -> AABB {
-        let stroke_width = match style {
-            Style::Smooth(options) => options.stroke_width,
-            Style::Rough(options) => options.stroke_width,
-            Style::Textured(options) => options.stroke_width,
-        };
+        let stroke_width = style.stroke_width();
 
         match &self.state {
             CubBezBuilderState::Start(start) => AABB::from_half_extents(
                 na::Point2::from(*start),
-                na::Vector2::repeat(stroke_width + drawhelpers::POS_INDICATOR_RADIUS),
+                na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS)),
             ),
             CubBezBuilderState::Cp1 { start, cp1 } => {
                 AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp1))
-                    .loosened(stroke_width + drawhelpers::POS_INDICATOR_RADIUS)
+                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS))
             }
             CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
-                let quadbez = QuadraticBezier {
-                    start: *start,
-                    cp: *cp1,
-                    end: *cp2,
-                };
-                quadbez
-                    .composed_bounds(style)
-                    .loosened(drawhelpers::POS_INDICATOR_RADIUS)
+                let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp2));
+                aabb.take_point(na::Point2::from(*cp1));
+                aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS))
             }
             CubBezBuilderState::End {
                 start,
@@ -160,15 +151,10 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 cp2,
                 end,
             } => {
-                let cubbez = CubicBezier {
-                    start: *start,
-                    cp1: *cp1,
-                    cp2: *cp2,
-                    end: *end,
-                };
-                cubbez
-                    .composed_bounds(style)
-                    .loosened(drawhelpers::POS_INDICATOR_RADIUS)
+                let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*end));
+                aabb.take_point(na::Point2::from(*cp1));
+                aabb.take_point(na::Point2::from(*cp2));
+                aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS))
             }
         }
     }

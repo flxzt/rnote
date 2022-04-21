@@ -82,11 +82,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
     }
 
     fn bounds(&self, style: &Style) -> AABB {
-        let stroke_width = match style {
-            Style::Smooth(options) => options.stroke_width,
-            Style::Rough(options) => options.stroke_width,
-            Style::Textured(options) => options.stroke_width,
-        };
+        let stroke_width = style.stroke_width();
 
         match &self.state {
             FociEllipseBuilderState::First(point) => AABB::from_half_extents(

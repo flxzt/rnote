@@ -41,6 +41,17 @@ impl Default for Style {
     }
 }
 
+impl Style {
+    /// returns the stroke width. available on all styles
+    pub fn stroke_width(&self) -> f64 {
+        match self {
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width,
+            Style::Textured(options) => options.stroke_width,
+        }
+    }
+}
+
 impl Composer<Style> for Line {
     fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
         match options {

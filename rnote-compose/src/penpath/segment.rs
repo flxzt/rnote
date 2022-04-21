@@ -97,21 +97,21 @@ impl ShapeBehaviour for Segment {
                 na::Vector2::repeat(0.5),
             )],
             Segment::Line { start, end } => {
-                let no_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
+                let n_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
 
                 let line = Line {
                     start: start.pos,
                     end: end.pos,
                 };
 
-                line.split(no_splits)
+                line.split(n_splits)
                     .into_iter()
                     .map(|line| line.bounds())
                     .collect()
             }
             Segment::QuadBez { start, cp, end } => {
                 // TODO: basing this off of the actual curve len
-                let no_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
+                let n_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
 
                 let quadbez = QuadraticBezier {
                     start: start.pos,
@@ -120,7 +120,7 @@ impl ShapeBehaviour for Segment {
                 };
 
                 quadbez
-                    .approx_with_lines(no_splits)
+                    .approx_with_lines(n_splits)
                     .into_iter()
                     .map(|line| line.bounds())
                     .collect()
@@ -131,7 +131,7 @@ impl ShapeBehaviour for Segment {
                 cp2,
                 end,
             } => {
-                let no_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
+                let n_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
 
                 let cubbez = CubicBezier {
                     start: start.pos,
@@ -141,7 +141,7 @@ impl ShapeBehaviour for Segment {
                 };
 
                 cubbez
-                    .approx_with_lines(no_splits)
+                    .approx_with_lines(n_splits)
                     .into_iter()
                     .map(|line| line.bounds())
                     .collect()

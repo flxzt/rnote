@@ -97,11 +97,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
     }
 
     fn bounds(&self, style: &Style) -> AABB {
-        let stroke_width = match style {
-            Style::Smooth(options) => options.stroke_width,
-            Style::Rough(options) => options.stroke_width,
-            Style::Textured(options) => options.stroke_width,
-        };
+        let stroke_width = style.stroke_width();
 
         self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
             acc.take_point(na::Point2::from(x.pos));

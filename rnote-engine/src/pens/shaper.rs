@@ -82,13 +82,6 @@ impl PenBehaviour for Shaper {
         let mut surface_flags = SurfaceFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
-            (_, PenEvent::Cancel) => {
-                // Same behaviour for any state for cancel events
-                self.state = ShaperState::Idle;
-
-                surface_flags.redraw = true;
-                PenProgress::Finished
-            }
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
                 // A new seed for a new shape
                 let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
@@ -132,6 +125,12 @@ impl PenBehaviour for Shaper {
                 PenProgress::InProgress
             }
             (ShaperState::Idle, _) => PenProgress::Idle,
+            (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
+                self.state = ShaperState::Idle;
+
+                surface_flags.redraw = true;
+                PenProgress::Finished
+            }
             (ShaperState::BuildShape { builder }, event) => match builder.handle_event(event) {
                 BuilderProgress::InProgress => {
                     surface_flags.redraw = true;

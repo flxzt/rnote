@@ -83,31 +83,6 @@ impl PenBehaviour for Brush {
 
         let pen_progress = match (&mut self.state, event) {
             (
-                BrushState::Drawing {
-                    current_stroke_key, ..
-                },
-                PenEvent::Cancel,
-            ) => {
-                Self::stop_audio(style, audioplayer);
-
-                // Finish up the last stroke
-                store.update_geometry_for_stroke(*current_stroke_key);
-                store.regenerate_rendering_for_stroke_threaded(
-                    *current_stroke_key,
-                    camera.viewport_extended(),
-                    camera.image_scale(),
-                );
-
-                self.state = BrushState::Idle;
-
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
-                surface_flags.hide_scrollbars = Some(false);
-
-                PenProgress::Finished
-            }
-            (
                 BrushState::Idle,
                 PenEvent::Down {
                     element,
@@ -151,6 +126,31 @@ impl PenBehaviour for Brush {
                 }
             }
             (BrushState::Idle, _) => PenProgress::Idle,
+            (
+                BrushState::Drawing {
+                    current_stroke_key, ..
+                },
+                PenEvent::Cancel,
+            ) => {
+                Self::stop_audio(style, audioplayer);
+
+                // Finish up the last stroke
+                store.update_geometry_for_stroke(*current_stroke_key);
+                store.regenerate_rendering_for_stroke_threaded(
+                    *current_stroke_key,
+                    camera.viewport_extended(),
+                    camera.image_scale(),
+                );
+
+                self.state = BrushState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
+                PenProgress::Finished
+            }
             (
                 BrushState::Drawing {
                     path_builder,

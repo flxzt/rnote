@@ -2,7 +2,6 @@ use crate::pens::penholder::PenHolderEvent;
 use crate::sheet::{background, Background, Format};
 use crate::store::StoreTask;
 use crate::strokes::Stroke;
-use crate::utils;
 use crate::{render, DrawOnSheetBehaviour, SurfaceFlags};
 use crate::{Camera, PenHolder, Sheet, StrokeStore};
 use gtk4::Snapshot;
@@ -540,7 +539,7 @@ impl RnoteEngine {
                     images: xopp_images,
                 };
 
-                let page_dimensions = utils::convert_coord_dpi(
+                let page_dimensions = crate::utils::convert_coord_dpi(
                     page_bounds.extents(),
                     current_dpi,
                     xoppformat::XoppFile::DPI,
@@ -607,7 +606,7 @@ impl RnoteEngine {
                 surface
                     .set_metadata(
                         cairo::PdfMetadata::CreateDate,
-                        utils::now_formatted_string().as_str(),
+                        crate::utils::now_formatted_string().as_str(),
                     )
                     .context("set pdf surface date metadata failed")?;
 
@@ -680,13 +679,16 @@ impl RnoteEngine {
 
         self.penholder
             .draw_on_sheet_snapshot(snapshot, sheet_bounds, &self.camera)?;
-
-        /*         {
+/* 
+        {
+            use crate::utils::GrapheneRectHelpers;
+            use gtk4::graphene;
             use piet::RenderContext;
             use rnote_compose::helpers::Affine2Helpers;
+
             let zoom = self.camera.zoom();
 
-            let cairo_cx = snapshot.append_cairo(&surface_bounds.to_graphene_rect());
+            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
             // Transform to sheet coordinate space
@@ -694,18 +696,19 @@ impl RnoteEngine {
 
             piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
             self.store
-                .draw_strokes_immediate_w_piet(&mut piet_cx, sheet_bounds, Some(viewport), zoom)?;
+                .draw_strokes_immediate_w_piet(&mut piet_cx, sheet_bounds, viewport, zoom)?;
             piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
 
             piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
             self.penholder
-                .draw_on_sheet(&mut piet_cx, sheet_bounds, viewport)?;
+                .draw_on_sheet(&mut piet_cx, sheet_bounds, &self.camera)?;
             piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
 
             piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
-        } */
+        }
+ */
         snapshot.save();
-
         snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
 
         // visual debugging

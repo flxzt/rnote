@@ -5,10 +5,13 @@ use p2d::bounding_volume::AABB;
 use rnote_compose::shapes::ShapeBehaviour;
 
 #[derive(Debug, Clone)]
-/// Generated stroke images.
+/// Generated stroke images. Some stroke types may only support generating (an) image(s) for the whole stroke
 pub enum GeneratedStrokeImages {
-    /// only part of the stroke was rendered (e.g. part of it is out of the given viewport)
-    Partial(Vec<render::Image>),
+    /// only part of the stroke was rendered (e.g. part of it is out of the viewport)
+    Partial {
+        images: Vec<render::Image>,
+        viewport: AABB,
+    },
     /// All stroke images were rendered
     Full(Vec<render::Image>),
 }

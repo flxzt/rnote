@@ -796,10 +796,11 @@ impl RnoteCanvas {
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
         self.engine().borrow_mut().camera.set_zoom(new_zoom);
 
+        let all_strokes = self.engine().borrow().store.stroke_keys_unordered();
         self.engine()
             .borrow_mut()
             .store
-            .reset_regenerate_flag_all_strokes();
+            .set_rendering_dirty_for_strokes(&all_strokes);
 
         self.engine().borrow_mut().resize_autoexpand();
         self.regenerate_background(false);
@@ -888,16 +889,12 @@ impl RnoteCanvas {
     /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch. redraw: queue canvas redrawing
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
         let image_scale = self.engine().borrow().camera.image_scale();
-        let viewport_extended = self.engine().borrow().camera.viewport_extended();
+        let viewport = self.engine().borrow().camera.viewport();
 
         self.engine()
             .borrow_mut()
             .store
-            .regenerate_rendering_in_viewport_threaded(
-                force_regenerate,
-                viewport_extended,
-                image_scale,
-            );
+            .regenerate_rendering_in_viewport_threaded(force_regenerate, viewport, image_scale);
 
         if redraw {
             self.queue_resize();

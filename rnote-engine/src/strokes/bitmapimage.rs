@@ -10,7 +10,7 @@ use rnote_compose::transform::TransformBehaviour;
 
 use anyhow::Context;
 use gtk4::cairo;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{AABB, BoundingVolume};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -48,19 +48,29 @@ impl StrokeBehaviour for BitmapImage {
 
     fn gen_images(
         &self,
-        _viewport: AABB,
+        viewport: AABB,
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
 
-        // Always generate full stroke images for bitmapimages, as they are too expensive to be repeatetly rendered
-        Ok(GeneratedStrokeImages::Full(vec![
-            render::Image::gen_with_piet(
-                |piet_cx| self.draw(piet_cx, image_scale),
-                bounds,
-                image_scale,
-            )?,
-        ]))
+        if viewport.contains(&bounds) {
+            Ok(GeneratedStrokeImages::Full(vec![
+                render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    bounds,
+                    image_scale,
+                )?,
+            ]))
+        } else {
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    viewport,
+                    image_scale,
+                )?],
+                viewport,
+            })
+        }
     }
 }
 

@@ -289,7 +289,7 @@ impl PenBehaviour for Selector {
                             // strokes that were far away previously might come into view
                             store.regenerate_rendering_in_viewport_threaded(
                                 false,
-                                camera.viewport_extended(),
+                                camera.viewport(),
                                 camera.image_scale(),
                             );
 
@@ -410,7 +410,7 @@ impl PenBehaviour for Selector {
             ) => {
                 store.regenerate_rendering_in_viewport_threaded(
                     false,
-                    camera.viewport_extended(),
+                    camera.viewport(),
                     camera.image_scale(),
                 );
 

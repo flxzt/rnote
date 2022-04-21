@@ -30,6 +30,8 @@ use rayon::iter::{ParallelBridge, ParallelIterator};
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
+use self::render_comp::RenderCompState;
+
 /*
 StrokeStore implements a Entity - Component - System pattern.
 The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
@@ -46,20 +48,27 @@ There also is a different category of methods which return filtered keys, e.g. `
 */
 
 #[derive(Debug, Clone)]
+/// A store task, usually coming from a spawned thread and to be processed with `process_received_task()`.
 pub enum StoreTask {
-    /// Replace the images of the render_comp
+    /// Replace the images of the render_comp.
+    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// to avoid large queues of already outdated rendering tasks.
     UpdateStrokeWithImages {
         key: StrokeKey,
         images: GeneratedStrokeImages,
     },
     /// Appends the images to the rendering of the stroke
+    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// to avoid large queues of already outdated rendering tasks.
     AppendImagesToStroke {
         key: StrokeKey,
         images: GeneratedStrokeImages,
     },
     /// Inserts a new stroke to the store
+    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// to avoid large queues of already outdated rendering tasks.
     InsertStroke { stroke: Stroke },
-    /// indicates that the application is in the process of quitting
+    /// indicates that the application is quitting. Usually handled to quit the async loop which receives the tasks
     Quit,
 }
 
@@ -167,7 +176,7 @@ impl StrokeStore {
         task: StoreTask,
         camera: &Camera,
     ) -> SurfaceFlags {
-        let viewport_expanded = camera.viewport_extended();
+        let viewport_expanded = camera.viewport();
         let image_scale = camera.image_scale();
         let mut surface_flags = SurfaceFlags::default();
 
@@ -253,13 +262,11 @@ impl StrokeStore {
         self.key_tree.insert_with_key(key, bounds);
         self.chrono_counter += 1;
 
-        let mut render_comp = RenderComponent::default();
-        render_comp.regenerate_flag = true;
-
         self.trash_components.insert(key, TrashComponent::default());
         self.selection_components
             .insert(key, SelectionComponent::default());
-        self.render_components.insert(key, render_comp);
+        self.render_components
+            .insert(key, RenderComponent::default());
         self.chrono_components
             .insert(key, ChronoComponent::new(self.chrono_counter));
 
@@ -281,9 +288,7 @@ impl StrokeStore {
         if let Some(Stroke::BrushStroke(ref mut brushstroke)) = self.strokes.get_mut(key) {
             brushstroke.push_segment(segment);
 
-            if let Some(render_comp) = self.render_components.get_mut(key) {
-                render_comp.regenerate_flag = true;
-            }
+            self.set_rendering_dirty(key);
         }
     }
 
@@ -478,9 +483,7 @@ impl StrokeStore {
                     brushstroke.update_geometry();
                     self.key_tree.update_with_key(key, stroke.bounds());
 
-                    if let Some(render_comp) = self.render_components.get_mut(key) {
-                        render_comp.regenerate_flag = true;
-                    }
+                    self.set_rendering_dirty(key);
                 }
                 Stroke::ShapeStroke(_) => {}
                 Stroke::VectorImage(_) => {}
@@ -626,13 +629,12 @@ impl StrokeStore {
 
                 // rotate the images
                 if let Some(render_comp) = self.render_components.get_mut(key) {
-                    render_comp.regenerate_flag = true;
+                    render_comp.state = RenderCompState::Dirty;
 
                     for image in render_comp.images.iter_mut() {
                         image.rect.rotate(angle, center);
                     }
 
-                    render_comp.regenerate_flag = true;
                     match render::Image::images_to_rendernodes(&render_comp.images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;
@@ -675,7 +677,7 @@ impl StrokeStore {
 
                 // resize the images
                 if let Some(render_comp) = self.render_components.get_mut(key) {
-                    render_comp.regenerate_flag = true;
+                    render_comp.state = RenderCompState::Dirty;
 
                     for image in render_comp.images.iter_mut() {
                         // resize the stroke geometry
@@ -699,7 +701,6 @@ impl StrokeStore {
                         image.rect.translate(old_image_bounds.center().coords);
                     }
 
-                    render_comp.regenerate_flag = true;
                     match render::Image::images_to_rendernodes(&render_comp.images) {
                         Ok(rendernodes) => {
                             render_comp.rendernodes = rendernodes;

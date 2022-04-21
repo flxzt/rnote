@@ -54,7 +54,6 @@ impl StrokeBehaviour for BrushStroke {
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
-
         let (bounds, partial) = if viewport.contains(&bounds) {
             (bounds, false)
         } else {
@@ -171,7 +170,7 @@ impl StrokeBehaviour for BrushStroke {
         };
 
         if partial {
-            Ok(GeneratedStrokeImages::Partial(images))
+            Ok(GeneratedStrokeImages::Partial { images, viewport })
         } else {
             Ok(GeneratedStrokeImages::Full(images))
         }
@@ -275,7 +274,7 @@ impl BrushStroke {
         &self,
         no_last_segments: usize,
         image_scale: f64,
-    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+    ) -> Result<Vec<render::Image>, anyhow::Error> {
         let images = match &self.style {
             Style::Smooth(options) => self
                 .path
@@ -338,6 +337,6 @@ impl BrushStroke {
                 .collect::<Vec<render::Image>>(),
         };
 
-        Ok(GeneratedStrokeImages::Partial(images))
+        Ok(images)
     }
 }

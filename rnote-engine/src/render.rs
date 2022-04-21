@@ -34,6 +34,10 @@ pub const USVG_XML_OPTIONS: usvg::XmlOptions = usvg::XmlOptions {
 
 /// size at which we split surfaces, so that cairo does not panic when rendering large images
 pub const CAIRO_IMGSURFACE_SPLIT_SIZE: na::Vector2<f64> = na::vector![3000.0, 3000.0];
+/// the margin around a viewport for rendering. In px value
+pub const VIEWPORT_RENDER_MARGIN: f64 = 500.0;
+
+
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum ImageMemoryFormat {

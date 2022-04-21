@@ -103,7 +103,7 @@ impl RnoteEngine {
         self.resize_to_fit_strokes();
         self.store.regenerate_rendering_in_viewport_threaded(
             false,
-            self.camera.viewport_extended(),
+            self.camera.viewport(),
             self.camera.image_scale(),
         );
     }
@@ -679,35 +679,35 @@ impl RnoteEngine {
 
         self.penholder
             .draw_on_sheet_snapshot(snapshot, sheet_bounds, &self.camera)?;
-/* 
-        {
-            use crate::utils::GrapheneRectHelpers;
-            use gtk4::graphene;
-            use piet::RenderContext;
-            use rnote_compose::helpers::Affine2Helpers;
+        /*
+               {
+                   use crate::utils::GrapheneRectHelpers;
+                   use gtk4::graphene;
+                   use piet::RenderContext;
+                   use rnote_compose::helpers::Affine2Helpers;
 
-            let zoom = self.camera.zoom();
+                   let zoom = self.camera.zoom();
 
-            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+                   let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
+                   let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
-            // Transform to sheet coordinate space
-            piet_cx.transform(self.camera.transform().to_kurbo());
+                   // Transform to sheet coordinate space
+                   piet_cx.transform(self.camera.transform().to_kurbo());
 
-            piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
-            self.store
-                .draw_strokes_immediate_w_piet(&mut piet_cx, sheet_bounds, viewport, zoom)?;
-            piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   self.store
+                       .draw_strokes_immediate_w_piet(&mut piet_cx, sheet_bounds, viewport, zoom)?;
+                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-            piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-            self.penholder
-                .draw_on_sheet(&mut piet_cx, sheet_bounds, &self.camera)?;
-            piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   self.penholder
+                       .draw_on_sheet(&mut piet_cx, sheet_bounds, &self.camera)?;
+                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-            piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
-        }
- */
+                   piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+               }
+        */
         snapshot.save();
         snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
 

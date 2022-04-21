@@ -147,7 +147,7 @@ impl PenBehaviour for Shaper {
                         )));
                         if let Err(e) = store.regenerate_rendering_for_stroke(
                             key,
-                            camera.viewport_extended(),
+                            camera.viewport(),
                             camera.image_scale(),
                         ) {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
@@ -170,7 +170,7 @@ impl PenBehaviour for Shaper {
                         )));
                         if let Err(e) = store.regenerate_rendering_for_stroke(
                             key,
-                            camera.viewport_extended(),
+                            camera.viewport(),
                             camera.image_scale(),
                         ) {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);

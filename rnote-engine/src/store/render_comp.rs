@@ -13,24 +13,38 @@ use rnote_compose::color;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Clone, Copy)]
+pub enum RenderCompState {
+    Complete,
+    ForViewport(AABB),
+    Dirty,
+}
+
+impl Default for RenderCompState {
+    fn default() -> Self {
+        Self::Dirty
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "render_component")]
 pub struct RenderComponent {
     #[serde(rename = "render")]
     pub render: bool,
     #[serde(skip)]
-    pub regenerate_flag: bool,
-    #[serde(skip)]
     pub images: Vec<render::Image>,
     #[serde(skip)]
     pub rendernodes: Vec<gsk::RenderNode>,
+
+    #[serde(skip)]
+    pub(super) state: RenderCompState,
 }
 
 impl Default for RenderComponent {
     fn default() -> Self {
         Self {
             render: true,
-            regenerate_flag: true,
+            state: RenderCompState::default(),
             images: vec![],
             rendernodes: vec![],
         }
@@ -67,35 +81,25 @@ impl StrokeStore {
         }
     }
 
-    pub fn regenerate_flag(&self, key: StrokeKey) -> Option<bool> {
-        if let Some(render_comp) = self.render_components.get(key) {
-            Some(render_comp.regenerate_flag)
-        } else {
-            log::debug!(
-                "get render_comp failed in regenerate_flag() of stroke for key {:?}, invalid key used or stroke does not support rendering",
-                key
-            );
-            None
-        }
-    }
-
-    pub fn set_regenerate_flag(&mut self, key: StrokeKey, regenerate_flag: bool) {
-        if let Some(render_comp) = self.render_components.get_mut(key) {
-            render_comp.regenerate_flag = regenerate_flag;
-        } else {
-            log::debug!(
-                "get render_comp failed in set_regenerate_flag() of stroke for key {:?}, invalid key used or stroke does not support rendering",
-                key
-            );
-        }
-    }
-
-    pub fn reset_regenerate_flag_all_strokes(&mut self) {
+    pub fn render_comp_state(&self, key: StrokeKey) -> Option<RenderCompState> {
         self.render_components
-            .iter_mut()
-            .for_each(|(_key, render_comp)| {
-                render_comp.regenerate_flag = true;
-            });
+            .get(key)
+            .map(|render_comp| render_comp.state)
+    }
+
+    pub fn set_rendering_dirty(&mut self, key: StrokeKey) {
+        if let Some(render_comp) = self.render_components.get_mut(key) {
+            render_comp.state = RenderCompState::Dirty;
+        } else {
+            log::debug!(
+                "get render_comp failed in set_state() of stroke for key {:?}, invalid key used or stroke does not support rendering",
+                key
+            );
+        }
+    }
+
+    pub fn set_rendering_dirty_for_strokes(&mut self, keys: &[StrokeKey]) {
+        keys.iter().for_each(|&key| self.set_rendering_dirty(key));
     }
 
     pub fn regenerate_rendering_for_stroke(
@@ -112,15 +116,14 @@ impl StrokeStore {
                 .context("gen_images() failed  in regenerate_rendering_for_stroke()")?;
 
             match images {
-                GeneratedStrokeImages::Partial(images) => {
+                GeneratedStrokeImages::Partial { images, viewport } => {
                     let rendernodes = render::Image::images_to_rendernodes(&images).context(
                         " image_to_rendernode() failed in regenerate_rendering_for_stroke()",
                     )?;
 
                     render_comp.rendernodes = rendernodes;
                     render_comp.images = images;
-                    // we set the flag cause its not async so tasks cant queue up
-                    render_comp.regenerate_flag = true;
+                    render_comp.state = RenderCompState::ForViewport(viewport);
                 }
                 GeneratedStrokeImages::Full(images) => {
                     let rendernodes = render::Image::images_to_rendernodes(&images).context(
@@ -129,21 +132,9 @@ impl StrokeStore {
 
                     render_comp.rendernodes = rendernodes;
                     render_comp.images = images;
-                    render_comp.regenerate_flag = false;
+                    render_comp.state = RenderCompState::Complete;
                 }
             }
-        }
-        Ok(())
-    }
-
-    pub fn regenerate_rendering_for_strokes(
-        &mut self,
-        keys: &[StrokeKey],
-        viewport: AABB,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
-        for key in keys.iter() {
-            self.regenerate_rendering_for_stroke(*key, viewport, image_scale)?;
         }
         Ok(())
     }
@@ -160,8 +151,17 @@ impl StrokeStore {
             (self.render_components.get_mut(key), self.strokes.get(key))
         {
             let stroke = stroke.clone();
+            let stroke_bounds = stroke.bounds();
 
-            render_comp.regenerate_flag = !viewport.contains(&stroke.bounds());
+            // margin is constant in pixel values, so we need to divide by the image_scale
+            let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
+            let viewport = viewport.loosened(viewport_render_margin);
+
+            render_comp.state = if viewport.contains(&stroke_bounds) {
+                RenderCompState::Complete
+            } else {
+                RenderCompState::ForViewport(viewport)
+            };
 
             // Spawn a new thread for image rendering
             self.threadpool.spawn(move || {
@@ -182,48 +182,7 @@ impl StrokeStore {
         }
     }
 
-    pub fn regenerate_rendering_for_strokes_threaded(
-        &mut self,
-        keys: &[StrokeKey],
-        viewport: AABB,
-        image_scale: f64,
-    ) {
-        keys.iter().for_each(|&key| {
-            self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
-        })
-    }
-
-    pub fn regenerate_rendering_in_viewport(
-        &mut self,
-        force_regenerate: bool,
-        viewport: AABB,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
-        let keys = self.render_components.keys().collect::<Vec<StrokeKey>>();
-
-        for key in keys {
-            if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(key), self.render_components.get_mut(key))
-            {
-                // skip and empty image buffer if stroke is not in expanded viewport
-                if !viewport.intersects(&stroke.bounds()) {
-                    render_comp.rendernodes = vec![];
-                    render_comp.images = vec![];
-                    render_comp.regenerate_flag = true;
-
-                    continue;
-                }
-                // or does not need regeneration
-                if !force_regenerate && !render_comp.regenerate_flag {
-                    continue;
-                }
-
-                self.regenerate_rendering_for_stroke(key, viewport, image_scale)?;
-            }
-        }
-        Ok(())
-    }
-
+    /// Regenerates the rendering of all strokes that have the regenerate flag set, for the given viewport
     pub fn regenerate_rendering_in_viewport_threaded(
         &mut self,
         force_regenerate: bool,
@@ -236,24 +195,48 @@ impl StrokeStore {
             if let (Some(stroke), Some(render_comp)) =
                 (self.strokes.get(key), self.render_components.get_mut(key))
             {
-                // skip and empty image buffer if stroke is not in expanded viewport
-                if !viewport.intersects(&stroke.bounds()) {
+                let stroke_bounds = stroke.bounds();
+
+                // margin is constant in pixel values, so we need to divide by the image_scale
+                let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
+                let viewport = viewport.loosened(viewport_render_margin);
+
+                // skip and empty image buffer if stroke is not in viewport
+                if !viewport.intersects(&stroke_bounds) {
                     render_comp.rendernodes = vec![];
                     render_comp.images = vec![];
-                    render_comp.regenerate_flag = true;
+                    render_comp.state = RenderCompState::Dirty;
 
                     return;
                 }
-                // or does not need regeneration
-                if !force_regenerate && !render_comp.regenerate_flag {
-                    return;
+
+                // only check if we dont force regeneration
+                if !force_regenerate {
+                    match render_comp.state {
+                        RenderCompState::Complete => {
+                            return;
+                        }
+                        RenderCompState::ForViewport(old_viewport) => {
+                            let diff  = (old_viewport.center().coords - viewport.center().coords).abs();
+                            if diff[0] < viewport_render_margin && diff[1] < viewport_render_margin {
+                                // We don't update the state, to have the old bounds on the next call
+                                // so we only update the rendering after it crossed the margin threshold
+                                return;
+                            }
+                        }
+                        RenderCompState::Dirty => {}
+                    }
                 }
+
+                // sets new state
+                render_comp.state = if viewport.contains(&stroke_bounds) {
+                    RenderCompState::Complete
+                } else {
+                    RenderCompState::ForViewport(viewport)
+                };
 
                 let tasks_tx = self.tasks_tx.clone();
                 let stroke = stroke.clone();
-
-                // Only set false when viewport contains stroke bounds
-                render_comp.regenerate_flag = !viewport.contains(&stroke.bounds());
 
                 // Spawn a new thread for image rendering
                 self.threadpool.spawn(move || {
@@ -288,26 +271,13 @@ impl StrokeStore {
         {
             match stroke {
                 Stroke::BrushStroke(brushstroke) => {
-                    let images =
+                    let mut images =
                         brushstroke.gen_images_for_last_segments(n_segments, image_scale)?;
 
-                    match images {
-                        GeneratedStrokeImages::Partial(mut images) => {
-                            let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
+                    let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
 
-                            render_comp.rendernodes.append(&mut rendernodes);
-                            render_comp.images.append(&mut images);
-                            // not async, tasks cant queue up
-                            render_comp.regenerate_flag = true;
-                        }
-                        GeneratedStrokeImages::Full(mut images) => {
-                            let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
-
-                            render_comp.rendernodes.append(&mut rendernodes);
-                            render_comp.images.append(&mut images);
-                            render_comp.regenerate_flag = false;
-                        }
-                    }
+                    render_comp.rendernodes.append(&mut rendernodes);
+                    render_comp.images.append(&mut images);
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
@@ -339,7 +309,7 @@ impl StrokeStore {
                             Ok(images) => {
                                 tasks_tx.unbounded_send(StoreTask::AppendImagesToStroke {
                                     key,
-                                    images,
+                                    images: GeneratedStrokeImages::Partial{images, viewport},
                                 }).unwrap_or_else(|e| {
                                     log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
                                 });
@@ -379,16 +349,17 @@ impl StrokeStore {
     ) -> anyhow::Result<()> {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match images {
-                GeneratedStrokeImages::Partial(images) => {
+                GeneratedStrokeImages::Partial { images, viewport } => {
                     let rendernodes = render::Image::images_to_rendernodes(&images)?;
                     render_comp.rendernodes = rendernodes;
                     render_comp.images = images;
+                    render_comp.state = RenderCompState::ForViewport(viewport);
                 }
                 GeneratedStrokeImages::Full(images) => {
                     let rendernodes = render::Image::images_to_rendernodes(&images)?;
                     render_comp.rendernodes = rendernodes;
                     render_comp.images = images;
-                    render_comp.regenerate_flag = false;
+                    render_comp.state = RenderCompState::Complete;
                 }
             }
         }
@@ -403,7 +374,10 @@ impl StrokeStore {
     ) -> anyhow::Result<()> {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             match images {
-                GeneratedStrokeImages::Partial(mut images) => {
+                GeneratedStrokeImages::Partial {
+                    mut images,
+                    viewport: _,
+                } => {
                     let mut rendernodes = render::Image::images_to_rendernodes(&images)?;
 
                     render_comp.rendernodes.append(&mut rendernodes);
@@ -543,14 +517,15 @@ impl StrokeStore {
                             snapshot.push_opacity(0.2);
                         }
                     }
-                    if render_comp.regenerate_flag {
-                        visual_debug::draw_fill(
-                            stroke.bounds(),
-                            visual_debug::COLOR_STROKE_REGENERATE_FLAG,
-                            snapshot,
-                        );
-                    }
-
+                    /*
+                                       if render_comp.regenerate_flag {
+                                           visual_debug::draw_fill(
+                                               stroke.bounds(),
+                                               visual_debug::COLOR_STROKE_REGENERATE_FLAG,
+                                               snapshot,
+                                           );
+                                       }
+                    */
                     render_comp.images.iter().for_each(|image| {
                         visual_debug::draw_bounds(
                             // a little tightened not to overlap with other bounds

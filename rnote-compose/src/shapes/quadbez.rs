@@ -1,10 +1,12 @@
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
+use crate::helpers::{AABBHelpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 
 use super::line::Line;
+use super::CubicBezier;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "quadratic_bezier")]
@@ -46,7 +48,7 @@ impl TransformBehaviour for QuadraticBezier {
 
 impl ShapeBehaviour for QuadraticBezier {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
-        let mut aabb = AABB::new(na::Point2::from(self.start), na::Point2::from(self.end));
+        let mut aabb = AABB::new_positive(na::Point2::from(self.start), na::Point2::from(self.end));
         aabb.take_point(na::Point2::from(self.cp));
         aabb
     }
@@ -95,6 +97,16 @@ impl QuadraticBezier {
         (first_splitted, second_splitted)
     }
 
+    /// convert to a cubic bezier ( raising the order is without losses)
+    pub fn to_cubic_bezier(&self) -> CubicBezier {
+        CubicBezier {
+            start: self.start,
+            cp1: self.start + (2.0 / 3.0) * (self.cp - self.start),
+            cp2: self.end + (2.0 / 3.0) * (self.cp - self.end),
+            end: self.end,
+        }
+    }
+
     /// Approximating a quadratic bezier with lines, given the number of splits distributed evenly based on the t value.
     pub fn approx_with_lines(&self, n_splits: i32) -> Vec<Line> {
         let mut lines = Vec::new();
@@ -110,6 +122,15 @@ impl QuadraticBezier {
         }
 
         lines
+    }
+
+    /// to kurbo
+    pub fn to_kurbo(&self) -> kurbo::QuadBez {
+        kurbo::QuadBez::new(
+            self.start.to_kurbo_point(),
+            self.cp.to_kurbo_point(),
+            self.end.to_kurbo_point(),
+        )
     }
 }
 

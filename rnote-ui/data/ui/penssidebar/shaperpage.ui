@@ -311,6 +311,28 @@
                   </child>
                 </object>
               </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_quadbez_row">
+                  <property name="title" translatable="yes">Quadratic bezier curve</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-quadbez-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_cubbez_row">
+                  <property name="title" translatable="yes">Cubic bezier curve</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-cubbez-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
             </object>
           </child>
         </object>

@@ -73,6 +73,24 @@ impl DrawBehaviour for ShapeStroke {
                 }
                 Style::Textured(_) => {}
             },
+            Shape::QuadraticBezier(ref quadbez) => match &self.style {
+                Style::Smooth(options) => {
+                    quadbez.draw_composed(cx, options);
+                }
+                Style::Rough(options) => {
+                    quadbez.draw_composed(cx, options);
+                }
+                Style::Textured(_) => {}
+            },
+            Shape::CubicBezier(ref cubbez) => match &self.style {
+                Style::Smooth(options) => {
+                    cubbez.draw_composed(cx, options);
+                }
+                Style::Rough(options) => {
+                    cubbez.draw_composed(cx, options);
+                }
+                Style::Textured(_) => {}
+            },
         };
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;

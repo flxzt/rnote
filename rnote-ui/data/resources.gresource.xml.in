@@ -80,6 +80,8 @@
         <file compressed="true">icons/scalable/actions/shape-rectangle-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-ellipse-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-fociellipse-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-quadbez-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-cubbez-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stroke-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacebrowser-symbolic.svg</file>

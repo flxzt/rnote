@@ -181,7 +181,10 @@ impl StrokeStore {
             }
             StoreTask::AppendImagesToStroke { key, images } => {
                 if let Err(e) = self.append_rendering_images(key, images) {
-                    log::error!("append_rendering_images() in process_received_task() failed with Err {}", e);
+                    log::error!(
+                        "append_rendering_images() in process_received_task() failed with Err {}",
+                        e
+                    );
                 }
 
                 surface_flags.redraw = true;

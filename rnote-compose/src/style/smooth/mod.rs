@@ -3,10 +3,15 @@ mod smoothoptions;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
 
+use crate::builders::cubbezbuilder::CubBezBuilderState;
 use crate::builders::fociellipsebuilder::FociEllipseBuilderState;
 use crate::builders::linebuilder::LineBuilder;
 use crate::builders::penpathbuilder::PenPathBuilderState;
-use crate::builders::{EllipseBuilder, FociEllipseBuilder, PenPathBuilder, RectangleBuilder};
+use crate::builders::quadbezbuilder::QuadBezBuilderState;
+use crate::builders::{
+    CubBezBuilder, EllipseBuilder, FociEllipseBuilder, PenPathBuilder, QuadBezBuilder,
+    RectangleBuilder,
+};
 use crate::helpers::{AABBHelpers, Vector2Helpers};
 use crate::penpath::Segment;
 use crate::shapes::CubicBezier;
@@ -298,12 +303,58 @@ impl Composer<SmoothOptions> for Ellipse {
     }
 }
 
+impl Composer<SmoothOptions> for QuadraticBezier {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let quadbez = self.to_kurbo();
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(quadbez.clone(), &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(quadbez, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<SmoothOptions> for CubicBezier {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let quadbez = self.to_kurbo();
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(quadbez.clone(), &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(quadbez, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
+    }
+}
+
 impl Composer<SmoothOptions> for crate::Shape {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
         match self {
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
+            crate::Shape::QuadraticBezier(quadbez) => quadbez.composed_bounds(options),
+            crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
         }
     }
 
@@ -312,6 +363,8 @@ impl Composer<SmoothOptions> for crate::Shape {
             crate::Shape::Line(line) => line.draw_composed(cx, options),
             crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
+            crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
+            crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
         }
     }
 }
@@ -458,5 +511,160 @@ impl Composer<SmoothOptions> for FociEllipseBuilder {
             }
         }
         cx.restore().unwrap();
+    }
+}
+
+impl Composer<SmoothOptions> for QuadBezBuilder {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        match &self.state {
+            crate::builders::quadbezbuilder::QuadBezBuilderState::Start(start) => {
+                AABB::from_half_extents(
+                    na::Point2::from(*start),
+                    na::Vector2::repeat(
+                        options.stroke_width
+                            + drawhelpers::POS_INDICATOR_RADIUS
+                            + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                    ),
+                )
+            }
+            crate::builders::quadbezbuilder::QuadBezBuilderState::Cp { start, cp } => {
+                AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp)).loosened(
+                    options.stroke_width
+                        + drawhelpers::POS_INDICATOR_RADIUS
+                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                )
+            }
+            crate::builders::quadbezbuilder::QuadBezBuilderState::End { start, cp, end } => {
+                let quadbez = QuadraticBezier {
+                    start: *start,
+                    cp: *cp,
+                    end: *end,
+                };
+                quadbez.composed_bounds(options).loosened(
+                    drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                )
+            }
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        match &self.state {
+            QuadBezBuilderState::Start(start) => {
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, 1.0);
+            }
+            QuadBezBuilderState::Cp { start, cp } => {
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp, 1.0);
+            }
+            QuadBezBuilderState::End { start, cp, end } => {
+                let quadbez = QuadraticBezier {
+                    start: *start,
+                    cp: *cp,
+                    end: *end,
+                };
+                quadbez.draw_composed(cx, options);
+
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *end, 1.0);
+            }
+        }
+    }
+}
+
+impl Composer<SmoothOptions> for CubBezBuilder {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        match &self.state {
+            CubBezBuilderState::Start(start) => AABB::from_half_extents(
+                na::Point2::from(*start),
+                na::Vector2::repeat(
+                    options.stroke_width
+                        + drawhelpers::POS_INDICATOR_RADIUS
+                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                ),
+            ),
+            CubBezBuilderState::Cp1 { start, cp1 } => {
+                AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp1)).loosened(
+                    options.stroke_width
+                        + drawhelpers::POS_INDICATOR_RADIUS
+                        + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                )
+            }
+            CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
+                let quadbez = QuadraticBezier {
+                    start: *start,
+                    cp: *cp1,
+                    end: *cp2,
+                };
+                quadbez.composed_bounds(options).loosened(
+                    drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                )
+            }
+            CubBezBuilderState::End {
+                start,
+                cp1,
+                cp2,
+                end,
+            } => {
+                let cubbez = CubicBezier {
+                    start: *start,
+                    cp1: *cp1,
+                    cp2: *cp2,
+                    end: *end,
+                };
+                cubbez.composed_bounds(options).loosened(
+                    drawhelpers::POS_INDICATOR_RADIUS + drawhelpers::POS_INDICATOR_OUTLINE_WIDTH,
+                )
+            }
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        match &self.state {
+            CubBezBuilderState::Start(start) => {
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, 1.0);
+            }
+            CubBezBuilderState::Cp1 { start, cp1 } => {
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp1, 1.0);
+            }
+            CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
+                let quadbez = QuadraticBezier {
+                    start: *start,
+                    cp: *cp1,
+                    end: *cp2,
+                };
+                quadbez.draw_composed(cx, options);
+
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp1, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp2, 1.0);
+            }
+            CubBezBuilderState::End {
+                start,
+                cp1,
+                cp2,
+                end,
+            } => {
+                let cubbez = CubicBezier {
+                    start: *start,
+                    cp1: *cp1,
+                    cp2: *cp2,
+                    end: *end,
+                };
+                cubbez.draw_composed(cx, options);
+
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, 1.0);
+                drawhelpers::draw_vec_indicator(cx, PenState::Down, *cp2, *end, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp1, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Up, *cp2, 1.0);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, *end, 1.0);
+            }
+        }
     }
 }

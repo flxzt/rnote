@@ -12,6 +12,8 @@ rnote_compose_sources = files(
     'builders/linebuilder.rs',
     'builders/rectanglebuilder.rs',
     'builders/fociellipsebuilder.rs',
+    'builders/quadbezbuilder.rs',
+    'builders/cubbezbuilder.rs',
     'builders/penpathbuilder.rs',
     'penpath/mod.rs',
     'penpath/element.rs',

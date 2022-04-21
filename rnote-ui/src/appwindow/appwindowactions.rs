@@ -604,6 +604,12 @@ impl RnoteAppWindow {
                 "fociellipse" => {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::FociEllipse;
                 },
+                "quadbez" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::QuadBez;
+                },
+                "cubbez" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::CubBez;
+                },
                 _ => { log::error!("set invalid state of action `shape-buildertype`")}
             }
 
@@ -797,7 +803,16 @@ impl RnoteAppWindow {
                         appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_fociellipse_row()));
                         appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-fociellipse-symbolic"));
                     }
+                    ShapeBuilderType::QuadBez => {
+                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_quadbez_row()));
+                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-quadbez-symbolic"));
+                    }
+                    ShapeBuilderType::CubBez => {
+                        appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_cubbez_row()));
+                        appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-cubbez-symbolic"));
+                    }
                 }
+
                 match shaper.style {
                     ShaperStyle::Smooth => {
                         appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_smooth_row()));

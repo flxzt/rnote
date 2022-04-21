@@ -2,113 +2,20 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="32"
-   height="32"
-   viewBox="0 0 8.4666667 8.4666667"
+   width="16"
+   height="16"
+   viewBox="0 0 4.2333333 4.2333333"
    version="1.1"
    id="svg5"
-   sodipodi:docname="stylus-primary-button.svg"
-   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview7"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="true"
-     inkscape:document-units="mm"
-     showgrid="true"
-     units="px"
-     inkscape:snap-bbox="true"
-     inkscape:snap-bbox-midpoints="true"
-     inkscape:bbox-nodes="true"
-     inkscape:snap-object-midpoints="true"
-     inkscape:bbox-paths="true"
-     inkscape:object-nodes="true"
-     inkscape:snap-smooth-nodes="true"
-     inkscape:zoom="21.780321"
-     inkscape:cx="16.689378"
-     inkscape:cy="17.974942"
-     inkscape:window-width="2560"
-     inkscape:window-height="1365"
-     inkscape:window-x="2560"
-     inkscape:window-y="38"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
-     inkscape:snap-global="true">
-    <inkscape:grid
-       type="xygrid"
-       id="grid824"
-       spacingx="0.21166667"
-       spacingy="0.21166667" />
-  </sodipodi:namedview>
   <defs
-     id="defs2">
-    <inkscape:path-effect
-       effect="bspline"
-       id="path-effect7200"
-       is_visible="true"
-       lpeversion="1"
-       weight="33.333333"
-       steps="2"
-       helper_size="0"
-       apply_no_weight="true"
-       apply_with_weight="true"
-       only_selected="false" />
-    <inkscape:path-effect
-       effect="bspline"
-       id="path-effect7196"
-       is_visible="true"
-       lpeversion="1"
-       weight="33.333333"
-       steps="2"
-       helper_size="0"
-       apply_no_weight="true"
-       apply_with_weight="true"
-       only_selected="false" />
-    <inkscape:path-effect
-       effect="bspline"
-       id="path-effect5023"
-       is_visible="true"
-       lpeversion="1"
-       weight="33.333333"
-       steps="2"
-       helper_size="0"
-       apply_no_weight="true"
-       apply_with_weight="true"
-       only_selected="false" />
-    <inkscape:path-effect
-       effect="bspline"
-       id="path-effect4929"
-       is_visible="true"
-       lpeversion="1"
-       weight="33.333333"
-       steps="2"
-       helper_size="0"
-       apply_no_weight="true"
-       apply_with_weight="true"
-       only_selected="false" />
-  </defs>
+     id="defs2" />
   <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
      id="layer1">
     <g
-       style="fill:#bebebe"
-       id="g857"
-       transform="matrix(0.26458333,0,0,0.26458333,-9.6130839,-2.2489583)">
-      <path
-         d="M 3,1 A 1,1 0 0 0 2,2 v 13 a 1,1 0 0 0 1,1 h 10 a 1,1 0 0 0 1,-1 v -5 a 1,1 0 1 0 -2,0 v 4 H 4 V 3 H 6 A 1,1 0 1 0 6,1 Z m 6,1.02 v 2 H 7 V 6.01 H 9 V 8 h 2 V 6.01 h 2 V 4.02 h -2 v -2 z"
-         id="path848" />
-    </g>
-    <g
        id="g15240"
-       transform="rotate(-38.225931,5.203459,5.4464364)">
+       transform="matrix(0.40916958,-0.32228467,0.32228467,0.40916958,-1.2624411,2.1969932)">
       <path
          style="color:#000000;fill:#bebebe;stroke-linecap:round;-inkscape-stroke:none"
          d="m 4.65625,-0.09960937 c -0.1709336,0 -0.3105469,0.13961363 -0.3105469,0.31054687 V 6.8730469 H 6.2382812 V 0.2109375 c 10e-8,-0.17093342 -0.1415665,-0.31054687 -0.3125,-0.31054687 z m 0,0.19921874 h 1.2695312 c 0.063593,0 0.1132813,0.04773512 0.1132813,0.11132813 V 6.6738281 H 4.5449219 V 0.2109375 c 0,-0.0635931 0.047735,-0.11132812 0.1113281,-0.11132813 z"

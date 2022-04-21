@@ -48,7 +48,8 @@ impl ShapeBehaviour for Ellipse {
         let half_extents = na::Vector2::from_homogeneous(
             self.transform.affine.into_inner().abs() * self.radii.to_homogeneous(),
         )
-        .unwrap();
+        .unwrap()
+        .abs();
 
         AABB::from_half_extents(center, half_extents)
     }

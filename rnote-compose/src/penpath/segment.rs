@@ -1,7 +1,8 @@
-use crate::helpers::AABBHelpers;
+use crate::helpers::{AABBHelpers, KurboHelpers};
 use crate::shapes::{CubicBezier, Line, QuadraticBezier, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
 
+use kurbo::Shape;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -70,10 +71,13 @@ impl ShapeBehaviour for Segment {
                 AABB::new_positive(na::Point2::from(start.pos), na::Point2::from(end.pos))
             }
             Self::QuadBez { start, cp, end } => {
-                let mut aabb =
-                    AABB::new_positive(na::Point2::from(start.pos), na::Point2::from(end.pos));
-                aabb.take_point(na::Point2::from(*cp));
-                aabb
+                let quadbez = QuadraticBezier {
+                    start: start.pos,
+                    cp: *cp,
+                    end: end.pos,
+                };
+
+                quadbez.to_kurbo().bounding_box().bounds_as_p2d_aabb()
             }
             Self::CubBez {
                 start,
@@ -81,11 +85,14 @@ impl ShapeBehaviour for Segment {
                 cp2,
                 end,
             } => {
-                let mut aabb =
-                    AABB::new_positive(na::Point2::from(start.pos), na::Point2::from(end.pos));
-                aabb.take_point(na::Point2::from(*cp1));
-                aabb.take_point(na::Point2::from(*cp2));
-                aabb
+                let cubbez = CubicBezier {
+                    start: start.pos,
+                    cp1: *cp1,
+                    cp2: *cp2,
+                    end: end.pos,
+                };
+
+                cubbez.to_kurbo().bounding_box().bounds_as_p2d_aabb()
             }
         }
     }
@@ -110,14 +117,14 @@ impl ShapeBehaviour for Segment {
                     .collect()
             }
             Segment::QuadBez { start, cp, end } => {
-                // TODO: basing this off of the actual curve len
-                let n_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
-
                 let quadbez = QuadraticBezier {
                     start: start.pos,
                     cp: *cp,
                     end: end.pos,
                 };
+
+                // TODO: basing this off of the actual curve len
+                let n_splits = hitbox_elems_for_segment_len(quadbez.to_kurbo().perimeter(0.1));
 
                 quadbez
                     .approx_with_lines(n_splits)
@@ -131,14 +138,15 @@ impl ShapeBehaviour for Segment {
                 cp2,
                 end,
             } => {
-                let n_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
-
                 let cubbez = CubicBezier {
                     start: start.pos,
                     cp1: *cp1,
                     cp2: *cp2,
                     end: end.pos,
                 };
+
+                // TODO: basing this off of the actual curve len
+                let n_splits = hitbox_elems_for_segment_len(cubbez.to_kurbo().perimeter(0.1));
 
                 cubbez
                     .approx_with_lines(n_splits)

@@ -27,96 +27,6 @@ fn fill_polygon(coords: Vec<na::Vector2<f64>>, options: &RoughOptions) -> kurbo:
 
 // Composer implementations
 
-impl Composer<RoughOptions> for Segment {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.bounds().loosened(options.stroke_width)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-        let mut options = options.clone();
-        options.disable_multistroke = true;
-        options.preserve_vertices = true;
-
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-
-            match self {
-                Segment::Dot { element } => {
-                    let radii = na::Vector2::from_element(options.stroke_width / 2.0);
-                    let dot_ellipse = kurbo::Ellipse::new(
-                        element.pos.to_kurbo_point(),
-                        radii.to_kurbo_vec(),
-                        0.0,
-                    );
-
-                    cx.fill(dot_ellipse, &stroke_brush);
-                }
-                Segment::Line { start, end } => {
-                    let line = Line {
-                        start: start.pos,
-                        end: end.pos,
-                    };
-
-                    line.draw_composed(cx, &options)
-                }
-                Segment::QuadBez { start, cp, end } => {
-                    let n_splits = 5;
-
-                    let quadbez = QuadraticBezier {
-                        start: start.pos,
-                        cp: *cp,
-                        end: end.pos,
-                    };
-
-                    let lines = quadbez.approx_with_lines(n_splits);
-
-                    lines
-                        .iter()
-                        .for_each(|line| line.draw_composed(cx, &options));
-                }
-                Segment::CubBez {
-                    start,
-                    cp1,
-                    cp2,
-                    end,
-                } => {
-                    let n_splits = 5;
-
-                    let cubbez = CubicBezier {
-                        start: start.pos,
-                        cp1: *cp1,
-                        cp2: *cp2,
-                        end: end.pos,
-                    };
-                    let lines = cubbez.approx_with_lines(n_splits);
-
-                    lines
-                        .iter()
-                        .for_each(|line| line.draw_composed(cx, &options));
-                }
-            }
-        }
-        cx.restore().unwrap();
-    }
-}
-
-impl Composer<RoughOptions> for PenPath {
-    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.iter()
-            .map(|segment| segment.composed_bounds(options))
-            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
-        cx.save().unwrap();
-        for segment in self.iter() {
-            segment.draw_composed(cx, options);
-        }
-        cx.restore().unwrap();
-    }
-}
-
 impl Composer<RoughOptions> for Line {
     fn composed_bounds(&self, options: &RoughOptions) -> p2d::bounding_volume::AABB {
         self.bounds()
@@ -341,6 +251,96 @@ impl Composer<RoughOptions> for CubicBezier {
             cx.stroke(bez_path, &stroke_brush, options.stroke_width)
         }
 
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<RoughOptions> for Segment {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
+        let mut options = options.clone();
+        options.disable_multistroke = true;
+        options.preserve_vertices = true;
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+
+            match self {
+                Segment::Dot { element } => {
+                    let radii = na::Vector2::from_element(options.stroke_width / 2.0);
+                    let dot_ellipse = kurbo::Ellipse::new(
+                        element.pos.to_kurbo_point(),
+                        radii.to_kurbo_vec(),
+                        0.0,
+                    );
+
+                    cx.fill(dot_ellipse, &stroke_brush);
+                }
+                Segment::Line { start, end } => {
+                    let line = Line {
+                        start: start.pos,
+                        end: end.pos,
+                    };
+
+                    line.draw_composed(cx, &options)
+                }
+                Segment::QuadBez { start, cp, end } => {
+                    let n_splits = 5;
+
+                    let quadbez = QuadraticBezier {
+                        start: start.pos,
+                        cp: *cp,
+                        end: end.pos,
+                    };
+
+                    let lines = quadbez.approx_with_lines(n_splits);
+
+                    lines
+                        .iter()
+                        .for_each(|line| line.draw_composed(cx, &options));
+                }
+                Segment::CubBez {
+                    start,
+                    cp1,
+                    cp2,
+                    end,
+                } => {
+                    let n_splits = 5;
+
+                    let cubbez = CubicBezier {
+                        start: start.pos,
+                        cp1: *cp1,
+                        cp2: *cp2,
+                        end: end.pos,
+                    };
+                    let lines = cubbez.approx_with_lines(n_splits);
+
+                    lines
+                        .iter()
+                        .for_each(|line| line.draw_composed(cx, &options));
+                }
+            }
+        }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<RoughOptions> for PenPath {
+    fn composed_bounds(&self, options: &RoughOptions) -> AABB {
+        self.iter()
+            .map(|segment| segment.composed_bounds(options))
+            .fold(AABB::new_invalid(), |acc, x| acc.merged(&x))
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
+        cx.save().unwrap();
+        for segment in self.iter() {
+            segment.draw_composed(cx, options);
+        }
         cx.restore().unwrap();
     }
 }

@@ -30,6 +30,8 @@ use std::collections::VecDeque;
 use std::time;
 
 mod imp {
+    use rnote_engine::utils::GrapheneRectHelpers;
+
     use super::*;
 
     #[allow(missing_debug_implementations)]
@@ -334,28 +336,18 @@ mod imp {
 
         fn snapshot(&self, widget: &Self::Type, snapshot: &gtk4::Snapshot) {
             if let Err(e) = || -> anyhow::Result<()> {
-                let (clip_x, clip_y, clip_width, clip_height) = if let Some(parent) =
-                    widget.parent()
-                {
+                let clip_bounds = if let Some(parent) = widget.parent() {
                     // unwrapping is fine, because its the parent
                     let (clip_x, clip_y) = parent.translate_coordinates(widget, 0.0, 0.0).unwrap();
-                    (
-                        clip_x as f32,
-                        clip_y as f32,
-                        parent.width() as f32,
-                        parent.height() as f32,
+                    AABB::new_positive(
+                        na::point![clip_x, clip_y],
+                        na::point![f64::from(parent.width()), f64::from(parent.height())],
                     )
                 } else {
-                    (0.0, 0.0, widget.width() as f32, widget.height() as f32)
+                    widget.bounds()
                 };
-
-                // Clip everything outside the parent (scroller) view
-                snapshot.push_clip(&graphene::Rect::new(
-                    clip_x,
-                    clip_y,
-                    clip_width,
-                    clip_height,
-                ));
+                // pushing the clip
+                snapshot.push_clip(&graphene::Rect::from_p2d_aabb(clip_bounds));
 
                 // Save the original coordinate space
                 snapshot.save();

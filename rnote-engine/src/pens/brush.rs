@@ -191,6 +191,7 @@ impl PenBehaviour for Brush {
                         ) {
                             log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
                         }
+                        surface_flags.redraw = true;
 
                         PenProgress::InProgress
                     }

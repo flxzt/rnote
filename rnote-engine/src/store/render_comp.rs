@@ -111,6 +111,10 @@ impl StrokeStore {
         if let (Some(stroke), Some(render_comp)) =
             (self.strokes.get(key), self.render_components.get_mut(key))
         {
+            // margin is constant in pixel values, so we need to divide by the image_scale
+            let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
+            let viewport = viewport.loosened(viewport_render_margin);
+
             let images = stroke
                 .gen_images(viewport, image_scale)
                 .context("gen_images() failed  in regenerate_rendering_for_stroke()")?;
@@ -157,6 +161,7 @@ impl StrokeStore {
             let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
             let viewport = viewport.loosened(viewport_render_margin);
 
+            // we need to check and set the state **before** spawning a task thread, to avoid repeated rendering of already outdated images
             render_comp.state = if viewport.contains(&stroke_bounds) {
                 RenderCompState::Complete
             } else {
@@ -231,7 +236,7 @@ impl StrokeStore {
                     }
                 }
 
-                // sets new state
+                // we need to check and set the state **before** spawning a task thread, to avoid repeated rendering of already outdated images
                 render_comp.state = if viewport.contains(&stroke_bounds) {
                     RenderCompState::Complete
                 } else {

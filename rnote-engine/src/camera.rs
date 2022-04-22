@@ -107,16 +107,12 @@ impl Camera {
 
     /// from sheet coords -> surface coords
     pub fn transform_bounds(&self, bounds: AABB) -> AABB {
-        bounds
-            .scale(self.total_zoom())
-            .translate(-self.offset)
+        bounds.scale(self.total_zoom()).translate(-self.offset)
     }
 
     /// from surface coords -> sheet coords
     pub fn transform_inv_bounds(&self, bounds: AABB) -> AABB {
-        bounds
-            .translate(self.offset)
-            .scale(1.0 / self.total_zoom())
+        bounds.translate(self.offset).scale(1.0 / self.total_zoom())
     }
 
     /// The transform from sheet coords -> surface coords

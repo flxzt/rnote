@@ -10,7 +10,7 @@ use rnote_compose::transform::TransformBehaviour;
 
 use anyhow::Context;
 use gtk4::cairo;
-use p2d::bounding_volume::{AABB, BoundingVolume};
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

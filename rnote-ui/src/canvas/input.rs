@@ -43,7 +43,7 @@ pub fn filter_stylus_input(_stylus_drawing_gesture: &GestureStylus) -> bool {
 #[allow(dead_code)]
 pub fn debug_stylus_gesture(stylus_gesture: &GestureStylus) {
     log::debug!(
-        "gesture modifier: {:?}, current_button: {:?}, tool_type: {:?}, event.event_type: {:?}",
+        "stylus_gesture | modifier: {:?}, current_button: {:?}, tool_type: {:?}, event.event_type: {:?}",
         stylus_gesture.current_event_state(),
         stylus_gesture.current_button(),
         stylus_gesture
@@ -81,46 +81,86 @@ pub fn retreive_pointer_elements(
     data_entries
 }
 
-pub fn retreive_mouse_shortcut_key(mouse_drawing_gesture: &GestureDrag) -> Option<ShortcutKey> {
-    let mut shortcut_key = None;
+pub fn retreive_mouse_shortcut_keys(mouse_drawing_gesture: &GestureDrag) -> Vec<ShortcutKey> {
+    let mut shortcut_keys = vec![];
 
     match mouse_drawing_gesture.current_button() {
         gdk::BUTTON_SECONDARY => {
-            shortcut_key = Some(ShortcutKey::MouseSecondaryButton);
+            shortcut_keys.push(ShortcutKey::MouseSecondaryButton);
         }
         _ => {}
     }
 
-    shortcut_key
+    shortcut_keys.append(&mut retreive_modifier_shortcut_key(
+        mouse_drawing_gesture.current_event_state(),
+    ));
+
+    shortcut_keys
 }
 
-/// Retreiving any shortcut key for the stylus gesture
-pub fn retreive_stylus_shortcut_key(stylus_drawing_gesture: &GestureStylus) -> Option<ShortcutKey> {
-    let mut shortcut_key = None;
+pub fn retreive_touch_shortcut_keys(touch_drawing_gesture: &GestureDrag) -> Vec<ShortcutKey> {
+    let mut shortcut_keys = vec![];
+
+    shortcut_keys.append(&mut retreive_modifier_shortcut_key(
+        touch_drawing_gesture.current_event_state(),
+    ));
+
+    shortcut_keys
+}
+
+/// Retreiving the shortcut keys for the stylus gesture
+pub fn retreive_stylus_shortcut_keys(stylus_drawing_gesture: &GestureStylus) -> Vec<ShortcutKey> {
+    let mut shortcut_keys = vec![];
 
     // the middle / secondary buttons are the lower or upper buttons on the stylus, but the mapping on gtk's side is inconsistent.
     // Also, libinput sometimes picks one button as tool_type: Eraser, but this is not supported by all devices.
     match stylus_drawing_gesture.current_button() {
         gdk::BUTTON_MIDDLE => {
-            shortcut_key = Some(ShortcutKey::StylusPrimaryButton);
+            shortcut_keys.push(ShortcutKey::StylusPrimaryButton);
         }
         gdk::BUTTON_SECONDARY => {
-            shortcut_key = Some(ShortcutKey::StylusSecondaryButton);
+            shortcut_keys.push(ShortcutKey::StylusSecondaryButton);
         }
         _ => {}
     };
+
     if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
         // Eraser is the lower stylus button
         match device_tool.tool_type() {
             gdk::DeviceToolType::Pen => {}
             gdk::DeviceToolType::Eraser => {
-                shortcut_key = Some(ShortcutKey::StylusEraserMode);
+                shortcut_keys.push(ShortcutKey::StylusEraserMode);
             }
             _ => {}
         }
     }
 
-    shortcut_key
+    shortcut_keys.append(&mut retreive_modifier_shortcut_key(
+        stylus_drawing_gesture.current_event_state(),
+    ));
+
+    shortcut_keys
+}
+
+pub fn retreive_keyboard_key_shortcut_key(key: gdk::Key) -> Option<ShortcutKey> {
+    key.to_unicode()
+        .map(|key_char| ShortcutKey::KeyboardKey(key_char))
+}
+
+/// Retreiving modifier shortcut keys. Note that here Button modifiers are skipped, they have different meanings with different kind of pointers and have to be handled individually
+pub fn retreive_modifier_shortcut_key(modifier: gdk::ModifierType) -> Vec<ShortcutKey> {
+    let mut shortcut_keys = vec![];
+    if modifier.contains(gdk::ModifierType::SHIFT_MASK) {
+        shortcut_keys.push(ShortcutKey::KeyboardShift);
+    }
+    if modifier.contains(gdk::ModifierType::CONTROL_MASK) {
+        shortcut_keys.push(ShortcutKey::KeyboardCtrl);
+    }
+    if modifier.contains(gdk::ModifierType::ALT_MASK) {
+        shortcut_keys.push(ShortcutKey::KeyboardAlt);
+    }
+
+    shortcut_keys
 }
 
 /// Retreives available input axes, defaults if not available.
@@ -148,41 +188,43 @@ pub fn retreive_stylus_elements(
 /// Process "Pen down"
 pub fn process_pen_down(
     element: Element,
-    shortcut_key: Option<ShortcutKey>,
+    shortcut_keys: Vec<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
     let mut surface_flags = SurfaceFlags::default();
-
-    // Shortcut keys as seperate events
-    if let Some(shortcut_key) = shortcut_key {
-        surface_flags.merge_with_other(
-            appwindow
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(shortcut_key)),
-        );
-    }
 
     appwindow
         .canvas()
         .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-    // GTK emits separate down events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a DownEvent
-    if shortcut_key != Some(ShortcutKey::StylusPrimaryButton)
-        && shortcut_key != Some(ShortcutKey::StylusSecondaryButton)
+    // GTK emits separate down events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a DownEvent and emit pressed shortcut key eventas
+    if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton)
+        || shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton)
     {
-        surface_flags.merge_with_other(
-            appwindow
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
-                    element,
-                    shortcut_key,
-                })),
-        );
+        for shortcut_key in shortcut_keys.iter() {
+            surface_flags.merge_with_other(
+                appwindow
+                    .canvas()
+                    .engine()
+                    .borrow_mut()
+                    .handle_penholder_event(PenHolderEvent::PressedShortcutkey(*shortcut_key)),
+            );
+        }
+
+        appwindow.handle_surface_flags(surface_flags);
+        return;
     }
+
+    surface_flags.merge_with_other(
+        appwindow
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
+                element,
+                shortcut_keys,
+            })),
+    );
 
     appwindow.handle_surface_flags(surface_flags);
 }
@@ -190,7 +232,7 @@ pub fn process_pen_down(
 /// Process "Pen motion"
 pub fn process_pen_motion(
     data_entries: VecDeque<Element>,
-    shortcut_key: Option<ShortcutKey>,
+    shortcut_keys: Vec<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
     let surface_flags = data_entries
@@ -202,7 +244,7 @@ pub fn process_pen_motion(
                 .borrow_mut()
                 .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
                     element,
-                    shortcut_key,
+                    shortcut_keys: shortcut_keys.clone(),
                 }))
         })
         .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x));
@@ -213,30 +255,47 @@ pub fn process_pen_motion(
 /// Process "Pen up"
 pub fn process_pen_up(
     element: Element,
-    shortcut_key: Option<ShortcutKey>,
+    shortcut_keys: Vec<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    // GTK emits separate events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a UpEvent
-    if shortcut_key != Some(ShortcutKey::StylusPrimaryButton)
-        && shortcut_key != Some(ShortcutKey::StylusSecondaryButton)
+    let mut surface_flags = SurfaceFlags::default();
+
+    // GTK emits separate down events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a DownEvent and emit pressed shortcut key eventas
+    if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton)
+        || shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton)
     {
-        let surface_flags = appwindow
+        for shortcut_key in shortcut_keys.iter() {
+            surface_flags.merge_with_other(
+                appwindow
+                    .canvas()
+                    .engine()
+                    .borrow_mut()
+                    .handle_penholder_event(PenHolderEvent::PressedShortcutkey(*shortcut_key)),
+            );
+        }
+
+        appwindow.handle_surface_flags(surface_flags);
+        return;
+    }
+
+    surface_flags.merge_with_other(
+        appwindow
             .canvas()
             .engine()
             .borrow_mut()
             .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Up {
                 element,
-                shortcut_key,
-            }));
+                shortcut_keys,
+            })),
+    );
 
-        appwindow.handle_surface_flags(surface_flags);
-    }
+    appwindow.handle_surface_flags(surface_flags);
 }
 
 /// Process "Pen proximity"
 pub fn process_pen_proximity(
     data_entries: VecDeque<Element>,
-    shortcut_key: Option<ShortcutKey>,
+    shortcut_keys: Vec<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
     let surface_flags = data_entries
@@ -248,10 +307,21 @@ pub fn process_pen_proximity(
                 .borrow_mut()
                 .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Proximity {
                     element,
-                    shortcut_key,
+                    shortcut_keys: shortcut_keys.clone(),
                 }))
         })
         .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x));
+
+    appwindow.handle_surface_flags(surface_flags);
+}
+
+/// Process keyboard key pressed
+pub fn process_keyboard_pressed(shortcut_key: ShortcutKey, appwindow: &RnoteAppWindow) {
+    let surface_flags = appwindow
+        .canvas()
+        .engine()
+        .borrow_mut()
+        .handle_penholder_event(PenHolderEvent::PressedShortcutkey(shortcut_key));
 
     appwindow.handle_surface_flags(surface_flags);
 }

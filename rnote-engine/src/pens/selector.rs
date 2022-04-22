@@ -7,8 +7,8 @@ use kurbo::Shape;
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penhelpers::PenState;
+use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::drawhelpers;
 use rnote_compose::{color, Color};
@@ -199,7 +199,10 @@ impl PenBehaviour for Selector {
                     selection,
                     selection_bounds,
                 },
-                PenEvent::Down { element, .. },
+                PenEvent::Down {
+                    element,
+                    shortcut_keys,
+                },
             ) => {
                 let mut pen_progress = PenProgress::InProgress;
 
@@ -339,7 +342,9 @@ impl PenBehaviour for Selector {
                         if pos_offset.magnitude()
                             > Self::RESIZE_MAGNITUDE_THRESHOLD / camera.total_zoom()
                         {
-                            let new_extents = if self.resize_lock_aspectratio {
+                            let new_extents = if self.resize_lock_aspectratio
+                                || shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
+                            {
                                 // Lock aspectratio
                                 rnote_compose::helpers::scale_w_locked_aspectratio(
                                     start_bounds.extents(),

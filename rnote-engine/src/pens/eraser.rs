@@ -51,7 +51,7 @@ impl PenBehaviour for Eraser {
                 EraserState::Up,
                 PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
                 store.trash_colliding_strokes(

@@ -221,12 +221,14 @@ impl PenHolder {
         store: &mut StrokeStore,
         camera: &mut Camera,
     ) -> SurfaceFlags {
-        /*         log::debug!(
+/* 
+        log::debug!(
             "handle_event(), event: {:?}, style: {:?}, style_override: {:?}",
             event,
             self.style,
             self.style_override
-        ); */
+        );
+ */
 
         let mut surface_flags = SurfaceFlags::default();
         surface_flags.redraw = true;

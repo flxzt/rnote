@@ -86,7 +86,7 @@ impl PenBehaviour for Brush {
                 BrushState::Idle,
                 PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {

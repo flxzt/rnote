@@ -280,7 +280,7 @@ impl PenBehaviour for Tools {
                 ToolsState::Idle,
                 PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
                 match self.style {
@@ -314,7 +314,7 @@ impl PenBehaviour for Tools {
                 ToolsState::Active,
                 PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
                 let pen_progress = match self.style {

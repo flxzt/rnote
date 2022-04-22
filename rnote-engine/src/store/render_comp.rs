@@ -217,8 +217,11 @@ impl StrokeStore {
                             return;
                         }
                         RenderCompState::ForViewport(old_viewport) => {
+                            // We don't skip if we pass the threshold in context to the margin, so the stroke gets rerendered in time. between 0.0 and 1.0
+                            const SKIP_RERENDER_MARGIN_THRESHOLD: f64 = 0.7;
+
                             let diff  = (old_viewport.center().coords - viewport.center().coords).abs();
-                            if diff[0] < viewport_render_margin && diff[1] < viewport_render_margin {
+                            if diff[0] < viewport_render_margin * SKIP_RERENDER_MARGIN_THRESHOLD && diff[1] < viewport_render_margin * SKIP_RERENDER_MARGIN_THRESHOLD {
                                 // We don't update the state, to have the old bounds on the next call
                                 // so we only update the rendering after it crossed the margin threshold
                                 return;
@@ -301,10 +304,10 @@ impl StrokeStore {
             let tasks_tx = self.tasks_tx.clone();
             let stroke = stroke.clone();
 
-            // Spawn a new thread for image rendering
-            self.threadpool.spawn(move || {
-                match stroke {
-                    Stroke::BrushStroke(brushstroke) => {
+            match stroke {
+                Stroke::BrushStroke(brushstroke) => {
+                    // Spawn a new thread for image rendering
+                    self.threadpool.spawn(move || {
                         match brushstroke.gen_images_for_last_segments(n_segments, image_scale) {
                             Ok(images) => {
                                 tasks_tx.unbounded_send(StoreTask::AppendImagesToStroke {
@@ -318,25 +321,14 @@ impl StrokeStore {
                                 log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
                             }
                         }
-                    }
-                    // regenerate everything for strokes that don't support generating svgs for the last added elements
-                    Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                        match stroke.gen_images(viewport, image_scale) {
-                            Ok(images) => {
-                                tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
-                                    key,
-                                    images,
-                                }).unwrap_or_else(|e| {
-                                    log::error!("tasks_tx.send() UpdateStrokeWithImages failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
-                                });
-                            }
-                            Err(e) => {
-                                log::debug!("stroke.gen_image() failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err {}", key, e);
-                            }
-                        }
-                    }
+
+                    });
                 }
-            });
+                // regenerate the whole stroke for strokes that don't support generating images for the last added segments
+                Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
+                    self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
+                }
+            }
         }
         Ok(())
     }

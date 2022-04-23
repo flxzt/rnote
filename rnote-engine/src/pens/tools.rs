@@ -326,6 +326,10 @@ impl PenBehaviour for Tools {
                                 &self.expandsheet_tool.strokes_below,
                                 na::vector![0.0, y_offset],
                             );
+                            store.translate_strokes_images(
+                                &self.expandsheet_tool.strokes_below,
+                                na::vector![0.0, y_offset],
+                            );
 
                             self.expandsheet_tool.current_pos_y = element.pos[1];
                         }

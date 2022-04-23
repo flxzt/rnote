@@ -347,7 +347,7 @@ impl PenBehaviour for Selector {
                                     ],
                                 ),
                                 ResizeCorner::BottomLeft => (
-                                    na::vector![pos_offset[0], -pos_offset[1]],
+                                    na::vector![-pos_offset[0], pos_offset[1]],
                                     na::vector![
                                         start_bounds.maxs.coords[0],
                                         start_bounds.mins.coords[1]

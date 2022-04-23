@@ -63,8 +63,6 @@ impl Composer<RoughOptions> for Rectangle {
         cx.save().unwrap();
         let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
-        cx.transform(self.transform.affine.to_kurbo());
-
         let mut rect_path = kurbo::BezPath::new();
 
         let top_left = -self.cuboid.half_extents;
@@ -148,6 +146,8 @@ impl Composer<RoughOptions> for Rectangle {
             );
         }
 
+        let rect_path = self.transform.affine.to_kurbo() * rect_path;
+
         if let Some(fill_color) = options.fill_color {
             let fill_points = vec![
                 na::vector![top_left[0], top_left[1]],
@@ -155,7 +155,8 @@ impl Composer<RoughOptions> for Rectangle {
                 na::vector![bottom_right[0], bottom_right[1]],
                 na::vector![top_left[0], bottom_right[1]],
             ];
-            let fill_polygon = fill_polygon(fill_points, options);
+            let fill_polygon =
+                self.transform.affine.to_kurbo() * fill_polygon(fill_points, options);
 
             let fill_brush = cx.solid_brush(fill_color.into());
             cx.fill(fill_polygon, &fill_brush);
@@ -181,9 +182,7 @@ impl Composer<RoughOptions> for Ellipse {
         cx.save().unwrap();
         let mut rng = crate::utils::new_rng_default_pcg64(options.seed);
 
-        cx.transform(self.transform.affine.to_kurbo());
-
-        let ellipse_result = roughgenerator::ellipse(
+        let mut ellipse_result = roughgenerator::ellipse(
             na::vector![0.0, 0.0],
             self.radii[0],
             self.radii[1],
@@ -191,8 +190,11 @@ impl Composer<RoughOptions> for Ellipse {
             &mut rng,
         );
 
+        ellipse_result.bez_path = self.transform.affine.to_kurbo() * ellipse_result.bez_path;
+
         if let Some(fill_color) = options.fill_color {
-            let fill_polygon = fill_polygon(ellipse_result.estimated_points, options);
+            let fill_polygon = self.transform.affine.to_kurbo()
+                * fill_polygon(ellipse_result.estimated_points, options);
 
             let fill_brush = cx.solid_brush(fill_color.into());
             cx.fill(fill_polygon, &fill_brush);

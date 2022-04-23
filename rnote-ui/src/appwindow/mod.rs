@@ -744,17 +744,9 @@ impl RnoteAppWindow {
                     let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * total_zoom;
                     let new_zoom = total_zoom - delta;
 
-                    // the sheet position BEFORE zooming
-                    let sheet_center_pos = appwindow.canvas().engine().borrow().camera.transform().inverse() *
-                        na::point![
-                            f64::from(appwindow.canvas().width()) * 0.5,
-                            f64::from(appwindow.canvas().height()) * 0.5
-                        ];
-
+                    let current_sheet_center = appwindow.canvas().current_center_on_sheet();
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-
-                    // Reposition scroller center to the previous sheet position
-                    appwindow.canvas().center_around_coord_on_sheet(sheet_center_pos.coords);
+                    appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
 
                     // Stop event propagation
                     Inhibit(true)

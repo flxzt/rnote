@@ -926,7 +926,10 @@ impl RnoteAppWindow {
         // Zoom reset
         action_zoom_reset.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let new_zoom = Camera::ZOOM_DEFAULT;
+
+            let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
+            appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
         }));
 
         // Zoom fit to width
@@ -936,25 +939,35 @@ impl RnoteAppWindow {
             for _ in 0..2 {
                 new_zoom = f64::from(appwindow.canvas_scroller().width()) / appwindow.canvas().engine().borrow().sheet.format.width as f64;
             }
+
+            let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
+            appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
         }));
 
         // Zoom in
         action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let new_zoom = ((appwindow.canvas().engine().borrow().camera.total_zoom() + RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).round() / 10.0;
+
+            let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
+            appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
         }));
 
         // Zoom out
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let new_zoom = ((appwindow.canvas().engine().borrow().camera.total_zoom() - RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).round() / 10.0;
+
+            let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
+            appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
         }));
 
         // Zoom to value
         action_zoom_to_value.connect_activate(
             clone!(@weak self as appwindow => move |_action_zoom_to_value, target| {
                 let new_zoom = target.unwrap().get::<f64>().unwrap();
+
                 appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, RnoteCanvas::ZOOM_TIMEOUT_TIME);
 
                 appwindow.mainheader().canvasmenu().zoomreset_button().set_label(format!("{:.0}%", (100.0 * new_zoom).round()).as_str());

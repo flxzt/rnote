@@ -786,6 +786,14 @@ impl RnoteCanvas {
         self.queue_resize();
     }
 
+    pub fn current_center_on_sheet(&self) -> na::Vector2<f64> {
+        (self.engine().borrow().camera.transform().inverse()
+            * na::point![
+                f64::from(self.width()) * 0.5,
+                f64::from(self.height()) * 0.5
+            ]).coords
+    }
+
     /// Centers the view around a coord on the sheet. The coord parameter has the coordinate space of the sheet!
     pub fn center_around_coord_on_sheet(&self, coord: na::Vector2<f64>) {
         let (parent_width, parent_height) = (

@@ -10,6 +10,7 @@
 /vendor
 /.editorconfig
 /.vscode
-src/config.rs
+rnote-ui/src/config.rs
+
 /temp/*
 *.mo

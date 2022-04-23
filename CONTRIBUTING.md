@@ -103,6 +103,38 @@ meson configure -Dprofile=default _mesonbuild
 
 For example if the profile needs to be changed.
 
+### Debugging
+For a native meson build:
+
+Change these lines in `build-aux/cargo.sh`:
+```bash
+    echo -e "\n--- DEVEL PROFILE ---\n"
+    cargo build --manifest-path \
+        "$MESON_SOURCE_ROOT"/Cargo.toml && \
+        cp "$CARGO_TARGET_DIR"/debug/"$APP_BIN" "$OUTPUT"
+```
+
+Then configure, compile and install the meson project as outlined above. Be sure to configure meson with -Dprofile=devel.
+
+** In VSCode**
+Create a `launch.json` entry similar to this:
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "launch debug build of 'rnote'",
+            "args": [],
+            "program": "${workspaceFolder}/target/debug/rnote"
+        },
+    ]
+}
+```
+
+In vscode the `CodeLLDB` extension can be used to debug from within the editor.
+
 
 **Uninstall**  
 If you don't like rnote, or decided that is not worth your precious disk space, you can always uninstall it with:

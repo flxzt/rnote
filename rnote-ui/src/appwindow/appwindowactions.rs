@@ -947,7 +947,7 @@ impl RnoteAppWindow {
 
         // Zoom in
         action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = ((appwindow.canvas().engine().borrow().camera.total_zoom() + RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).round() / 10.0;
+            let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 + RnoteCanvas::ZOOM_STEP);
 
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
@@ -956,7 +956,7 @@ impl RnoteAppWindow {
 
         // Zoom out
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let new_zoom = ((appwindow.canvas().engine().borrow().camera.total_zoom() - RnoteCanvas::ZOOM_ACTION_DELTA) * 10.0).round() / 10.0;
+            let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - RnoteCanvas::ZOOM_STEP);
 
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));

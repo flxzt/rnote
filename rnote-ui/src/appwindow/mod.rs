@@ -447,9 +447,6 @@ glib::wrapper! {
 }
 
 impl RnoteAppWindow {
-    pub const CANVAS_ZOOMGESTURE_THRESHOLD: f64 = 0.005; // Sets the delta threshold (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
-    pub const CANVAS_ZOOM_SCROLL_STEP: f64 = 0.1; // Sets the canvas zoom scroll step in % for one unit of the event controller delta
-
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
     }
@@ -738,11 +735,8 @@ impl RnoteAppWindow {
         // zoom scrolling with <ctrl> + scroll
         {
             canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
-                let total_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
-
                 if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                    let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * total_zoom;
-                    let new_zoom = total_zoom - delta;
+                    let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
 
                     let current_sheet_center = appwindow.canvas().current_center_on_sheet();
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));

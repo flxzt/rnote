@@ -393,7 +393,10 @@ impl Default for RnoteCanvas {
 impl RnoteCanvas {
     /// The zoom amount when activating the zoom-in / zoom-out action
     pub const ZOOM_ACTION_DELTA: f64 = 0.1;
+    // the zoom timeout time
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
+    // Sets the canvas zoom scroll step in % for one unit of the event controller delta
+    pub const ZOOM_STEP: f64 = 0.1; 
     // The default width of imported PDF's in percentage to the sheet width
     pub const PDF_IMPORT_WIDTH_DEFAULT: f64 = 50.0;
 

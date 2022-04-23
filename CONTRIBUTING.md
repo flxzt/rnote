@@ -91,14 +91,14 @@ Installing the binary into the system can be done with:
 meson install -C _mesonbuild
 ```
 
+This places the files in the specified prefix and their subpaths. The binary should now be in `/usr/bin` (and therefore in PATH)
+
 **Test**  
 Meson has some tests to validate the desktop, gresources, ... files.
 
 ```bash
 meson test -v -C _mesonbuild
 ```
-
-This places the files in the specified prefix and their subpaths. The binary should now be in `/usr/bin` (and therefore in PATH)
 
 **Reconfigure**  
 reconfiguring the meson build files can be done with:
@@ -122,7 +122,7 @@ Change these lines in `build-aux/cargo.sh`:
 
 Then configure, compile and install the meson project as outlined above. Be sure to configure meson with -Dprofile=devel.
 
-** In VSCode**
+**With VSCode**  
 Create a `launch.json` entry similar to this:
 ```json
 {

@@ -198,28 +198,39 @@ pub fn process_pen_down(
         .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
-    // so we skip handling those as a DownEvent and emit pressed shortcut key eventas
-    if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton)
-        || shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton)
-    {
-        for shortcut_key in [
-            ShortcutKey::StylusPrimaryButton,
-            ShortcutKey::StylusSecondaryButton,
-        ] {
-            surface_flags.merge_with_other(
-                appwindow
-                    .canvas()
-                    .engine()
-                    .borrow_mut()
-                    .handle_penholder_event(PenHolderEvent::PressedShortcutkey(shortcut_key)),
-            );
-        }
+    // so we skip handling those as a Pen Events and emit pressed shortcut key events
+    // TODO: handle this better
+    if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::StylusPrimaryButton,
+                )),
+        );
+
+        appwindow.handle_surface_flags(surface_flags);
+        return;
+    }
+    if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::StylusSecondaryButton,
+                )),
+        );
 
         appwindow.handle_surface_flags(surface_flags);
         return;
     }
 
-    // When switched to Eraser mode, we handle it but propagate it further as a pen event
+    // handling pointer shortcut keys as seperate events
+    // TODO: handle this better
     // TODO: make the eraser mode equivalent to the Pen mode, see https://github.com/flxzt/rnote/issues/136
     if shortcut_keys.contains(&ShortcutKey::StylusEraserMode) {
         surface_flags.merge_with_other(
@@ -229,6 +240,17 @@ pub fn process_pen_down(
                 .borrow_mut()
                 .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
                     ShortcutKey::StylusEraserMode,
+                )),
+        );
+    }
+    if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::MouseSecondaryButton,
                 )),
         );
     }
@@ -255,7 +277,8 @@ pub fn process_pen_motion(
 ) {
     let mut surface_flags = SurfaceFlags::default();
 
-    // When switched to Eraser mode, we handle it but propagate it further as a pen event
+    // handling pointer shortcut keys as seperate events
+    // TODO: handle this better
     // TODO: make the eraser mode equivalent to the Pen mode, see https://github.com/flxzt/rnote/issues/136
     if shortcut_keys.contains(&ShortcutKey::StylusEraserMode) {
         surface_flags.merge_with_other(
@@ -265,6 +288,17 @@ pub fn process_pen_motion(
                 .borrow_mut()
                 .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
                     ShortcutKey::StylusEraserMode,
+                )),
+        );
+    }
+    if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::MouseSecondaryButton,
                 )),
         );
     }
@@ -297,22 +331,32 @@ pub fn process_pen_up(
     let mut surface_flags = SurfaceFlags::default();
 
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
-    // so we skip handling those as a DownEvent and emit pressed shortcut key eventas
-    if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton)
-        || shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton)
-    {
-        for shortcut_key in [
-            ShortcutKey::StylusPrimaryButton,
-            ShortcutKey::StylusSecondaryButton,
-        ] {
-            surface_flags.merge_with_other(
-                appwindow
-                    .canvas()
-                    .engine()
-                    .borrow_mut()
-                    .handle_penholder_event(PenHolderEvent::PressedShortcutkey(shortcut_key)),
-            );
-        }
+    // so we skip handling those as a Pen Events and emit pressed shortcut key events
+    // TODO: handle this better
+    if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::StylusPrimaryButton,
+                )),
+        );
+
+        appwindow.handle_surface_flags(surface_flags);
+        return;
+    }
+    if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::StylusSecondaryButton,
+                )),
+        );
 
         appwindow.handle_surface_flags(surface_flags);
         return;

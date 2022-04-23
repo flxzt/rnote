@@ -3,7 +3,7 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use crate::helpers::AABBHelpers;
 use crate::penhelpers::{PenEvent, PenState};
 use crate::penpath::Element;
-use crate::shapes::{CubicBezier, QuadraticBezier};
+use crate::shapes::{CubicBezier};
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
@@ -170,12 +170,13 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *cp1, zoom);
             }
             CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
-                let quadbez = QuadraticBezier {
+                let cubbez = CubicBezier {
                     start: *start,
-                    cp: *cp1,
+                    cp1: *cp1,
+                    cp2: *cp2,
                     end: *cp2,
                 };
-                quadbez.draw_composed(cx, style);
+                cubbez.draw_composed(cx, style);
 
                 drawhelpers::draw_vec_indicator(cx, PenState::Down, *start, *cp1, zoom);
                 drawhelpers::draw_pos_indicator(cx, PenState::Up, *start, zoom);

@@ -421,6 +421,10 @@ impl PenBehaviour for Selector {
             (SelectorState::ModifySelection { .. }, PenEvent::Cancel) => {
                 self.state = SelectorState::Idle;
 
+                // Deselect on cancel
+                let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
+                store.set_selected_keys(&keys, false);
+
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
                 surface_flags.sheet_changed = true;

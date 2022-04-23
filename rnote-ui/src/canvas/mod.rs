@@ -571,7 +571,7 @@ impl RnoteCanvas {
 
         self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
             //log::debug!("stylus_drawing_gesture motion");
-            input::debug_stylus_gesture(&stylus_drawing_gesture);
+            //input::debug_stylus_gesture(&stylus_drawing_gesture);
 
             if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
 

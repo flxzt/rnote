@@ -197,22 +197,40 @@ pub fn process_pen_down(
         .canvas()
         .set_cursor(Some(&appwindow.canvas().motion_cursor()));
 
-    // GTK emits separate down events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a DownEvent and emit pressed shortcut key eventas
+    // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
+    // so we skip handling those as a DownEvent and emit pressed shortcut key eventas
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton)
         || shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton)
     {
-        for shortcut_key in shortcut_keys.iter() {
+        for shortcut_key in [
+            ShortcutKey::StylusPrimaryButton,
+            ShortcutKey::StylusSecondaryButton,
+        ] {
             surface_flags.merge_with_other(
                 appwindow
                     .canvas()
                     .engine()
                     .borrow_mut()
-                    .handle_penholder_event(PenHolderEvent::PressedShortcutkey(*shortcut_key)),
+                    .handle_penholder_event(PenHolderEvent::PressedShortcutkey(shortcut_key)),
             );
         }
 
         appwindow.handle_surface_flags(surface_flags);
         return;
+    }
+
+    // When switched to Eraser mode, we handle it but propagate it further as a pen event
+    // TODO: make the eraser mode equivalent to the Pen mode, see https://github.com/flxzt/rnote/issues/136
+    if shortcut_keys.contains(&ShortcutKey::StylusEraserMode) {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::StylusEraserMode,
+                )),
+        );
     }
 
     surface_flags.merge_with_other(
@@ -235,19 +253,37 @@ pub fn process_pen_motion(
     shortcut_keys: Vec<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    let surface_flags = data_entries
-        .into_iter()
-        .map(|element| {
+    let mut surface_flags = SurfaceFlags::default();
+
+    // When switched to Eraser mode, we handle it but propagate it further as a pen event
+    // TODO: make the eraser mode equivalent to the Pen mode, see https://github.com/flxzt/rnote/issues/136
+    if shortcut_keys.contains(&ShortcutKey::StylusEraserMode) {
+        surface_flags.merge_with_other(
             appwindow
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
-                    element,
-                    shortcut_keys: shortcut_keys.clone(),
-                }))
-        })
-        .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x));
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::StylusEraserMode,
+                )),
+        );
+    }
+
+    surface_flags.merge_with_other(
+        data_entries
+            .into_iter()
+            .map(|element| {
+                appwindow
+                    .canvas()
+                    .engine()
+                    .borrow_mut()
+                    .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
+                        element,
+                        shortcut_keys: shortcut_keys.clone(),
+                    }))
+            })
+            .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x)),
+    );
 
     appwindow.handle_surface_flags(surface_flags);
 }
@@ -260,17 +296,21 @@ pub fn process_pen_up(
 ) {
     let mut surface_flags = SurfaceFlags::default();
 
-    // GTK emits separate down events when pressing the stylus primary / secondary button (even when the pen is only in proximity), so we skip handling those as a DownEvent and emit pressed shortcut key eventas
+    // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
+    // so we skip handling those as a DownEvent and emit pressed shortcut key eventas
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton)
         || shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton)
     {
-        for shortcut_key in shortcut_keys.iter() {
+        for shortcut_key in [
+            ShortcutKey::StylusPrimaryButton,
+            ShortcutKey::StylusSecondaryButton,
+        ] {
             surface_flags.merge_with_other(
                 appwindow
                     .canvas()
                     .engine()
                     .borrow_mut()
-                    .handle_penholder_event(PenHolderEvent::PressedShortcutkey(*shortcut_key)),
+                    .handle_penholder_event(PenHolderEvent::PressedShortcutkey(shortcut_key)),
             );
         }
 
@@ -298,19 +338,23 @@ pub fn process_pen_proximity(
     shortcut_keys: Vec<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    let surface_flags = data_entries
-        .into_iter()
-        .map(|element| {
-            appwindow
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Proximity {
-                    element,
-                    shortcut_keys: shortcut_keys.clone(),
-                }))
-        })
-        .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x));
+    let mut surface_flags = SurfaceFlags::default();
+
+    surface_flags.merge_with_other(
+        data_entries
+            .into_iter()
+            .map(|element| {
+                appwindow
+                    .canvas()
+                    .engine()
+                    .borrow_mut()
+                    .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Proximity {
+                        element,
+                        shortcut_keys: shortcut_keys.clone(),
+                    }))
+            })
+            .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x)),
+    );
 
     appwindow.handle_surface_flags(surface_flags);
 }

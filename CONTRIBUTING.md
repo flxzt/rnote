@@ -58,9 +58,15 @@ flatpak run com.github.flxzt.rnote
 
 ### Build with Meson
 The flatpak manifest calls the meson build system to build the application.
-If a native build is wanted, meson can be called directly.
+If a native build on the host is wanted, meson can be called directly.
 
-Make sure `rustc` and `cargo` are installed. Then run:
+
+Install all needed dependencies and build tools, e.g. for fedora 36:
+```bash
+sudo dnf install meson gtk4-devel libadwaita-devel poppler-glib-devel poppler-data
+```
+
+Also make sure `rustc` and `cargo` are installed ( see [https://www.rust-lang.org/](https://www.rust-lang.org/) ). Then run:
 
 ```bash
 meson setup --prefix=/usr _mesonbuild
@@ -144,4 +150,4 @@ sudo ninja uninstall -C _mesonbuild
 ```
 
 # Contribute
-Please open an issue or ask in the `Github Discussions` section if you need help with anything!
+Please ask in the `Github Discussions` section if you need help with anything!

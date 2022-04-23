@@ -73,7 +73,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             (FociEllipseBuilderState::FociAndPoint { foci, point }, PenEvent::Up { .. }) => {
                 let shape = Ellipse::from_foci_and_point(*foci, *point);
 
-                return BuilderProgress::Finished(Some(vec![Shape::Ellipse(shape)]));
+                return BuilderProgress::Finished(vec![Shape::Ellipse(shape)]);
             }
             (FociEllipseBuilderState::FociAndPoint { .. }, _) => {}
         }

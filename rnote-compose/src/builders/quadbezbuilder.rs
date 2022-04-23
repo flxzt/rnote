@@ -84,13 +84,11 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                 *end = element.pos;
             }
             (QuadBezBuilderState::End { start, cp, end }, PenEvent::Up { .. }) => {
-                return BuilderProgress::Finished(Some(vec![Shape::QuadraticBezier(
-                    QuadraticBezier {
-                        start: *start,
-                        cp: *cp,
-                        end: *end,
-                    },
-                )]));
+                return BuilderProgress::Finished(vec![Shape::QuadraticBezier(QuadraticBezier {
+                    start: *start,
+                    cp: *cp,
+                    end: *end,
+                })]);
             }
             (QuadBezBuilderState::End { .. }, ..) => {}
         }

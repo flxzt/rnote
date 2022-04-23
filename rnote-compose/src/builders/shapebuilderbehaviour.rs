@@ -12,7 +12,7 @@ pub enum BuilderProgress {
     /// emits shapes, but continue
     EmitContinue(Vec<Shape>),
     /// done building
-    Finished(Option<Vec<Shape>>),
+    Finished(Vec<Shape>),
 }
 
 /// Creates a shape builder (separate trait cause trait object traits can't return Self)

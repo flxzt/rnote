@@ -443,7 +443,7 @@ impl RnoteEngine {
 
     pub fn export_selection_as_svg_string(&self) -> anyhow::Result<Option<String>> {
         let selection_keys = self.store.selection_keys_as_rendered();
-        if let Some(selection_bounds) = self.store.gen_bounds(&selection_keys) {
+        if let Some(selection_bounds) = self.store.gen_bounds_for_strokes(&selection_keys) {
             let mut svg_data = self
                 .store
                 .gen_svgs_for_strokes(&selection_keys)

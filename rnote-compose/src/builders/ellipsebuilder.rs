@@ -35,9 +35,7 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
                 self.current = element.pos;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(Some(vec![Shape::Ellipse(
-                    self.state_as_ellipse(),
-                )]));
+                return BuilderProgress::Finished(vec![Shape::Ellipse(self.state_as_ellipse())]);
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}

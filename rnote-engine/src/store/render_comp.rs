@@ -102,6 +102,38 @@ impl StrokeStore {
         keys.iter().for_each(|&key| self.set_rendering_dirty(key));
     }
 
+    pub fn gen_bounds_for_stroke_images(&self, key: StrokeKey) -> Option<AABB> {
+        if let Some(render_comp) = self.render_components.get(key) {
+            if render_comp.images.is_empty() {
+                return None;
+            }
+            return Some(
+                render_comp
+                    .images
+                    .iter()
+                    .map(|image| image.rect.bounds())
+                    .fold(AABB::new_invalid(), |acc, x| acc.merged(&x)),
+            );
+        }
+        None
+    }
+
+    pub fn gen_bounds_for_strokes_images(&self, keys: &[StrokeKey]) -> Option<AABB> {
+        let images_bounds = keys
+            .iter()
+            .filter_map(|&key| self.gen_bounds_for_stroke_images(key))
+            .collect::<Vec<AABB>>();
+        if images_bounds.is_empty() {
+            return None;
+        }
+
+        Some(
+            images_bounds
+                .into_iter()
+                .fold(AABB::new_invalid(), |acc, x| acc.merged(&x)),
+        )
+    }
+
     pub fn regenerate_rendering_for_stroke(
         &mut self,
         key: StrokeKey,
@@ -139,6 +171,18 @@ impl StrokeStore {
                     render_comp.state = RenderCompState::Complete;
                 }
             }
+        }
+        Ok(())
+    }
+
+    pub fn regenerate_rendering_for_strokes(
+        &mut self,
+        keys: &[StrokeKey],
+        viewport: AABB,
+        image_scale: f64,
+    ) -> anyhow::Result<()> {
+        for &key in keys {
+            self.regenerate_rendering_for_stroke(key, viewport, image_scale)?;
         }
         Ok(())
     }

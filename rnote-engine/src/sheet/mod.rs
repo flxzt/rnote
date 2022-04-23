@@ -128,7 +128,7 @@ impl Sheet {
         let mut keys = store.stroke_keys_as_rendered();
         keys.append(&mut store.selection_keys_as_rendered());
 
-        let new_bounds = if let Some(new_bounds) = store.gen_bounds(&keys) {
+        let new_bounds = if let Some(new_bounds) = store.gen_bounds_for_strokes(&keys) {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If sheet is empty, resize to one page with the format size

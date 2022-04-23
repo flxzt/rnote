@@ -57,7 +57,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
             ) => {
                 self.buffer.push_back(element);
 
-                match self.try_build_segment_start() {
+                match self.try_build_segments_start() {
                     Some(shapes) => BuilderProgress::EmitContinue(shapes),
                     None => BuilderProgress::InProgress,
                 }
@@ -71,7 +71,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
             ) => {
                 self.buffer.push_back(element);
 
-                match self.try_build_segment_during() {
+                match self.try_build_segments_during() {
                     Some(shapes) => BuilderProgress::EmitContinue(shapes),
                     None => BuilderProgress::InProgress,
                 }
@@ -85,13 +85,13 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
             ) => {
                 self.buffer.push_back(element);
 
-                BuilderProgress::Finished(self.try_build_segment_end())
+                BuilderProgress::Finished(self.try_build_segments_end())
             }
             (_, PenEvent::Proximity { .. }) => BuilderProgress::InProgress,
             (_, PenEvent::Cancel) => {
                 self.reset();
 
-                BuilderProgress::Finished(None)
+                BuilderProgress::Finished(vec![])
             }
         }
     }
@@ -136,7 +136,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
 }
 
 impl PenPathBuilder {
-    fn try_build_segment_start(&mut self) -> Option<Vec<Shape>> {
+    fn try_build_segments_start(&mut self) -> Option<Vec<Shape>> {
         let segments = match self.buffer.len() {
             0 => None,
             1 => Some(vec![Shape::Segment(Segment::Dot {
@@ -161,8 +161,8 @@ impl PenPathBuilder {
         segments
     }
 
-    fn try_build_segment_during(&mut self) -> Option<Vec<Shape>> {
-        let segment = match self.buffer.len() {
+    fn try_build_segments_during(&mut self) -> Option<Vec<Shape>> {
+        let segments = match self.buffer.len() {
             4.. => {
                 if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
                     self.buffer[0].pos,
@@ -200,11 +200,11 @@ impl PenPathBuilder {
             _ => None,
         };
 
-        segment
+        segments
     }
 
-    fn try_build_segment_end(&mut self) -> Option<Vec<Shape>> {
-        let mut segments: Option<Vec<Shape>> = None;
+    fn try_build_segments_end(&mut self) -> Vec<Shape> {
+        let mut segments: Vec<Shape> = vec![];
 
         while let Some(mut new_segments) = match self.buffer.len() {
             0 => None,
@@ -262,11 +262,7 @@ impl PenPathBuilder {
             }
             _ => None,
         } {
-            if let Some(ref mut segments) = segments {
-                segments.append(&mut new_segments);
-            } else {
-                segments = Some(new_segments);
-            }
+            segments.append(&mut new_segments);
         }
 
         self.reset();

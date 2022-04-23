@@ -28,7 +28,8 @@ pub(super) enum ResizeCorner {
 pub(super) enum ModifyState {
     Up,
     Translate {
-        pos: na::Vector2<f64>,
+        start_pos: na::Vector2<f64>,
+        current_pos: na::Vector2<f64>,
     },
     Rotate {
         rotation_center: na::Point2<f64>,
@@ -158,7 +159,7 @@ impl PenBehaviour for Selector {
                         }
                     }
                 } {
-                    if let Some(selection_bounds) = store.gen_bounds(&selection) {
+                    if let Some(selection_bounds) = store.gen_bounds_for_strokes(&selection) {
                         // Change to the modifiy state
                         state = SelectorState::ModifySelection {
                             modify_state: ModifyState::default(),
@@ -272,7 +273,10 @@ impl PenBehaviour for Selector {
                         } else if selection_bounds
                             .contains_local_point(&na::Point2::from(element.pos))
                         {
-                            *modify_state = ModifyState::Translate { pos: element.pos };
+                            *modify_state = ModifyState::Translate {
+                                start_pos: element.pos,
+                                current_pos: element.pos,
+                            };
                         } else {
                             // If clicking outside the selection, reset
                             store.set_selected_keys(selection, false);
@@ -281,14 +285,19 @@ impl PenBehaviour for Selector {
                             pen_progress = PenProgress::Finished;
                         }
                     }
-                    ModifyState::Translate { pos } => {
-                        let offset = element.pos - *pos;
+                    ModifyState::Translate {
+                        start_pos: _,
+                        current_pos,
+                    } => {
+                        let offset = element.pos - *current_pos;
 
                         if offset.magnitude()
                             > Self::TRANSLATE_MAGNITUDE_THRESHOLD / camera.total_zoom()
                         {
                             store.translate_strokes(selection, offset);
+                            store.translate_strokes_images(selection, offset);
                             *selection_bounds = selection_bounds.translate(offset);
+
                             // strokes that were far away previously might come into view
                             store.regenerate_rendering_in_viewport_threaded(
                                 false,
@@ -296,7 +305,7 @@ impl PenBehaviour for Selector {
                                 camera.image_scale(),
                             );
 
-                            *pos = element.pos;
+                            *current_pos = element.pos;
                         }
                     }
                     ModifyState::Rotate {
@@ -312,8 +321,9 @@ impl PenBehaviour for Selector {
 
                         if angle_delta.abs() > Self::ROTATE_ANGLE_THRESHOLD {
                             store.rotate_strokes(selection, angle_delta, *rotation_center);
+                            store.rotate_strokes_images(selection, angle_delta, *rotation_center);
 
-                            if let Some(new_bounds) = store.gen_bounds(selection) {
+                            if let Some(new_bounds) = store.gen_bounds_for_strokes(selection) {
                                 *selection_bounds = new_bounds;
                             }
                             *current_rotation_angle = new_rotation_angle;
@@ -324,78 +334,51 @@ impl PenBehaviour for Selector {
                         start_bounds,
                         start_pos,
                     } => {
-                        let pos_offset = {
+                        let (pos_offset, pivot) = {
                             let pos_offset = element.pos - *start_pos;
 
                             match from_corner {
-                                ResizeCorner::TopLeft => -pos_offset,
-                                ResizeCorner::TopRight => {
-                                    na::vector![pos_offset[0], -pos_offset[1]]
-                                }
-                                ResizeCorner::BottomLeft => {
-                                    na::vector![-pos_offset[0], pos_offset[1]]
-                                }
-                                ResizeCorner::BottomRight => pos_offset,
+                                ResizeCorner::TopLeft => (-pos_offset, start_bounds.maxs.coords),
+                                ResizeCorner::TopRight => (
+                                    na::vector![pos_offset[0], -pos_offset[1]],
+                                    na::vector![
+                                        start_bounds.mins.coords[0],
+                                        start_bounds.maxs.coords[1]
+                                    ],
+                                ),
+                                ResizeCorner::BottomLeft => (
+                                    na::vector![pos_offset[0], -pos_offset[1]],
+                                    na::vector![
+                                        start_bounds.maxs.coords[0],
+                                        start_bounds.mins.coords[1]
+                                    ],
+                                ),
+                                ResizeCorner::BottomRight => (pos_offset, start_bounds.mins.coords),
                             }
                         };
 
-                        if pos_offset.magnitude()
-                            > Self::RESIZE_MAGNITUDE_THRESHOLD / camera.total_zoom()
+                        let new_extents = if self.resize_lock_aspectratio
+                            || shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
                         {
-                            let new_extents = if self.resize_lock_aspectratio
-                                || shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
-                            {
-                                // Lock aspectratio
-                                rnote_compose::helpers::scale_w_locked_aspectratio(
-                                    start_bounds.extents(),
-                                    start_bounds.extents() + pos_offset,
-                                )
-                            } else {
-                                start_bounds.extents() + pos_offset
-                            }
-                            .maxs(&((Self::RESIZE_NODE_SIZE * 2.0) / camera.total_zoom()));
-
-                            let new_bounds = match from_corner {
-                                ResizeCorner::TopLeft => AABB::new(
-                                    na::point![
-                                        start_bounds.maxs[0] - new_extents[0],
-                                        start_bounds.maxs[1] - new_extents[1]
-                                    ],
-                                    na::point![start_bounds.maxs[0], start_bounds.maxs[1]],
-                                ),
-                                ResizeCorner::TopRight => AABB::new(
-                                    na::point![
-                                        start_bounds.mins[0],
-                                        start_bounds.maxs[1] - new_extents[1]
-                                    ],
-                                    na::point![
-                                        start_bounds.mins[0] + new_extents[0],
-                                        start_bounds.maxs[1]
-                                    ],
-                                ),
-                                ResizeCorner::BottomLeft => AABB::new(
-                                    na::point![
-                                        start_bounds.maxs[0] - new_extents[0],
-                                        start_bounds.mins[1]
-                                    ],
-                                    na::point![
-                                        start_bounds.maxs[0],
-                                        start_bounds.mins[1] + new_extents[1]
-                                    ],
-                                ),
-                                ResizeCorner::BottomRight => AABB::new(
-                                    na::point![start_bounds.mins[0], start_bounds.mins[1]],
-                                    na::point![
-                                        start_bounds.mins[0] + new_extents[0],
-                                        start_bounds.mins[1] + new_extents[1]
-                                    ],
-                                ),
-                            };
-
-                            store.resize_strokes(selection, *selection_bounds, new_bounds);
-
-                            *selection_bounds = new_bounds;
+                            // Lock aspectratio
+                            rnote_compose::helpers::scale_w_locked_aspectratio(
+                                start_bounds.extents(),
+                                start_bounds.extents() + pos_offset,
+                            )
+                        } else {
+                            start_bounds.extents() + pos_offset
                         }
+                        .maxs(&((Self::RESIZE_NODE_SIZE * 2.0) / camera.total_zoom()));
+
+                        let scale = new_extents.component_div(&selection_bounds.extents());
+
+                        store.scale_strokes_with_pivot(selection, scale, pivot);
+                        store.scale_strokes_images_with_pivot(selection, scale, pivot);
+
+                        *selection_bounds = selection_bounds
+                            .translate(-pivot)
+                            .scale_non_uniform(scale)
+                            .translate(pivot);
                     }
                 }
 
@@ -421,7 +404,7 @@ impl PenBehaviour for Selector {
 
                 store.update_geometry_for_strokes(&selection);
 
-                if let Some(new_bounds) = store.gen_bounds(selection) {
+                if let Some(new_bounds) = store.gen_bounds_for_strokes(selection) {
                     *selection_bounds = new_bounds;
                 }
                 *modify_state = ModifyState::Up;
@@ -564,8 +547,6 @@ impl Selector {
     const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.0;
     /// The threshold angle (rad) where a rotation is applied
     const ROTATE_ANGLE_THRESHOLD: f64 = ((2.0 * std::f64::consts::PI) / 360.0) * 0.2;
-    /// The threshold where a resize is applied ( in offset magnitude, surface coords )
-    const RESIZE_MAGNITUDE_THRESHOLD: f64 = 1.0;
 
     const SELECTION_OUTLINE_WIDTH: f64 = 1.5;
     const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(0xf0);
@@ -588,7 +569,7 @@ impl Selector {
 
     pub fn update_selection_from_state(&mut self, store: &StrokeStore) {
         let selection = store.selection_keys_unordered();
-        let selection_bounds = store.gen_bounds(&selection);
+        let selection_bounds = store.gen_bounds_for_strokes(&selection);
         if let Some(selection_bounds) = selection_bounds {
             self.set_selection(selection, selection_bounds);
         } else {

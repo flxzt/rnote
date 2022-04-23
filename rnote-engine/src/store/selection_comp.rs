@@ -121,7 +121,7 @@ impl StrokeStore {
     }
 
     pub fn gen_selection_bounds(&self) -> Option<AABB> {
-        self.gen_bounds(&self.selection_keys_unordered())
+        self.gen_bounds_for_strokes(&self.selection_keys_unordered())
     }
 
     pub fn duplicate_selection(&mut self) {

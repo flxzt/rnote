@@ -35,10 +35,10 @@ impl ShapeBuilderBehaviour for LineBuilder {
                 self.current = element.pos;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(Some(vec![Shape::Line(Line {
+                return BuilderProgress::Finished(vec![Shape::Line(Line {
                     start: self.start,
                     end: self.current,
-                })]));
+                })]);
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}

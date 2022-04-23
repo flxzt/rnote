@@ -8,6 +8,7 @@ use image::GenericImageView;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use rnote_compose::shapes::{Rectangle, ShapeBehaviour};
+use rnote_compose::transform::TransformBehaviour;
 use serde::{Deserialize, Serialize};
 
 use crate::utils::{base64, GrapheneRectHelpers};
@@ -164,6 +165,20 @@ impl DrawBehaviour for Image {
         );
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
+    }
+}
+
+impl TransformBehaviour for Image {
+    fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
+        self.rect.translate(offset)
+    }
+
+    fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
+        self.rect.rotate(angle, center)
+    }
+
+    fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
+        self.rect.scale(scale)
     }
 }
 

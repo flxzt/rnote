@@ -115,12 +115,12 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 },
                 PenEvent::Up { .. },
             ) => {
-                return BuilderProgress::Finished(Some(vec![Shape::CubicBezier(CubicBezier {
+                return BuilderProgress::Finished(vec![Shape::CubicBezier(CubicBezier {
                     start: *start,
                     cp1: *cp1,
                     cp2: *cp2,
                     end: *end,
-                })]));
+                })]);
             }
             (CubBezBuilderState::End { .. }, ..) => {}
         }

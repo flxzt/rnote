@@ -539,8 +539,8 @@ impl StrokeStore {
         new_height
     }
 
-    /// Generates the bounds which enclose the strokes
-    pub fn gen_bounds(&self, keys: &[StrokeKey]) -> Option<AABB> {
+    /// Generates the enclosing bounds for the given stroke keys
+    pub fn gen_bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<AABB> {
         let mut keys_iter = keys.iter();
         if let Some(&key) = keys_iter.next() {
             if let Some(first) = self.strokes.get(key) {
@@ -586,7 +586,8 @@ impl StrokeStore {
             .collect::<Vec<render::Svg>>()
     }
 
-    /// Translate the strokes with the offset
+    /// Translate the strokes with the offset.
+    /// Rendering needs to be regenerated
     pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
@@ -595,28 +596,31 @@ impl StrokeStore {
                     stroke.translate(offset);
                     self.key_tree.update_with_key(key, stroke.bounds());
                 }
+            }
+        });
+    }
 
-                // translate the images
-                if let Some(render_comp) = self.render_components.get_mut(key) {
-                    for image in render_comp.images.iter_mut() {
-                        image.rect.translate(offset);
-                    }
+    pub fn translate_strokes_images(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {
+        strokes.iter().for_each(|&key| {
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                for image in render_comp.images.iter_mut() {
+                    image.translate(offset);
+                }
 
-                    match render::Image::images_to_rendernodes(&render_comp.images) {
-                        Ok(rendernodes) => {
-                            render_comp.rendernodes = rendernodes;
-                        }
-                        Err(e) => log::error!(
-                            "images_to_rendernode() failed in translate_strokes() with Err {}",
-                            e
-                        ),
+                match render::Image::images_to_rendernodes(&render_comp.images) {
+                    Ok(rendernodes) => {
+                        render_comp.rendernodes = rendernodes;
                     }
+                    Err(e) => log::error!(
+                        "images_to_rendernode() failed in translate_strokes_images() with Err {}",
+                        e
+                    ),
                 }
             }
         });
     }
 
-    /// Rotates the stroke with angle (rad) around the center
+    /// Rotates the stroke with angle (rad) around the center.
     /// Rendering needs to be regenerated
     pub fn rotate_strokes(&mut self, strokes: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
         strokes.iter().for_each(|&key| {
@@ -626,32 +630,103 @@ impl StrokeStore {
                     stroke.rotate(angle, center);
                     self.key_tree.update_with_key(key, stroke.bounds());
                 }
+            }
+        });
+    }
 
-                // rotate the images
-                if let Some(render_comp) = self.render_components.get_mut(key) {
-                    render_comp.state = RenderCompState::Dirty;
+    pub fn rotate_strokes_images(
+        &mut self,
+        strokes: &[StrokeKey],
+        angle: f64,
+        center: na::Point2<f64>,
+    ) {
+        strokes.iter().for_each(|&key| {
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                render_comp.state = RenderCompState::Dirty;
 
-                    for image in render_comp.images.iter_mut() {
-                        image.rect.rotate(angle, center);
+                for image in render_comp.images.iter_mut() {
+                    image.rotate(angle, center);
+                }
+
+                match render::Image::images_to_rendernodes(&render_comp.images) {
+                    Ok(rendernodes) => {
+                        render_comp.rendernodes = rendernodes;
                     }
-
-                    match render::Image::images_to_rendernodes(&render_comp.images) {
-                        Ok(rendernodes) => {
-                            render_comp.rendernodes = rendernodes;
-                        }
-                        Err(e) => log::error!(
-                            "images_to_rendernode() failed in rotate_strokes() with Err {}",
-                            e
-                        ),
-                    }
+                    Err(e) => log::error!(
+                        "images_to_rendernode() failed in rotate_strokes() with Err {}",
+                        e
+                    ),
                 }
             }
         });
     }
 
-    /// Resizes the strokes to new bounds
+    /// Scales the strokes with the factor.
+    /// Rendering needs to be regenerated
+    pub fn scale_strokes(&mut self, strokes: &[StrokeKey], scale: na::Vector2<f64>) {
+        strokes.iter().for_each(|&key| {
+            if let Some(stroke) = self.strokes.get_mut(key) {
+                {
+                    // rotate the stroke geometry
+                    stroke.scale(scale);
+                    self.key_tree.update_with_key(key, stroke.bounds());
+                }
+            }
+        });
+    }
+
+    pub fn scale_strokes_images(&mut self, strokes: &[StrokeKey], scale: na::Vector2<f64>) {
+        strokes.iter().for_each(|&key| {
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                render_comp.state = RenderCompState::Dirty;
+
+                for image in render_comp.images.iter_mut() {
+                    image.scale(scale);
+                }
+
+                match render::Image::images_to_rendernodes(&render_comp.images) {
+                    Ok(rendernodes) => {
+                        render_comp.rendernodes = rendernodes;
+                    }
+                    Err(e) => log::error!(
+                        "images_to_rendernode() failed in rotate_strokes() with Err {}",
+                        e
+                    ),
+                }
+            }
+        });
+    }
+
+    pub fn scale_strokes_with_pivot(
+        &mut self,
+        strokes: &[StrokeKey],
+        scale: na::Vector2<f64>,
+        pivot: na::Vector2<f64>,
+    ) {
+        self.translate_strokes(strokes, -pivot);
+        self.scale_strokes(strokes, scale);
+        self.translate_strokes(strokes, pivot);
+    }
+
+    pub fn scale_strokes_images_with_pivot(
+        &mut self,
+        strokes: &[StrokeKey],
+        scale: na::Vector2<f64>,
+        pivot: na::Vector2<f64>,
+    ) {
+        self.translate_strokes_images(strokes, -pivot);
+        self.scale_strokes_images(strokes, scale);
+        self.translate_strokes_images(strokes, pivot);
+    }
+
+    /// Resizes the strokes to new bounds.
     /// Needs rendering regeneration after calling
-    pub fn resize_strokes(&mut self, strokes: &[StrokeKey], old_bounds: AABB, new_bounds: AABB) {
+    pub fn resize_strokes(&mut self, strokes: &[StrokeKey], new_bounds: AABB) {
+        let old_bounds = match self.gen_bounds_for_strokes(strokes) {
+            Some(old_bounds) => old_bounds,
+            None => return,
+        };
+
         strokes.iter().for_each(|&key| {
             if let Some(stroke) = self.strokes.get_mut(key) {
                 {
@@ -674,42 +749,47 @@ impl StrokeStore {
 
                     self.key_tree.update_with_key(key, stroke.bounds());
                 }
+            }
+        });
+    }
 
-                // resize the images
-                if let Some(render_comp) = self.render_components.get_mut(key) {
-                    render_comp.state = RenderCompState::Dirty;
+    pub fn resize_strokes_images(&mut self, strokes: &[StrokeKey], new_bounds: AABB) {
+        let old_bounds = match self.gen_bounds_for_strokes(strokes) {
+            Some(old_bounds) => old_bounds,
+            None => return,
+        };
 
-                    for image in render_comp.images.iter_mut() {
-                        // resize the stroke geometry
-                        let old_image_bounds = image.rect.bounds();
-                        let new_image_bounds =
-                            helpers::scale_inner_bounds_in_context_new_outer_bounds(
-                                old_image_bounds,
-                                old_bounds,
-                                new_bounds,
-                            );
-                        let scale = new_image_bounds
-                            .extents()
-                            .component_div(&old_image_bounds.extents());
-                        let rel_offset = new_image_bounds.center() - old_image_bounds.center();
+        strokes.iter().for_each(|&key| {
+            if let Some(render_comp) = self.render_components.get_mut(key) {
+                render_comp.state = RenderCompState::Dirty;
 
-                        // Translate in relation to the outer bounds
-                        image
-                            .rect
-                            .translate(rel_offset - old_image_bounds.center().coords);
-                        image.rect.scale(scale);
-                        image.rect.translate(old_image_bounds.center().coords);
+                for image in render_comp.images.iter_mut() {
+                    // resize the stroke geometry
+                    let old_image_bounds = image.rect.bounds();
+                    let new_image_bounds = helpers::scale_inner_bounds_in_context_new_outer_bounds(
+                        old_image_bounds,
+                        old_bounds,
+                        new_bounds,
+                    );
+                    let scale = new_image_bounds
+                        .extents()
+                        .component_div(&old_image_bounds.extents());
+                    let rel_offset = new_image_bounds.center() - old_image_bounds.center();
+
+                    // Translate in relation to the outer bounds
+                    image.translate(rel_offset - old_image_bounds.center().coords);
+                    image.scale(scale);
+                    image.translate(old_image_bounds.center().coords);
+                }
+
+                match render::Image::images_to_rendernodes(&render_comp.images) {
+                    Ok(rendernodes) => {
+                        render_comp.rendernodes = rendernodes;
                     }
-
-                    match render::Image::images_to_rendernodes(&render_comp.images) {
-                        Ok(rendernodes) => {
-                            render_comp.rendernodes = rendernodes;
-                        }
-                        Err(e) => log::error!(
-                            "images_to_rendernode() failed in resize_strokes() with Err {}",
-                            e
-                        ),
-                    }
+                    Err(e) => log::error!(
+                        "images_to_rendernode() failed in resize_strokes() with Err {}",
+                        e
+                    ),
                 }
             }
         });

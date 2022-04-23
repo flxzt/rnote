@@ -826,7 +826,7 @@ impl RnoteCanvas {
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
         self.engine().borrow_mut().camera.set_zoom(new_zoom);
 
-        let all_strokes = self.engine().borrow().store.stroke_keys_unordered();
+        let all_strokes = self.engine().borrow().store.keys_unordered();
         self.engine()
             .borrow_mut()
             .store

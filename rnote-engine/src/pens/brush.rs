@@ -195,7 +195,7 @@ impl PenBehaviour for Brush {
 
                         PenProgress::InProgress
                     }
-                    BuilderProgress::Finished(Some(shapes)) => {
+                    BuilderProgress::Finished(shapes) => {
                         for shape in shapes {
                             match shape {
                                 Shape::Segment(new_segment) => {
@@ -211,26 +211,6 @@ impl PenBehaviour for Brush {
                             }
                         }
 
-                        // Finish up the last stroke
-                        store.update_geometry_for_stroke(*current_stroke_key);
-                        store.regenerate_rendering_for_stroke_threaded(
-                            *current_stroke_key,
-                            camera.viewport(),
-                            camera.image_scale(),
-                        );
-
-                        Self::stop_audio(style, audioplayer);
-
-                        self.state = BrushState::Idle;
-
-                        surface_flags.redraw = true;
-                        surface_flags.resize = true;
-                        surface_flags.sheet_changed = true;
-                        surface_flags.hide_scrollbars = Some(false);
-
-                        PenProgress::Finished
-                    }
-                    BuilderProgress::Finished(None) => {
                         // Finish up the last stroke
                         store.update_geometry_for_stroke(*current_stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(

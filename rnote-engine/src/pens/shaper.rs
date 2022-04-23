@@ -160,8 +160,13 @@ impl PenBehaviour for Shaper {
 
                     PenProgress::InProgress
                 }
-                BuilderProgress::Finished(Some(shapes)) => {
+                BuilderProgress::Finished(shapes) => {
                     let drawstyle = self.gen_style_for_current_options();
+
+                    if !shapes.is_empty() {
+                        surface_flags.resize = true;
+                        surface_flags.sheet_changed = true;
+                    }
 
                     for shape in shapes {
                         let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
@@ -173,22 +178,14 @@ impl PenBehaviour for Shaper {
                             camera.viewport(),
                             camera.image_scale(),
                         ) {
-                            log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
+                            log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err {}", e);
                         }
                     }
 
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.sheet_changed = true;
-
                     self.state = ShaperState::Idle;
 
-                    PenProgress::Finished
-                }
-                BuilderProgress::Finished(None) => {
                     surface_flags.redraw = true;
 
-                    self.state = ShaperState::Idle;
                     PenProgress::Finished
                 }
             },

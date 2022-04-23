@@ -113,7 +113,7 @@ For example if the profile needs to be changed.
 If you don't like rnote, or decided that is not worth your precious disk space, you can always uninstall it with:
 
 ```bash
-sudo ninja uninstall -C _mesonbuild
+sudo -E ninja uninstall -C _mesonbuild
 ```
 
 # Debugging

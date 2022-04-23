@@ -33,6 +33,14 @@
       <default>"./"</default>
       <summary>the current workspace directory</summary>
     </key>
+    <key name="autosave" type="b">
+      <default>true</default>
+      <summary>true when autosave is enabled</summary>
+    </key>
+    <key name="autosave-interval-secs" type="u">
+      <default>120</default>
+      <summary>the sec interval for the autosave</summary>
+    </key>
     <key name="righthanded" type="b">
       <default>true</default>
       <summary>Wether the user is righthanded (or lefthanded)</summary>

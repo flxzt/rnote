@@ -109,6 +109,9 @@ impl RnoteAppWindow {
         self.add_action(&action_save_sheet);
         let action_save_sheet_as = gio::SimpleAction::new("save-sheet-as", None);
         self.add_action(&action_save_sheet_as);
+        let action_autosave =
+            gio::PropertyAction::new("autosave", self, "autosave");
+        self.add_action(&action_autosave);
         let action_open_sheet = gio::SimpleAction::new("open-sheet", None);
         self.add_action(&action_open_sheet);
         let action_open_workspace = gio::SimpleAction::new("open-workspace", None);

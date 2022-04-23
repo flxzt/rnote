@@ -57,6 +57,16 @@ impl RnoteAppWindow {
             })
             .build();
 
+        // autosave
+        self.app_settings()
+            .bind("autosave", self, "autosave")
+            .build();
+
+        // autosave interval secs
+        self.app_settings()
+            .bind("autosave-interval-secs", self, "autosave-interval-secs")
+            .build();
+
         // righthanded
         self.app_settings()
             .bind("righthanded", self, "righthanded")

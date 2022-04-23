@@ -44,8 +44,11 @@ mod imp {
     pub struct RnoteAppWindow {
         pub app_settings: gio::Settings,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
+        pub autosave_source_id: Rc<RefCell<Option<glib::SourceId>>>,
 
         pub unsaved_changes: Cell<bool>,
+        pub autosave: Cell<bool>,
+        pub autosave_interval_secs: Cell<u32>,
         pub righthanded: Cell<bool>,
 
         #[template_child]
@@ -105,8 +108,11 @@ mod imp {
             Self {
                 app_settings: gio::Settings::new(config::APP_ID),
                 filechoosernative: Rc::new(RefCell::new(None)),
+                autosave_source_id: Rc::new(RefCell::new(None)),
 
                 unsaved_changes: Cell::new(false),
+                autosave: Cell::new(true),
+                autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
                 righthanded: Cell::new(true),
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
@@ -218,6 +224,24 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
+                    // autosave
+                    glib::ParamSpecBoolean::new(
+                        "autosave",
+                        "autosave",
+                        "autosave",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // autosave interval in secs
+                    glib::ParamSpecUInt::new(
+                        "autosave-interval-secs",
+                        "autosave-interval-secs",
+                        "autosave-interval-secs",
+                        5,
+                        u32::MAX,
+                        super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT,
+                        glib::ParamFlags::READWRITE,
+                    ),
                     // righthanded
                     glib::ParamSpecBoolean::new(
                         "righthanded",
@@ -234,6 +258,8 @@ mod imp {
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
                 "unsaved-changes" => self.unsaved_changes.get().to_value(),
+                "autosave" => self.autosave.get().to_value(),
+                "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
                 _ => unimplemented!(),
             }
@@ -241,7 +267,7 @@ mod imp {
 
         fn set_property(
             &self,
-            _obj: &Self::Type,
+            obj: &Self::Type,
             _id: usize,
             value: &glib::Value,
             pspec: &glib::ParamSpec,
@@ -251,6 +277,34 @@ mod imp {
                     let unsaved_changes: bool =
                         value.get().expect("The value needs to be of type `bool`.");
                     self.unsaved_changes.replace(unsaved_changes);
+                }
+                "autosave" => {
+                    let autosave = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.autosave.replace(autosave);
+
+                    if autosave {
+                        self.update_autosave_handler(obj);
+                    } else {
+                        if let Some(autosave_source_id) =
+                            self.autosave_source_id.borrow_mut().take()
+                        {
+                            autosave_source_id.remove();
+                        }
+                    }
+                }
+                "autosave-interval-secs" => {
+                    let autosave_interval_secs = value
+                        .get::<u32>()
+                        .expect("The value needs to be of type `u32`.");
+
+                    self.autosave_interval_secs.replace(autosave_interval_secs);
+
+                    if self.autosave.get() {
+                        self.update_autosave_handler(obj);
+                    }
                 }
                 "righthanded" => {
                     let righthanded = value
@@ -286,6 +340,25 @@ mod imp {
     impl AdwApplicationWindowImpl for RnoteAppWindow {}
 
     impl RnoteAppWindow {
+        fn update_autosave_handler(&self, obj: &super::RnoteAppWindow) {
+            if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(), clone!(@strong obj as appwindow => @default-return glib::source::Continue(false), move || {
+                if let Some(output_file) = appwindow.canvas().output_file() {
+                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        if let Err(e) = appwindow.save_sheet_to_file(&output_file).await {
+                            appwindow.canvas().set_output_file(None);
+
+                            log::error!("saving sheet failed with error `{}`", e);
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving sheet failed.").to_variant()));
+                        }
+                    }));
+                }
+
+                glib::source::Continue(true)
+            }))) {
+                removed_id.remove();
+            }
+        }
+
         // Setting up the sidebar flap
         fn setup_flap(&self, obj: &super::RnoteAppWindow) {
             let flap = self.flap.get();
@@ -447,6 +520,8 @@ glib::wrapper! {
 }
 
 impl RnoteAppWindow {
+    const AUTOSAVE_INTERVAL_DEFAULT: u32 = 120;
+
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
     }
@@ -490,6 +565,22 @@ impl RnoteAppWindow {
 
     pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
         self.set_property("unsaved-changes", unsaved_changes.to_value());
+    }
+
+    pub fn autosave(&self) -> bool {
+        self.property::<bool>("autosave")
+    }
+
+    pub fn set_autosave(&self, autosave: bool) {
+        self.set_property("autosave", autosave.to_value());
+    }
+
+    pub fn autosave_interval_secs(&self) -> u32 {
+        self.property::<u32>("autosave-interval-secs")
+    }
+
+    pub fn set_autosave_interval_secs(&self, autosave_interval_secs: u32) {
+        self.set_property("autosave-interval-secs", autosave_interval_secs.to_value());
     }
 
     pub fn righthanded(&self) -> bool {

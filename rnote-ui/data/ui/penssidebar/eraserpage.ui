@@ -45,7 +45,7 @@
         <child>
           <object class="GtkToggleButton" id="eraserstyle_split_colliding_strokes_toggle">
             <property name="group">eraserstyle_trash_colliding_strokes_toggle</property>
-            <property name="tooltip_text" translatable="yes">split strokes</property>
+            <property name="tooltip_text" translatable="yes">Split strokes</property>
             <property name="vexpand">true</property>
             <child>
               <object class="GtkImage">

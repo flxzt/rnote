@@ -325,7 +325,7 @@ impl Background {
 
     fn gen_rendernodes(
         &mut self,
-        sheet_bounds: AABB,
+        viewport: AABB,
     ) -> Result<Vec<(gsk::RenderNode, AABB)>, anyhow::Error> {
         let tile_size = self.tile_size();
         let mut rendernodes: Vec<(gsk::RenderNode, AABB)> = vec![];
@@ -336,7 +336,7 @@ impl Background {
                 .to_memtexture()
                 .context("image to_memtexture() failed in gen_rendernode() of background.")?;
 
-            for splitted_bounds in sheet_bounds.split_extended_origin_aligned(tile_size) {
+            for splitted_bounds in viewport.split_extended_origin_aligned(tile_size) {
                 rendernodes.push((
                     gsk::TextureNode::new(
                         &new_texture,
@@ -351,8 +351,8 @@ impl Background {
         Ok(rendernodes)
     }
 
-    pub fn update_rendernodes(&mut self, sheet_bounds: AABB) -> anyhow::Result<()> {
-        match self.gen_rendernodes(sheet_bounds) {
+    pub fn update_rendernodes(&mut self, viewport: AABB) -> anyhow::Result<()> {
+        match self.gen_rendernodes(viewport) {
             Ok(rendernodes) => {
                 self.rendernodes = rendernodes;
             }
@@ -369,7 +369,7 @@ impl Background {
 
     pub fn regenerate_background(
         &mut self,
-        sheet_bounds: AABB,
+        viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         let tile_size = self.tile_size();
@@ -377,7 +377,7 @@ impl Background {
 
         self.image = self.gen_image(tile_bounds, image_scale)?;
 
-        self.update_rendernodes(sheet_bounds)?;
+        self.update_rendernodes(viewport)?;
         Ok(())
     }
 

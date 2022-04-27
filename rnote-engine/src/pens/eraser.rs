@@ -72,6 +72,8 @@ impl PenBehaviour for Eraser {
                     shortcut_keys: _,
                 },
             ) => {
+                store.record();
+
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
                         store.trash_colliding_strokes(

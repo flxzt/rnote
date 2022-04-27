@@ -76,9 +76,9 @@ impl RnoteAppWindow {
             gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
 
-        let action_undo_stroke = gio::SimpleAction::new("undo-stroke", None);
+        let action_undo_stroke = gio::SimpleAction::new("undo", None);
         self.add_action(&action_undo_stroke);
-        let action_redo_stroke = gio::SimpleAction::new("redo-stroke", None);
+        let action_redo_stroke = gio::SimpleAction::new("redo", None);
         self.add_action(&action_redo_stroke);
         let action_zoom_reset = gio::SimpleAction::new("zoom-reset", None);
         self.add_action(&action_zoom_reset);
@@ -114,8 +114,7 @@ impl RnoteAppWindow {
         self.add_action(&action_save_sheet);
         let action_save_sheet_as = gio::SimpleAction::new("save-sheet-as", None);
         self.add_action(&action_save_sheet_as);
-        let action_autosave =
-            gio::PropertyAction::new("autosave", self, "autosave");
+        let action_autosave = gio::PropertyAction::new("autosave", self, "autosave");
         self.add_action(&action_autosave);
         let action_open_sheet = gio::SimpleAction::new("open-sheet", None);
         self.add_action(&action_open_sheet);
@@ -942,15 +941,14 @@ impl RnoteAppWindow {
 
         // Undo stroke
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().engine().borrow_mut().store.undo_last_stroke();
-            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+            let surface_flags =appwindow.canvas().engine().borrow_mut().undo();
+            appwindow.handle_surface_flags(surface_flags);
             appwindow.canvas().queue_resize();
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().engine().borrow_mut().store.redo_last_stroke();
-            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+            appwindow.canvas().engine().borrow_mut().break_undo_chain();
             appwindow.canvas().queue_resize();
         }));
 
@@ -1011,7 +1009,7 @@ impl RnoteAppWindow {
             let new_sheet_height = appwindow.canvas().engine().borrow().sheet.height + format_height;
             appwindow.canvas().engine().borrow_mut().sheet.height = new_sheet_height;
 
-            appwindow.canvas().update_background_rendernodes(true);
+            appwindow.canvas().queue_resize();
         }));
 
         // Resize to fit strokes
@@ -1025,7 +1023,7 @@ impl RnoteAppWindow {
         action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().return_to_origin_page();
             appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.canvas().update_background_rendernodes(true);
+            appwindow.canvas().queue_resize();
         }));
 
         // New sheet
@@ -1255,8 +1253,8 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.clear-sheet", &["<Ctrl>l"]);
         app.set_accels_for_action("win.print-sheet", &["<Ctrl>p"]);
         app.set_accels_for_action("win.import-file", &["<Ctrl>i"]);
-        app.set_accels_for_action("win.undo-stroke", &["<Ctrl>z"]);
-        app.set_accels_for_action("win.redo-stroke", &["<Ctrl><Shift>z"]);
+        app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
+        app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
         app.set_accels_for_action("win.zoomin", &["plus"]);
         app.set_accels_for_action("win.zoomout", &["minus"]);
         app.set_accels_for_action("win.selection-trash", &["Delete"]);

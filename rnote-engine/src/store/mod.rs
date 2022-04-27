@@ -4,6 +4,9 @@ pub mod render_comp;
 pub mod selection_comp;
 pub mod trash_comp;
 
+use std::collections::VecDeque;
+use std::sync::Arc;
+
 // Re-exports
 pub use chrono_comp::ChronoComponent;
 use keytree::KeyTree;
@@ -85,20 +88,34 @@ slotmap::new_key_type! {
     pub struct StrokeKey;
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct HistoryEntry {
+    strokes: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
+    selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
+    chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_store")]
 pub struct StrokeStore {
     // Components
     #[serde(rename = "strokes")]
-    strokes: HopSlotMap<StrokeKey, Stroke>,
+    strokes: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "trash_components")]
-    trash_components: SecondaryMap<StrokeKey, TrashComponent>,
+    trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
     #[serde(rename = "selection_components")]
-    selection_components: SecondaryMap<StrokeKey, SelectionComponent>,
+    selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
     #[serde(rename = "chrono_components")]
-    chrono_components: SecondaryMap<StrokeKey, ChronoComponent>,
-    #[serde(rename = "render_components")]
+    chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    #[serde(skip)]
     render_components: SecondaryMap<StrokeKey, RenderComponent>,
+
+    // The history
+    #[serde(skip)]
+    history: VecDeque<Arc<HistoryEntry>>,
+    #[serde(skip)]
+    history_pos: Option<usize>,
 
     // A rtree backed by the slotmap, for faster spatial queries. Needs to be updated with update_with_key() when strokes changed their geometry of position!
     #[serde(skip)]
@@ -125,11 +142,14 @@ impl Default for StrokeStore {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<StoreTask>();
 
         Self {
-            strokes: HopSlotMap::with_key(),
-            trash_components: SecondaryMap::new(),
-            selection_components: SecondaryMap::new(),
-            chrono_components: SecondaryMap::new(),
+            strokes: Arc::new(HopSlotMap::with_key()),
+            trash_components: Arc::new(SecondaryMap::new()),
+            selection_components: Arc::new(SecondaryMap::new()),
+            chrono_components: Arc::new(SecondaryMap::new()),
             render_components: SecondaryMap::new(),
+
+            history: VecDeque::new(),
+            history_pos: None,
 
             key_tree: KeyTree::default(),
 
@@ -143,6 +163,9 @@ impl Default for StrokeStore {
 }
 
 impl StrokeStore {
+    /// The max length of the history
+    pub(crate) const HISTORY_LEN: usize = 100;
+
     pub fn new() -> Self {
         Self::default()
     }
@@ -155,11 +178,11 @@ impl StrokeStore {
         self.trash_components = store.trash_components;
         self.selection_components = store.selection_components;
         self.chrono_components = store.chrono_components;
-        self.render_components = store.render_components;
 
         self.chrono_counter = store.chrono_counter;
 
         self.reload_tree();
+        self.reload_render_components_slotmap();
     }
 
     pub fn reload_tree(&mut self) {
@@ -201,6 +224,8 @@ impl StrokeStore {
                 surface_flags.sheet_changed = true;
             }
             StoreTask::InsertStroke { stroke } => {
+                self.record();
+
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {
                         let _inserted = self.insert_stroke(Stroke::BrushStroke(brushstroke));
@@ -254,38 +279,122 @@ impl StrokeStore {
         surface_flags
     }
 
+    fn ptr_eq_history(&self, history_entry: &Arc<HistoryEntry>) -> bool {
+        Arc::ptr_eq(&self.strokes, &history_entry.strokes)
+            && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
+            && Arc::ptr_eq(
+                &self.selection_components,
+                &history_entry.selection_components,
+            )
+            && Arc::ptr_eq(&self.chrono_components, &history_entry.chrono_components)
+    }
+
+    fn history_entry_from_current_state(&self) -> Arc<HistoryEntry> {
+        Arc::new(HistoryEntry {
+            strokes: Arc::clone(&self.strokes),
+            trash_components: Arc::clone(&self.trash_components),
+            selection_components: Arc::clone(&self.selection_components),
+            chrono_components: Arc::clone(&self.chrono_components),
+        })
+    }
+
+    fn import_history_entry(&mut self, history_entry: &Arc<HistoryEntry>) {
+        self.strokes = Arc::clone(&history_entry.strokes);
+        self.trash_components = Arc::clone(&history_entry.trash_components);
+        self.selection_components = Arc::clone(&history_entry.selection_components);
+        self.chrono_components = Arc::clone(&history_entry.chrono_components);
+    }
+
+    pub fn record(&mut self) {
+        self.history_pos = None;
+
+        if !self
+            .history
+            .back()
+            .map(|last| self.ptr_eq_history(last))
+            .unwrap_or(false)
+        {
+            self.history
+                .push_back(self.history_entry_from_current_state());
+
+            if self.history.len() > Self::HISTORY_LEN {
+                self.history.pop_front();
+            }
+        } else {
+            log::trace!("state has not changed, no need to record");
+        }
+    }
+
+    // Needs rendering regeneration after calling
+    pub(crate) fn undo(&mut self) {
+        let index = self.history_pos.unwrap_or(self.history.len());
+
+        if index > 0 {
+            let current = self.history_entry_from_current_state();
+            let prev = Arc::clone(&self.history[index - 1]);
+
+            self.history.push_back(current);
+
+            self.import_history_entry(&prev);
+            self.history_pos = Some(index - 1);
+
+            // Since we don't store the tree in the history, we rebuild them everytime we undo
+            self.reload_tree();
+            // render_components are also not stored in the history, but for the duration of the running app we don't ever remove from render_components, so we can actually skip rebuilding it on undo.
+            // Avoids visual glitches where we have already rebuilt the components and can't display anything until the asynchronous rendering is finished
+            //self.reload_render_components_slotmap();
+        } else {
+            log::debug!("no history, can't undo");
+        }
+    }
+
+    pub(crate) fn break_undo_chain(&mut self) {
+        // move the position to the end, so we can do "undo the undoes", emacs-style
+        self.history_pos = None;
+    }
+
+    pub fn clear_history(&mut self) {
+        self.history.clear();
+        self.history_pos = None;
+    }
+
     /// Needs rendering regeneration after calling
     pub fn insert_stroke(&mut self, stroke: Stroke) -> StrokeKey {
         let bounds = stroke.bounds();
 
-        let key = self.strokes.insert(stroke);
+        let key = Arc::make_mut(&mut self.strokes).insert(Arc::new(stroke));
         self.key_tree.insert_with_key(key, bounds);
         self.chrono_counter += 1;
 
-        self.trash_components.insert(key, TrashComponent::default());
-        self.selection_components
-            .insert(key, SelectionComponent::default());
+        Arc::make_mut(&mut self.trash_components).insert(key, Arc::new(TrashComponent::default()));
+        Arc::make_mut(&mut self.selection_components)
+            .insert(key, Arc::new(SelectionComponent::default()));
+        Arc::make_mut(&mut self.chrono_components)
+            .insert(key, Arc::new(ChronoComponent::new(self.chrono_counter)));
         self.render_components
             .insert(key, RenderComponent::default());
-        self.chrono_components
-            .insert(key, ChronoComponent::new(self.chrono_counter));
 
         key
     }
 
     pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<Stroke> {
-        self.trash_components.remove(key);
-        self.selection_components.remove(key);
-        self.chrono_components.remove(key);
+        Arc::make_mut(&mut self.trash_components).remove(key);
+        Arc::make_mut(&mut self.selection_components).remove(key);
+        Arc::make_mut(&mut self.chrono_components).remove(key);
         self.render_components.remove(key);
 
         self.key_tree.remove_with_key(key);
-        self.strokes.remove(key)
+        Arc::make_mut(&mut self.strokes)
+            .remove(key)
+            .map(|stroke| (*stroke).clone())
     }
 
     /// stroke geometry needs to be updated and rendering regeneration after calling
     pub fn add_segment_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
-        if let Some(Stroke::BrushStroke(ref mut brushstroke)) = self.strokes.get_mut(key) {
+        if let Some(Stroke::BrushStroke(brushstroke)) = Arc::make_mut(&mut self.strokes)
+            .get_mut(key)
+            .map(Arc::make_mut)
+        {
             brushstroke.push_segment(segment);
 
             self.set_rendering_dirty(key);
@@ -294,12 +403,14 @@ impl StrokeStore {
 
     /// Clears every stroke and every component
     pub fn clear(&mut self) {
-        self.chrono_counter = 0;
+        Arc::make_mut(&mut self.strokes).clear();
+        Arc::make_mut(&mut self.trash_components).clear();
+        Arc::make_mut(&mut self.selection_components).clear();
+        Arc::make_mut(&mut self.chrono_components).clear();
 
-        self.strokes.clear();
-        self.trash_components.clear();
-        self.selection_components.clear();
-        self.chrono_components.clear();
+        self.chrono_counter = 0;
+        self.clear_history();
+
         self.render_components.clear();
         self.key_tree.clear();
     }
@@ -314,10 +425,7 @@ impl StrokeStore {
         self.strokes
             .keys()
             .filter_map(|key| {
-                if self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && !(self.selected(key).unwrap_or(false))
-                {
+                if !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false)) {
                     Some(key)
                 } else {
                     None
@@ -331,10 +439,7 @@ impl StrokeStore {
         self.keys_sorted_chrono()
             .into_iter()
             .filter_map(|key| {
-                if self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && !(self.selected(key).unwrap_or(false))
-                {
+                if !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false)) {
                     Some(key)
                 } else {
                     None
@@ -347,16 +452,14 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter(|&key| {
-                self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && !(self.selected(key).unwrap_or(false))
+                !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
 
     pub fn clone_strokes(&self, keys: &[StrokeKey]) -> Vec<Stroke> {
         keys.iter()
-            .filter_map(|&key| Some(self.strokes.get(key)?.clone()))
+            .filter_map(|&key| Some((**self.strokes.get(key)?).clone()))
             .collect::<Vec<Stroke>>()
     }
 
@@ -477,7 +580,10 @@ impl StrokeStore {
 
     /// Needs rendering regeneration after calling
     pub fn update_geometry_for_stroke(&mut self, key: StrokeKey) {
-        if let Some(stroke) = self.strokes.get_mut(key) {
+        if let Some(stroke) = Arc::make_mut(&mut self.strokes)
+            .get_mut(key)
+            .map(Arc::make_mut)
+        {
             match stroke {
                 Stroke::BrushStroke(ref mut brushstroke) => {
                     brushstroke.update_geometry();
@@ -590,7 +696,10 @@ impl StrokeStore {
     /// Rendering needs to be regenerated
     pub fn translate_strokes(&mut self, strokes: &[StrokeKey], offset: na::Vector2<f64>) {
         strokes.iter().for_each(|&key| {
-            if let Some(stroke) = self.strokes.get_mut(key) {
+            if let Some(stroke) = Arc::make_mut(&mut self.strokes)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
                 {
                     // translate the stroke geometry
                     stroke.translate(offset);
@@ -624,7 +733,10 @@ impl StrokeStore {
     /// Rendering needs to be regenerated
     pub fn rotate_strokes(&mut self, strokes: &[StrokeKey], angle: f64, center: na::Point2<f64>) {
         strokes.iter().for_each(|&key| {
-            if let Some(stroke) = self.strokes.get_mut(key) {
+            if let Some(stroke) = Arc::make_mut(&mut self.strokes)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
                 {
                     // rotate the stroke geometry
                     stroke.rotate(angle, center);
@@ -665,7 +777,10 @@ impl StrokeStore {
     /// Rendering needs to be regenerated
     pub fn scale_strokes(&mut self, strokes: &[StrokeKey], scale: na::Vector2<f64>) {
         strokes.iter().for_each(|&key| {
-            if let Some(stroke) = self.strokes.get_mut(key) {
+            if let Some(stroke) = Arc::make_mut(&mut self.strokes)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
                 {
                     // rotate the stroke geometry
                     stroke.scale(scale);
@@ -728,7 +843,10 @@ impl StrokeStore {
         };
 
         strokes.iter().for_each(|&key| {
-            if let Some(stroke) = self.strokes.get_mut(key) {
+            if let Some(stroke) = Arc::make_mut(&mut self.strokes)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
                 {
                     // resize the stroke geometry
                     let old_stroke_bounds = stroke.bounds();
@@ -826,11 +944,11 @@ impl StrokeStore {
             (1.0 - (pos - tool_pos).magnitude() / radius).clamp(0.0, 1.0)
         }
 
-        self.strokes
+        Arc::make_mut(&mut self.strokes)
             .iter_mut()
             .par_bridge()
             .filter_map(|(key, stroke)| -> Option<StrokeKey> {
-                match stroke {
+                match Arc::make_mut(stroke) {
                     Stroke::BrushStroke(brushstroke) => {
                         if sphere.intersects(&brushstroke.path.bounds().bounding_sphere()) {
                             for segment in brushstroke.path.iter_mut() {

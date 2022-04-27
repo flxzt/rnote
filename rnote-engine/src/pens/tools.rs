@@ -283,6 +283,8 @@ impl PenBehaviour for Tools {
                     shortcut_keys: _,
                 },
             ) => {
+                store.record();
+
                 match self.style {
                     ToolsStyle::ExpandSheet => {
                         self.expandsheet_tool.start_pos_y = element.pos[1];
@@ -382,6 +384,19 @@ impl PenBehaviour for Tools {
                 pen_progress
             }
             (ToolsState::Active, PenEvent::Up { .. }) => {
+                match self.style {
+                    ToolsStyle::ExpandSheet => {
+                        store.update_geometry_for_strokes(&self.expandsheet_tool.strokes_below);
+                    }
+                    ToolsStyle::DragProximity => {}
+                    ToolsStyle::OffsetCamera => {}
+                }
+                store.regenerate_rendering_in_viewport_threaded(
+                    false,
+                    camera.viewport(),
+                    camera.image_scale(),
+                );
+
                 self.reset();
                 self.state = ToolsState::Idle;
 

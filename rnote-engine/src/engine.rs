@@ -1,4 +1,4 @@
-use crate::pens::penholder::PenHolderEvent;
+use crate::pens::penholder::{PenHolderEvent, PenStyle};
 use crate::sheet::{background, Background, Format};
 use crate::store::StoreTask;
 use crate::strokes::Stroke;
@@ -103,6 +103,40 @@ impl RnoteEngine {
         self.resize_to_fit_strokes();
         self.store.regenerate_rendering_in_viewport_threaded(
             false,
+            self.camera.viewport(),
+            self.camera.image_scale(),
+        );
+    }
+
+    pub fn undo(&mut self) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
+        self.store.undo();
+
+        self.update_selector();
+        if !self.store.selection_keys_unordered().is_empty() {
+            surface_flags.merge_with_other(
+                self.handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector)),
+            );
+        }
+
+        self.resize_autoexpand();
+        self.store.regenerate_rendering_in_viewport_threaded(
+            true,
+            self.camera.viewport(),
+            self.camera.image_scale(),
+        );
+
+        surface_flags
+    }
+
+    pub fn break_undo_chain(&mut self) {
+        self.store.break_undo_chain();
+
+        self.update_selector();
+        self.resize_autoexpand();
+        self.store.regenerate_rendering_in_viewport_threaded(
+            true,
             self.camera.viewport(),
             self.camera.image_scale(),
         );
@@ -215,6 +249,7 @@ impl RnoteEngine {
     }
 
     /// Called when sheet should resize to the format and to fit all strokes
+    /// Sheet background rendering needs to be updated after calling this
     pub fn resize_to_fit_strokes(&mut self) {
         match self.expand_mode {
             ExpandMode::FixedSize => {
@@ -230,17 +265,10 @@ impl RnoteEngine {
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
         }
-
-        if let Err(e) = self
-            .sheet
-            .background
-            .update_rendernodes(self.sheet.bounds())
-        {
-            log::error!("failed to update rendernodes for background in resize_to_fit_strokes() with Err {}", e);
-        }
     }
 
     /// resize the sheet when in autoexpanding expand modes. called e.g. when finishing a new stroke
+    /// Sheet background rendering needs to be updated after calling this
     pub fn resize_autoexpand(&mut self) {
         match self.expand_mode {
             ExpandMode::FixedSize => {
@@ -256,16 +284,10 @@ impl RnoteEngine {
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
         }
-
-        if let Err(e) = self
-            .sheet
-            .background
-            .update_rendernodes(self.sheet.bounds())
-        {
-            log::error!("failed to update rendernodes for background in resize_autoexpand() with Err {}", e);
-        }
     }
 
+    /// Updates the camera and expands sheet dimensions with offset
+    /// Sheet background rendering needs to be updated after calling this
     pub fn resize_new_offset(&mut self) {
         match self.expand_mode {
             ExpandMode::FixedSize => {
@@ -275,24 +297,15 @@ impl RnoteEngine {
                 self.sheet.resize_sheet_mode_endless_vertical(&self.store);
             }
             ExpandMode::Infinite => {
+                // only expand, don't resize to fit strokes
                 self.sheet
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
         }
-
-        if let Err(e) = self
-            .sheet
-            .background
-            .update_rendernodes(self.sheet.bounds())
-        {
-            log::error!("failed to update rendernodes for background in resize_new_offset() with Err {}", e);
-        }
     }
 
     pub fn update_selector(&mut self) {
-        self.penholder
-            .selector
-            .update_from_store(&self.store);
+        self.penholder.selector.update_from_store(&self.store);
     }
 
     /// Import and replace the engine config. NOT for opening files

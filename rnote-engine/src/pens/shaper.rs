@@ -83,6 +83,8 @@ impl PenBehaviour for Shaper {
 
         let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
+                store.record();
+
                 // A new seed for a new shape
                 let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
                 self.rough_options.seed = seed;

@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use super::{StrokeKey, StrokeStore};
 
 use geo::prelude::*;
@@ -49,10 +51,16 @@ impl StrokeStore {
 
     /// Sets if the stroke is currently selected
     pub fn set_selected(&mut self, key: StrokeKey, selected: bool) {
-        if let Some(selection_comp) = self.selection_components.get_mut(key) {
+        if let Some(selection_comp) = Arc::make_mut(&mut self.selection_components)
+            .get_mut(key)
+            .map(Arc::make_mut)
+        {
             selection_comp.selected = selected;
 
-            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+            if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components)
+                .get_mut(key)
+                .map(Arc::make_mut)
+            {
                 self.chrono_counter += 1;
                 chrono_comp.t = self.chrono_counter;
             }
@@ -73,15 +81,8 @@ impl StrokeStore {
     pub fn selection_keys_unordered(&self) -> Vec<StrokeKey> {
         self.strokes
             .keys()
-            .filter_map(|key| {
-                if self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && (self.selected(key).unwrap_or(false))
-                {
-                    Some(key)
-                } else {
-                    None
-                }
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
             })
             .collect()
     }
@@ -91,16 +92,9 @@ impl StrokeStore {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
         keys_sorted_chrono
-            .iter()
-            .filter_map(|&key| {
-                if self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && (self.selected(key).unwrap_or(false))
-                {
-                    Some(key)
-                } else {
-                    None
-                }
+            .into_iter()
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
@@ -109,9 +103,7 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter(|&key| {
-                self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && (self.selected(key).unwrap_or(false))
+                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
@@ -125,6 +117,8 @@ impl StrokeStore {
     }
 
     pub fn duplicate_selection(&mut self) {
+        self.record();
+
         let offset = na::vector![
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_X,
             SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
@@ -135,10 +129,10 @@ impl StrokeStore {
 
         let new_selected = old_selected
             .iter()
-            .map(|&key| {
-                let new_key = self.insert_stroke(self.strokes.get(key).unwrap().clone());
+            .filter_map(|&key| {
+                let new_key = self.insert_stroke((**self.strokes.get(key)?).clone());
                 self.set_selected(new_key, true);
-                new_key
+                Some(new_key)
             })
             .collect::<Vec<StrokeKey>>();
 
@@ -168,7 +162,9 @@ impl StrokeStore {
             .iter()
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
-                let selection_comp = self.selection_components.get_mut(key)?;
+                let selection_comp = Arc::make_mut(&mut self.selection_components)
+                    .get_mut(key)
+                    .map(Arc::make_mut)?;
 
                 // skip if stroke is trashed
                 if let Some(trash_comp) = self.trash_components.get(key) {
@@ -182,7 +178,10 @@ impl StrokeStore {
 
                 if selector_polygon.contains(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
                 {
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                    if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components)
+                        .get_mut(key)
+                        .map(Arc::make_mut)
+                    {
                         self.chrono_counter += 1;
                         chrono_comp.t = self.chrono_counter;
                     }
@@ -199,7 +198,10 @@ impl StrokeStore {
                         }
                     }
 
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                    if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components)
+                        .get_mut(key)
+                        .map(Arc::make_mut)
+                    {
                         self.chrono_counter += 1;
                         chrono_comp.t = self.chrono_counter;
                     }
@@ -218,7 +220,9 @@ impl StrokeStore {
             .iter()
             .filter_map(|&key| {
                 let stroke = self.strokes.get(key)?;
-                let selection_comp = self.selection_components.get_mut(key)?;
+                let selection_comp = Arc::make_mut(&mut self.selection_components)
+                    .get_mut(key)
+                    .map(Arc::make_mut)?;
 
                 // skip if stroke is trashed
                 if let Some(trash_comp) = self.trash_components.get(key) {
@@ -232,7 +236,10 @@ impl StrokeStore {
                 let stroke_bounds = stroke.bounds();
 
                 if aabb.contains(&stroke_bounds) {
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                    if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components)
+                        .get_mut(key)
+                        .map(Arc::make_mut)
+                    {
                         self.chrono_counter += 1;
                         chrono_comp.t = self.chrono_counter;
                     }
@@ -245,7 +252,10 @@ impl StrokeStore {
                         }
                     }
 
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+                    if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components)
+                        .get_mut(key)
+                        .map(Arc::make_mut)
+                    {
                         self.chrono_counter += 1;
                         chrono_comp.t = self.chrono_counter;
                     }

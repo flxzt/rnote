@@ -13,7 +13,7 @@ use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, CompositeTemplate,
     CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
     FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
-    PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
+    PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton, Button
 };
 use once_cell::sync::Lazy;
 use rnote_engine::pens::penholder::PenHolderEvent;
@@ -80,6 +80,8 @@ mod imp {
         #[template_child]
         pub flap_resizer_box: TemplateChild<gtk4::Box>,
         #[template_child]
+        pub flap_close_button: TemplateChild<Button>,
+        #[template_child]
         pub workspacebrowser: TemplateChild<WorkspaceBrowser>,
         #[template_child]
         pub flapreveal_toggle: TemplateChild<ToggleButton>,
@@ -129,6 +131,7 @@ mod imp {
                 flap_header: TemplateChild::<adw::HeaderBar>::default(),
                 flap_resizer: TemplateChild::<gtk4::Box>::default(),
                 flap_resizer_box: TemplateChild::<gtk4::Box>::default(),
+                flap_close_button: TemplateChild::<Button>::default(),
                 workspacebrowser: TemplateChild::<WorkspaceBrowser>::default(),
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
                 flap_menus_box: TemplateChild::<Box>::default(),
@@ -395,10 +398,12 @@ mod imp {
 
                     if flap.reveals_flap() && !flap.is_folded() {
                         appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(false);
+                        appwindow.flap_menus_box().set_visible(true);
+                        appwindow.flap_close_button().set_visible(false);
                     } else {
                         appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(true);
+                        appwindow.flap_menus_box().set_visible(false);
+                        appwindow.flap_close_button().set_visible(true);
                     }
 
                     if flap.is_folded() {
@@ -425,10 +430,12 @@ mod imp {
 
                     if flap.reveals_flap() && !flap.is_folded() {
                         appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(false);
+                        appwindow.flap_menus_box().set_visible(true);
+                        appwindow.flap_close_button().set_visible(false);
                     } else {
                         appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(true);
+                        appwindow.flap_menus_box().set_visible(false);
+                        appwindow.flap_close_button().set_visible(true);
                     }
 
                     if flap.flap_position() == PackType::Start {
@@ -448,22 +455,18 @@ mod imp {
 
                         flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
 
-                        appwindow.workspacebrowser().workspace_controlbox().remove(&appwindow.workspacebrowser().flap_close_buttonbox());
-                        appwindow.workspacebrowser().workspace_controlbox().prepend(&appwindow.workspacebrowser().flap_close_buttonbox());
-                        appwindow.workspacebrowser().flap_close_buttonbox().remove(&appwindow.workspacebrowser().flap_close_buttonseparator());
-                        appwindow.workspacebrowser().flap_close_buttonbox().append(&appwindow.workspacebrowser().flap_close_buttonseparator());
-                        appwindow.workspacebrowser().flap_close_button().set_icon_name("arrow1-left-symbolic");
+                        appwindow.flap_header().remove(&appwindow.flap_close_button());
+                        appwindow.flap_header().pack_end(&appwindow.flap_close_button());
+                        appwindow.flap_close_button().set_icon_name("arrow1-left-symbolic");
                     } else if flap.flap_position() == PackType::End {
                         workspace_headerbar.set_show_start_title_buttons(false);
                         workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
 
                         flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
 
-                        appwindow.workspacebrowser().workspace_controlbox().remove(&appwindow.workspacebrowser().flap_close_buttonbox());
-                        appwindow.workspacebrowser().workspace_controlbox().append(&appwindow.workspacebrowser().flap_close_buttonbox());
-                        appwindow.workspacebrowser().flap_close_buttonbox().remove(&appwindow.workspacebrowser().flap_close_buttonseparator());
-                        appwindow.workspacebrowser().flap_close_buttonbox().prepend(&appwindow.workspacebrowser().flap_close_buttonseparator());
-                        appwindow.workspacebrowser().flap_close_button().set_icon_name("arrow1-right-symbolic");
+                        appwindow.flap_header().remove(&appwindow.flap_close_button());
+                        appwindow.flap_header().pack_start(&appwindow.flap_close_button());
+                        appwindow.flap_close_button().set_icon_name("arrow1-right-symbolic");
                     }
                 }),
             );
@@ -506,6 +509,14 @@ mod imp {
                     gdk::Cursor::from_name("default", None).as_ref(),
                 )
                 .as_ref(),
+            );
+
+            self.flap_close_button.get().connect_clicked(
+                clone!(@weak obj => move |_flap_close_button| {
+                    if obj.flap().reveals_flap() && obj.flap().is_folded() {
+                        obj.flap().set_reveal_flap(false);
+                    }
+                }),
             );
         }
     }
@@ -649,6 +660,10 @@ impl RnoteAppWindow {
 
     pub fn flap_menus_box(&self) -> Box {
         self.imp().flap_menus_box.get()
+    }
+
+    pub fn flap_close_button(&self) -> Button {
+        self.imp().flap_close_button.get()
     }
 
     pub fn mainheader(&self) -> MainHeader {

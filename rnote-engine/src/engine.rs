@@ -100,7 +100,7 @@ impl RnoteEngine {
     pub fn set_expand_mode(&mut self, expand_mode: ExpandMode) {
         self.expand_mode = expand_mode;
 
-        self.resize_to_fit_strokes();
+        self.resize_autoexpand();
         self.store.regenerate_rendering_in_viewport_threaded(
             false,
             self.camera.viewport(),

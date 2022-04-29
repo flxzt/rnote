@@ -7,6 +7,7 @@ use crate::{
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_engine::engine::ExpandMode;
 use rnote_engine::pens::brush::BrushStyle;
+use rnote_engine::pens::eraser::EraserStyle;
 use rnote_engine::pens::penholder::{PenHolderEvent, PenStyle};
 use rnote_engine::pens::selector::SelectorType;
 use rnote_engine::pens::shaper::ShaperStyle;
@@ -90,6 +91,10 @@ impl RnoteAppWindow {
         let action_zoom_to_value =
             gio::SimpleAction::new("zoom-to-value", Some(&glib::VariantType::new("d").unwrap()));
         self.add_action(&action_zoom_to_value);
+        let action_add_page_to_sheet = gio::SimpleAction::new("add-page-to-sheet", None);
+        self.add_action(&action_add_page_to_sheet);
+        let action_resize_to_fit_strokes = gio::SimpleAction::new("resize-to-fit-strokes", None);
+        self.add_action(&action_resize_to_fit_strokes);
         let action_return_origin_page = gio::SimpleAction::new("return-origin-page", None);
         self.add_action(&action_return_origin_page);
 
@@ -154,6 +159,11 @@ impl RnoteAppWindow {
         let action_shaper_style =
             gio::SimpleAction::new("shaper-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_shaper_style);
+        let action_eraser_style = gio::SimpleAction::new(
+            "eraser-style",
+            Some(&glib::VariantType::new("s").unwrap()),
+        );
+        self.add_action(&action_eraser_style);
         let action_selector_style = gio::SimpleAction::new(
             "selector-style",
             Some(&glib::VariantType::new("s").unwrap()),
@@ -645,6 +655,25 @@ impl RnoteAppWindow {
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
         }));
 
+        // Eraser Style
+        action_eraser_style.connect_activate(
+        clone!(@weak self as appwindow => move |_action_eraser_style, target| {
+            let eraser_style = target.unwrap().str().unwrap();
+
+            match eraser_style {
+                "trash-colliding-strokes" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.eraser.style = EraserStyle::TrashCollidingStrokes;
+                },
+                "split-colliding-strokes" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.eraser.style = EraserStyle::SplitCollidingStrokes;
+                },
+                _ => { log::error!("set invalid state of action `eraser-style`")}
+            }
+
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
+        }),
+        );
+
         // Selector Style
         action_selector_style.connect_activate(
         clone!(@weak self as appwindow => move |_action_selector_style, target| {
@@ -755,21 +784,18 @@ impl RnoteAppWindow {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_marker_row()));
                         appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.stroke_width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
-                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-marker-symbolic"));
                     },
                     BrushStyle::Solid => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
                         appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.stroke_width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
-                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(false);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-solid-symbolic"));
                     },
                     BrushStyle::Textured => {
                         appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
                         appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.textured_options.stroke_width);
                         appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.textured_options.stroke_color);
-                        appwindow.penssidebar().brush_page().brushconfig_menubutton().set_sensitive(true);
                         appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-textured-symbolic"));
                     },
                 }
@@ -827,7 +853,6 @@ impl RnoteAppWindow {
                             appwindow.penssidebar().shaper_page().width_spinbutton().set_value(smooth_options.stroke_width);
                             appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(smooth_options.stroke_color);
                             appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(smooth_options.fill_color);
-                            appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(false);
                             appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
                         },
                         ShaperStyle::Rough => {
@@ -835,7 +860,6 @@ impl RnoteAppWindow {
                             appwindow.penssidebar().shaper_page().width_spinbutton().set_value(rough_options.stroke_width);
                             appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(rough_options.stroke_color);
                             appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(rough_options.fill_color);
-                            appwindow.penssidebar().shaper_page().shapeconfig_menubutton().set_sensitive(true);
                             appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-rough-symbolic"));
                         },
                     }
@@ -843,6 +867,10 @@ impl RnoteAppWindow {
 
                 // Eraser
                 appwindow.penssidebar().eraser_page().width_spinbutton().set_value(eraser.width);
+                match eraser.style {
+                    EraserStyle::TrashCollidingStrokes => appwindow.penssidebar().eraser_page().eraserstyle_trash_colliding_strokes_toggle().set_active(true),
+                    EraserStyle::SplitCollidingStrokes => appwindow.penssidebar().eraser_page().eraserstyle_split_colliding_strokes_toggle().set_active(true),
+                }
 
                 // Selector
                 match selector.style {
@@ -916,14 +944,14 @@ impl RnoteAppWindow {
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().engine().borrow_mut().store.undo_last_stroke();
             appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.canvas().update_background_rendernodes(true);
+            appwindow.canvas().queue_resize();
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().engine().borrow_mut().store.redo_last_stroke();
             appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.canvas().update_background_rendernodes(true);
+            appwindow.canvas().queue_resize();
         }));
 
         // Zoom reset
@@ -975,6 +1003,23 @@ impl RnoteAppWindow {
 
                 appwindow.mainheader().canvasmenu().zoomreset_button().set_label(format!("{:.0}%", (100.0 * new_zoom).round()).as_str());
             }));
+
+        // Add page to sheet in fixed size mode
+        action_add_page_to_sheet.connect_activate(
+            clone!(@weak self as appwindow => move |_action_add_page_to_sheet, _target| {
+            let format_height = appwindow.canvas().engine().borrow().sheet.format.height;
+            let new_sheet_height = appwindow.canvas().engine().borrow().sheet.height + format_height;
+            appwindow.canvas().engine().borrow_mut().sheet.height = new_sheet_height;
+
+            appwindow.canvas().update_background_rendernodes(true);
+        }));
+
+        // Resize to fit strokes
+        action_resize_to_fit_strokes.connect_activate(
+            clone!(@weak self as appwindow => move |_action_resize_to_fit_strokes, _target| {
+            appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
+            appwindow.canvas().queue_resize();
+        }));
 
         // Return to the origin page
         action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {

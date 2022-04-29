@@ -708,11 +708,11 @@ impl RnoteAppWindow {
         }
         if surface_flags.resize {
             self.canvas().engine().borrow_mut().resize_autoexpand();
-            self.canvas().update_background_rendernodes(true);
+            self.canvas().queue_resize();
         }
         if surface_flags.resize_to_fit_strokes {
             self.canvas().engine().borrow_mut().resize_to_fit_strokes();
-            self.canvas().update_background_rendernodes(true);
+            self.canvas().queue_resize();
         }
         if let Some(new_pen_style) = surface_flags.change_to_pen {
             adw::prelude::ActionGroupExt::activate_action(

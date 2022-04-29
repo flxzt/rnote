@@ -26,7 +26,7 @@ mod imp {
         #[template_child]
         pub add_page_button: TemplateChild<Button>,
         #[template_child]
-        pub resize_to_format_button: TemplateChild<Button>,
+        pub resize_to_fit_strokes_button: TemplateChild<Button>,
         #[template_child]
         pub undo_button: TemplateChild<Button>,
         #[template_child]
@@ -127,8 +127,8 @@ impl MainHeader {
         self.imp().add_page_button.get()
     }
 
-    pub fn resize_to_format_button(&self) -> Button {
-        self.imp().resize_to_format_button.get()
+    pub fn resize_to_fit_strokes_button(&self) -> Button {
+        self.imp().resize_to_fit_strokes_button.get()
     }
 
     pub fn undo_button(&self) -> Button {
@@ -220,18 +220,13 @@ impl MainHeader {
 
         self.imp().add_page_button.get().connect_clicked(
             clone!(@weak appwindow => move |_add_page_button| {
-                let format_height = appwindow.canvas().engine().borrow().sheet.format.height;
-                let new_sheet_height = appwindow.canvas().engine().borrow().sheet.height + format_height;
-                appwindow.canvas().engine().borrow_mut().sheet.height = new_sheet_height;
-
-                appwindow.canvas().update_background_rendernodes(true);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "add-page-to-sheet", None);
             }),
         );
 
-        self.imp().resize_to_format_button.get().connect_clicked(
+        self.imp().resize_to_fit_strokes_button.get().connect_clicked(
             clone!(@weak appwindow => move |_resize_to_format_button| {
-                appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
-                appwindow.canvas().update_background_rendernodes(true);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "resize-to-fit-strokes", None);
             }),
         );
 

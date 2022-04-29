@@ -100,7 +100,7 @@ impl RnoteEngine {
     pub fn set_expand_mode(&mut self, expand_mode: ExpandMode) {
         self.expand_mode = expand_mode;
 
-        self.resize_autoexpand();
+        self.resize_to_fit_strokes();
         self.store.regenerate_rendering_in_viewport_threaded(
             false,
             self.camera.viewport(),
@@ -109,7 +109,7 @@ impl RnoteEngine {
     }
 
     /// processes the received task from tasks_rx.
-    /// Returns surface flags for what to update in the frontend UI.
+    /// Returns surface flags to indicate what needs to be updated in the UI.
     /// An example how to use it:
     /// ```rust, ignore
     /// let main_cx = glib::MainContext::default();
@@ -230,6 +230,14 @@ impl RnoteEngine {
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
         }
+
+        if let Err(e) = self
+            .sheet
+            .background
+            .update_rendernodes(self.sheet.bounds())
+        {
+            log::error!("failed to update rendernodes for background in resize_to_fit_strokes() with Err {}", e);
+        }
     }
 
     /// resize the sheet when in autoexpanding expand modes. called e.g. when finishing a new stroke
@@ -248,6 +256,14 @@ impl RnoteEngine {
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
         }
+
+        if let Err(e) = self
+            .sheet
+            .background
+            .update_rendernodes(self.sheet.bounds())
+        {
+            log::error!("failed to update rendernodes for background in resize_autoexpand() with Err {}", e);
+        }
     }
 
     pub fn resize_new_offset(&mut self) {
@@ -263,12 +279,20 @@ impl RnoteEngine {
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
         }
+
+        if let Err(e) = self
+            .sheet
+            .background
+            .update_rendernodes(self.sheet.bounds())
+        {
+            log::error!("failed to update rendernodes for background in resize_new_offset() with Err {}", e);
+        }
     }
 
     pub fn update_selector(&mut self) {
         self.penholder
             .selector
-            .update_selection_from_state(&self.store);
+            .update_from_store(&self.store);
     }
 
     /// Import and replace the engine config. NOT for opening files

@@ -571,7 +571,7 @@ impl Selector {
         };
     }
 
-    pub fn update_selection_from_state(&mut self, store: &StrokeStore) {
+    pub fn update_from_store(&mut self, store: &StrokeStore) {
         let selection = store.selection_keys_unordered();
         let selection_bounds = store.gen_bounds_for_strokes(&selection);
         if let Some(selection_bounds) = selection_bounds {

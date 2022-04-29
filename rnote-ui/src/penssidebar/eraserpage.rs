@@ -1,6 +1,6 @@
 use crate::appwindow::RnoteAppWindow;
 use adw::prelude::*;
-use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, SpinButton};
+use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, SpinButton, ToggleButton};
 use rnote_engine::pens::eraser::Eraser;
 
 mod imp {
@@ -9,6 +9,10 @@ mod imp {
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
     pub struct EraserPage {
+        #[template_child]
+        pub eraserstyle_trash_colliding_strokes_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub eraserstyle_split_colliding_strokes_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
     }
@@ -59,11 +63,31 @@ impl EraserPage {
         glib::Object::new(&[]).expect("Failed to create EraserPage")
     }
 
+    pub fn eraserstyle_trash_colliding_strokes_toggle(&self) -> ToggleButton {
+        self.imp().eraserstyle_trash_colliding_strokes_toggle.get()
+    }
+
+    pub fn eraserstyle_split_colliding_strokes_toggle(&self) -> ToggleButton {
+        self.imp().eraserstyle_split_colliding_strokes_toggle.get()
+    }
+
     pub fn width_spinbutton(&self) -> SpinButton {
         self.imp().width_spinbutton.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.eraserstyle_trash_colliding_strokes_toggle().connect_toggled(clone!(@weak appwindow => move |eraserstyle_trash_colliding_strokes_toggle| {
+            if eraserstyle_trash_colliding_strokes_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "eraser-style", Some(&"trash-colliding-strokes".to_variant()));
+            }
+        }));
+
+        self.eraserstyle_split_colliding_strokes_toggle().connect_toggled(clone!(@weak appwindow => move |eraserstyle_split_colliding_strokes_toggle| {
+            if eraserstyle_split_colliding_strokes_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "eraser-style", Some(&"split-colliding-strokes".to_variant()));
+            }
+        }));
+
         self.width_spinbutton().set_increments(1.0, 5.0);
         self.width_spinbutton()
             .set_range(Eraser::WIDTH_MIN, Eraser::WIDTH_MAX);

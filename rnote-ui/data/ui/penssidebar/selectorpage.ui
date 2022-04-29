@@ -36,7 +36,7 @@
             <property name="active">true</property>
             <child>
               <object class="GtkImage">
-                <property name="icon_name">selector-polygon-symbolic</property>
+                <property name="icon_name">pen-selector-polygon-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
@@ -49,7 +49,7 @@
             <property name="vexpand">true</property>
             <child>
               <object class="GtkImage">
-                <property name="icon_name">selector-rectangle-symbolic</property>
+                <property name="icon_name">pen-selector-rectangle-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>

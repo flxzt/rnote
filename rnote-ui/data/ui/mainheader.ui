@@ -71,9 +71,9 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkButton" id="resize_to_format_button">
-                        <property name="icon_name">resize-to-format-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize to fit sheet format</property>
+                      <object class="GtkButton" id="resize_to_fit_strokes_button">
+                        <property name="icon_name">resize-to-fit-strokes-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Resize sheet to fit the strokes</property>
                       </object>
                     </child>
                   </object>

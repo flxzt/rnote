@@ -190,10 +190,12 @@ impl Stroke {
             .map(|(&start, &end)| Segment::Line { start, end })
             .collect::<PenPath>();
 
-        Ok(Stroke::BrushStroke(BrushStroke::from_penpath(
-            penpath,
-            brush.gen_style_for_current_options(),
-        )))
+        let brushstroke = BrushStroke::from_penpath(penpath, brush.gen_style_for_current_options())
+            .ok_or(anyhow::anyhow!(
+                "creating brushstroke from penpath in from_xoppstroke() failed."
+            ))?;
+
+        Ok(Stroke::BrushStroke(brushstroke))
     }
 
     pub fn from_xoppimage(

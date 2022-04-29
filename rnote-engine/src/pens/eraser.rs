@@ -17,11 +17,28 @@ pub enum EraserState {
     Down(Element),
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename = "eraser_style")]
+pub enum EraserStyle {
+    #[serde(rename = "trash_entire_stroke")]
+    TrashCollidingStrokes,
+    #[serde(rename = "remove_stroke_segments")]
+    SplitCollidingStrokes,
+}
+
+impl Default for EraserStyle {
+    fn default() -> Self {
+        Self::TrashCollidingStrokes
+    }
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "eraser")]
 pub struct Eraser {
     #[serde(rename = "width")]
     pub width: f64,
+    #[serde(rename = "style")]
+    pub style: EraserStyle,
     #[serde(skip)]
     pub(crate) state: EraserState,
 }
@@ -30,6 +47,7 @@ impl Default for Eraser {
     fn default() -> Self {
         Self {
             width: Self::WIDTH_DEFAULT,
+            style: EraserStyle::default(),
             state: EraserState::Up,
         }
     }
@@ -54,10 +72,28 @@ impl PenBehaviour for Eraser {
                     shortcut_keys: _,
                 },
             ) => {
-                store.trash_colliding_strokes(
-                    Self::eraser_bounds(self.width, element),
-                    camera.viewport(),
-                );
+                match &self.style {
+                    EraserStyle::TrashCollidingStrokes => {
+                        store.trash_colliding_strokes(
+                            Self::eraser_bounds(self.width, element),
+                            camera.viewport(),
+                        );
+                    }
+                    EraserStyle::SplitCollidingStrokes => {
+                        let new_strokes = store.split_colliding_strokes(
+                            Self::eraser_bounds(self.width, element),
+                            camera.viewport(),
+                        );
+
+                        if let Err(e) = store.regenerate_rendering_for_strokes(
+                            &new_strokes,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err {}", e);
+                        }
+                    }
+                }
 
                 self.state = EraserState::Down(element);
 
@@ -69,10 +105,28 @@ impl PenBehaviour for Eraser {
             }
             (EraserState::Up, _) => PenProgress::Idle,
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
-                store.trash_colliding_strokes(
-                    Self::eraser_bounds(self.width, element),
-                    camera.viewport(),
-                );
+                match &self.style {
+                    EraserStyle::TrashCollidingStrokes => {
+                        store.trash_colliding_strokes(
+                            Self::eraser_bounds(self.width, element),
+                            camera.viewport(),
+                        );
+                    }
+                    EraserStyle::SplitCollidingStrokes => {
+                        let new_strokes = store.split_colliding_strokes(
+                            Self::eraser_bounds(self.width, element),
+                            camera.viewport(),
+                        );
+
+                        if let Err(e) = store.regenerate_rendering_for_strokes(
+                            &new_strokes,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err {}", e);
+                        }
+                    }
+                }
 
                 *current_element = element;
 
@@ -82,10 +136,28 @@ impl PenBehaviour for Eraser {
                 PenProgress::InProgress
             }
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
-                store.trash_colliding_strokes(
-                    Self::eraser_bounds(self.width, element),
-                    camera.viewport(),
-                );
+                match &self.style {
+                    EraserStyle::TrashCollidingStrokes => {
+                        store.trash_colliding_strokes(
+                            Self::eraser_bounds(self.width, element),
+                            camera.viewport(),
+                        );
+                    }
+                    EraserStyle::SplitCollidingStrokes => {
+                        let new_strokes = store.split_colliding_strokes(
+                            Self::eraser_bounds(self.width, element),
+                            camera.viewport(),
+                        );
+
+                        if let Err(e) = store.regenerate_rendering_for_strokes(
+                            &new_strokes,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("regenerate_rendering_for_strokes() failed while splitting colliding strokes, Err {}", e);
+                        }
+                    }
+                }
 
                 self.state = EraserState::Up;
 
@@ -118,7 +190,7 @@ impl Eraser {
     pub fn new(width: f64) -> Self {
         Self {
             width,
-            state: EraserState::Up,
+            ..Default::default()
         }
     }
 

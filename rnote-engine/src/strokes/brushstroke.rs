@@ -229,17 +229,21 @@ impl BrushStroke {
     pub fn new(segment: Segment, style: Style) -> Self {
         let path = PenPath::new_w_segment(segment);
 
-        Self::from_penpath(path, style)
+        Self::from_penpath(path, style).unwrap()
     }
 
-    pub fn from_penpath(path: PenPath, style: Style) -> Self {
-        let hitboxes = Vec::new();
-
-        Self {
+    pub fn from_penpath(path: PenPath, style: Style) -> Option<Self> {
+        if path.is_empty() {
+            return None;
+        }
+        let mut new_brushstroke = Self {
             path,
             style,
-            hitboxes,
-        }
+            hitboxes: vec![],
+        };
+        new_brushstroke.update_geometry();
+
+        Some(new_brushstroke)
     }
 
     pub fn push_segment(&mut self, segment: Segment) {

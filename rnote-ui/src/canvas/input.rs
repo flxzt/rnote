@@ -330,6 +330,10 @@ pub fn process_pen_up(
 ) {
     let mut surface_flags = SurfaceFlags::default();
 
+    appwindow
+        .canvas()
+        .set_cursor(Some(&appwindow.canvas().cursor()));
+
     // GTK emits separate down / up events when pressing / releasing the stylus primary / secondary button (even when the pen is only in proximity),
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
     // TODO: handle this better

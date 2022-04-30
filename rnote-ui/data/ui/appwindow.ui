@@ -255,6 +255,7 @@
                 <property name="hexpand">false</property>
                 <property name="halign">fill</property>
                 <property name="orientation">vertical</property>
+                <property name="width-request">400</property>
                 <style>
                   <class name="flap_box" />
                   <class name="background" />

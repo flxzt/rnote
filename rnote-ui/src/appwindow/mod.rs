@@ -478,7 +478,7 @@ mod imp {
                 .build();
             self.flap_resizer.add_controller(&resizer_drag_gesture);
 
-            // Dirty hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
+            // hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
             let prev_folded = Rc::new(Cell::new(self.flap.get().is_folded()));
 
             resizer_drag_gesture.connect_drag_begin(clone!(@strong prev_folded, @weak flap, @weak flap_box => move |_resizer_drag_gesture, _x , _y| {
@@ -495,7 +495,8 @@ mod imp {
                     } else {
                         flap_box.width() - x.floor() as i32
                     };
-                    if new_width > 0 && new_width < obj.mainheader().width() - 64 {
+
+                    if new_width > 0 && new_width < obj.mainheader().width() - super::RnoteAppWindow::FLAP_FOLDED_RESIZE_MARGIN as i32 {
                         flap_box.set_width_request(new_width);
                     }
                 } else if flap.is_folded() {
@@ -522,8 +523,6 @@ mod imp {
     }
 }
 
-// The renderer as a global singleton
-
 glib::wrapper! {
     pub struct RnoteAppWindow(ObjectSubclass<imp::RnoteAppWindow>)
         @extends gtk4::Widget, gtk4::Window, adw::Window, gtk4::ApplicationWindow, adw::ApplicationWindow,
@@ -532,6 +531,8 @@ glib::wrapper! {
 
 impl RnoteAppWindow {
     const AUTOSAVE_INTERVAL_DEFAULT: u32 = 120;
+
+    const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")

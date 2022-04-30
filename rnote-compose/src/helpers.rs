@@ -111,7 +111,7 @@ where
     /// Clamps to the min and max bounds
     fn clamp(&self, min: Option<Self>, max: Option<Self>) -> Self;
     /// extends on every side by the given size
-    fn extend_by(&self, expand_by: na::Vector2<f64>) -> Self;
+    fn extend_by(&self, extend_by: na::Vector2<f64>) -> Self;
     /// Scales the AABB by the scalefactor
     fn scale(&self, scale: f64) -> Self;
     /// Scales the AABB by the scale vector

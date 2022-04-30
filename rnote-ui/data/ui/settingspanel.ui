@@ -5,7 +5,6 @@
     <property name="layout-manager">
       <object class="GtkBinLayout"></object>
     </property>
-    <property name="width-request">400</property>
     <style>
       <class name="settings_panel" />
       <class name="background" />

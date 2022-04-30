@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use super::{StrokeKey, StrokeStore};
 
 use geo::prelude::*;
@@ -49,13 +51,13 @@ impl StrokeStore {
 
     /// Sets if the stroke is currently selected
     pub fn set_selected(&mut self, key: StrokeKey, selected: bool) {
-        if let Some(selection_comp) = self.selection_components.get_mut(key) {
+        if let Some(selection_comp) = Arc::make_mut(&mut self.selection_components)
+            .get_mut(key)
+            .map(Arc::make_mut)
+        {
             selection_comp.selected = selected;
 
-            if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                self.chrono_counter += 1;
-                chrono_comp.t = self.chrono_counter;
-            }
+            self.update_chrono_to_last(key);
         } else {
             log::debug!(
                 "get selection_comp in set_selected() returned None for stroke with key {:?}",
@@ -71,17 +73,10 @@ impl StrokeStore {
     }
 
     pub fn selection_keys_unordered(&self) -> Vec<StrokeKey> {
-        self.strokes
+        self.stroke_components
             .keys()
-            .filter_map(|key| {
-                if self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && (self.selected(key).unwrap_or(false))
-                {
-                    Some(key)
-                } else {
-                    None
-                }
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
             })
             .collect()
     }
@@ -91,16 +86,9 @@ impl StrokeStore {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
         keys_sorted_chrono
-            .iter()
-            .filter_map(|&key| {
-                if self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && (self.selected(key).unwrap_or(false))
-                {
-                    Some(key)
-                } else {
-                    None
-                }
+            .into_iter()
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
@@ -109,9 +97,7 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
             .filter(|&key| {
-                self.does_render(key).unwrap_or(false)
-                    && !(self.trashed(key).unwrap_or(false))
-                    && (self.selected(key).unwrap_or(false))
+                !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
@@ -135,10 +121,10 @@ impl StrokeStore {
 
         let new_selected = old_selected
             .iter()
-            .map(|&key| {
-                let new_key = self.insert_stroke(self.strokes.get(key).unwrap().clone());
+            .filter_map(|&key| {
+                let new_key = self.insert_stroke((**self.stroke_components.get(key)?).clone());
                 self.set_selected(new_key, true);
-                new_key
+                Some(new_key)
             })
             .collect::<Vec<StrokeKey>>();
 
@@ -146,8 +132,8 @@ impl StrokeStore {
         self.translate_strokes(&new_selected, offset);
     }
 
-    /// Updates the selected strokes for a given polygon path. Returns the selected keys
-    pub fn update_selection_for_polygon_path(
+    /// selects the strokes intersecting a given polygon path. Returns the new selected keys
+    pub fn select_keys_intersecting_polygon_path(
         &mut self,
         path: &[Element],
         viewport: AABB,
@@ -165,28 +151,21 @@ impl StrokeStore {
         };
 
         self.keys_sorted_chrono_intersecting_bounds(viewport)
-            .iter()
-            .filter_map(|&key| {
-                let stroke = self.strokes.get(key)?;
-                let selection_comp = self.selection_components.get_mut(key)?;
-
+            .into_iter()
+            .filter_map(|key| {
                 // skip if stroke is trashed
-                if let Some(trash_comp) = self.trash_components.get(key) {
-                    if trash_comp.trashed {
-                        return None;
-                    }
+                if self.trashed(key)? {
+                    return None;
                 }
-                selection_comp.selected = false;
 
+                let stroke = self.stroke_components.get(key)?;
                 let stroke_bounds = stroke.bounds();
 
                 if selector_polygon.contains(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
                 {
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                        self.chrono_counter += 1;
-                        chrono_comp.t = self.chrono_counter;
-                    }
-                    selection_comp.selected = true;
+                    self.set_selected(key, true);
+                    self.update_chrono_to_last(key);
+
                     return Some(key);
                 } else if selector_polygon
                     .intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
@@ -199,11 +178,9 @@ impl StrokeStore {
                         }
                     }
 
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                        self.chrono_counter += 1;
-                        chrono_comp.t = self.chrono_counter;
-                    }
-                    selection_comp.selected = true;
+                    self.set_selected(key, true);
+                    self.update_chrono_to_last(key);
+
                     return Some(key);
                 }
 
@@ -212,31 +189,23 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Updates the selected strokes for a given aabb. Returns the selected keys
-    pub fn update_selection_for_aabb(&mut self, aabb: AABB, viewport: AABB) -> Vec<StrokeKey> {
+    /// selects the strokes intersecting a given aabb. Returns the new selected keys
+    pub fn select_keys_intersecting_aabb(&mut self, aabb: AABB, viewport: AABB) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(viewport)
-            .iter()
-            .filter_map(|&key| {
-                let stroke = self.strokes.get(key)?;
-                let selection_comp = self.selection_components.get_mut(key)?;
-
+            .into_iter()
+            .filter_map(|key| {
                 // skip if stroke is trashed
-                if let Some(trash_comp) = self.trash_components.get(key) {
-                    if trash_comp.trashed {
-                        return None;
-                    }
+                if self.trashed(key)? {
+                    return None;
                 }
 
-                selection_comp.selected = false;
-
+                let stroke = self.stroke_components.get(key)?;
                 let stroke_bounds = stroke.bounds();
 
                 if aabb.contains(&stroke_bounds) {
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                        self.chrono_counter += 1;
-                        chrono_comp.t = self.chrono_counter;
-                    }
-                    selection_comp.selected = true;
+                    self.set_selected(key, true);
+                    self.update_chrono_to_last(key);
+
                     return Some(key);
                 } else if aabb.intersects(&stroke_bounds) {
                     for &hitbox_elem in stroke.hitboxes().iter() {
@@ -245,11 +214,9 @@ impl StrokeStore {
                         }
                     }
 
-                    if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
-                        self.chrono_counter += 1;
-                        chrono_comp.t = self.chrono_counter;
-                    }
-                    selection_comp.selected = true;
+                    self.set_selected(key, true);
+                    self.update_chrono_to_last(key);
+
                     return Some(key);
                 }
 

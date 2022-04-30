@@ -396,7 +396,7 @@ impl RnoteCanvas {
     // the zoom timeout time
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
-    pub const ZOOM_STEP: f64 = 0.1; 
+    pub const ZOOM_STEP: f64 = 0.1;
     // The default width of imported PDF's in percentage to the sheet width
     pub const PDF_IMPORT_WIDTH_DEFAULT: f64 = 50.0;
 
@@ -777,15 +777,12 @@ impl RnoteCanvas {
         )
     }
 
-    // When the camera offset should change, we call this ( for example from touch drag gestures )
-    pub fn update_offset(&self, new_offset: na::Vector2<f64>) {
-        self.engine().borrow_mut().camera.offset = new_offset;
+    // updates the camera offset with a new one ( for example from touch drag gestures )
+    pub fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
+        self.engine().borrow_mut().update_camera_offset(new_offset);
 
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
-
-        self.engine().borrow_mut().resize_new_offset();
-
         self.queue_resize();
     }
 
@@ -794,7 +791,8 @@ impl RnoteCanvas {
             * na::point![
                 f64::from(self.width()) * 0.5,
                 f64::from(self.height()) * 0.5
-            ]).coords
+            ])
+        .coords
     }
 
     /// Centers the view around a coord on the sheet. The coord parameter has the coordinate space of the sheet!
@@ -810,7 +808,7 @@ impl RnoteCanvas {
             ((coord[1]) * total_zoom) - parent_height * 0.5
         ];
 
-        self.update_offset(new_offset);
+        self.update_camera_offset(new_offset);
     }
 
     /// Centering the view to the origin page
@@ -823,13 +821,13 @@ impl RnoteCanvas {
             -Sheet::SHADOW_WIDTH * zoom
         ];
 
-        self.update_offset(new_offset);
+        self.update_camera_offset(new_offset);
     }
 
     /// zooms and regenerates the canvas and its contents to a new zoom
     /// is private, zooming from other parts of the app should always be done through the "zoom-to-value" action
     fn zoom_to(&self, new_zoom: f64) {
-        // Remove the timeout if existss
+        // Remove the timeout if exists
         if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
             zoom_timeout_id.remove();
         }
@@ -837,11 +835,16 @@ impl RnoteCanvas {
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
         self.engine().borrow_mut().camera.set_zoom(new_zoom);
 
-        let all_strokes = self.engine().borrow().store.keys_unordered();
+        let viewport = self.engine().borrow_mut().camera.viewport();
+        let strokes_in_viewport = self
+            .engine()
+            .borrow()
+            .store
+            .keys_sorted_chrono_intersecting_bounds(viewport);
         self.engine()
             .borrow_mut()
             .store
-            .set_rendering_dirty_for_strokes(&all_strokes);
+            .set_rendering_dirty_for_strokes(&strokes_in_viewport);
 
         self.engine().borrow_mut().resize_autoexpand();
         self.regenerate_background(false);
@@ -867,37 +870,42 @@ impl RnoteCanvas {
             .camera
             .set_temporary_zoom(new_temp_zoom);
 
-        self.update_background_rendernodes(true);
+        self.queue_resize();
 
-        self.imp()
-            .zoom_timeout_id
-            .borrow_mut()
-            .replace(glib::source::timeout_add_local_once(
-                timeout_time,
-                clone!(@weak self as canvas => move || {
+        if let Some(zoom_timeout_id) =
+            self.imp()
+                .zoom_timeout_id
+                .borrow_mut()
+                .replace(glib::source::timeout_add_local_once(
+                    timeout_time,
+                    clone!(@weak self as canvas => move || {
 
-                    // After timeout zoom permanent
-                    canvas.zoom_to(zoom);
+                        // After timeout zoom permanent
+                        canvas.zoom_to(zoom);
 
-                    // Removing the timeout id
-                    let mut zoom_timeout_id = canvas.imp().zoom_timeout_id.borrow_mut();
-                    if let Some(zoom_timeout_id) = zoom_timeout_id.take() {
-                        zoom_timeout_id.remove();
-                    }
-                }),
-            ));
+                        // Removing the timeout id
+                        let mut zoom_timeout_id = canvas.imp().zoom_timeout_id.borrow_mut();
+                        if let Some(zoom_timeout_id) = zoom_timeout_id.take() {
+                            zoom_timeout_id.remove();
+                        }
+                    }),
+                ))
+        {
+            zoom_timeout_id.remove();
+        }
     }
 
-    /// Update rendernodes of the background. Used when the background itself did not change, but for example the sheet size
-    pub fn update_background_rendernodes(&self, redraw: bool) {
-        let sheet_bounds = self.engine().borrow().sheet.bounds();
+    /// Update rendernodes of the background. Used when the background itself did not change, but for example the sheet size.
+    /// Only to be called on allocation from the layout manager
+    fn update_background_rendernodes(&self, redraw: bool) {
+        let viewport = self.engine().borrow().camera.viewport();
 
         if let Err(e) = self
             .engine()
             .borrow_mut()
             .sheet
             .background
-            .update_rendernodes(sheet_bounds)
+            .update_rendernodes(viewport)
         {
             log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
         }
@@ -909,7 +917,7 @@ impl RnoteCanvas {
     /// regenerating the background image and rendernode.
     /// use for example when changing the background pattern or zoom
     pub fn regenerate_background(&self, redraw: bool) {
-        let sheet_bounds = self.engine().borrow().sheet.bounds();
+        let viewport = self.engine().borrow().camera.viewport();
         let image_scale = self.engine().borrow().camera.image_scale();
 
         if let Err(e) = self
@@ -917,7 +925,7 @@ impl RnoteCanvas {
             .borrow_mut()
             .sheet
             .background
-            .regenerate_background(sheet_bounds, image_scale)
+            .regenerate_background(viewport, image_scale)
         {
             log::error!("failed to regenerate background, {}", e)
         };
@@ -927,7 +935,8 @@ impl RnoteCanvas {
         }
     }
 
-    /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch. redraw: queue canvas redrawing
+    /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch.
+    /// redraw: queue canvas redrawing
     pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
         let image_scale = self.engine().borrow().camera.image_scale();
         let viewport = self.engine().borrow().camera.viewport();

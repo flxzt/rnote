@@ -90,6 +90,8 @@ impl PenBehaviour for Brush {
                 },
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
+                    store.record();
+
                     Self::start_audio(style, audioplayer);
 
                     // A new seed for a new brush stroke

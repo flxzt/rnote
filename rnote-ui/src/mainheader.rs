@@ -264,14 +264,14 @@ impl MainHeader {
             .undo_button
             .get()
             .connect_clicked(clone!(@weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "undo-stroke", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "undo", None);
             }));
 
         self.imp()
             .redo_button
             .get()
             .connect_clicked(clone!(@weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "redo-stroke", None);
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "redo", None);
             }));
     }
 

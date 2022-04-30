@@ -254,6 +254,12 @@ impl BrushStroke {
         self.hitboxes = self.gen_hitboxes();
     }
 
+    /// Replacing the current path with a new one. the new path must not be empty.
+    pub fn replace_path(&mut self, path: PenPath) {
+        self.path = path;
+        self.update_geometry();
+    }
+
     // internal method generating the current hitboxes.
     fn gen_hitboxes(&self) -> Vec<AABB> {
         let width = match &self.style {

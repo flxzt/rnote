@@ -3,7 +3,7 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use crate::helpers::AABBHelpers;
 use crate::penhelpers::{PenEvent, PenState};
 use crate::penpath::Element;
-use crate::shapes::{CubicBezier};
+use crate::shapes::CubicBezier;
 use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 

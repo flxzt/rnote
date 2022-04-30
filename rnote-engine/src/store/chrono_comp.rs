@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use p2d::bounding_volume::AABB;
 use rayon::iter::{ParallelBridge, ParallelIterator};
 use rayon::slice::ParallelSliceMut;
@@ -27,9 +29,9 @@ impl ChronoComponent {
 /// Systems that are related to their Chronology.
 impl StrokeStore {
     pub fn update_chrono_to_last(&mut self, key: StrokeKey) {
-        if let Some(chrono_comp) = self.chrono_components.get_mut(key) {
+        if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components).get_mut(key) {
             self.chrono_counter += 1;
-            chrono_comp.t = self.chrono_counter;
+            Arc::make_mut(chrono_comp).t = self.chrono_counter;
         } else {
             log::debug!(
                 "get chrono_comp in set_chrono_to_last() returned None for stroke with key {:?}",
@@ -88,7 +90,7 @@ impl StrokeStore {
     pub fn keys_sorted_chrono(&self) -> Vec<StrokeKey> {
         let chrono_components = &self.chrono_components;
 
-        let mut keys = self.strokes.keys().collect::<Vec<StrokeKey>>();
+        let mut keys = self.stroke_components.keys().collect::<Vec<StrokeKey>>();
 
         keys.par_sort_unstable_by(|&first, &second| {
             if let (Some(first_chrono), Some(second_chrono)) =

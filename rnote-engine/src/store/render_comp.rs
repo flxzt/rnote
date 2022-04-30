@@ -11,8 +11,6 @@ use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::color;
 use rnote_compose::shapes::ShapeBehaviour;
-use serde::{Deserialize, Serialize};
-
 #[derive(Debug, Clone, Copy)]
 pub enum RenderCompState {
     Complete,
@@ -26,24 +24,16 @@ impl Default for RenderCompState {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default, rename = "render_component")]
+#[derive(Debug, Clone)]
 pub struct RenderComponent {
-    #[serde(rename = "render")]
-    pub render: bool,
-    #[serde(skip)]
     pub images: Vec<render::Image>,
-    #[serde(skip)]
     pub rendernodes: Vec<gsk::RenderNode>,
-
-    #[serde(skip)]
     pub(super) state: RenderCompState,
 }
 
 impl Default for RenderComponent {
     fn default() -> Self {
         Self {
-            render: true,
             state: RenderCompState::default(),
             images: vec![],
             rendernodes: vec![],
@@ -52,33 +42,17 @@ impl Default for RenderComponent {
 }
 
 impl StrokeStore {
+    pub fn reload_render_components_slotmap(&mut self) {
+        self.render_components = slotmap::SecondaryMap::new();
+        self.stroke_components.keys().for_each(|key| {
+            self.render_components
+                .insert(key, RenderComponent::default());
+        });
+    }
+
     /// Returns false if rendering is not supported
     pub fn can_render(&self, key: StrokeKey) -> bool {
         self.render_components.get(key).is_some()
-    }
-
-    /// Wether rendering is enabled. Returns None if rendering is not supported
-    pub fn does_render(&self, key: StrokeKey) -> Option<bool> {
-        if let Some(render_comp) = self.render_components.get(key) {
-            Some(render_comp.render)
-        } else {
-            log::debug!(
-                "get render_comp failed in does_render() of stroke for key {:?}, invalid key used or stroke does not support rendering",
-                key
-            );
-            None
-        }
-    }
-
-    pub fn set_render(&mut self, key: StrokeKey, render: bool) {
-        if let Some(render_component) = self.render_components.get_mut(key) {
-            render_component.render = render;
-        } else {
-            log::debug!(
-                "get render_comp failed in set_render() of stroke for key {:?}, invalid key used or stroke does not support rendering",
-                key
-            );
-        }
     }
 
     pub fn render_comp_state(&self, key: StrokeKey) -> Option<RenderCompState> {
@@ -140,9 +114,10 @@ impl StrokeStore {
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        if let (Some(stroke), Some(render_comp)) =
-            (self.strokes.get(key), self.render_components.get_mut(key))
-        {
+        if let (Some(stroke), Some(render_comp)) = (
+            self.stroke_components.get(key),
+            self.render_components.get_mut(key),
+        ) {
             // margin is constant in pixel values, so we need to divide by the image_scale
             let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
             let viewport = viewport.loosened(viewport_render_margin);
@@ -195,9 +170,10 @@ impl StrokeStore {
     ) {
         let tasks_tx = self.tasks_tx.clone();
 
-        if let (Some(render_comp), Some(stroke)) =
-            (self.render_components.get_mut(key), self.strokes.get(key))
-        {
+        if let (Some(render_comp), Some(stroke)) = (
+            self.render_components.get_mut(key),
+            self.stroke_components.get(key),
+        ) {
             let stroke = stroke.clone();
             let stroke_bounds = stroke.bounds();
 
@@ -242,7 +218,7 @@ impl StrokeStore {
 
         keys.into_iter().for_each(|key| {
             if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(key), self.render_components.get_mut(key))
+                (self.stroke_components.get(key), self.render_components.get_mut(key))
             {
                 let stroke_bounds = stroke.bounds();
 
@@ -318,10 +294,11 @@ impl StrokeStore {
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        if let (Some(stroke), Some(render_comp)) =
-            (self.strokes.get(key), self.render_components.get_mut(key))
-        {
-            match stroke {
+        if let (Some(stroke), Some(render_comp)) = (
+            self.stroke_components.get(key),
+            self.render_components.get_mut(key),
+        ) {
+            match stroke.as_ref() {
                 Stroke::BrushStroke(brushstroke) => {
                     let mut images =
                         brushstroke.gen_images_for_last_segments(n_segments, image_scale)?;
@@ -349,12 +326,12 @@ impl StrokeStore {
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        if let Some(stroke) = self.strokes.get(key) {
+        if let Some(stroke) = self.stroke_components.get(key) {
             let tasks_tx = self.tasks_tx.clone();
-            let stroke = stroke.clone();
 
-            match stroke {
+            match &**stroke {
                 Stroke::BrushStroke(brushstroke) => {
+                    let brushstroke = brushstroke.clone();
                     // Spawn a new thread for image rendering
                     self.threadpool.spawn(move || {
                         match brushstroke.gen_images_for_last_segments(n_segments, image_scale) {
@@ -441,9 +418,10 @@ impl StrokeStore {
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .iter()
             .for_each(|&key| {
-                if let (Some(stroke), Some(render_comp)) =
-                    (self.strokes.get(key), self.render_components.get(key))
-                {
+                if let (Some(stroke), Some(render_comp)) = (
+                    self.stroke_components.get(key),
+                    self.render_components.get(key),
+                ) {
                     if render_comp.rendernodes.is_empty() {
                         Self::draw_stroke_placeholder(snapshot, stroke.bounds())
                     }
@@ -467,9 +445,10 @@ impl StrokeStore {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
-                if let (Some(stroke), Some(render_comp)) =
-                    (self.strokes.get(key), self.render_components.get(key))
-                {
+                if let (Some(stroke), Some(render_comp)) = (
+                    self.stroke_components.get(key),
+                    self.render_components.get(key),
+                ) {
                     if render_comp.rendernodes.is_empty() {
                         Self::draw_stroke_placeholder(snapshot, stroke.bounds())
                     }
@@ -498,7 +477,7 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
-                if let Some(stroke) = self.strokes.get(key) {
+                if let Some(stroke) = self.stroke_components.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
                         piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
                         stroke
@@ -528,7 +507,7 @@ impl StrokeStore {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
-                if let Some(stroke) = self.strokes.get(key) {
+                if let Some(stroke) = self.stroke_components.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
                         piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
                         stroke
@@ -550,14 +529,15 @@ impl StrokeStore {
 
     pub fn draw_debug(&self, snapshot: &Snapshot, border_widths: f64) {
         self.keys_sorted_chrono().into_iter().for_each(|key| {
-            if let Some(stroke) = self.strokes.get(key) {
-                // Push blur and opacity for strokes which are normally hidden
-                if let Some(render_comp) = self.render_components.get(key) {
-                    if let Some(trash_comp) = self.trash_components.get(key) {
-                        if render_comp.render && trash_comp.trashed {
-                            snapshot.push_opacity(0.2);
-                        }
+            if let Some(stroke) = self.stroke_components.get(key) {
+                // Push opacity for strokes which are normally hidden
+                if let Some(trash_comp) = self.trash_components.get(key) {
+                    if trash_comp.trashed {
+                        snapshot.push_opacity(0.2);
                     }
+                }
+
+                if let Some(render_comp) = self.render_components.get(key) {
                     /*
                                        if render_comp.regenerate_flag {
                                            visual_debug::draw_fill(
@@ -594,7 +574,7 @@ impl StrokeStore {
                     border_widths,
                 );
 
-                match stroke {
+                match stroke.as_ref() {
                     // Draw positions for brushstrokes
                     Stroke::BrushStroke(brushstroke) => {
                         for element in brushstroke.path.clone().into_elements().iter() {
@@ -610,11 +590,8 @@ impl StrokeStore {
                 }
 
                 // Pop Blur and opacity for hidden strokes
-                if let (Some(render_comp), Some(trash_comp)) = (
-                    self.render_components.get(key),
-                    self.trash_components.get(key),
-                ) {
-                    if render_comp.render && trash_comp.trashed {
+                if let Some(trash_comp) = self.trash_components.get(key) {
+                    if trash_comp.trashed {
                         snapshot.pop();
                     }
                 }

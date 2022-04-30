@@ -6,6 +6,8 @@ use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
 
+use super::Line;
+
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "rectangle")]
 /// A rectangle
@@ -42,7 +44,11 @@ impl ShapeBehaviour for Rectangle {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        vec![self.bounds()]
+        self.outline_lines()
+            .into_iter()
+            .map(|line| line.hitboxes())
+            .flatten()
+            .collect()
     }
 }
 
@@ -68,6 +74,45 @@ impl Rectangle {
         let transform = Transform::new_w_isometry(na::Isometry2::new(bounds.center().coords, 0.0));
 
         Self { cuboid, transform }
+    }
+
+    /// The outline lines of the rect
+    pub fn outline_lines(&self) -> [Line; 4] {
+        let upper_left = self.transform.transform_point(na::point![
+            -self.cuboid.half_extents[0],
+            -self.cuboid.half_extents[1]
+        ]);
+        let upper_right = self.transform.transform_point(na::point![
+            self.cuboid.half_extents[0],
+            -self.cuboid.half_extents[1]
+        ]);
+        let lower_left = self.transform.transform_point(na::point![
+            -self.cuboid.half_extents[0],
+            self.cuboid.half_extents[1]
+        ]);
+        let lower_right = self.transform.transform_point(na::point![
+            self.cuboid.half_extents[0],
+            self.cuboid.half_extents[1]
+        ]);
+
+        [
+            Line {
+                start: upper_left.coords,
+                end: lower_left.coords,
+            },
+            Line {
+                start: lower_left.coords,
+                end: lower_right.coords,
+            },
+            Line {
+                start: lower_right.coords,
+                end: upper_right.coords,
+            },
+            Line {
+                start: upper_right.coords,
+                end: upper_left.coords,
+            },
+        ]
     }
 
     /// to kurbo

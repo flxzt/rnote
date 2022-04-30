@@ -1,3 +1,4 @@
+use kurbo::Shape;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
@@ -5,6 +6,8 @@ use crate::helpers::{Affine2Helpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 use crate::Transform;
+
+use super::Line;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "ellipse")]
@@ -55,7 +58,10 @@ impl ShapeBehaviour for Ellipse {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        vec![self.bounds()]
+        self.approx_with_lines()
+            .into_iter()
+            .map(|line| line.bounds())
+            .collect()
     }
 }
 
@@ -80,6 +86,26 @@ impl Ellipse {
         let transform = Transform::new_w_isometry(na::Isometry2::new(center, angle));
 
         Self { radii, transform }
+    }
+
+    /// Approximating a ellipse with lines
+    pub fn approx_with_lines(&self) -> Vec<Line> {
+        let mut lines = Vec::new();
+        let mut prev = kurbo::Point::new(0.0, 0.0);
+
+        self.to_kurbo().to_path(0.1).flatten(0.1, |el| match el {
+            kurbo::PathEl::MoveTo(point) => prev = point,
+            kurbo::PathEl::LineTo(next) => {
+                lines.push(Line {
+                    start: na::vector![prev.x, prev.y],
+                    end: na::vector![next.x, next.y],
+                });
+                prev = next
+            }
+            _ => {}
+        });
+
+        lines
     }
 
     /// to kurbo

@@ -777,15 +777,12 @@ impl RnoteCanvas {
         )
     }
 
-    // When the camera offset should change, we call this ( for example from touch drag gestures )
-    pub fn update_offset(&self, new_offset: na::Vector2<f64>) {
-        self.engine().borrow_mut().camera.offset = new_offset;
+    // updates the camera offset with a new one ( for example from touch drag gestures )
+    pub fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
+        self.engine().borrow_mut().update_camera_offset(new_offset);
 
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
-
-        self.engine().borrow_mut().resize_new_offset();
-
         self.queue_resize();
     }
 
@@ -811,7 +808,7 @@ impl RnoteCanvas {
             ((coord[1]) * total_zoom) - parent_height * 0.5
         ];
 
-        self.update_offset(new_offset);
+        self.update_camera_offset(new_offset);
     }
 
     /// Centering the view to the origin page
@@ -824,13 +821,13 @@ impl RnoteCanvas {
             -Sheet::SHADOW_WIDTH * zoom
         ];
 
-        self.update_offset(new_offset);
+        self.update_camera_offset(new_offset);
     }
 
     /// zooms and regenerates the canvas and its contents to a new zoom
     /// is private, zooming from other parts of the app should always be done through the "zoom-to-value" action
     fn zoom_to(&self, new_zoom: f64) {
-        // Remove the timeout if existss
+        // Remove the timeout if exists
         if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
             zoom_timeout_id.remove();
         }

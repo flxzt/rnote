@@ -172,7 +172,7 @@ impl StrokeStore {
                                 })
                                 .collect::<Vec<&[Segment]>>();
 
-                            // If this is met, we are intersecting we cant form new split strokes, so we trash it
+                            // If this is met, we intersect the stroke but we cant form any new split strokes, so we trash it ( e.g. strokes that only have a single element)
                             if split_segments.iter().all(|segments| segments.is_empty()) {
                                 trash_current_stroke = true;
                             } else {

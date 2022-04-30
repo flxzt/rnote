@@ -288,7 +288,9 @@ impl RnoteEngine {
 
     /// Updates the camera and expands sheet dimensions with offset
     /// Sheet background rendering needs to be updated after calling this
-    pub fn resize_new_offset(&mut self) {
+    pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
+        self.camera.offset = new_offset;
+
         match self.expand_mode {
             ExpandMode::FixedSize => {
                 // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.

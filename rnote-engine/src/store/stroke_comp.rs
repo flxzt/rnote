@@ -11,7 +11,6 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 
 use p2d::bounding_volume::{BoundingSphere, BoundingVolume, AABB};
-use rayon::iter::{ParallelBridge, ParallelIterator};
 use std::sync::Arc;
 
 /// Systems that are related to the stroke components.
@@ -33,7 +32,7 @@ impl StrokeStore {
         self.stroke_components.keys().collect()
     }
 
-    /// All stroke keys, not including the selection
+    /// All stroke keys, excluding selection or tashed keys
     pub fn stroke_keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components
             .keys()
@@ -47,7 +46,7 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Returns the stroke keys in the order that they should be rendered. Does not include the selection.
+    /// Returns the stroke keys in the order that they should be rendered. exluding selected or trashed keys.
     pub fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         self.keys_sorted_chrono()
             .into_iter()
@@ -61,6 +60,7 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
+    /// Returns the stroke keys in the order that they should be rendered, intersecting the given bounds. exluding selected or trashed keys.
     pub fn stroke_keys_as_rendered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
@@ -540,9 +540,10 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
+    /// Unimplemented!
     /// Needs rendering regeneration for current viewport after calling
     pub fn drag_strokes_proximity(&mut self, drag_proximity_tool: &DragProximityTool) {
-        let sphere = BoundingSphere {
+        let _sphere = BoundingSphere {
             center: na::Point2::from(drag_proximity_tool.pos),
             radius: drag_proximity_tool.radius,
         };
@@ -557,54 +558,6 @@ impl StrokeStore {
             (1.0 - (pos - tool_pos).magnitude() / radius).clamp(0.0, 1.0)
         }
 
-        Arc::make_mut(&mut self.stroke_components)
-            .iter_mut()
-            .par_bridge()
-            .filter_map(|(key, stroke)| -> Option<StrokeKey> {
-                match Arc::make_mut(stroke) {
-                    Stroke::BrushStroke(brushstroke) => {
-                        if sphere.intersects(&brushstroke.path.bounds().bounding_sphere()) {
-                            for segment in brushstroke.path.iter_mut() {
-                                let segment_sphere = segment.bounds().bounding_sphere();
-
-                                if sphere.intersects(&segment_sphere) {
-                                    /*                                     match segment {
-                                        Segment::QuadBez { start, cp, end } => {
-                                            start.pos += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    start.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            *cp += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    *cp,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            end.pos += drag_proximity_tool.offset
-                                                * calc_distance_ratio(
-                                                    end.pos,
-                                                    drag_proximity_tool.pos,
-                                                    drag_proximity_tool.radius,
-                                                );
-                                            return Some(key);
-                                        }
-                                    } */
-                                    return Some(key);
-                                }
-                            }
-                        }
-                    }
-                    _ => {}
-                }
-
-                None
-            })
-            .collect::<Vec<StrokeKey>>()
-            .iter()
-            .for_each(|&key| {
-                self.update_geometry_for_stroke(key);
-            });
+        unimplemented!()
     }
 }

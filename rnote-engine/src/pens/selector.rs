@@ -115,11 +115,10 @@ impl PenBehaviour for Selector {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
                 store.record();
 
-                // Deselect when starting
-                let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
-                if keys.iter().any(|&key| store.selected(key).unwrap_or(false)) {
-                    store.set_selected_keys(&keys, false);
-                }
+                // Deselect on start
+                let selection_keys =
+                    store.selection_keys_as_rendered_intersecting_bounds(camera.viewport());
+                store.set_selected_keys(&selection_keys, false);
 
                 self.state = SelectorState::Selecting {
                     path: vec![element],
@@ -143,26 +142,31 @@ impl PenBehaviour for Selector {
                 let mut state = SelectorState::Idle;
                 let mut pen_progress = PenProgress::Finished;
 
-                if let Some(selection) = match self.style {
-                    SelectorType::Polygon => {
-                        if path.len() < 3 {
-                            None
-                        } else {
-                            Some(store.update_selection_for_polygon_path(&path, camera.viewport()))
+                if let Some(selection) =
+                    match self.style {
+                        SelectorType::Polygon => {
+                            if path.len() < 3 {
+                                None
+                            } else {
+                                Some(store.select_keys_intersecting_polygon_path(
+                                    &path,
+                                    camera.viewport(),
+                                ))
+                            }
+                        }
+                        SelectorType::Rectangle => {
+                            if let (Some(first), Some(last)) = (path.first(), path.last()) {
+                                let aabb = AABB::new_positive(
+                                    na::Point2::from(first.pos),
+                                    na::Point2::from(last.pos),
+                                );
+                                Some(store.select_keys_intersecting_aabb(aabb, camera.viewport()))
+                            } else {
+                                None
+                            }
                         }
                     }
-                    SelectorType::Rectangle => {
-                        if let (Some(first), Some(last)) = (path.first(), path.last()) {
-                            let aabb = AABB::new_positive(
-                                na::Point2::from(first.pos),
-                                na::Point2::from(last.pos),
-                            );
-                            Some(store.update_selection_for_aabb(aabb, camera.viewport()))
-                        } else {
-                            None
-                        }
-                    }
-                } {
+                {
                     if let Some(selection_bounds) = store.gen_bounds_for_strokes(&selection) {
                         // Change to the modifiy state
                         state = SelectorState::ModifySelection {
@@ -189,8 +193,9 @@ impl PenBehaviour for Selector {
                 self.state = SelectorState::Idle;
 
                 // Deselect on cancel
-                let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
-                store.set_selected_keys(&keys, false);
+                let selection_keys =
+                    store.selection_keys_as_rendered_intersecting_bounds(camera.viewport());
+                store.set_selected_keys(&selection_keys, false);
 
                 surface_flags.redraw = true;
                 surface_flags.sheet_changed = true;
@@ -423,12 +428,16 @@ impl PenBehaviour for Selector {
             (SelectorState::ModifySelection { .. }, PenEvent::Proximity { .. }) => {
                 PenProgress::InProgress
             }
-            (SelectorState::ModifySelection { .. }, PenEvent::Cancel) => {
+            (
+                SelectorState::ModifySelection {
+                    modify_state: _,
+                    selection,
+                    selection_bounds: _,
+                },
+                PenEvent::Cancel,
+            ) => {
+                store.set_selected_keys(&selection, false);
                 self.state = SelectorState::Idle;
-
-                // Deselect on cancel
-                let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
-                store.set_selected_keys(&keys, false);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;

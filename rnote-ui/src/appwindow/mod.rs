@@ -10,10 +10,10 @@ use std::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, CompositeTemplate,
+    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, CompositeTemplate,
     CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
     FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
-    PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton, Button
+    PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
 use rnote_engine::pens::penholder::PenHolderEvent;

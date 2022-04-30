@@ -46,13 +46,7 @@ impl StrokeStore {
         {
             trash_comp.trashed = trash;
 
-            if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components)
-                .get_mut(key)
-                .map(Arc::make_mut)
-            {
-                self.chrono_counter += 1;
-                chrono_comp.t = self.chrono_counter;
-            }
+            self.update_chrono_to_last(key);
         } else {
             log::debug!(
                 "get trash_comp in set_trashed() returned None for stroke with key {:?}",
@@ -61,32 +55,13 @@ impl StrokeStore {
         }
     }
 
-    pub fn trash_selection(&mut self) {
-        self.record();
-
-        // have to be in rendered order, to ensure consistent chrono_comp t value
-        self.selection_keys_as_rendered().iter().for_each(|&key| {
-            if let Some(selection_comp) = Arc::make_mut(&mut self.selection_components)
-                .get_mut(key)
-                .map(Arc::make_mut)
-            {
-                if selection_comp.selected {
-                    selection_comp.selected = false;
-
-                    if let Some(trash_comp) = Arc::make_mut(&mut self.trash_components)
-                        .get_mut(key)
-                        .map(Arc::make_mut)
-                    {
-                        trash_comp.trashed = true;
-
-                        if let Some(chrono_comp) = Arc::make_mut(&mut self.chrono_components)
-                            .get_mut(key)
-                            .map(Arc::make_mut)
-                        {
-                            self.chrono_counter += 1;
-                            chrono_comp.t = self.chrono_counter;
-                        }
-                    }
+    pub fn set_trashed_keys(&mut self, keys: &[StrokeKey], trash: bool) {
+        keys.iter().for_each(|&key| {
+            if let Some(selected) = self.selected(key) {
+                if selected {
+                    self.set_selected(key, false);
+                    self.set_trashed(key, trash);
+                    self.update_chrono_to_last(key);
                 }
             }
         });

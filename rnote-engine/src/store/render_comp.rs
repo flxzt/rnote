@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use super::StoreTask;
 use super::{Stroke, StrokeKey, StrokeStore};
 use crate::engine::visual_debug;
@@ -116,9 +114,10 @@ impl StrokeStore {
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        if let (Some(stroke), Some(render_comp)) =
-            (self.stroke_components.get(key), self.render_components.get_mut(key))
-        {
+        if let (Some(stroke), Some(render_comp)) = (
+            self.stroke_components.get(key),
+            self.render_components.get_mut(key),
+        ) {
             // margin is constant in pixel values, so we need to divide by the image_scale
             let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
             let viewport = viewport.loosened(viewport_render_margin);
@@ -171,9 +170,10 @@ impl StrokeStore {
     ) {
         let tasks_tx = self.tasks_tx.clone();
 
-        if let (Some(render_comp), Some(stroke)) =
-            (self.render_components.get_mut(key), self.stroke_components.get(key))
-        {
+        if let (Some(render_comp), Some(stroke)) = (
+            self.render_components.get_mut(key),
+            self.stroke_components.get(key),
+        ) {
             let stroke = stroke.clone();
             let stroke_bounds = stroke.bounds();
 
@@ -294,9 +294,10 @@ impl StrokeStore {
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        if let (Some(stroke), Some(render_comp)) =
-            (self.stroke_components.get(key), self.render_components.get_mut(key))
-        {
+        if let (Some(stroke), Some(render_comp)) = (
+            self.stroke_components.get(key),
+            self.render_components.get_mut(key),
+        ) {
             match stroke.as_ref() {
                 Stroke::BrushStroke(brushstroke) => {
                     let mut images =
@@ -325,10 +326,10 @@ impl StrokeStore {
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        if let Some(stroke) = Arc::make_mut(&mut self.stroke_components).get_mut(key) {
+        if let Some(stroke) = self.stroke_components.get(key) {
             let tasks_tx = self.tasks_tx.clone();
 
-            match Arc::make_mut(stroke) {
+            match &**stroke {
                 Stroke::BrushStroke(brushstroke) => {
                     let brushstroke = brushstroke.clone();
                     // Spawn a new thread for image rendering
@@ -417,9 +418,10 @@ impl StrokeStore {
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .iter()
             .for_each(|&key| {
-                if let (Some(stroke), Some(render_comp)) =
-                    (self.stroke_components.get(key), self.render_components.get(key))
-                {
+                if let (Some(stroke), Some(render_comp)) = (
+                    self.stroke_components.get(key),
+                    self.render_components.get(key),
+                ) {
                     if render_comp.rendernodes.is_empty() {
                         Self::draw_stroke_placeholder(snapshot, stroke.bounds())
                     }
@@ -443,9 +445,10 @@ impl StrokeStore {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
-                if let (Some(stroke), Some(render_comp)) =
-                    (self.stroke_components.get(key), self.render_components.get(key))
-                {
+                if let (Some(stroke), Some(render_comp)) = (
+                    self.stroke_components.get(key),
+                    self.render_components.get(key),
+                ) {
                     if render_comp.rendernodes.is_empty() {
                         Self::draw_stroke_placeholder(snapshot, stroke.bounds())
                     }

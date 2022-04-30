@@ -79,7 +79,7 @@ impl StrokeStore {
     }
 
     pub fn selection_keys_unordered(&self) -> Vec<StrokeKey> {
-        self.strokes
+        self.stroke_components
             .keys()
             .filter(|&key| {
                 !(self.trashed(key).unwrap_or(false)) && (self.selected(key).unwrap_or(false))
@@ -130,7 +130,7 @@ impl StrokeStore {
         let new_selected = old_selected
             .iter()
             .filter_map(|&key| {
-                let new_key = self.insert_stroke((**self.strokes.get(key)?).clone());
+                let new_key = self.insert_stroke((**self.stroke_components.get(key)?).clone());
                 self.set_selected(new_key, true);
                 Some(new_key)
             })
@@ -161,7 +161,7 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(viewport)
             .iter()
             .filter_map(|&key| {
-                let stroke = self.strokes.get(key)?;
+                let stroke = self.stroke_components.get(key)?;
                 let selection_comp = Arc::make_mut(&mut self.selection_components)
                     .get_mut(key)
                     .map(Arc::make_mut)?;
@@ -219,7 +219,7 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(viewport)
             .iter()
             .filter_map(|&key| {
-                let stroke = self.strokes.get(key)?;
+                let stroke = self.stroke_components.get(key)?;
                 let selection_comp = Arc::make_mut(&mut self.selection_components)
                     .get_mut(key)
                     .map(Arc::make_mut)?;

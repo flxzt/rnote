@@ -29,6 +29,7 @@ rnote_engine_sources = files(
     'strokes/bitmapimage.rs',
     'store/mod.rs',
     'store/keytree.rs',
+    'store/stroke_comp.rs',
     'store/chrono_comp.rs',
     'store/render_comp.rs',
     'store/selection_comp.rs',

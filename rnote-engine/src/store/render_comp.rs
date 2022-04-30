@@ -46,7 +46,7 @@ impl Default for RenderComponent {
 impl StrokeStore {
     pub fn reload_render_components_slotmap(&mut self) {
         self.render_components = slotmap::SecondaryMap::new();
-        self.strokes.keys().for_each(|key| {
+        self.stroke_components.keys().for_each(|key| {
             self.render_components
                 .insert(key, RenderComponent::default());
         });
@@ -117,7 +117,7 @@ impl StrokeStore {
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) =
-            (self.strokes.get(key), self.render_components.get_mut(key))
+            (self.stroke_components.get(key), self.render_components.get_mut(key))
         {
             // margin is constant in pixel values, so we need to divide by the image_scale
             let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
@@ -172,7 +172,7 @@ impl StrokeStore {
         let tasks_tx = self.tasks_tx.clone();
 
         if let (Some(render_comp), Some(stroke)) =
-            (self.render_components.get_mut(key), self.strokes.get(key))
+            (self.render_components.get_mut(key), self.stroke_components.get(key))
         {
             let stroke = stroke.clone();
             let stroke_bounds = stroke.bounds();
@@ -218,7 +218,7 @@ impl StrokeStore {
 
         keys.into_iter().for_each(|key| {
             if let (Some(stroke), Some(render_comp)) =
-                (self.strokes.get(key), self.render_components.get_mut(key))
+                (self.stroke_components.get(key), self.render_components.get_mut(key))
             {
                 let stroke_bounds = stroke.bounds();
 
@@ -295,7 +295,7 @@ impl StrokeStore {
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let (Some(stroke), Some(render_comp)) =
-            (self.strokes.get(key), self.render_components.get_mut(key))
+            (self.stroke_components.get(key), self.render_components.get_mut(key))
         {
             match stroke.as_ref() {
                 Stroke::BrushStroke(brushstroke) => {
@@ -325,7 +325,7 @@ impl StrokeStore {
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
-        if let Some(stroke) = Arc::make_mut(&mut self.strokes).get_mut(key) {
+        if let Some(stroke) = Arc::make_mut(&mut self.stroke_components).get_mut(key) {
             let tasks_tx = self.tasks_tx.clone();
 
             match Arc::make_mut(stroke) {
@@ -418,7 +418,7 @@ impl StrokeStore {
             .iter()
             .for_each(|&key| {
                 if let (Some(stroke), Some(render_comp)) =
-                    (self.strokes.get(key), self.render_components.get(key))
+                    (self.stroke_components.get(key), self.render_components.get(key))
                 {
                     if render_comp.rendernodes.is_empty() {
                         Self::draw_stroke_placeholder(snapshot, stroke.bounds())
@@ -444,7 +444,7 @@ impl StrokeStore {
             .into_iter()
             .for_each(|key| {
                 if let (Some(stroke), Some(render_comp)) =
-                    (self.strokes.get(key), self.render_components.get(key))
+                    (self.stroke_components.get(key), self.render_components.get(key))
                 {
                     if render_comp.rendernodes.is_empty() {
                         Self::draw_stroke_placeholder(snapshot, stroke.bounds())
@@ -474,7 +474,7 @@ impl StrokeStore {
         self.keys_sorted_chrono_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
-                if let Some(stroke) = self.strokes.get(key) {
+                if let Some(stroke) = self.stroke_components.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
                         piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
                         stroke
@@ -504,7 +504,7 @@ impl StrokeStore {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
-                if let Some(stroke) = self.strokes.get(key) {
+                if let Some(stroke) = self.stroke_components.get(key) {
                     if let Err(e) = || -> anyhow::Result<()> {
                         piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
                         stroke
@@ -526,7 +526,7 @@ impl StrokeStore {
 
     pub fn draw_debug(&self, snapshot: &Snapshot, border_widths: f64) {
         self.keys_sorted_chrono().into_iter().for_each(|key| {
-            if let Some(stroke) = self.strokes.get(key) {
+            if let Some(stroke) = self.stroke_components.get(key) {
                 // Push opacity for strokes which are normally hidden
                 if let Some(trash_comp) = self.trash_components.get(key) {
                     if trash_comp.trashed {

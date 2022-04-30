@@ -21,7 +21,7 @@ impl Default for TrashComponent {
     }
 }
 
-/// Systems that are related to the trash.
+/// Systems that are related trashing
 impl StrokeStore {
     pub fn can_trash(&self, key: StrokeKey) -> bool {
         self.trash_components.get(key).is_some()
@@ -99,7 +99,7 @@ impl StrokeStore {
             .for_each(|key| {
                 let mut trash_current_stroke = false;
 
-                if let Some(stroke) = self.strokes.get(key) {
+                if let Some(stroke) = self.stroke_components.get(key) {
                     match stroke.as_ref() {
                         Stroke::BrushStroke(_) | Stroke::ShapeStroke(_) => {
                             // First check if eraser even intersects stroke bounds, avoiding unnecessary work
@@ -143,7 +143,7 @@ impl StrokeStore {
             .stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .map(|key| {
-                let stroke = match Arc::make_mut(&mut self.strokes)
+                let stroke = match Arc::make_mut(&mut self.stroke_components)
                     .get_mut(key)
                     .map(Arc::make_mut)
                 {

@@ -89,7 +89,7 @@
             <child>
               <object class="GtkButton" id="redo_button">
                 <property name="icon_name">edit-redo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Break undo chain</property>
+                <property name="tooltip_text" translatable="yes">Redo</property>
               </object>
             </child>
           </object>

@@ -130,8 +130,8 @@ impl RnoteEngine {
         surface_flags
     }
 
-    pub fn break_undo_chain(&mut self) {
-        self.store.break_undo_chain();
+    pub fn redo(&mut self) {
+        self.store.redo();
 
         self.update_selector();
         self.resize_autoexpand();

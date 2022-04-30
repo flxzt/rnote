@@ -117,7 +117,9 @@ impl PenBehaviour for Selector {
 
                 // Deselect when starting
                 let keys = store.keys_sorted_chrono_intersecting_bounds(camera.viewport());
-                store.set_selected_keys(&keys, false);
+                if keys.iter().any(|&key| store.selected(key).unwrap_or(false)) {
+                    store.set_selected_keys(&keys, false);
+                }
 
                 self.state = SelectorState::Selecting {
                     path: vec![element],

@@ -948,7 +948,7 @@ impl RnoteAppWindow {
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().engine().borrow_mut().break_undo_chain();
+            appwindow.canvas().engine().borrow_mut().redo();
             appwindow.canvas().queue_resize();
         }));
 

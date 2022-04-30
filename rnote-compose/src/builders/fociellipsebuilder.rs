@@ -110,7 +110,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             }
             FociEllipseBuilderState::Foci(foci) => {
                 drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[0], zoom);
-                drawhelpers::draw_pos_indicator(cx, PenState::Up, foci[1], zoom);
+                drawhelpers::draw_pos_indicator(cx, PenState::Down, foci[1], zoom);
             }
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);

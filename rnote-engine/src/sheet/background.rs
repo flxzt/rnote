@@ -199,7 +199,7 @@ impl Default for Background {
 }
 
 impl Background {
-    const TILE_MAX_SIZE: f64 = 192.0;
+    const TILE_MAX_SIZE: f64 = 128.0;
     const COLOR_DEFAULT: Color = Color::WHITE;
     const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
     const PATTERN_COLOR_DEFAULT: Color = Color {
@@ -215,18 +215,17 @@ impl Background {
             na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
         let tile_width = if tile_factor[0] > 1.0 {
-            tile_factor[0].floor() * self.pattern_size[0]
+            tile_factor[0] * self.pattern_size[0]
         } else {
             self.pattern_size[0]
         };
         let tile_height = if tile_factor[1] > 1.0 {
-            tile_factor[1].floor() * self.pattern_size[1]
+            tile_factor[1] * self.pattern_size[1]
         } else {
             self.pattern_size[1]
         };
-        let tile_size = na::vector![tile_width, tile_height];
 
-        tile_size
+        na::vector![tile_width, tile_height]
     }
 
     /// Generates the background svg, without xml header or svg root
@@ -267,7 +266,7 @@ impl Background {
                     self.pattern_size[1],
                     self.pattern_size[0],
                     self.pattern_color,
-                    1.0,
+                    1.5,
                 ));
             }
         }

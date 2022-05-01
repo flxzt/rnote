@@ -406,13 +406,14 @@ mod imp {
                     }
 
                     if flap.reveals_flap() && !flap.is_folded() {
-                        appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
+                        // Set visible before appending, to avoid allocation glitch
                         appwindow.flap_menus_box().set_visible(true);
                         appwindow.flap_close_button().set_visible(false);
+                        appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
                     } else {
-                        appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
                         appwindow.flap_menus_box().set_visible(false);
                         appwindow.flap_close_button().set_visible(true);
+                        appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
                     }
 
                     if flap.is_folded() {

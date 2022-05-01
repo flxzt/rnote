@@ -15,7 +15,7 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         .transient_for(appwindow)
         .program_name(config::APP_NAME_CAPITALIZED)
         .comments(&gettext(
-            "A simple drawing application to create handwritten notes",
+            "Sketch and take handwritten notes",
         ))
         .logo_icon_name(config::APP_ID)
         .website(config::APP_WEBSITE)

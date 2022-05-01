@@ -186,7 +186,7 @@ mod imp {
     border-style: solid;
     border-width: 1px;
     filter: brightness(100%);
-    margin{0}: 8px;
+    margin{0}: 6px;
     background-color: rgba({3}, {4}, {5}, {6:.3});
     transition: margin{0} 0.15s ease-out, border-radius 0.15s ease-out, filter 0.15s ease-out;
     {1}

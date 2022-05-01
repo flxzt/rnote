@@ -17,7 +17,7 @@
             <property name="title" translatable="yes">Brush</property>
             <property name="child">
               <object class="BrushPage" id="brush_page">
-                <property name="width_request">40</property>
+                <property name="width_request">48</property>
                 <property name="margin_top">6</property>
                 <property name="margin_bottom">6</property>
                 <property name="margin_start">9</property>
@@ -34,7 +34,7 @@
             <property name="title" translatable="yes">Shaper</property>
             <property name="child">
               <object class="ShaperPage" id="shaper_page">
-                <property name="width_request">40</property>
+                <property name="width_request">48</property>
                 <property name="margin_top">6</property>
                 <property name="margin_bottom">6</property>
                 <property name="margin_start">9</property>
@@ -51,7 +51,7 @@
             <property name="title" translatable="yes">Eraser</property>
             <property name="child">
               <object class="EraserPage" id="eraser_page">
-                <property name="width_request">40</property>
+                <property name="width_request">48</property>
                 <property name="margin_top">6</property>
                 <property name="margin_bottom">6</property>
                 <property name="margin_start">9</property>
@@ -68,7 +68,7 @@
             <property name="title" translatable="yes">Selector</property>
             <property name="child">
               <object class="SelectorPage" id="selector_page">
-                <property name="width_request">40</property>
+                <property name="width_request">48</property>
                 <property name="margin_top">6</property>
                 <property name="margin_bottom">6</property>
                 <property name="margin_start">9</property>
@@ -85,7 +85,7 @@
             <property name="title" translatable="yes">Tools</property>
             <property name="child">
               <object class="ToolsPage" id="tools_page">
-                <property name="width_request">40</property>
+                <property name="width_request">48</property>
                 <property name="margin_top">6</property>
                 <property name="margin_bottom">6</property>
                 <property name="margin_start">9</property>

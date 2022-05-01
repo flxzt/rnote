@@ -36,6 +36,9 @@
               <object class="GtkImage" id="brushstyle_image">
                 <property name="icon-name">pen-brush-style-solid-symbolic</property>
                 <property name="icon-size">large</property>
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
               </object>
             </child>
           </object>

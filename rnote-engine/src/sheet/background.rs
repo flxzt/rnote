@@ -1,7 +1,8 @@
 use anyhow::Context;
 use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use p2d::bounding_volume::AABB;
 use piet::RenderContext;
+use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
@@ -43,6 +44,8 @@ pub fn gen_hline_pattern(
 ) -> svg::node::element::Element {
     let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_hline_pattern";
 
+    let line_offset = line_width / 2.0;
+
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
             .set("id", pattern_id.as_str())
@@ -57,9 +60,9 @@ pub fn gen_hline_pattern(
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color_attr())
                     .set("x1", 0_f64)
-                    .set("y1", 0_f64)
+                    .set("y1", line_offset)
                     .set("x2", bounds.extents()[0])
-                    .set("y2", 0_f64),
+                    .set("y2", line_offset),
             ),
     );
 
@@ -83,6 +86,8 @@ pub fn gen_grid_pattern(
 ) -> svg::node::element::Element {
     let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_grid_pattern";
 
+    let line_offset = line_width / 2.0;
+
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
             .set("id", pattern_id.as_str())
@@ -97,17 +102,17 @@ pub fn gen_grid_pattern(
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color_attr())
                     .set("x1", 0_f64)
-                    .set("y1", 0_f64)
+                    .set("y1", line_offset)
                     .set("x2", column_spacing)
-                    .set("y2", 0_f64),
+                    .set("y2", line_offset),
             )
             .add(
                 element::Line::new()
                     .set("stroke-width", line_width)
                     .set("stroke", color.to_css_color_attr())
-                    .set("x1", 0_f64)
+                    .set("x1", line_offset)
                     .set("y1", 0_f64)
-                    .set("x2", 0_f64)
+                    .set("x2", line_offset)
                     .set("y2", row_spacing),
             ),
     );
@@ -177,7 +182,7 @@ pub struct Background {
     #[serde(skip)]
     pub image: Option<render::Image>,
     #[serde(skip)]
-    rendernodes: Vec<(gsk::RenderNode, AABB)>,
+    rendernodes: Vec<gsk::RenderNode>,
 }
 
 impl Default for Background {
@@ -244,7 +249,7 @@ impl Background {
                     bounds,
                     self.pattern_size[1],
                     self.pattern_color,
-                    1.0,
+                    0.5,
                 ));
             }
             PatternStyle::Grid => {
@@ -253,7 +258,7 @@ impl Background {
                     self.pattern_size[1],
                     self.pattern_size[0],
                     self.pattern_color,
-                    1.0,
+                    0.5,
                 ));
             }
             PatternStyle::Dots => {
@@ -262,7 +267,7 @@ impl Background {
                     self.pattern_size[1],
                     self.pattern_size[0],
                     self.pattern_color,
-                    2.0,
+                    1.0,
                 ));
             }
         }
@@ -323,12 +328,8 @@ impl Background {
         )?))
     }
 
-    fn gen_rendernodes(
-        &mut self,
-        viewport: AABB,
-    ) -> Result<Vec<(gsk::RenderNode, AABB)>, anyhow::Error> {
-        let tile_size = self.tile_size();
-        let mut rendernodes: Vec<(gsk::RenderNode, AABB)> = vec![];
+    fn gen_rendernodes(&mut self, viewport: AABB) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
+        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
         if let Some(image) = &self.image {
             // Only creat the texture once, it is expensive
@@ -336,15 +337,16 @@ impl Background {
                 .to_memtexture()
                 .context("image to_memtexture() failed in gen_rendernode() of background.")?;
 
-            for splitted_bounds in viewport.split_extended_origin_aligned(tile_size) {
-                rendernodes.push((
+            for splitted_bounds in
+                viewport.split_extended_origin_aligned(image.rect.bounds().extents())
+            {
+                rendernodes.push(
                     gsk::TextureNode::new(
                         &new_texture,
-                        &graphene::Rect::from_p2d_aabb(splitted_bounds.ceil().loosened(1.0)),
+                        &graphene::Rect::from_p2d_aabb(splitted_bounds),
                     )
                     .upcast(),
-                    splitted_bounds,
-                ));
+                );
             }
         }
 
@@ -399,11 +401,7 @@ impl Background {
         );
 
         self.rendernodes.iter().for_each(|rendernode| {
-            // Skip rendernodes that are not in view
-            if !camera.viewport().intersects(&rendernode.1) {
-                return;
-            }
-            snapshot.append_node(&rendernode.0);
+            snapshot.append_node(&rendernode);
         });
 
         // Draw an indicator at the origin

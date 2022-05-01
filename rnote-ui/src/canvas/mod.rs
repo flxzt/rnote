@@ -832,16 +832,15 @@ impl RnoteCanvas {
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
         self.engine().borrow_mut().camera.set_zoom(new_zoom);
 
-        let viewport = self.engine().borrow_mut().camera.viewport();
-        let strokes_in_viewport = self
+        let all_keys = self
             .engine()
             .borrow()
             .store
-            .keys_sorted_chrono_intersecting_bounds(viewport);
+            .keys_sorted_chrono();
         self.engine()
             .borrow_mut()
             .store
-            .set_rendering_dirty_for_strokes(&strokes_in_viewport);
+            .set_rendering_dirty_for_strokes(&all_keys);
 
         self.engine().borrow_mut().resize_autoexpand();
         self.regenerate_background(false);

@@ -17,7 +17,7 @@
           <property name="column">0</property>
           <property name="row">0</property>
         </layout>
-        <property name="propagate-natural-width">true</property>
+        <property name="propagate-natural-width">false</property>
         <property name="propagate-natural-height">false</property>
         <property name="hexpand">true</property>
         <property name="vexpand">true</property>

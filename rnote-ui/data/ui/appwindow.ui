@@ -9,6 +9,7 @@
         <property name="reveal-flap">false</property>
         <property name="swipe-to-open">false</property>
         <property name="swipe-to-close">false</property>
+        <property name="fold-threshold-policy">minimum</property>
         <child type="separator">
           <object class="GtkSeparator">
             <property name="orientation">vertical</property>
@@ -362,7 +363,6 @@
                         <child>
                           <object class="AdwViewSwitcherTitle" id="flap_switcher_title">
                             <property name="stack">flap_stack</property>
-                            <property name="hexpand">true</property>
                             <property name="halign">center</property>
                           </object>
                         </child>

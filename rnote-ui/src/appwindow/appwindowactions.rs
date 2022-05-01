@@ -18,7 +18,7 @@ use rnote_engine::{render, Camera};
 use gettextrs::gettext;
 use gtk4::PrintStatus;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, ArrowType, CornerType, PackType, PositionType,
+    gdk, gio, glib, glib::clone, prelude::*, Align, ArrowType, CornerType, PackType, PositionType,
     PrintOperation, PrintOperationAction, Unit,
 };
 
@@ -267,15 +267,15 @@ impl RnoteAppWindow {
                 match expand_mode {
                     "fixed-size" => {
                         appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::FixedSize);
-                        appwindow.mainheader().pageedit_revealer().set_reveal_child(true);
+                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(true);
                     },
                     "endless-vertical" => {
                         appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::EndlessVertical);
-                        appwindow.mainheader().pageedit_revealer().set_reveal_child(false);
+                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
                     "infinite" => {
                         appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::Infinite);
-                        appwindow.mainheader().pageedit_revealer().set_reveal_child(false);
+                        appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
                     }
                     invalid_str => {
                         log::error!("action expand mode failed, invalid str: {}", invalid_str);
@@ -309,6 +309,7 @@ impl RnoteAppWindow {
                     appwindow
                         .main_grid()
                         .attach(&appwindow.canvas_box(), 2, 2, 1, 1);
+                    appwindow.canvas_quickactions_box().set_halign(Align::End);
 
                     appwindow
                         .mainheader()
@@ -319,14 +320,6 @@ impl RnoteAppWindow {
                         .mainheader()
                         .headerbar()
                         .remove(&appwindow.mainheader().pens_toggles_squeezer());
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .remove(&appwindow.mainheader().quickactions_box());
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .pack_end(&appwindow.mainheader().quickactions_box());
                     appwindow
                         .mainheader()
                         .headerbar()
@@ -391,24 +384,17 @@ impl RnoteAppWindow {
                     appwindow
                         .main_grid()
                         .attach(&appwindow.sidebar_grid(), 2, 1, 1, 2);
+                    appwindow.canvas_quickactions_box().set_halign(Align::Start);
+
                     appwindow
                         .mainheader()
                         .headerbar()
                         .remove(&appwindow.mainheader().pens_toggles_squeezer());
-
                     appwindow
                         .mainheader()
                         .appmenu()
                         .lefthanded_toggle()
                         .set_active(true);
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .remove(&appwindow.mainheader().quickactions_box());
-                    appwindow
-                        .mainheader()
-                        .headerbar()
-                        .pack_start(&appwindow.mainheader().quickactions_box());
                     appwindow
                         .mainheader()
                         .headerbar()

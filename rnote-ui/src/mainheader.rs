@@ -1,7 +1,7 @@
 use crate::{appmenu::AppMenu, appwindow::RnoteAppWindow, canvasmenu::CanvasMenu};
 use gtk4::{
-    gio, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate, Label,
-    Revealer, ToggleButton, Widget,
+    gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Label,
+    ToggleButton, Widget,
 };
 use rnote_engine::pens::penholder::PenStyle;
 
@@ -19,18 +19,6 @@ mod imp {
         pub main_title_unsaved_indicator: TemplateChild<Label>,
         #[template_child]
         pub menus_box: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub quickactions_box: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub pageedit_revealer: TemplateChild<Revealer>,
-        #[template_child]
-        pub add_page_button: TemplateChild<Button>,
-        #[template_child]
-        pub resize_to_fit_strokes_button: TemplateChild<Button>,
-        #[template_child]
-        pub undo_button: TemplateChild<Button>,
-        #[template_child]
-        pub redo_button: TemplateChild<Button>,
         #[template_child]
         pub pens_toggles_squeezer: TemplateChild<adw::Squeezer>,
         #[template_child]
@@ -115,30 +103,6 @@ impl MainHeader {
         self.imp().menus_box.get()
     }
 
-    pub fn quickactions_box(&self) -> gtk4::Box {
-        self.imp().quickactions_box.get()
-    }
-
-    pub fn pageedit_revealer(&self) -> Revealer {
-        self.imp().pageedit_revealer.get()
-    }
-
-    pub fn add_page_button(&self) -> Button {
-        self.imp().add_page_button.get()
-    }
-
-    pub fn resize_to_fit_strokes_button(&self) -> Button {
-        self.imp().resize_to_fit_strokes_button.get()
-    }
-
-    pub fn undo_button(&self) -> Button {
-        self.imp().undo_button.get()
-    }
-
-    pub fn redo_button(&self) -> Button {
-        self.imp().redo_button.get()
-    }
-
     pub fn pens_toggles_placeholderbox(&self) -> gtk4::Box {
         self.imp().pens_toggles_placeholderbox.get()
     }
@@ -218,18 +182,6 @@ impl MainHeader {
             }),
         );
 
-        self.imp().add_page_button.get().connect_clicked(
-            clone!(@weak appwindow => move |_add_page_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "add-page-to-sheet", None);
-            }),
-        );
-
-        self.imp().resize_to_fit_strokes_button.get().connect_clicked(
-            clone!(@weak appwindow => move |_resize_to_format_button| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "resize-to-fit-strokes", None);
-            }),
-        );
-
         self.imp().brush_toggle.get().connect_toggled(clone!(@weak appwindow => move |brush_toggle| {
             if brush_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
@@ -259,20 +211,6 @@ impl MainHeader {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
             }
         }));
-
-        self.imp()
-            .undo_button
-            .get()
-            .connect_clicked(clone!(@weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "undo", None);
-            }));
-
-        self.imp()
-            .redo_button
-            .get()
-            .connect_clicked(clone!(@weak appwindow => move |_| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "redo", None);
-            }));
     }
 
     pub fn set_title_for_file(&self, file: Option<&gio::File>) {

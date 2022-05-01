@@ -13,7 +13,7 @@ use gtk4::{
     gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, CompositeTemplate,
     CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
     FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
-    PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
+    ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
 use rnote_engine::pens::penholder::PenHolderEvent;
@@ -58,7 +58,13 @@ mod imp {
         #[template_child]
         pub canvas_box: TemplateChild<gtk4::Box>,
         #[template_child]
+        pub canvas_quickactions_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub canvas_fixedsize_quickactions_revealer: TemplateChild<Revealer>,
+        #[template_child]
         pub canvas_scroller: TemplateChild<ScrolledWindow>,
+        #[template_child]
+        pub canvas_progressbar: TemplateChild<ProgressBar>,
         #[template_child]
         pub canvas: TemplateChild<RnoteCanvas>,
         #[template_child]
@@ -120,6 +126,9 @@ mod imp {
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 main_grid: TemplateChild::<Grid>::default(),
                 canvas_box: TemplateChild::<gtk4::Box>::default(),
+                canvas_quickactions_box: TemplateChild::<gtk4::Box>::default(),
+                canvas_fixedsize_quickactions_revealer: TemplateChild::<Revealer>::default(),
+                canvas_progressbar: TemplateChild::<ProgressBar>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<RnoteCanvas>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
@@ -613,6 +622,18 @@ impl RnoteAppWindow {
 
     pub fn canvas_box(&self) -> gtk4::Box {
         self.imp().canvas_box.get()
+    }
+
+    pub fn canvas_quickactions_box(&self) -> gtk4::Box {
+        self.imp().canvas_quickactions_box.get()
+    }
+
+    pub fn canvas_fixedsize_quickactions_revealer(&self) -> Revealer {
+        self.imp().canvas_fixedsize_quickactions_revealer.get()
+    }
+
+    pub fn canvas_progressbar(&self) -> ProgressBar {
+        self.imp().canvas_progressbar.get()
     }
 
     pub fn canvas_scroller(&self) -> ScrolledWindow {

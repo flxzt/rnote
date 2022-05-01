@@ -26,7 +26,6 @@ use rnote_compose::penpath::Element;
 use rnote_engine::utils::GrapheneRectHelpers;
 use rnote_engine::Sheet;
 
-use gettextrs::gettext;
 use std::collections::VecDeque;
 use std::time;
 
@@ -48,7 +47,6 @@ mod imp {
         pub mouse_drawing_gesture: GestureDrag,
         pub touch_drawing_gesture: GestureDrag,
         pub key_controller: EventControllerKey,
-        pub return_to_center_toast: RefCell<Option<adw::Toast>>,
 
         pub engine: Rc<RefCell<RnoteEngine>>,
 
@@ -127,7 +125,6 @@ mod imp {
                 touch_drawing_gesture,
                 key_controller,
                 zoom_timeout_id: RefCell::new(None),
-                return_to_center_toast: RefCell::new(None),
 
                 engine: Rc::new(RefCell::new(RnoteEngine::default())),
 
@@ -948,43 +945,6 @@ impl RnoteCanvas {
 
         if redraw {
             self.queue_resize();
-        }
-    }
-
-    pub fn show_return_to_center_toast(&self) {
-        let return_to_center_toast_is_some = self.imp().return_to_center_toast.borrow().is_some();
-
-        if !return_to_center_toast_is_some {
-            let return_to_center_toast = adw::Toast::builder()
-                .title(&gettext("Return to origin"))
-                .timeout(0)
-                .button_label(&gettext("Ok"))
-                .priority(adw::ToastPriority::Normal)
-                .action_name("win.return-origin-page")
-                .build();
-
-            return_to_center_toast.connect_dismissed(
-                clone!(@weak self as canvas => move |_toast| {
-                    canvas.imp().return_to_center_toast.borrow_mut().take();
-                }),
-            );
-
-            self.ancestor(RnoteAppWindow::static_type())
-                .unwrap()
-                .downcast_ref::<RnoteAppWindow>()
-                .unwrap()
-                .toast_overlay()
-                .add_toast(&return_to_center_toast);
-            *self.imp().return_to_center_toast.borrow_mut() = Some(return_to_center_toast);
-        }
-    }
-
-    pub fn dismiss_return_to_center_toast(&self) {
-        // Avoid already borrowed err
-        let return_to_center_toast = self.imp().return_to_center_toast.borrow_mut().take();
-
-        if let Some(return_to_center_toast) = return_to_center_toast {
-            return_to_center_toast.dismiss();
         }
     }
 }

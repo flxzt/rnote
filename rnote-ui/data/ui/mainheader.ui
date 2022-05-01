@@ -52,48 +52,6 @@
             </child>
           </object>
         </child>
-        <child type="start">
-          <object class="GtkBox" id="quickactions_box">
-            <property name="margin-end">12</property>
-            <child>
-              <object class="GtkRevealer" id="pageedit_revealer">
-                <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>
-                <property name="transition_duration">300</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="homogeneous">true</property>
-                    <property name="spacing">6</property>
-                    <property name="margin-end">12</property>
-                    <child>
-                      <object class="GtkButton" id="add_page_button">
-                        <property name="icon_name">add-page-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Add page</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="resize_to_fit_strokes_button">
-                        <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize sheet to fit the strokes</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="undo_button">
-                <property name="icon_name">edit-undo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Undo</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="redo_button">
-                <property name="icon_name">edit-redo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Redo</property>
-              </object>
-            </child>
-          </object>
-        </child>
         <child type="end">
           <object class="GtkBox" id="menus_box">
             <property name="spacing">6</property>

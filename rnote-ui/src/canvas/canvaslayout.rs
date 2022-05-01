@@ -1,17 +1,11 @@
 mod imp {
-    use gtk4::glib;
-    use gtk4::prelude::*;
-    use gtk4::subclass::prelude::*;
-    use gtk4::LayoutManager;
-    use gtk4::Orientation;
-    use gtk4::SizeRequestMode;
-    use gtk4::Widget;
-    use p2d::bounding_volume::{BoundingVolume, AABB};
-    use rnote_engine::engine::ExpandMode;
-    use rnote_engine::Sheet;
+    use gtk4::{
+        glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
+    };
 
     use crate::canvas::RnoteCanvas;
-    use rnote_compose::helpers::AABBHelpers;
+    use rnote_engine::engine::ExpandMode;
+    use rnote_engine::Sheet;
 
     #[derive(Debug, Default)]
     pub struct CanvasLayout {}
@@ -128,31 +122,6 @@ mod imp {
             // Update content and background
             canvas.update_background_rendernodes(false);
             canvas.regenerate_content(false, true);
-
-            let viewport = canvas.engine().borrow().camera.viewport();
-            match expand_mode {
-                ExpandMode::FixedSize | ExpandMode::EndlessVertical => {}
-                ExpandMode::Infinite => {
-                    // Show "return to center" toast when far away in infinite mode
-                    let threshold_bounds = AABB::new(
-                        na::point![0.0, 0.0],
-                        na::point![
-                            canvas.engine().borrow().sheet.format.width,
-                            canvas.engine().borrow().sheet.format.height
-                        ],
-                    )
-                    .extend_by(na::vector![
-                        2.0 * canvas.engine().borrow().sheet.format.width,
-                        2.0 * canvas.engine().borrow().sheet.format.height
-                    ]);
-
-                    if !viewport.intersects(&threshold_bounds) {
-                        canvas.show_return_to_center_toast()
-                    } else {
-                        canvas.dismiss_return_to_center_toast();
-                    }
-                }
-            }
         }
     }
 }

@@ -159,12 +159,16 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                     dialog_open_input_file.close();
 
                     if let Some(input_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().as_ref() {
+                        appwindow.canvas_progressbar().pulse();
+
                         if let Err(e) = appwindow.load_in_file(input_file, None) {
                             log::error!("failed to load in input file, {}", e);
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening file failed.").to_variant()));
                         }
-                    }
-                },
+
+                        appwindow.finish_canvas_progressbar();
+                        }
+                    },
                 ResponseType::Apply => {
                     dialog_open_input_file.close();
 
@@ -287,6 +291,8 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            appwindow.canvas_progressbar().pulse();
+
                             if let Err(e) = appwindow.save_sheet_to_file(&file).await {
                                 appwindow.canvas().set_output_file(None);
 
@@ -295,6 +301,8 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Saved sheet successfully.").to_variant()));
                             }
+
+                            appwindow.finish_canvas_progressbar();
                         }));
                     }
                 }
@@ -338,10 +346,14 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_import_file.file() {
+                        appwindow.canvas_progressbar().pulse();
+
                         if let Err(e) = appwindow.load_in_file(&file, None) {
                             log::error!("load_in_file() failed while import file, Err {}", e);
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Importing file failed.").to_variant()));
                         }
+
+                        appwindow.finish_canvas_progressbar();
                     }
                 }
                 _ => {
@@ -385,12 +397,16 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_selection.file() {
                         glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            appwindow.canvas_progressbar().pulse();
+
                             if let Err(e) = appwindow.export_selection_as_svg(&file).await {
                                 log::error!("exporting selection failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection as SVG failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported selection as SVG successfully.").to_variant()));
                             }
+
+                            appwindow.finish_canvas_progressbar();
                         }));
                     }
                 }
@@ -430,12 +446,16 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            appwindow.canvas_progressbar().pulse();
+
                             if let Err(e) = appwindow.export_sheet_as_svg(&file).await {
                                 log::error!("exporting sheet failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export sheet as SVG failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported sheet as SVG successfully.").to_variant()));
                             }
+
+                            appwindow.finish_canvas_progressbar();
                         }));
                     }
                 }
@@ -477,12 +497,16 @@ pub fn dialog_export_sheet_as_pdf(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@weak appwindow, @strong file => async move {
+                            appwindow.canvas_progressbar().pulse();
+
                             if let Err(e) = appwindow.export_sheet_as_pdf(&file).await {
                                 log::error!("export_sheet_as_pdf() failed in export dialog with Err {}", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export sheet as PDF failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported sheet as PDF successfully.").to_variant()));
                             };
+
+                            appwindow.finish_canvas_progressbar();
                         }));
                     }
                 }
@@ -524,12 +548,16 @@ pub fn dialog_export_sheet_as_xopp(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            appwindow.canvas_progressbar().pulse();
+
                             if let Err(e) = appwindow.export_sheet_as_xopp(&file).await {
                                 log::error!("exporting sheet as .xopp failed, replace_file_async failed with Err {}", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Exporting sheet as .xopp failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported sheet as .xopp successfully.").to_variant()));
                             }
+
+                            appwindow.finish_canvas_progressbar();
                         }));
                     }
                 }
@@ -574,12 +602,16 @@ pub fn dialog_export_engine_state(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_engine_state.file() {
                         glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            appwindow.canvas_progressbar().pulse();
+
                             if let Err(e) = appwindow.export_engine_state(&file).await {
                                 log::error!("exporting engine state failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export engine state failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported engine state successfully.").to_variant()));
                             }
+
+                            appwindow.finish_canvas_progressbar();
                         }));
                     }
                 }

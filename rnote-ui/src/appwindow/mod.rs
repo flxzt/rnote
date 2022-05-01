@@ -1004,6 +1004,24 @@ impl RnoteAppWindow {
         }
     }
 
+    pub fn finish_canvas_progressbar(&self) {
+        const PROGRESS_BAR_TIMEOUT_TIME: std::time::Duration =
+            std::time::Duration::from_millis(300);
+
+        self.canvas_progressbar().set_fraction(1.0);
+
+        glib::source::timeout_add_local_once(
+            PROGRESS_BAR_TIMEOUT_TIME,
+            clone!(@weak self as appwindow => move || {
+                appwindow.canvas_progressbar().set_fraction(0.0);
+            }),
+        );
+    }
+
+    pub fn abort_canvas_progressbar(&self) {
+        self.canvas_progressbar().set_fraction(0.0);
+    }
+
     pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
         match utils::FileType::lookup_file_type(file) {

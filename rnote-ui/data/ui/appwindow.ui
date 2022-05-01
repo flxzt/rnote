@@ -122,9 +122,9 @@
                       <object class="GtkProgressBar" id="canvas_progressbar">
                         <property name="halign">fill</property>
                         <property name="valign">start</property>
+                        <property name="pulse-step">0.33</property>
                         <style>
                           <class name="osd" />
-                          <class name="circular" />
                         </style>
                       </object>
                     </child>

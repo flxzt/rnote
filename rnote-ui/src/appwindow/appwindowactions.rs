@@ -1043,12 +1043,16 @@ impl RnoteAppWindow {
             // check again if a file was selected from the dialog
             if let Some(output_file) = appwindow.canvas().output_file() {
                 glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                    appwindow.canvas_progressbar().pulse();
+
                     if let Err(e) = appwindow.save_sheet_to_file(&output_file).await {
                         appwindow.canvas().set_output_file(None);
 
                         log::error!("saving sheet failed with error `{}`", e);
                         adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving sheet failed.").to_variant()));
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
                 // No success toast on saving without dialog, success is already indicated in the header title
             }
@@ -1061,6 +1065,8 @@ impl RnoteAppWindow {
 
         // Print sheet
         action_print_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            appwindow.canvas_progressbar().pulse();
+
             let print_op = PrintOperation::builder()
                 .unit(Unit::Points)
                 .build();
@@ -1075,6 +1081,8 @@ impl RnoteAppWindow {
             let sheet_bounds = appwindow.canvas().engine().borrow().sheet.bounds();
 
             print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
+                appwindow.canvas_progressbar().pulse();
+
                 let cx = print_cx.cairo_context();
 
                 if let Err(e) = || -> anyhow::Result<()> {
@@ -1122,6 +1130,8 @@ impl RnoteAppWindow {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing sheet failed").to_variant()));
             }
 
+
+            appwindow.finish_canvas_progressbar();
         }));
 
         // Import

@@ -7,7 +7,7 @@ use crate::appwindow::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, Entry, FileFilter,
-    FilterChange, FilterListModel, ListItem, ListView, MultiSorter, PropertyExpression, Separator,
+    FilterChange, FilterListModel, ListItem, ListView, MultiSorter, PropertyExpression,
     SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
 };
 use std::path::{Path, PathBuf};
@@ -20,12 +20,6 @@ mod imp {
     pub struct WorkspaceBrowser {
         #[template_child]
         pub open_workspace_button: TemplateChild<Button>,
-        #[template_child]
-        pub flap_close_buttonbox: TemplateChild<gtk4::Box>,
-        #[template_child]
-        pub flap_close_buttonseparator: TemplateChild<Separator>,
-        #[template_child]
-        pub flap_close_button: TemplateChild<Button>,
         #[template_child]
         pub workspace_pathup_button: TemplateChild<Button>,
         #[template_child]
@@ -44,9 +38,6 @@ mod imp {
             primary_dirlist.set_monitored(true);
 
             Self {
-                flap_close_buttonbox: TemplateChild::<gtk4::Box>::default(),
-                flap_close_buttonseparator: TemplateChild::<Separator>::default(),
-                flap_close_button: TemplateChild::<Button>::default(),
                 open_workspace_button: TemplateChild::<Button>::default(),
                 workspace_pathup_button: TemplateChild::<Button>::default(),
                 workspace_pathentry: TemplateChild::<Entry>::default(),
@@ -127,31 +118,11 @@ impl WorkspaceBrowser {
         self.imp().workspace_controlbox.get()
     }
 
-    pub fn flap_close_buttonbox(&self) -> gtk4::Box {
-        self.imp().flap_close_buttonbox.get()
-    }
-
-    pub fn flap_close_buttonseparator(&self) -> Separator {
-        self.imp().flap_close_buttonseparator.get()
-    }
-
-    pub fn flap_close_button(&self) -> Button {
-        self.imp().flap_close_button.get()
-    }
-
     pub fn workspace_pathentry(&self) -> Entry {
         self.imp().workspace_pathentry.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.imp().flap_close_button.get().connect_clicked(
-            clone!(@weak appwindow => move |_flap_close_button| {
-                if appwindow.flap().reveals_flap() && appwindow.flap().is_folded() {
-                    appwindow.flap().set_reveal_flap(false);
-                }
-            }),
-        );
-
         self.imp().open_workspace_button.get().connect_clicked(
             clone!(@weak appwindow => move |_open_workspace_button| {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "open-workspace", None);

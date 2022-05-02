@@ -1,11 +1,16 @@
+use p2d::bounding_volume::{BoundingVolume, AABB};
+use piet::RenderContext;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
+use crate::penhelpers::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
-use crate::PenEvent;
+use crate::style::Composer;
+use crate::{PenPath, Shape, Style};
 
-use super::ShapeBuilderBehaviour;
+use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::{ConstraintRatio, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum PenPathBuilderState {
@@ -21,10 +26,8 @@ pub struct PenPathBuilder {
     pub buffer: VecDeque<Element>,
 }
 
-impl ShapeBuilderBehaviour for PenPathBuilder {
-    type BuildedShape = Segment;
-
-    fn start(element: Element) -> Self {
+impl ShapeBuilderCreator for PenPathBuilder {
+    fn start(element: Element, ratio: ConstraintRatio) -> Self {
         let mut buffer = VecDeque::new();
         buffer.push_back(element);
 
@@ -33,8 +36,10 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
             buffer,
         }
     }
+}
 
-    fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
+impl ShapeBuilderBehaviour for PenPathBuilder {
+    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,
@@ -47,64 +52,108 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
                 PenPathBuilderState::Start,
                 PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
                 self.buffer.push_back(element);
 
-                self.try_build_segment_start()
+                match self.try_build_segments_start() {
+                    Some(shapes) => BuilderProgress::EmitContinue(shapes),
+                    None => BuilderProgress::InProgress,
+                }
             }
             (
                 PenPathBuilderState::During,
                 PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
                 self.buffer.push_back(element);
 
-                self.try_build_segment_during()
+                match self.try_build_segments_during() {
+                    Some(shapes) => BuilderProgress::EmitContinue(shapes),
+                    None => BuilderProgress::InProgress,
+                }
             }
             (
                 _,
                 PenEvent::Up {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
                 self.buffer.push_back(element);
 
-                self.try_build_segment_end()
+                BuilderProgress::Finished(self.try_build_segments_end())
             }
-            (_, PenEvent::Proximity { .. }) => None,
+            (_, PenEvent::Proximity { .. }) => BuilderProgress::InProgress,
             (_, PenEvent::Cancel) => {
                 self.reset();
 
-                None
+                BuilderProgress::Finished(vec![])
             }
         }
+    }
+
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+        let stroke_width = style.stroke_width();
+
+        self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
+            acc.take_point(na::Point2::from(x.pos));
+            acc.loosened(stroke_width / zoom)
+        })
+    }
+
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
+        cx.save().unwrap();
+        let penpath = match &self.state {
+            PenPathBuilderState::Start => self
+                .buffer
+                .iter()
+                .zip(self.buffer.iter().skip(1))
+                .map(|(start, end)| Segment::Line {
+                    start: *start,
+                    end: *end,
+                })
+                .collect::<PenPath>(),
+            // Skipping the first buffer element as that is the not drained by the segment builder and is the prev element in the "During" state
+            PenPathBuilderState::During => self
+                .buffer
+                .iter()
+                .skip(1)
+                .zip(self.buffer.iter().skip(2))
+                .map(|(start, end)| Segment::Line {
+                    start: *start,
+                    end: *end,
+                })
+                .collect::<PenPath>(),
+        };
+
+        penpath.draw_composed(cx, style);
+        cx.restore().unwrap();
     }
 }
 
 impl PenPathBuilder {
-    fn try_build_segment_start(&mut self) -> Option<Vec<Segment>> {
+    fn try_build_segments_start(&mut self) -> Option<Vec<Shape>> {
         let segments = match self.buffer.len() {
             0 => None,
-            1 => Some(vec![Segment::Dot {
+            1 => Some(vec![Shape::Segment(Segment::Dot {
                 element: self.buffer[0],
-            }]),
-            2 => Some(vec![Segment::Line {
+            })]),
+            2 => Some(vec![Shape::Segment(Segment::Line {
                 start: self.buffer[0],
                 end: self.buffer[1],
-            }]),
+            })]),
             3.. => {
                 // Here we have enough elements to switch into during state
                 self.state = PenPathBuilderState::During;
 
-                Some(vec![Segment::Line {
+                Some(vec![Shape::Segment(Segment::Line {
                     start: self.buffer[0],
                     end: self.buffer[1],
-                }])
+                })])
             }
             _ => None,
         };
@@ -112,8 +161,8 @@ impl PenPathBuilder {
         segments
     }
 
-    fn try_build_segment_during(&mut self) -> Option<Vec<Segment>> {
-        let segment = match self.buffer.len() {
+    fn try_build_segments_during(&mut self) -> Option<Vec<Shape>> {
+        let segments = match self.buffer.len() {
             4.. => {
                 if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
                     self.buffer[0].pos,
@@ -121,7 +170,7 @@ impl PenPathBuilder {
                     self.buffer[2].pos,
                     self.buffer[3].pos,
                 ) {
-                    let segment = Segment::CubBez {
+                    let segment = Shape::Segment(Segment::CubBez {
                         start: Element {
                             pos: cubbez.start,
                             ..self.buffer[1]
@@ -132,16 +181,16 @@ impl PenPathBuilder {
                             pos: cubbez.end,
                             ..self.buffer[2]
                         },
-                    };
+                    });
 
                     self.buffer.pop_front();
 
                     Some(vec![segment])
                 } else {
-                    let segment = Segment::Line {
+                    let segment = Shape::Segment(Segment::Line {
                         start: self.buffer[1],
                         end: self.buffer[2],
-                    };
+                    });
 
                     self.buffer.pop_front();
 
@@ -151,30 +200,30 @@ impl PenPathBuilder {
             _ => None,
         };
 
-        segment
+        segments
     }
 
-    fn try_build_segment_end(&mut self) -> Option<Vec<Segment>> {
-        let mut segments: Option<Vec<Segment>> = None;
+    fn try_build_segments_end(&mut self) -> Vec<Shape> {
+        let mut segments: Vec<Shape> = vec![];
 
         while let Some(mut new_segments) = match self.buffer.len() {
             0 => None,
-            1 => Some(vec![Segment::Dot {
+            1 => Some(vec![Shape::Segment(Segment::Dot {
                 element: self.buffer.remove(0).unwrap(),
-            }]),
+            })]),
             2 => {
                 let elements = self.buffer.drain(0..2).collect::<Vec<Element>>();
-                Some(vec![Segment::Line {
+                Some(vec![Shape::Segment(Segment::Line {
                     start: elements[0],
                     end: elements[1],
-                }])
+                })])
             }
             3 => {
                 let elements = self.buffer.drain(0..3).collect::<Vec<Element>>();
-                Some(vec![Segment::Line {
+                Some(vec![Shape::Segment(Segment::Line {
                     start: elements[1],
                     end: elements[2],
-                }])
+                })])
             }
             4.. => {
                 if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
@@ -183,7 +232,7 @@ impl PenPathBuilder {
                     self.buffer[2].pos,
                     self.buffer[3].pos,
                 ) {
-                    let segment = Segment::CubBez {
+                    let segment = Shape::Segment(Segment::CubBez {
                         start: Element {
                             pos: cubbez.start,
                             ..self.buffer[1]
@@ -194,17 +243,17 @@ impl PenPathBuilder {
                             pos: cubbez.end,
                             ..self.buffer[2]
                         },
-                    };
+                    });
 
                     // Only remove one element as more segments can be build
                     self.buffer.pop_front();
 
                     Some(vec![segment])
                 } else {
-                    let segment = Segment::Line {
+                    let segment = Shape::Segment(Segment::Line {
                         start: self.buffer[1],
                         end: self.buffer[2],
-                    };
+                    });
 
                     self.buffer.pop_front();
 
@@ -213,11 +262,7 @@ impl PenPathBuilder {
             }
             _ => None,
         } {
-            if let Some(ref mut segments) = segments {
-                segments.append(&mut new_segments);
-            } else {
-                segments = Some(new_segments);
-            }
+            segments.append(&mut new_segments);
         }
 
         self.reset();

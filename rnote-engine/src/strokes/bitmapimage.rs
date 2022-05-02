@@ -1,3 +1,4 @@
+use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::render;
 use crate::DrawBehaviour;
@@ -9,7 +10,7 @@ use rnote_compose::transform::TransformBehaviour;
 
 use anyhow::Context;
 use gtk4::cairo;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -45,18 +46,42 @@ impl StrokeBehaviour for BitmapImage {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        Ok(render::Image::gen_images_from_drawable(
-            self,
-            self.bounds(),
-            image_scale,
-        )?)
+    fn gen_images(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+        let bounds = self.bounds();
+
+        if viewport.contains(&bounds) {
+            Ok(GeneratedStrokeImages::Full(vec![
+                render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    bounds,
+                    image_scale,
+                )?,
+            ]))
+        } else {
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    viewport,
+                    image_scale,
+                )?],
+                viewport,
+            })
+        }
     }
 }
 
 impl DrawBehaviour for BitmapImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         let piet_image_format = piet::ImageFormat::try_from(self.image.memory_format)?;
+
+        cx.transform(self.rectangle.transform.affine.to_kurbo());
+
         let piet_image = cx
             .make_image(
                 self.image.pixel_width as usize,
@@ -66,11 +91,10 @@ impl DrawBehaviour for BitmapImage {
             )
             .map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        cx.transform(self.rectangle.transform.affine.to_kurbo());
-
         let dest_rect = self.rectangle.cuboid.local_aabb().to_kurbo_rect();
         cx.draw_image(&piet_image, dest_rect, piet::InterpolationMode::Bilinear);
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -78,6 +102,10 @@ impl DrawBehaviour for BitmapImage {
 impl ShapeBehaviour for BitmapImage {
     fn bounds(&self) -> AABB {
         self.rectangle.bounds()
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        vec![self.bounds()]
     }
 }
 
@@ -103,7 +131,10 @@ impl BitmapImage {
         bytes: &[u8],
         pos: na::Vector2<f64>,
     ) -> Result<Self, anyhow::Error> {
-        let image = render::Image::try_from_encoded_bytes(bytes)?;
+        let mut image = render::Image::try_from_encoded_bytes(bytes)?;
+        // Ensure we are in rgba8-remultiplied format, to be able to draw to piet
+        image.convert_to_rgba8pre()?;
+
         let size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
 
         let rectangle = Rectangle {
@@ -186,22 +217,5 @@ impl BitmapImage {
         }
 
         Ok(images)
-    }
-
-    pub fn export_as_image_bytes(
-        &self,
-        format: image::ImageOutputFormat,
-        image_scale: f64,
-    ) -> Result<Vec<u8>, anyhow::Error> {
-        let bounds = self.bounds();
-
-        match render::Image::join_images(
-            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
-            bounds,
-            image_scale,
-        )? {
-            Some(image) => Ok(image.into_encoded_bytes(format)?),
-            None => Ok(vec![]),
-        }
     }
 }

@@ -1,8 +1,14 @@
+use p2d::bounding_volume::{BoundingVolume, AABB};
+use piet::RenderContext;
+
+use crate::penhelpers::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Ellipse;
-use crate::{PenEvent, Shape, Transform};
+use crate::style::{drawhelpers, Composer};
+use crate::{Shape, Style, Transform};
 
-use super::ShapeBuilderBehaviour;
+use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::{ConstraintRatio, ShapeBuilderBehaviour};
 
 /// line builder
 #[derive(Debug, Clone)]
@@ -13,29 +19,45 @@ pub struct EllipseBuilder {
     pub current: na::Vector2<f64>,
 }
 
-impl ShapeBuilderBehaviour for EllipseBuilder {
-    type BuildedShape = Shape;
-
-    fn start(element: Element) -> Self {
+impl ShapeBuilderCreator for EllipseBuilder {
+    fn start(element: Element, ratio: ConstraintRatio) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
         }
     }
+}
 
-    fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
+impl ShapeBuilderBehaviour for EllipseBuilder {
+    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = element.pos;
             }
             PenEvent::Up { .. } => {
-                return Some(vec![Shape::Ellipse(self.state_as_ellipse())]);
+                return BuilderProgress::Finished(vec![Shape::Ellipse(self.state_as_ellipse())]);
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}
         }
 
-        None
+        BuilderProgress::InProgress
+    }
+
+    fn bounds(&self, style: &crate::Style, zoom: f64) -> AABB {
+        self.state_as_ellipse()
+            .composed_bounds(style)
+            .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
+    }
+
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+        cx.save().unwrap();
+        let ellipse = self.state_as_ellipse();
+        ellipse.draw_composed(cx, style);
+
+        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
+        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
+        cx.restore().unwrap();
     }
 }
 

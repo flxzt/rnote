@@ -1,3 +1,4 @@
+use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, DrawBehaviour};
 use rnote_compose::shapes::Shape;
@@ -6,11 +7,11 @@ use rnote_compose::style::Composer;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::Style;
 
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename = "shapestroke")]
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[serde(default, rename = "shapestroke")]
 pub struct ShapeStroke {
     #[serde(rename = "shape")]
     pub shape: Shape,
@@ -32,17 +33,38 @@ impl StrokeBehaviour for ShapeStroke {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        Ok(render::Image::gen_images_from_drawable(
-            self,
-            self.bounds(),
-            image_scale,
-        )?)
+    fn gen_images(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+        let bounds = self.bounds();
+
+        if viewport.contains(&bounds) {
+            Ok(GeneratedStrokeImages::Full(vec![
+                render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    bounds,
+                    image_scale,
+                )?,
+            ]))
+        } else {
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    viewport,
+                    image_scale,
+                )?],
+                viewport,
+            })
+        }
     }
 }
 
 impl DrawBehaviour for ShapeStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match self.shape {
             Shape::Line(ref line) => match &self.style {
                 Style::Smooth(options) => {
@@ -71,8 +93,38 @@ impl DrawBehaviour for ShapeStroke {
                 }
                 Style::Textured(_) => {}
             },
+            Shape::QuadraticBezier(ref quadbez) => match &self.style {
+                Style::Smooth(options) => {
+                    quadbez.draw_composed(cx, options);
+                }
+                Style::Rough(options) => {
+                    quadbez.draw_composed(cx, options);
+                }
+                Style::Textured(_) => {}
+            },
+            Shape::CubicBezier(ref cubbez) => match &self.style {
+                Style::Smooth(options) => {
+                    cubbez.draw_composed(cx, options);
+                }
+                Style::Rough(options) => {
+                    cubbez.draw_composed(cx, options);
+                }
+                Style::Textured(_) => {}
+            },
+            Shape::Segment(ref segment) => match &self.style {
+                Style::Smooth(options) => {
+                    segment.draw_composed(cx, options);
+                }
+                Style::Rough(options) => {
+                    segment.draw_composed(cx, options);
+                }
+                Style::Textured(options) => {
+                    segment.draw_composed(cx, options);
+                }
+            },
         };
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -84,6 +136,20 @@ impl ShapeBehaviour for ShapeStroke {
             Style::Rough(options) => self.shape.composed_bounds(options),
             Style::Textured(_) => self.shape.bounds(),
         }
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        let width = match &self.style {
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width,
+            Style::Textured(options) => options.stroke_width,
+        };
+
+        self.shape
+            .hitboxes()
+            .into_iter()
+            .map(|hitbox| hitbox.loosened(width / 2.0))
+            .collect()
     }
 }
 
@@ -100,62 +166,11 @@ impl TransformBehaviour for ShapeStroke {
 }
 
 impl ShapeStroke {
-<<<<<<< HEAD
-    pub fn new(element: Element, shaper: &Shaper) -> Self {
-        let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
-
-        let shape = match shaper.style {
-            ShaperStyle::Line => Shape::Line(curves::Line {
-                start: element.inputdata.pos(),
-                end: element.inputdata.pos(),
-            }),
-            ShaperStyle::Rectangle => Shape::Rectangle(shapes::Rectangle {
-                cuboid: p2d::shape::Cuboid::new(na::vector![0.0, 0.0]),
-                transform: Transform::new_w_isometry(na::Isometry2::new(
-                    element.inputdata.pos(),
-                    0.0,
-                )),
-            }),
-            ShaperStyle::Ellipse => Shape::Ellipse(shapes::Ellipse {
-                radii: na::vector![0.0, 0.0],
-                transform: Transform::new_w_isometry(na::Isometry2::<f64>::new(
-                    element.inputdata.pos(),
-                    0.0,
-                )),
-            }),
-        };
-        let bounds = shape.bounds();
-        let drawstyle = match shaper.drawstyle {
-            ShaperDrawStyle::Smooth => {
-                let mut options = shaper.smooth_options;
-                options.seed = seed;
-
-                ShapeDrawStyle::Smooth { options }
-            }
-            ShaperDrawStyle::Rough => {
-                let mut options = shaper.rough_options.clone();
-                options.seed = seed;
-
-                ShapeDrawStyle::Rough { options }
-            }
-        };
-        let ratio = shaper.ratio;
-
-        let mut shapestroke = Self {
-            shape,
-            drawstyle,
-            bounds,
-            seed,
-            ratio,
-        };
-
-        if let Some(new_bounds) = shapestroke.gen_bounds() {
-            shapestroke.bounds = new_bounds;
-        }
-
-        shapestroke
+    pub fn new(shape: Shape, style: Style) -> Self {
+        Self { shape, style }
     }
 
+    /*
     pub fn update_shape(&mut self, shaper: &mut Shaper, element: Element) {
         match self.shape {
             Shape::Line(ref mut line) => {
@@ -185,38 +200,19 @@ impl ShapeStroke {
 
         self.update_geometry();
     }
+    */
 
     pub fn update_geometry(&mut self) {
-        if let Some(new_bounds) = self.gen_bounds() {
-            self.bounds = new_bounds;
-        }
-=======
-    pub fn new(shape: Shape, style: Style) -> Self {
-        Self { shape, style }
->>>>>>> 26b5fbea4fb1225b97449ca1e1a6726cc071e1d8
+        self.hitboxes = self.gen_hitboxes();
     }
 
-    fn constrain(pos: na::Vector2<f64>, ratio: ShaperConstraintRatio) -> na::Vector2<f64> {
-        let max = pos.max();
-        let dx = *pos.index((0, 0));
-        let dy = *pos.index((1, 0));
-        match ratio {
-            ShaperConstraintRatio::Disabled => pos,
-            ShaperConstraintRatio::OneToOne => na::vector![max, max],
-            ShaperConstraintRatio::ThreeToTwo => {
-                if dx > dy {
-                    na::vector![dx, dx / 1.5]
-                } else {
-                    na::vector![dy / 1.5, dy]
-                }
-            }
-            ShaperConstraintRatio::Golden => {
-                if dx > dy {
-                    na::vector![dx, dx / 1.618]
-                } else {
-                    na::vector![dy / 1.618, dy]
-                }
-            }
-        }
+    fn gen_hitboxes(&self) -> Vec<AABB> {
+        let width = self.style.stroke_width();
+
+        self.shape
+            .hitboxes()
+            .into_iter()
+            .map(|hitbox| hitbox.loosened(width / 2.0))
+            .collect()
     }
 }

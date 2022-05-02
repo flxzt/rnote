@@ -56,6 +56,10 @@ mod imp {
         pub shapebuildertype_ellipse_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub shapebuildertype_fociellipse_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub shapebuildertype_quadbez_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub shapebuildertype_cubbez_row: TemplateChild<adw::ActionRow>,
     }
 
     #[glib::object_subclass]
@@ -201,6 +205,14 @@ impl ShaperPage {
             .get()
     }
 
+    pub fn shapebuildertype_quadbez_row(&self) -> adw::ActionRow {
+        self.imp().shapebuildertype_quadbez_row.get()
+    }
+
+    pub fn shapebuildertype_cubbez_row(&self) -> adw::ActionRow {
+        self.imp().shapebuildertype_cubbez_row.get()
+    }
+
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         // Width
         self.width_spinbutton().set_increments(0.1, 2.0);
@@ -213,7 +225,7 @@ impl ShaperPage {
                 let shaper_style = appwindow.canvas().engine().borrow_mut().penholder.shaper.style;
 
                 match shaper_style {
-                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.width = width_spinbutton.value(),
+                    ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_width = width_spinbutton.value(),
                     ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_width = width_spinbutton.value(),
                 }
             }),
@@ -364,9 +376,17 @@ impl ShaperPage {
                         2 => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"ellipse".to_variant()));
                         }
-                        // Ellipse
+                        // Foci ellipse
                         3 => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"fociellipse".to_variant()));
+                        }
+                        // Quadbez
+                        4 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"quadbez".to_variant()));
+                        }
+                        // Cubbez
+                        5 => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"cubbez".to_variant()));
                         }
                         _ => {}
                     }

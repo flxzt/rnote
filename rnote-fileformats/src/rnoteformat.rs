@@ -25,41 +25,73 @@ fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
     Ok(bytes)
 }
 
-/// A .rnote file
+/// The rnote file wrapper. used to extract and match to the version up front, before deserializing the actual data.
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct RnoteFile {
-    /// The version of the file
-    // TODO: make the version strongly typed
-    pub version: String,
-    /// The sheet
-    pub sheet: serde_json::Value,
-    /// expand mode
-    pub expand_mode: serde_json::Value,
-    /// strokes store
-    pub store: serde_json::Value,
+#[serde(rename = "rnotefile_wrapper")]
+struct RnotefileWrapper {
+    #[serde(rename = "version")]
+    version: semver::Version,
+    #[serde(rename = "data")]
+    data: serde_json::Value,
 }
 
-impl FileFormatLoader for RnoteFile {
-    fn load_from_bytes(bytes: &[u8]) -> Result<Self, anyhow::Error> {
+#[derive(Debug, Clone, Serialize, Deserialize)]
+/// the Rnote file in format version 0.5.x. The actual (de-) serialization into strong types is happening in `rnote-engine`.
+/// This struct exists to allow for upgrading older versions before loading it in.
+
+#[serde(rename = "rnotefile_maj0_min5")]
+pub struct RnotefileMaj0Min5 {
+    /// sheet
+    #[serde(rename = "sheet")]
+    pub sheet: serde_json::Value,
+    /// strokes store
+    #[serde(rename = "store")]
+    pub store: serde_json::Value,
+    /// expand mode
+    #[serde(rename = "expand_mode")]
+    pub expand_mode: serde_json::Value,
+}
+
+impl FileFormatLoader for RnotefileMaj0Min5 {
+    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<RnotefileMaj0Min5> {
         let decompressed = String::from_utf8(decompress_from_gzip(&bytes)?)?;
-        let file = serde_json::from_str::<Self>(&decompressed)?;
+
+        let wrapped_rnote_file = serde_json::from_str::<RnotefileWrapper>(decompressed.as_str())?;
 
         // Conversions for older file format versions happens here
-        match file.version.as_str() {
-            "0.5.0" => Ok(file),
-            version => Err(anyhow::anyhow!(
-                "failed to load rnote file from bytes, invalid version: {}",
-                version
-            )),
+        if semver::VersionReq::parse(">=0.5.0")
+            .unwrap()
+            .matches(&wrapped_rnote_file.version)
+        {
+            Ok(serde_json::from_value::<RnotefileMaj0Min5>(
+                wrapped_rnote_file.data,
+            )?)
+        } else {
+            Err(anyhow::anyhow!(
+                "failed to load rnote file from bytes, invalid version",
+            ))
         }
     }
 }
 
-impl FileFormatSaver for RnoteFile {
-    fn save_as_bytes(&self, file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
-        let output = serde_json::to_string(self)?;
-        let compressed = compress_to_gzip(output.as_bytes(), file_name)?;
+impl FileFormatSaver for RnotefileMaj0Min5 {
+    fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
+        let output = RnotefileWrapper {
+            version: semver::Version::parse("0.5.0").unwrap(),
+            data: serde_json::to_value(self)?,
+        };
+
+        let compressed = compress_to_gzip(serde_json::to_string(&output)?.as_bytes(), file_name)?;
 
         Ok(compressed)
     }
 }
+
+// The file format is expected only to break on minor versions in prelease (0.x.x) and on major versions after 1.0.0 release. (equivalent to API breaks according to the semver spec)
+// Older formats can be added here, with the naming scheme RnoteFileMaj<X>Min<Y>, where X: semver major, Y: semver minor version.
+// Then TryFrom is implemented to allow conversions and chaining from older to newer versions.
+
+/* #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RnoteFileMaj0Min4 {
+    sheet: serde_json::Value,
+} */

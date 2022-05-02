@@ -1,7 +1,7 @@
 pub mod audioplayer;
 pub mod brush;
 pub mod eraser;
-mod penbehaviour;
+pub mod penbehaviour;
 pub mod penholder;
 pub mod selector;
 pub mod shaper;

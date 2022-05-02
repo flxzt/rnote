@@ -1,4 +1,3 @@
-use geo::line_string;
 use p2d::bounding_volume::AABB;
 
 /// Helpers that extend the Vector2 type
@@ -112,7 +111,7 @@ where
     /// Clamps to the min and max bounds
     fn clamp(&self, min: Option<Self>, max: Option<Self>) -> Self;
     /// extends on every side by the given size
-    fn extend_by(&self, expand_by: na::Vector2<f64>) -> Self;
+    fn extend_by(&self, extend_by: na::Vector2<f64>) -> Self;
     /// Scales the AABB by the scalefactor
     fn scale(&self, scale: f64) -> Self;
     /// Scales the AABB by the scale vector
@@ -133,8 +132,6 @@ where
     /// It is also guaranteed that bounding boxes are aligned to the origin, meaning (0.0,0.0) is the corner of four boxes.
     /// The boxes on the edges most likely extend beyond the given aabb.
     fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
-    /// Converts a AABB to a geo::Polygon
-    fn to_geo_polygon(&self) -> geo::Polygon<f64>;
     /// Converts a AABB to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
 }
@@ -352,17 +349,6 @@ impl AABBHelpers for AABB {
         splitted_aabbs
     }
 
-    fn to_geo_polygon(&self) -> geo::Polygon<f64> {
-        let line_string = line_string![
-            (x: self.mins[0], y: self.mins[1]),
-            (x: self.maxs[0], y: self.mins[1]),
-            (x: self.maxs[0], y: self.maxs[1]),
-            (x: self.mins[0], y: self.maxs[1]),
-            (x: self.mins[0], y: self.mins[1]),
-        ];
-        geo::Polygon::new(line_string, vec![])
-    }
-
     fn to_kurbo_rect(&self) -> kurbo::Rect {
         kurbo::Rect::from_points(
             self.mins.coords.to_kurbo_point(),
@@ -415,8 +401,8 @@ pub fn scale_w_locked_aspectratio(
     src_size * ratio
 }
 
-/// Scales some inner bounds to new outer bounds
-pub fn scale_inner_bounds_to_new_outer_bounds(
+/// Scales inner bounds in context to new outer bounds
+pub fn scale_inner_bounds_in_context_new_outer_bounds(
     old_inner_bounds: AABB,
     old_outer_bounds: AABB,
     new_outer_bounds: AABB,

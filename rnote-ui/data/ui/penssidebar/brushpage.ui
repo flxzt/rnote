@@ -36,6 +36,9 @@
               <object class="GtkImage" id="brushstyle_image">
                 <property name="icon-name">pen-brush-style-solid-symbolic</property>
                 <property name="icon-size">large</property>
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
               </object>
             </child>
           </object>
@@ -111,7 +114,6 @@
         <child>
           <object class="GtkMenuButton" id="brushconfig_menubutton">
             <property name="icon-name">settings-symbolic</property>
-            <property name="sensitive">false</property>
             <property name="hexpand">true</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
@@ -127,28 +129,23 @@
           <property name="orientation">vertical</property>
           <property name="margin-top">12</property>
           <property name="margin-bottom">12</property>
+          <property name="margin-start">12</property>
+          <property name="margin-end">12</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Brush configuration</property>
               <property name="halign">center</property>
-              <property name="margin-top">12</property>
-              <property name="margin-bottom">24</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
           <child>
-            <object class="GtkListBox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">none</property>
-              <style>
-                <class name="content" />
-                <class name="medium" />
-              </style>
+            <!-- Textured options -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Textured style</property>
               <child>
-                <!-- Textured Brush -->
                 <object class="AdwActionRow">
                   <property name="title" translatable="yes">Density</property>
                   <property name="subtitle" translatable="yes">The density is the amount of dots per 10x10 area</property>
@@ -236,7 +233,7 @@
     </child>
     <child>
       <object class="ColorPicker" id="colorpicker">
-        <property name="height_request">380</property>
+        <property name="height_request">360</property>
         <property name="amount-colorbuttons">8</property>
       </object>
     </child>

@@ -15,7 +15,7 @@ use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
-#[serde(rename = "path")]
+#[serde(rename = "pen_path")]
 /// a pen path, consisting of segments of pen input elements
 pub struct PenPath(VecDeque<Segment>);
 
@@ -38,6 +38,13 @@ impl ShapeBehaviour for PenPath {
         self.iter()
             .map(|segment| segment.bounds())
             .fold(AABB::new_invalid(), |prev, next| prev.merged(&next))
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        self.iter()
+            .map(|segment| segment.hitboxes())
+            .flatten()
+            .collect()
     }
 }
 

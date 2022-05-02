@@ -1,3 +1,4 @@
+use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::render::{self};
 use crate::DrawBehaviour;
@@ -18,6 +19,7 @@ pub struct BrushStroke {
     #[serde(rename = "style")]
     pub style: Style,
     #[serde(skip)]
+    // since the path can have many hitboxes, we store them for faster queries and update them when we the stroke geometry changes
     pub hitboxes: Vec<AABB>,
 }
 
@@ -46,56 +48,139 @@ impl StrokeBehaviour for BrushStroke {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        let images = match &self.style {
-            Style::Smooth(options) => self
-                .path
-                .iter()
-                .filter_map(|segment| {
-                    match render::Image::gen_from_composable_shape(segment, options, image_scale) {
-                        Ok(image) => Some(image),
+    fn gen_images(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+        let bounds = self.bounds();
+        let (bounds, partial) = if viewport.contains(&bounds) {
+            (bounds, false)
+        } else {
+            (viewport, true)
+        };
+
+        let images = if bounds.extents()[0] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
+            && bounds.extents()[1] < Self::IMAGES_SEGMENTS_THRESHOLD / image_scale
+        {
+            // generate a single image when bounds are below threshold
+            match &self.style {
+                Style::Smooth(options) => {
+                    let image = render::Image::gen_with_piet(
+                        |piet_cx| {
+                            self.path.draw_composed(piet_cx, options);
+                            Ok(())
+                        },
+                        bounds,
+                        image_scale,
+                    );
+
+                    match image {
+                        Ok(image) => vec![image],
                         Err(e) => {
-                            log::error!("gen_images() failed with Err {}", e);
-                            None
+                            log::error!("gen_images() in brushstroke failed with Err {}", e);
+                            vec![]
                         }
                     }
-                })
-                .flatten()
-                .collect::<Vec<render::Image>>(),
-            Style::Rough(_) => vec![],
-            Style::Textured(options) => {
-                let mut options = options.clone();
+                }
+                Style::Rough(_options) => {
+                    // Unsupported
+                    vec![]
+                }
+                Style::Textured(options) => {
+                    let image = render::Image::gen_with_piet(
+                        |piet_cx| {
+                            self.path.draw_composed(piet_cx, options);
+                            Ok(())
+                        },
+                        bounds,
+                        image_scale,
+                    );
 
-                self.path
+                    match image {
+                        Ok(image) => vec![image],
+                        Err(e) => {
+                            log::error!("gen_images() in brushstroke failed with Err {}", e);
+                            vec![]
+                        }
+                    }
+                }
+            }
+        } else {
+            match &self.style {
+                Style::Smooth(options) => self
+                    .path
                     .iter()
                     .filter_map(|segment| {
-                        options.seed = options
-                            .seed
-                            .map(|seed| rnote_compose::utils::seed_advance(seed));
-
-                        match render::Image::gen_from_composable_shape(
-                            segment,
-                            &options,
+                        let image = render::Image::gen_with_piet(
+                            |piet_cx| {
+                                segment.draw_composed(piet_cx, options);
+                                Ok(())
+                            },
+                            segment.composed_bounds(options),
                             image_scale,
-                        ) {
+                        );
+
+                        match image {
                             Ok(image) => Some(image),
                             Err(e) => {
-                                log::error!("gen_images() failed with Err {}", e);
+                                log::error!("gen_images() in brushstroke failed with Err {}", e);
                                 None
                             }
                         }
                     })
-                    .flatten()
-                    .collect::<Vec<render::Image>>()
+                    .collect::<Vec<render::Image>>(),
+                Style::Rough(_) => {
+                    // Unsupported
+                    vec![]
+                }
+                Style::Textured(options) => {
+                    let mut options = options.clone();
+
+                    self.path
+                        .iter()
+                        .filter_map(|segment| {
+                            options.seed = options
+                                .seed
+                                .map(|seed| rnote_compose::utils::seed_advance(seed));
+
+                            let image = render::Image::gen_with_piet(
+                                |piet_cx| {
+                                    segment.draw_composed(piet_cx, &options);
+                                    Ok(())
+                                },
+                                segment.composed_bounds(&options),
+                                image_scale,
+                            );
+
+                            match image {
+                                Ok(image) => Some(image),
+                                Err(e) => {
+                                    log::error!(
+                                        "gen_images() in brushstroke failed with Err {}",
+                                        e
+                                    );
+                                    None
+                                }
+                            }
+                        })
+                        .collect::<Vec<render::Image>>()
+                }
             }
         };
 
-        Ok(images)
+        if partial {
+            Ok(GeneratedStrokeImages::Partial { images, viewport })
+        } else {
+            Ok(GeneratedStrokeImages::Full(images))
+        }
     }
 }
 
 impl DrawBehaviour for BrushStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match &self.style {
             Style::Smooth(options) => self.path.draw_composed(cx, options),
             Style::Rough(_) => {
@@ -104,6 +189,7 @@ impl DrawBehaviour for BrushStroke {
             Style::Textured(options) => self.path.draw_composed(cx, options),
         };
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -117,40 +203,47 @@ impl ShapeBehaviour for BrushStroke {
             Style::Textured(options) => self.path.composed_bounds(options),
         }
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        self.hitboxes.clone()
+    }
 }
 
 impl TransformBehaviour for BrushStroke {
     fn translate(&mut self, offset: nalgebra::Vector2<f64>) {
         self.path.translate(offset);
-        self.update_geometry();
     }
     fn rotate(&mut self, angle: f64, center: nalgebra::Point2<f64>) {
         self.path.rotate(angle, center);
-        self.update_geometry();
     }
     fn scale(&mut self, scale: nalgebra::Vector2<f64>) {
         self.path.scale(scale);
-        self.update_geometry();
     }
 }
 
 impl BrushStroke {
     pub const HITBOX_DEFAULT: f64 = 10.0;
+    /// when one of the extents of the stroke is above the threshold, images are generated indivdually for the stroke segments (to avoid very large images)
+    pub const IMAGES_SEGMENTS_THRESHOLD: f64 = 1000.0;
 
     pub fn new(segment: Segment, style: Style) -> Self {
         let path = PenPath::new_w_segment(segment);
 
-        Self::from_penpath(path, style)
+        Self::from_penpath(path, style).unwrap()
     }
 
-    pub fn from_penpath(path: PenPath, style: Style) -> Self {
-        let hitboxes = Vec::new();
-
-        Self {
+    pub fn from_penpath(path: PenPath, style: Style) -> Option<Self> {
+        if path.is_empty() {
+            return None;
+        }
+        let mut new_brushstroke = Self {
             path,
             style,
-            hitboxes,
-        }
+            hitboxes: vec![],
+        };
+        new_brushstroke.update_geometry();
+
+        Some(new_brushstroke)
     }
 
     pub fn push_segment(&mut self, segment: Segment) {
@@ -161,21 +254,30 @@ impl BrushStroke {
         self.hitboxes = self.gen_hitboxes();
     }
 
+    /// Replacing the current path with a new one. the new path must not be empty.
+    pub fn replace_path(&mut self, path: PenPath) {
+        self.path = path;
+        self.update_geometry();
+    }
+
+    // internal method generating the current hitboxes.
     fn gen_hitboxes(&self) -> Vec<AABB> {
         let width = match &self.style {
-            Style::Smooth(options) => Some(options.width),
-            Style::Rough(_) => None,
-            Style::Textured(options) => Some(options.width),
+            Style::Smooth(options) => options.stroke_width,
+            Style::Rough(options) => options.stroke_width,
+            Style::Textured(options) => options.stroke_width,
         };
 
-        if let Some(width) = width {
-            self.path
-                .iter()
-                .map(|segment| segment.bounds().loosened(width))
-                .collect()
-        } else {
-            vec![]
-        }
+        self.path
+            .iter()
+            .map(|segment| {
+                segment
+                    .hitboxes()
+                    .into_iter()
+                    .map(|hitbox| hitbox.loosened(width / 2.0))
+            })
+            .flatten()
+            .collect()
     }
 
     pub fn gen_images_for_last_segments(
@@ -191,7 +293,16 @@ impl BrushStroke {
                 .take(no_last_segments)
                 .rev()
                 .filter_map(|segment| {
-                    match render::Image::gen_from_composable_shape(segment, options, image_scale) {
+                    let image = render::Image::gen_with_piet(
+                        |piet_cx| {
+                            segment.draw_composed(piet_cx, options);
+                            Ok(())
+                        },
+                        segment.composed_bounds(options),
+                        image_scale,
+                    );
+
+                    match image {
                         Ok(image) => Some(image),
                         Err(e) => {
                             log::error!("gen_images_for_last_segments() failed with Err {}", e);
@@ -199,7 +310,6 @@ impl BrushStroke {
                         }
                     }
                 })
-                .flatten()
                 .collect::<Vec<render::Image>>(),
             Style::Rough(_) => vec![],
             Style::Textured(options) => self
@@ -217,7 +327,16 @@ impl BrushStroke {
                             .map(|seed| rnote_compose::utils::seed_advance(seed))
                     });
 
-                    match render::Image::gen_from_composable_shape(segment, &options, image_scale) {
+                    let image = render::Image::gen_with_piet(
+                        |piet_cx| {
+                            segment.draw_composed(piet_cx, &options);
+                            Ok(())
+                        },
+                        segment.composed_bounds(&options),
+                        image_scale,
+                    );
+
+                    match image {
                         Ok(image) => Some(image),
                         Err(e) => {
                             log::error!("gen_images_for_last_segments() failed with Err {}", e);
@@ -225,7 +344,6 @@ impl BrushStroke {
                         }
                     }
                 })
-                .flatten()
                 .collect::<Vec<render::Image>>(),
         };
 

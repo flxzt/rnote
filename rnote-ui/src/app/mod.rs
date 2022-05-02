@@ -1,24 +1,25 @@
 mod appactions;
 
+use std::{cell::RefCell, path};
+
+use adw::subclass::prelude::AdwApplicationImpl;
+use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::{
+    sheet::format::MeasureUnit,
+    sheet::{background::PatternStyle, format::PredefinedFormat},
+};
+
+use crate::{
+    colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
+    penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
+    settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow, AppMenu, CanvasMenu,
+    ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas, SettingsPanel, UnitEntry,
+    WorkspaceBrowser,
+};
+
 mod imp {
-    use std::{cell::RefCell, path};
-
-    use adw::subclass::prelude::AdwApplicationImpl;
-    use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
-    use rnote_engine::pens::penholder::PenStyle;
-    use rnote_engine::{
-        sheet::format::MeasureUnit,
-        sheet::{background::PatternStyle, format::PredefinedFormat},
-    };
-
-    use crate::{
-        colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
-        penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
-        settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow, AppMenu, CanvasMenu,
-        ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas, SettingsPanel,
-        UnitEntry, WorkspaceBrowser,
-    };
-
+    use super::*;
     #[allow(missing_debug_implementations)]
     pub struct RnoteApp {
         pub input_file: RefCell<Option<gio::File>>,
@@ -90,7 +91,7 @@ mod imp {
         fn open(&self, application: &Self::Type, files: &[gio::File], _hint: &str) {
             for file in files {
                 match utils::FileType::lookup_file_type(file) {
-                    utils::FileType::UnknownFile => {
+                    utils::FileType::Unsupported => {
                         log::warn!("tried to open unsupported file type");
                     }
                     _ => {
@@ -105,11 +106,6 @@ mod imp {
     impl GtkApplicationImpl for RnoteApp {}
     impl AdwApplicationImpl for RnoteApp {}
 }
-
-use gtk4::{gio, glib, subclass::prelude::*};
-
-use crate::appwindow::RnoteAppWindow;
-use crate::config;
 
 glib::wrapper! {
     pub struct RnoteApp(ObjectSubclass<imp::RnoteApp>)

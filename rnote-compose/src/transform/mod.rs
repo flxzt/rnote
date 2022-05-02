@@ -5,6 +5,8 @@ pub use transformbehaviour::TransformBehaviour;
 
 use serde::{Deserialize, Serialize};
 
+use crate::helpers::Affine2Helpers;
+
 /// To be used as state in a stroke to help implement the StrokeBehaviour trait
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "transform")]
@@ -74,16 +76,10 @@ impl Transform {
 
     /// appends a scale to the transform
     pub fn append_scale_mut(&mut self, scale: na::Vector2<f64>) {
-        let translation = self.translation_part();
-
-        self.affine = na::Translation2::from(-translation) * self.affine;
-
         self.affine = na::try_convert(
             na::Scale2::<f64>::from(scale).to_homogeneous() * self.affine.to_homogeneous(),
         )
         .unwrap();
-
-        self.affine = na::Translation2::from(translation) * self.affine;
     }
 
     /// converts the transform to a svg attribute string, insertable into svg elements
@@ -99,5 +95,10 @@ impl Transform {
             matrix[(0, 2)],
             matrix[(1, 2)],
         )
+    }
+
+    /// To kurbo affine
+    pub fn to_kurbo(&self) -> kurbo::Affine {
+        self.affine.to_kurbo()
     }
 }

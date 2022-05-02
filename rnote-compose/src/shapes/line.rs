@@ -43,6 +43,15 @@ impl ShapeBehaviour for Line {
     fn bounds(&self) -> AABB {
         AABBHelpers::new_positive(na::Point2::from(self.start), na::Point2::from(self.end))
     }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        let n_splits = super::hitbox_elems_for_shape_len((self.end - self.start).magnitude());
+
+        self.split(n_splits)
+            .into_iter()
+            .map(|line| line.bounds())
+            .collect()
+    }
 }
 
 impl Line {
@@ -61,5 +70,24 @@ impl Line {
     /// to kurbo
     pub fn to_kurbo(&self) -> kurbo::Line {
         kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point())
+    }
+
+    /// Splits itself given the no splits
+    pub fn split(&self, n_splits: i32) -> Vec<Self> {
+        (0..n_splits)
+            .map(|i| {
+                let sub_start = self
+                    .start
+                    .lerp(&self.end, f64::from(i) / f64::from(n_splits));
+                let sub_end = self
+                    .start
+                    .lerp(&self.end, f64::from(i + 1) / f64::from(n_splits));
+
+                Line {
+                    start: sub_start,
+                    end: sub_end,
+                }
+            })
+            .collect::<Vec<Self>>()
     }
 }

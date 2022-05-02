@@ -9,6 +9,7 @@
         <property name="reveal-flap">false</property>
         <property name="swipe-to-open">false</property>
         <property name="swipe-to-close">false</property>
+        <property name="fold-threshold-policy">minimum</property>
         <child type="separator">
           <object class="GtkSeparator">
             <property name="orientation">vertical</property>
@@ -116,29 +117,121 @@
                   <property name="row">2</property>
                 </layout>
                 <child>
-                  <object class="AdwToastOverlay" id="toast_overlay">
-                    <property name="child">
-                      <object class="GtkScrolledWindow" id="canvas_scroller">
-                        <style>
-                          <class name="canvas_scroller" />
-                        </style>
-                        <property name="kinetic_scrolling">false</property>
-                        <property name="propagate-natural-width">false</property>
-                        <property name="propagate-natural-height">false</property>
+                  <object class="GtkOverlay" id="canvas_actions_overlay">
+                    <child type="overlay">
+                      <object class="GtkProgressBar" id="canvas_progressbar">
                         <property name="halign">fill</property>
-                        <property name="valign">fill</property>
-                        <property name="vexpand">true</property>
-                        <property name="hexpand">true</property>
-                        <property name="window-placement">top-left</property>
-                        <property name="overlay-scrolling">true</property>
+                        <property name="valign">start</property>
+                        <property name="pulse-step">0.33</property>
+                        <style>
+                          <class name="osd" />
+                        </style>
+                      </object>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkBox" id="canvas_quickactions_box">
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="margin-start">18</property>
+                        <property name="margin-end">18</property>
+                        <property name="margin-top">18</property>
+                        <property name="margin-bottom">18</property>
+                        <property name="spacing">6</property>
                         <child>
-                          <object class="RnoteCanvas" id="canvas">
-                            <property name="halign">center</property>
-                            <property name="valign">start</property>
+                          <object class="GtkRevealer" id="canvas_fixedsize_quickactions_revealer">
+                            <property name="transition-type">slide-right</property>
+                            <property name="transition_duration">300</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="homogeneous">true</property>
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkButton" id="add_page_button">
+                                    <property name="icon_name">add-page-symbolic</property>
+                                    <property name="tooltip_text" translatable="yes">Add page</property>
+                                    <property name="action-name">win.add-page-to-sheet</property>
+                                    <style>
+                                      <class name="osd" />
+                                      <class name="circular" />
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="resize_to_fit_strokes_button">
+                                    <property name="icon_name">resize-to-fit-strokes-symbolic</property>
+                                    <property name="tooltip_text" translatable="yes">Resize sheet to fit the strokes</property>
+                                    <property name="action-name">win.resize-to-fit-strokes</property>
+                                    <style>
+                                      <class name="osd" />
+                                      <class name="circular" />
+                                    </style>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="return_origin_page_button">
+                            <property name="icon_name">return-origin-page-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Return to the origin page</property>
+                            <property name="action-name">win.return-origin-page</property>
+                            <style>
+                              <class name="osd" />
+                              <class name="circular" />
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="undo_button">
+                            <property name="icon_name">edit-undo-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Undo</property>
+                            <property name="action-name">win.undo</property>
+                            <style>
+                              <class name="osd" />
+                              <class name="circular" />
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="redo_button">
+                            <property name="icon_name">edit-redo-symbolic</property>
+                            <property name="tooltip_text" translatable="yes">Redo</property>
+                            <property name="action-name">win.redo</property>
+                            <style>
+                              <class name="osd" />
+                              <class name="circular" />
+                            </style>
                           </object>
                         </child>
                       </object>
-                    </property>
+                    </child>
+                    <child>
+                      <object class="AdwToastOverlay" id="toast_overlay">
+                        <property name="child">
+                          <object class="GtkScrolledWindow" id="canvas_scroller">
+                            <style>
+                              <class name="canvas_scroller" />
+                            </style>
+                            <property name="kinetic_scrolling">false</property>
+                            <property name="propagate-natural-width">false</property>
+                            <property name="propagate-natural-height">false</property>
+                            <property name="halign">fill</property>
+                            <property name="valign">fill</property>
+                            <property name="vexpand">true</property>
+                            <property name="hexpand">true</property>
+                            <property name="window-placement">top-left</property>
+                            <property name="overlay-scrolling">true</property>
+                            <child>
+                              <object class="RnoteCanvas" id="canvas">
+                                <property name="halign">center</property>
+                                <property name="valign">start</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -255,6 +348,7 @@
                 <property name="hexpand">false</property>
                 <property name="halign">fill</property>
                 <property name="orientation">vertical</property>
+                <property name="width-request">400</property>
                 <style>
                   <class name="flap_box" />
                   <class name="background" />
@@ -269,10 +363,16 @@
                         <child>
                           <object class="AdwViewSwitcherTitle" id="flap_switcher_title">
                             <property name="stack">flap_stack</property>
-                            <property name="hexpand">true</property>
                             <property name="halign">center</property>
                           </object>
                         </child>
+                      </object>
+                    </child>
+                    <child type="start">
+                      <object class="GtkButton" id="flap_close_button">
+                        <property name="icon_name">arrow1-right-symbolic</property>
+                        <property name="width_request">52</property>
+                        <property name="tooltip_text" translatable="yes">Close the folded flap</property>
                       </object>
                     </child>
                     <child type="end">

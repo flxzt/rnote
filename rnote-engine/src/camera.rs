@@ -1,6 +1,7 @@
 use gtk4::{graphene, gsk};
 use p2d::bounding_volume::AABB;
 use rnote_compose::helpers::AABBHelpers;
+use serde::{Deserialize, Serialize};
 
 /* pub enum Coordinate {
     Surface(na::Vector2<f64>),
@@ -16,7 +17,7 @@ impl Coordinate {
 } */
 
 #[allow(unused)]
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 /// e.g. when
 /// offset = (10.0, 10.0); zoom = 2.0;,
 /// then (50.0, 20.0) on the surface is -> (60.0, 30.0) -> (30.0, 10.0) on the sheet
@@ -104,10 +105,14 @@ impl Camera {
         )
     }
 
-    /// The viewport, expanded. Used by rendering
-    pub fn viewport_extended(&self) -> AABB {
-        let viewport = self.viewport();
-        viewport.extend_by(viewport.extents() / 2.0)
+    /// from sheet coords -> surface coords
+    pub fn transform_bounds(&self, bounds: AABB) -> AABB {
+        bounds.scale(self.total_zoom()).translate(-self.offset)
+    }
+
+    /// from surface coords -> sheet coords
+    pub fn transform_inv_bounds(&self, bounds: AABB) -> AABB {
+        bounds.translate(self.offset).scale(1.0 / self.total_zoom())
     }
 
     /// The transform from sheet coords -> surface coords
@@ -126,7 +131,7 @@ impl Camera {
     // The gsk transform for the GTK snapshot func
     // GTKs transformations are applied on its coordinate system, so we need to reverse the order (translate, then scale)
     // To have the inverse, call .invert()
-    pub fn transform_as_gsk(&self) -> gsk::Transform {
+    pub fn transform_for_gtk_snapshot(&self) -> gsk::Transform {
         let total_zoom = self.total_zoom();
 
         gsk::Transform::new()

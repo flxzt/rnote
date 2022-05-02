@@ -7,59 +7,38 @@
    viewBox="0 0 26.458333 26.458333"
    version="1.1"
    id="svg5"
-   sodipodi:docname="pen-tools-expandsheettool-symbolic.svg"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview11"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     showgrid="false"
-     inkscape:zoom="5.8760331"
-     inkscape:cx="56.075246"
-     inkscape:cy="54.288326"
-     inkscape:window-width="2560"
-     inkscape:window-height="1365"
-     inkscape:window-x="2560"
-     inkscape:window-y="38"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="svg5" />
   <defs
      id="defs2" />
   <g
      id="g924"
-     transform="matrix(0.67042205,0,0,0.67042205,4.3598232,3.9026805)">
+     transform="matrix(0.74975002,0,0,0.74975002,3.3103545,2.7991201)"
+     style="fill:#353535;fill-opacity:1">
     <g
        fill="#2e3436"
        id="g952"
        transform="matrix(0.91056928,0,0,0.91056928,5.9446122,7.2710855)"
-       style="fill:#bebebe;fill-opacity:1">
+       style="fill:#353535;fill-opacity:1">
       <path
          d="m 7.78125,0.996094 -3.03125,3 H 7 v 2 h 2 v -2 h 2.25 l -3.03125,-3 z m 0,0"
          id="path950"
-         style="fill:#bebebe;fill-opacity:1" />
+         style="fill:#353535;fill-opacity:1" />
       <path
          d="m 1,6.996094 h 14 v 2 H 1 Z m 0,0"
          id="path947"
-         style="fill:#bebebe;fill-opacity:1" />
+         style="fill:#353535;fill-opacity:1" />
       <path
          d="m 7.78125,14.996094 -3.03125,-3 H 7 v -2 h 2 v 2 h 2.25 l -3.03125,3 z m 0,0"
          id="path943"
-         style="fill:#bebebe;fill-opacity:1" />
+         style="fill:#353535;fill-opacity:1" />
     </g>
     <path
-       style="color:#000000;fill:#bebebe;stroke-width:0.877232;stroke-dasharray:5.08795, 2.54397;stroke-dashoffset:2.54397;-inkscape-stroke:none"
+       style="color:#000000;fill:#353535;fill-opacity:1;stroke-width:0.877232;stroke-dasharray:5.08795, 2.54397;stroke-dashoffset:2.54397;-inkscape-stroke:none"
        d="m 0,4.0824961 v 2.231957 h 2.9003906 v -2.231957 z m 5.8007812,0 v 2.231957 h 5.7988278 v -2.231957 z m 8.6992188,0 v 2.231957 h 5.800781 v -2.231957 z m 8.699219,0 v 2.231957 h 3.259765 v -2.231957 z"
        id="path940" />
     <path
-       style="color:#000000;fill:#bebebe;stroke-dashoffset:1;-inkscape-stroke:none"
+       style="color:#000000;fill:#353535;fill-opacity:1;stroke-dashoffset:1;-inkscape-stroke:none"
        d="m 0,22.740234 v 1 h 26.458984 v -1 z"
        id="path937" />
   </g>

@@ -1,10 +1,13 @@
+use kurbo::Shape;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
+use crate::helpers::{KurboHelpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 
 use super::line::Line;
+use super::CubicBezier;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "quadratic_bezier")]
@@ -46,9 +49,17 @@ impl TransformBehaviour for QuadraticBezier {
 
 impl ShapeBehaviour for QuadraticBezier {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
-        let mut aabb = AABB::new(na::Point2::from(self.start), na::Point2::from(self.end));
-        aabb.take_point(na::Point2::from(self.cp));
-        aabb
+        self.to_kurbo().bounding_box().bounds_as_p2d_aabb()
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        // TODO: should be dependend on the actual curve length
+        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
+
+        self.approx_with_lines(n_splits)
+            .into_iter()
+            .map(|line| line.bounds())
+            .collect()
     }
 }
 
@@ -85,6 +96,16 @@ impl QuadraticBezier {
         (first_splitted, second_splitted)
     }
 
+    /// convert to a cubic bezier ( raising the order is without losses)
+    pub fn to_cubic_bezier(&self) -> CubicBezier {
+        CubicBezier {
+            start: self.start,
+            cp1: self.start + (2.0 / 3.0) * (self.cp - self.start),
+            cp2: self.end + (2.0 / 3.0) * (self.cp - self.end),
+            end: self.end,
+        }
+    }
+
     /// Approximating a quadratic bezier with lines, given the number of splits distributed evenly based on the t value.
     pub fn approx_with_lines(&self, n_splits: i32) -> Vec<Line> {
         let mut lines = Vec::new();
@@ -101,9 +122,18 @@ impl QuadraticBezier {
 
         lines
     }
+
+    /// to kurbo
+    pub fn to_kurbo(&self) -> kurbo::QuadBez {
+        kurbo::QuadBez::new(
+            self.start.to_kurbo_point(),
+            self.cp.to_kurbo_point(),
+            self.end.to_kurbo_point(),
+        )
+    }
 }
 
-// Coefficient a of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
+/// Coefficient a of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
 pub fn quadbez_coeff_a(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
@@ -112,18 +142,18 @@ pub fn quadbez_coeff_a(
     p2 - 2.0 * p1 + p0
 }
 
-// Coefficient b of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
+/// Coefficient b of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
 pub fn quadbez_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }
 
-// Coefficient c of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
+/// Coefficient c of quadratic bezier in polynomial form: C = a * t^2 + b * t + c
 #[allow(dead_code)]
 pub fn quadbez_coeff_c(p0: na::Vector2<f64>) -> na::Vector2<f64> {
     p0
 }
 
-// calculating the value of a bezier curve with its support points, for t: between 0.0 and 1.0
+/// calculating the value of a bezier curve with its support points, for t: between 0.0 and 1.0
 #[allow(dead_code)]
 pub fn quadbez_calc(
     p0: na::Vector2<f64>,
@@ -134,7 +164,7 @@ pub fn quadbez_calc(
     quadbez_coeff_a(p0, p1, p2) * t.powi(2) + quadbez_coeff_b(p0, p1) * t + quadbez_coeff_c(p0)
 }
 
-// Coefficient a of quadratic bezier derivation in polynomial form: C' = a * t + b
+/// Coefficient a of quadratic bezier derivation in polynomial form: C' = a * t + b
 pub fn quad_bezier_derive_coeff_a(
     p0: na::Vector2<f64>,
     p1: na::Vector2<f64>,
@@ -143,7 +173,7 @@ pub fn quad_bezier_derive_coeff_a(
     2.0 * p2 - 4.0 * p1 + 2.0 * p0
 }
 
-// Coefficient b of quadratic bezier derivation in polynomial form: C' = a * t + b
+/// Coefficient b of quadratic bezier derivation in polynomial form: C' = a * t + b
 pub fn quadbez_derive_coeff_b(p0: na::Vector2<f64>, p1: na::Vector2<f64>) -> na::Vector2<f64> {
     2.0 * p1 - 2.0 * p0
 }

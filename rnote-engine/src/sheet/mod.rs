@@ -46,6 +46,7 @@ impl Default for Sheet {
 
 impl Sheet {
     pub const SHADOW_WIDTH: f64 = 30.0;
+    pub const SHADOW_OFFSET: na::Vector2<f64> = na::vector![8.0, 8.0];
     pub const SHADOW_COLOR: Color = Color {
         r: 0.1,
         g: 0.1,
@@ -128,7 +129,7 @@ impl Sheet {
         let mut keys = store.stroke_keys_as_rendered();
         keys.append(&mut store.selection_keys_as_rendered());
 
-        let new_bounds = if let Some(new_bounds) = store.gen_bounds(&keys) {
+        let new_bounds = if let Some(new_bounds) = store.gen_bounds_for_strokes(&keys) {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If sheet is empty, resize to one page with the format size
@@ -146,13 +147,16 @@ impl Sheet {
 
     pub fn draw_shadow(&self, snapshot: &Snapshot) {
         let shadow_width = Self::SHADOW_WIDTH;
-        let bounds = self.bounds();
+        let bounds = self
+            .bounds();
+            //.extend_by(-Self::SHADOW_OFFSET)
+            //.translate(Self::SHADOW_OFFSET);
 
         let corner_radius =
             graphene::Size::new(shadow_width as f32 / 4.0, shadow_width as f32 / 4.0);
 
         let rounded_rect = gsk::RoundedRect::new(
-            graphene::Rect::from_aabb(bounds),
+            graphene::Rect::from_p2d_aabb(bounds),
             corner_radius.clone(),
             corner_radius.clone(),
             corner_radius.clone(),
@@ -162,10 +166,10 @@ impl Sheet {
         snapshot.append_outset_shadow(
             &rounded_rect,
             &gdk::RGBA::from_compose_color(Self::SHADOW_COLOR),
-            0.0,
-            0.0,
-            (shadow_width / 2.0) as f32,
-            (shadow_width / 2.0) as f32,
+            Self::SHADOW_OFFSET[0] as f32,
+            Self::SHADOW_OFFSET[1] as f32,
+            (1.0 * shadow_width / 4.0) as f32,
+            (1.0 * shadow_width / 2.0) as f32,
         );
     }
 }

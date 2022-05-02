@@ -1,3 +1,5 @@
+use crate::shapes::QuadraticBezier;
+
 use super::roughoptions::RoughOptions;
 use rand::Rng;
 
@@ -190,10 +192,33 @@ where
     bez_path
 }
 
+pub(super) fn quadratic_bezier<R>(
+    start: na::Vector2<f64>,
+    cp: na::Vector2<f64>,
+    end: na::Vector2<f64>,
+    options: &RoughOptions,
+    rng: &mut R,
+) -> kurbo::BezPath
+where
+    R: Rng + ?Sized,
+{
+    // Converting to a cubic, so we can reuse the rough algorithm for it
+    let cubbez = QuadraticBezier { start, cp, end }.to_cubic_bezier();
+
+    cubic_bezier(
+        cubbez.start,
+        cubbez.cp1,
+        cubbez.cp2,
+        cubbez.end,
+        options,
+        rng,
+    )
+}
+
 pub(super) fn cubic_bezier<R>(
     start: na::Vector2<f64>,
-    first: na::Vector2<f64>,
-    second: na::Vector2<f64>,
+    cp1: na::Vector2<f64>,
+    cp2: na::Vector2<f64>,
     end: na::Vector2<f64>,
     options: &RoughOptions,
     rng: &mut R,
@@ -240,12 +265,12 @@ where
 
         bez_path.curve_to(
             kurbo::Point::new(
-                first[0] + offset_opt(ros[i], options, rng, None),
-                first[1] + offset_opt(ros[i], options, rng, None),
+                cp1[0] + offset_opt(ros[i], options, rng, None),
+                cp1[1] + offset_opt(ros[i], options, rng, None),
             ),
             kurbo::Point::new(
-                second[0] + offset_opt(ros[i], options, rng, None),
-                second[1] + offset_opt(ros[i], options, rng, None),
+                cp2[0] + offset_opt(ros[i], options, rng, None),
+                cp2[1] + offset_opt(ros[i], options, rng, None),
             ),
             kurbo::Point::new(end_[0], end_[1]),
         );

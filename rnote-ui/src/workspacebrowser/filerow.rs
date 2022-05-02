@@ -86,7 +86,6 @@ mod imp {
                     "current-file",
                     "current-file",
                     Option::<gio::File>::static_type(),
-                    // The property can be read and written to
                     glib::ParamFlags::READWRITE,
                 )]
             });

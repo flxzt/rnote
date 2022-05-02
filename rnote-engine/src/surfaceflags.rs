@@ -14,12 +14,12 @@ pub struct SurfaceFlags {
     pub resize_to_fit_strokes: bool,
     /// Should change to the pen style
     pub change_to_pen: Option<PenStyle>,
-    /// Pen style has changed
-    pub pen_changed: bool,
+    /// Penholder state has has changed
+    pub penholder_changed: bool,
     /// wether the sheet has changed, i.e. new strokes inserted, modified, etc.
     pub sheet_changed: bool,
     /// Selection has changed
-    pub selection_changed: bool,
+    pub update_selector: bool,
     /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
     pub hide_scrollbars: Option<bool>,
     /// camera offset changed
@@ -34,9 +34,9 @@ impl Default for SurfaceFlags {
             resize: false,
             resize_to_fit_strokes: false,
             change_to_pen: None,
-            pen_changed: false,
+            penholder_changed: false,
             sheet_changed: false,
-            selection_changed: false,
+            update_selector: false,
             hide_scrollbars: None,
             camera_offset_changed: false,
         }
@@ -56,9 +56,9 @@ impl SurfaceFlags {
             self.change_to_pen
         };
 
-        self.pen_changed |= other.pen_changed;
+        self.penholder_changed |= other.penholder_changed;
         self.sheet_changed |= other.sheet_changed;
-        self.selection_changed |= other.selection_changed;
+        self.update_selector |= other.update_selector;
         self.hide_scrollbars = if other.hide_scrollbars.is_some() {
             other.hide_scrollbars
         } else {

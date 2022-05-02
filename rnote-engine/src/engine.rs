@@ -1,8 +1,7 @@
-use crate::pens::penholder::PenHolderEvent;
+use crate::pens::penholder::{PenHolderEvent, PenStyle};
 use crate::sheet::{background, Background, Format};
 use crate::store::StoreTask;
 use crate::strokes::Stroke;
-use crate::utils;
 use crate::{render, DrawOnSheetBehaviour, SurfaceFlags};
 use crate::{Camera, PenHolder, Sheet, StrokeStore};
 use gtk4::Snapshot;
@@ -10,7 +9,7 @@ use itertools::Itertools;
 use num_derive::{FromPrimitive, ToPrimitive};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::transform::TransformBehaviour;
-use rnote_fileformats::rnoteformat::RnoteFile;
+use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
 use rnote_fileformats::xoppformat;
 use rnote_fileformats::FileFormatLoader;
 use rnote_fileformats::FileFormatSaver;
@@ -73,7 +72,7 @@ pub struct RnoteEngine {
 
     #[serde(rename = "expand_mode")]
     expand_mode: ExpandMode,
-    #[serde(skip)]
+    #[serde(rename = "camera")]
     pub camera: Camera,
     #[serde(skip)]
     pub visual_debug: bool,
@@ -104,23 +103,57 @@ impl RnoteEngine {
         self.resize_to_fit_strokes();
         self.store.regenerate_rendering_in_viewport_threaded(
             false,
-            self.camera.viewport_extended(),
+            self.camera.viewport(),
+            self.camera.image_scale(),
+        );
+    }
+
+    pub fn undo(&mut self) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
+        self.store.undo();
+
+        self.update_selector();
+        if !self.store.selection_keys_unordered().is_empty() {
+            surface_flags.merge_with_other(
+                self.handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector)),
+            );
+        }
+
+        self.resize_autoexpand();
+        self.store.regenerate_rendering_in_viewport_threaded(
+            true,
+            self.camera.viewport(),
+            self.camera.image_scale(),
+        );
+
+        surface_flags
+    }
+
+    pub fn redo(&mut self) {
+        self.store.redo();
+
+        self.update_selector();
+        self.resize_autoexpand();
+        self.store.regenerate_rendering_in_viewport_threaded(
+            true,
+            self.camera.viewport(),
             self.camera.image_scale(),
         );
     }
 
     /// processes the received task from tasks_rx.
-    /// Returns surface flags for what to update in the frontend UI.
+    /// Returns surface flags to indicate what needs to be updated in the UI.
     /// An example how to use it:
     /// ```rust, ignore
     /// let main_cx = glib::MainContext::default();
 
-    /// main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
+    /// main_cx.spawn_local(clone!(@strong canvas, @strong appwindow => async move {
     ///            let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
 
     ///           loop {
     ///              if let Some(task) = task_rx.next().await {
-    ///                    let surface_flags = canvas.engine().borrow_mut().store.process_received_task(task, canvas.zoom());
+    ///                    let surface_flags = canvas.engine().borrow_mut().process_received_task(task);
     ///                    appwindow.handle_surface_flags(surface_flags);
     ///                }
     ///            }
@@ -130,10 +163,14 @@ impl RnoteEngine {
         self.store.process_received_task(task, &self.camera)
     }
 
-    /// Public method to handle pen events coming from ui event handlers
-    pub fn handle_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
-        self.penholder
-            .handle_event(event, &mut self.sheet, &mut self.store, &mut self.camera)
+    /// Public method to call to handle pen events and to change pen holder state
+    pub fn handle_penholder_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
+        self.penholder.handle_penholder_event(
+            event,
+            &mut self.sheet,
+            &mut self.store,
+            &mut self.camera,
+        )
     }
 
     // Generates bounds for each page which is containing content, extended to fit the sheet format
@@ -212,6 +249,7 @@ impl RnoteEngine {
     }
 
     /// Called when sheet should resize to the format and to fit all strokes
+    /// Sheet background rendering needs to be updated after calling this
     pub fn resize_to_fit_strokes(&mut self) {
         match self.expand_mode {
             ExpandMode::FixedSize => {
@@ -230,6 +268,7 @@ impl RnoteEngine {
     }
 
     /// resize the sheet when in autoexpanding expand modes. called e.g. when finishing a new stroke
+    /// Sheet background rendering needs to be updated after calling this
     pub fn resize_autoexpand(&mut self) {
         match self.expand_mode {
             ExpandMode::FixedSize => {
@@ -247,7 +286,11 @@ impl RnoteEngine {
         }
     }
 
-    pub fn resize_new_offset(&mut self) {
+    /// Updates the camera and expands sheet dimensions with offset
+    /// Sheet background rendering needs to be updated after calling this
+    pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
+        self.camera.offset = new_offset;
+
         match self.expand_mode {
             ExpandMode::FixedSize => {
                 // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.
@@ -256,6 +299,7 @@ impl RnoteEngine {
                 self.sheet.resize_sheet_mode_endless_vertical(&self.store);
             }
             ExpandMode::Infinite => {
+                // only expand, don't resize to fit strokes
                 self.sheet
                     .expand_sheet_mode_infinite(self.camera.viewport());
             }
@@ -263,9 +307,7 @@ impl RnoteEngine {
     }
 
     pub fn update_selector(&mut self) {
-        self.penholder
-            .selector
-            .update_selection_from_state(&self.store);
+        self.penholder.selector.update_from_store(&self.store);
     }
 
     /// Import and replace the engine config. NOT for opening files
@@ -273,7 +315,8 @@ impl RnoteEngine {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
         self.sheet = serde_json::from_value(engine_config.sheet)?;
-        self.penholder = serde_json::from_value(engine_config.penholder)?;
+        self.penholder
+            .import(serde_json::from_value(engine_config.penholder)?);
         self.expand_mode = serde_json::from_value(engine_config.expand_mode)?;
 
         Ok(())
@@ -290,7 +333,7 @@ impl RnoteEngine {
     }
 
     pub fn open_from_rnote_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
-        let rnote_file = RnoteFile::load_from_bytes(bytes)?;
+        let rnote_file = RnotefileMaj0Min5::load_from_bytes(bytes)?;
 
         self.sheet = serde_json::from_value(rnote_file.sheet)?;
         self.expand_mode = serde_json::from_value(rnote_file.expand_mode)?;
@@ -302,15 +345,19 @@ impl RnoteEngine {
         Ok(())
     }
 
-    pub fn save_as_rnote_bytes(&self, version: &str, file_name: &str) -> anyhow::Result<Vec<u8>> {
-        let rnote_file = RnoteFile {
-            version: version.to_string(),
+    pub fn save_as_rnote_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
+        let rnote_file = RnotefileMaj0Min5 {
             sheet: serde_json::to_value(&self.sheet)?,
             expand_mode: serde_json::to_value(&self.expand_mode)?,
             store: serde_json::to_value(&self.store)?,
         };
 
         Ok(rnote_file.save_as_bytes(file_name)?)
+    }
+
+    /// for debugging the current engine state
+    pub fn export_state_as_json(&self) -> anyhow::Result<String> {
+        Ok(serde_json::to_string_pretty(self)?)
     }
 
     pub fn open_from_xopp_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
@@ -435,7 +482,7 @@ impl RnoteEngine {
 
     pub fn export_selection_as_svg_string(&self) -> anyhow::Result<Option<String>> {
         let selection_keys = self.store.selection_keys_as_rendered();
-        if let Some(selection_bounds) = self.store.gen_bounds(&selection_keys) {
+        if let Some(selection_bounds) = self.store.gen_bounds_for_strokes(&selection_keys) {
             let mut svg_data = self
                 .store
                 .gen_svgs_for_strokes(&selection_keys)
@@ -531,7 +578,7 @@ impl RnoteEngine {
                     images: xopp_images,
                 };
 
-                let page_dimensions = utils::convert_coord_dpi(
+                let page_dimensions = crate::utils::convert_coord_dpi(
                     page_bounds.extents(),
                     current_dpi,
                     xoppformat::XoppFile::DPI,
@@ -598,7 +645,7 @@ impl RnoteEngine {
                 surface
                     .set_metadata(
                         cairo::PdfMetadata::CreateDate,
-                        utils::now_formatted_string().as_str(),
+                        crate::utils::now_formatted_string().as_str(),
                     )
                     .context("set pdf surface date metadata failed")?;
 
@@ -650,10 +697,14 @@ impl RnoteEngine {
         let viewport = self.camera.viewport();
 
         snapshot.save();
-        snapshot.transform(Some(&self.camera.transform_as_gsk()));
+        snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
 
         self.sheet.draw_shadow(snapshot);
-        self.sheet.background.draw(snapshot, sheet_bounds);
+
+        self.sheet
+            .background
+            .draw(snapshot, sheet_bounds, &self.camera)?;
+
         self.sheet
             .format
             .draw(snapshot, sheet_bounds, &self.camera)?;
@@ -667,33 +718,37 @@ impl RnoteEngine {
 
         self.penholder
             .draw_on_sheet_snapshot(snapshot, sheet_bounds, &self.camera)?;
+        /*
+               {
+                   use crate::utils::GrapheneRectHelpers;
+                   use gtk4::graphene;
+                   use piet::RenderContext;
+                   use rnote_compose::helpers::Affine2Helpers;
 
-        /*         {
-            use piet::RenderContext;
-            use rnote_compose::helpers::Affine2Helpers;
-            let zoom = self.camera.zoom();
+                   let zoom = self.camera.zoom();
 
-            let cairo_cx = snapshot.append_cairo(&surface_bounds.to_graphene_rect());
-            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+                   let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(surface_bounds));
+                   let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
-            // Transform to sheet coordinate space
-            piet_cx.transform(self.camera.transform().to_kurbo());
+                   // Transform to sheet coordinate space
+                   piet_cx.transform(self.camera.transform().to_kurbo());
 
-            piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
-            self.store
-                .draw_strokes_immediate_w_piet(&mut piet_cx, sheet_bounds, Some(viewport), zoom)?;
-            piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   self.store
+                       .draw_strokes_immediate_w_piet(&mut piet_cx, sheet_bounds, viewport, zoom)?;
+                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-            piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
-            self.penholder
-                .draw_on_sheet(&mut piet_cx, sheet_bounds, viewport)?;
-            piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+                   piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-            piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
-        } */
+                   self.penholder
+                       .draw_on_sheet(&mut piet_cx, sheet_bounds, &self.camera)?;
+                   piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+
+                   piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+               }
+        */
         snapshot.save();
-
-        snapshot.transform(Some(&self.camera.transform_as_gsk()));
+        snapshot.transform(Some(&self.camera.transform_for_gtk_snapshot()));
 
         // visual debugging
         if self.visual_debug {
@@ -711,6 +766,7 @@ pub mod visual_debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
     use p2d::bounding_volume::{BoundingVolume, AABB};
 
+    use crate::pens::eraser::EraserState;
     use crate::pens::penholder::PenStyle;
     use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
     use crate::{DrawOnSheetBehaviour, RnoteEngine};
@@ -738,6 +794,12 @@ pub mod visual_debug {
         r: 0.0,
         g: 0.8,
         b: 0.8,
+        a: 1.0,
+    };
+    pub const COLOR_IMAGE_BOUNDS: Color = Color {
+        r: 0.0,
+        g: 0.5,
+        b: 1.0,
         a: 1.0,
     };
     pub const COLOR_STROKE_REGENERATE_FLAG: Color = Color {
@@ -802,7 +864,7 @@ pub mod visual_debug {
     pub fn draw_fill(rect: AABB, color: Color, snapshot: &Snapshot) {
         snapshot.append_color(
             &gdk::RGBA::from_compose_color(color),
-            &graphene::Rect::from_aabb(rect),
+            &graphene::Rect::from_p2d_aabb(rect),
         );
     }
 
@@ -829,9 +891,9 @@ pub mod visual_debug {
 
         match current_pen_style {
             PenStyle::Eraser => {
-                if let Some(current_input) = engine.penholder.eraser.current_input {
+                if let EraserState::Down(current_element) = engine.penholder.eraser.state {
                     draw_pos(
-                        current_input.pos,
+                        current_element.pos,
                         COLOR_POS_ALT,
                         snapshot,
                         border_widths * 4.0,

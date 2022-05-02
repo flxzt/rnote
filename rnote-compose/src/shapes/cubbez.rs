@@ -1,6 +1,8 @@
+use kurbo::Shape;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
+use crate::helpers::{KurboHelpers, Vector2Helpers};
 use crate::shapes::ShapeBehaviour;
 use crate::transform::TransformBehaviour;
 
@@ -53,10 +55,17 @@ impl TransformBehaviour for CubicBezier {
 
 impl ShapeBehaviour for CubicBezier {
     fn bounds(&self) -> p2d::bounding_volume::AABB {
-        let mut aabb = AABB::new(na::Point2::from(self.start), na::Point2::from(self.end));
-        aabb.take_point(na::Point2::from(self.cp1));
-        aabb.take_point(na::Point2::from(self.cp2));
-        aabb
+        self.to_kurbo().bounding_box().bounds_as_p2d_aabb()
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        // TODO: should be dependend on the actual curve length
+        let n_splits = super::hitbox_elems_for_shape_len(self.to_kurbo().perimeter(0.1));
+
+        self.approx_with_lines(n_splits)
+            .into_iter()
+            .map(|line| line.bounds())
+            .collect()
     }
 }
 
@@ -149,6 +158,16 @@ impl CubicBezier {
         }
 
         lines
+    }
+
+    /// to kurbo
+    pub fn to_kurbo(&self) -> kurbo::CubicBez {
+        kurbo::CubicBez::new(
+            self.start.to_kurbo_point(),
+            self.cp1.to_kurbo_point(),
+            self.cp2.to_kurbo_point(),
+            self.end.to_kurbo_point(),
+        )
     }
 }
 

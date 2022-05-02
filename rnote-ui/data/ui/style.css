@@ -1,3 +1,8 @@
+.sidebar_action_image {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
 .main_title.unsaved_changes .title {
     font-style: italic;
     transition: font-style 0.2s;

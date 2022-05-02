@@ -1,5 +1,7 @@
-use gtk4::{gdk, glib, graphene};
+use geo::line_string;
+use gtk4::{gdk, glib, graphene, gsk};
 use p2d::bounding_volume::AABB;
+use rnote_compose::Transform;
 
 pub trait GdkRGBAHelpers
 where
@@ -7,6 +9,8 @@ where
 {
     fn from_compose_color(color: rnote_compose::Color) -> Self;
     fn into_compose_color(self) -> rnote_compose::Color;
+    fn from_piet_color(color: piet::Color) -> Self;
+    fn into_piet_color(self) -> piet::Color;
 }
 
 impl GdkRGBAHelpers for gdk::RGBA {
@@ -26,17 +30,31 @@ impl GdkRGBAHelpers for gdk::RGBA {
             a: f64::from(self.alpha()),
         }
     }
+
+    fn from_piet_color(color: piet::Color) -> Self {
+        let (r, g, b, a) = color.as_rgba();
+        gdk::RGBA::new(r as f32, g as f32, b as f32, a as f32)
+    }
+
+    fn into_piet_color(self) -> piet::Color {
+        piet::Color::rgba(
+            f64::from(self.red()),
+            f64::from(self.green()),
+            f64::from(self.blue()),
+            f64::from(self.alpha()),
+        )
+    }
 }
 
 pub trait GrapheneRectHelpers
 where
     Self: Sized,
 {
-    fn from_aabb(aabb: AABB) -> Self;
+    fn from_p2d_aabb(aabb: AABB) -> Self;
 }
 
 impl GrapheneRectHelpers for graphene::Rect {
-    fn from_aabb(aabb: AABB) -> Self {
+    fn from_p2d_aabb(aabb: AABB) -> Self {
         graphene::Rect::new(
             aabb.mins[0] as f32,
             aabb.mins[1] as f32,
@@ -66,6 +84,29 @@ pub fn convert_coord_dpi(
     target_dpi: f64,
 ) -> na::Vector2<f64> {
     (coord / current_dpi) * target_dpi
+}
+
+pub fn transform_to_gsk(transform: &Transform) -> gsk::Transform {
+    gsk::Transform::new().matrix(&graphene::Matrix::from_2d(
+        transform.affine[(0, 0)],
+        transform.affine[(1, 0)],
+        transform.affine[(0, 1)],
+        transform.affine[(1, 1)],
+        transform.affine[(0, 2)],
+        transform.affine[(1, 2)],
+    ))
+}
+
+/// Converts a AABB to a geo::Polygon
+pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
+    let line_string = line_string![
+        (x: aabb.mins[0], y: aabb.mins[1]),
+        (x: aabb.maxs[0], y: aabb.mins[1]),
+        (x: aabb.maxs[0], y: aabb.maxs[1]),
+        (x: aabb.mins[0], y: aabb.maxs[1]),
+        (x: aabb.mins[0], y: aabb.mins[1]),
+    ];
+    geo::Polygon::new(line_string, vec![])
 }
 
 pub mod base64 {

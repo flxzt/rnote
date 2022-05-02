@@ -1,3 +1,4 @@
+use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, DrawBehaviour};
 use rnote_compose::helpers::AABBHelpers;
@@ -63,12 +64,21 @@ impl StrokeBehaviour for VectorImage {
         Ok(svg)
     }
 
-    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
-        Ok(render::Image::gen_images_from_drawable(
-            self,
-            self.bounds(),
-            image_scale,
-        )?)
+    fn gen_images(
+        &self,
+        _viewport: AABB,
+        image_scale: f64,
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
+        let bounds = self.bounds();
+
+        // Always generate full stroke images for vectorimages, as they are too expensive to be repeatetly rendered
+        Ok(GeneratedStrokeImages::Full(vec![
+            render::Image::gen_with_piet(
+                |piet_cx| self.draw(piet_cx, image_scale),
+                bounds,
+                image_scale,
+            )?,
+        ]))
     }
 }
 
@@ -76,35 +86,16 @@ impl StrokeBehaviour for VectorImage {
 // There we use a svg renderer to generate pixel images. In this way we ensure to export an actual svg when calling gen_svgs(), but can also draw it onto piet.
 impl DrawBehaviour for VectorImage {
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()> {
-        let mut image = match render::Image::join_images(
-            render::Image::gen_images_from_svg(self.gen_svg()?, self.bounds(), image_scale)?,
-            self.bounds(),
-            image_scale,
-        )? {
-            Some(image) => image,
-            None => return Ok(()),
-        };
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        // piet needs rgba8-prem. the gen_images() func might produces bgra8-prem format, so we need to convert the image first
+        let mut image =
+            render::Image::gen_image_from_svg(self.gen_svg()?, self.bounds(), image_scale)?;
+
+        // draw() needs rgba8-prem. the gen_images() func might produces bgra8-prem format (when using librsvg as renderer backend), so we might need to convert the image first
         image.convert_to_rgba8pre()?;
+        image.draw(cx, image_scale)?;
 
-        let piet_image_format = piet::ImageFormat::try_from(image.memory_format)?;
-
-        let piet_image = cx
-            .make_image(
-                image.pixel_width as usize,
-                image.pixel_height as usize,
-                &image.data,
-                piet_image_format,
-            )
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
-
-        cx.draw_image(
-            &piet_image,
-            image.bounds.to_kurbo_rect(),
-            piet::InterpolationMode::Bilinear,
-        );
-
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -112,6 +103,10 @@ impl DrawBehaviour for VectorImage {
 impl ShapeBehaviour for VectorImage {
     fn bounds(&self) -> AABB {
         self.rectangle.bounds()
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        vec![self.bounds()]
     }
 }
 
@@ -280,22 +275,5 @@ impl VectorImage {
         );
 
         Ok(export_svg_data)
-    }
-
-    pub fn export_as_image_bytes(
-        &self,
-        format: image::ImageOutputFormat,
-        image_scale: f64,
-    ) -> Result<Vec<u8>, anyhow::Error> {
-        let bounds = self.bounds();
-
-        match render::Image::join_images(
-            render::Image::gen_images_from_drawable(self, bounds, image_scale)?,
-            bounds,
-            image_scale,
-        )? {
-            Some(image) => Ok(image.into_encoded_bytes(format)?),
-            None => Ok(vec![]),
-        }
     }
 }

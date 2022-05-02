@@ -1,13 +1,14 @@
 use anyhow::Context;
 use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use piet::RenderContext;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
 
-use crate::render;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
+use crate::{render, Camera};
 use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::Color;
+use rnote_compose::{color, Color};
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
@@ -176,7 +177,7 @@ pub struct Background {
     #[serde(skip)]
     pub image: Option<render::Image>,
     #[serde(skip)]
-    rendernodes: Vec<gsk::RenderNode>,
+    rendernodes: Vec<(gsk::RenderNode, AABB)>,
 }
 
 impl Default for Background {
@@ -193,10 +194,10 @@ impl Default for Background {
 }
 
 impl Background {
-    pub const TILE_MAX_SIZE: f64 = 192.0;
-    pub const COLOR_DEFAULT: Color = Color::WHITE;
-    pub const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
-    pub const PATTERN_COLOR_DEFAULT: Color = Color {
+    const TILE_MAX_SIZE: f64 = 192.0;
+    const COLOR_DEFAULT: Color = Color::WHITE;
+    const PATTERN_SIZE_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
+    const PATTERN_COLOR_DEFAULT: Color = Color {
         r: 0.8,
         g: 0.9,
         b: 1.0,
@@ -271,55 +272,87 @@ impl Background {
         Ok(render::Svg { svg_data, bounds })
     }
 
+    fn draw_origin_indicator(camera: &Camera) -> anyhow::Result<gsk::RenderNode> {
+        const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
+        let path_width: f64 = 1.0 / camera.total_zoom();
+
+        let indicator_bounds = AABB::from_half_extents(
+            na::point![0.0, 0.0],
+            na::Vector2::repeat(6.0 / camera.total_zoom()),
+        );
+
+        let cairo_node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(indicator_bounds));
+        let cairo_cx = cairo_node.draw_context();
+        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+        let mut indicator_path = kurbo::BezPath::new();
+        indicator_path.move_to(kurbo::Point::new(
+            indicator_bounds.mins[0],
+            indicator_bounds.mins[1],
+        ));
+        indicator_path.line_to(kurbo::Point::new(
+            indicator_bounds.maxs[0],
+            indicator_bounds.maxs[1],
+        ));
+        indicator_path.move_to(kurbo::Point::new(
+            indicator_bounds.mins[0],
+            indicator_bounds.maxs[1],
+        ));
+        indicator_path.line_to(kurbo::Point::new(
+            indicator_bounds.maxs[0],
+            indicator_bounds.mins[1],
+        ));
+
+        piet_cx.stroke(indicator_path, &PATH_COLOR, path_width);
+
+        piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        Ok(cairo_node.upcast())
+    }
+
     fn gen_image(
         &self,
         bounds: AABB,
         image_scale: f64,
     ) -> Result<Option<render::Image>, anyhow::Error> {
         let svg = self.gen_svg(bounds)?;
-        Ok(render::Image::join_images(
-            render::Image::gen_images_from_svg(svg, bounds, image_scale)?,
+        Ok(Some(render::Image::gen_image_from_svg(
+            svg,
             bounds,
             image_scale,
-        )?)
+        )?))
     }
 
     fn gen_rendernodes(
         &mut self,
-        sheet_bounds: AABB,
-    ) -> Result<Vec<gsk::RenderNode>, anyhow::Error> {
+        viewport: AABB,
+    ) -> Result<Vec<(gsk::RenderNode, AABB)>, anyhow::Error> {
         let tile_size = self.tile_size();
-        let mut rendernodes: Vec<gsk::RenderNode> = vec![];
-
-        // Fill with background color just in case there is any space left between the tiles
-        rendernodes.push(
-            gsk::ColorNode::new(
-                &gdk::RGBA::from_compose_color(self.color),
-                &graphene::Rect::from_aabb(sheet_bounds),
-            )
-            .upcast(),
-        );
+        let mut rendernodes: Vec<(gsk::RenderNode, AABB)> = vec![];
 
         if let Some(image) = &self.image {
+            // Only creat the texture once, it is expensive
             let new_texture = image
                 .to_memtexture()
-                .context("image_to_memtexture() failed in gen_rendernode().")?;
-            for splitted_bounds in sheet_bounds.split_extended_origin_aligned(tile_size) {
-                rendernodes.push(
+                .context("image to_memtexture() failed in gen_rendernode() of background.")?;
+
+            for splitted_bounds in viewport.split_extended_origin_aligned(tile_size) {
+                rendernodes.push((
                     gsk::TextureNode::new(
                         &new_texture,
-                        &graphene::Rect::from_aabb(splitted_bounds.ceil().loosened(1.0)),
+                        &graphene::Rect::from_p2d_aabb(splitted_bounds.ceil().loosened(1.0)),
                     )
                     .upcast(),
-                );
+                    splitted_bounds,
+                ));
             }
         }
 
         Ok(rendernodes)
     }
 
-    pub fn update_rendernodes(&mut self, sheet_bounds: AABB) -> anyhow::Result<()> {
-        match self.gen_rendernodes(sheet_bounds) {
+    pub fn update_rendernodes(&mut self, viewport: AABB) -> anyhow::Result<()> {
+        match self.gen_rendernodes(viewport) {
             Ok(rendernodes) => {
                 self.rendernodes = rendernodes;
             }
@@ -336,7 +369,7 @@ impl Background {
 
     pub fn regenerate_background(
         &mut self,
-        sheet_bounds: AABB,
+        viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         let tile_size = self.tile_size();
@@ -344,17 +377,39 @@ impl Background {
 
         self.image = self.gen_image(tile_bounds, image_scale)?;
 
-        self.update_rendernodes(sheet_bounds)?;
+        self.update_rendernodes(viewport)?;
         Ok(())
     }
 
-    pub fn draw(&self, snapshot: &Snapshot, sheet_bounds: AABB) {
-        snapshot.push_clip(&graphene::Rect::from_aabb(sheet_bounds));
+    pub fn draw(
+        &self,
+        snapshot: &Snapshot,
+        sheet_bounds: AABB,
+        camera: &Camera,
+    ) -> anyhow::Result<()> {
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
+
+        // Fill with background color just in case there is any space left between the tiles
+        snapshot.append_node(
+            &gsk::ColorNode::new(
+                &gdk::RGBA::from_compose_color(self.color),
+                &graphene::Rect::from_p2d_aabb(sheet_bounds),
+            )
+            .upcast(),
+        );
 
         self.rendernodes.iter().for_each(|rendernode| {
-            snapshot.append_node(rendernode);
+            // Skip rendernodes that are not in view
+            if !camera.viewport().intersects(&rendernode.1) {
+                return;
+            }
+            snapshot.append_node(&rendernode.0);
         });
 
+        // Draw an indicator at the origin
+        snapshot.append_node(&Self::draw_origin_indicator(camera)?);
+
         snapshot.pop();
+        Ok(())
     }
 }

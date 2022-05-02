@@ -33,6 +33,14 @@
       <default>"./"</default>
       <summary>the current workspace directory</summary>
     </key>
+    <key name="autosave" type="b">
+      <default>true</default>
+      <summary>true when autosave is enabled</summary>
+    </key>
+    <key name="autosave-interval-secs" type="u">
+      <default>120</default>
+      <summary>the sec interval for the autosave</summary>
+    </key>
     <key name="righthanded" type="b">
       <default>true</default>
       <summary>Wether the user is righthanded (or lefthanded)</summary>
@@ -83,8 +91,8 @@
     </key>
     <key name="shaperpage-fills" type="(uu)">
       <default>(
-        0x000000ff,
-        0x00000000
+        0x00000000,
+        0x99c1f1ff
       )</default>
       <summary>the shaper page fill colors</summary>
     </key>

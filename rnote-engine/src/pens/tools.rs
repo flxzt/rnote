@@ -1,13 +1,15 @@
 use crate::sheet::Sheet;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use piet::RenderContext;
+use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::{color, PenEvent};
+use rnote_compose::penhelpers::PenEvent;
 
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -32,7 +34,7 @@ impl Default for ExpandSheetTool {
 }
 
 impl ExpandSheetTool {
-    pub const Y_OFFSET_THRESHOLD: f64 = 2.0;
+    pub const Y_OFFSET_THRESHOLD: f64 = 0.1;
     pub const FILL_COLOR: piet::Color = color::GNOME_BLUES[0].with_a8(0x16);
     pub const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(0xf0);
     pub const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
@@ -56,10 +58,12 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         _sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         let viewport = camera.viewport();
         let x = viewport.mins[0];
         let y = self.start_pos_y;
@@ -71,14 +75,14 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
             tool_bounds.mins.coords.to_kurbo_point(),
             tool_bounds.maxs.coords.to_kurbo_point(),
         );
-        cx.fill(tool_bounds_rect, &piet::PaintBrush::Color(Self::FILL_COLOR));
+        cx.fill(tool_bounds_rect, &Self::FILL_COLOR);
 
         let threshold_line =
             kurbo::Line::new(kurbo::Point::new(x, y), kurbo::Point::new(x + width, y));
 
         cx.stroke_styled(
             threshold_line,
-            &piet::PaintBrush::Color(Self::THRESHOLD_LINE_COLOR),
+            &Self::THRESHOLD_LINE_COLOR,
             Self::THRESHOLD_LINE_WIDTH,
             &piet::StrokeStyle::new().dash_pattern(&[12.0, 6.0]),
         );
@@ -89,10 +93,11 @@ impl DrawOnSheetBehaviour for ExpandSheetTool {
         );
         cx.stroke(
             offset_line,
-            &piet::PaintBrush::Color(Self::OFFSET_LINE_COLOR),
+            &Self::OFFSET_LINE_COLOR,
             Self::OFFSET_LINE_WIDTH,
         );
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -137,10 +142,11 @@ impl DrawOnSheetBehaviour for DragProximityTool {
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         _sheet_bounds: AABB,
         _camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let mut radius = self.radius;
 
         let n_circles = 7;
@@ -149,14 +155,11 @@ impl DrawOnSheetBehaviour for DragProximityTool {
 
             let circle = kurbo::Circle::new(self.pos.to_kurbo_point(), radius);
 
-            cx.fill(circle, &piet::PaintBrush::Color(Self::FILL_COLOR));
-            cx.stroke(
-                circle,
-                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
-                Self::OUTLINE_WIDTH,
-            );
+            cx.fill(circle, &Self::FILL_COLOR);
+            cx.stroke(circle, &Self::OUTLINE_COLOR, Self::OUTLINE_WIDTH);
         }
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -177,8 +180,8 @@ impl Default for OffsetCameraTool {
 }
 
 impl OffsetCameraTool {
-    const DRAW_SIZE: na::Vector2<f64> = na::vector![28.0, 28.0];
-    const PATH_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(0xf0);
+    const DRAW_SIZE: na::Vector2<f64> = na::vector![16.0, 16.0];
+    const FILL_COLOR: piet::Color = color::GNOME_DARKS[3].with_a8(0xf0);
     const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[1].with_a8(0xf0);
     const PATH_WIDTH: f64 = 2.0;
 }
@@ -187,35 +190,31 @@ impl DrawOnSheetBehaviour for OffsetCameraTool {
     fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.start),
-            (Self::DRAW_SIZE * 0.5 + na::Vector2::repeat(Self::PATH_WIDTH)) / camera.total_zoom(),
+            ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5) / camera.total_zoom(),
         ))
     }
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
             cx.transform(kurbo::Affine::scale(1.0 / camera.total_zoom()));
 
             let bez_path =
-                kurbo::BezPath::from_svg(include_str!("../../data/images/hand-grab-path.txt"))
+                kurbo::BezPath::from_svg(include_str!("../../data/images/sheet-drag-path.txt"))
                     .unwrap();
 
-            cx.stroke(
-                bez_path.clone(),
-                &piet::PaintBrush::Color(Self::OUTLINE_COLOR),
-                Self::PATH_WIDTH,
-            );
-            cx.stroke(
-                bez_path,
-                &piet::PaintBrush::Color(Self::PATH_COLOR),
-                Self::PATH_WIDTH * 0.5,
-            );
+            cx.stroke(bez_path.clone(), &Self::OUTLINE_COLOR, Self::PATH_WIDTH);
+            cx.fill(bez_path, &Self::FILL_COLOR);
         }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }
@@ -273,17 +272,19 @@ impl PenBehaviour for Tools {
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) -> SurfaceFlags {
+    ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 
-        match (self.state, event) {
+        let pen_progress = match (&mut self.state, event) {
             (
                 ToolsState::Idle,
                 PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
+                store.record();
+
                 match self.style {
                     ToolsStyle::ExpandSheet => {
                         self.expandsheet_tool.start_pos_y = element.pos[1];
@@ -302,78 +303,125 @@ impl PenBehaviour for Tools {
                 }
 
                 self.state = ToolsState::Active;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(true);
+
+                PenProgress::InProgress
             }
+            (ToolsState::Idle, _) => PenProgress::Idle,
             (
                 ToolsState::Active,
                 PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
-            ) => match self.style {
-                ToolsStyle::ExpandSheet => {
-                    let y_offset = element.pos[1] - self.expandsheet_tool.current_pos_y;
+            ) => {
+                let pen_progress = match self.style {
+                    ToolsStyle::ExpandSheet => {
+                        let y_offset = element.pos[1] - self.expandsheet_tool.current_pos_y;
 
-                    if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
-                        store.translate_strokes(
-                            &self.expandsheet_tool.strokes_below,
-                            na::vector![0.0, y_offset],
-                        );
+                        if y_offset.abs() > ExpandSheetTool::Y_OFFSET_THRESHOLD {
+                            store.translate_strokes(
+                                &self.expandsheet_tool.strokes_below,
+                                na::vector![0.0, y_offset],
+                            );
+                            store.translate_strokes_images(
+                                &self.expandsheet_tool.strokes_below,
+                                na::vector![0.0, y_offset],
+                            );
 
-                        self.expandsheet_tool.current_pos_y = element.pos[1];
+                            self.expandsheet_tool.current_pos_y = element.pos[1];
+                        }
+
+                        PenProgress::InProgress
                     }
-                }
-                ToolsStyle::DragProximity => {
-                    let offset = element.pos - self.dragproximity_tool.pos;
-                    self.dragproximity_tool.offset = offset;
+                    ToolsStyle::DragProximity => {
+                        let offset = element.pos - self.dragproximity_tool.pos;
+                        self.dragproximity_tool.offset = offset;
 
-                    if self.dragproximity_tool.offset.magnitude()
-                        > DragProximityTool::OFFSET_MAGNITUDE_THRESHOLD
-                    {
-                        store.drag_strokes_proximity(&self.dragproximity_tool);
-                        store.regenerate_rendering_in_viewport_threaded(
-                            false,
-                            camera.viewport_extended(),
-                            camera.image_scale(),
-                        );
+                        if self.dragproximity_tool.offset.magnitude()
+                            > DragProximityTool::OFFSET_MAGNITUDE_THRESHOLD
+                        {
+                            store.drag_strokes_proximity(&self.dragproximity_tool);
+                            store.regenerate_rendering_in_viewport_threaded(
+                                false,
+                                camera.viewport(),
+                                camera.image_scale(),
+                            );
 
-                        self.dragproximity_tool.pos = element.pos;
-                        self.dragproximity_tool.offset = na::Vector2::zeros();
+                            self.dragproximity_tool.pos = element.pos;
+                            self.dragproximity_tool.offset = na::Vector2::zeros();
+                        }
+
+                        PenProgress::InProgress
                     }
-                }
-                ToolsStyle::OffsetCamera => {
-                    let offset = camera
-                        .transform()
-                        .transform_point(&na::Point2::from(element.pos))
-                        .coords
-                        - camera
+                    ToolsStyle::OffsetCamera => {
+                        let offset = camera
                             .transform()
-                            .transform_point(&na::Point2::from(self.offsetcamera_tool.start))
-                            .coords;
+                            .transform_point(&na::Point2::from(element.pos))
+                            .coords
+                            - camera
+                                .transform()
+                                .transform_point(&na::Point2::from(self.offsetcamera_tool.start))
+                                .coords;
 
-                    if offset.magnitude() > 1.0 {
-                        camera.offset -= offset;
-                        surface_flags.camera_offset_changed = true;
+                        if offset.magnitude() > 1.0 {
+                            camera.offset -= offset;
+                            surface_flags.camera_offset_changed = true;
+                        }
+
+                        PenProgress::InProgress
                     }
-                }
-            },
-            (ToolsState::Idle, PenEvent::Up { .. }) => {}
+                };
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+
+                pen_progress
+            }
             (ToolsState::Active, PenEvent::Up { .. }) => {
+                match self.style {
+                    ToolsStyle::ExpandSheet => {
+                        store.update_geometry_for_strokes(&self.expandsheet_tool.strokes_below);
+                    }
+                    ToolsStyle::DragProximity => {}
+                    ToolsStyle::OffsetCamera => {}
+                }
+                store.regenerate_rendering_in_viewport_threaded(
+                    false,
+                    camera.viewport(),
+                    camera.image_scale(),
+                );
+
                 self.reset();
                 self.state = ToolsState::Idle;
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
+                PenProgress::Finished
             }
-            (ToolsState::Idle, PenEvent::Proximity { .. }) => {}
-            (ToolsState::Active, PenEvent::Proximity { .. }) => {
-                self.reset();
-                self.state = ToolsState::Idle;
-            }
-            (ToolsState::Idle, PenEvent::Cancel) => {}
+            (ToolsState::Active, PenEvent::Proximity { .. }) => PenProgress::InProgress,
             (ToolsState::Active, PenEvent::Cancel) => {
                 self.reset();
                 self.state = ToolsState::Idle;
-            }
-        }
 
-        surface_flags
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
+                PenProgress::Finished
+            }
+        };
+
+        (pen_progress, surface_flags)
     }
 }
 
@@ -397,24 +445,29 @@ impl DrawOnSheetBehaviour for Tools {
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+
         match &self.style {
             ToolsStyle::ExpandSheet => {
                 self.expandsheet_tool
-                    .draw_on_sheet(cx, sheet_bounds, camera)
+                    .draw_on_sheet(cx, sheet_bounds, camera)?;
             }
             ToolsStyle::DragProximity => {
                 self.dragproximity_tool
-                    .draw_on_sheet(cx, sheet_bounds, camera)
+                    .draw_on_sheet(cx, sheet_bounds, camera)?;
             }
             ToolsStyle::OffsetCamera => {
                 self.offsetcamera_tool
-                    .draw_on_sheet(cx, sheet_bounds, camera)
+                    .draw_on_sheet(cx, sheet_bounds, camera)?;
             }
         }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        Ok(())
     }
 }
 

@@ -10,10 +10,10 @@ use crate::Camera;
 /// In the coordinate space of the sheet
 pub trait DrawOnSheetBehaviour {
     fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB>;
-    /// draws itself on the sheet. the callers are expected to call with save / restore context
+    /// draws itself on the sheet. the implementors are expected save / restore context
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()>;
@@ -41,7 +41,8 @@ pub trait DrawOnSheetBehaviour {
             bounds_transformed.ensure_positive();
             bounds_transformed.assert_valid()?;
 
-            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_aabb(bounds_transformed));
+            let cairo_cx =
+                snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_transformed));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
             // Transform to sheet coordinate space
@@ -51,14 +52,13 @@ pub trait DrawOnSheetBehaviour {
         }
 
         snapshot.restore();
-
         Ok(())
     }
 }
 
 /// Trait for types that can draw themselves on a piet RenderContext.
 pub trait DrawBehaviour {
-    /// draws itself. the callers are expected to call with save / restore context
-    /// image_scale is the scalefactor of generated pixel images within the type. the context should not be zoomed by it!
+    /// draws itself. the implementors are expected save / restore context
+    /// image_scale is the scalefactor of generated pixel images within the type. the content should not be zoomed by it!
     fn draw(&self, cx: &mut impl piet::RenderContext, image_scale: f64) -> anyhow::Result<()>;
 }

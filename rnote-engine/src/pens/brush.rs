@@ -2,18 +2,21 @@ use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
+use piet::RenderContext;
+use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use rnote_compose::builders::ConstraintRatio;
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
+use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
-use rnote_compose::{PenEvent, Style};
+use rnote_compose::{Shape, Style};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rand::{Rng, SeedableRng};
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::style::textured::TexturedOptions;
-use rnote_compose::style::Composer;
 use serde::{Deserialize, Serialize};
 
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -75,19 +78,21 @@ impl PenBehaviour for Brush {
         store: &mut StrokeStore,
         camera: &mut Camera,
         audioplayer: Option<&mut AudioPlayer>,
-    ) -> SurfaceFlags {
-        let surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, SurfaceFlags) {
+        let mut surface_flags = SurfaceFlags::default();
         let style = self.style;
 
-        match (&mut self.state, event) {
+        let pen_progress = match (&mut self.state, event) {
             (
                 BrushState::Idle,
-                pen_event @ PenEvent::Down {
+                PenEvent::Down {
                     element,
-                    shortcut_key: _,
+                    shortcut_keys: _,
                 },
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
+                    store.record();
+
                     Self::start_audio(style, audioplayer);
 
                     // A new seed for a new brush stroke
@@ -100,17 +105,13 @@ impl PenBehaviour for Brush {
                     ));
                     let current_stroke_key = store.insert_stroke(brushstroke);
 
-                    let mut path_builder = PenPathBuilder::start(element);
+                    let path_builder = PenPathBuilder::start(element, ConstraintRatio::Disabled);
 
-                    if let Some(new_segments) = path_builder.handle_event(pen_event) {
-                        for new_segment in new_segments {
-                            store.add_segment_to_brushstroke(current_stroke_key, new_segment);
-                        }
-                    }
-
-                    if let Err(e) = store
-                        .regenerate_rendering_for_stroke(current_stroke_key, camera.image_scale())
-                    {
+                    if let Err(e) = store.regenerate_rendering_for_stroke(
+                        current_stroke_key,
+                        camera.viewport(),
+                        camera.image_scale(),
+                    ) {
                         log::error!("regenerate_rendering_for_stroke() failed after inserting brush stroke, Err {}", e);
                     }
 
@@ -118,68 +119,16 @@ impl PenBehaviour for Brush {
                         path_builder,
                         current_stroke_key,
                     };
+
+                    surface_flags.redraw = true;
+                    surface_flags.hide_scrollbars = Some(true);
+
+                    PenProgress::InProgress
+                } else {
+                    PenProgress::Idle
                 }
             }
-            (BrushState::Idle, PenEvent::Up { .. }) => Self::stop_audio(style, audioplayer),
-            (
-                BrushState::Drawing {
-                    path_builder,
-                    current_stroke_key,
-                },
-                pen_event @ PenEvent::Down {
-                    element,
-                    shortcut_key: _,
-                },
-            ) => {
-                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
-                    if let Some(new_segments) = path_builder.handle_event(pen_event) {
-                        let no_segments = new_segments.len();
-
-                        for new_segment in new_segments {
-                            store.add_segment_to_brushstroke(*current_stroke_key, new_segment);
-                        }
-
-                        if let Err(e) = store.append_rendering_last_segments(
-                            *current_stroke_key,
-                            no_segments,
-                            camera.image_scale(),
-                        ) {
-                            log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
-                        }
-                    }
-                }
-            }
-            (
-                BrushState::Drawing {
-                    ref mut path_builder,
-                    current_stroke_key,
-                },
-                pen_event @ PenEvent::Up {
-                    element: _,
-                    shortcut_key: _,
-                },
-            ) => {
-                Self::stop_audio(style, audioplayer);
-
-                if let Some(new_segments) = path_builder.handle_event(pen_event) {
-                    for new_segment in new_segments {
-                        store.add_segment_to_brushstroke(*current_stroke_key, new_segment);
-                    }
-                }
-
-                // Finish up the last stroke
-                store.update_geometry_for_stroke(*current_stroke_key);
-                if let Err(e) =
-                    store.regenerate_rendering_for_stroke(*current_stroke_key, camera.image_scale())
-                {
-                    log::error!("regenerate_rendering_for_stroke() failed after finishing brush stroke, Err {}", e);
-                }
-
-                self.state = BrushState::Idle;
-            }
-            (BrushState::Idle, PenEvent::Cancel) => {
-                Self::stop_audio(style, audioplayer);
-            }
+            (BrushState::Idle, _) => PenProgress::Idle,
             (
                 BrushState::Drawing {
                     current_stroke_key, ..
@@ -192,62 +141,135 @@ impl PenBehaviour for Brush {
                 store.update_geometry_for_stroke(*current_stroke_key);
                 store.regenerate_rendering_for_stroke_threaded(
                     *current_stroke_key,
+                    camera.viewport(),
                     camera.image_scale(),
                 );
 
                 self.state = BrushState::Idle;
-            }
-            (_, PenEvent::Proximity { .. }) => {}
-        }
 
-        surface_flags
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.sheet_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
+                PenProgress::Finished
+            }
+            (
+                BrushState::Drawing {
+                    path_builder,
+                    current_stroke_key,
+                },
+                pen_event,
+            ) => {
+                match path_builder.handle_event(pen_event) {
+                    BuilderProgress::InProgress => {
+                        surface_flags.redraw = true;
+
+                        PenProgress::InProgress
+                    }
+                    BuilderProgress::EmitContinue(shapes) => {
+                        let mut n_segments = 0;
+
+                        for shape in shapes {
+                            match shape {
+                                Shape::Segment(new_segment) => {
+                                    store.add_segment_to_brushstroke(
+                                        *current_stroke_key,
+                                        new_segment,
+                                    );
+                                    n_segments += 1;
+                                    surface_flags.sheet_changed = true;
+                                }
+                                _ => {
+                                    // not reachable, pen builder should only produce segments
+                                }
+                            }
+                        }
+
+                        if let Err(e) = store.append_rendering_last_segments(
+                            *current_stroke_key,
+                            n_segments,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
+                        }
+                        surface_flags.redraw = true;
+
+                        PenProgress::InProgress
+                    }
+                    BuilderProgress::Finished(shapes) => {
+                        for shape in shapes {
+                            match shape {
+                                Shape::Segment(new_segment) => {
+                                    store.add_segment_to_brushstroke(
+                                        *current_stroke_key,
+                                        new_segment,
+                                    );
+                                    surface_flags.sheet_changed = true;
+                                }
+                                _ => {
+                                    // not reachable, pen builder should only produce segments
+                                }
+                            }
+                        }
+
+                        // Finish up the last stroke
+                        store.update_geometry_for_stroke(*current_stroke_key);
+                        store.regenerate_rendering_for_stroke_threaded(
+                            *current_stroke_key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        );
+
+                        Self::stop_audio(style, audioplayer);
+
+                        self.state = BrushState::Idle;
+
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.sheet_changed = true;
+                        surface_flags.hide_scrollbars = Some(false);
+
+                        PenProgress::Finished
+                    }
+                }
+            }
+        };
+
+        (pen_progress, surface_flags)
     }
 }
 
 impl DrawOnSheetBehaviour for Brush {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
-        match (&self.state, self.style) {
-            (BrushState::Idle, _) => None,
-            (BrushState::Drawing { path_builder, .. }, BrushStyle::Marker) => {
-                Some(path_builder.composed_bounds(&self.smooth_options))
-            }
-            (BrushState::Drawing { path_builder, .. }, BrushStyle::Solid) => {
-                Some(path_builder.composed_bounds(&self.smooth_options))
-            }
-            (BrushState::Drawing { path_builder, .. }, BrushStyle::Textured) => {
-                Some(path_builder.composed_bounds(&self.textured_options))
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+        let style = self.gen_style_for_current_options();
+
+        match &self.state {
+            BrushState::Idle => None,
+            BrushState::Drawing { path_builder, .. } => {
+                Some(path_builder.bounds(&style, camera.zoom()))
             }
         }
     }
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         _sheet_bounds: AABB,
-        _camera: &Camera,
+        camera: &Camera,
     ) -> anyhow::Result<()> {
-        // Different color for debugging
-        let smooth_options = self.smooth_options.clone();
-        /*         smooth_options.stroke_color = Some(rnote_compose::Color {
-            r: 1.0,
-            g: 0.0,
-            b: 1.0,
-            a: 1.0,
-        }); */
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        match (&self.state, self.style) {
-            (BrushState::Drawing { path_builder, .. }, BrushStyle::Marker) => {
-                path_builder.draw_composed(cx, &smooth_options);
+        match &self.state {
+            BrushState::Idle => {}
+            BrushState::Drawing { path_builder, .. } => {
+                let style = self.gen_style_for_current_options();
+                path_builder.draw_styled(cx, &style, camera.total_zoom());
             }
-            (BrushState::Drawing { path_builder, .. }, BrushStyle::Solid) => {
-                path_builder.draw_composed(cx, &smooth_options);
-            }
-            (BrushState::Drawing { path_builder, .. }, BrushStyle::Textured) => {
-                path_builder.draw_composed(cx, &self.textured_options);
-            }
-            _ => {}
         }
 
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

@@ -1,8 +1,14 @@
+use p2d::bounding_volume::{BoundingVolume, AABB};
+use piet::RenderContext;
+
+use crate::penhelpers::{PenEvent, PenState};
 use crate::penpath::Element;
 use crate::shapes::Line;
-use crate::{PenEvent, Shape};
+use crate::style::{drawhelpers, Composer};
+use crate::{Shape, Style};
 
-use super::ShapeBuilderBehaviour;
+use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use super::{ConstraintRatio, ShapeBuilderBehaviour};
 
 /// line builder
 #[derive(Debug, Clone)]
@@ -13,32 +19,48 @@ pub struct LineBuilder {
     pub current: na::Vector2<f64>,
 }
 
-impl ShapeBuilderBehaviour for LineBuilder {
-    type BuildedShape = Shape;
-
-    fn start(element: Element) -> Self {
+impl ShapeBuilderCreator for LineBuilder {
+    fn start(element: Element, ratio: ConstraintRatio) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
         }
     }
+}
 
-    fn handle_event(&mut self, event: PenEvent) -> Option<Vec<Self::BuildedShape>> {
+impl ShapeBuilderBehaviour for LineBuilder {
+    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
         match event {
-            crate::PenEvent::Down { element, .. } => {
+            PenEvent::Down { element, .. } => {
                 self.current = element.pos;
             }
-            crate::PenEvent::Up { .. } => {
-                return Some(vec![Shape::Line(Line {
+            PenEvent::Up { .. } => {
+                return BuilderProgress::Finished(vec![Shape::Line(Line {
                     start: self.start,
                     end: self.current,
                 })]);
             }
-            crate::PenEvent::Proximity { .. } => {}
-            crate::PenEvent::Cancel => {}
+            PenEvent::Proximity { .. } => {}
+            PenEvent::Cancel => {}
         }
 
-        None
+        BuilderProgress::InProgress
+    }
+
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+        self.state_as_line()
+            .composed_bounds(style)
+            .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
+    }
+
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+        cx.save().unwrap();
+        let line = self.state_as_line();
+        line.draw_composed(cx, style);
+
+        drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
+        drawhelpers::draw_pos_indicator(cx, PenState::Down, self.current, zoom);
+        cx.restore().unwrap();
     }
 }
 

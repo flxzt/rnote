@@ -9,9 +9,9 @@ use crate::unitentry::UnitEntry;
 use adw::prelude::*;
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorButton,
-    CompositeTemplate, ScrolledWindow, ToggleButton, Widget,
+    CompositeTemplate, ScrolledWindow, SpinButton, Switch, ToggleButton, Widget,
 };
-use rnote_compose::penevent::ShortcutKey;
+use rnote_compose::penhelpers::ShortcutKey;
 use rnote_engine::sheet::background::PatternStyle;
 use rnote_engine::sheet::format::{self, Format};
 use rnote_engine::utils::GdkRGBAHelpers;
@@ -27,6 +27,12 @@ mod imp {
 
         #[template_child]
         pub settings_scroller: TemplateChild<ScrolledWindow>,
+        #[template_child]
+        pub general_autosave_enable_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub general_autosave_interval_secs_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
         pub general_pdf_import_width_adj: TemplateChild<Adjustment>,
         #[template_child]
@@ -590,6 +596,33 @@ impl SettingsPanel {
             self.imp().penshortcut_stylus_button_eraser_row.get();
         let penshortcut_mouse_button_secondary_row =
             self.imp().penshortcut_mouse_button_secondary_row.get();
+
+        // autosave enable switch
+        self.imp()
+            .general_autosave_enable_switch
+            .bind_property("state", appwindow, "autosave")
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
+
+        self.imp()
+            .general_autosave_enable_switch
+            .get()
+            .bind_property(
+                "state",
+                &self.imp().general_autosave_interval_secs_row.get(),
+                "sensitive",
+            )
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+            .build();
+
+        self.imp()
+            .general_autosave_interval_secs_spinbutton
+            .get()
+            .bind_property("value", appwindow, "autosave-interval-secs")
+            .transform_to(|_, value| Some((value.get::<f64>().unwrap().round() as u32).to_value()))
+            .transform_from(|_, value| Some(f64::from(value.get::<u32>().unwrap()).to_value()))
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
 
         // Pdf import width
         self.imp()

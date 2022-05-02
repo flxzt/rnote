@@ -36,6 +36,9 @@
               <object class="GtkImage" id="shaperstyle_image">
                 <property name="icon-name">pen-shaper-style-smoooth-symbolic</property>
                 <property name="icon-size">large</property>
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
               </object>
             </child>
           </object>
@@ -101,7 +104,6 @@
           <object class="GtkMenuButton" id="shapeconfig_menubutton">
             <property name="icon-name">settings-symbolic</property>
             <property name="hexpand">true</property>
-            <property name="sensitive">false</property>
             <property name="halign">fill</property>
             <property name="direction">left</property>
             <property name="tooltip_text" translatable="yes">Shape configuration</property>
@@ -116,26 +118,22 @@
           <property name="orientation">vertical</property>
           <property name="margin-top">12</property>
           <property name="margin-bottom">12</property>
+          <property name="margin-start">12</property>
+          <property name="margin-end">12</property>
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
               <property name="label" translatable="yes">Shape configuration</property>
               <property name="halign">center</property>
-              <property name="margin-top">12</property>
-              <property name="margin-bottom">24</property>
               <style>
-                <class name="title-4" />
+                <class name="title-3" />
               </style>
             </object>
           </child>
           <child>
-            <object class="GtkListBox">
-              <property name="width-request">300</property>
-              <property name="selection-mode">none</property>
-              <style>
-                <class name="content" />
-                <class name="medium" />
-              </style>
+            <!-- Rough options -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Rough style</property>
               <child>
                 <object class="AdwActionRow">
                   <property name="title" translatable="yes">Roughness</property>
@@ -288,14 +286,16 @@
           <object class="GtkMenuButton" id="shapebuildertype_menubutton">
             <property name="hexpand">true</property>
             <property name="halign">fill</property>
-            <property name="height-request">48</property>
             <property name="direction">left</property>
-            <property name="tooltip_text" translatable="yes">Shape types</property>
+            <property name="tooltip_text" translatable="yes">Shape builders</property>
             <property name="popover">shapebuildertype_popover</property>
             <child>
               <object class="GtkImage" id="shapebuildertype_image">
                 <property name="icon-name">shape-line-symbolic</property>
                 <property name="icon-size">large</property>
+                <style>
+                  <class name="sidebar_action_image" />
+                </style>
               </object>
             </child>
           </object>
@@ -311,7 +311,7 @@
           <property name="spacing">12</property>
           <child>
             <object class="GtkLabel">
-              <property name="label" translatable="yes">Shape builder type</property>
+              <property name="label" translatable="yes">Shape builders</property>
               <property name="halign">center</property>
               <property name="margin-bottom">12</property>
               <style>
@@ -362,10 +362,32 @@
               </child>
               <child>
                 <object class="AdwActionRow" id="shapebuildertype_fociellipse_row">
-                  <property name="title" translatable="yes">Ellipse with Foci</property>
+                  <property name="title" translatable="yes">Ellipse with foci</property>
                   <child type="prefix">
                     <object class="GtkImage">
                       <property name="icon-name">shape-fociellipse-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_quadbez_row">
+                  <property name="title" translatable="yes">Quadratic bezier curve</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-quadbez-symbolic</property>
+                      <property name="icon-size">large</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow" id="shapebuildertype_cubbez_row">
+                  <property name="title" translatable="yes">Cubic bezier curve</property>
+                  <child type="prefix">
+                    <object class="GtkImage">
+                      <property name="icon-name">shape-cubbez-symbolic</property>
                       <property name="icon-size">large</property>
                     </object>
                   </child>
@@ -390,7 +412,7 @@
     </child>
     <child>
       <object class="ColorPicker" id="stroke_colorpicker">
-        <property name="height_request">127</property>
+        <property name="height_request">120</property>
         <property name="amount-colorbuttons">2</property>
       </object>
     </child>
@@ -408,7 +430,7 @@
     </child>
     <child>
       <object class="ColorPicker" id="fill_colorpicker">
-        <property name="height_request">127</property>
+        <property name="height_request">120</property>
         <property name="amount-colorbuttons">2</property>
       </object>
     </child>

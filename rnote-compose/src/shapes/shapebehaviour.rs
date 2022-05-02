@@ -6,4 +6,7 @@ use crate::transform::TransformBehaviour;
 pub trait ShapeBehaviour: TransformBehaviour {
     /// The bounds of the shape
     fn bounds(&self) -> AABB;
+
+    /// The hitboxes of the shape
+    fn hitboxes(&self) -> Vec<AABB>;
 }

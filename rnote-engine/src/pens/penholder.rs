@@ -4,14 +4,15 @@ use crate::pens::Tools;
 use crate::sheet::Sheet;
 use crate::surfaceflags::SurfaceFlags;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore};
-use rnote_compose::penevent::ShortcutKey;
-use rnote_compose::PenEvent;
+use piet::RenderContext;
+use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 
 use gtk4::{glib, glib::prelude::*};
 use num_derive::FromPrimitive;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
+use super::penbehaviour::PenProgress;
 use super::{AudioPlayer, Brush, Eraser, PenBehaviour, Selector, Shaper, Shortcuts};
 
 #[derive(
@@ -94,21 +95,9 @@ impl PenStyle {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-pub enum PenState {
-    Up,
-    Down,
-}
-
-impl Default for PenState {
-    fn default() -> Self {
-        Self::Up
-    }
-}
-
 #[derive(Debug, Clone)]
 pub enum PenHolderEvent {
-    PenEvent(rnote_compose::PenEvent),
+    PenEvent(PenEvent),
     ChangeStyle(PenStyle),
     ChangeStyleOverride(Option<PenStyle>),
     PressedShortcutkey(ShortcutKey),
@@ -119,7 +108,6 @@ pub enum PenHolderEvent {
 #[derive(Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
-    // brushes are configurable from the public
     #[serde(rename = "brush")]
     pub brush: Brush,
     #[serde(rename = "shaper")]
@@ -131,7 +119,6 @@ pub struct PenHolder {
     #[serde(rename = "tools")]
     pub tools: Tools,
 
-    // Managed by the internal state machine
     #[serde(rename = "style")]
     style: PenStyle,
     #[serde(skip)]
@@ -139,21 +126,25 @@ pub struct PenHolder {
     #[serde(rename = "shortcuts")]
     shortcuts: Shortcuts,
     #[serde(rename = "pen_sounds")]
-    pub pen_sounds: bool,
+    // we need this outside of the audioplayer, because we skip (de) serializing it.
+    pen_sounds: bool,
     #[serde(skip)]
-    state: PenState,
-    #[serde(skip)]
-    pub audioplayer: Option<AudioPlayer>,
+    audioplayer: Option<AudioPlayer>,
 }
 
 impl Default for PenHolder {
     fn default() -> Self {
+        let pen_sounds = false;
         let audioplayer = AudioPlayer::new()
             .map_err(|e| {
                 log::error!(
                     "failed to create a new audio player in PenHolder::default(), Err {}",
                     e
                 );
+            })
+            .map(|mut audioplayer| {
+                audioplayer.enabled = pen_sounds;
+                audioplayer
             })
             .ok();
 
@@ -167,14 +158,19 @@ impl Default for PenHolder {
             style: PenStyle::default(),
             style_override: None,
             shortcuts: Shortcuts::default(),
-            pen_sounds: false,
-            state: PenState::default(),
+            pen_sounds,
             audioplayer,
         }
     }
 }
 
 impl PenHolder {
+    /// Use this to import and overwrite self (e.g. when loading from settings)
+    pub fn import(&mut self, penholder: Self) {
+        *self = penholder;
+        // Set the pen sounds to update the audioplayer
+        self.set_pen_sounds(self.pen_sounds)
+    }
     /// gets the pen style. May be overriden by style_override.
     pub fn style(&self) -> PenStyle {
         self.style
@@ -206,129 +202,158 @@ impl PenHolder {
     }
 
     pub fn pen_sounds(&self) -> bool {
-        self.audioplayer
-            .as_ref()
-            .map(|audioplayer| audioplayer.enabled)
-            .unwrap_or(false)
+        self.pen_sounds
     }
 
     pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
+        self.pen_sounds = pen_sounds;
         if let Some(audioplayer) = self.audioplayer.as_mut() {
             audioplayer.enabled = pen_sounds;
         }
     }
 
     /// Changes the internal state according to events
-    pub(crate) fn handle_event(
+    #[must_use]
+    pub(crate) fn handle_penholder_event(
         &mut self,
         event: PenHolderEvent,
         sheet: &mut crate::sheet::Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
     ) -> SurfaceFlags {
-        /*         log::debug!(
-            "handle_event() with state: {:?}, event: {:?}, style: {:?}, style_override: {:?}",
-            self.state,
-            event,
-            self.style,
-            self.style_override
-        ); */
+        /*
+               log::debug!(
+                   "handle_event(), event: {:?}, style: {:?}, style_override: {:?}",
+                   event,
+                   self.style,
+                   self.style_override
+               );
+        */
 
         let mut surface_flags = SurfaceFlags::default();
+        surface_flags.redraw = true;
 
-        match (self.state, event) {
-            (
-                PenState::Up,
-                PenHolderEvent::PenEvent(
-                    pen_event @ PenEvent::Down {
-                        element: _,
-                        shortcut_key,
-                    },
-                ),
-            ) => {
-                if let Some(shortcut_key) = shortcut_key {
-                    self.change_state_for_shortcut_key(shortcut_key, &mut surface_flags);
+        match event {
+            PenHolderEvent::PenEvent(pen_event) => {
+                let (pen_progress, pen_surface_flags) =
+                    self.handle_pen_event(pen_event, sheet, store, camera);
+                surface_flags.merge_with_other(pen_surface_flags);
+                surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+            }
+            PenHolderEvent::ChangeStyle(new_style) => {
+                surface_flags.merge_with_other(self.change_style(new_style, sheet, store, camera));
+            }
+            PenHolderEvent::ChangeStyleOverride(new_style_override) => {
+                surface_flags.merge_with_other(self.change_style_override(
+                    new_style_override,
+                    sheet,
+                    store,
+                    camera,
+                ));
+            }
+            PenHolderEvent::PressedShortcutkey(shortcut_key) => {
+                if let Some(&action) = self.shortcuts.get(&shortcut_key) {
+                    match action {
+                        ShortcutAction::ChangePenStyle {
+                            style: new_style,
+                            permanent,
+                        } => {
+                            if permanent {
+                                surface_flags.merge_with_other(
+                                    self.change_style(new_style, sheet, store, camera),
+                                );
+                            } else {
+                                surface_flags.merge_with_other(self.change_style_override(
+                                    Some(new_style),
+                                    sheet,
+                                    store,
+                                    camera,
+                                ));
+                            }
+                        }
+                    }
                 }
-
-                surface_flags
-                    .merge_with_other(self.handle_pen_event(pen_event, sheet, store, camera));
-
-                self.state = PenState::Down;
-
-                surface_flags.redraw = true;
-                surface_flags.hide_scrollbars = Some(true);
             }
-            (PenState::Down, PenHolderEvent::PenEvent(pen_event @ PenEvent::Down { .. })) => {
-                surface_flags
-                    .merge_with_other(self.handle_pen_event(pen_event, sheet, store, camera));
+        }
 
-                surface_flags.redraw = true;
-            }
-            (PenState::Up, PenHolderEvent::PenEvent(PenEvent::Up { .. })) => {}
-            (PenState::Down, PenHolderEvent::PenEvent(pen_event @ PenEvent::Up { .. })) => {
-                // We deselect the selection here, before updating it when the current style is the selector
-                //let all_strokes = store.keys_sorted_chrono();
-                //store.set_selected_keys(&all_strokes, false);
+        surface_flags
+    }
 
-                surface_flags
-                    .merge_with_other(self.handle_pen_event(pen_event, sheet, store, camera));
+    #[must_use]
+    fn change_style(
+        &mut self,
+        new_style: PenStyle,
+        sheet: &mut crate::sheet::Sheet,
+        store: &mut StrokeStore,
+        camera: &mut Camera,
+    ) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
 
-                self.state = PenState::Up;
+        if self.style != new_style {
+            // Cancel current pen
+            let (pen_progress, pen_surface_flags) =
+                self.handle_pen_event(PenEvent::Cancel, sheet, store, camera);
+            surface_flags.merge_with_other(pen_surface_flags);
 
-                // Disable the style override after finishing the stroke
+            surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+
+            // Deselecting when changing the style
+            let all_strokes = store.keys_sorted_chrono();
+            store.set_selected_keys(&all_strokes, false);
+
+            self.style = new_style;
+
+            surface_flags.penholder_changed = true;
+            surface_flags.redraw = true;
+        }
+
+        surface_flags
+    }
+
+    #[must_use]
+    fn change_style_override(
+        &mut self,
+        new_style_override: Option<PenStyle>,
+        sheet: &mut crate::sheet::Sheet,
+        store: &mut StrokeStore,
+        camera: &mut Camera,
+    ) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
+        //log::debug!("current_style_override: {:?}, new_style_override: {:?}", self.style_override, new_style_override);
+
+        if self.style_override != new_style_override {
+            // Cancel current pen
+            let (pen_progress, pen_surface_flags) =
+                self.handle_pen_event(PenEvent::Cancel, sheet, store, camera);
+            surface_flags.merge_with_other(pen_surface_flags);
+            surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+
+            // Deselecting when changing the style override
+            let all_strokes = store.keys_sorted_chrono();
+            store.set_selected_keys(&all_strokes, false);
+
+            self.style_override = new_style_override;
+
+            surface_flags.penholder_changed = true;
+            surface_flags.redraw = true;
+        }
+
+        surface_flags
+    }
+
+    #[must_use]
+    fn handle_pen_progress(&mut self, pen_progress: PenProgress) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
+        match pen_progress {
+            PenProgress::Idle => {}
+            PenProgress::InProgress => {}
+            PenProgress::Finished => {
+                // Disable the style override when pen is finished
                 if self.style_override.take().is_some() {
-                    surface_flags.pen_changed = true;
+                    surface_flags.penholder_changed = true;
                 }
-
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
-                surface_flags.selection_changed = true;
-                surface_flags.hide_scrollbars = Some(false);
-            }
-            (_, PenHolderEvent::PenEvent(pen_event @ PenEvent::Proximity { .. })) => {
-                surface_flags
-                    .merge_with_other(self.handle_pen_event(pen_event, sheet, store, camera));
-            }
-            (_, PenHolderEvent::PenEvent(pen_event @ PenEvent::Cancel)) => {
-                surface_flags
-                    .merge_with_other(self.handle_pen_event(pen_event, sheet, store, camera));
-
-                self.state = PenState::Up;
-
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
-                surface_flags.selection_changed = true;
-                surface_flags.hide_scrollbars = Some(false);
-            }
-            (PenState::Down, PenHolderEvent::ChangeStyle(_)) => {
-                // Dont change anything while down
-            }
-            (PenState::Up, PenHolderEvent::ChangeStyle(new_style)) => {
-                if self.style != new_style {
-                    self.style = new_style;
-
-                    surface_flags.pen_changed = true;
-                    surface_flags.redraw = true;
-                }
-            }
-            (PenState::Down, PenHolderEvent::ChangeStyleOverride(_)) => {
-                // Dont change anything while down
-            }
-            (PenState::Up, PenHolderEvent::ChangeStyleOverride(new_style_override)) => {
-                if self.style_override != new_style_override {
-                    self.style_override = new_style_override;
-
-                    surface_flags.pen_changed = true;
-                    surface_flags.redraw = true;
-                }
-            }
-            (PenState::Down, PenHolderEvent::PressedShortcutkey(_)) => {
-                // Dont change anything while down
-            }
-            (PenState::Up, PenHolderEvent::PressedShortcutkey(shortcut_key)) => {
-                self.change_state_for_shortcut_key(shortcut_key, &mut surface_flags);
             }
         }
 
@@ -341,7 +366,7 @@ impl PenHolder {
         sheet: &mut Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
-    ) -> SurfaceFlags {
+    ) -> (PenProgress, SurfaceFlags) {
         match self.style_w_override() {
             PenStyle::Brush => {
                 self.brush
@@ -365,28 +390,6 @@ impl PenHolder {
             }
         }
     }
-
-    fn change_state_for_shortcut_key(
-        &mut self,
-        shortcut_key: ShortcutKey,
-        surface_flags: &mut SurfaceFlags,
-    ) {
-        if let Some(&action) = self.shortcuts.get(&shortcut_key) {
-            match action {
-                ShortcutAction::ChangePenStyle { style, permanent } => {
-                    if permanent {
-                        self.style = style;
-
-                        surface_flags.pen_changed = true;
-                    } else {
-                        self.style_override = Some(style);
-
-                        surface_flags.pen_changed = true;
-                    }
-                }
-            }
-        }
-    }
 }
 
 impl DrawOnSheetBehaviour for PenHolder {
@@ -401,12 +404,11 @@ impl DrawOnSheetBehaviour for PenHolder {
     }
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
-        cx.save()
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         match self.style_w_override() {
             PenStyle::Brush => self.brush.draw_on_sheet(cx, sheet_bounds, camera),
@@ -416,8 +418,7 @@ impl DrawOnSheetBehaviour for PenHolder {
             PenStyle::Tools => self.tools.draw_on_sheet(cx, sheet_bounds, camera),
         }?;
 
-        cx.restore()
-            .map_err(|e| anyhow::anyhow!("{}", e))?;
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

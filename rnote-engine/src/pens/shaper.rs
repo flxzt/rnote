@@ -1,20 +1,23 @@
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 use crate::sheet::Sheet;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
 
+use gtk4::glib;
 use p2d::bounding_volume::AABB;
+use piet::RenderContext;
 use rand::{Rng, SeedableRng};
-use rnote_compose::builders::ShapeBuilderType;
+use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use rnote_compose::builders::{ConstraintRatio, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{
     EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
+use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::style::Composer;
-use rnote_compose::{PenEvent, Style};
+use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
@@ -32,20 +35,11 @@ impl Default for ShaperStyle {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 enum ShaperState {
     Idle,
-    BuildLine {
-        line_builder: LineBuilder,
-    },
-    BuildRectangle {
-        rect_builder: RectangleBuilder,
-    },
-    BuildEllipse {
-        ellipse_builder: EllipseBuilder,
-    },
-    BuildFociEllipse {
-        foci_ellipse_builder: FociEllipseBuilder,
+    BuildShape {
+        builder: Box<dyn ShapeBuilderBehaviour>,
     },
 }
 
@@ -79,7 +73,18 @@ impl From<glib::GString> for ShaperConstraintRatio {
     }
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+impl From<ShaperConstraintRatio> for ConstraintRatio {
+    fn from(r: ShaperConstraintRatio) -> Self {
+        match r {
+            ShaperConstraintRatio::Disabled => ConstraintRatio::Disabled,
+            ShaperConstraintRatio::OneToOne => ConstraintRatio::OneToOne,
+            ShaperConstraintRatio::ThreeToTwo => ConstraintRatio::ThreeToTwo,
+            ShaperConstraintRatio::Golden => ConstraintRatio::Golden,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "shaper")]
 pub struct Shaper {
     #[serde(rename = "builder_type")]
@@ -92,17 +97,9 @@ pub struct Shaper {
     pub rough_options: RoughOptions,
 
     #[serde(skip)]
-<<<<<<< HEAD
-    pub current_stroke: Option<StrokeKey>,
+    ratio: ShaperConstraintRatio,
     #[serde(skip)]
-    pub rect_start: na::Vector2<f64>,
-    #[serde(skip)]
-    pub rect_current: na::Vector2<f64>,
-    #[serde(skip)]
-    pub ratio: ShaperConstraintRatio,
-=======
     state: ShaperState,
->>>>>>> 26b5fbea4fb1225b97449ca1e1a6726cc071e1d8
 }
 
 impl Default for Shaper {
@@ -112,14 +109,8 @@ impl Default for Shaper {
             style: ShaperStyle::default(),
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
-<<<<<<< HEAD
-            current_stroke: None,
-            rect_start: na::vector![0.0, 0.0],
-            rect_current: na::vector![0.0, 0.0],
             ratio: ShaperConstraintRatio::Disabled,
-=======
             state: ShaperState::Idle,
->>>>>>> 26b5fbea4fb1225b97449ca1e1a6726cc071e1d8
         }
     }
 }
@@ -132,45 +123,71 @@ impl PenBehaviour for Shaper {
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
-    ) -> SurfaceFlags {
-        let surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, SurfaceFlags) {
+        let mut surface_flags = SurfaceFlags::default();
 
-        match (&mut self.state, event) {
+        let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
+                store.record();
+
                 // A new seed for a new shape
                 let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
                 self.rough_options.seed = seed;
 
                 match self.builder_type {
                     ShapeBuilderType::Line => {
-                        self.state = ShaperState::BuildLine {
-                            line_builder: LineBuilder::start(element),
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(LineBuilder::start(element, self.ratio.into())),
                         }
                     }
                     ShapeBuilderType::Rectangle => {
-                        self.state = ShaperState::BuildRectangle {
-                            rect_builder: RectangleBuilder::start(element),
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(RectangleBuilder::start(element, self.ratio.into())),
                         }
                     }
                     ShapeBuilderType::Ellipse => {
-                        self.state = ShaperState::BuildEllipse {
-                            ellipse_builder: EllipseBuilder::start(element),
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(EllipseBuilder::start(element, self.ratio.into())),
                         }
                     }
                     ShapeBuilderType::FociEllipse => {
-                        self.state = ShaperState::BuildFociEllipse {
-                            foci_ellipse_builder: FociEllipseBuilder::start(element),
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(FociEllipseBuilder::start(
+                                element,
+                                self.ratio.into(),
+                            )),
+                        }
+                    }
+                    ShapeBuilderType::QuadBez => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(QuadBezBuilder::start(element, self.ratio.into())),
+                        }
+                    }
+                    ShapeBuilderType::CubBez => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(CubBezBuilder::start(element, self.ratio.into())),
                         }
                     }
                 }
+
+                surface_flags.redraw = true;
+
+                PenProgress::InProgress
             }
-            (ShaperState::Idle, _) => {}
-            (ShaperState::BuildLine { line_builder }, event @ PenEvent::Down { .. }) => {
-                // we know the builder only emits a shape on up events, so we don't handle the return
-                line_builder.handle_event(event);
+            (ShaperState::Idle, _) => PenProgress::Idle,
+            (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
+                self.state = ShaperState::Idle;
+
+                surface_flags.redraw = true;
+                PenProgress::Finished
             }
-            (ShaperState::BuildLine { line_builder }, event @ PenEvent::Up { .. }) => {
-                if let Some(shapes) = line_builder.handle_event(event) {
+            (ShaperState::BuildShape { builder }, event) => match builder.handle_event(event) {
+                BuilderProgress::InProgress => {
+                    surface_flags.redraw = true;
+
+                    PenProgress::InProgress
+                }
+                BuilderProgress::EmitContinue(shapes) => {
                     let drawstyle = self.gen_style_for_current_options();
 
                     for shape in shapes {
@@ -178,189 +195,85 @@ impl PenBehaviour for Shaper {
                             shape,
                             drawstyle.clone(),
                         )));
-                        if let Err(e) =
-                            store.regenerate_rendering_for_stroke(key, camera.image_scale())
-                        {
+                        if let Err(e) = store.regenerate_rendering_for_stroke(
+                            key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
                             log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
                         }
                     }
-                }
 
-                self.state = ShaperState::Idle;
-            }
-            (ShaperState::BuildLine { .. }, _) => self.state = ShaperState::Idle,
-            (ShaperState::BuildRectangle { rect_builder }, event @ PenEvent::Down { .. }) => {
-                // we know the builder only emits a shape on up events, so we don't handle the return
-                rect_builder.handle_event(event);
-            }
-            (ShaperState::BuildRectangle { rect_builder }, PenEvent::Up { .. }) => {
-                if let Some(shapes) = rect_builder.handle_event(event) {
+                    surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.sheet_changed = true;
+
+                    PenProgress::InProgress
+                }
+                BuilderProgress::Finished(shapes) => {
                     let drawstyle = self.gen_style_for_current_options();
 
-                    for shape in shapes {
-                        let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
-                            shape,
-                            drawstyle.clone(),
-                        )));
-                        if let Err(e) =
-                            store.regenerate_rendering_for_stroke(key, camera.image_scale())
-                        {
-                            log::error!("regenerate_rendering_for_stroke() failed after inserting new rectangle, Err {}", e);
-                        }
+                    if !shapes.is_empty() {
+                        surface_flags.resize = true;
+                        surface_flags.sheet_changed = true;
                     }
-                }
-
-                self.state = ShaperState::Idle;
-            }
-            (ShaperState::BuildRectangle { .. }, ..) => self.state = ShaperState::Idle,
-            (ShaperState::BuildEllipse { ellipse_builder }, event @ PenEvent::Down { .. }) => {
-                // we know the builder only emits a shape on up events, so we don't handle the return
-                ellipse_builder.handle_event(event);
-            }
-            (ShaperState::BuildEllipse { ellipse_builder }, PenEvent::Up { .. }) => {
-                if let Some(shapes) = ellipse_builder.handle_event(event) {
-                    let drawstyle = self.gen_style_for_current_options();
 
                     for shape in shapes {
                         let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
                             shape,
                             drawstyle.clone(),
                         )));
-                        if let Err(e) =
-                            store.regenerate_rendering_for_stroke(key, camera.image_scale())
-                        {
-                            log::error!("regenerate_rendering_for_stroke() failed after inserting new ellipse, Err {}", e);
-                        }
-                    }
-                }
-
-                self.state = ShaperState::Idle;
-            }
-            (ShaperState::BuildEllipse { .. }, ..) => self.state = ShaperState::Idle,
-            (
-                ShaperState::BuildFociEllipse {
-                    foci_ellipse_builder,
-                },
-                PenEvent::Down { .. },
-            ) => {
-                // we know the builder only emits a shape on up events, so we don't handle the return
-                foci_ellipse_builder.handle_event(event);
-            }
-            (
-                ShaperState::BuildFociEllipse {
-                    foci_ellipse_builder,
-                },
-                PenEvent::Up { .. },
-            ) => {
-                if let Some(shapes) = foci_ellipse_builder.handle_event(event) {
-                    let drawstyle = self.gen_style_for_current_options();
-
-                    for shape in shapes {
-                        let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
-                            shape,
-                            drawstyle.clone(),
-                        )));
-                        if let Err(e) =
-                            store.regenerate_rendering_for_stroke(key, camera.image_scale())
-                        {
-                            log::error!("regenerate_rendering_for_stroke() failed after inserting new foci ellipse, Err {}", e);
+                        if let Err(e) = store.regenerate_rendering_for_stroke(
+                            key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err {}", e);
                         }
                     }
 
                     self.state = ShaperState::Idle;
-                }
-            }
-            (ShaperState::BuildFociEllipse { .. }, PenEvent::Proximity { .. }) => {}
-            (ShaperState::BuildFociEllipse { .. }, PenEvent::Cancel) => {
-                self.state = ShaperState::Idle
-            }
-        }
 
-        surface_flags
+                    surface_flags.redraw = true;
+
+                    PenProgress::Finished
+                }
+            },
+        };
+
+        (pen_progress, surface_flags)
     }
 }
 
 impl DrawOnSheetBehaviour for Shaper {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
-        match (&self.state, &self.style) {
-            (ShaperState::Idle, ShaperStyle::Smooth) => None,
-            (ShaperState::Idle, ShaperStyle::Rough) => None,
-            (ShaperState::BuildLine { line_builder }, ShaperStyle::Smooth) => {
-                Some(line_builder.composed_bounds(&self.smooth_options))
+    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+        let style = self.gen_style_for_current_options();
+
+        match &self.state {
+            ShaperState::Idle => None,
+            ShaperState::BuildShape { builder } => {
+                Some(builder.bounds(&style, camera.total_zoom()))
             }
-            (ShaperState::BuildLine { line_builder }, ShaperStyle::Rough) => {
-                Some(line_builder.composed_bounds(&self.rough_options))
-            }
-            (ShaperState::BuildRectangle { rect_builder }, ShaperStyle::Smooth) => {
-                Some(rect_builder.composed_bounds(&self.smooth_options))
-            }
-            (ShaperState::BuildRectangle { rect_builder }, ShaperStyle::Rough) => {
-                Some(rect_builder.composed_bounds(&self.rough_options))
-            }
-            (ShaperState::BuildEllipse { ellipse_builder }, ShaperStyle::Smooth) => {
-                Some(ellipse_builder.composed_bounds(&self.smooth_options))
-            }
-            (ShaperState::BuildEllipse { ellipse_builder }, ShaperStyle::Rough) => {
-                Some(ellipse_builder.composed_bounds(&self.rough_options))
-            }
-            (
-                ShaperState::BuildFociEllipse {
-                    foci_ellipse_builder,
-                },
-                ShaperStyle::Smooth,
-            ) => Some(foci_ellipse_builder.composed_bounds(&self.smooth_options)),
-            (
-                ShaperState::BuildFociEllipse {
-                    foci_ellipse_builder,
-                },
-                ShaperStyle::Rough,
-            ) => Some(foci_ellipse_builder.composed_bounds(&self.rough_options)),
         }
     }
 
     fn draw_on_sheet(
         &self,
-        cx: &mut impl piet::RenderContext,
+        cx: &mut piet_cairo::CairoRenderContext,
         _sheet_bounds: AABB,
-        _camera: &Camera,
+        camera: &Camera,
     ) -> anyhow::Result<()> {
-        match (&self.state, &self.style) {
-            (ShaperState::Idle, _) => {}
-            (ShaperState::BuildLine { line_builder }, ShaperStyle::Smooth) => {
-                line_builder.draw_composed(cx, &self.smooth_options);
-            }
-            (ShaperState::BuildLine { line_builder }, ShaperStyle::Rough) => {
-                line_builder.draw_composed(cx, &self.rough_options);
-            }
-            (ShaperState::BuildRectangle { rect_builder }, ShaperStyle::Smooth) => {
-                rect_builder.draw_composed(cx, &self.smooth_options);
-            }
-            (ShaperState::BuildRectangle { rect_builder }, ShaperStyle::Rough) => {
-                rect_builder.draw_composed(cx, &self.rough_options);
-            }
-            (ShaperState::BuildEllipse { ellipse_builder }, ShaperStyle::Smooth) => {
-                ellipse_builder.draw_composed(cx, &self.smooth_options);
-            }
-            (ShaperState::BuildEllipse { ellipse_builder }, ShaperStyle::Rough) => {
-                ellipse_builder.draw_composed(cx, &self.rough_options);
-            }
-            (
-                ShaperState::BuildFociEllipse {
-                    foci_ellipse_builder,
-                },
-                ShaperStyle::Smooth,
-            ) => {
-                foci_ellipse_builder.draw_composed(cx, &self.smooth_options);
-            }
-            (
-                ShaperState::BuildFociEllipse {
-                    foci_ellipse_builder,
-                },
-                ShaperStyle::Rough,
-            ) => {
-                foci_ellipse_builder.draw_composed(cx, &self.rough_options);
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        let style = self.gen_style_for_current_options();
+
+        match &self.state {
+            ShaperState::Idle => {}
+            ShaperState::BuildShape { builder } => {
+                builder.draw_styled(cx, &style, camera.total_zoom())
             }
         }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
     }
 }

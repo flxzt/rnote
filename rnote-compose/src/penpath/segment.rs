@@ -1,7 +1,8 @@
-use crate::helpers::AABBHelpers;
-use crate::shapes::ShapeBehaviour;
+use crate::helpers::{AABBHelpers, KurboHelpers};
+use crate::shapes::{CubicBezier, Line, QuadraticBezier, ShapeBehaviour};
 use crate::transform::TransformBehaviour;
 
+use kurbo::Shape;
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -70,10 +71,13 @@ impl ShapeBehaviour for Segment {
                 AABB::new_positive(na::Point2::from(start.pos), na::Point2::from(end.pos))
             }
             Self::QuadBez { start, cp, end } => {
-                let mut aabb =
-                    AABB::new_positive(na::Point2::from(start.pos), na::Point2::from(end.pos));
-                aabb.take_point(na::Point2::from(*cp));
-                aabb
+                let quadbez = QuadraticBezier {
+                    start: start.pos,
+                    cp: *cp,
+                    end: end.pos,
+                };
+
+                quadbez.to_kurbo().bounding_box().bounds_as_p2d_aabb()
             }
             Self::CubBez {
                 start,
@@ -81,11 +85,74 @@ impl ShapeBehaviour for Segment {
                 cp2,
                 end,
             } => {
-                let mut aabb =
-                    AABB::new_positive(na::Point2::from(start.pos), na::Point2::from(end.pos));
-                aabb.take_point(na::Point2::from(*cp1));
-                aabb.take_point(na::Point2::from(*cp2));
-                aabb
+                let cubbez = CubicBezier {
+                    start: start.pos,
+                    cp1: *cp1,
+                    cp2: *cp2,
+                    end: end.pos,
+                };
+
+                cubbez.to_kurbo().bounding_box().bounds_as_p2d_aabb()
+            }
+        }
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        match self {
+            Segment::Dot { element } => vec![AABB::from_half_extents(
+                na::Point2::from(element.pos),
+                na::Vector2::repeat(0.5),
+            )],
+            Segment::Line { start, end } => {
+                let n_splits = hitbox_elems_for_segment_len((end.pos - start.pos).magnitude());
+
+                let line = Line {
+                    start: start.pos,
+                    end: end.pos,
+                };
+
+                line.split(n_splits)
+                    .into_iter()
+                    .map(|line| line.bounds())
+                    .collect()
+            }
+            Segment::QuadBez { start, cp, end } => {
+                let quadbez = QuadraticBezier {
+                    start: start.pos,
+                    cp: *cp,
+                    end: end.pos,
+                };
+
+                // TODO: basing this off of the actual curve len
+                let n_splits = hitbox_elems_for_segment_len(quadbez.to_kurbo().perimeter(0.1));
+
+                quadbez
+                    .approx_with_lines(n_splits)
+                    .into_iter()
+                    .map(|line| line.bounds())
+                    .collect()
+            }
+            Segment::CubBez {
+                start,
+                cp1,
+                cp2,
+                end,
+            } => {
+                let cubbez = CubicBezier {
+                    start: start.pos,
+                    cp1: *cp1,
+                    cp2: *cp2,
+                    end: end.pos,
+                };
+
+                // TODO: basing this off of the actual curve len
+                let n_splits = hitbox_elems_for_segment_len(cubbez.to_kurbo().perimeter(0.1));
+
+                cubbez
+                    .approx_with_lines(n_splits)
+                    .into_iter()
+                    .map(|line| line.bounds())
+                    .collect()
             }
         }
     }
@@ -177,5 +244,19 @@ impl TransformBehaviour for Segment {
                 end.pos = end.pos.component_mul(&scale);
             }
         }
+    }
+}
+
+/// Calculates the number hitbox elems for the given length capped with a maximum no of hitbox elemens
+fn hitbox_elems_for_segment_len(len: f64) -> i32 {
+    // Maximum hitbox diagonal ( below the threshold )
+    const MAX_HITBOX_DIAGONAL: f64 = 15.0;
+    const MAX_ELEMS: i32 = 6;
+
+    if len < MAX_HITBOX_DIAGONAL * f64::from(MAX_ELEMS) {
+        ((len / MAX_HITBOX_DIAGONAL).ceil() as i32).max(1)
+    } else {
+        // capping the no of elements for bigger len's, avoiding huge amounts of hitboxes for large strokes that are drawn when zoomed out
+        MAX_ELEMS
     }
 }

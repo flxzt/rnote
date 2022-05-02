@@ -169,7 +169,7 @@ impl Format {
             let border_width = 1.0 / total_zoom;
             let viewport = camera.viewport();
 
-            snapshot.push_clip(&graphene::Rect::from_aabb(sheet_bounds.loosened(2.0)));
+            snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds.loosened(2.0)));
 
             for page_bounds in
                 sheet_bounds.split_extended_origin_aligned(na::vector![self.width, self.height])
@@ -179,7 +179,7 @@ impl Format {
                 }
 
                 let rounded_rect = gsk::RoundedRect::new(
-                    graphene::Rect::from_aabb(page_bounds),
+                    graphene::Rect::from_p2d_aabb(page_bounds),
                     graphene::Size::zero(),
                     graphene::Size::zero(),
                     graphene::Size::zero(),

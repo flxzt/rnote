@@ -3,11 +3,8 @@ mod smoothoptions;
 // Re-exports
 pub use smoothoptions::SmoothOptions;
 
-use crate::builders::fociellipsebuilder::FociEllipseBuilderState;
-use crate::builders::linebuilder::LineBuilder;
-use crate::builders::penpathbuilder::PenPathBuilderState;
-use crate::builders::{EllipseBuilder, FociEllipseBuilder, PenPathBuilder, RectangleBuilder};
-use crate::helpers::{AABBHelpers, Vector2Helpers};
+use super::Composer;
+use crate::helpers::Vector2Helpers;
 use crate::penpath::Segment;
 use crate::shapes::CubicBezier;
 use crate::shapes::Ellipse;
@@ -19,9 +16,6 @@ use crate::PenPath;
 
 use kurbo::Shape;
 use p2d::bounding_volume::{BoundingVolume, AABB};
-
-use super::drawhelpers::NodeState;
-use super::{drawhelpers, Composer};
 
 // Composes a Bezier path with variable width from the line. Must be drawn with only a fill
 fn compose_line_variable_width(
@@ -84,28 +78,137 @@ fn compose_line_variable_width(
     bez_path
 }
 
-impl Composer<SmoothOptions> for Segment {
+impl Composer<SmoothOptions> for Line {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
+        self.bounds().loosened(options.stroke_width)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let line = self.to_kurbo();
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(line, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<SmoothOptions> for Rectangle {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let shape = self.to_kurbo();
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(shape.clone(), &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(shape, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<SmoothOptions> for Ellipse {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let ellipse = self.to_kurbo();
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(ellipse.clone(), &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(ellipse, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<SmoothOptions> for QuadraticBezier {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let quadbez = self.to_kurbo();
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(quadbez.clone(), &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(quadbez, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<SmoothOptions> for CubicBezier {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
+        let quadbez = self.to_kurbo();
+
+        if let Some(fill_color) = options.fill_color {
+            let fill_brush = cx.solid_brush(fill_color.into());
+            cx.fill(quadbez.clone(), &fill_brush);
+        }
+
+        if let Some(stroke_color) = options.stroke_color {
+            let stroke_brush = cx.solid_brush(stroke_color.into());
+            cx.stroke(quadbez, &stroke_brush, options.stroke_width);
+        }
+        cx.restore().unwrap();
+    }
+}
+
+impl Composer<SmoothOptions> for Segment {
+    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
+        self.bounds().loosened(options.stroke_width)
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         let shape = {
             match self {
                 Segment::Dot { element } => {
                     let radii = if options.segment_constant_width {
-                        na::Vector2::from_element(options.width / 2.0)
+                        na::Vector2::from_element(options.stroke_width / 2.0)
                     } else {
-                        na::Vector2::from_element(element.pressure * (options.width / 2.0))
+                        na::Vector2::from_element(element.pressure * (options.stroke_width / 2.0))
                     };
                     kurbo::Ellipse::new(element.pos.to_kurbo_point(), radii.to_kurbo_vec(), 0.0)
                         .into_path(0.1)
                 }
                 Segment::Line { start, end } => {
                     let (line_width_start, line_width_end) = if options.segment_constant_width {
-                        (options.width, options.width)
+                        (options.stroke_width, options.stroke_width)
                     } else {
-                        (start.pressure * options.width, end.pressure * options.width)
+                        (
+                            start.pressure * options.stroke_width,
+                            end.pressure * options.stroke_width,
+                        )
                     };
                     let line = Line {
                         start: start.pos,
@@ -116,9 +219,12 @@ impl Composer<SmoothOptions> for Segment {
                 }
                 Segment::QuadBez { start, cp, end } => {
                     let (width_start, width_end) = if options.segment_constant_width {
-                        (options.width, options.width)
+                        (options.stroke_width, options.stroke_width)
                     } else {
-                        (start.pressure * options.width, end.pressure * options.width)
+                        (
+                            start.pressure * options.stroke_width,
+                            end.pressure * options.stroke_width,
+                        )
                     };
                     let n_splits = 5;
 
@@ -160,9 +266,12 @@ impl Composer<SmoothOptions> for Segment {
                     end,
                 } => {
                     let (width_start, width_end) = if options.segment_constant_width {
-                        (options.width, options.width)
+                        (options.stroke_width, options.stroke_width)
                     } else {
-                        (start.pressure * options.width, end.pressure * options.width)
+                        (
+                            start.pressure * options.stroke_width,
+                            end.pressure * options.stroke_width,
+                        )
                     };
                     let n_splits = 5;
 
@@ -207,6 +316,7 @@ impl Composer<SmoothOptions> for Segment {
             let fill_brush = cx.solid_brush(fill_color.into());
             cx.fill(shape, &fill_brush);
         }
+        cx.restore().unwrap();
     }
 }
 
@@ -218,64 +328,11 @@ impl Composer<SmoothOptions> for PenPath {
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
+        cx.save().unwrap();
         for segment in self.iter() {
             segment.draw_composed(cx, options);
         }
-    }
-}
-
-impl Composer<SmoothOptions> for Line {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let line = self.to_kurbo();
-
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(line, &stroke_brush, options.width);
-        }
-    }
-}
-
-impl Composer<SmoothOptions> for Rectangle {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let shape = self.to_kurbo();
-
-        if let Some(fill_color) = options.fill_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(shape.clone(), &fill_brush);
-        }
-
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(shape, &stroke_brush, options.width);
-        }
-    }
-}
-
-impl Composer<SmoothOptions> for Ellipse {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.bounds().loosened(options.width)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let ellipse = self.to_kurbo();
-
-        if let Some(fill_color) = options.fill_color {
-            let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(ellipse.clone(), &fill_brush);
-        }
-
-        if let Some(stroke_color) = options.stroke_color {
-            let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(ellipse, &stroke_brush, options.width);
-        }
+        cx.restore().unwrap();
     }
 }
 
@@ -285,6 +342,9 @@ impl Composer<SmoothOptions> for crate::Shape {
             crate::Shape::Line(line) => line.composed_bounds(options),
             crate::Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
             crate::Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
+            crate::Shape::QuadraticBezier(quadbez) => quadbez.composed_bounds(options),
+            crate::Shape::CubicBezier(cubbez) => cubbez.composed_bounds(options),
+            crate::Shape::Segment(segment) => segment.composed_bounds(options),
         }
     }
 
@@ -293,121 +353,9 @@ impl Composer<SmoothOptions> for crate::Shape {
             crate::Shape::Line(line) => line.draw_composed(cx, options),
             crate::Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
             crate::Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
-        }
-    }
-}
-
-impl Composer<SmoothOptions> for PenPathBuilder {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
-            acc.take_point(na::Point2::from(x.pos));
-            acc.loosened(options.width)
-        })
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let penpath = match &self.state {
-            PenPathBuilderState::Start => self
-                .buffer
-                .iter()
-                .zip(self.buffer.iter().skip(1))
-                .map(|(start, end)| Segment::Line {
-                    start: *start,
-                    end: *end,
-                })
-                .collect::<PenPath>(),
-            // Skipping the first buffer element as that is the not drained by the segment builder and is the prev element in the "During" state
-            PenPathBuilderState::During => self
-                .buffer
-                .iter()
-                .skip(1)
-                .zip(self.buffer.iter().skip(2))
-                .map(|(start, end)| Segment::Line {
-                    start: *start,
-                    end: *end,
-                })
-                .collect::<PenPath>(),
-        };
-
-        penpath.draw_composed(cx, options);
-    }
-}
-
-impl Composer<SmoothOptions> for LineBuilder {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.state_as_line().composed_bounds(options)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let line = self.state_as_line();
-        line.draw_composed(cx, options);
-    }
-}
-
-impl Composer<SmoothOptions> for RectangleBuilder {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.state_as_rect().composed_bounds(options)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let rect = self.state_as_rect();
-        rect.draw_composed(cx, options);
-    }
-}
-
-impl Composer<SmoothOptions> for EllipseBuilder {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        self.state_as_ellipse().composed_bounds(options)
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        let ellipse = self.state_as_ellipse();
-        ellipse.draw_composed(cx, options);
-    }
-}
-
-impl Composer<SmoothOptions> for FociEllipseBuilder {
-    fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        match &self.state {
-            FociEllipseBuilderState::First(point) => AABB::from_half_extents(
-                na::Point2::from(*point),
-                na::Vector2::repeat(options.width),
-            ),
-            FociEllipseBuilderState::Foci(foci) => {
-                AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                    .loosened(options.width * 500.0)
-            }
-            FociEllipseBuilderState::FociAndPoint { foci, point } => {
-                let mut bounds =
-                    AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                        .loosened(options.width * 500.0);
-                bounds.take_point(na::Point2::from(*point));
-
-                bounds
-            }
-        }
-    }
-
-    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
-        match &self.state {
-            FociEllipseBuilderState::First(point) => {
-                let circle = kurbo::Circle::new(point.to_kurbo_point(), 2.0);
-                cx.stroke(circle, &piet::Color::MAROON, 1.0);
-            }
-            FociEllipseBuilderState::Foci(foci) => {
-                drawhelpers::draw_pos_indicator(cx, NodeState::Up, foci[0], 1.0);
-                drawhelpers::draw_pos_indicator(cx, NodeState::Up, foci[1], 1.0);
-            }
-            FociEllipseBuilderState::FociAndPoint { foci, point } => {
-                let ellipse = Ellipse::from_foci_and_point(*foci, *point);
-
-                ellipse.draw_composed(cx, options);
-
-                drawhelpers::draw_pos_indicator(cx, NodeState::Up, foci[0], 1.0);
-                drawhelpers::draw_pos_indicator(cx, NodeState::Up, foci[1], 1.0);
-                drawhelpers::draw_vec_indicator(cx, NodeState::Down, foci[0], *point, 1.0);
-                drawhelpers::draw_vec_indicator(cx, NodeState::Down, foci[1], *point, 1.0);
-            }
+            crate::Shape::QuadraticBezier(quadbez) => quadbez.draw_composed(cx, options),
+            crate::Shape::CubicBezier(cubbez) => cubbez.draw_composed(cx, options),
+            crate::Shape::Segment(segment) => segment.draw_composed(cx, options),
         }
     }
 }

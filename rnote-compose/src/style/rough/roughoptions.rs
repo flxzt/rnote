@@ -15,8 +15,8 @@ pub struct RoughOptions {
     /// how curvy the lines are when drawing a sketch. 0 is a straight line.
     #[serde(rename = "bowing")]
     pub bowing: f64,
-    /// An optional stroke color. When set to None, no stroke outline is produced
-    #[serde(rename = "stroke")]
+    /// the stroke color. When set to None, no stroke outline is produced
+    #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
     /// the stroke width
     #[serde(rename = "stroke_width")]

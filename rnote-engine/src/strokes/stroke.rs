@@ -1,6 +1,7 @@
 use super::bitmapimage::BitmapImage;
 use super::brushstroke::BrushStroke;
 use super::shapestroke::ShapeStroke;
+use super::strokebehaviour::GeneratedStrokeImages;
 use super::vectorimage::VectorImage;
 use super::StrokeBehaviour;
 use crate::pens::brush::BrushStyle;
@@ -48,12 +49,16 @@ impl StrokeBehaviour for Stroke {
         }
     }
 
-    fn gen_images(&self, image_scale: f64) -> Result<Vec<render::Image>, anyhow::Error> {
+    fn gen_images(
+        &self,
+        viewport: AABB,
+        image_scale: f64,
+    ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         match self {
-            Stroke::BrushStroke(brushstroke) => brushstroke.gen_images(image_scale),
-            Stroke::ShapeStroke(shapestroke) => shapestroke.gen_images(image_scale),
-            Stroke::VectorImage(vectorimage) => vectorimage.gen_images(image_scale),
-            Stroke::BitmapImage(bitmapimage) => bitmapimage.gen_images(image_scale),
+            Stroke::BrushStroke(brushstroke) => brushstroke.gen_images(viewport, image_scale),
+            Stroke::ShapeStroke(shapestroke) => shapestroke.gen_images(viewport, image_scale),
+            Stroke::VectorImage(vectorimage) => vectorimage.gen_images(viewport, image_scale),
+            Stroke::BitmapImage(bitmapimage) => bitmapimage.gen_images(viewport, image_scale),
         }
     }
 }
@@ -76,6 +81,15 @@ impl ShapeBehaviour for Stroke {
             Self::ShapeStroke(shapestroke) => shapestroke.bounds(),
             Self::VectorImage(vectorimage) => vectorimage.bounds(),
             Self::BitmapImage(bitmapimage) => bitmapimage.bounds(),
+        }
+    }
+
+    fn hitboxes(&self) -> Vec<AABB> {
+        match self {
+            Self::BrushStroke(brushstroke) => brushstroke.hitboxes(),
+            Self::ShapeStroke(shapestroke) => shapestroke.hitboxes(),
+            Self::VectorImage(vectorimage) => vectorimage.hitboxes(),
+            Self::BitmapImage(bitmapimage) => bitmapimage.hitboxes(),
         }
     }
 }
@@ -145,14 +159,14 @@ impl Stroke {
 
         // The first element is the absolute width, every following is the relative width (between 0.0 and 1.0)
         if let Some(width) = width_iter.next() {
-            smooth_options.width = width;
+            smooth_options.stroke_width = width;
         }
 
         let mut brush = Brush::default();
         brush.style = BrushStyle::Solid;
         brush.smooth_options = smooth_options;
 
-        let absolute_width = brush.smooth_options.width;
+        let absolute_width = brush.smooth_options.stroke_width;
 
         let elements = stroke
             .coords
@@ -176,10 +190,12 @@ impl Stroke {
             .map(|(&start, &end)| Segment::Line { start, end })
             .collect::<PenPath>();
 
-        Ok(Stroke::BrushStroke(BrushStroke::from_penpath(
-            penpath,
-            brush.gen_style_for_current_options(),
-        )))
+        let brushstroke = BrushStroke::from_penpath(penpath, brush.gen_style_for_current_options())
+            .ok_or(anyhow::anyhow!(
+                "creating brushstroke from penpath in from_xoppstroke() failed."
+            ))?;
+
+        Ok(Stroke::BrushStroke(brushstroke))
     }
 
     pub fn from_xoppimage(
@@ -210,9 +226,11 @@ impl Stroke {
             Stroke::BrushStroke(brushstroke) => {
                 let (width, color): (f64, XoppColor) = match brushstroke.style {
                     // Return early if color is None
-                    Style::Smooth(options) => (options.width, options.stroke_color?.into()),
+                    Style::Smooth(options) => (options.stroke_width, options.stroke_color?.into()),
                     Style::Rough(options) => (options.stroke_width, options.stroke_color?.into()),
-                    Style::Textured(options) => (options.width, options.stroke_color?.into()),
+                    Style::Textured(options) => {
+                        (options.stroke_width, options.stroke_color?.into())
+                    }
                 };
 
                 let tool = xoppformat::XoppTool::Pen;
@@ -260,29 +278,16 @@ impl Stroke {
                 ))
             }
             Stroke::ShapeStroke(shapestroke) => {
+                let png_data = match shapestroke
+                    .export_as_image_bytes(image::ImageOutputFormat::Png, image_scale)
+                {
+                    Ok(image_bytes) => image_bytes,
+                    Err(e) => {
+                        log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() with Err `{}`", e);
+                        return None;
+                    }
+                };
                 let shapestroke_bounds = shapestroke.bounds();
-                let shape_image = render::Image::join_images(
-                    shapestroke.gen_images(image_scale).ok()?,
-                    shapestroke_bounds,
-                    image_scale,
-                )
-                .map_err(|e| {
-                    log::error!(
-                        "join_images() failed in to_xopp() for shapestroke with Err {}",
-                        e
-                    )
-                })
-                .ok()??;
-
-                let image_bytes = shape_image
-                    .into_encoded_bytes(image::ImageOutputFormat::Png)
-                    .map_err(|e| {
-                        log::error!(
-                            "into_encoded_bytes() failed in to_xopp() for shapestroke with Err {}",
-                            e
-                        )
-                    })
-                    .ok()?;
 
                 Some(xoppformat::XoppStrokeType::XoppImage(
                     xoppformat::XoppImage {
@@ -306,7 +311,7 @@ impl Stroke {
                             current_dpi,
                             xoppformat::XoppFile::DPI,
                         ),
-                        data: base64::encode(&image_bytes),
+                        data: base64::encode(&png_data),
                     },
                 ))
             }
@@ -316,7 +321,7 @@ impl Stroke {
                 {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("bitmapimage.export_as_bytes() failed in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err `{}`", e);
                         return None;
                     }
                 };
@@ -354,7 +359,7 @@ impl Stroke {
                 {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
-                        log::error!("bitmapimage.export_as_bytes() failed in stroke to_xopp() with Err `{}`", e);
+                        log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() with Err `{}`", e);
                         return None;
                     }
                 };

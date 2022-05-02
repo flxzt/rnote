@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 20:55+0200\n"
-"PO-Revision-Date: 2022-05-02 20:58+0200\n"
+"POT-Creation-Date: 2022-05-02 21:02+0200\n"
+"PO-Revision-Date: 2022-05-02 21:06+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -75,7 +75,7 @@ msgstr "Entwicklermodus"
 
 #: rnote-ui/data/ui/appmenu.ui:29
 msgid "Developer menu"
-msgstr "Entwickler Menü"
+msgstr "Entwicklermenü"
 
 #: rnote-ui/data/ui/appmenu.ui:34
 msgid "Visual debugging"
@@ -83,11 +83,11 @@ msgstr "Visuelles Debugging"
 
 #: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:568
 msgid "Export engine state"
-msgstr "Exportiere den 'engine state'"
+msgstr "Exportiere 'engine state'"
 
-#: rnote-ui/data/ui/appmenu.ui:42
-msgid "Export engine config (as saved in settings)"
-msgstr "Exportiere die 'engine config' (wie in den Einstellungen gesichert)"
+#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:622
+msgid "Export engine config"
+msgstr "Exportiere 'engine config'"
 
 #: rnote-ui/data/ui/appmenu.ui:50
 msgid "Keyboard shortcuts"
@@ -1009,10 +1009,6 @@ msgstr "'engine state' exportieren gescheitert."
 msgid "Exported engine state successfully."
 msgstr "'engine state' erfolgreich exportiert."
 
-#: rnote-ui/src/dialogs.rs:622
-msgid "Export engine config"
-msgstr "Exportiere die 'engine config'"
-
 #: rnote-ui/src/dialogs.rs:650
 msgid "Export engine config failed."
 msgstr "'engine config' exportieren gescheitert."
@@ -1020,6 +1016,9 @@ msgstr "'engine config' exportieren gescheitert."
 #: rnote-ui/src/dialogs.rs:652
 msgid "Exported engine config successfully."
 msgstr "'engine config' erfolgreich exportiert."
+
+#~ msgid "Export engine config (as saved in settings)"
+#~ msgstr "Exportiere die 'engine config' (wie in den Einstellungen gesichert)"
 
 #~ msgid "Developer settings"
 #~ msgstr "Entwicklereinstellungen"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-02 20:55+0200\n"
+"POT-Creation-Date: 2022-05-02 21:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,8 +80,8 @@ msgstr ""
 msgid "Export engine state"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:42
-msgid "Export engine config (as saved in settings)"
+#: rnote-ui/data/ui/appmenu.ui:42 rnote-ui/src/dialogs.rs:622
+msgid "Export engine config"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:50
@@ -991,10 +991,6 @@ msgstr ""
 
 #: rnote-ui/src/dialogs.rs:598
 msgid "Exported engine state successfully."
-msgstr ""
-
-#: rnote-ui/src/dialogs.rs:622
-msgid "Export engine config"
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:650

@@ -1451,7 +1451,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    /// exports and writes the engine config (as saved in the settings) as json into the file.
+    /// exports and writes the engine config as json into the file.
     /// Only for debugging!
     pub async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
         let exported_engine_config = self.canvas().engine().borrow().save_engine_config()?;

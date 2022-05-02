@@ -39,7 +39,7 @@
                 <attribute name="action">win.debug-export-engine-state</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">Export engine config (as saved in settings)</attribute>
+                <attribute name="label" translatable="yes">Export engine config</attribute>
                 <attribute name="action">win.debug-export-engine-config</attribute>
               </item>
             </section>

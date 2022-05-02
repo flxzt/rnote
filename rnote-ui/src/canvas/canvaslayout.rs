@@ -4,7 +4,7 @@ mod imp {
     };
 
     use crate::canvas::RnoteCanvas;
-    use rnote_engine::engine::ExpandMode;
+    use rnote_engine::sheet::ExpandMode;
     use rnote_engine::Sheet;
 
     #[derive(Debug, Default)]
@@ -119,27 +119,8 @@ mod imp {
             canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
             canvas.engine().borrow_mut().camera.size = new_size;
 
-            let viewport = canvas.engine().borrow().camera.viewport();
-            let image_scale = canvas.engine().borrow().camera.image_scale();
-
-            // Update background and strokes for the new viewport
-            if let Err(e) = canvas
-                .engine()
-                .borrow_mut()
-                .sheet
-                .background
-                .update_rendernodes(viewport)
-            {
-                log::error!(
-                    "failed to update background rendernodes on canvas resize with Err {}",
-                    e
-                );
-            }
-            canvas
-                .engine()
-                .borrow_mut()
-                .store
-                .regenerate_rendering_in_viewport_threaded(false, viewport, image_scale);
+            // Update engine rendering for the new viewport
+            canvas.engine().borrow_mut().update_rendering_for_viewport();
         }
     }
 }

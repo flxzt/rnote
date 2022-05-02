@@ -15,14 +15,46 @@ pub use trash_comp::TrashComponent;
 use std::collections::VecDeque;
 use std::sync::Arc;
 
-use crate::pens::penholder::PenStyle;
-use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
-use crate::surfaceflags::SurfaceFlags;
-use crate::Camera;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
+
+slotmap::new_key_type! {
+    pub struct StrokeKey;
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default, rename = "history_entry")]
+pub struct HistoryEntry {
+    #[serde(rename = "stroke_components")]
+    stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    #[serde(rename = "trash_components")]
+    trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
+    #[serde(rename = "selection_components")]
+    selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
+    #[serde(rename = "chrono_components")]
+    chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+
+    #[serde(rename = "chrono_counter")]
+    chrono_counter: u32,
+}
+
+impl Default for HistoryEntry {
+    fn default() -> Self {
+        Self {
+            stroke_components: Arc::new(HopSlotMap::with_key()),
+            trash_components: Arc::new(SecondaryMap::new()),
+            selection_components: Arc::new(SecondaryMap::new()),
+            chrono_components: Arc::new(SecondaryMap::new()),
+
+            chrono_counter: 0,
+        }
+    }
+}
+
+// the store snapshot, used when saving the store to a file.
+pub type StoreSnapshot = HistoryEntry;
 
 /// StrokeStore implements a Entity - Component - System pattern.
 /// The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
@@ -36,52 +68,6 @@ use slotmap::{HopSlotMap, SecondaryMap};
 /// Most systems take a key or a slice of keys, and iterate with them over the different components.
 /// There also is a different category of methods which return filtered keys, (e.g. `.keys_sorted_chrono` returns the keys in chronological ordering,
 ///     `.stroke_keys_in_order_rendering` filters and returns keys in the order which they should be rendered)
-
-#[derive(Debug, Clone)]
-/// A store task, usually coming from a spawned thread and to be processed with `process_received_task()`.
-pub enum StoreTask {
-    /// Replace the images of the render_comp.
-    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
-    UpdateStrokeWithImages {
-        key: StrokeKey,
-        images: GeneratedStrokeImages,
-    },
-    /// Appends the images to the rendering of the stroke
-    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
-    AppendImagesToStroke {
-        key: StrokeKey,
-        images: GeneratedStrokeImages,
-    },
-    /// Inserts a new stroke to the store
-    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
-    InsertStroke { stroke: Stroke },
-    /// indicates that the application is quitting. Usually handled to quit the async loop which receives the tasks
-    Quit,
-}
-
-fn default_threadpool() -> rayon::ThreadPool {
-    rayon::ThreadPoolBuilder::default()
-        .build()
-        .unwrap_or_else(|e| {
-            log::error!("default_render_threadpool() failed with Err {}", e);
-            panic!()
-        })
-}
-
-slotmap::new_key_type! {
-    pub struct StrokeKey;
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct HistoryEntry {
-    strokes: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
-    trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
-    selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
-    chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
-}
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "stroke_store")]
@@ -112,22 +98,10 @@ pub struct StrokeStore {
     /// incrementing counter for chrono_components. value is equal chrono_component of the newest inserted or modified stroke.
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
-
-    #[serde(skip)]
-    pub tasks_tx: futures::channel::mpsc::UnboundedSender<StoreTask>,
-    /// To be taken out into a loop which processes the receiver stream. The received tasks should be processed with process_received_task()
-    #[serde(skip)]
-    pub tasks_rx: Option<futures::channel::mpsc::UnboundedReceiver<StoreTask>>,
-    #[serde(skip, default = "default_threadpool")]
-    threadpool: rayon::ThreadPool,
 }
 
 impl Default for StrokeStore {
     fn default() -> Self {
-        let threadpool = default_threadpool();
-
-        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<StoreTask>();
-
         Self {
             stroke_components: Arc::new(HopSlotMap::with_key()),
             trash_components: Arc::new(SecondaryMap::new()),
@@ -141,10 +115,6 @@ impl Default for StrokeStore {
             key_tree: KeyTree::default(),
 
             chrono_counter: 0,
-
-            tasks_tx,
-            tasks_rx: Some(tasks_rx),
-            threadpool,
         }
     }
 }
@@ -157,16 +127,16 @@ impl StrokeStore {
         Self::default()
     }
 
-    /// imports a store. A loaded strokes store should always be imported with this method, to not replace the threadpool, channel handlers..
-    /// stroke then needs to update its rendering
-    pub fn import_store(&mut self, store: Self) {
+    /// imports a store snapshot. A loaded strokes store should always be imported with this method.
+    /// the store then needs to update its rendering
+    pub fn import_snapshot(&mut self, store_snapshot: &StoreSnapshot) {
         self.clear();
-        self.stroke_components = store.stroke_components;
-        self.trash_components = store.trash_components;
-        self.selection_components = store.selection_components;
-        self.chrono_components = store.chrono_components;
+        self.stroke_components = Arc::clone(&store_snapshot.stroke_components);
+        self.trash_components = Arc::clone(&store_snapshot.trash_components);
+        self.selection_components = Arc::clone(&store_snapshot.selection_components);
+        self.chrono_components = Arc::clone(&store_snapshot.chrono_components);
 
-        self.chrono_counter = store.chrono_counter;
+        self.chrono_counter = store_snapshot.chrono_counter;
 
         self.reload_tree();
         self.reload_render_components_slotmap();
@@ -182,95 +152,9 @@ impl StrokeStore {
         self.key_tree.reload_with_vec(tree_objects);
     }
 
-    /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
-    pub(crate) fn process_received_task(
-        &mut self,
-        task: StoreTask,
-        camera: &Camera,
-    ) -> SurfaceFlags {
-        let viewport_expanded = camera.viewport();
-        let image_scale = camera.image_scale();
-        let mut surface_flags = SurfaceFlags::default();
-
-        match task {
-            StoreTask::UpdateStrokeWithImages { key, images } => {
-                if let Err(e) = self.replace_rendering_with_images(key, images) {
-                    log::error!("replace_rendering_with_images() in process_received_task() failed with Err {}", e);
-                }
-
-                surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
-            }
-            StoreTask::AppendImagesToStroke { key, images } => {
-                if let Err(e) = self.append_rendering_images(key, images) {
-                    log::error!(
-                        "append_rendering_images() in process_received_task() failed with Err {}",
-                        e
-                    );
-                }
-
-                surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
-            }
-            StoreTask::InsertStroke { stroke } => {
-                self.record();
-
-                match stroke {
-                    Stroke::BrushStroke(brushstroke) => {
-                        let _inserted = self.insert_stroke(Stroke::BrushStroke(brushstroke));
-
-                        surface_flags.redraw = true;
-                        surface_flags.update_engine_rendering = true;
-                        surface_flags.sheet_changed = true;
-                    }
-                    Stroke::ShapeStroke(shapestroke) => {
-                        let _inserted = self.insert_stroke(Stroke::ShapeStroke(shapestroke));
-
-                        surface_flags.redraw = true;
-                        surface_flags.update_engine_rendering = true;
-                        surface_flags.sheet_changed = true;
-                    }
-                    Stroke::VectorImage(vectorimage) => {
-                        let inserted = self.insert_stroke(Stroke::VectorImage(vectorimage));
-                        self.set_selected(inserted, true);
-
-                        surface_flags.redraw = true;
-                        surface_flags.update_engine_rendering = true;
-                        surface_flags.resize_to_fit_strokes = true;
-                        surface_flags.change_to_pen = Some(PenStyle::Selector);
-                        surface_flags.sheet_changed = true;
-                        surface_flags.update_selector = true;
-                    }
-                    Stroke::BitmapImage(bitmapimage) => {
-                        let inserted = self.insert_stroke(Stroke::BitmapImage(bitmapimage));
-                        self.set_selected(inserted, true);
-
-                        surface_flags.redraw = true;
-                        surface_flags.update_engine_rendering = true;
-                        surface_flags.resize_to_fit_strokes = true;
-                        surface_flags.change_to_pen = Some(PenStyle::Selector);
-                        surface_flags.sheet_changed = true;
-                        surface_flags.update_selector = true;
-                    }
-                }
-
-                self.regenerate_rendering_in_viewport_threaded(
-                    false,
-                    viewport_expanded,
-                    image_scale,
-                );
-            }
-            StoreTask::Quit => {
-                surface_flags.quit = true;
-            }
-        }
-
-        surface_flags
-    }
-
     /// Returns true if the current state is pointer equal to the given history entry
     fn ptr_eq_history(&self, history_entry: &Arc<HistoryEntry>) -> bool {
-        Arc::ptr_eq(&self.stroke_components, &history_entry.strokes)
+        Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
             && Arc::ptr_eq(
                 &self.selection_components,
@@ -280,21 +164,29 @@ impl StrokeStore {
     }
 
     /// Returns a history entry created from the current state
-    fn history_entry_from_current_state(&self) -> Arc<HistoryEntry> {
+    pub fn history_entry_from_current_state(&self) -> Arc<HistoryEntry> {
         Arc::new(HistoryEntry {
-            strokes: Arc::clone(&self.stroke_components),
+            stroke_components: Arc::clone(&self.stroke_components),
             trash_components: Arc::clone(&self.trash_components),
             selection_components: Arc::clone(&self.selection_components),
             chrono_components: Arc::clone(&self.chrono_components),
+            chrono_counter: self.chrono_counter,
         })
+    }
+
+    /// Taking a snapshot of the current state
+    pub fn take_store_snapshot(&self) -> Arc<StoreSnapshot> {
+        self.history_entry_from_current_state()
     }
 
     /// Imports a given history entry and replaces the current state with it.
     fn import_history_entry(&mut self, history_entry: &Arc<HistoryEntry>) {
-        self.stroke_components = Arc::clone(&history_entry.strokes);
+        self.stroke_components = Arc::clone(&history_entry.stroke_components);
         self.trash_components = Arc::clone(&history_entry.trash_components);
         self.selection_components = Arc::clone(&history_entry.selection_components);
         self.chrono_components = Arc::clone(&history_entry.chrono_components);
+
+        self.chrono_counter = history_entry.chrono_counter;
 
         // Since we don't store the tree in the history, we need to reload it.
         self.reload_tree();

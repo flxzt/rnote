@@ -1,5 +1,6 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
+use crate::engine::EngineTaskSender;
 use crate::sheet::Sheet;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
@@ -102,7 +103,8 @@ impl PenBehaviour for Selector {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _sheet: &mut Sheet,
+        tasks_tx: EngineTaskSender,
+        sheet: &mut Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -125,7 +127,7 @@ impl PenBehaviour for Selector {
                 };
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
@@ -181,7 +183,7 @@ impl PenBehaviour for Selector {
                 self.state = state;
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 pen_progress
@@ -198,7 +200,7 @@ impl PenBehaviour for Selector {
                 store.set_selected_keys(&selection_keys, false);
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -311,6 +313,7 @@ impl PenBehaviour for Selector {
 
                             // strokes that were far away previously might come into view
                             store.regenerate_rendering_in_viewport_threaded(
+                                tasks_tx,
                                 false,
                                 camera.viewport(),
                                 camera.image_scale(),
@@ -394,7 +397,7 @@ impl PenBehaviour for Selector {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 pen_progress
             }
@@ -409,6 +412,7 @@ impl PenBehaviour for Selector {
             ) => {
                 store.update_geometry_for_strokes(&selection);
                 store.regenerate_rendering_in_viewport_threaded(
+                    tasks_tx,
                     false,
                     camera.viewport(),
                     camera.image_scale(),
@@ -419,9 +423,10 @@ impl PenBehaviour for Selector {
                 }
                 *modify_state = ModifyState::Up;
 
+                sheet.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
-                surface_flags.update_engine_rendering = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::InProgress
             }
@@ -439,9 +444,10 @@ impl PenBehaviour for Selector {
                 store.set_selected_keys(&selection, false);
                 self.state = SelectorState::Idle;
 
+                sheet.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
-                surface_flags.update_engine_rendering = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::Finished
             }

@@ -1,3 +1,4 @@
+use crate::engine::EngineTaskSender;
 use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::color;
@@ -57,6 +58,7 @@ impl PenBehaviour for Eraser {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        _tasks_tx: EngineTaskSender,
         _sheet: &mut Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
@@ -101,7 +103,7 @@ impl PenBehaviour for Eraser {
 
                 surface_flags.redraw = true;
                 surface_flags.hide_scrollbars = Some(true);
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::InProgress
             }
@@ -133,7 +135,7 @@ impl PenBehaviour for Eraser {
                 *current_element = element;
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::InProgress
             }
@@ -165,7 +167,7 @@ impl PenBehaviour for Eraser {
 
                 surface_flags.redraw = true;
                 surface_flags.hide_scrollbars = Some(false);
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::Finished
             }

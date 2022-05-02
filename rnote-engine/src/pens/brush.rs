@@ -1,3 +1,4 @@
+use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
@@ -78,6 +79,7 @@ impl PenBehaviour for Brush {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        tasks_tx: EngineTaskSender,
         sheet: &mut Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
@@ -144,6 +146,7 @@ impl PenBehaviour for Brush {
                 // Finish up the last stroke
                 store.update_geometry_for_stroke(*current_stroke_key);
                 store.regenerate_rendering_for_stroke_threaded(
+                    tasks_tx,
                     *current_stroke_key,
                     camera.viewport(),
                     camera.image_scale(),
@@ -151,9 +154,10 @@ impl PenBehaviour for Brush {
 
                 self.state = BrushState::Idle;
 
+                sheet.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
-                surface_flags.update_engine_rendering = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -182,7 +186,7 @@ impl PenBehaviour for Brush {
                                         new_segment,
                                     );
                                     n_segments += 1;
-                                    surface_flags.sheet_changed = true;
+                                    surface_flags.store_changed = true;
                                 }
                                 _ => {
                                     // not reachable, pen builder should only produce segments
@@ -191,6 +195,7 @@ impl PenBehaviour for Brush {
                         }
 
                         if let Err(e) = store.append_rendering_last_segments(
+                            tasks_tx,
                             *current_stroke_key,
                             n_segments,
                             camera.viewport(),
@@ -210,7 +215,7 @@ impl PenBehaviour for Brush {
                                         *current_stroke_key,
                                         new_segment,
                                     );
-                                    surface_flags.sheet_changed = true;
+                                    surface_flags.store_changed = true;
                                 }
                                 _ => {
                                     // not reachable, pen builder should only produce segments
@@ -221,6 +226,7 @@ impl PenBehaviour for Brush {
                         // Finish up the last stroke
                         store.update_geometry_for_stroke(*current_stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
+                            tasks_tx,
                             *current_stroke_key,
                             camera.viewport(),
                             camera.image_scale(),
@@ -230,9 +236,10 @@ impl PenBehaviour for Brush {
 
                         self.state = BrushState::Idle;
 
+                        sheet.resize_autoexpand(store, camera);
+
                         surface_flags.redraw = true;
-                        surface_flags.update_engine_rendering = true;
-                        surface_flags.sheet_changed = true;
+                        surface_flags.store_changed = true;
                         surface_flags.hide_scrollbars = Some(false);
 
                         PenProgress::Finished

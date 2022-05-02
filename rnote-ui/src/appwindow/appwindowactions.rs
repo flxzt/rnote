@@ -5,7 +5,6 @@ use crate::{
     {dialogs, RnoteCanvas},
 };
 use rnote_compose::builders::ShapeBuilderType;
-use rnote_engine::engine::ExpandMode;
 use rnote_engine::pens::brush::BrushStyle;
 use rnote_engine::pens::eraser::EraserStyle;
 use rnote_engine::pens::penholder::{PenHolderEvent, PenStyle};
@@ -13,6 +12,7 @@ use rnote_engine::pens::selector::SelectorType;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::tools::ToolsStyle;
 use rnote_engine::pens::{brush, selector, shaper, tools};
+use rnote_engine::sheet::ExpandMode;
 use rnote_engine::{render, Camera};
 
 use gettextrs::gettext;
@@ -66,6 +66,16 @@ impl RnoteAppWindow {
         self.add_action(&action_touch_drawing);
 
         // Engine actions
+        let action_pdf_import_width_perc = gio::SimpleAction::new(
+            "pdf-import-width-perc",
+            Some(&glib::VariantType::new("d").unwrap()),
+        );
+        self.add_action(&action_pdf_import_width_perc);
+        let action_pdf_import_as_vector = gio::SimpleAction::new(
+            "pdf-import-as-vector",
+            Some(&glib::VariantType::new("b").unwrap()),
+        );
+        self.add_action(&action_pdf_import_as_vector);
         let action_pen_sounds =
             gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
@@ -461,6 +471,28 @@ impl RnoteAppWindow {
             }),
         );
 
+        // Pdf import width perc
+        action_pdf_import_width_perc.connect_activate(
+            clone!(@weak self as appwindow => move |_action_pdf_import_width_perc, target| {
+                let pdf_import_width_perc = target.unwrap().get::<f64>().unwrap();
+
+                appwindow.canvas().engine().borrow_mut().pdf_import_width_perc = pdf_import_width_perc;
+
+                appwindow.settings_panel().refresh_for_engine(&appwindow);
+            }),
+        );
+
+        // Pdf import as vector
+        action_pdf_import_as_vector.connect_activate(
+            clone!(@weak self as appwindow => move |_action_pdf_import_as_vector, target| {
+                let pdf_import_as_vector = target.unwrap().get::<bool>().unwrap();
+
+                appwindow.canvas().engine().borrow_mut().pdf_import_as_vector = pdf_import_as_vector;
+
+                appwindow.settings_panel().refresh_for_engine(&appwindow);
+            }),
+        );
+
         // Pen sounds
         action_pen_sounds.connect_change_state(
             clone!(@weak self as appwindow => move |action_pen_sounds, state_request| {
@@ -714,10 +746,19 @@ impl RnoteAppWindow {
 
         // Refresh UI state
         action_refresh_ui_for_engine.connect_activate(
-            clone!(@weak self as appwindow, @strong action_pen_sounds, @strong action_expand_mode, @strong action_format_borders => move |_action_refresh_ui_for_sheet, _| {
+            clone!(
+                @weak self as appwindow,
+                @strong action_pen_sounds,
+                @strong action_expand_mode,
+                @strong action_format_borders,
+                @strong action_pdf_import_width_perc,
+                @strong action_pdf_import_as_vector
+                => move |_action_refresh_ui_for_sheet, _| {
                 // Avoids borrow errors
                 let format = appwindow.canvas().engine().borrow().sheet.format.clone();
                 let expand_mode = appwindow.canvas().engine().borrow().expand_mode();
+                let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
+                let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
                 let pen_sounds = appwindow.canvas().engine().borrow().penholder.pen_sounds();
                 let pen_style = appwindow.canvas().engine().borrow().penholder.style_w_override();
                 let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
@@ -733,9 +774,9 @@ impl RnoteAppWindow {
                         ExpandMode::Infinite => "infinite",
                     };
                     action_expand_mode.activate(Some(&expand_mode_str.to_variant()));
-
+                    action_pdf_import_as_vector.activate(Some(&pdf_import_as_vector.to_variant()));
+                    action_pdf_import_width_perc.activate(Some(&pdf_import_width_perc.to_variant()));
                     action_pen_sounds.change_state(&pen_sounds.to_variant());
-
                     action_format_borders.change_state(&format.show_borders.to_variant());
                 }
 
@@ -897,6 +938,7 @@ impl RnoteAppWindow {
                 appwindow.canvas().engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
+                appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -909,6 +951,7 @@ impl RnoteAppWindow {
                 appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
+                appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -937,6 +980,7 @@ impl RnoteAppWindow {
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
+                appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -951,6 +995,7 @@ impl RnoteAppWindow {
             let surface_flags =appwindow.canvas().engine().borrow_mut().undo();
             appwindow.handle_surface_flags(surface_flags);
 
+            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
             appwindow.canvas().update_engine_rendering();
         }));
 
@@ -959,6 +1004,7 @@ impl RnoteAppWindow {
             let surface_flags =appwindow.canvas().engine().borrow_mut().redo();
             appwindow.handle_surface_flags(surface_flags);
 
+            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
             appwindow.canvas().update_engine_rendering();
         }));
 
@@ -969,6 +1015,7 @@ impl RnoteAppWindow {
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom fit to width
@@ -982,6 +1029,7 @@ impl RnoteAppWindow {
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom in
@@ -991,6 +1039,7 @@ impl RnoteAppWindow {
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom out
@@ -1000,6 +1049,7 @@ impl RnoteAppWindow {
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom to value
@@ -1035,6 +1085,7 @@ impl RnoteAppWindow {
         action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().return_to_origin_page();
 
+            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
             appwindow.canvas().update_engine_rendering();
         }));
 
@@ -1061,7 +1112,7 @@ impl RnoteAppWindow {
 
             // check again if a file was selected from the dialog
             if let Some(output_file) = appwindow.canvas().output_file() {
-                glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     appwindow.canvas_progressbar().pulse();
 
                     if let Err(e) = appwindow.save_sheet_to_file(&output_file).await {

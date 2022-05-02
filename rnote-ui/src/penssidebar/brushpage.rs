@@ -167,7 +167,8 @@ impl BrushPage {
         self.width_spinbutton()
             .set_range(Brush::STROKE_WIDTH_MIN, Brush::STROKE_WIDTH_MAX);
         // Must be after set_range() !
-        self.width_spinbutton().set_value(Brush::STROKE_WIDTH_DEFAULT);
+        self.width_spinbutton()
+            .set_value(Brush::STROKE_WIDTH_DEFAULT);
 
         self.colorpicker().connect_notify_local(
             Some("current-color"),

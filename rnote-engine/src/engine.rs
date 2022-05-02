@@ -1,12 +1,12 @@
 use crate::pens::penholder::{PenHolderEvent, PenStyle};
-use crate::sheet::{background, Background, Format};
-use crate::store::StoreTask;
+use crate::sheet::{background, Background, ExpandMode, Format};
+use crate::store::{StoreSnapshot, StrokeKey};
+use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::Stroke;
 use crate::{render, DrawOnSheetBehaviour, SurfaceFlags};
 use crate::{Camera, PenHolder, Sheet, StrokeStore};
 use gtk4::Snapshot;
 use itertools::Itertools;
-use num_derive::{FromPrimitive, ToPrimitive};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
@@ -15,25 +15,33 @@ use rnote_fileformats::FileFormatLoader;
 use rnote_fileformats::FileFormatSaver;
 
 use anyhow::Context;
-use futures::channel::oneshot;
+use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, FromPrimitive, ToPrimitive)]
-#[serde(rename = "expand_mode")]
-pub enum ExpandMode {
-    #[serde(rename = "fixed_size")]
-    FixedSize,
-    #[serde(rename = "endless_vertical")]
-    EndlessVertical,
-    #[serde(rename = "infinite")]
-    Infinite,
-}
-
-impl Default for ExpandMode {
-    fn default() -> Self {
-        Self::Infinite
-    }
+#[derive(Debug, Clone)]
+/// A engine task, usually coming from a spawned thread and to be processed with `process_received_task()`.
+pub enum EngineTask {
+    /// Replace the images of the render_comp.
+    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
+    UpdateStrokeWithImages {
+        key: StrokeKey,
+        images: GeneratedStrokeImages,
+    },
+    /// Appends the images to the rendering of the stroke
+    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
+    AppendImagesToStroke {
+        key: StrokeKey,
+        images: GeneratedStrokeImages,
+    },
+    /// Inserts a new stroke to the store
+    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
+    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
+    InsertStroke { stroke: Stroke },
+    /// indicates that the application is quitting. Usually handled to quit the async loop which receives the tasks
+    Quit,
 }
 
 #[allow(missing_debug_implementations)]
@@ -44,20 +52,28 @@ struct EngineConfig {
     sheet: serde_json::Value,
     #[serde(rename = "penholder")]
     penholder: serde_json::Value,
-    #[serde(rename = "expand_mode")]
-    expand_mode: serde_json::Value,
+    #[serde(rename = "pdf_import_width_perc")]
+    pdf_import_width_perc: serde_json::Value,
+    #[serde(rename = "pdf_import_as_vector")]
+    pdf_import_as_vector: serde_json::Value,
 }
 
 impl Default for EngineConfig {
     fn default() -> Self {
         let engine = RnoteEngine::default();
+
         Self {
             sheet: serde_json::to_value(&engine.sheet).unwrap(),
             penholder: serde_json::to_value(&engine.penholder).unwrap(),
-            expand_mode: serde_json::to_value(&engine.expand_mode).unwrap(),
+
+            pdf_import_width_perc: serde_json::to_value(&engine.pdf_import_width_perc).unwrap(),
+            pdf_import_as_vector: serde_json::to_value(&engine.pdf_import_as_vector).unwrap(),
         }
     }
 }
+
+pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
+pub type EngineTaskReceiver = mpsc::UnboundedReceiver<EngineTask>;
 
 #[allow(missing_debug_implementations)]
 #[derive(Serialize, Deserialize)]
@@ -70,41 +86,66 @@ pub struct RnoteEngine {
     #[serde(rename = "store")]
     pub store: StrokeStore,
 
-    #[serde(rename = "expand_mode")]
-    expand_mode: ExpandMode,
     #[serde(rename = "camera")]
     pub camera: Camera,
+    #[serde(rename = "pdf_import_width_perc")]
+    pub pdf_import_width_perc: f64,
+    #[serde(rename = "pdf_import_as_vector")]
+    pub pdf_import_as_vector: bool,
+
     #[serde(skip)]
     pub visual_debug: bool,
+    #[serde(skip)]
+    pub tasks_tx: EngineTaskSender,
+    /// To be taken out into a loop which processes the receiver stream. The received tasks should be processed with process_received_task()
+    #[serde(skip)]
+    pub tasks_rx: Option<EngineTaskReceiver>,
 }
 
 impl Default for RnoteEngine {
     fn default() -> Self {
+        let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+
         Self {
             sheet: Sheet::default(),
             penholder: PenHolder::default(),
             store: StrokeStore::default(),
 
-            expand_mode: ExpandMode::default(),
             camera: Camera::default(),
+            pdf_import_width_perc: Self::PDF_IMPORT_WIDTH_PERC_DEFAULT,
+            pdf_import_as_vector: true,
+
             visual_debug: false,
+            tasks_tx,
+            tasks_rx: Some(tasks_rx),
         }
     }
 }
 
 impl RnoteEngine {
-    pub fn expand_mode(&self) -> ExpandMode {
-        self.expand_mode
+    // The default width of imported PDF's in percentage to the sheet width
+    pub const PDF_IMPORT_WIDTH_PERC_DEFAULT: f64 = 50.0;
+
+    pub fn tasks_tx(&self) -> EngineTaskSender {
+        self.tasks_tx.clone()
     }
 
-    pub fn set_expand_mode(&mut self, expand_mode: ExpandMode) {
-        self.expand_mode = expand_mode;
+    pub fn update_rendering_for_viewport(&mut self) {
+        let viewport = self.camera.viewport();
+        let image_scale = self.camera.image_scale();
 
-        self.resize_to_fit_strokes();
+        // Update background and strokes for the new viewport
+        if let Err(e) = self.sheet.background.update_rendernodes(viewport) {
+            log::error!(
+                "failed to update background rendernodes on canvas resize with Err {}",
+                e
+            );
+        }
         self.store.regenerate_rendering_in_viewport_threaded(
+            self.tasks_tx(),
             false,
-            self.camera.viewport(),
-            self.camera.image_scale(),
+            viewport,
+            image_scale,
         );
     }
 
@@ -122,6 +163,7 @@ impl RnoteEngine {
 
         self.resize_autoexpand();
         self.store.regenerate_rendering_in_viewport_threaded(
+            self.tasks_tx(),
             true,
             self.camera.viewport(),
             self.camera.image_scale(),
@@ -140,6 +182,7 @@ impl RnoteEngine {
         self.update_selector();
         self.resize_autoexpand();
         self.store.regenerate_rendering_in_viewport_threaded(
+            self.tasks_tx(),
             true,
             self.camera.viewport(),
             self.camera.image_scale(),
@@ -167,14 +210,102 @@ impl RnoteEngine {
     ///            }
     ///        }));
     /// ```
-    pub fn process_received_task(&mut self, task: StoreTask) -> SurfaceFlags {
-        self.store.process_received_task(task, &self.camera)
+    /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
+    pub fn process_received_task(&mut self, task: EngineTask) -> SurfaceFlags {
+        let viewport_expanded = self.camera.viewport();
+        let image_scale = self.camera.image_scale();
+        let mut surface_flags = SurfaceFlags::default();
+
+        match task {
+            EngineTask::UpdateStrokeWithImages { key, images } => {
+                if let Err(e) = self.store.replace_rendering_with_images(key, images) {
+                    log::error!("replace_rendering_with_images() in process_received_task() failed with Err {}", e);
+                }
+
+                surface_flags.redraw = true;
+                surface_flags.store_changed = true;
+            }
+            EngineTask::AppendImagesToStroke { key, images } => {
+                if let Err(e) = self.store.append_rendering_images(key, images) {
+                    log::error!(
+                        "append_rendering_images() in process_received_task() failed with Err {}",
+                        e
+                    );
+                }
+
+                surface_flags.redraw = true;
+                surface_flags.store_changed = true;
+            }
+            EngineTask::InsertStroke { stroke } => {
+                self.store.record();
+
+                match stroke {
+                    Stroke::BrushStroke(brushstroke) => {
+                        let _inserted = self.store.insert_stroke(Stroke::BrushStroke(brushstroke));
+
+                        self.resize_autoexpand();
+
+                        surface_flags.redraw = true;
+                        surface_flags.store_changed = true;
+                    }
+                    Stroke::ShapeStroke(shapestroke) => {
+                        let _inserted = self.store.insert_stroke(Stroke::ShapeStroke(shapestroke));
+
+                        self.resize_autoexpand();
+
+                        surface_flags.redraw = true;
+                        surface_flags.store_changed = true;
+                    }
+                    Stroke::VectorImage(vectorimage) => {
+                        let inserted = self.store.insert_stroke(Stroke::VectorImage(vectorimage));
+                        self.store.set_selected(inserted, true);
+
+                        surface_flags.merge_with_other(self.handle_penholder_event(
+                            PenHolderEvent::ChangeStyle(PenStyle::Selector),
+                        ));
+
+                        self.resize_to_fit_strokes();
+                        self.update_selector();
+
+                        surface_flags.redraw = true;
+                        surface_flags.store_changed = true;
+                    }
+                    Stroke::BitmapImage(bitmapimage) => {
+                        let inserted = self.store.insert_stroke(Stroke::BitmapImage(bitmapimage));
+                        self.store.set_selected(inserted, true);
+
+                        surface_flags.merge_with_other(self.handle_penholder_event(
+                            PenHolderEvent::ChangeStyle(PenStyle::Selector),
+                        ));
+
+                        self.resize_to_fit_strokes();
+                        self.update_selector();
+
+                        surface_flags.redraw = true;
+                        surface_flags.store_changed = true;
+                    }
+                }
+
+                self.store.regenerate_rendering_in_viewport_threaded(
+                    self.tasks_tx(),
+                    false,
+                    viewport_expanded,
+                    image_scale,
+                );
+            }
+            EngineTask::Quit => {
+                surface_flags.quit = true;
+            }
+        }
+
+        surface_flags
     }
 
     /// Public method to call to handle penholder events
     pub fn handle_penholder_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
         self.penholder.handle_penholder_event(
             event,
+            self.tasks_tx(),
             &mut self.sheet,
             &mut self.store,
             &mut self.camera,
@@ -258,42 +389,25 @@ impl RnoteEngine {
         Ok(svgs)
     }
 
+    pub fn expand_mode(&self) -> ExpandMode {
+        self.sheet.expand_mode()
+    }
+
+    pub fn set_expand_mode(&mut self, expand_mode: ExpandMode) {
+        self.sheet
+            .set_expand_mode(expand_mode, &self.store, &self.camera);
+    }
+
     /// resizes the sheet to the format and to fit all strokes
     /// Sheet background rendering then needs to be updated.
     pub fn resize_to_fit_strokes(&mut self) {
-        match self.expand_mode {
-            ExpandMode::FixedSize => {
-                self.sheet.resize_sheet_mode_fixed_size(&self.store);
-            }
-            ExpandMode::EndlessVertical => {
-                self.sheet.resize_sheet_mode_endless_vertical(&self.store);
-            }
-            ExpandMode::Infinite => {
-                self.sheet
-                    .resize_sheet_mode_infinite_to_fit_strokes(&self.store);
-                self.sheet
-                    .expand_sheet_mode_infinite(self.camera.viewport());
-            }
-        }
+        self.sheet.resize_to_fit_strokes(&self.store, &self.camera);
     }
 
     /// resize the sheet when in autoexpanding expand modes. called e.g. when finishing a new stroke
     /// Sheet background rendering then needs to be updated.
     pub fn resize_autoexpand(&mut self) {
-        match self.expand_mode {
-            ExpandMode::FixedSize => {
-                // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.
-            }
-            ExpandMode::EndlessVertical => {
-                self.sheet.resize_sheet_mode_endless_vertical(&self.store);
-            }
-            ExpandMode::Infinite => {
-                self.sheet
-                    .resize_sheet_mode_infinite_to_fit_strokes(&self.store);
-                self.sheet
-                    .expand_sheet_mode_infinite(self.camera.viewport());
-            }
-        }
+        self.sheet.resize_autoexpand(&self.store, &self.camera);
     }
 
     /// Updates the camera and expands sheet dimensions with offset
@@ -301,7 +415,7 @@ impl RnoteEngine {
     pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
         self.camera.offset = new_offset;
 
-        match self.expand_mode {
+        match self.sheet.expand_mode() {
             ExpandMode::FixedSize => {
                 // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.
             }
@@ -329,7 +443,8 @@ impl RnoteEngine {
         self.sheet = serde_json::from_value(engine_config.sheet)?;
         self.penholder
             .import(serde_json::from_value(engine_config.penholder)?);
-        self.expand_mode = serde_json::from_value(engine_config.expand_mode)?;
+        self.pdf_import_width_perc = serde_json::from_value(engine_config.pdf_import_width_perc)?;
+        self.pdf_import_as_vector = serde_json::from_value(engine_config.pdf_import_as_vector)?;
 
         Ok(())
     }
@@ -339,20 +454,33 @@ impl RnoteEngine {
         let engine_config = EngineConfig {
             sheet: serde_json::to_value(&self.sheet)?,
             penholder: serde_json::to_value(&self.penholder)?,
-            expand_mode: serde_json::to_value(&self.expand_mode)?,
+            pdf_import_width_perc: serde_json::to_value(&self.pdf_import_width_perc)?,
+            pdf_import_as_vector: serde_json::to_value(&self.pdf_import_as_vector)?,
         };
 
-            Ok(serde_json::to_string(&engine_config)?)
+        Ok(serde_json::to_string(&engine_config)?)
     }
 
     /// opens a .rnote file and replaces the current state with it.
-    pub fn open_from_rnote_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
-        let rnote_file = RnotefileMaj0Min5::load_from_bytes(bytes)?;
+    pub async fn open_from_rnote_bytes(&mut self, bytes: Vec<u8>) -> anyhow::Result<()> {
+        let rnote_file = RnotefileMaj0Min5::load_from_bytes(&bytes)?;
 
         self.sheet = serde_json::from_value(rnote_file.sheet)?;
-        self.expand_mode = serde_json::from_value(rnote_file.expand_mode)?;
-        self.store
-            .import_store(serde_json::from_value(rnote_file.store)?);
+
+        let (store_snapshot_sender, store_snapshot_receiver) =
+            oneshot::channel::<anyhow::Result<StoreSnapshot>>();
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<StoreSnapshot> {
+                Ok(serde_json::from_value(rnote_file.store_snapshot)?)
+            };
+
+            if let Err(_data) = store_snapshot_sender.send(result()) {
+                log::error!("sending result to receiver in open_from_rnote_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        self.store.import_snapshot(&store_snapshot_receiver.await??);
 
         self.update_selector();
 
@@ -360,14 +488,32 @@ impl RnoteEngine {
     }
 
     /// Saves the current state as a .rnote file.
-    pub fn save_as_rnote_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
-        let rnote_file = RnotefileMaj0Min5 {
-            sheet: serde_json::to_value(&self.sheet)?,
-            expand_mode: serde_json::to_value(&self.expand_mode)?,
-            store: serde_json::to_value(&self.store)?,
-        };
+    pub fn save_as_rnote_bytes(
+        &self,
+        file_name: String,
+    ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<Vec<u8>>>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
 
-        Ok(rnote_file.save_as_bytes(file_name)?)
+        let store_snapshot = self.store.take_store_snapshot();
+        // the sheet is currently not thread safe, so we have to serialize it before
+        let sheet = serde_json::to_value(&self.sheet)?;
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Vec<u8>> {
+                let rnote_file = RnotefileMaj0Min5 {
+                    sheet,
+                    store_snapshot: serde_json::to_value(&*store_snapshot)?,
+                };
+
+                rnote_file.save_as_bytes(&file_name)
+            };
+
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in save_as_rnote_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        Ok(oneshot_receiver)
     }
 
     /// Exports the entire engine state as JSON string
@@ -463,11 +609,42 @@ impl RnoteEngine {
 
         // Import into engine
         self.sheet = sheet;
-        self.store.import_store(store);
+        self.store.import_snapshot(&*store.take_store_snapshot());
 
         self.update_selector();
 
         Ok(())
+    }
+
+    pub fn import_vectorimage_bytes(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
+        self.store
+            .insert_vectorimage_bytes_threaded(self.tasks_tx(), pos, bytes);
+    }
+
+    pub fn import_bitmapimage_bytes(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
+        self.store
+            .insert_bitmapimage_bytes_threaded(self.tasks_tx(), pos, bytes);
+    }
+
+    pub fn import_pdf_bytes(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
+        let page_width = (f64::from(self.sheet.format.width) * (self.pdf_import_width_perc / 100.0))
+            .round() as i32;
+
+        if self.pdf_import_as_vector {
+            self.store.insert_pdf_bytes_as_vector_threaded(
+                self.tasks_tx(),
+                pos,
+                Some(page_width),
+                bytes,
+            );
+        } else {
+            self.store.insert_pdf_bytes_as_bitmap_threaded(
+                self.tasks_tx(),
+                pos,
+                Some(page_width),
+                bytes,
+            );
+        }
     }
 
     /// Exports the sheet with the strokes as a SVG string. Excluding the current selection.
@@ -706,7 +883,7 @@ impl RnoteEngine {
             };
 
             if let Err(_data) = oneshot_sender.send(result()) {
-                log::error!("sending result from export_sheet_as_pdf_bytes to oneshot_receiver failed. Receiving end already dropped.");
+                log::error!("sending result to receiver in export_sheet_as_pdf_bytes() failed. Receiver already dropped.");
             }
         });
 

@@ -68,6 +68,8 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().set_unsaved_changes(false);
                     appwindow.canvas().set_empty(true);
 
+                    appwindow.canvas().return_to_origin_page();
+                    appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                     appwindow.canvas().update_engine_rendering();
                 },
                 _ => {
@@ -97,6 +99,8 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
                 appwindow.canvas().set_output_file(None);
 
+                appwindow.canvas().return_to_origin_page();
+                appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().update_engine_rendering();
             },
             ResponseType::Apply => {
@@ -281,7 +285,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.canvas_progressbar().pulse();
 
                             if let Err(e) = appwindow.save_sheet_to_file(&file).await {
@@ -383,7 +387,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_selection.file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.canvas_progressbar().pulse();
 
                             if let Err(e) = appwindow.export_selection_as_svg(&file).await {
@@ -432,7 +436,7 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.canvas_progressbar().pulse();
 
                             if let Err(e) = appwindow.export_sheet_as_svg(&file).await {
@@ -483,7 +487,7 @@ pub fn dialog_export_sheet_as_pdf(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow, @strong file => async move {
+                        glib::MainContext::default().spawn_local(clone!(@strong appwindow, @strong file => async move {
                             appwindow.canvas_progressbar().pulse();
 
                             if let Err(e) = appwindow.export_sheet_as_pdf(&file).await {
@@ -534,7 +538,7 @@ pub fn dialog_export_sheet_as_xopp(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.canvas_progressbar().pulse();
 
                             if let Err(e) = appwindow.export_sheet_as_xopp(&file).await {
@@ -588,7 +592,7 @@ pub fn dialog_export_engine_state(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_engine_state.file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.canvas_progressbar().pulse();
 
                             if let Err(e) = appwindow.export_engine_state(&file).await {
@@ -642,7 +646,7 @@ pub fn dialog_export_engine_config(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_engine_config.file() {
-                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.canvas_progressbar().pulse();
 
                             if let Err(e) = appwindow.export_engine_config(&file).await {
@@ -665,4 +669,3 @@ pub fn dialog_export_engine_config(appwindow: &RnoteAppWindow) {
     // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_engine_config);
 }
-

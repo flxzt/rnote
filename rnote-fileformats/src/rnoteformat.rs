@@ -44,12 +44,9 @@ pub struct RnotefileMaj0Min5 {
     /// sheet
     #[serde(rename = "sheet")]
     pub sheet: serde_json::Value,
-    /// strokes store
-    #[serde(rename = "store")]
-    pub store: serde_json::Value,
-    /// expand mode
-    #[serde(rename = "expand_mode")]
-    pub expand_mode: serde_json::Value,
+    /// A snapshot of the store
+    #[serde(rename = "store_snapshot")]
+    pub store_snapshot: serde_json::Value,
 }
 
 impl FileFormatLoader for RnotefileMaj0Min5 {

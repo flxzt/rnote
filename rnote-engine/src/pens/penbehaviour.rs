@@ -1,5 +1,6 @@
 use rnote_compose::penhelpers::PenEvent;
 
+use crate::engine::EngineTaskSender;
 use crate::sheet::Sheet;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
 
@@ -12,6 +13,7 @@ pub trait PenBehaviour: DrawOnSheetBehaviour {
     fn handle_event(
         &mut self,
         event: PenEvent,
+        tasks_tx: EngineTaskSender,
         sheet: &mut Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,

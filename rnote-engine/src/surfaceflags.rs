@@ -1,29 +1,21 @@
-use crate::pens::penholder::PenStyle;
-
 /// Flags returned to the surface drawing the engine
 #[must_use]
 #[derive(Debug, Clone, Copy)]
 pub struct SurfaceFlags {
     /// application should be quit
     pub quit: bool,
-    /// needs redrawing
+    /// needs surface redrawing
     pub redraw: bool,
-    /// engine rendering should be updated
-    pub update_engine_rendering: bool,
-    /// Sheet should be resized to fit the strokes
-    pub resize_to_fit_strokes: bool,
-    /// Should change to the pen style
-    pub change_to_pen: Option<PenStyle>,
+    /// needs surface resizing
+    pub resize: bool,
     /// Penholder state has has changed
     pub penholder_changed: bool,
-    /// wether the sheet has changed, i.e. new strokes inserted, modified, etc.
-    pub sheet_changed: bool,
-    /// Selection has changed
-    pub update_selector: bool,
+    /// wether the store has changed, i.e. new strokes inserted, modified, etc.
+    pub store_changed: bool,
     /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
     pub hide_scrollbars: Option<bool>,
-    /// camera offset changed
-    pub camera_offset_changed: bool,
+    /// camera has changed
+    pub camera_changed: bool,
 }
 
 impl Default for SurfaceFlags {
@@ -31,14 +23,11 @@ impl Default for SurfaceFlags {
         Self {
             quit: false,
             redraw: false,
-            update_engine_rendering: false,
-            resize_to_fit_strokes: false,
-            change_to_pen: None,
+            resize: false,
             penholder_changed: false,
-            sheet_changed: false,
-            update_selector: false,
+            store_changed: false,
             hide_scrollbars: None,
-            camera_offset_changed: false,
+            camera_changed: false,
         }
     }
 }
@@ -48,23 +37,15 @@ impl SurfaceFlags {
     pub fn merged_with_other(mut self, other: Self) -> Self {
         self.quit |= other.quit;
         self.redraw |= other.redraw;
-        self.update_engine_rendering |= other.update_engine_rendering;
-        self.resize_to_fit_strokes |= other.resize_to_fit_strokes;
-        self.change_to_pen = if other.change_to_pen.is_some() {
-            other.change_to_pen
-        } else {
-            self.change_to_pen
-        };
-
+        self.resize |= other.resize;
         self.penholder_changed |= other.penholder_changed;
-        self.sheet_changed |= other.sheet_changed;
-        self.update_selector |= other.update_selector;
+        self.store_changed |= other.store_changed;
         self.hide_scrollbars = if other.hide_scrollbars.is_some() {
             other.hide_scrollbars
         } else {
             self.hide_scrollbars
         };
-        self.camera_offset_changed |= other.camera_offset_changed;
+        self.camera_changed |= other.camera_changed;
 
         self
     }

@@ -7,12 +7,29 @@ pub use format::Format;
 use rnote_compose::Color;
 
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::StrokeStore;
+use crate::{Camera, StrokeStore};
 use rnote_compose::helpers::AABBHelpers;
 
 use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[serde(rename = "expand_mode")]
+pub enum ExpandMode {
+    #[serde(rename = "fixed_size")]
+    FixedSize,
+    #[serde(rename = "endless_vertical")]
+    EndlessVertical,
+    #[serde(rename = "infinite")]
+    Infinite,
+}
+
+impl Default for ExpandMode {
+    fn default() -> Self {
+        Self::Infinite
+    }
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "sheet")]
@@ -29,6 +46,8 @@ pub struct Sheet {
     pub format: Format,
     #[serde(rename = "background")]
     pub background: Background,
+    #[serde(rename = "expand_mode")]
+    expand_mode: ExpandMode,
 }
 
 impl Default for Sheet {
@@ -40,6 +59,7 @@ impl Default for Sheet {
             height: Format::default().height,
             format: Format::default(),
             background: Background::default(),
+            expand_mode: ExpandMode::default(),
         }
     }
 }
@@ -53,6 +73,21 @@ impl Sheet {
         b: 0.1,
         a: 0.3,
     };
+
+    pub(crate) fn expand_mode(&self) -> ExpandMode {
+        self.expand_mode
+    }
+
+    pub(crate) fn set_expand_mode(
+        &mut self,
+        expand_mode: ExpandMode,
+        store: &StrokeStore,
+        camera: &Camera,
+    ) {
+        self.expand_mode = expand_mode;
+
+        self.resize_to_fit_strokes(store, camera);
+    }
 
     pub fn bounds(&self) -> AABB {
         AABB::new(
@@ -80,6 +115,36 @@ impl Sheet {
                 * (self.height / self.format.height).round() as u32
         } else {
             0
+        }
+    }
+
+    pub(crate) fn resize_to_fit_strokes(&mut self, store: &StrokeStore, camera: &Camera) {
+        match self.expand_mode {
+            ExpandMode::FixedSize => {
+                self.resize_sheet_mode_fixed_size(store);
+            }
+            ExpandMode::EndlessVertical => {
+                self.resize_sheet_mode_endless_vertical(store);
+            }
+            ExpandMode::Infinite => {
+                self.resize_sheet_mode_infinite_to_fit_strokes(store);
+                self.expand_sheet_mode_infinite(camera.viewport());
+            }
+        }
+    }
+
+    pub(crate) fn resize_autoexpand(&mut self, store: &StrokeStore, camera: &Camera) {
+        match self.expand_mode {
+            ExpandMode::FixedSize => {
+                // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.
+            }
+            ExpandMode::EndlessVertical => {
+                self.resize_sheet_mode_endless_vertical(store);
+            }
+            ExpandMode::Infinite => {
+                self.resize_sheet_mode_infinite_to_fit_strokes(store);
+                self.expand_sheet_mode_infinite(camera.viewport());
+            }
         }
     }
 

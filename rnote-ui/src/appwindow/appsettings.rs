@@ -77,20 +77,6 @@ impl RnoteAppWindow {
             .bind("touch-drawing", &self.canvas(), "touch-drawing")
             .build();
 
-        // pdf import width
-        self.app_settings()
-            .bind("pdf-import-width", &self.canvas(), "pdf-import-width")
-            .build();
-
-        // pdf import as vector image
-        self.app_settings()
-            .bind(
-                "pdf-import-as-vector",
-                &self.canvas(),
-                "pdf-import-as-vector",
-            )
-            .build();
-
         // Brush page
         self.app_settings()
             .bind(

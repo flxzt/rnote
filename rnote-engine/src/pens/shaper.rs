@@ -1,5 +1,6 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
+use crate::engine::EngineTaskSender;
 use crate::sheet::Sheet;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
@@ -79,7 +80,8 @@ impl PenBehaviour for Shaper {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _sheet: &mut Sheet,
+        _tasks_tx: EngineTaskSender,
+        sheet: &mut Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -162,8 +164,7 @@ impl PenBehaviour for Shaper {
                     }
 
                     surface_flags.redraw = true;
-                    surface_flags.update_engine_rendering = true;
-                    surface_flags.sheet_changed = true;
+                    surface_flags.store_changed = true;
 
                     PenProgress::InProgress
                 }
@@ -171,8 +172,9 @@ impl PenBehaviour for Shaper {
                     let drawstyle = self.gen_style_for_current_options();
 
                     if !shapes.is_empty() {
-                        surface_flags.update_engine_rendering = true;
-                        surface_flags.sheet_changed = true;
+                        sheet.resize_autoexpand(store, camera);
+
+                        surface_flags.store_changed = true;
                     }
 
                     for shape in shapes {

@@ -1,3 +1,4 @@
+use crate::engine::EngineTaskSender;
 use crate::sheet::Sheet;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
@@ -269,7 +270,8 @@ impl PenBehaviour for Tools {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _sheet: &mut Sheet,
+        tasks_tx: EngineTaskSender,
+        sheet: &mut Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -305,9 +307,10 @@ impl PenBehaviour for Tools {
 
                 self.state = ToolsState::Active;
 
+                sheet.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
-                surface_flags.update_engine_rendering = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
@@ -348,6 +351,7 @@ impl PenBehaviour for Tools {
                         {
                             store.drag_strokes_proximity(&self.dragproximity_tool);
                             store.regenerate_rendering_in_viewport_threaded(
+                                tasks_tx,
                                 false,
                                 camera.viewport(),
                                 camera.image_scale(),
@@ -371,16 +375,17 @@ impl PenBehaviour for Tools {
 
                         if offset.magnitude() > 1.0 {
                             camera.offset -= offset;
-                            surface_flags.camera_offset_changed = true;
+                            surface_flags.camera_changed = true;
                         }
 
                         PenProgress::InProgress
                     }
                 };
 
+                sheet.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
-                surface_flags.update_engine_rendering = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 pen_progress
             }
@@ -393,6 +398,7 @@ impl PenBehaviour for Tools {
                     ToolsStyle::OffsetCamera => {}
                 }
                 store.regenerate_rendering_in_viewport_threaded(
+                    tasks_tx,
                     false,
                     camera.viewport(),
                     camera.image_scale(),
@@ -401,9 +407,10 @@ impl PenBehaviour for Tools {
                 self.reset();
                 self.state = ToolsState::Idle;
 
+                sheet.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
-                surface_flags.update_engine_rendering = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -413,9 +420,10 @@ impl PenBehaviour for Tools {
                 self.reset();
                 self.state = ToolsState::Idle;
 
+                sheet.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
-                surface_flags.update_engine_rendering = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished

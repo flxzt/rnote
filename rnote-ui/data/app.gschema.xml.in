@@ -49,14 +49,6 @@
       <default>false</default>
       <summary>enable drawing with touch input</summary>
     </key>
-    <key name="pdf-import-width" type="d">
-      <default>50.0</default>
-      <summary>the pdf import width as percentage to the sheet width</summary>
-    </key>
-    <key name="pdf-import-as-vector" type="b">
-      <default>true</default>
-      <summary>enable pdf import as vector image</summary>
-    </key>
     <key name="brushpage-selected-color" type="u">
       <default>0</default>
       <summary>the default selected color row on the brush page</summary>

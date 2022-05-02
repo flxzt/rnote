@@ -1,6 +1,6 @@
-use super::StoreTask;
 use super::{Stroke, StrokeKey, StrokeStore};
 use crate::engine::visual_debug;
+use crate::engine::{EngineTask, EngineTaskSender};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::StrokeBehaviour;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
@@ -168,12 +168,11 @@ impl StrokeStore {
 
     pub fn regenerate_rendering_for_stroke_threaded(
         &mut self,
+        tasks_tx: EngineTaskSender,
         key: StrokeKey,
         viewport: AABB,
         image_scale: f64,
     ) {
-        let tasks_tx = self.tasks_tx.clone();
-
         if let (Some(render_comp), Some(stroke)) = (
             self.render_components.get_mut(key),
             self.stroke_components.get(key),
@@ -193,19 +192,17 @@ impl StrokeStore {
             };
 
             // Spawn a new thread for image rendering
-            self.threadpool.spawn(move || {
-                match stroke.gen_images(viewport, image_scale) {
-                    Ok(images) => {
-                        tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
+            rayon::spawn(move || match stroke.gen_images(viewport, image_scale) {
+                Ok(images) => {
+                    tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                             key,
                             images,
                         }).unwrap_or_else(|e| {
                             log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err, {}",key, e);
                         });
-                    }
-                    Err(e) => {
-                        log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
-                    }
+                }
+                Err(e) => {
+                    log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
                 }
             });
         }
@@ -214,6 +211,7 @@ impl StrokeStore {
     /// Regenerates the rendering of all keys for the given viewport that need rerendering
     pub fn regenerate_rendering_in_viewport_threaded(
         &mut self,
+        tasks_tx: EngineTaskSender,
         force_regenerate: bool,
         viewport: AABB,
         image_scale: f64,
@@ -224,6 +222,7 @@ impl StrokeStore {
             if let (Some(stroke), Some(render_comp)) =
                 (self.stroke_components.get(key), self.render_components.get_mut(key))
             {
+                let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
 
                 // margin is constant in pixel values, so we need to divide by the image_scale
@@ -267,14 +266,13 @@ impl StrokeStore {
                     RenderCompState::ForViewport(viewport)
                 };
 
-                let tasks_tx = self.tasks_tx.clone();
                 let stroke = stroke.clone();
 
                 // Spawn a new thread for image rendering
-                self.threadpool.spawn(move || {
+                rayon::spawn(move || {
                     match stroke.gen_images(viewport, image_scale) {
                         Ok(images) => {
-                            tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
+                            tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                                 key,
                                 images,
                             }).unwrap_or_else(|e| {
@@ -293,6 +291,7 @@ impl StrokeStore {
     /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completely
     pub fn append_rendering_last_segments(
         &mut self,
+        tasks_tx: EngineTaskSender,
         key: StrokeKey,
         n_segments: usize,
         viewport: AABB,
@@ -314,7 +313,12 @@ impl StrokeStore {
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                    self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
+                    self.regenerate_rendering_for_stroke_threaded(
+                        tasks_tx,
+                        key,
+                        viewport,
+                        image_scale,
+                    );
                 }
             }
         }
@@ -325,22 +329,21 @@ impl StrokeStore {
     #[allow(unused)]
     pub fn append_rendering_last_segments_threaded(
         &mut self,
+        tasks_tx: EngineTaskSender,
         key: StrokeKey,
         n_segments: usize,
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
         if let Some(stroke) = self.stroke_components.get(key) {
-            let tasks_tx = self.tasks_tx.clone();
-
             match &**stroke {
                 Stroke::BrushStroke(brushstroke) => {
                     let brushstroke = brushstroke.clone();
                     // Spawn a new thread for image rendering
-                    self.threadpool.spawn(move || {
+                    rayon::spawn(move || {
                         match brushstroke.gen_images_for_last_segments(n_segments, image_scale) {
                             Ok(images) => {
-                                tasks_tx.unbounded_send(StoreTask::AppendImagesToStroke {
+                                tasks_tx.unbounded_send(EngineTask::AppendImagesToStroke {
                                     key,
                                     images: GeneratedStrokeImages::Partial{images, viewport},
                                 }).unwrap_or_else(|e| {
@@ -351,12 +354,16 @@ impl StrokeStore {
                                 log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
                             }
                         }
-
                     });
                 }
                 // regenerate the whole stroke for strokes that don't support generating images for the last added segments
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                    self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
+                    self.regenerate_rendering_for_stroke_threaded(
+                        tasks_tx,
+                        key,
+                        viewport,
+                        image_scale,
+                    );
                 }
             }
         }

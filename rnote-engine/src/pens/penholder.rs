@@ -1,3 +1,4 @@
+use crate::engine::EngineTaskSender;
 use crate::pens::shortcuts::ShortcutAction;
 use crate::pens::Tools;
 
@@ -224,6 +225,7 @@ impl PenHolder {
     pub(crate) fn handle_penholder_event(
         &mut self,
         event: PenHolderEvent,
+        tasks_tx: EngineTaskSender,
         sheet: &mut crate::sheet::Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
@@ -243,16 +245,18 @@ impl PenHolder {
         match event {
             PenHolderEvent::PenEvent(pen_event) => {
                 let (pen_progress, pen_surface_flags) =
-                    self.handle_pen_event(pen_event, sheet, store, camera);
+                    self.handle_pen_event(pen_event, tasks_tx, sheet, store, camera);
                 surface_flags.merge_with_other(pen_surface_flags);
                 surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
             }
             PenHolderEvent::ChangeStyle(new_style) => {
-                surface_flags.merge_with_other(self.change_style(new_style, sheet, store, camera));
+                surface_flags
+                    .merge_with_other(self.change_style(new_style, tasks_tx, sheet, store, camera));
             }
             PenHolderEvent::ChangeStyleOverride(new_style_override) => {
                 surface_flags.merge_with_other(self.change_style_override(
                     new_style_override,
+                    tasks_tx,
                     sheet,
                     store,
                     camera,
@@ -267,11 +271,12 @@ impl PenHolder {
                         } => {
                             if permanent {
                                 surface_flags.merge_with_other(
-                                    self.change_style(new_style, sheet, store, camera),
+                                    self.change_style(new_style, tasks_tx, sheet, store, camera),
                                 );
                             } else {
                                 surface_flags.merge_with_other(self.change_style_override(
                                     Some(new_style),
+                                    tasks_tx,
                                     sheet,
                                     store,
                                     camera,
@@ -290,6 +295,7 @@ impl PenHolder {
     fn change_style(
         &mut self,
         new_style: PenStyle,
+        tasks_tx: EngineTaskSender,
         sheet: &mut crate::sheet::Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
@@ -299,7 +305,7 @@ impl PenHolder {
         if self.style != new_style {
             // Cancel current pen
             let (pen_progress, pen_surface_flags) =
-                self.handle_pen_event(PenEvent::Cancel, sheet, store, camera);
+                self.handle_pen_event(PenEvent::Cancel, tasks_tx, sheet, store, camera);
             surface_flags.merge_with_other(pen_surface_flags);
 
             surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
@@ -321,6 +327,7 @@ impl PenHolder {
     fn change_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
+        tasks_tx: EngineTaskSender,
         sheet: &mut crate::sheet::Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
@@ -332,7 +339,7 @@ impl PenHolder {
         if self.style_override != new_style_override {
             // Cancel current pen
             let (pen_progress, pen_surface_flags) =
-                self.handle_pen_event(PenEvent::Cancel, sheet, store, camera);
+                self.handle_pen_event(PenEvent::Cancel, tasks_tx, sheet, store, camera);
             surface_flags.merge_with_other(pen_surface_flags);
             surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
@@ -371,31 +378,52 @@ impl PenHolder {
     fn handle_pen_event(
         &mut self,
         event: PenEvent,
+        tasks_tx: EngineTaskSender,
         sheet: &mut Sheet,
         store: &mut StrokeStore,
         camera: &mut Camera,
     ) -> (PenProgress, SurfaceFlags) {
         match self.style_w_override() {
-            PenStyle::Brush => {
-                self.brush
-                    .handle_event(event, sheet, store, camera, self.audioplayer.as_mut())
-            }
-            PenStyle::Shaper => {
-                self.shaper
-                    .handle_event(event, sheet, store, camera, self.audioplayer.as_mut())
-            }
-            PenStyle::Eraser => {
-                self.eraser
-                    .handle_event(event, sheet, store, camera, self.audioplayer.as_mut())
-            }
-            PenStyle::Selector => {
-                self.selector
-                    .handle_event(event, sheet, store, camera, self.audioplayer.as_mut())
-            }
-            PenStyle::Tools => {
-                self.tools
-                    .handle_event(event, sheet, store, camera, self.audioplayer.as_mut())
-            }
+            PenStyle::Brush => self.brush.handle_event(
+                event,
+                tasks_tx,
+                sheet,
+                store,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Shaper => self.shaper.handle_event(
+                event,
+                tasks_tx,
+                sheet,
+                store,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Eraser => self.eraser.handle_event(
+                event,
+                tasks_tx,
+                sheet,
+                store,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Selector => self.selector.handle_event(
+                event,
+                tasks_tx,
+                sheet,
+                store,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Tools => self.tools.handle_event(
+                event,
+                tasks_tx,
+                sheet,
+                store,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
         }
     }
 }

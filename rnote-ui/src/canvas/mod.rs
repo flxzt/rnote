@@ -55,8 +55,6 @@ mod imp {
         pub empty: Cell<bool>,
 
         pub touch_drawing: Cell<bool>,
-        pub pdf_import_width: Cell<f64>,
-        pub pdf_import_as_vector: Cell<bool>,
     }
 
     impl Default for RnoteCanvas {
@@ -133,8 +131,6 @@ mod imp {
                 empty: Cell::new(true),
 
                 touch_drawing: Cell::new(false),
-                pdf_import_width: Cell::new(super::RnoteCanvas::PDF_IMPORT_WIDTH_DEFAULT),
-                pdf_import_as_vector: Cell::new(true),
             }
         }
     }
@@ -213,24 +209,6 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
-                    // import PDFs with with in percentage to sheet width
-                    glib::ParamSpecDouble::new(
-                        "pdf-import-width",
-                        "pdf-import-width",
-                        "pdf-import-width",
-                        1.0,
-                        100.0,
-                        super::RnoteCanvas::PDF_IMPORT_WIDTH_DEFAULT,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    // import PDFs as vector images ( if false = as bitmap images )
-                    glib::ParamSpecBoolean::new(
-                        "pdf-import-as-vector",
-                        "pdf-import-as-vector",
-                        "pdf-import-as-vector",
-                        true,
-                        glib::ParamFlags::READWRITE,
-                    ),
                     // Scrollable properties
                     glib::ParamSpecOverride::for_interface::<Scrollable>("hscroll-policy"),
                     glib::ParamSpecOverride::for_interface::<Scrollable>("vscroll-policy"),
@@ -251,8 +229,6 @@ mod imp {
                 "hscroll-policy" => self.hscroll_policy.get().to_value(),
                 "vscroll-policy" => self.vscroll_policy.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
-                "pdf-import-width" => self.pdf_import_width.get().to_value(),
-                "pdf-import-as-vector" => self.pdf_import_as_vector.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -314,21 +290,6 @@ mod imp {
                         self.touch_drawing_gesture
                             .set_propagation_phase(PropagationPhase::None);
                     }
-                }
-                "pdf-import-width" => {
-                    let pdf_import_width = value
-                        .get::<f64>()
-                        .expect("The value needs to be of type `f64`.")
-                        .clamp(1.0, 100.0);
-
-                    self.pdf_import_width.replace(pdf_import_width);
-                }
-                "pdf-import-as-vector" => {
-                    let pdf_import_as_vector = value
-                        .get::<bool>()
-                        .expect("The value needs to be of type `bool`.");
-
-                    self.pdf_import_as_vector.replace(pdf_import_as_vector);
                 }
                 _ => unimplemented!(),
             }
@@ -394,8 +355,6 @@ impl RnoteCanvas {
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub const ZOOM_STEP: f64 = 0.1;
-    // The default width of imported PDF's in percentage to the sheet width
-    pub const PDF_IMPORT_WIDTH_DEFAULT: f64 = 50.0;
 
     pub fn new() -> Self {
         let canvas: RnoteCanvas = glib::Object::new(&[]).expect("Failed to create RnoteCanvas");
@@ -422,22 +381,6 @@ impl RnoteCanvas {
 
     pub fn set_output_file(&self, output_file: Option<gio::File>) {
         self.set_property("output-file", output_file.to_value());
-    }
-
-    pub fn pdf_import_width(&self) -> f64 {
-        self.property::<f64>("pdf-import-width")
-    }
-
-    pub fn set_pdf_import_width(&self, pdf_import_width: f64) {
-        self.set_property("pdf-import-width", pdf_import_width.to_value());
-    }
-
-    pub fn pdf_import_as_vector(&self) -> bool {
-        self.property::<bool>("pdf-import-as-vector")
-    }
-
-    pub fn set_pdf_import_as_vector(&self, as_vector: bool) {
-        self.set_property("pdf-import-as-vector", as_vector.to_value());
     }
 
     pub fn unsaved_changes(&self) -> bool {
@@ -501,11 +444,8 @@ impl RnoteCanvas {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
-        // receive store tasks
-        let main_cx = glib::MainContext::default();
-
-        main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
-            let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
+        glib::MainContext::default().spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
+            let mut task_rx = canvas.engine().borrow_mut().tasks_rx.take().unwrap();
 
             loop {
                 if let Some(task) = task_rx.next().await {
@@ -780,15 +720,18 @@ impl RnoteCanvas {
     }
 
     // updates the camera offset with a new one ( for example from touch drag gestures )
+    // update_engine_rendering() then needs to be called.
     pub fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
         self.engine().borrow_mut().update_camera_offset(new_offset);
 
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
 
-        self.update_engine_rendering();
+        self.queue_resize();
     }
 
+    /// returns the center of the current view on the sheet
+    // update_engine_rendering() then needs to be called.
     pub fn current_center_on_sheet(&self) -> na::Vector2<f64> {
         (self.engine().borrow().camera.transform().inverse()
             * na::point![
@@ -799,6 +742,7 @@ impl RnoteCanvas {
     }
 
     /// Centers the view around a coord on the sheet. The coord parameter has the coordinate space of the sheet!
+    // update_engine_rendering() then needs to be called.
     pub fn center_around_coord_on_sheet(&self, coord: na::Vector2<f64>) {
         let (parent_width, parent_height) = (
             f64::from(self.parent().unwrap().width()),
@@ -815,6 +759,7 @@ impl RnoteCanvas {
     }
 
     /// Centering the view to the origin page
+    // update_engine_rendering() then needs to be called.
     pub fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
 
@@ -893,10 +838,8 @@ impl RnoteCanvas {
 
     /// Updates the rendering of the background and strokes that are flagged for rerendering for the current viewport.
     /// To force the rerendering of the background pattern, call regenerate_background_pattern().
-    /// To force the rerendering for all strokes in the current viewport, call regenerate_strokes_rendering_current_viewport().
+    /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
     pub fn update_engine_rendering(&self) {
-        self.engine().borrow_mut().resize_autoexpand();
-
         // Updating the backround and strokes rendering in the layout manager.
         self.queue_resize();
     }

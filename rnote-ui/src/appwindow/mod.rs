@@ -29,8 +29,8 @@ use crate::{
     {dialogs, mainheader::MainHeader},
 };
 use rnote_engine::{
+    engine::EngineTask,
     pens::penholder::PenStyle,
-    store::StoreTask,
     strokes::{BitmapImage, VectorImage},
     Camera, SurfaceFlags,
 };
@@ -560,9 +560,8 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow()
-            .store
-            .tasks_tx
-            .unbounded_send(StoreTask::Quit)
+            .tasks_tx()
+            .unbounded_send(EngineTask::Quit)
         {
             log::error!(
                 "failed to send StateTask::Quit on store tasks_tx, Err {}",
@@ -729,30 +728,15 @@ impl RnoteAppWindow {
         if surface_flags.redraw {
             self.canvas().queue_draw();
         }
-        if surface_flags.update_engine_rendering {
-            self.canvas().update_engine_rendering();
-        }
-        if surface_flags.resize_to_fit_strokes {
-            self.canvas().engine().borrow_mut().resize_to_fit_strokes();
-            self.canvas().update_engine_rendering();
-        }
-        if let Some(new_pen_style) = surface_flags.change_to_pen {
-            adw::prelude::ActionGroupExt::activate_action(
-                self,
-                "pen-style",
-                Some(&new_pen_style.nick().to_variant()),
-            );
+        if surface_flags.resize {
+            self.canvas().queue_resize();
         }
         if surface_flags.penholder_changed {
             adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
         }
-        if surface_flags.sheet_changed {
+        if surface_flags.store_changed {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
-        }
-        if surface_flags.update_selector {
-            self.canvas().engine().borrow_mut().update_selector();
-            self.canvas().update_engine_rendering();
         }
         if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
             if hide_scrollbars {
@@ -763,9 +747,10 @@ impl RnoteAppWindow {
                     .set_policy(PolicyType::Automatic, PolicyType::Automatic);
             }
         }
-        if surface_flags.camera_offset_changed {
+        if surface_flags.camera_changed {
             let new_offsets = self.canvas().engine().borrow().camera.offset;
             self.canvas().update_camera_offset(new_offsets);
+            self.canvas().update_engine_rendering();
         }
 
         false
@@ -868,6 +853,7 @@ impl RnoteAppWindow {
                     let current_sheet_center = appwindow.canvas().current_center_on_sheet();
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
                     appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+                    appwindow.canvas().update_engine_rendering();
 
                     // Stop event propagation
                     Inhibit(true)
@@ -891,6 +877,7 @@ impl RnoteAppWindow {
                 let new_adj_values = touch_drag_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
+                appwindow.canvas().update_engine_rendering();
             }));
         }
 
@@ -908,6 +895,7 @@ impl RnoteAppWindow {
                 let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
+                appwindow.canvas().update_engine_rendering();
             }));
         }
 
@@ -925,6 +913,7 @@ impl RnoteAppWindow {
                 let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
+                appwindow.canvas().update_engine_rendering();
             }));
         }
 
@@ -981,6 +970,7 @@ impl RnoteAppWindow {
                         let new_adj_values = adjs_begin.get() * prev_scale.get() - bbcenter_delta;
 
                         appwindow.canvas().update_camera_offset(new_adj_values);
+                        appwindow.canvas().update_engine_rendering();
                     }
             }));
 
@@ -1068,14 +1058,14 @@ impl RnoteAppWindow {
 
         match utils::FileType::lookup_file_type(&file) {
             utils::FileType::RnoteFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
                     appwindow.canvas_progressbar().pulse();
 
                     let result = file.load_bytes_future().await;
                     appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_rnote_bytes(&file_bytes, file.path()) {
+                        if let Err(e) = appwindow.load_in_rnote_bytes(file_bytes.to_vec(), file.path()).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .rnote file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
@@ -1088,7 +1078,7 @@ impl RnoteAppWindow {
                 }));
             }
             utils::FileType::XoppFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
                     appwindow.canvas_progressbar().pulse();
 
                     let result = file.load_bytes_future().await;
@@ -1108,7 +1098,7 @@ impl RnoteAppWindow {
                 }));
             }
             utils::FileType::VectorImageFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
                     appwindow.canvas_progressbar().pulse();
 
                     let result = file.load_bytes_future().await;
@@ -1128,7 +1118,7 @@ impl RnoteAppWindow {
                 }));
             }
             utils::FileType::BitmapImageFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
                     appwindow.canvas_progressbar().pulse();
 
                     let result = file.load_bytes_future().await;
@@ -1148,7 +1138,7 @@ impl RnoteAppWindow {
                 }));
             }
             utils::FileType::PdfFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
                     appwindow.canvas_progressbar().pulse();
 
                     let result = file.load_bytes_future().await;
@@ -1190,15 +1180,21 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_rnote_bytes<P>(&self, bytes: &[u8], path: Option<P>) -> anyhow::Result<()>
+    pub async fn load_in_rnote_bytes<P>(
+        &self,
+        bytes: Vec<u8>,
+        path: Option<P>,
+    ) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
     {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+
         self.canvas()
             .engine()
             .borrow_mut()
-            .open_from_rnote_bytes(bytes)?;
+            .open_from_rnote_bytes(bytes)
+            .await?;
 
         self.canvas().set_unsaved_changes(false);
         app.set_input_file(None);
@@ -1212,6 +1208,7 @@ impl RnoteAppWindow {
         self.canvas().return_to_origin_page();
 
         self.canvas().regenerate_background_pattern();
+        self.canvas().engine().borrow_mut().resize_autoexpand();
         self.canvas().update_engine_rendering();
 
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
@@ -1240,6 +1237,7 @@ impl RnoteAppWindow {
         self.canvas().return_to_origin_page();
 
         self.canvas().regenerate_background_pattern();
+        self.canvas().engine().borrow_mut().resize_autoexpand();
         self.canvas().update_engine_rendering();
 
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
@@ -1271,8 +1269,7 @@ impl RnoteAppWindow {
         self.canvas()
             .engine()
             .borrow_mut()
-            .store
-            .insert_vectorimage_bytes_threaded(pos, bytes.to_vec());
+            .import_vectorimage_bytes(pos, bytes.to_vec());
 
         app.set_input_file(None);
         self.canvas().set_unsaved_changes(true);
@@ -1307,8 +1304,7 @@ impl RnoteAppWindow {
         self.canvas()
             .engine()
             .borrow_mut()
-            .store
-            .insert_bitmapimage_bytes_threaded(pos, bytes.to_vec());
+            .import_bitmapimage_bytes(pos, bytes.to_vec());
 
         app.set_input_file(None);
         self.canvas().set_unsaved_changes(true);
@@ -1326,10 +1322,6 @@ impl RnoteAppWindow {
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
-        let page_width = (f64::from(self.canvas().engine().borrow().sheet.format.width)
-            * (self.canvas().pdf_import_width() / 100.0))
-            .round() as i32;
-
         let surface_flags = self
             .canvas()
             .engine()
@@ -1337,31 +1329,16 @@ impl RnoteAppWindow {
             .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
         self.handle_surface_flags(surface_flags);
 
-        if self.canvas().pdf_import_as_vector() {
-            let pos = target_pos.unwrap_or_else(|| {
-                (self.canvas().engine().borrow().camera.transform().inverse()
-                    * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
-                .coords
-            });
+        let pos = target_pos.unwrap_or_else(|| {
+            (self.canvas().engine().borrow().camera.transform().inverse()
+                * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
+            .coords
+        });
 
-            self.canvas()
-                .engine()
-                .borrow_mut()
-                .store
-                .insert_pdf_bytes_as_vector_threaded(pos, Some(page_width), bytes.to_vec());
-        } else {
-            let pos = target_pos.unwrap_or_else(|| {
-                (self.canvas().engine().borrow().camera.transform().inverse()
-                    * na::Point2::from(BitmapImage::IMPORT_OFFSET_DEFAULT))
-                .coords
-            });
-
-            self.canvas()
-                .engine()
-                .borrow_mut()
-                .store
-                .insert_pdf_bytes_as_bitmap_threaded(pos, Some(page_width), bytes.to_vec());
-        }
+        self.canvas()
+            .engine()
+            .borrow_mut()
+            .import_pdf_bytes(pos, bytes.to_vec());
 
         app.set_input_file(None);
 
@@ -1373,13 +1350,13 @@ impl RnoteAppWindow {
 
     pub async fn save_sheet_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
-            let bytes = self
+            let rnote_bytes_receiver = self
                 .canvas()
                 .engine()
                 .borrow()
-                .save_as_rnote_bytes(&basename.to_string_lossy())?;
+                .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
 
-            utils::replace_file_future(bytes, file).await?;
+            utils::replace_file_future(rnote_bytes_receiver.await??, file).await?;
 
             self.canvas().set_output_file(Some(file.to_owned()));
             self.canvas().set_unsaved_changes(false);

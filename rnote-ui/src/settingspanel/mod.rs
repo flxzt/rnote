@@ -489,15 +489,22 @@ impl SettingsPanel {
     }
 
     pub fn refresh_for_engine(&self, appwindow: &RnoteAppWindow) {
-        self.load_misc(appwindow);
+        self.load_general(appwindow);
         self.load_format(appwindow);
         self.load_background(appwindow);
         self.load_shortcuts(appwindow);
     }
 
-    pub fn load_misc(&self, appwindow: &RnoteAppWindow) {
+    pub fn load_general(&self, appwindow: &RnoteAppWindow) {
+        let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
+        let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
+
+        self.general_pdf_import_as_vector_toggle()
+            .set_active(pdf_import_as_vector);
+        self.general_pdf_import_as_bitmap_toggle()
+            .set_active(!pdf_import_as_vector);
         self.general_pdf_import_width_adj()
-            .set_value(appwindow.canvas().pdf_import_width());
+            .set_value(pdf_import_width_perc);
     }
 
     pub fn load_format(&self, appwindow: &RnoteAppWindow) {
@@ -628,27 +635,23 @@ impl SettingsPanel {
         self.imp()
             .general_pdf_import_width_adj
             .get()
-            .bind_property("value", &appwindow.canvas(), "pdf-import-width")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
+            .connect_value_changed(clone!(@weak appwindow => move |general_pdf_import_width_adj| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-width-perc", Some(&general_pdf_import_width_adj.value().to_variant()));
+            }));
 
-        // Pdf import as vector or bitmap
         self.imp()
             .general_pdf_import_as_vector_toggle
             .get()
-            .bind_property("active", &appwindow.canvas(), "pdf-import-as-vector")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
+            .connect_active_notify(clone!(@weak appwindow => move |general_pdf_import_as_vector_toggle| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-as-vector", Some(&general_pdf_import_as_vector_toggle.is_active().to_variant()));
+            }));
+
         self.imp()
             .general_pdf_import_as_bitmap_toggle
             .get()
-            .bind_property("active", &appwindow.canvas(), "pdf-import-as-vector")
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
-            .build();
+            .connect_active_notify(clone!(@weak appwindow => move |general_pdf_import_as_bitmap_toggle| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-as-vector", Some(&(!general_pdf_import_as_bitmap_toggle.is_active()).to_variant()));
+            }));
 
         // revert format
         self.imp().format_revert_button.get().connect_clicked(

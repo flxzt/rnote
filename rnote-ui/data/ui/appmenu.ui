@@ -82,7 +82,7 @@
                   <child>
                     <object class="GtkToggleButton" id="righthanded_toggle">
                       <property name="icon_name">dock-left-symbolic</property>
-                      <property name="tooltip_text" translatable="yes">Dock position at the left side</property>
+                      <property name="tooltip_text" translatable="yes">Sidebar on the left side</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>
@@ -91,7 +91,7 @@
                       <property name="group">righthanded_toggle</property>
                       <property name="active">true</property>
                       <property name="icon_name">dock-right-symbolic</property>
-                      <property name="tooltip_text" translatable="yes">Dock position at the right side</property>
+                      <property name="tooltip_text" translatable="yes">Sidebar on the right side</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>

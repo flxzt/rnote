@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-01 15:02+0200\n"
+"POT-Creation-Date: 2022-05-02 20:55+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgid "@APP_NAME_CAPITALIZED@"
 msgstr ""
 
 #: rnote-ui/data/app.desktop.in.in:5 rnote-ui/data/app.metainfo.xml.in.in:9
-#: rnote-ui/src/dialogs.rs:18
+#: rnote-ui/src/dialogs.rs:17
 msgid "Sketch and take handwritten notes"
 msgstr ""
 
@@ -69,63 +69,75 @@ msgid "Developer mode"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:29
-msgid "Developer settings"
+msgid "Developer menu"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:34
 msgid "Visual debugging"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:573
+#: rnote-ui/data/ui/appmenu.ui:38 rnote-ui/src/dialogs.rs:568
 msgid "Export engine state"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:46
-msgid "Keyboard shortcuts"
+#: rnote-ui/data/ui/appmenu.ui:42
+msgid "Export engine config (as saved in settings)"
 msgstr ""
 
 #: rnote-ui/data/ui/appmenu.ui:50
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:54
 msgid "About Rnote"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:98
+#: rnote-ui/data/ui/appmenu.ui:85
+msgid "Sidebar on the left side"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:94
+msgid "Sidebar on the right side"
+msgstr ""
+
+#: rnote-ui/data/ui/appmenu.ui:104
 msgid "Toggle fullscreen"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:111
+#: rnote-ui/data/ui/appmenu.ui:117
 msgid "Use system colors preference"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:125
+#: rnote-ui/data/ui/appmenu.ui:131
 msgid "Use light colors"
 msgstr ""
 
-#: rnote-ui/data/ui/appmenu.ui:140
+#: rnote-ui/data/ui/appmenu.ui:146
 msgid "Use dark colors"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:66 rnote-ui/data/ui/mainheader.ui:89
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:17
+#: rnote-ui/data/ui/appwindow.ui:66 rnote-ui/data/ui/mainheader.ui:78
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:18
 msgid "Brush"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:73 rnote-ui/data/ui/mainheader.ui:96
+#: rnote-ui/data/ui/appwindow.ui:73 rnote-ui/data/ui/mainheader.ui:85
 #: rnote-ui/data/ui/penssidebar/penssidebar.ui:34
 msgid "Shaper"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:81 rnote-ui/data/ui/mainheader.ui:104
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:51
+#: rnote-ui/data/ui/appwindow.ui:81 rnote-ui/data/ui/mainheader.ui:93
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:50
 msgid "Eraser"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:89 rnote-ui/data/ui/mainheader.ui:112
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:68
+#: rnote-ui/data/ui/appwindow.ui:89 rnote-ui/data/ui/mainheader.ui:101
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:66
 msgid "Selector"
 msgstr ""
 
-#: rnote-ui/data/ui/appwindow.ui:97 rnote-ui/data/ui/mainheader.ui:120
-#: rnote-ui/data/ui/penssidebar/penssidebar.ui:85
+#: rnote-ui/data/ui/appwindow.ui:97 rnote-ui/data/ui/mainheader.ui:109
+#: rnote-ui/data/ui/penssidebar/penssidebar.ui:82
 msgid "Tools"
 msgstr ""
 
@@ -198,8 +210,8 @@ msgid "New"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:69 rnote-ui/data/ui/dialogs.ui:88
-#: rnote-ui/data/ui/filerow.ui:55 rnote-ui/src/dialogs.rs:196
-#: rnote-ui/src/dialogs.rs:231
+#: rnote-ui/data/ui/filerow.ui:55 rnote-ui/src/dialogs.rs:191
+#: rnote-ui/src/dialogs.rs:226
 msgid "Open"
 msgstr ""
 
@@ -207,7 +219,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:268
+#: rnote-ui/data/ui/canvasmenu.ui:77 rnote-ui/src/dialogs.rs:263
 msgid "Save as"
 msgstr ""
 
@@ -215,7 +227,7 @@ msgstr ""
 msgid "Print"
 msgstr ""
 
-#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:329
+#: rnote-ui/data/ui/canvasmenu.ui:85 rnote-ui/src/dialogs.rs:324
 msgid "Import file"
 msgstr ""
 
@@ -269,11 +281,12 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:43
 #: rnote-ui/data/ui/dialogs.ui:75 rnote-ui/data/ui/dialogs.ui:107
-#: rnote-ui/src/dialogs.rs:197 rnote-ui/src/dialogs.rs:232
-#: rnote-ui/src/dialogs.rs:269 rnote-ui/src/dialogs.rs:333
-#: rnote-ui/src/dialogs.rs:373 rnote-ui/src/dialogs.rs:425
-#: rnote-ui/src/dialogs.rs:476 rnote-ui/src/dialogs.rs:527
-#: rnote-ui/src/dialogs.rs:577 rnote-ui/src/workspacebrowser/filerow.rs:235
+#: rnote-ui/src/dialogs.rs:192 rnote-ui/src/dialogs.rs:227
+#: rnote-ui/src/dialogs.rs:264 rnote-ui/src/dialogs.rs:328
+#: rnote-ui/src/dialogs.rs:368 rnote-ui/src/dialogs.rs:420
+#: rnote-ui/src/dialogs.rs:471 rnote-ui/src/dialogs.rs:522
+#: rnote-ui/src/dialogs.rs:572 rnote-ui/src/dialogs.rs:626
+#: rnote-ui/src/workspacebrowser/filerow.rs:235
 msgid "Cancel"
 msgstr ""
 
@@ -861,121 +874,133 @@ msgid "Offset the camera by dragging"
 msgstr ""
 
 #. TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
-#: rnote-ui/src/dialogs.rs:29
+#: rnote-ui/src/dialogs.rs:27
 msgid "translator-credits"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:164
+#: rnote-ui/src/dialogs.rs:159
 msgid "Opening file failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:190
+#: rnote-ui/src/dialogs.rs:185
 msgid ".rnote / .xopp File"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:193
+#: rnote-ui/src/dialogs.rs:188
 msgid "Open file"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:228
+#: rnote-ui/src/dialogs.rs:223
 msgid "Open workspace"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:262
+#: rnote-ui/src/dialogs.rs:257
 msgid ".rnote file"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:265
+#: rnote-ui/src/dialogs.rs:260
 msgid "Save sheet as"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:296
+#: rnote-ui/src/dialogs.rs:291
 msgid "Saving sheet failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:298
+#: rnote-ui/src/dialogs.rs:293
 msgid "Saved sheet successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:326
+#: rnote-ui/src/dialogs.rs:321
 msgid "PNG / SVG / JPG / PDF file"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:332
+#: rnote-ui/src/dialogs.rs:327
 msgid "Import"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:347
+#: rnote-ui/src/dialogs.rs:342
 msgid "Importing file failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:366 rnote-ui/src/dialogs.rs:418
+#: rnote-ui/src/dialogs.rs:361 rnote-ui/src/dialogs.rs:413
 msgid "SVG file"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:369
+#: rnote-ui/src/dialogs.rs:364
 msgid "Export Selection"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:372 rnote-ui/src/dialogs.rs:424
-#: rnote-ui/src/dialogs.rs:475 rnote-ui/src/dialogs.rs:526
-#: rnote-ui/src/dialogs.rs:576
+#: rnote-ui/src/dialogs.rs:367 rnote-ui/src/dialogs.rs:419
+#: rnote-ui/src/dialogs.rs:470 rnote-ui/src/dialogs.rs:521
+#: rnote-ui/src/dialogs.rs:571 rnote-ui/src/dialogs.rs:625
 msgid "Export"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:396
+#: rnote-ui/src/dialogs.rs:391
 msgid "Export selection as SVG failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:398
+#: rnote-ui/src/dialogs.rs:393
 msgid "Exported selection as SVG successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:421 rnote-ui/src/dialogs.rs:472
-#: rnote-ui/src/dialogs.rs:523
+#: rnote-ui/src/dialogs.rs:416 rnote-ui/src/dialogs.rs:467
+#: rnote-ui/src/dialogs.rs:518
 msgid "Export Sheet"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:445
+#: rnote-ui/src/dialogs.rs:440
 msgid "Export sheet as SVG failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:447
+#: rnote-ui/src/dialogs.rs:442
 msgid "Exported sheet as SVG successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:469
+#: rnote-ui/src/dialogs.rs:464
 msgid "PDF file"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:496
+#: rnote-ui/src/dialogs.rs:491
 msgid "Export sheet as PDF failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:498
+#: rnote-ui/src/dialogs.rs:493
 msgid "Exported sheet as PDF successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:520
+#: rnote-ui/src/dialogs.rs:515
 msgid ".xopp file"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:547
+#: rnote-ui/src/dialogs.rs:542
 msgid "Exporting sheet as .xopp failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:549
+#: rnote-ui/src/dialogs.rs:544
 msgid "Exported sheet as .xopp successfully."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:570
+#: rnote-ui/src/dialogs.rs:565 rnote-ui/src/dialogs.rs:619
 msgid "JSON file"
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:601
+#: rnote-ui/src/dialogs.rs:596
 msgid "Export engine state failed."
 msgstr ""
 
-#: rnote-ui/src/dialogs.rs:603
+#: rnote-ui/src/dialogs.rs:598
 msgid "Exported engine state successfully."
+msgstr ""
+
+#: rnote-ui/src/dialogs.rs:622
+msgid "Export engine config"
+msgstr ""
+
+#: rnote-ui/src/dialogs.rs:650
+msgid "Export engine config failed."
+msgstr ""
+
+#: rnote-ui/src/dialogs.rs:652
+msgid "Exported engine config successfully."
 msgstr ""

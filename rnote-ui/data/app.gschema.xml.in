@@ -101,8 +101,7 @@
       <summary>if the aspect ratio while resizing is locked</summary>
     </key>
     <key name="engine-config" type="s">
-      <default>'
-      '</default>
+      <default>''</default>
       <summary>the engine configuration</summary>
     </key>
   </schema>

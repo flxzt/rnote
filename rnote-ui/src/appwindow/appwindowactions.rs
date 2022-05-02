@@ -48,14 +48,17 @@ impl RnoteAppWindow {
         let action_devel_mode =
             gio::SimpleAction::new_stateful("devel-mode", None, &false.to_variant());
         self.add_action(&action_devel_mode);
-        let action_devel_settings = gio::SimpleAction::new("devel-settings", None);
-        self.add_action(&action_devel_settings);
+        let action_devel_menu = gio::SimpleAction::new("devel-menu", None);
+        self.add_action(&action_devel_menu);
         let action_visual_debug =
             gio::SimpleAction::new_stateful("visual-debug", None, &false.to_variant());
         self.add_action(&action_visual_debug);
         let action_debug_export_engine_state =
             gio::SimpleAction::new("debug-export-engine-state", None);
         self.add_action(&action_debug_export_engine_state);
+        let action_debug_export_engine_config =
+            gio::SimpleAction::new("debug-export-engine-config", None);
+        self.add_action(&action_debug_export_engine_config);
         let action_righthanded = gio::PropertyAction::new("righthanded", self, "righthanded");
         self.add_action(&action_righthanded);
         let action_touch_drawing =
@@ -221,11 +224,11 @@ impl RnoteAppWindow {
 
         // Developer mode
         action_devel_mode.connect_activate(
-            clone!(@weak self as appwindow, @weak action_devel_settings => move |action_devel_mode, _target| {
+            clone!(@weak self as appwindow, @weak action_devel_menu => move |action_devel_mode, _target| {
                 let state = action_devel_mode.state().unwrap().get::<bool>().unwrap();
 
-                // Enable the devel settings action to reveal the settings in the menu
-                action_devel_settings.set_enabled(!state);
+                // Enable the devel menu action to reveal it in the app menu
+                action_devel_menu.set_enabled(!state);
 
                 // If toggled to disable
                 if state {
@@ -238,7 +241,7 @@ impl RnoteAppWindow {
 
         // Developer settings
         // Its enabled state toggles the visibility of the developer setttings menu entry. Is only modified inside action_devel_mode
-        action_devel_settings.set_enabled(false);
+        action_devel_menu.set_enabled(false);
 
         // Visual debugging
         action_visual_debug.connect_change_state(
@@ -256,6 +259,13 @@ impl RnoteAppWindow {
         action_debug_export_engine_state.connect_activate(
             clone!(@weak self as appwindow => move |_action_debug_export_engine_state, _target| {
                 dialogs::dialog_export_engine_state(&appwindow);
+            }),
+        );
+
+        // Export engine config
+        action_debug_export_engine_config.connect_activate(
+            clone!(@weak self as appwindow => move |_action_debug_export_engine_config, _target| {
+                dialogs::dialog_export_engine_config(&appwindow);
             }),
         );
 
@@ -293,6 +303,7 @@ impl RnoteAppWindow {
                 let current_state = action_righthanded.state().unwrap().get::<bool>().unwrap();
 
                 if current_state {
+                    appwindow.flap().set_flap_position(PackType::Start);
                     appwindow.main_grid().remove(&appwindow.sidebar_grid());
                     appwindow.main_grid().remove(&appwindow.sidebar_sep());
                     appwindow.main_grid().remove(&appwindow.narrow_pens_toggles_revealer());
@@ -310,7 +321,6 @@ impl RnoteAppWindow {
                         .main_grid()
                         .attach(&appwindow.canvas_box(), 2, 2, 1, 1);
                     appwindow.canvas_quickactions_box().set_halign(Align::End);
-
                     appwindow
                         .mainheader()
                         .appmenu()
@@ -331,11 +341,20 @@ impl RnoteAppWindow {
                     appwindow
                         .sidebar_scroller()
                         .set_window_placement(CornerType::TopRight);
-
                     appwindow
                         .settings_panel()
                         .settings_scroller()
                         .set_window_placement(CornerType::TopRight);
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .brushconfig_menubutton()
+                        .set_direction(ArrowType::Right);
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .brushstyle_menubutton()
+                        .set_direction(ArrowType::Right);
                     appwindow
                         .penssidebar()
                         .brush_page()
@@ -353,21 +372,16 @@ impl RnoteAppWindow {
                         .set_property("position", PositionType::Left.to_value());
                     appwindow
                         .penssidebar()
-                        .brush_page()
-                        .brushconfig_menubutton()
-                        .set_direction(ArrowType::Right);
-                    appwindow
-                        .penssidebar()
                         .shaper_page()
                         .shapeconfig_menubutton()
                         .set_direction(ArrowType::Right);
                     appwindow
                         .penssidebar()
-                        .brush_page()
-                        .brushstyle_menubutton()
+                        .shaper_page()
+                        .shapebuildertype_menubutton()
                         .set_direction(ArrowType::Right);
-                    appwindow.flap().set_flap_position(PackType::Start);
                 } else {
+                    appwindow.flap().set_flap_position(PackType::End);
                     appwindow.main_grid().remove(&appwindow.canvas_box());
                     appwindow.main_grid().remove(&appwindow.narrow_pens_toggles_revealer());
                     appwindow.main_grid().remove(&appwindow.sidebar_sep());
@@ -385,7 +399,6 @@ impl RnoteAppWindow {
                         .main_grid()
                         .attach(&appwindow.sidebar_grid(), 2, 1, 1, 2);
                     appwindow.canvas_quickactions_box().set_halign(Align::Start);
-
                     appwindow
                         .mainheader()
                         .headerbar()
@@ -399,18 +412,26 @@ impl RnoteAppWindow {
                         .mainheader()
                         .headerbar()
                         .pack_end(&appwindow.mainheader().pens_toggles_squeezer());
-
                     appwindow
                         .canvas_scroller()
                         .set_window_placement(CornerType::BottomRight);
                     appwindow
                         .sidebar_scroller()
                         .set_window_placement(CornerType::TopLeft);
-
                     appwindow
                         .settings_panel()
                         .settings_scroller()
                         .set_window_placement(CornerType::TopLeft);
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .brushconfig_menubutton()
+                        .set_direction(ArrowType::Left);
+                    appwindow
+                        .penssidebar()
+                        .brush_page()
+                        .brushstyle_menubutton()
+                        .set_direction(ArrowType::Left);
                     appwindow
                         .penssidebar()
                         .brush_page()
@@ -428,20 +449,14 @@ impl RnoteAppWindow {
                         .set_property("position", PositionType::Right.to_value());
                     appwindow
                         .penssidebar()
-                        .brush_page()
-                        .brushconfig_menubutton()
-                        .set_direction(ArrowType::Left);
-                    appwindow
-                        .penssidebar()
                         .shaper_page()
                         .shapeconfig_menubutton()
                         .set_direction(ArrowType::Left);
                     appwindow
                         .penssidebar()
-                        .brush_page()
-                        .brushstyle_menubutton()
+                        .shaper_page()
+                        .shapebuildertype_menubutton()
                         .set_direction(ArrowType::Left);
-                    appwindow.flap().set_flap_position(PackType::End);
                 }
             }),
         );

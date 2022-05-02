@@ -611,3 +611,58 @@ pub fn dialog_export_engine_state(appwindow: &RnoteAppWindow) {
     // keeping the filechooser around because otherwise GTK won't keep it alive
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_engine_state);
 }
+
+pub fn dialog_export_engine_config(appwindow: &RnoteAppWindow) {
+    let filter = FileFilter::new();
+    filter.add_mime_type("application/json");
+    filter.add_pattern("*.json");
+    filter.set_name(Some(&gettext("JSON file")));
+
+    let dialog_export_engine_config: FileChooserNative = FileChooserNative::builder()
+        .title(&gettext("Export engine config"))
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label(&gettext("Export"))
+        .cancel_label(&gettext("Cancel"))
+        .action(FileChooserAction::Save)
+        .select_multiple(false)
+        .build();
+    dialog_export_engine_config.add_filter(&filter);
+
+    dialog_export_engine_config.set_current_name(
+        format!(
+            "{}_engine_config.json",
+            rnote_engine::utils::now_formatted_string()
+        )
+        .as_str(),
+    );
+
+    dialog_export_engine_config.connect_response(
+        clone!(@weak appwindow => move |dialog_export_engine_config, responsetype| {
+            match responsetype {
+                ResponseType::Accept => {
+                    if let Some(file) = dialog_export_engine_config.file() {
+                        glib::MainContext::default().spawn_local(clone!(@weak appwindow => async move {
+                            appwindow.canvas_progressbar().pulse();
+
+                            if let Err(e) = appwindow.export_engine_config(&file).await {
+                                log::error!("exporting engine state failed with error `{}`", e);
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export engine config failed.").to_variant()));
+                            } else {
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported engine config successfully.").to_variant()));
+                            }
+
+                            appwindow.finish_canvas_progressbar();
+                        }));
+                    }
+                }
+                _ => {}
+            }
+        }),
+    );
+
+    dialog_export_engine_config.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_engine_config);
+}
+

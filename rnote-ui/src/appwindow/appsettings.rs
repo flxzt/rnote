@@ -118,7 +118,7 @@ impl RnoteAppWindow {
     }
 
     /// load settings at start that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
-    pub fn load_settings(&self) -> anyhow::Result<()> {
+    pub fn load_settings(&self) {
         let _app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         // appwindow
@@ -203,15 +203,26 @@ impl RnoteAppWindow {
         {
             // load engine config
             let engine_config = self.app_settings().string("engine-config");
-            self.canvas()
+            match self
+                .canvas()
                 .engine()
                 .borrow_mut()
-                .load_engine_config(&engine_config)?;
+                .load_engine_config(&engine_config)
+            {
+                Err(e) => {
+                    // On first app startup the engine config is empty, so we don't log an error
+                    if engine_config.is_empty() {
+                        log::debug!("did not load `engine-config` from settings, was empty");
+                    } else {
+                        log::error!("failed to load `engine-config` from settings, Err {}", e);
+                    }
+                }
+                Ok(()) => {}
+            }
         }
 
         // refresh the UI
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
-        Ok(())
     }
 
     /// Save all settings at shutdown that are not bound in setup_settings

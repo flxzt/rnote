@@ -26,8 +26,8 @@
             <attribute name="action">win.devel-mode</attribute>
           </item>
           <submenu>
-            <attribute name="label" translatable="yes">Developer settings</attribute>
-            <attribute name="action">win.devel-settings</attribute>
+            <attribute name="label" translatable="yes">Developer menu</attribute>
+            <attribute name="action">win.devel-menu</attribute>
             <attribute name="hidden-when">action-disabled</attribute>
             <section>
               <item>
@@ -37,6 +37,10 @@
               <item>
                 <attribute name="label" translatable="yes">Export engine state</attribute>
                 <attribute name="action">win.debug-export-engine-state</attribute>
+              </item>
+              <item>
+                <attribute name="label" translatable="yes">Export engine config (as saved in settings)</attribute>
+                <attribute name="action">win.debug-export-engine-config</attribute>
               </item>
             </section>
           </submenu>
@@ -78,6 +82,7 @@
                   <child>
                     <object class="GtkToggleButton" id="righthanded_toggle">
                       <property name="icon_name">dock-left-symbolic</property>
+                      <property name="tooltip_text" translatable="yes">Dock position at the left side</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>
@@ -86,6 +91,7 @@
                       <property name="group">righthanded_toggle</property>
                       <property name="active">true</property>
                       <property name="icon_name">dock-right-symbolic</property>
+                      <property name="tooltip_text" translatable="yes">Dock position at the right side</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>

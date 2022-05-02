@@ -2,6 +2,7 @@ use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
     MenuButton, Popover, SpinButton,
 };
+use rnote_engine::pens::Brush;
 
 use crate::{appwindow::RnoteAppWindow, ColorPicker};
 use adw::prelude::*;
@@ -87,13 +88,6 @@ impl Default for BrushPage {
 }
 
 impl BrushPage {
-    /// The default width
-    pub const WIDTH_DEFAULT: f64 = 3.6;
-    /// The min width
-    pub const WIDTH_MIN: f64 = 0.1;
-    /// The max width
-    pub const WIDTH_MAX: f64 = 1000.0;
-
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("Failed to create BrushPage")
     }
@@ -171,9 +165,9 @@ impl BrushPage {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.width_spinbutton().set_increments(0.1, 2.0);
         self.width_spinbutton()
-            .set_range(Self::WIDTH_MIN, Self::WIDTH_MAX);
+            .set_range(Brush::STROKE_WIDTH_MIN, Brush::STROKE_WIDTH_MAX);
         // Must be after set_range() !
-        self.width_spinbutton().set_value(Self::WIDTH_DEFAULT);
+        self.width_spinbutton().set_value(Brush::STROKE_WIDTH_DEFAULT);
 
         self.colorpicker().connect_notify_local(
             Some("current-color"),

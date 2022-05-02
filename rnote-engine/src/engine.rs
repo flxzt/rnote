@@ -342,7 +342,7 @@ impl RnoteEngine {
             expand_mode: serde_json::to_value(&self.expand_mode)?,
         };
 
-        Ok(serde_json::to_string(&engine_config)?)
+            Ok(serde_json::to_string(&engine_config)?)
     }
 
     /// opens a .rnote file and replaces the current state with it.

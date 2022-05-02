@@ -60,11 +60,16 @@ pub struct Shaper {
 
 impl Default for Shaper {
     fn default() -> Self {
+        let mut smooth_options = SmoothOptions::default();
+        let mut rough_options = RoughOptions::default();
+        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        rough_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+
         Self {
             builder_type: ShapeBuilderType::default(),
             style: ShaperStyle::default(),
-            smooth_options: SmoothOptions::default(),
-            rough_options: RoughOptions::default(),
+            smooth_options,
+            rough_options,
             state: ShaperState::Idle,
         }
     }
@@ -232,6 +237,10 @@ impl DrawOnSheetBehaviour for Shaper {
 
 impl Shaper {
     pub const INPUT_OVERSHOOT: f64 = 30.0;
+
+    pub const STROKE_WIDTH_MIN: f64 = 1.0;
+    pub const STROKE_WIDTH_MAX: f64 = 500.0;
+    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
 
     pub fn gen_style_for_current_options(&self) -> Style {
         match &self.style {

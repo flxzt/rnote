@@ -60,10 +60,15 @@ pub struct Brush {
 
 impl Default for Brush {
     fn default() -> Self {
+        let mut smooth_options = SmoothOptions::default();
+        let mut textured_options = TexturedOptions::default();
+        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        textured_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+
         Self {
             style: BrushStyle::default(),
-            smooth_options: SmoothOptions::default(),
-            textured_options: TexturedOptions::default(),
+            smooth_options,
+            textured_options,
             state: BrushState::Idle,
         }
     }
@@ -275,6 +280,10 @@ impl DrawOnSheetBehaviour for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
+
+    pub const STROKE_WIDTH_MIN: f64 = 1.0;
+    pub const STROKE_WIDTH_MAX: f64 = 500.0;
+    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
 
     fn start_audio(style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {

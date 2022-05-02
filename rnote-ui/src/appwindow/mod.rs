@@ -797,9 +797,8 @@ impl RnoteAppWindow {
         self.setup_action_accels();
         self.setup_settings();
 
-        if let Err(e) = self.load_settings() {
-            log::debug!("failed to load appwindow settings with Err `{}`", e);
-        }
+        // Load settings
+        self.load_settings();
 
         // Loading in input file, if Some
         if let Some(input_file) = self
@@ -1442,11 +1441,22 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    /// exports the engine state as json into the file. Only for debugging!
+    /// exports and writes the engine state as json into the file.
+    /// Only for debugging!
     pub async fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
         let exported_engine_state = self.canvas().engine().borrow().export_state_as_json()?;
 
         utils::replace_file_future(exported_engine_state.into_bytes(), file).await?;
+
+        Ok(())
+    }
+
+    /// exports and writes the engine config (as saved in the settings) as json into the file.
+    /// Only for debugging!
+    pub async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
+        let exported_engine_config = self.canvas().engine().borrow().save_engine_config()?;
+
+        utils::replace_file_future(exported_engine_config.into_bytes(), file).await?;
 
         Ok(())
     }

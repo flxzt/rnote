@@ -368,11 +368,7 @@ impl Background {
         Ok(())
     }
 
-    pub fn regenerate_background(
-        &mut self,
-        viewport: AABB,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
+    pub fn regenerate_pattern(&mut self, viewport: AABB, image_scale: f64) -> anyhow::Result<()> {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 

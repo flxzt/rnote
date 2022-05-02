@@ -282,7 +282,7 @@ impl RnoteAppWindow {
                         return;
                     }
                 }
-                appwindow.canvas().queue_resize();
+                appwindow.canvas().update_engine_rendering();
 
                 action_expand_mode.set_state(&expand_mode.to_variant());
             }));
@@ -882,7 +882,7 @@ impl RnoteAppWindow {
                 appwindow.canvas().engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
-                appwindow.canvas().regenerate_content(false, true);
+                appwindow.canvas().update_engine_rendering();
             }),
         );
 
@@ -894,7 +894,7 @@ impl RnoteAppWindow {
                 appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
-                appwindow.canvas().regenerate_content(false, true);
+                appwindow.canvas().update_engine_rendering();
             }),
         );
 
@@ -909,7 +909,7 @@ impl RnoteAppWindow {
                 let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
                 appwindow.handle_surface_flags(surface_flags);
 
-                appwindow.canvas().regenerate_content(false, true);
+                appwindow.canvas().update_engine_rendering();
             }),
         );
 
@@ -922,7 +922,7 @@ impl RnoteAppWindow {
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
-                appwindow.canvas().regenerate_content(false, true);
+                appwindow.canvas().update_engine_rendering();
             }),
         );
 
@@ -935,13 +935,16 @@ impl RnoteAppWindow {
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let surface_flags =appwindow.canvas().engine().borrow_mut().undo();
             appwindow.handle_surface_flags(surface_flags);
-            appwindow.canvas().queue_resize();
+
+            appwindow.canvas().update_engine_rendering();
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            appwindow.canvas().engine().borrow_mut().redo();
-            appwindow.canvas().queue_resize();
+            let surface_flags =appwindow.canvas().engine().borrow_mut().redo();
+            appwindow.handle_surface_flags(surface_flags);
+
+            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom reset
@@ -1001,22 +1004,23 @@ impl RnoteAppWindow {
             let new_sheet_height = appwindow.canvas().engine().borrow().sheet.height + format_height;
             appwindow.canvas().engine().borrow_mut().sheet.height = new_sheet_height;
 
-            appwindow.canvas().queue_resize();
+            appwindow.canvas().update_engine_rendering();
         }));
 
         // Resize to fit strokes
         action_resize_to_fit_strokes.connect_activate(
             clone!(@weak self as appwindow => move |_action_resize_to_fit_strokes, _target| {
                 appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
-                appwindow.canvas().queue_resize();
+
+                appwindow.canvas().update_engine_rendering();
             }),
         );
 
         // Return to the origin page
         action_return_origin_page.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.canvas().return_to_origin_page();
-            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-            appwindow.canvas().queue_resize();
+
+            appwindow.canvas().update_engine_rendering();
         }));
 
         // New sheet

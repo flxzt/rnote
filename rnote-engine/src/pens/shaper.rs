@@ -157,7 +157,7 @@ impl PenBehaviour for Shaper {
                     }
 
                     surface_flags.redraw = true;
-                    surface_flags.resize = true;
+                    surface_flags.update_engine_rendering = true;
                     surface_flags.sheet_changed = true;
 
                     PenProgress::InProgress
@@ -166,7 +166,7 @@ impl PenBehaviour for Shaper {
                     let drawstyle = self.gen_style_for_current_options();
 
                     if !shapes.is_empty() {
-                        surface_flags.resize = true;
+                        surface_flags.update_engine_rendering = true;
                         surface_flags.sheet_changed = true;
                     }
 

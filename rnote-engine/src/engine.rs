@@ -127,10 +127,14 @@ impl RnoteEngine {
             self.camera.image_scale(),
         );
 
+        surface_flags.redraw = true;
+
         surface_flags
     }
 
-    pub fn redo(&mut self) {
+    pub fn redo(&mut self) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         self.store.redo();
 
         self.update_selector();
@@ -140,6 +144,10 @@ impl RnoteEngine {
             self.camera.viewport(),
             self.camera.image_scale(),
         );
+
+        surface_flags.redraw = true;
+
+        surface_flags
     }
 
     /// processes the received task from tasks_rx.
@@ -309,6 +317,7 @@ impl RnoteEngine {
     }
 
     /// Updates the selector pen with the current store state.
+    /// Needs to be called whenever the selected strokes change outside of the selector
     pub fn update_selector(&mut self) {
         self.penholder.selector.update_from_store(&self.store);
     }

@@ -729,13 +729,12 @@ impl RnoteAppWindow {
         if surface_flags.redraw {
             self.canvas().queue_draw();
         }
-        if surface_flags.resize {
-            self.canvas().engine().borrow_mut().resize_autoexpand();
-            self.canvas().queue_resize();
+        if surface_flags.update_engine_rendering {
+            self.canvas().update_engine_rendering();
         }
         if surface_flags.resize_to_fit_strokes {
             self.canvas().engine().borrow_mut().resize_to_fit_strokes();
-            self.canvas().queue_resize();
+            self.canvas().update_engine_rendering();
         }
         if let Some(new_pen_style) = surface_flags.change_to_pen {
             adw::prelude::ActionGroupExt::activate_action(
@@ -753,7 +752,7 @@ impl RnoteAppWindow {
         }
         if surface_flags.update_selector {
             self.canvas().engine().borrow_mut().update_selector();
-            self.canvas().queue_resize();
+            self.canvas().update_engine_rendering();
         }
         if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
             if hide_scrollbars {
@@ -1212,8 +1211,9 @@ impl RnoteAppWindow {
         self.canvas().set_unsaved_changes(false);
         self.canvas().set_empty(false);
         self.canvas().return_to_origin_page();
-        self.canvas().regenerate_background(false);
-        self.canvas().regenerate_content(true, true);
+
+        self.canvas().regenerate_background_pattern();
+        self.canvas().update_engine_rendering();
 
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
 
@@ -1239,8 +1239,9 @@ impl RnoteAppWindow {
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
         self.canvas().return_to_origin_page();
-        self.canvas().regenerate_background(false);
-        self.canvas().regenerate_content(true, true);
+
+        self.canvas().regenerate_background_pattern();
+        self.canvas().update_engine_rendering();
 
         adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
 

@@ -8,8 +8,8 @@ pub struct SurfaceFlags {
     pub quit: bool,
     /// needs redrawing
     pub redraw: bool,
-    /// needs resizing
-    pub resize: bool,
+    /// engine rendering should be updated
+    pub update_engine_rendering: bool,
     /// Sheet should be resized to fit the strokes
     pub resize_to_fit_strokes: bool,
     /// Should change to the pen style
@@ -31,7 +31,7 @@ impl Default for SurfaceFlags {
         Self {
             quit: false,
             redraw: false,
-            resize: false,
+            update_engine_rendering: false,
             resize_to_fit_strokes: false,
             change_to_pen: None,
             penholder_changed: false,
@@ -48,7 +48,7 @@ impl SurfaceFlags {
     pub fn merged_with_other(mut self, other: Self) -> Self {
         self.quit |= other.quit;
         self.redraw |= other.redraw;
-        self.resize |= other.resize;
+        self.update_engine_rendering |= other.update_engine_rendering;
         self.resize_to_fit_strokes |= other.resize_to_fit_strokes;
         self.change_to_pen = if other.change_to_pen.is_some() {
             other.change_to_pen

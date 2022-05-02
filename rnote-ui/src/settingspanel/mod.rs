@@ -678,15 +678,17 @@ impl SettingsPanel {
                 appwindow.canvas().engine().borrow_mut().sheet.format = temporary_format;
 
                 appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
-                appwindow.canvas().regenerate_background(false);
-                appwindow.canvas().regenerate_content(true, true);
+
+                appwindow.canvas().update_engine_rendering();
             }),
         );
 
         // Background
         self.imp().background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
             appwindow.canvas().engine().borrow_mut().sheet.background.color = background_color_choosebutton.rgba().into_compose_color();
-            appwindow.canvas().regenerate_background(true);
+
+            appwindow.canvas().regenerate_background_pattern();
+            appwindow.canvas().update_engine_rendering();
         }));
 
         self.imp().background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |background_patterns_row| {
@@ -725,13 +727,16 @@ impl SettingsPanel {
                     }
                 };
 
-                appwindow.canvas().regenerate_background(true);
+                appwindow.canvas().regenerate_background_pattern();
+                appwindow.canvas().update_engine_rendering();
             }
         }));
 
         self.imp().background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
             appwindow.canvas().engine().borrow_mut().sheet.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
-            appwindow.canvas().regenerate_background(true);
+
+            appwindow.canvas().regenerate_background_pattern();
+            appwindow.canvas().update_engine_rendering();
         }));
 
         self.imp().background_pattern_width_unitentry.get().connect_local(
@@ -742,8 +747,9 @@ impl SettingsPanel {
                     pattern_size[0] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
 
                     appwindow.canvas().engine().borrow_mut().sheet.background.pattern_size = pattern_size;
-                    appwindow.canvas().regenerate_background(true);
 
+                    appwindow.canvas().regenerate_background_pattern();
+                    appwindow.canvas().update_engine_rendering();
                     None
             }),
         );
@@ -756,8 +762,9 @@ impl SettingsPanel {
                     pattern_size[1] = f64::from(settings_panel.background_pattern_height_unitentry().value_in_px());
 
                     appwindow.canvas().engine().borrow_mut().sheet.background.pattern_size = pattern_size;
-                    appwindow.canvas().regenerate_background(true);
 
+                    appwindow.canvas().regenerate_background_pattern();
+                    appwindow.canvas().update_engine_rendering();
                     None
             }),
         );

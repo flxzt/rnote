@@ -68,8 +68,7 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().set_unsaved_changes(false);
                     appwindow.canvas().set_empty(true);
 
-                    appwindow.canvas().regenerate_background(false);
-                    appwindow.canvas().regenerate_content(true, true);
+                    appwindow.canvas().update_engine_rendering();
                 },
                 _ => {
                     dialog_clear_sheet.close();
@@ -98,9 +97,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
                 appwindow.canvas().set_output_file(None);
 
-                appwindow.canvas().regenerate_background(false);
-                appwindow.canvas().regenerate_content(true, true);
-
+                appwindow.canvas().update_engine_rendering();
             },
             ResponseType::Apply => {
                 dialog_new_sheet.close();

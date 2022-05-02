@@ -420,7 +420,7 @@ impl PenBehaviour for Selector {
                 *modify_state = ModifyState::Up;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
+                surface_flags.update_engine_rendering = true;
                 surface_flags.sheet_changed = true;
 
                 PenProgress::InProgress
@@ -440,7 +440,7 @@ impl PenBehaviour for Selector {
                 self.state = SelectorState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
+                surface_flags.update_engine_rendering = true;
                 surface_flags.sheet_changed = true;
 
                 PenProgress::Finished

@@ -36,7 +36,7 @@ impl Default for ExpandSheetTool {
 impl ExpandSheetTool {
     const Y_OFFSET_THRESHOLD: f64 = 0.1;
 
-    const FILL_COLOR: piet::Color = color::GNOME_BLUES[0].with_a8(0x16);
+    const FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x17);
     const THRESHOLD_LINE_COLOR: piet::Color = color::GNOME_GREENS[4].with_a8(0xf0);
     const OFFSET_LINE_COLOR: piet::Color = color::GNOME_BLUES[3];
 
@@ -306,7 +306,7 @@ impl PenBehaviour for Tools {
                 self.state = ToolsState::Active;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
+                surface_flags.update_engine_rendering = true;
                 surface_flags.sheet_changed = true;
                 surface_flags.hide_scrollbars = Some(true);
 
@@ -379,7 +379,7 @@ impl PenBehaviour for Tools {
                 };
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
+                surface_flags.update_engine_rendering = true;
                 surface_flags.sheet_changed = true;
 
                 pen_progress
@@ -402,7 +402,7 @@ impl PenBehaviour for Tools {
                 self.state = ToolsState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
+                surface_flags.update_engine_rendering = true;
                 surface_flags.sheet_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
@@ -414,7 +414,7 @@ impl PenBehaviour for Tools {
                 self.state = ToolsState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
+                surface_flags.update_engine_rendering = true;
                 surface_flags.sheet_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 

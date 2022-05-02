@@ -473,8 +473,7 @@ impl RnoteCanvas {
         if let Some(ref hadjustment) = adj {
             let signal_id = hadjustment.connect_value_changed(
                 clone!(@weak self as canvas => move |_hadjustment| {
-                    canvas.queue_resize();
-                    // Everything is updated in canvaslayout allocate
+                    canvas.update_engine_rendering();
                 }),
             );
             self.imp().hadjustment_signal.replace(Some(signal_id));
@@ -491,8 +490,7 @@ impl RnoteCanvas {
         if let Some(ref vadjustment) = adj {
             let signal_id = vadjustment.connect_value_changed(
                 clone!(@weak self as canvas => move |_vadjustment| {
-                    canvas.queue_resize();
-                    // Everything is updated in canvaslayout allocate
+                    canvas.update_engine_rendering();
                 }),
             );
             self.imp().vadjustment_signal.replace(Some(signal_id));
@@ -543,8 +541,15 @@ impl RnoteCanvas {
         self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
             let scale_factor = f64::from(canvas.scale_factor());
             canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
-            canvas.regenerate_background(false);
-            canvas.regenerate_content(true, true);
+
+            canvas
+                .engine()
+                .borrow_mut()
+                .store
+                .set_rendering_dirty_all_keys();
+
+            canvas.regenerate_background_pattern();
+            canvas.update_engine_rendering();
         });
     }
 
@@ -780,7 +785,8 @@ impl RnoteCanvas {
 
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
-        self.queue_resize();
+
+        self.update_engine_rendering();
     }
 
     pub fn current_center_on_sheet(&self) -> na::Vector2<f64> {
@@ -832,15 +838,13 @@ impl RnoteCanvas {
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
         self.engine().borrow_mut().camera.set_zoom(new_zoom);
 
-        let all_keys = self.engine().borrow().store.keys_sorted_chrono();
         self.engine()
             .borrow_mut()
             .store
-            .set_rendering_dirty_for_strokes(&all_keys);
+            .set_rendering_dirty_all_keys();
 
-        self.engine().borrow_mut().resize_autoexpand();
-        self.regenerate_background(false);
-        self.regenerate_content(false, true);
+        self.regenerate_background_pattern();
+        self.update_engine_rendering();
     }
 
     /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.
@@ -887,28 +891,19 @@ impl RnoteCanvas {
         }
     }
 
-    /// Update rendernodes of the background. Used when the background itself did not change, but for example the sheet size.
-    /// Only to be called on allocation from the layout manager
-    fn update_background_rendernodes(&self, redraw: bool) {
-        let viewport = self.engine().borrow().camera.viewport();
+    /// Updates the rendering of the background and strokes that are flagged for rerendering for the current viewport.
+    /// To force the rerendering of the background pattern, call regenerate_background_pattern().
+    /// To force the rerendering for all strokes in the current viewport, call regenerate_strokes_rendering_current_viewport().
+    pub fn update_engine_rendering(&self) {
+        self.engine().borrow_mut().resize_autoexpand();
 
-        if let Err(e) = self
-            .engine()
-            .borrow_mut()
-            .sheet
-            .background
-            .update_rendernodes(viewport)
-        {
-            log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
-        }
-
-        if redraw {
-            self.queue_resize();
-        }
+        // Updating the backround and strokes rendering in the layout manager.
+        self.queue_resize();
     }
-    /// regenerating the background image and rendernode.
-    /// use for example when changing the background pattern or zoom
-    pub fn regenerate_background(&self, redraw: bool) {
+
+    /// updates the background pattern and rendering for the current viewport.
+    /// to be called for example when changing the background pattern or zoom.
+    pub fn regenerate_background_pattern(&self) {
         let viewport = self.engine().borrow().camera.viewport();
         let image_scale = self.engine().borrow().camera.image_scale();
 
@@ -917,29 +912,11 @@ impl RnoteCanvas {
             .borrow_mut()
             .sheet
             .background
-            .regenerate_background(viewport, image_scale)
+            .regenerate_pattern(viewport, image_scale)
         {
             log::error!("failed to regenerate background, {}", e)
         };
 
-        if redraw {
-            self.queue_resize();
-        }
-    }
-
-    /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch.
-    /// redraw: queue canvas redrawing
-    pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
-        let image_scale = self.engine().borrow().camera.image_scale();
-        let viewport = self.engine().borrow().camera.viewport();
-
-        self.engine()
-            .borrow_mut()
-            .store
-            .regenerate_rendering_in_viewport_threaded(force_regenerate, viewport, image_scale);
-
-        if redraw {
-            self.queue_resize();
-        }
+        self.queue_draw();
     }
 }

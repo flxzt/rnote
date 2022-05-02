@@ -220,14 +220,14 @@ impl StrokeStore {
                         let _inserted = self.insert_stroke(Stroke::BrushStroke(brushstroke));
 
                         surface_flags.redraw = true;
-                        surface_flags.resize = true;
+                        surface_flags.update_engine_rendering = true;
                         surface_flags.sheet_changed = true;
                     }
                     Stroke::ShapeStroke(shapestroke) => {
                         let _inserted = self.insert_stroke(Stroke::ShapeStroke(shapestroke));
 
                         surface_flags.redraw = true;
-                        surface_flags.resize = true;
+                        surface_flags.update_engine_rendering = true;
                         surface_flags.sheet_changed = true;
                     }
                     Stroke::VectorImage(vectorimage) => {
@@ -235,7 +235,7 @@ impl StrokeStore {
                         self.set_selected(inserted, true);
 
                         surface_flags.redraw = true;
-                        surface_flags.resize = true;
+                        surface_flags.update_engine_rendering = true;
                         surface_flags.resize_to_fit_strokes = true;
                         surface_flags.change_to_pen = Some(PenStyle::Selector);
                         surface_flags.sheet_changed = true;
@@ -246,7 +246,7 @@ impl StrokeStore {
                         self.set_selected(inserted, true);
 
                         surface_flags.redraw = true;
-                        surface_flags.resize = true;
+                        surface_flags.update_engine_rendering = true;
                         surface_flags.resize_to_fit_strokes = true;
                         surface_flags.change_to_pen = Some(PenStyle::Selector);
                         surface_flags.sheet_changed = true;

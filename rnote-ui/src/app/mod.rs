@@ -138,7 +138,8 @@ impl RnoteApp {
     // Anything that needs to be done right before showing the appwindow
     pub fn init_misc(&self, appwindow: &RnoteAppWindow) {
         appwindow.canvas().return_to_origin_page();
-        appwindow.canvas().regenerate_background(false);
-        appwindow.canvas().regenerate_content(true, true);
+
+        appwindow.canvas().regenerate_background_pattern();
+        appwindow.canvas().update_engine_rendering();
     }
 }

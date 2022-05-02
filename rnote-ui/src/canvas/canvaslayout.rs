@@ -119,9 +119,27 @@ mod imp {
             canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
             canvas.engine().borrow_mut().camera.size = new_size;
 
-            // Update content and background
-            canvas.update_background_rendernodes(false);
-            canvas.regenerate_content(false, true);
+            let viewport = canvas.engine().borrow().camera.viewport();
+            let image_scale = canvas.engine().borrow().camera.image_scale();
+
+            // Update background and strokes for the new viewport
+            if let Err(e) = canvas
+                .engine()
+                .borrow_mut()
+                .sheet
+                .background
+                .update_rendernodes(viewport)
+            {
+                log::error!(
+                    "failed to update background rendernodes on canvas resize with Err {}",
+                    e
+                );
+            }
+            canvas
+                .engine()
+                .borrow_mut()
+                .store
+                .regenerate_rendering_in_viewport_threaded(false, viewport, image_scale);
         }
     }
 }

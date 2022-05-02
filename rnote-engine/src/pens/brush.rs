@@ -147,7 +147,7 @@ impl PenBehaviour for Brush {
                 self.state = BrushState::Idle;
 
                 surface_flags.redraw = true;
-                surface_flags.resize = true;
+                surface_flags.update_engine_rendering = true;
                 surface_flags.sheet_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
@@ -226,7 +226,7 @@ impl PenBehaviour for Brush {
                         self.state = BrushState::Idle;
 
                         surface_flags.redraw = true;
-                        surface_flags.resize = true;
+                        surface_flags.update_engine_rendering = true;
                         surface_flags.sheet_changed = true;
                         surface_flags.hide_scrollbars = Some(false);
 

@@ -76,6 +76,10 @@ impl StrokeStore {
         keys.iter().for_each(|&key| self.set_rendering_dirty(key));
     }
 
+    pub fn set_rendering_dirty_all_keys(&mut self) {
+        self.set_rendering_dirty_for_strokes(&self.keys_unordered());
+    }
+
     pub fn gen_bounds_for_stroke_images(&self, key: StrokeKey) -> Option<AABB> {
         if let Some(render_comp) = self.render_components.get(key) {
             if render_comp.images.is_empty() {

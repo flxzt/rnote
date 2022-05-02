@@ -933,7 +933,7 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
                 appwindow.canvas().engine().borrow_mut().store.record();
 
-                let all_strokes = appwindow.canvas().engine().borrow().store.stroke_keys_as_rendered();
+                let all_strokes = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
                 appwindow.canvas().engine().borrow_mut().update_selector();
 
@@ -1281,7 +1281,7 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.selection-trash", &["Delete"]);
         app.set_accels_for_action("win.selection-duplicate", &["<Ctrl>d"]);
         app.set_accels_for_action("win.selection-select-all", &["<Ctrl>a"]);
-        app.set_accels_for_action("win.selection-deselect-all", &["Escape"]);
+        app.set_accels_for_action("win.selection-deselect-all", &["<Ctrl><Shift>a"]);
         app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste-selection", &["<Ctrl>v"]);
 

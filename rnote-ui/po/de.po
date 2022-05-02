@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-02 21:02+0200\n"
-"PO-Revision-Date: 2022-05-02 21:06+0200\n"
+"PO-Revision-Date: 2022-05-02 21:27+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -359,19 +359,19 @@ msgstr "Allgemein"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
-msgstr "Automatisch speichern"
+msgstr "Automatisches Speichern"
 
 #: rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr "Automatisches speichern de- / aktivieren"
+msgstr "Automatisches Speichern de- / aktivieren"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave interval (secs)"
-msgstr "Automatisch speichern Interval"
+msgstr "Automatisches Speichern Intervall (Sek.)"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
-msgstr "Ändere das automatisch speichern Interval"
+msgstr "Ändere das Intervall für automatisches Speichern"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 msgid "PDF import width (%)"

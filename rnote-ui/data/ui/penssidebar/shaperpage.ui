@@ -32,13 +32,13 @@
             <property name="direction">left</property>
             <property name="tooltip_text" translatable="yes">Shaper style</property>
             <property name="popover">shaperstyle_popover</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
             <child>
               <object class="GtkImage" id="shaperstyle_image">
                 <property name="icon-name">pen-shaper-style-smoooth-symbolic</property>
                 <property name="icon-size">large</property>
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
               </object>
             </child>
           </object>
@@ -229,13 +229,13 @@
             <property name="direction">left</property>
             <property name="tooltip_text" translatable="yes">Shape builders</property>
             <property name="popover">shapebuildertype_popover</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
             <child>
               <object class="GtkImage" id="shapebuildertype_image">
                 <property name="icon-name">shape-line-symbolic</property>
                 <property name="icon-size">large</property>
-                <style>
-                  <class name="sidebar_action_image" />
-                </style>
               </object>
             </child>
           </object>

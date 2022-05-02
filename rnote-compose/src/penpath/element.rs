@@ -1,6 +1,5 @@
 use std::collections::VecDeque;
 
-use chrono::Utc;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
@@ -14,9 +13,6 @@ pub struct Element {
     #[serde(rename = "pressure")]
     /// The pen pressure. The valid range is [0.0, 1.0]
     pub pressure: f64,
-    #[serde(rename = "timestamp")]
-    /// The timestamp on element creation
-    pub timestamp: chrono::DateTime<Utc>,
 }
 
 impl Default for Element {
@@ -33,14 +29,8 @@ impl Element {
     pub fn new(pos: na::Vector2<f64>, pressure: f64) -> Self {
         Self {
             pos,
-            pressure,
-            timestamp: Utc::now(),
+            pressure: pressure.clamp(0.0, 1.0),
         }
-    }
-
-    /// Updates the timestamp to now
-    pub fn update_timestamp(&mut self) {
-        self.timestamp = Utc::now();
     }
 
     /// Sets the pressure, clamped to the range [0.0 - 1.0]

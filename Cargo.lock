@@ -2922,7 +2922,6 @@ name = "rnote-compose"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "chrono",
  "image 0.23.14",
  "kurbo",
  "log",
@@ -2978,7 +2977,7 @@ dependencies = [
  "rnote-fileformats",
  "rodio",
  "rstar 0.9.3",
- "semver 1.0.7",
+ "semver 1.0.9",
  "serde",
  "serde_json",
  "slotmap",
@@ -2996,7 +2995,7 @@ dependencies = [
  "nalgebra 0.30.1",
  "pretty_env_logger",
  "roxmltree",
- "semver 1.0.7",
+ "semver 1.0.9",
  "serde",
  "serde_json",
  "xmlwriter",
@@ -3083,7 +3082,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
 dependencies = [
- "semver 1.0.7",
+ "semver 1.0.9",
 ]
 
 [[package]]
@@ -3192,9 +3191,9 @@ dependencies = [
 
 [[package]]
 name = "semver"
-version = "1.0.7"
+version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d65bd28f48be7196d222d95b9243287f48d27aca604e08497513019ff0502cc4"
+checksum = "8cb243bdfdb5936c8dc3c45762a19d12ab4550cdc753bc247637d4ec35a040fd"
 dependencies = [
  "serde",
 ]
@@ -3689,9 +3688,9 @@ checksum = "3ed742d4ea2bd1176e236172c8429aaf54486e7ac098db29ffe6529e0ce50973"
 
 [[package]]
 name = "unicode-xid"
-version = "0.2.2"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ccb82d61f80a663efe1f787a51b16b5a51e3314d6ac365b08639f52387b33f3"
+checksum = "957e51f3646910546462e67d5f7599b9e4fb8acdd304b087a6494730f9eebf04"
 
 [[package]]
 name = "url"

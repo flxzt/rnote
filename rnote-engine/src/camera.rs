@@ -3,35 +3,24 @@ use p2d::bounding_volume::AABB;
 use rnote_compose::helpers::AABBHelpers;
 use serde::{Deserialize, Serialize};
 
-/* pub enum Coordinate {
-    Surface(na::Vector2<f64>),
-    Sheet(na::Vector2<f64>)
-}
-
-impl Coordinate {
-    pub fn transform(self, camera: &Camera) -> Self {
-
-    }
-
-
-} */
-
-#[allow(unused)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
-/// e.g. when
-/// offset = (10.0, 10.0); zoom = 2.0;,
-/// then (50.0, 20.0) on the surface is -> (60.0, 30.0) -> (30.0, 10.0) on the sheet
+#[serde(default, rename = "camera")]
 pub struct Camera {
     /// The offset in surface coords.
+    #[serde(rename = "offset")]
     pub offset: na::Vector2<f64>,
     /// The dimensions in surface coords
+    #[serde(rename = "size")]
     pub size: na::Vector2<f64>,
     /// The camera zoom, origin at (0.0, 0.0)
+    #[serde(rename = "zoom")]
     zoom: f64,
     /// the temporary zoom. Is used to overlay the "permanent" zoom
+    #[serde(rename = "temporary_zoom")]
     temporary_zoom: f64,
 
-    /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi values. Could become non-integer values in the future!
+    /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi values. (Could become a non-integer value in the future, so it is stored as float.)
+    #[serde(rename = "scale_factor")]
     pub scale_factor: f64,
 }
 
@@ -71,15 +60,17 @@ impl Camera {
         self.zoom
     }
 
+    /// sets the zoom
     pub fn set_zoom(&mut self, zoom: f64) {
         self.zoom = zoom.clamp(Self::ZOOM_MIN, Self::ZOOM_MAX)
     }
 
-    /// The temporary zoom, supposed to be overlayed at the surface when zooming with a timeout
+    /// The temporary zoom, supposed to be overlayed on the surface when zooming with a timeout
     pub fn temporary_zoom(&self) -> f64 {
         self.temporary_zoom
     }
 
+    /// sets the temporary zoom
     pub fn set_temporary_zoom(&mut self, temporary_zoom: f64) {
         self.temporary_zoom =
             temporary_zoom.clamp(Camera::ZOOM_MIN / self.zoom, Camera::ZOOM_MAX / self.zoom)
@@ -90,7 +81,7 @@ impl Camera {
         self.zoom * self.temporary_zoom
     }
 
-    /// The desired scaling factor for generating pixel images with the current zoom. takes the surface scale factor in account
+    /// The scaling factor for generating pixel images with the current zoom. also takes the scale factor in account
     pub fn image_scale(&self) -> f64 {
         self.zoom * self.scale_factor
     }

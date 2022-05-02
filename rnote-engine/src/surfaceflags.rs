@@ -69,6 +69,7 @@ impl SurfaceFlags {
         self
     }
 
+    /// Merging with another SurfaceFlags struct in place, prioritizing other for conflicting values.
     pub fn merge_with_other(&mut self, other: Self) {
         *self = self.merged_with_other(other);
     }

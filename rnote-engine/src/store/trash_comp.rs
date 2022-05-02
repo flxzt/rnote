@@ -106,7 +106,7 @@ impl StrokeStore {
 
     /// remove colliding stroke segments with the given bounds. The stroke is then split. For strokes that don't have segments, trash the entire stroke.
     /// Returns the keys of all created or modified strokes.
-    /// Needs rendering regeneration
+    /// returned strokes need to update their rendering.
     pub fn split_colliding_strokes(
         &mut self,
         eraser_bounds: AABB,

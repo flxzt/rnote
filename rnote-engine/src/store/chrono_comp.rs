@@ -10,7 +10,7 @@ use super::{StrokeKey, StrokeStore};
 #[serde(default, rename = "chrono_component")]
 pub struct ChronoComponent {
     #[serde(rename = "t")]
-    pub t: u32,
+    t: u32,
 }
 
 impl Default for ChronoComponent {

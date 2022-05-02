@@ -171,6 +171,7 @@ impl PenHolder {
         // Set the pen sounds to update the audioplayer
         self.set_pen_sounds(self.pen_sounds)
     }
+
     /// gets the pen style. May be overriden by style_override.
     pub fn style(&self) -> PenStyle {
         self.style
@@ -186,14 +187,17 @@ impl PenHolder {
         self.style_override.unwrap_or(self.style)
     }
 
+    /// Registers a new shortcut key and action
     pub fn register_new_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
         self.shortcuts.insert(key, action);
     }
 
+    /// Removes the shortcut action for the given shortcut key, if it is registered
     pub fn remove_shortcut(&mut self, key: ShortcutKey) -> Option<ShortcutAction> {
         self.shortcuts.remove(&key)
     }
 
+    /// Lists all current registered shortcut keys and their action
     pub fn list_current_shortcuts(&self) -> Vec<(ShortcutKey, ShortcutAction)> {
         self.shortcuts
             .iter()
@@ -201,10 +205,12 @@ impl PenHolder {
             .collect()
     }
 
+    /// wether pen sounds are enabled
     pub fn pen_sounds(&self) -> bool {
         self.pen_sounds
     }
 
+    /// enables / disables the pen sounds
     pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
         self.pen_sounds = pen_sounds;
         if let Some(audioplayer) = self.audioplayer.as_mut() {
@@ -212,7 +218,8 @@ impl PenHolder {
         }
     }
 
-    /// Changes the internal state according to events
+    /// handles penholder events
+    /// The public method for handling penholder events is with the engine struct
     #[must_use]
     pub(crate) fn handle_penholder_event(
         &mut self,
@@ -298,7 +305,7 @@ impl PenHolder {
             surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
             // Deselecting when changing the style
-            let all_strokes = store.keys_sorted_chrono();
+            let all_strokes = store.selection_keys_as_rendered();
             store.set_selected_keys(&all_strokes, false);
 
             self.style = new_style;
@@ -330,7 +337,7 @@ impl PenHolder {
             surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
             // Deselecting when changing the style override
-            let all_strokes = store.keys_sorted_chrono();
+            let all_strokes = store.selection_keys_as_rendered();
             store.set_selected_keys(&all_strokes, false);
 
             self.style_override = new_style_override;
@@ -360,6 +367,7 @@ impl PenHolder {
         surface_flags
     }
 
+    #[must_use]
     fn handle_pen_event(
         &mut self,
         event: PenEvent,

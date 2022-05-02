@@ -7,6 +7,7 @@ use super::AudioPlayer;
 
 /// types that are pens and can handle pen events
 pub trait PenBehaviour: DrawOnSheetBehaviour {
+    /// Handles a pen event
     #[must_use]
     fn handle_event(
         &mut self,

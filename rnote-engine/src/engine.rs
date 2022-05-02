@@ -163,7 +163,7 @@ impl RnoteEngine {
         self.store.process_received_task(task, &self.camera)
     }
 
-    /// Public method to call to handle pen events and to change pen holder state
+    /// Public method to call to handle penholder events
     pub fn handle_penholder_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
         self.penholder.handle_penholder_event(
             event,
@@ -173,7 +173,7 @@ impl RnoteEngine {
         )
     }
 
-    // Generates bounds for each page which is containing content, extended to fit the sheet format
+    // Generates bounds for each page which is containing content, extended to align with the sheet format
     pub fn pages_bounds_containing_content(&self) -> Vec<AABB> {
         let sheet_bounds = self.sheet.bounds();
         let keys = self.store.stroke_keys_as_rendered();
@@ -197,7 +197,7 @@ impl RnoteEngine {
         }
     }
 
-    /// Generates bounds which contain all pages with content, and are extended to align with the format.
+    /// Generates bounds which contain all pages with content, and are extended to align with the sheet format.
     pub fn bounds_w_content_extended(&self) -> Option<AABB> {
         let bounds = self.pages_bounds_containing_content();
         if bounds.is_empty() {
@@ -215,7 +215,8 @@ impl RnoteEngine {
         )
     }
 
-    /// Generates all containing svgs for the sheet without root or xml header for the entire size
+    /// Generates all svgs for all strokes, including the background. Exluding the current selection.
+    /// without root or xml header.
     pub fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
         let sheet_bounds = self.sheet.bounds();
         let mut svgs = vec![];
@@ -228,7 +229,8 @@ impl RnoteEngine {
         Ok(svgs)
     }
 
-    /// Generates all svgs intersecting the specified bounds, including the background, without root or xml header
+    /// Generates all svgs intersecting the given bounds, including the background.
+    /// without root or xml header.
     pub fn gen_svgs_intersecting_bounds(
         &self,
         viewport: AABB,
@@ -248,8 +250,8 @@ impl RnoteEngine {
         Ok(svgs)
     }
 
-    /// Called when sheet should resize to the format and to fit all strokes
-    /// Sheet background rendering needs to be updated after calling this
+    /// resizes the sheet to the format and to fit all strokes
+    /// Sheet background rendering then needs to be updated.
     pub fn resize_to_fit_strokes(&mut self) {
         match self.expand_mode {
             ExpandMode::FixedSize => {
@@ -268,7 +270,7 @@ impl RnoteEngine {
     }
 
     /// resize the sheet when in autoexpanding expand modes. called e.g. when finishing a new stroke
-    /// Sheet background rendering needs to be updated after calling this
+    /// Sheet background rendering then needs to be updated.
     pub fn resize_autoexpand(&mut self) {
         match self.expand_mode {
             ExpandMode::FixedSize => {
@@ -287,7 +289,7 @@ impl RnoteEngine {
     }
 
     /// Updates the camera and expands sheet dimensions with offset
-    /// Sheet background rendering needs to be updated after calling this
+    /// Sheet background rendering then needs to be updated.
     pub fn update_camera_offset(&mut self, new_offset: na::Vector2<f64>) {
         self.camera.offset = new_offset;
 
@@ -306,11 +308,12 @@ impl RnoteEngine {
         }
     }
 
+    /// Updates the selector pen with the current store state.
     pub fn update_selector(&mut self) {
         self.penholder.selector.update_from_store(&self.store);
     }
 
-    /// Import and replace the engine config. NOT for opening files
+    /// Imports and replace the engine config. NOT for opening files
     pub fn load_engine_config(&mut self, serialized_config: &str) -> anyhow::Result<()> {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
@@ -322,6 +325,7 @@ impl RnoteEngine {
         Ok(())
     }
 
+    /// Exports the current engine config as JSON string
     pub fn save_engine_config(&self) -> anyhow::Result<String> {
         let engine_config = EngineConfig {
             sheet: serde_json::to_value(&self.sheet)?,
@@ -332,6 +336,7 @@ impl RnoteEngine {
         Ok(serde_json::to_string(&engine_config)?)
     }
 
+    /// opens a .rnote file and replaces the current state with it.
     pub fn open_from_rnote_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
         let rnote_file = RnotefileMaj0Min5::load_from_bytes(bytes)?;
 
@@ -345,6 +350,7 @@ impl RnoteEngine {
         Ok(())
     }
 
+    /// Saves the current state as a .rnote file.
     pub fn save_as_rnote_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let rnote_file = RnotefileMaj0Min5 {
             sheet: serde_json::to_value(&self.sheet)?,
@@ -355,11 +361,13 @@ impl RnoteEngine {
         Ok(rnote_file.save_as_bytes(file_name)?)
     }
 
-    /// for debugging the current engine state
+    /// Exports the entire engine state as JSON string
+    /// Only use for debugging
     pub fn export_state_as_json(&self) -> anyhow::Result<String> {
         Ok(serde_json::to_string_pretty(self)?)
     }
 
+    /// Opens a  Xournal++ .xopp file, and replaces the current state with it.
     pub fn open_from_xopp_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
         let xopp_file = xoppformat::XoppFile::load_from_bytes(bytes)?;
 
@@ -453,6 +461,7 @@ impl RnoteEngine {
         Ok(())
     }
 
+    /// Exports the sheet with the strokes as a SVG string. Excluding the current selection.
     pub fn export_sheet_as_svg_string(&self) -> Result<String, anyhow::Error> {
         let bounds = if let Some(bounds) = self.bounds_w_content_extended() {
             bounds
@@ -480,6 +489,7 @@ impl RnoteEngine {
         Ok(svg_data)
     }
 
+    /// Exports the current selection as a SVG string
     pub fn export_selection_as_svg_string(&self) -> anyhow::Result<Option<String>> {
         let selection_keys = self.store.selection_keys_as_rendered();
         if let Some(selection_bounds) = self.store.gen_bounds_for_strokes(&selection_keys) {
@@ -502,6 +512,7 @@ impl RnoteEngine {
         }
     }
 
+    /// Exports the sheet with the strokes as a Xournal++ .xopp file. Excluding the current selection.
     pub fn export_sheet_as_xopp_bytes(&self, filename: &str) -> Result<Vec<u8>, anyhow::Error> {
         let current_dpi = self.sheet.format.dpi;
 
@@ -608,6 +619,7 @@ impl RnoteEngine {
         Ok(xoppfile_bytes)
     }
 
+    /// Exports the sheet with the strokes as a PDF file. Excluding the current selection.
     /// Returns the receiver to be awaited on for the bytes
     pub fn export_sheet_as_pdf_bytes(
         &self,
@@ -692,6 +704,7 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
+    /// Draws the entire engine (sheet, pens, strokes, selection, ..) on a GTK snapshot.
     pub fn draw(&self, snapshot: &Snapshot, _surface_bounds: AABB) -> anyhow::Result<()> {
         let sheet_bounds = self.sheet.bounds();
         let viewport = self.camera.viewport();

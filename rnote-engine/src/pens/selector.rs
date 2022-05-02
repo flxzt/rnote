@@ -571,9 +571,9 @@ impl Selector {
     const SELECTION_FILL_COLOR: piet::Color = color::GNOME_BRIGHTS[2].with_a8(0x17);
     const SELECTING_DASH_PATTERN: [f64; 2] = [12.0, 6.0];
 
-    /// size when zoom = 1.0, keep constant surface size, so are scaled with zoom!
+    /// resize node size, in surface coords
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
-    /// size when zoom = 1.0, keep constant surface size, so are scaled with zoom!
+    /// rotate node size, in surface coords
     const ROTATE_NODE_SIZE: f64 = 18.0;
 
     /// Sets the state to a selection
@@ -585,8 +585,9 @@ impl Selector {
         };
     }
 
+    /// Updates the selector from the stroke store
     pub fn update_from_store(&mut self, store: &StrokeStore) {
-        let selection = store.selection_keys_unordered();
+        let selection = store.selection_keys_as_rendered();
         let selection_bounds = store.gen_bounds_for_strokes(&selection);
         if let Some(selection_bounds) = selection_bounds {
             self.set_selection(selection, selection_bounds);

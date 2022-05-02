@@ -17,6 +17,9 @@ pub struct ShapeStroke {
     pub shape: Shape,
     #[serde(rename = "style")]
     pub style: Style,
+    #[serde(skip)]
+    // since the path can have many hitboxes, we store them for faster queries and update them when we the stroke geometry changes
+    pub hitboxes: Vec<AABB>,
 }
 
 impl StrokeBehaviour for ShapeStroke {
@@ -65,64 +68,7 @@ impl DrawBehaviour for ShapeStroke {
     fn draw(&self, cx: &mut impl piet::RenderContext, _image_scale: f64) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        match self.shape {
-            Shape::Line(ref line) => match &self.style {
-                Style::Smooth(options) => {
-                    line.draw_composed(cx, options);
-                }
-                Style::Rough(options) => {
-                    line.draw_composed(cx, options);
-                }
-                Style::Textured(_) => {}
-            },
-            Shape::Rectangle(ref rectangle) => match &self.style {
-                Style::Smooth(options) => {
-                    rectangle.draw_composed(cx, options);
-                }
-                Style::Rough(options) => {
-                    rectangle.draw_composed(cx, options);
-                }
-                Style::Textured(_) => {}
-            },
-            Shape::Ellipse(ref ellipse) => match &self.style {
-                Style::Smooth(options) => {
-                    ellipse.draw_composed(cx, options);
-                }
-                Style::Rough(options) => {
-                    ellipse.draw_composed(cx, options);
-                }
-                Style::Textured(_) => {}
-            },
-            Shape::QuadraticBezier(ref quadbez) => match &self.style {
-                Style::Smooth(options) => {
-                    quadbez.draw_composed(cx, options);
-                }
-                Style::Rough(options) => {
-                    quadbez.draw_composed(cx, options);
-                }
-                Style::Textured(_) => {}
-            },
-            Shape::CubicBezier(ref cubbez) => match &self.style {
-                Style::Smooth(options) => {
-                    cubbez.draw_composed(cx, options);
-                }
-                Style::Rough(options) => {
-                    cubbez.draw_composed(cx, options);
-                }
-                Style::Textured(_) => {}
-            },
-            Shape::Segment(ref segment) => match &self.style {
-                Style::Smooth(options) => {
-                    segment.draw_composed(cx, options);
-                }
-                Style::Rough(options) => {
-                    segment.draw_composed(cx, options);
-                }
-                Style::Textured(options) => {
-                    segment.draw_composed(cx, options);
-                }
-            },
-        };
+        self.shape.draw_composed(cx, &self.style);
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
         Ok(())
@@ -139,17 +85,7 @@ impl ShapeBehaviour for ShapeStroke {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        let width = match &self.style {
-            Style::Smooth(options) => options.stroke_width,
-            Style::Rough(options) => options.stroke_width,
-            Style::Textured(options) => options.stroke_width,
-        };
-
-        self.shape
-            .hitboxes()
-            .into_iter()
-            .map(|hitbox| hitbox.loosened(width / 2.0))
-            .collect()
+        self.hitboxes.clone()
     }
 }
 
@@ -167,6 +103,27 @@ impl TransformBehaviour for ShapeStroke {
 
 impl ShapeStroke {
     pub fn new(shape: Shape, style: Style) -> Self {
-        Self { shape, style }
+        let mut shapestroke = Self {
+            shape,
+            style,
+            hitboxes: vec![],
+        };
+        shapestroke.update_geometry();
+
+        shapestroke
+    }
+
+    pub fn update_geometry(&mut self) {
+        self.hitboxes = self.gen_hitboxes();
+    }
+
+    fn gen_hitboxes(&self) -> Vec<AABB> {
+        let width = self.style.stroke_width();
+
+        self.shape
+            .hitboxes()
+            .into_iter()
+            .map(|hitbox| hitbox.loosened(width / 2.0))
+            .collect()
     }
 }

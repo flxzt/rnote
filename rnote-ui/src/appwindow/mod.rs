@@ -1257,7 +1257,7 @@ impl RnoteAppWindow {
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::point![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT])
+                * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
             .coords
         });
 
@@ -1293,7 +1293,7 @@ impl RnoteAppWindow {
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::point![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT])
+                * na::Point2::from(BitmapImage::IMPORT_OFFSET_DEFAULT))
             .coords
         });
 
@@ -1326,11 +1326,6 @@ impl RnoteAppWindow {
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
-        let pos = target_pos.unwrap_or_else(|| {
-            (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::point![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT])
-            .coords
-        });
         let page_width = (f64::from(self.canvas().engine().borrow().sheet.format.width)
             * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
@@ -1343,12 +1338,24 @@ impl RnoteAppWindow {
         self.handle_surface_flags(surface_flags);
 
         if self.canvas().pdf_import_as_vector() {
+            let pos = target_pos.unwrap_or_else(|| {
+                (self.canvas().engine().borrow().camera.transform().inverse()
+                    * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
+                .coords
+            });
+
             self.canvas()
                 .engine()
                 .borrow_mut()
                 .store
                 .insert_pdf_bytes_as_vector_threaded(pos, Some(page_width), bytes.to_vec());
         } else {
+            let pos = target_pos.unwrap_or_else(|| {
+                (self.canvas().engine().borrow().camera.transform().inverse()
+                    * na::Point2::from(BitmapImage::IMPORT_OFFSET_DEFAULT))
+                .coords
+            });
+
             self.canvas()
                 .engine()
                 .borrow_mut()

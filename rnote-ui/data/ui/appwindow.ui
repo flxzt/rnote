@@ -297,8 +297,7 @@
                     </layout>
                     <property name="hexpand">true</property>
                     <property name="halign">fill</property>
-                    <property name="valign">fill</property>
-                    <property name="height-request">35</property>
+                    <property name="valign">end</property>
                     <property name="icon_name">flap-symbolic</property>
                     <property name="margin_top">6</property>
                     <property name="margin_bottom">6</property>

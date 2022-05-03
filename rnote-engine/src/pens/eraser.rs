@@ -189,7 +189,7 @@ impl PenBehaviour for Eraser {
 impl Eraser {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 20.0;
+    pub const WIDTH_DEFAULT: f64 = 12.0;
 
     pub fn new(width: f64) -> Self {
         Self {

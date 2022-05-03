@@ -948,7 +948,9 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
                 appwindow.canvas().engine().borrow_mut().store.record();
 
-                appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
+                let new_selected = appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
+                appwindow.canvas().engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
+
 
                 appwindow.canvas().engine().borrow_mut().update_selector();
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();

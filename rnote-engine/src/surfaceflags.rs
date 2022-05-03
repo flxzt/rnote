@@ -12,10 +12,10 @@ pub struct SurfaceFlags {
     pub penholder_changed: bool,
     /// wether the store has changed, i.e. new strokes inserted, modified, etc.
     pub store_changed: bool,
-    /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
-    pub hide_scrollbars: Option<bool>,
     /// camera has changed
     pub camera_changed: bool,
+    /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
+    pub hide_scrollbars: Option<bool>,
 }
 
 impl Default for SurfaceFlags {
@@ -26,8 +26,8 @@ impl Default for SurfaceFlags {
             resize: false,
             penholder_changed: false,
             store_changed: false,
-            hide_scrollbars: None,
             camera_changed: false,
+            hide_scrollbars: None,
         }
     }
 }
@@ -40,12 +40,12 @@ impl SurfaceFlags {
         self.resize |= other.resize;
         self.penholder_changed |= other.penholder_changed;
         self.store_changed |= other.store_changed;
+        self.camera_changed |= other.camera_changed;
         self.hide_scrollbars = if other.hide_scrollbars.is_some() {
             other.hide_scrollbars
         } else {
             self.hide_scrollbars
         };
-        self.camera_changed |= other.camera_changed;
 
         self
     }

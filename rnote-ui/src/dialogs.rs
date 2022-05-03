@@ -69,6 +69,7 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
                     appwindow.canvas().set_empty(true);
 
                     appwindow.canvas().return_to_origin_page();
+
                     appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                     appwindow.canvas().update_engine_rendering();
                 },
@@ -100,6 +101,7 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
                 appwindow.canvas().set_output_file(None);
 
                 appwindow.canvas().return_to_origin_page();
+
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().update_engine_rendering();
             },

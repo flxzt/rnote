@@ -936,8 +936,8 @@ impl RnoteAppWindow {
 
                 let selection_keys = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
-                appwindow.canvas().engine().borrow_mut().update_selector();
 
+                appwindow.canvas().engine().borrow_mut().update_selector();
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().update_engine_rendering();
             }),
@@ -949,8 +949,8 @@ impl RnoteAppWindow {
                 appwindow.canvas().engine().borrow_mut().store.record();
 
                 appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
-                appwindow.canvas().engine().borrow_mut().update_selector();
 
+                appwindow.canvas().engine().borrow_mut().update_selector();
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().update_engine_rendering();
             }),
@@ -978,8 +978,8 @@ impl RnoteAppWindow {
 
                 let all_strokes = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
-                appwindow.canvas().engine().borrow_mut().update_selector();
 
+                appwindow.canvas().engine().borrow_mut().update_selector();
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().update_engine_rendering();
             }),
@@ -1260,9 +1260,11 @@ impl RnoteAppWindow {
                             appwindow.clipboard().read_text_async(None::<&gio::Cancellable>, clone!(@weak appwindow => move |text_res| {
                                 match text_res {
                                     Ok(Some(text)) => {
-                                        appwindow.load_in_vectorimage_bytes(text.as_bytes(), None).unwrap_or_else(|e| {
-                                            log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err, {}", e);
-                                        });
+                                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                                            if let Err(e) = appwindow.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
+                                                log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err, {}", e);
+                                            };
+                                        }));
                                     }
                                     Ok(None) => {}
                                     Err(e) => {
@@ -1273,37 +1275,7 @@ impl RnoteAppWindow {
                             }));
                             break;
                         }
-/*                         "image/png" | "image/jpeg" => {
-                            appwindow.clipboard().read_texture_async(gio::NONE_CANCELLABLE, clone!(@weak appwindow => move |texture_res| {
-                                match texture_res {
-                                    Ok(Some(texture)) => {
-                                        let mut texture_bytes: Vec<u8> = Vec::new();
-                                        texture.download(&mut texture_bytes, texture.width() as usize * 4);
-
-                                        if let Some(image) = image::ImageBuffer::<image::Bgra<u8>, Vec<u8>>::from_vec(texture.width() as u32, texture.height() as u32, texture_bytes) {
-                                            let mut image_bytes = Vec::<u8>::new();
-                                            image::DynamicImage::ImageBgra8(image).write_to(&mut image_bytes, image::ImageOutputFormat::Png).unwrap_or_else(|e| {
-                                                log::error!("failed to paste clipboard as BitmapImage, DynamicImage.write_to() returned Err, {}", e);
-                                            });
-
-                                            appwindow.load_in_bitmapimage_bytes(&image_bytes).unwrap_or_else(|e| {
-                                                log::error!("failed to paste clipboard as BitmapImage, load_in_vectorimage_bytes() returned Err, {}", e);
-                                            });
-                                        };
-
-
-                                    }
-                                    Ok(None) => {
-                                    }
-                                    Err(e) => {
-                                        log::error!("failed to paste clipboard as BitmapImage, texture in callback is Err, {}", e);
-                                    }
-                                }
-                            }));
-                            break;
-                        }
-                        */
-                        // Pdfs are not supported in the clipboard
+                        "image/png" | "image/jpeg" => {}
                         _ => {}
                     }
             }

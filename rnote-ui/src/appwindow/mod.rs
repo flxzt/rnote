@@ -16,7 +16,7 @@ use gtk4::{
     ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
-use rnote_engine::pens::penholder::PenHolderEvent;
+use rnote_engine::strokes::Stroke;
 
 use crate::{
     app::RnoteApp,
@@ -738,6 +738,11 @@ impl RnoteAppWindow {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
         }
+        if surface_flags.camera_changed {
+            let new_offsets = self.canvas().engine().borrow().camera.offset;
+            self.canvas().update_camera_offset(new_offsets);
+            self.canvas().update_engine_rendering();
+        }
         if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
             if hide_scrollbars {
                 self.canvas_scroller()
@@ -746,11 +751,6 @@ impl RnoteAppWindow {
                 self.canvas_scroller()
                     .set_policy(PolicyType::Automatic, PolicyType::Automatic);
             }
-        }
-        if surface_flags.camera_changed {
-            let new_offsets = self.canvas().engine().borrow().camera.offset;
-            self.canvas().update_camera_offset(new_offsets);
-            self.canvas().update_engine_rendering();
         }
 
         false
@@ -1085,7 +1085,7 @@ impl RnoteAppWindow {
                     appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_xopp_bytes(&file_bytes, file.path()) {
+                        if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec(), file.path()) {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .xopp file failed.").to_variant()));
                             log::error!(
                                 "load_in_xopp_bytes() failed in load_in_file() with Err {}",
@@ -1105,7 +1105,7 @@ impl RnoteAppWindow {
                     appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_vectorimage_bytes(&file_bytes, target_pos) {
+                        if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Vectorimage file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
@@ -1125,7 +1125,7 @@ impl RnoteAppWindow {
                     appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_bitmapimage_bytes(&file_bytes, target_pos) {
+                        if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Bitmapimage file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
@@ -1145,7 +1145,7 @@ impl RnoteAppWindow {
                     appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_pdf_bytes(&file_bytes, target_pos) {
+                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
@@ -1216,7 +1216,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_xopp_bytes<P>(&self, bytes: &[u8], _path: Option<P>) -> anyhow::Result<()>
+    pub fn load_in_xopp_bytes<P>(&self, bytes: Vec<u8>, _path: Option<P>) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
     {
@@ -1245,9 +1245,9 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub fn load_in_vectorimage_bytes(
+    pub async fn load_in_vectorimage_bytes(
         &self,
-        bytes: &[u8],
+        bytes: Vec<u8>,
         // In coordinate space of the sheet
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
@@ -1259,30 +1259,31 @@ impl RnoteAppWindow {
             .coords
         });
 
+        // we need the split the import operation between generate_vectorimage_from_bytes() which returns a receiver and import_generated_strokes(),
+        // to avoid borrowing the entire engine refcell while awaiting the stroke
+        let vectorimage_receiver = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .generate_vectorimage_from_bytes(pos, bytes);
+        let vectorimage = vectorimage_receiver.await??;
+
         let surface_flags = self
             .canvas()
             .engine()
             .borrow_mut()
-            .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
+            .import_generated_strokes(vec![Stroke::VectorImage(vectorimage)]);
         self.handle_surface_flags(surface_flags);
 
-        self.canvas()
-            .engine()
-            .borrow_mut()
-            .import_vectorimage_bytes(pos, bytes.to_vec());
-
         app.set_input_file(None);
-        self.canvas().set_unsaved_changes(true);
-        self.canvas().set_empty(false);
-        self.canvas().queue_draw();
 
         Ok(())
     }
 
     /// Target position is in the coordinate space of the sheet
-    pub fn load_in_bitmapimage_bytes(
+    pub async fn load_in_bitmapimage_bytes(
         &self,
-        bytes: &[u8],
+        bytes: Vec<u8>,
         // In the coordinate space of the sheet
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
@@ -1294,40 +1295,33 @@ impl RnoteAppWindow {
             .coords
         });
 
+        let bitmapimage_receiver = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .generate_bitmapimage_from_bytes(pos, bytes);
+        let bitmapimage = bitmapimage_receiver.await??;
+
         let surface_flags = self
             .canvas()
             .engine()
             .borrow_mut()
-            .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
+            .import_generated_strokes(vec![Stroke::BitmapImage(bitmapimage)]);
         self.handle_surface_flags(surface_flags);
 
-        self.canvas()
-            .engine()
-            .borrow_mut()
-            .import_bitmapimage_bytes(pos, bytes.to_vec());
-
         app.set_input_file(None);
-        self.canvas().set_unsaved_changes(true);
-        self.canvas().set_empty(false);
 
         Ok(())
     }
 
     /// Target position is in the coordinate space of the sheet
-    pub fn load_in_pdf_bytes(
+    pub async fn load_in_pdf_bytes(
         &self,
-        bytes: &[u8],
+        bytes: Vec<u8>,
         // In the coordinate space of the sheet
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
-
-        let surface_flags = self
-            .canvas()
-            .engine()
-            .borrow_mut()
-            .handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
-        self.handle_surface_flags(surface_flags);
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
@@ -1335,15 +1329,21 @@ impl RnoteAppWindow {
             .coords
         });
 
-        self.canvas()
+        let strokes_receiver = self
+            .canvas()
             .engine()
             .borrow_mut()
-            .import_pdf_bytes(pos, bytes.to_vec());
+            .generate_strokes_from_pdf_bytes(pos, bytes);
+        let strokes = strokes_receiver.await??;
+
+        let surface_flags = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .import_generated_strokes(strokes);
+        self.handle_surface_flags(surface_flags);
 
         app.set_input_file(None);
-
-        self.canvas().set_unsaved_changes(true);
-        self.canvas().set_empty(false);
 
         Ok(())
     }

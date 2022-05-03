@@ -840,7 +840,7 @@ impl RnoteCanvas {
     /// To force the rerendering of the background pattern, call regenerate_background_pattern().
     /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
     pub fn update_engine_rendering(&self) {
-        // Updating the backround and strokes rendering in the layout manager.
+        // Updating the engine rendering in the layout manager.
         self.queue_resize();
     }
 

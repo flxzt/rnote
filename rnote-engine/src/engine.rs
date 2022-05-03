@@ -2,7 +2,7 @@ use crate::pens::penholder::{PenHolderEvent, PenStyle};
 use crate::sheet::{background, Background, ExpandMode, Format};
 use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
-use crate::strokes::Stroke;
+use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{render, DrawOnSheetBehaviour, SurfaceFlags};
 use crate::{Camera, PenHolder, Sheet, StrokeStore};
 use gtk4::Snapshot;
@@ -36,10 +36,6 @@ pub enum EngineTask {
         key: StrokeKey,
         images: GeneratedStrokeImages,
     },
-    /// Inserts a new stroke to the store
-    /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
-    InsertStroke { stroke: Stroke },
     /// indicates that the application is quitting. Usually handled to quit the async loop which receives the tasks
     Quit,
 }
@@ -130,7 +126,7 @@ impl RnoteEngine {
         self.tasks_tx.clone()
     }
 
-    pub fn update_rendering_for_viewport(&mut self) {
+    pub fn update_rendering_current_viewport(&mut self) {
         let viewport = self.camera.viewport();
         let image_scale = self.camera.image_scale();
 
@@ -212,8 +208,6 @@ impl RnoteEngine {
     /// ```
     /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
     pub fn process_received_task(&mut self, task: EngineTask) -> SurfaceFlags {
-        let viewport_expanded = self.camera.viewport();
-        let image_scale = self.camera.image_scale();
         let mut surface_flags = SurfaceFlags::default();
 
         match task {
@@ -235,63 +229,6 @@ impl RnoteEngine {
 
                 surface_flags.redraw = true;
                 surface_flags.store_changed = true;
-            }
-            EngineTask::InsertStroke { stroke } => {
-                self.store.record();
-
-                match stroke {
-                    Stroke::BrushStroke(brushstroke) => {
-                        let _inserted = self.store.insert_stroke(Stroke::BrushStroke(brushstroke));
-
-                        self.resize_autoexpand();
-
-                        surface_flags.redraw = true;
-                        surface_flags.store_changed = true;
-                    }
-                    Stroke::ShapeStroke(shapestroke) => {
-                        let _inserted = self.store.insert_stroke(Stroke::ShapeStroke(shapestroke));
-
-                        self.resize_autoexpand();
-
-                        surface_flags.redraw = true;
-                        surface_flags.store_changed = true;
-                    }
-                    Stroke::VectorImage(vectorimage) => {
-                        let inserted = self.store.insert_stroke(Stroke::VectorImage(vectorimage));
-                        self.store.set_selected(inserted, true);
-
-                        surface_flags.merge_with_other(self.handle_penholder_event(
-                            PenHolderEvent::ChangeStyle(PenStyle::Selector),
-                        ));
-
-                        self.resize_to_fit_strokes();
-                        self.update_selector();
-
-                        surface_flags.redraw = true;
-                        surface_flags.store_changed = true;
-                    }
-                    Stroke::BitmapImage(bitmapimage) => {
-                        let inserted = self.store.insert_stroke(Stroke::BitmapImage(bitmapimage));
-                        self.store.set_selected(inserted, true);
-
-                        surface_flags.merge_with_other(self.handle_penholder_event(
-                            PenHolderEvent::ChangeStyle(PenStyle::Selector),
-                        ));
-
-                        self.resize_to_fit_strokes();
-                        self.update_selector();
-
-                        surface_flags.redraw = true;
-                        surface_flags.store_changed = true;
-                    }
-                }
-
-                self.store.regenerate_rendering_in_viewport_threaded(
-                    self.tasks_tx(),
-                    false,
-                    viewport_expanded,
-                    image_scale,
-                );
             }
             EngineTask::Quit => {
                 surface_flags.quit = true;
@@ -523,8 +460,8 @@ impl RnoteEngine {
     }
 
     /// Opens a  Xournal++ .xopp file, and replaces the current state with it.
-    pub fn open_from_xopp_bytes(&mut self, bytes: &[u8]) -> anyhow::Result<()> {
-        let xopp_file = xoppformat::XoppFile::load_from_bytes(bytes)?;
+    pub fn open_from_xopp_bytes(&mut self, bytes: Vec<u8>) -> anyhow::Result<()> {
+        let xopp_file = xoppformat::XoppFile::load_from_bytes(&bytes)?;
 
         // Extract the largest width of all sheets, add together all heights
         let (sheet_width, sheet_height) = xopp_file
@@ -616,35 +553,117 @@ impl RnoteEngine {
         Ok(())
     }
 
-    pub fn import_vectorimage_bytes(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
-        self.store
-            .insert_vectorimage_bytes_threaded(self.tasks_tx(), pos, bytes);
+    //// generates a vectorimage for the bytes ( from a SVG file )
+    pub fn generate_vectorimage_from_bytes(
+        &self,
+        pos: na::Vector2<f64>,
+        bytes: Vec<u8>,
+    ) -> oneshot::Receiver<anyhow::Result<VectorImage>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<VectorImage>>();
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<VectorImage> {
+                let svg_str = String::from_utf8(bytes)?;
+
+                VectorImage::import_from_svg_data(&svg_str, pos, None)
+            };
+
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in generate_vectorimage_from_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        oneshot_receiver
     }
 
-    pub fn import_bitmapimage_bytes(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
-        self.store
-            .insert_bitmapimage_bytes_threaded(self.tasks_tx(), pos, bytes);
+    //// generates a bitmapimage for the bytes ( from a bitmap image file (PNG, JPG) )
+    pub fn generate_bitmapimage_from_bytes(
+        &self,
+        pos: na::Vector2<f64>,
+        bytes: Vec<u8>,
+    ) -> oneshot::Receiver<anyhow::Result<BitmapImage>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<BitmapImage>>();
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<BitmapImage> {
+                BitmapImage::import_from_image_bytes(&bytes, pos)
+            };
+
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in generate_bitmapimage_from_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        oneshot_receiver
     }
 
-    pub fn import_pdf_bytes(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
+    //// generates strokes for each page for the bytes ( from a PDF file )
+    pub fn generate_strokes_from_pdf_bytes(
+        &self,
+        pos: na::Vector2<f64>,
+        bytes: Vec<u8>,
+    ) -> oneshot::Receiver<anyhow::Result<Vec<Stroke>>> {
+        let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Stroke>>>();
+
         let page_width = (f64::from(self.sheet.format.width) * (self.pdf_import_width_perc / 100.0))
             .round() as i32;
 
-        if self.pdf_import_as_vector {
-            self.store.insert_pdf_bytes_as_vector_threaded(
-                self.tasks_tx(),
-                pos,
-                Some(page_width),
-                bytes,
-            );
-        } else {
-            self.store.insert_pdf_bytes_as_bitmap_threaded(
-                self.tasks_tx(),
-                pos,
-                Some(page_width),
-                bytes,
-            );
+        let pdf_import_as_vector = self.pdf_import_as_vector;
+
+        rayon::spawn(move || {
+            let result = || -> anyhow::Result<Vec<Stroke>> {
+                if pdf_import_as_vector {
+                    let vectorimages =
+                        VectorImage::import_from_pdf_bytes(&bytes, pos, Some(page_width))?
+                            .into_iter()
+                            .map(|vectorimage| Stroke::VectorImage(vectorimage))
+                            .collect::<Vec<Stroke>>();
+                    Ok(vectorimages)
+                } else {
+                    let bitmapimages =
+                        BitmapImage::import_from_pdf_bytes(&bytes, pos, Some(page_width))?
+                            .into_iter()
+                            .map(|vectorimage| Stroke::BitmapImage(vectorimage))
+                            .collect::<Vec<Stroke>>();
+                    Ok(bitmapimages)
+                }
+            };
+
+            if let Err(_data) = oneshot_sender.send(result()) {
+                log::error!("sending result to receiver in import_pdf_bytes() failed. Receiver already dropped.");
+            }
+        });
+
+        oneshot_receiver
+    }
+
+    pub fn import_generated_strokes(&mut self, strokes: Vec<Stroke>) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+        self.store.record();
+
+        let all_strokes = self.store.keys_unordered();
+        self.store.set_selected_keys(&all_strokes, false);
+
+        for stroke in strokes {
+            let inserted = self.store.insert_stroke(stroke);
+            self.store.set_selected(inserted, true);
         }
+
+        self.resize_to_fit_strokes();
+        self.update_selector();
+
+        surface_flags.merge_with_other(
+            self.handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector)),
+        );
+
+        self.update_rendering_current_viewport();
+
+        surface_flags.redraw = true;
+        surface_flags.resize = true;
+        surface_flags.store_changed = true;
+        surface_flags.penholder_changed = true;
+
+        surface_flags
     }
 
     /// Exports the sheet with the strokes as a SVG string. Excluding the current selection.

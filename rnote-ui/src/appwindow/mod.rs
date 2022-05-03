@@ -45,6 +45,7 @@ mod imp {
         pub app_settings: gio::Settings,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
         pub autosave_source_id: Rc<RefCell<Option<glib::SourceId>>>,
+        pub progresspulse_source_id: Rc<RefCell<Option<glib::SourceId>>>,
 
         pub unsaved_changes: Cell<bool>,
         pub autosave: Cell<bool>,
@@ -117,6 +118,7 @@ mod imp {
                 app_settings: gio::Settings::new(config::APP_ID),
                 filechoosernative: Rc::new(RefCell::new(None)),
                 autosave_source_id: Rc::new(RefCell::new(None)),
+                progresspulse_source_id: Rc::new(RefCell::new(None)),
 
                 unsaved_changes: Cell::new(false),
                 autosave: Cell::new(true),
@@ -992,9 +994,29 @@ impl RnoteAppWindow {
         }
     }
 
+    pub fn start_pulsing_canvas_progressbar(&self) {
+        const PROGRESS_BAR_PULSE_INTERVAL: std::time::Duration =
+            std::time::Duration::from_millis(300);
+
+        if let Some(old_pulse_source) = self.imp().progresspulse_source_id.replace(Some(glib::source::timeout_add_local(
+            PROGRESS_BAR_PULSE_INTERVAL,
+            clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+                appwindow.canvas_progressbar().pulse();
+
+                glib::source::Continue(true)
+            })),
+        )) {
+            old_pulse_source.remove();
+        }
+    }
+
     pub fn finish_canvas_progressbar(&self) {
         const PROGRESS_BAR_TIMEOUT_TIME: std::time::Duration =
             std::time::Duration::from_millis(300);
+
+        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
+            pulse_source.remove();
+        }
 
         self.canvas_progressbar().set_fraction(1.0);
 
@@ -1007,6 +1029,10 @@ impl RnoteAppWindow {
     }
 
     pub fn abort_canvas_progressbar(&self) {
+        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
+            pulse_source.remove();
+        }
+
         self.canvas_progressbar().set_fraction(0.0);
     }
 
@@ -1059,10 +1085,9 @@ impl RnoteAppWindow {
         match utils::FileType::lookup_file_type(&file) {
             utils::FileType::RnoteFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.canvas_progressbar().pulse();
+                    appwindow.start_pulsing_canvas_progressbar();
 
                     let result = file.load_bytes_future().await;
-                    appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_rnote_bytes(file_bytes.to_vec(), file.path()).await {
@@ -1079,10 +1104,9 @@ impl RnoteAppWindow {
             }
             utils::FileType::XoppFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.canvas_progressbar().pulse();
+                    appwindow.start_pulsing_canvas_progressbar();
 
                     let result = file.load_bytes_future().await;
-                    appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec(), file.path()) {
@@ -1099,10 +1123,9 @@ impl RnoteAppWindow {
             }
             utils::FileType::VectorImageFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.canvas_progressbar().pulse();
+                    appwindow.start_pulsing_canvas_progressbar();
 
                     let result = file.load_bytes_future().await;
-                    appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos).await {
@@ -1119,10 +1142,9 @@ impl RnoteAppWindow {
             }
             utils::FileType::BitmapImageFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.canvas_progressbar().pulse();
+                    appwindow.start_pulsing_canvas_progressbar();
 
                     let result = file.load_bytes_future().await;
-                    appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos).await {
@@ -1139,10 +1161,9 @@ impl RnoteAppWindow {
             }
             utils::FileType::PdfFile => {
                 main_cx.spawn_local(clone!(@strong self as appwindow => async move {
-                    appwindow.canvas_progressbar().pulse();
+                    appwindow.start_pulsing_canvas_progressbar();
 
                     let result = file.load_bytes_future().await;
-                    appwindow.canvas_progressbar().pulse();
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos).await {

@@ -288,7 +288,7 @@ pub fn dialog_save_sheet_as(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_progressbar().pulse();
+                            appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.save_sheet_to_file(&file).await {
                                 appwindow.canvas().set_output_file(None);
@@ -390,7 +390,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_selection.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_progressbar().pulse();
+                            appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_selection_as_svg(&file).await {
                                 log::error!("exporting selection failed with error `{}`", e);
@@ -439,7 +439,7 @@ pub fn dialog_export_sheet_as_svg(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_progressbar().pulse();
+                            appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_sheet_as_svg(&file).await {
                                 log::error!("exporting sheet failed with error `{}`", e);
@@ -490,7 +490,7 @@ pub fn dialog_export_sheet_as_pdf(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow, @strong file => async move {
-                            appwindow.canvas_progressbar().pulse();
+                            appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_sheet_as_pdf(&file).await {
                                 log::error!("export_sheet_as_pdf() failed in export dialog with Err {}", e);
@@ -541,7 +541,7 @@ pub fn dialog_export_sheet_as_xopp(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_sheet.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_progressbar().pulse();
+                            appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_sheet_as_xopp(&file).await {
                                 log::error!("exporting sheet as .xopp failed, replace_file_async failed with Err {}", e);
@@ -595,7 +595,7 @@ pub fn dialog_export_engine_state(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_engine_state.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_progressbar().pulse();
+                            appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_engine_state(&file).await {
                                 log::error!("exporting engine state failed with error `{}`", e);
@@ -649,7 +649,7 @@ pub fn dialog_export_engine_config(appwindow: &RnoteAppWindow) {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_export_engine_config.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                            appwindow.canvas_progressbar().pulse();
+                            appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_engine_config(&file).await {
                                 log::error!("exporting engine state failed with error `{}`", e);

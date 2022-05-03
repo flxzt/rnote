@@ -1113,7 +1113,7 @@ impl RnoteAppWindow {
             // check again if a file was selected from the dialog
             if let Some(output_file) = appwindow.canvas().output_file() {
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                    appwindow.canvas_progressbar().pulse();
+                    appwindow.start_pulsing_canvas_progressbar();
 
                     if let Err(e) = appwindow.save_sheet_to_file(&output_file).await {
                         appwindow.canvas().set_output_file(None);
@@ -1135,7 +1135,7 @@ impl RnoteAppWindow {
 
         // Print sheet
         action_print_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            appwindow.canvas_progressbar().pulse();
+            appwindow.start_pulsing_canvas_progressbar();
 
             let print_op = PrintOperation::builder()
                 .unit(Unit::Points)
@@ -1151,8 +1151,6 @@ impl RnoteAppWindow {
             let sheet_bounds = appwindow.canvas().engine().borrow().sheet.bounds();
 
             print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
-                appwindow.canvas_progressbar().pulse();
-
                 let cx = print_cx.cairo_context();
 
                 if let Err(e) = || -> anyhow::Result<()> {

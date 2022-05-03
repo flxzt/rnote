@@ -910,7 +910,7 @@ impl RnoteEngine {
     }
 
     /// Draws the entire engine (sheet, pens, strokes, selection, ..) on a GTK snapshot.
-    pub fn draw(&self, snapshot: &Snapshot, _surface_bounds: AABB) -> anyhow::Result<()> {
+    pub fn draw(&self, snapshot: &Snapshot, surface_bounds: AABB) -> anyhow::Result<()> {
         let sheet_bounds = self.sheet.bounds();
         let viewport = self.camera.viewport();
 
@@ -970,10 +970,14 @@ impl RnoteEngine {
 
         // visual debugging
         if self.visual_debug {
-            visual_debug::draw_debug(self, snapshot, 1.0 / self.camera.total_zoom());
+            visual_debug::draw_debug(snapshot, self, surface_bounds)?;
         }
 
         snapshot.restore();
+
+        if self.visual_debug {
+            visual_debug::draw_statistics_overlay(snapshot, self, surface_bounds)?;
+        }
 
         Ok(())
     }
@@ -983,6 +987,8 @@ impl RnoteEngine {
 pub mod visual_debug {
     use gtk4::{gdk, graphene, gsk, Snapshot};
     use p2d::bounding_volume::{BoundingVolume, AABB};
+    use piet::{RenderContext, Text, TextLayoutBuilder};
+    use rnote_compose::helpers::Vector2Helpers;
 
     use crate::pens::eraser::EraserState;
     use crate::pens::penholder::PenStyle;
@@ -1087,9 +1093,61 @@ pub mod visual_debug {
     }
 
     // Draw bounds, positions, .. for visual debugging purposes
-    pub fn draw_debug(engine: &RnoteEngine, snapshot: &Snapshot, border_widths: f64) {
+    // Expects snapshot in surface coords
+    pub fn draw_statistics_overlay(
+        snapshot: &Snapshot,
+        engine: &RnoteEngine,
+        surface_bounds: AABB,
+    ) -> anyhow::Result<()> {
+        // A statistics overlay
+        {
+            let text_bounds = AABB::new(
+                na::point![
+                    surface_bounds.maxs[0] - 300.0,
+                    surface_bounds.mins[1] + 20.0
+                ],
+                na::point![surface_bounds.maxs[0], surface_bounds.mins[1] + 220.0],
+            );
+            let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(text_bounds));
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+            // Gather statistics
+            let strokes_total = engine.store.keys_unordered();
+            let strokes_in_viewport = engine
+                .store
+                .keys_unordered_intersecting_bounds(engine.camera.viewport());
+
+            let statistics_text_string = format!(
+                "strokes in store: \t{}\nstrokes in current viewport: \t{}",
+                strokes_total.len(),
+                strokes_in_viewport.len()
+            );
+
+            let text_layout = piet_cx
+                .text()
+                .new_text_layout(statistics_text_string)
+                .text_color(piet::Color::RED)
+                .max_width(500.0)
+                .alignment(piet::TextAlignment::End)
+                .font(piet::FontFamily::MONOSPACE, 8.0)
+                .build()
+                .map_err(|e| anyhow::anyhow!("{}", e))?;
+
+            piet_cx.draw_text(&text_layout, text_bounds.mins.coords.to_kurbo_point());
+            piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
+        }
+        Ok(())
+    }
+
+    // Draw bounds, positions, .. for visual debugging purposes
+    pub fn draw_debug(
+        snapshot: &Snapshot,
+        engine: &RnoteEngine,
+        surface_bounds: AABB,
+    ) -> anyhow::Result<()> {
         let viewport = engine.camera.viewport();
         let sheet_bounds = engine.sheet.bounds();
+        let border_widths = 1.0 / engine.camera.total_zoom();
 
         draw_bounds(sheet_bounds, COLOR_SHEET_BOUNDS, snapshot, border_widths);
 
@@ -1102,7 +1160,7 @@ pub mod visual_debug {
         );
 
         // Draw the strokes and selection
-        engine.store.draw_debug(snapshot, border_widths);
+        engine.store.draw_debug(snapshot, engine, surface_bounds)?;
 
         // Draw the pens
         let current_pen_style = engine.penholder.style_w_override();
@@ -1129,5 +1187,7 @@ pub mod visual_debug {
             }
             PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools => {}
         }
+
+        Ok(())
     }
 }

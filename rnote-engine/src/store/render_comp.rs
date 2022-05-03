@@ -4,14 +4,14 @@ use crate::engine::{EngineTask, EngineTaskSender};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::StrokeBehaviour;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{render, DrawBehaviour};
+use crate::{render, DrawBehaviour, RnoteEngine};
 
 use anyhow::Context;
 use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::color;
 use rnote_compose::shapes::ShapeBehaviour;
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
     Complete,
     ForViewport(AABB),
@@ -542,7 +542,14 @@ impl StrokeStore {
     }
 
     /// Draws bounds, positions, etc. for all strokes for visual debugging
-    pub fn draw_debug(&self, snapshot: &Snapshot, border_widths: f64) {
+    pub fn draw_debug(
+        &self,
+        snapshot: &Snapshot,
+        engine: &RnoteEngine,
+        _surface_bounds: AABB,
+    ) -> anyhow::Result<()> {
+        let border_widths = 1.0 / engine.camera.total_zoom();
+
         self.keys_sorted_chrono().into_iter().for_each(|key| {
             if let Some(stroke) = self.stroke_components.get(key) {
                 // Push opacity for strokes which are normally hidden
@@ -612,5 +619,7 @@ impl StrokeStore {
                 }
             }
         });
+
+        Ok(())
     }
 }

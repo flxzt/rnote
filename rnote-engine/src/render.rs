@@ -132,7 +132,7 @@ impl From<image::DynamicImage> for Image {
 
         Self {
             data,
-            rect: Rectangle::from_bounds(bounds),
+            rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width,
             pixel_height,
             memory_format,
@@ -412,7 +412,7 @@ impl Image {
 
         Ok(Some(Self {
             data,
-            rect: Rectangle::from_bounds(bounds),
+            rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width,
             pixel_height: height,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
@@ -501,7 +501,7 @@ impl Image {
 
         Ok(Self {
             data,
-            rect: Rectangle::from_bounds(bounds),
+            rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width_scaled,
             pixel_height: height_scaled,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
@@ -567,7 +567,7 @@ impl Image {
 
         Ok(Image {
             data,
-            rect: Rectangle::from_bounds(bounds),
+            rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: splitted_width_scaled,
             pixel_height: splitted_height_scaled,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,

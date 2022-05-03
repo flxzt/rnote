@@ -989,6 +989,7 @@ pub mod visual_debug {
     use p2d::bounding_volume::{BoundingVolume, AABB};
     use piet::{RenderContext, Text, TextLayoutBuilder};
     use rnote_compose::helpers::Vector2Helpers;
+    use rnote_compose::shapes::Rectangle;
 
     use crate::pens::eraser::EraserState;
     use crate::pens::penholder::PenStyle;
@@ -1103,10 +1104,10 @@ pub mod visual_debug {
         {
             let text_bounds = AABB::new(
                 na::point![
-                    surface_bounds.maxs[0] - 300.0,
+                    surface_bounds.maxs[0] - 320.0,
                     surface_bounds.mins[1] + 20.0
                 ],
-                na::point![surface_bounds.maxs[0], surface_bounds.mins[1] + 220.0],
+                na::point![surface_bounds.maxs[0] - 20.0, surface_bounds.mins[1] + 80.0],
             );
             let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(text_bounds));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
@@ -1118,7 +1119,7 @@ pub mod visual_debug {
                 .keys_unordered_intersecting_bounds(engine.camera.viewport());
 
             let statistics_text_string = format!(
-                "strokes in store: \t{}\nstrokes in current viewport: \t{}",
+                "strokes in store:   {}\nstrokes in current viewport:   {}",
                 strokes_total.len(),
                 strokes_in_viewport.len()
             );
@@ -1126,14 +1127,22 @@ pub mod visual_debug {
             let text_layout = piet_cx
                 .text()
                 .new_text_layout(statistics_text_string)
-                .text_color(piet::Color::RED)
+                .text_color(piet::Color::rgba(0.8, 1.0, 1.0, 1.0))
                 .max_width(500.0)
                 .alignment(piet::TextAlignment::End)
-                .font(piet::FontFamily::MONOSPACE, 8.0)
+                .font(piet::FontFamily::MONOSPACE, 10.0)
                 .build()
                 .map_err(|e| anyhow::anyhow!("{}", e))?;
 
-            piet_cx.draw_text(&text_layout, text_bounds.mins.coords.to_kurbo_point());
+            piet_cx.fill(
+                Rectangle::from_p2d_aabb(text_bounds).to_kurbo(),
+                &piet::Color::rgba(0.1, 0.1, 0.1, 0.9),
+            );
+
+            piet_cx.draw_text(
+                &text_layout,
+                (text_bounds.mins.coords + na::vector![20.0, 10.0]).to_kurbo_point(),
+            );
             piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
         }
         Ok(())

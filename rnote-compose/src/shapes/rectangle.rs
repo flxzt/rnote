@@ -68,7 +68,7 @@ impl TransformBehaviour for Rectangle {
 
 impl Rectangle {
     /// New from bounds
-    pub fn from_bounds(mut bounds: AABB) -> Self {
+    pub fn from_p2d_aabb(mut bounds: AABB) -> Self {
         bounds.ensure_positive();
         let cuboid = p2d::shape::Cuboid::new(bounds.half_extents());
         let transform = Transform::new_w_isometry(na::Isometry2::new(bounds.center().coords, 0.0));

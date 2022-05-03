@@ -37,7 +37,7 @@ impl Default for Camera {
 }
 
 impl Camera {
-    pub const ZOOM_MIN: f64 = 0.3;
+    pub const ZOOM_MIN: f64 = 0.2;
     pub const ZOOM_MAX: f64 = 6.0;
     pub const ZOOM_DEFAULT: f64 = 1.0;
 

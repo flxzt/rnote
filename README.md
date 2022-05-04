@@ -11,6 +11,7 @@
     </a>
 </div><br>
 
+
 # Rnote
 > Sketch and take handwritten notes.  
 
@@ -27,6 +28,7 @@ Rnote is available as a flatpak on Flathub:
 <br><div align="start">
 <a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="256" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 </div><br>
+
 
 ### Downgrading
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
@@ -85,6 +87,7 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
         <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" height="400">
         <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" height="400">
 </div><br>
+
 
 # Building, contributing
 Build instructions and guidelines how to contribute are outlined in [CONTRIBUTING.md](./CONTRIBUTING.md)

@@ -24,41 +24,39 @@ use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
 
-/*
-StrokeStore implements a Entity - Component - System pattern.
-The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
-    * 'stroke_components': Hold geometric data. These components are special in that they are the primary map. A new stroke must have this component. (could also be called geometric components)
-    * 'trash_components': Hold state wether the strokes are trashed
-    * 'selection_components': Hold state wether the strokes are selected
-    * 'chrono_components': Hold state about the time, chronological ordering
-    * 'render_components': Hold state about the current rendering of the strokes.
-
-The systems are implemented as methods on StrokesStore, loosely categorized to the different components (but often modify others as well).
-Most systems take a key or a slice of keys, and iterate with them over the different components.
-There also is a different category of methods which return filtered keys, e.g. `.keys_sorted_chrono` returns the keys in chronological ordering,
-    `.stroke_keys_in_order_rendering` filters and returns keys in the order which they should be rendered.
-*/
+/// StrokeStore implements a Entity - Component - System pattern.
+/// The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
+///     * 'stroke_components': Hold geometric data. These components are special in that they are the primary map. A new stroke must have this component. (could also be called geometric components)
+///     * 'trash_components': Hold state wether the strokes are trashed
+///     * 'selection_components': Hold state wether the strokes are selected
+///     * 'chrono_components': Hold state about the chronological ordering
+///     * 'render_components': Hold state about the current rendering of the strokes.
+///
+/// The systems are implemented as methods on StrokesStore, loosely categorized to the different components (but often modify others as well).
+/// Most systems take a key or a slice of keys, and iterate with them over the different components.
+/// There also is a different category of methods which return filtered keys, (e.g. `.keys_sorted_chrono` returns the keys in chronological ordering,
+///     `.stroke_keys_in_order_rendering` filters and returns keys in the order which they should be rendered)
 
 #[derive(Debug, Clone)]
 /// A store task, usually coming from a spawned thread and to be processed with `process_received_task()`.
 pub enum StoreTask {
     /// Replace the images of the render_comp.
     /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid large queues of already outdated rendering tasks.
+    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
     UpdateStrokeWithImages {
         key: StrokeKey,
         images: GeneratedStrokeImages,
     },
     /// Appends the images to the rendering of the stroke
     /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid large queues of already outdated rendering tasks.
+    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
     AppendImagesToStroke {
         key: StrokeKey,
         images: GeneratedStrokeImages,
     },
     /// Inserts a new stroke to the store
     /// Note that usually the state of the render component should be set **before** spawning a thread, generating images and sending this task,
-    /// to avoid large queues of already outdated rendering tasks.
+    /// to avoid spawning large amounts of already outdated rendering tasks when checking the render component state on resize / zooming, etc.
     InsertStroke { stroke: Stroke },
     /// indicates that the application is quitting. Usually handled to quit the async loop which receives the tasks
     Quit,
@@ -106,12 +104,12 @@ pub struct StrokeStore {
     #[serde(skip)]
     history_pos: Option<usize>,
 
-    // A rtree backed by the slotmap, for faster spatial queries. Needs to be updated with update_with_key() when strokes changed their geometry of position!
+    // A rtree backed by the slotmap, for faster spatial queries. Needs to be updated with update_with_key() when strokes changed their geometry or position!
     #[serde(skip)]
     key_tree: KeyTree,
 
     // Other state
-    /// value is equal chrono_component of the newest inserted or modified stroke.
+    /// incrementing counter for chrono_components. value is equal chrono_component of the newest inserted or modified stroke.
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
 
@@ -159,8 +157,8 @@ impl StrokeStore {
         Self::default()
     }
 
-    /// A new strokes state should always be imported with this method, to not replace the threadpool, channel handlers..
-    /// needs rendering regeneration after calling
+    /// imports a store. A loaded strokes store should always be imported with this method, to not replace the threadpool, channel handlers..
+    /// stroke then needs to update its rendering
     pub fn import_store(&mut self, store: Self) {
         self.clear();
         self.stroke_components = store.stroke_components;
@@ -174,6 +172,7 @@ impl StrokeStore {
         self.reload_render_components_slotmap();
     }
 
+    /// Reloads the rtree with the current bounds of the strokes.
     pub fn reload_tree(&mut self) {
         let tree_objects = self
             .stroke_components
@@ -183,6 +182,7 @@ impl StrokeStore {
         self.key_tree.reload_with_vec(tree_objects);
     }
 
+    /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
     pub(crate) fn process_received_task(
         &mut self,
         task: StoreTask,
@@ -268,6 +268,7 @@ impl StrokeStore {
         surface_flags
     }
 
+    /// Returns true if the current state is pointer equal to the given history entry
     fn ptr_eq_history(&self, history_entry: &Arc<HistoryEntry>) -> bool {
         Arc::ptr_eq(&self.stroke_components, &history_entry.strokes)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
@@ -278,6 +279,7 @@ impl StrokeStore {
             && Arc::ptr_eq(&self.chrono_components, &history_entry.chrono_components)
     }
 
+    /// Returns a history entry created from the current state
     fn history_entry_from_current_state(&self) -> Arc<HistoryEntry> {
         Arc::new(HistoryEntry {
             strokes: Arc::clone(&self.stroke_components),
@@ -287,11 +289,19 @@ impl StrokeStore {
         })
     }
 
+    /// Imports a given history entry and replaces the current state with it.
     fn import_history_entry(&mut self, history_entry: &Arc<HistoryEntry>) {
         self.stroke_components = Arc::clone(&history_entry.strokes);
         self.trash_components = Arc::clone(&history_entry.trash_components);
         self.selection_components = Arc::clone(&history_entry.selection_components);
         self.chrono_components = Arc::clone(&history_entry.chrono_components);
+
+        // Since we don't store the tree in the history, we need to reload it.
+        self.reload_tree();
+        // render_components are also not stored in the history, but for the duration of the running app we don't ever remove from render_components,
+        // so we can actually skip rebuilding it when importing a history entry. This avoids visual glitches where we have already rebuilt the components
+        // and can't display anything until the asynchronous rendering is finished
+        //self.reload_render_components_slotmap();
     }
 
     /// Saves the current state in the history
@@ -352,7 +362,7 @@ impl StrokeStore {
     }
 
     fn simple_style_record(&mut self) {
-        // as soon as changes are made, remove the future
+        // as soon as the current state is recorded, remove the future
         self.history.truncate(
             self.history_pos
                 .map(|pos| pos + 1)
@@ -394,8 +404,6 @@ impl StrokeStore {
             self.import_history_entry(&prev);
 
             self.history_pos = Some(index - 1);
-
-            self.reload_tree();
         } else {
             log::debug!("no history, can't undo");
         }
@@ -409,8 +417,6 @@ impl StrokeStore {
             self.import_history_entry(&next);
 
             self.history_pos = Some(index + 1);
-
-            self.reload_tree();
         } else {
             log::debug!("no future history entries, can't redo");
         }
@@ -440,7 +446,7 @@ impl StrokeStore {
     }
 
     /// emacs style undo, where the undo operation is pushed to the history as well.
-    /// Needs rendering regeneration after calling
+    /// after that, regenerate rendering for the current viewport.
     /// Only to be used in combination with emacs_style_break_undo_chain() and emacs_style_record()
     #[allow(unused)]
     fn emacs_style_undo(&mut self) {
@@ -454,12 +460,6 @@ impl StrokeStore {
 
             self.import_history_entry(&prev);
             self.history_pos = Some(index - 1);
-
-            // Since we don't store the tree in the history, we rebuild them everytime we undo
-            self.reload_tree();
-            // render_components are also not stored in the history, but for the duration of the running app we don't ever remove from render_components, so we can actually skip rebuilding it on undo.
-            // Avoids visual glitches where we have already rebuilt the components and can't display anything until the asynchronous rendering is finished
-            //self.reload_render_components_slotmap();
         } else {
             log::debug!("no history, can't undo");
         }
@@ -478,7 +478,8 @@ impl StrokeStore {
         self.history_pos = None;
     }
 
-    /// Needs rendering regeneration after calling
+    /// inserts a new stroke into the store
+    /// stroke then needs to update its rendering
     pub fn insert_stroke(&mut self, stroke: Stroke) -> StrokeKey {
         let bounds = stroke.bounds();
 
@@ -509,7 +510,7 @@ impl StrokeStore {
             .map(|stroke| (*stroke).clone())
     }
 
-    /// Clears every stroke and every component
+    /// Clears the entire store
     pub fn clear(&mut self) {
         Arc::make_mut(&mut self.stroke_components).clear();
         Arc::make_mut(&mut self.trash_components).clear();

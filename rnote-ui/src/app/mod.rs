@@ -19,6 +19,8 @@ use crate::{
 };
 
 mod imp {
+    use rnote_engine::pens::shaper::ShaperConstraintRatio;
+
     use super::*;
     #[allow(missing_debug_implementations)]
     pub struct RnoteApp {

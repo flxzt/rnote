@@ -147,10 +147,7 @@ impl Sheet {
 
     pub fn draw_shadow(&self, snapshot: &Snapshot) {
         let shadow_width = Self::SHADOW_WIDTH;
-        let bounds = self
-            .bounds();
-            //.extend_by(-Self::SHADOW_OFFSET)
-            //.translate(Self::SHADOW_OFFSET);
+        let bounds = self.bounds();
 
         let corner_radius =
             graphene::Size::new(shadow_width as f32 / 4.0, shadow_width as f32 / 4.0);

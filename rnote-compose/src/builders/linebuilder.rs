@@ -17,6 +17,8 @@ pub struct LineBuilder {
     pub start: na::Vector2<f64>,
     /// the current position
     pub current: na::Vector2<f64>,
+
+    ratio: ConstraintRatio,
 }
 
 impl ShapeBuilderCreator for LineBuilder {
@@ -24,6 +26,7 @@ impl ShapeBuilderCreator for LineBuilder {
         Self {
             start: element.pos,
             current: element.pos,
+            ratio,
         }
     }
 }
@@ -35,10 +38,7 @@ impl ShapeBuilderBehaviour for LineBuilder {
                 self.current = element.pos;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Line(Line {
-                    start: self.start,
-                    end: self.current,
-                })]);
+                return BuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}
@@ -69,7 +69,7 @@ impl LineBuilder {
     pub fn state_as_line(&self) -> Line {
         Line {
             start: self.start,
-            end: self.current,
+            end: self.ratio.constrain(self.current - self.start) + self.start,
         }
     }
 }

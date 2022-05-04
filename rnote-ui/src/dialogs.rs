@@ -14,9 +14,7 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         .modal(true)
         .transient_for(appwindow)
         .program_name(config::APP_NAME_CAPITALIZED)
-        .comments(&gettext(
-            "A simple drawing application to create handwritten notes",
-        ))
+        .comments(&gettext("Sketch and take handwritten notes"))
         .logo_icon_name(config::APP_ID)
         .website(config::APP_WEBSITE)
         .authors(
@@ -159,14 +157,10 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
                     dialog_open_input_file.close();
 
                     if let Some(input_file) = appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().input_file().as_ref() {
-                        appwindow.canvas_progressbar().pulse();
-
                         if let Err(e) = appwindow.load_in_file(input_file, None) {
                             log::error!("failed to load in input file, {}", e);
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening file failed.").to_variant()));
                         }
-
-                        appwindow.finish_canvas_progressbar();
                         }
                     },
                 ResponseType::Apply => {
@@ -346,14 +340,10 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_import_file.file() {
-                        appwindow.canvas_progressbar().pulse();
-
                         if let Err(e) = appwindow.load_in_file(&file, None) {
                             log::error!("load_in_file() failed while import file, Err {}", e);
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Importing file failed.").to_variant()));
                         }
-
-                        appwindow.finish_canvas_progressbar();
                     }
                 }
                 _ => {

@@ -419,14 +419,8 @@ impl Image {
         }))
     }
 
-    // Public method to create an image from an svg
-    pub fn gen_image_from_svg(svg: Svg, bounds: AABB, image_scale: f64) -> anyhow::Result<Self> {
-        Self::gen_image_from_svg_resvg(svg, bounds, image_scale)
-    }
-
-    // With librsvg
-    #[allow(unused)]
-    fn gen_image_from_svg_librsvg(
+    // create an image from an svg (using librsvg )
+    pub fn gen_image_from_svg(
         svg: Svg,
         mut bounds: AABB,
         image_scale: f64,
@@ -439,7 +433,7 @@ impl Image {
         );
 
         bounds.ensure_positive();
-        bounds = bounds.ceil();
+        bounds = bounds.ceil().loosened(1.0);
         bounds.assert_valid()?;
 
         let width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
@@ -514,54 +508,6 @@ impl Image {
         })
     }
 
-    // With resvg
-    #[allow(unused)]
-    fn gen_image_from_svg_resvg(
-        svg: Svg,
-        mut bounds: AABB,
-        image_scale: f64,
-    ) -> anyhow::Result<Self> {
-        let svg_data = rnote_compose::utils::wrap_svg_root(
-            svg.svg_data.as_str(),
-            Some(bounds),
-            Some(bounds),
-            false,
-        );
-        let svg_tree = usvg::Tree::from_data(svg_data.as_bytes(), &USVG_OPTIONS.to_ref())?;
-
-        bounds.ensure_positive();
-        bounds = bounds.ceil();
-        bounds.assert_valid()?;
-
-        let splitted_width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;
-        let splitted_height_scaled = ((bounds.extents()[1]) * image_scale).round() as u32;
-        let offset = bounds.mins.coords - bounds.mins.coords;
-
-        let mut pixmap = tiny_skia::Pixmap::new(splitted_width_scaled, splitted_height_scaled)
-            .ok_or_else(|| {
-                anyhow::Error::msg("tiny_skia::Pixmap::new() failed in gen_image_from_svg_resvg()")
-            })?;
-
-        resvg::render(
-            &svg_tree,
-            usvg::FitTo::Original,
-            tiny_skia::Transform::from_translate(-offset[0] as f32, -offset[1] as f32)
-                .post_scale(image_scale as f32, image_scale as f32),
-            pixmap.as_mut(),
-        )
-        .ok_or_else(|| anyhow::Error::msg("resvg::render failed in gen_image_from_svg_resvg."))?;
-
-        let data = pixmap.data().to_vec();
-
-        Ok(Self {
-            data,
-            rect: Rectangle::from_bounds(bounds),
-            pixel_width: splitted_width_scaled,
-            pixel_height: splitted_height_scaled,
-            memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
-        })
-    }
-
     /// Renders an image with a function that draws onto a piet CairoRenderContext
     pub fn gen_with_piet(
         mut draw_func: impl FnMut(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
@@ -569,7 +515,7 @@ impl Image {
         image_scale: f64,
     ) -> anyhow::Result<Self> {
         bounds.ensure_positive();
-        bounds = bounds.ceil();
+        bounds = bounds.ceil().loosened(1.0);
         bounds.assert_valid()?;
 
         let splitted_width_scaled = ((bounds.extents()[0]) * image_scale).round() as u32;

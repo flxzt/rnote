@@ -19,7 +19,7 @@ pub struct RectangleBuilder {
     /// the current position
     pub current: na::Vector2<f64>,
 
-    pub ratio: ConstraintRatio,
+    ratio: ConstraintRatio,
 }
 
 impl ShapeBuilderCreator for RectangleBuilder {
@@ -27,7 +27,7 @@ impl ShapeBuilderCreator for RectangleBuilder {
         Self {
             start: element.pos,
             current: element.pos,
-            ratio: ConstraintRatio::Disabled,
+            ratio,
         }
     }
 }

@@ -222,8 +222,7 @@ impl TransformBehaviour for BrushStroke {
 }
 
 impl BrushStroke {
-    pub const HITBOX_DEFAULT: f64 = 10.0;
-    /// when one of the extents of the stroke is above the threshold, images are generated indivdually for the stroke segments (to avoid very large images)
+    /// when one of the extents of the stroke is above this threshold, images are generated seperately for each stroke segment (to avoid very large images)
     pub const IMAGES_SEGMENTS_THRESHOLD: f64 = 1000.0;
 
     pub fn new(segment: Segment, style: Style) -> Self {

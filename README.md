@@ -12,14 +12,14 @@
 </div><br>
 
 # Rnote
-A simple drawing application to create handwritten notes.  
+> Sketch and take handwritten notes.  
+
+Rnote is a simple vector-based drawing application for sketching, handwritten notes and to annotate documents and pictures.  
 Written in Rust and GTK4.
 
-Rnote aims to be a simple but functional note taking application for freehand drawing or annotating pictures or documents. It eventually should be able to import / export various media file formats.  
-One main consideration is that it is vector based, which should make it very flexible in editing and altering the contents.
-
 **Disclaimer**  
-This is my first Rust and GTK project and I am learning as I go along. Expect some bugs and crashes. Also, the file format is still unstable and will change between versions!
+This is my first Rust and GTK project and I am learning as I go along. Expect some bugs and crashes.  
+Also: The file format is still unstable. It might change and break compatibility between versions.
 
 ## Installation
 Rnote is available as a flatpak on Flathub:
@@ -76,38 +76,6 @@ So far breaking changes in the format happened in versions:
 - `v0.4.0`
 
 To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
-
-## To-Do
-- [x] switch geometry to [nalgebra](https://crates.io/crates/nalgebra) wherever possible. It can operate on f64 and has much more features than graphene.
-- [x] printing & PDF export
-- [x] PDF import ( as vector & bitmap )
-- [x] vector & bitmap picture import
-- [x] implement bezier curve stroke with variable stroke width
-    (see [Quadratic bezier offsetting with selective subdivision](https://microbians.com/math/Gabriel_Suchowolski_Quadratic_bezier_offsetting_with_selective_subdivision.pdf),
-    [Precise offsetting of bezier curves](https://blend2d.com/research/precise_offset_curves.pdf))
-- [x] Textured brush strokes with tweakable parameters
-- [x] Stroke elements drag tool: drag along parts of the selected strokes based on the proximity of a round pen tool
-- [x] strokes rotation
-- [x] parallelizing rendering and actions which affect many strokes.
-- [x] asychronous rendering
-- [ ] (partial) Xournal++ .xopp file import and export
-- [ ] (implemented: lines, rectangles, ellipses) drawing rough shapes by porting [rough.js](https://roughjs.com/) to Rust
-- [ ] cancellable rendering
-- [ ] export as bitmap picture
-- [ ] text fields (Plain, Markdown)
-- [ ] optional stroke smoothing
-
-## Feature Ideas:
-* Stroke Layers
-* History list
-    * with the ability to move them up and down the history
-* Stroke trash restorer
-    *  with a preview of the deleted strokes
-* Stylus buttons configuration to map them to different actions and / or pen types 
-* Locked strokes: mode to toggle the mutability of strokes
-* Multiple sheet tabs
-* Share and synchronize sheets with others ( via e.g. the peer-2-peer protocol libp2p ).
-
 # Drawings created with Rnote
 
 If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  

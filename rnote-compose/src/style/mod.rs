@@ -10,7 +10,7 @@ pub mod textured;
 
 use crate::penpath::Segment;
 use crate::shapes::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
-use crate::PenPath;
+use crate::{PenPath, Shape};
 
 // Re exports
 use self::rough::RoughOptions;
@@ -174,6 +174,30 @@ impl Composer<Style> for PenPath {
             Style::Smooth(options) => self.draw_composed(cx, options),
             Style::Rough(options) => self.draw_composed(cx, options),
             Style::Textured(options) => self.draw_composed(cx, options),
+        }
+    }
+}
+
+impl Composer<Style> for Shape {
+    fn composed_bounds(&self, options: &Style) -> p2d::bounding_volume::AABB {
+        match self {
+            Shape::Line(line) => line.composed_bounds(options),
+            Shape::Rectangle(rectangle) => rectangle.composed_bounds(options),
+            Shape::Ellipse(ellipse) => ellipse.composed_bounds(options),
+            Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.composed_bounds(options),
+            Shape::CubicBezier(cubic_bezier) => cubic_bezier.composed_bounds(options),
+            Shape::Segment(segment) => segment.composed_bounds(options),
+        }
+    }
+
+    fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &Style) {
+        match self {
+            Shape::Line(line) => line.draw_composed(cx, options),
+            Shape::Rectangle(rectangle) => rectangle.draw_composed(cx, options),
+            Shape::Ellipse(ellipse) => ellipse.draw_composed(cx, options),
+            Shape::QuadraticBezier(quadratic_bezier) => quadratic_bezier.draw_composed(cx, options),
+            Shape::CubicBezier(cubic_bezier) => cubic_bezier.draw_composed(cx, options),
+            Shape::Segment(segment) => segment.draw_composed(cx, options),
         }
     }
 }

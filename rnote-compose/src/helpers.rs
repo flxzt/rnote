@@ -313,18 +313,8 @@ impl AABBHelpers for AABB {
         splitted_aabbs
     }
 
-    fn split_extended_origin_aligned(self, mut splitted_size: na::Vector2<f64>) -> Vec<Self> {
+    fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self> {
         let mut splitted_aabbs = Vec::new();
-
-        let width = self.extents()[0];
-        let height = self.extents()[1];
-
-        if width <= splitted_size[0] {
-            splitted_size[0] = width;
-        }
-        if height <= splitted_size[1] {
-            splitted_size[1] = height;
-        }
 
         let n_columns = (self.extents()[0] / splitted_size[0]).ceil() as u32;
         let n_rows = (self.extents()[1] / splitted_size[1]).ceil() as u32;

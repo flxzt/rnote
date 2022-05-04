@@ -125,10 +125,8 @@ impl TransformBehaviour for VectorImage {
 }
 
 impl VectorImage {
-    pub const SIZE_X_DEFAULT: f64 = 500.0;
-    pub const SIZE_Y_DEFAULT: f64 = 500.0;
-    pub const OFFSET_X_DEFAULT: f64 = 32.0;
-    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
+    /// The default offset in surface coords when importing a vector image
+    pub const IMPORT_OFFSET_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
 
     pub fn import_from_svg_data(
         svg_data: &str,
@@ -194,7 +192,8 @@ impl VectorImage {
                 };
 
                 let x = pos[0];
-                let y = pos[1] + f64::from(i) * (height + f64::from(Self::OFFSET_Y_DEFAULT) / 2.0);
+                let y = pos[1]
+                    + f64::from(i) * (height + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) / 2.0);
 
                 let svg_stream: Vec<u8> = vec![];
 

@@ -17,6 +17,8 @@ pub struct EllipseBuilder {
     pub start: na::Vector2<f64>,
     /// the current position
     pub current: na::Vector2<f64>,
+
+    ratio: ConstraintRatio,
 }
 
 impl ShapeBuilderCreator for EllipseBuilder {
@@ -24,6 +26,7 @@ impl ShapeBuilderCreator for EllipseBuilder {
         Self {
             start: element.pos,
             current: element.pos,
+            ratio,
         }
     }
 }
@@ -65,7 +68,7 @@ impl EllipseBuilder {
     /// The current state as rectangle
     pub fn state_as_ellipse(&self) -> Ellipse {
         let transform = Transform::new_w_isometry(na::Isometry2::new(self.start, 0.0));
-        let radii = (self.current - self.start).abs();
+        let radii = self.ratio.constrain(self.current - self.start).abs();
 
         Ellipse { radii, transform }
     }

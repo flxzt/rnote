@@ -20,9 +20,9 @@ pub enum EraserState {
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename = "eraser_style")]
 pub enum EraserStyle {
-    #[serde(rename = "trash_entire_stroke")]
+    #[serde(rename = "trash_colliding_strokes")]
     TrashCollidingStrokes,
-    #[serde(rename = "remove_stroke_segments")]
+    #[serde(rename = "split_colliding_strokes")]
     SplitCollidingStrokes,
 }
 

@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "bitmapimage")]
 pub struct BitmapImage {
-    // The bounds field of the image should not be used. Use rectangle.bounds() instead.
+    /// The bounds field of the image should not be used to determine the stroke bounds. Use rectangle.bounds() instead.
     #[serde(rename = "image")]
     pub image: render::Image,
     #[serde(rename = "rectangle")]
@@ -124,8 +124,8 @@ impl TransformBehaviour for BitmapImage {
 }
 
 impl BitmapImage {
-    pub const OFFSET_X_DEFAULT: f64 = 32.0;
-    pub const OFFSET_Y_DEFAULT: f64 = 32.0;
+    /// The default offset in surface coords when importing a bitmap image
+    pub const IMPORT_OFFSET_DEFAULT: na::Vector2<f64> = na::vector![32.0, 32.0];
 
     pub fn import_from_image_bytes(
         bytes: &[u8],
@@ -172,7 +172,8 @@ impl BitmapImage {
 
                 let x = pos[0];
                 let y = pos[1]
-                    + f64::from(i) * (f64::from(height) + f64::from(Self::OFFSET_Y_DEFAULT) / 2.0);
+                    + f64::from(i)
+                        * (f64::from(height) + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) / 2.0);
 
                 let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                     .map_err(|e| {

@@ -1031,11 +1031,13 @@ impl RnoteAppWindow {
 
                 if self.unsaved_changes() {
                     dialogs::dialog_open_overwrite(self);
-                } else if let Err(e) = self.load_in_file(file, target_pos) {
-                    log::error!(
-                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
-                        e
-                    );
+                } else {
+                    if let Err(e) = self.load_in_file(file, target_pos) {
+                        log::error!(
+                            "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
+                            e
+                        );
+                    }
                 }
             }
             utils::FileType::VectorImageFile
@@ -1069,7 +1071,11 @@ impl RnoteAppWindow {
         match utils::FileType::lookup_file_type(&file) {
             utils::FileType::RnoteFile => {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    appwindow.canvas_progressbar().pulse();
+
                     let result = file.load_bytes_future().await;
+                    appwindow.canvas_progressbar().pulse();
+
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_rnote_bytes(&file_bytes, file.path()) {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .rnote file failed.").to_variant()));
@@ -1079,11 +1085,17 @@ impl RnoteAppWindow {
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::XoppFile => {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    appwindow.canvas_progressbar().pulse();
+
                     let result = file.load_bytes_future().await;
+                    appwindow.canvas_progressbar().pulse();
+
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_xopp_bytes(&file_bytes, file.path()) {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .xopp file failed.").to_variant()));
@@ -1093,11 +1105,17 @@ impl RnoteAppWindow {
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::VectorImageFile => {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    appwindow.canvas_progressbar().pulse();
+
                     let result = file.load_bytes_future().await;
+                    appwindow.canvas_progressbar().pulse();
+
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_vectorimage_bytes(&file_bytes, target_pos) {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Vectorimage file failed.").to_variant()));
@@ -1107,11 +1125,17 @@ impl RnoteAppWindow {
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::BitmapImageFile => {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    appwindow.canvas_progressbar().pulse();
+
                     let result = file.load_bytes_future().await;
+                    appwindow.canvas_progressbar().pulse();
+
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_bitmapimage_bytes(&file_bytes, target_pos) {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Bitmapimage file failed.").to_variant()));
@@ -1121,11 +1145,17 @@ impl RnoteAppWindow {
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::PdfFile => {
                 main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                    appwindow.canvas_progressbar().pulse();
+
                     let result = file.load_bytes_future().await;
+                    appwindow.canvas_progressbar().pulse();
+
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_pdf_bytes(&file_bytes, target_pos) {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
@@ -1135,6 +1165,8 @@ impl RnoteAppWindow {
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::Folder => {
@@ -1225,7 +1257,7 @@ impl RnoteAppWindow {
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::point![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT])
+                * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
             .coords
         });
 
@@ -1261,7 +1293,7 @@ impl RnoteAppWindow {
 
         let pos = target_pos.unwrap_or_else(|| {
             (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::point![BitmapImage::OFFSET_X_DEFAULT, BitmapImage::OFFSET_Y_DEFAULT])
+                * na::Point2::from(BitmapImage::IMPORT_OFFSET_DEFAULT))
             .coords
         });
 
@@ -1294,11 +1326,6 @@ impl RnoteAppWindow {
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
-        let pos = target_pos.unwrap_or_else(|| {
-            (self.canvas().engine().borrow().camera.transform().inverse()
-                * na::point![VectorImage::OFFSET_X_DEFAULT, VectorImage::OFFSET_Y_DEFAULT])
-            .coords
-        });
         let page_width = (f64::from(self.canvas().engine().borrow().sheet.format.width)
             * (self.canvas().pdf_import_width() / 100.0))
             .round() as i32;
@@ -1311,12 +1338,24 @@ impl RnoteAppWindow {
         self.handle_surface_flags(surface_flags);
 
         if self.canvas().pdf_import_as_vector() {
+            let pos = target_pos.unwrap_or_else(|| {
+                (self.canvas().engine().borrow().camera.transform().inverse()
+                    * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
+                .coords
+            });
+
             self.canvas()
                 .engine()
                 .borrow_mut()
                 .store
                 .insert_pdf_bytes_as_vector_threaded(pos, Some(page_width), bytes.to_vec());
         } else {
+            let pos = target_pos.unwrap_or_else(|| {
+                (self.canvas().engine().borrow().camera.transform().inverse()
+                    * na::Point2::from(BitmapImage::IMPORT_OFFSET_DEFAULT))
+                .coords
+            });
+
             self.canvas()
                 .engine()
                 .borrow_mut()

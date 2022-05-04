@@ -1,4 +1,5 @@
 use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
+use adw::traits::ComboRowExt;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
     MenuButton, Popover, SpinButton, Switch,
@@ -8,6 +9,7 @@ use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
+
     use super::*;
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/shaperpage.ui")]
@@ -47,7 +49,7 @@ mod imp {
         #[template_child]
         pub shapebuildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub constraint_ratio_combo: TemplateChild<ComboRow>,
+        pub constraint_ratio_combo: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub shapebuildertype_line_row: TemplateChild<adw::ActionRow>,
         #[template_child]
@@ -199,18 +201,16 @@ impl ShaperPage {
         self.imp().shapebuildertype_fociellipse_row.get()
     }
 
-    pub fn constraint_ratio_combo(&self) -> ComboRow {
-        imp::ShaperPage::from_instance(self)
-            .constraint_ratio_combo
-            .get()
-    }
-
     pub fn shapebuildertype_quadbez_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_quadbez_row.get()
     }
 
     pub fn shapebuildertype_cubbez_row(&self) -> adw::ActionRow {
         self.imp().shapebuildertype_cubbez_row.get()
+    }
+
+    pub fn constraint_ratio_combo(&self) -> adw::ComboRow {
+        self.imp().constraint_ratio_combo.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -355,7 +355,7 @@ impl ShaperPage {
                     .downcast::<adw::EnumListItem>()
                     .unwrap()
                     .nick();
-                appwindow.canvas().pens().borrow_mut().shaper.ratio = nick.into();
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.ratio = nick.into();
             }),
         );
 

@@ -22,7 +22,7 @@ pub trait StrokeBehaviour: DrawBehaviour + ShapeBehaviour
 where
     Self: Sized,
 {
-    /// generates the svg, without the xml header or the svg root. used for export
+    /// generates the svg, without the xml header or the svg root. used for exporting.
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error>;
 
     /// generates pixel images for this stroke
@@ -33,6 +33,7 @@ where
         image_scale: f64,
     ) -> Result<GeneratedStrokeImages, anyhow::Error>;
 
+    /// Exporting as encoded image bytes (Png / Jpg, etc.)
     fn export_as_image_bytes(
         &self,
         format: image::ImageOutputFormat,

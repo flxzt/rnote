@@ -97,7 +97,7 @@ pub struct Shaper {
     pub rough_options: RoughOptions,
 
     #[serde(skip)]
-    ratio: ShaperConstraintRatio,
+    pub ratio: ShaperConstraintRatio,
     #[serde(skip)]
     state: ShaperState,
 }

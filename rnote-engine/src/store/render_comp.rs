@@ -207,7 +207,7 @@ impl StrokeStore {
         }
     }
 
-    /// Regenerates the rendering of all strokes that have the regenerate flag set, for the given viewport
+    /// Regenerates the rendering of all keys for the given viewport that need rerendering
     pub fn regenerate_rendering_in_viewport_threaded(
         &mut self,
         force_regenerate: bool,
@@ -235,7 +235,7 @@ impl StrokeStore {
                     return;
                 }
 
-                // only check if we dont force regeneration
+                // only check if rerendering is not forced
                 if !force_regenerate {
                     match render_comp.state {
                         RenderCompState::Complete => {
@@ -286,7 +286,7 @@ impl StrokeStore {
         })
     }
 
-    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes all rendering is regenerated
+    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completely
     pub fn append_rendering_last_segments(
         &mut self,
         key: StrokeKey,
@@ -317,7 +317,7 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes all rendering is regenerated
+    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completelyd
     #[allow(unused)]
     pub fn append_rendering_last_segments_threaded(
         &mut self,
@@ -359,7 +359,6 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// Not changing the regenerate flag, that is the responsibility of the caller
     pub fn replace_rendering_with_images(
         &mut self,
         key: StrokeKey,
@@ -384,7 +383,7 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// Not changing the regenerate flag, that is the responsibility of the caller
+    /// Not changing the render component state, that is the responsibility of the caller
     pub fn append_rendering_images(
         &mut self,
         key: StrokeKey,
@@ -460,13 +459,16 @@ impl StrokeStore {
             });
     }
 
-    fn draw_stroke_placeholder(snapshot: &Snapshot, bounds: AABB) {
+    /// Draws a placeholder for the given stroke bounds
+    fn draw_stroke_placeholder(snapshot: &Snapshot, stroke_bounds: AABB) {
         snapshot.append_color(
             &gdk::RGBA::from_piet_color(color::GNOME_BRIGHTS[1].with_a8(0x90)),
-            &graphene::Rect::from_p2d_aabb(bounds),
+            &graphene::Rect::from_p2d_aabb(stroke_bounds),
         );
     }
 
+    /// Draws the stroke on the piet context. In immediate mode, without the image cache.
+    /// Not drawing the selection
     pub fn draw_strokes_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
@@ -497,6 +499,7 @@ impl StrokeStore {
         Ok(())
     }
 
+    /// Draws the selection on the piet context. In immediate mode, without the image cache.
     pub fn draw_selection_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
@@ -527,6 +530,7 @@ impl StrokeStore {
         Ok(())
     }
 
+    /// Draws bounds, positions, etc. for all strokes for visual debugging
     pub fn draw_debug(&self, snapshot: &Snapshot, border_widths: f64) {
         self.keys_sorted_chrono().into_iter().for_each(|key| {
             if let Some(stroke) = self.stroke_components.get(key) {

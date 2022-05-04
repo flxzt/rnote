@@ -1169,14 +1169,14 @@ impl RnoteAppWindow {
             Ok(Some(selection_svg_data)) => {
                 let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(selection_svg_data.as_bytes()));
                 if let Err(e) = appwindow.clipboard().set_content(Some(&svg_content_provider)) {
-                    log::error!("copy selection into clipboard failed in clipboard().set_content(), {}", e);
+                    log::error!("set_content() failed in clipboard_copy_selection actino, Err {}", e);
                 }
             }
             Ok(None) => {
-                log::debug!("tried to copy empty selection into clipboard");
+                log::debug!("can't copy selection into clipboard. Is empty");
             }
             Err(e) => {
-                log::error!("copy selection into clipboard failed in gen_svg_selection(), {}", e);
+                log::error!("export_selection_as_svg_string() failed in clipboard_copy_selection action, Err {}", e);
             }
         }
     }));
@@ -1191,13 +1191,12 @@ impl RnoteAppWindow {
                                 match text_res {
                                     Ok(Some(text)) => {
                                         appwindow.load_in_vectorimage_bytes(text.as_bytes(), None).unwrap_or_else(|e| {
-                                            log::error!("failed to paste clipboard as VectorImage, load_in_vectorimage_bytes() returned Err, {}", e);
+                                            log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err, {}", e);
                                         });
                                     }
-                                    Ok(None) => {
-                                    }
+                                    Ok(None) => {}
                                     Err(e) => {
-                                        log::error!("failed to paste clipboard as VectorImage, text in callback is Err, {}", e);
+                                        log::error!("failed to paste clipboard as vector image, read_text_async() returned Err, {}", e);
 
                                     }
                                 }

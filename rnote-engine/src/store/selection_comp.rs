@@ -23,8 +23,7 @@ impl Default for SelectionComponent {
 }
 
 impl SelectionComponent {
-    pub const SELECTION_DUPLICATION_OFFSET_X: f64 = 20.0;
-    pub const SELECTION_DUPLICATION_OFFSET_Y: f64 = 20.0;
+    const SELECTION_DUPLICATION_OFFSET: na::Vector2<f64> = na::vector![20.0, 20.0];
 
     pub fn new(selected: bool) -> Self {
         Self { selected }
@@ -41,10 +40,6 @@ impl StrokeStore {
         if let Some(selection_comp) = self.selection_components.get(key) {
             Some(selection_comp.selected)
         } else {
-            log::debug!(
-                "get selection_comp in selected() returned None for stroke with key {:?}",
-                key
-            );
             None
         }
     }
@@ -58,11 +53,6 @@ impl StrokeStore {
             selection_comp.selected = selected;
 
             self.update_chrono_to_last(key);
-        } else {
-            log::debug!(
-                "get selection_comp in set_selected() returned None for stroke with key {:?}",
-                key
-            );
         }
     }
 
@@ -81,7 +71,8 @@ impl StrokeStore {
             .collect()
     }
 
-    /// Returns the selection keys in the order that they should be rendered. Does not return the stroke keys!
+    /// Returns the selection keys in the order that they should be rendered.
+    /// Does not return the not-selected stroke keys.
     pub fn selection_keys_as_rendered(&self) -> Vec<StrokeKey> {
         let keys_sorted_chrono = self.keys_sorted_chrono();
 
@@ -93,6 +84,8 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
+    /// Returns the selection keys in the order that they should be rendered that intersect the given bounds.
+    /// Does not return the not-selected stroke keys.
     pub fn selection_keys_as_rendered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(bounds)
             .into_iter()
@@ -102,20 +95,14 @@ impl StrokeStore {
             .collect::<Vec<StrokeKey>>()
     }
 
-    pub fn selection_len(&self) -> usize {
-        self.selection_keys_unordered().len()
-    }
-
+    /// Generates the bounds that include all selected strokes.
+    /// None if no strokes are selected
     pub fn gen_selection_bounds(&self) -> Option<AABB> {
         self.gen_bounds_for_strokes(&self.selection_keys_unordered())
     }
 
+    /// Duplicates the selected keys
     pub fn duplicate_selection(&mut self) {
-        let offset = na::vector![
-            SelectionComponent::SELECTION_DUPLICATION_OFFSET_X,
-            SelectionComponent::SELECTION_DUPLICATION_OFFSET_Y
-        ];
-
         let old_selected = self.selection_keys_as_rendered();
         self.set_selected_keys(&old_selected, false);
 
@@ -128,11 +115,15 @@ impl StrokeStore {
             })
             .collect::<Vec<StrokeKey>>();
 
-        // Offsetting the new selected stroke to make the duplication apparent to the user
-        self.translate_strokes(&new_selected, offset);
+        // Offsetting the new selected stroke to make the duplication apparent
+        self.translate_strokes(
+            &new_selected,
+            SelectionComponent::SELECTION_DUPLICATION_OFFSET,
+        );
     }
 
-    /// selects the strokes intersecting a given polygon path. Returns the new selected keys
+    /// selects the strokes intersecting a given polygon path. Already selected keys are **not** deselected.
+    /// Returns the new selected keys.
     pub fn select_keys_intersecting_polygon_path(
         &mut self,
         path: &[Element],
@@ -189,7 +180,8 @@ impl StrokeStore {
             .collect()
     }
 
-    /// selects the strokes intersecting a given aabb. Returns the new selected keys
+    /// selects the strokes intersecting a given aabb. Already selected keys are **not** deselected.
+    /// Returns the new selected keys
     pub fn select_keys_intersecting_aabb(&mut self, aabb: AABB, viewport: AABB) -> Vec<StrokeKey> {
         self.keys_sorted_chrono_intersecting_bounds(viewport)
             .into_iter()

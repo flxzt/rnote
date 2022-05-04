@@ -6,7 +6,7 @@ use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
 use crate::utils::GrapheneRectHelpers;
 use crate::Camera;
 
-/// Trait for types that can draw themselves on the sheet
+/// Trait for types that can draw themselves on the sheet.
 /// In the coordinate space of the sheet
 pub trait DrawOnSheetBehaviour {
     fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB>;

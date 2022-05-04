@@ -275,7 +275,7 @@ impl DrawOnSheetBehaviour for Brush {
 }
 
 impl Brush {
-    pub const INPUT_OVERSHOOT: f64 = 30.0;
+    const INPUT_OVERSHOOT: f64 = 30.0;
 
     fn start_audio(style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {

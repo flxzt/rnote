@@ -6,7 +6,7 @@
   <project_license>GPL-3.0</project_license>
   <name translatable="no">@APP_NAME_CAPITALIZED@</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
-  <summary>A simple drawing application to create handwritten notes</summary>
+  <summary>Sketch and take handwritten notes</summary>
 
   <categories>
     <category>Graphics</category>
@@ -19,10 +19,10 @@
 
   <description>
     <p>
-      Rnote is a simple vector based drawing application for handwritten notes and to annotate documents and pictures.
+      Rnote is a simple vector-based drawing application for sketching, handwritten notes and to annotate documents and pictures.
     </p>
     <p>
-      Disclaimer: The file format is still unstable. It might change between versions and break backward compatibility.
+      Disclaimer: The file format is still unstable. It might change and break compatibility between versions.
     </p>
   </description>
 

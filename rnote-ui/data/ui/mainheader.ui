@@ -34,7 +34,7 @@
               <object class="GtkButton">
                 <property name="visible">true</property>
                 <property name="halign">start</property>
-                <property name="tooltip-text">Save sheet</property>
+                <property name="tooltip-text" translatable="yes">Save sheet</property>
                 <property name="icon-name">sheet-save-symbolic</property>
                 <property name="action-name">win.save-sheet</property>
               </object>

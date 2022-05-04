@@ -18,7 +18,7 @@ use super::Composer;
 
 impl Composer<TexturedOptions> for Line {
     fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        self.bounds().loosened(options.stroke_width)
+        self.bounds().loosened(options.stroke_width * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
@@ -96,7 +96,14 @@ impl Composer<TexturedOptions> for Line {
 
 impl Composer<TexturedOptions> for Segment {
     fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        self.bounds().loosened(options.stroke_width)
+        let max_pressure = if options.segment_constant_width {
+            1.0
+        } else {
+            self.start().pressure.max(self.end().pressure)
+        };
+
+        self.bounds()
+            .loosened(options.stroke_width * 0.5 * max_pressure)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {

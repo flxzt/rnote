@@ -201,7 +201,7 @@ impl Eraser {
     fn eraser_bounds(eraser_width: f64, element: Element) -> AABB {
         AABB::from_half_extents(
             na::Point2::from(element.pos),
-            na::Vector2::repeat(eraser_width / 2.0),
+            na::Vector2::repeat(eraser_width * 0.5),
         )
     }
 }

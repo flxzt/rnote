@@ -138,14 +138,6 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
 impl PenPathBuilder {
     fn try_build_segments_start(&mut self) -> Option<Vec<Shape>> {
         let segments = match self.buffer.len() {
-            0 => None,
-            1 => Some(vec![Shape::Segment(Segment::Dot {
-                element: self.buffer[0],
-            })]),
-            2 => Some(vec![Shape::Segment(Segment::Line {
-                start: self.buffer[0],
-                end: self.buffer[1],
-            })]),
             3.. => {
                 // Here we have enough elements to switch into during state
                 self.state = PenPathBuilderState::During;

@@ -150,14 +150,14 @@ impl VectorImage {
 
         let rectangle = if let Some(size) = size {
             Rectangle {
-                cuboid: p2d::shape::Cuboid::new(size / 2.0),
-                transform: Transform::new_w_isometry(na::Isometry2::new(pos + size / 2.0, 0.0)),
+                cuboid: p2d::shape::Cuboid::new(size * 0.5),
+                transform: Transform::new_w_isometry(na::Isometry2::new(pos + size * 0.5, 0.0)),
             }
         } else {
             Rectangle {
-                cuboid: p2d::shape::Cuboid::new(intrinsic_size / 2.0),
+                cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
                 transform: Transform::new_w_isometry(na::Isometry2::new(
-                    pos + intrinsic_size / 2.0,
+                    pos + intrinsic_size * 0.5,
                     0.0,
                 )),
             }
@@ -193,7 +193,7 @@ impl VectorImage {
 
                 let x = pos[0];
                 let y = pos[1]
-                    + f64::from(i) * (height + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) / 2.0);
+                    + f64::from(i) * (height + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5);
 
                 let svg_stream: Vec<u8> = vec![];
 
@@ -228,8 +228,8 @@ impl VectorImage {
                     let line_width = 1.0;
                     cx.set_line_width(line_width);
                     cx.rectangle(
-                        line_width / 2.0,
-                        line_width / 2.0,
+                        line_width * 0.5,
+                        line_width * 0.5,
                         intrinsic_size.0 - line_width,
                         intrinsic_size.1 - line_width,
                     );

@@ -33,14 +33,14 @@ impl TexturedDotsDistribution {
             Self::Uniform => rand_distr::Uniform::from(range.clone()).sample(rng),
             Self::Normal => {
                 // setting the mean to the mid of the range
-                let mean = (range.end + range.start) / 2.0;
+                let mean = (range.end + range.start) * 0.5;
                 // the standard deviation
-                let std_dev = ((range.end - range.start) / 2.0) / 3.0;
+                let std_dev = ((range.end - range.start) * 0.5) / 3.0;
 
                 rand_distr::Normal::new(mean, std_dev).unwrap().sample(rng)
             }
             Self::Exponential => {
-                let mid = (range.end + range.start) / 2.0;
+                let mid = (range.end + range.start) * 0.5;
                 let width = (range.end - range.start) / 4.0;
                 // The lambda
                 let lambda = 1.0;

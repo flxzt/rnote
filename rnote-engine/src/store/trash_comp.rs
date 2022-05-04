@@ -79,8 +79,8 @@ impl StrokeStore {
                         Stroke::BrushStroke(_) | Stroke::ShapeStroke(_) => {
                             // First check if eraser even intersects stroke bounds, avoiding unnecessary work
                             if eraser_bounds.intersects(&stroke.bounds()) {
-                                for hitbox_elem in stroke.hitboxes().iter() {
-                                    if eraser_bounds.intersects(hitbox_elem) {
+                                for hitbox in stroke.hitboxes().into_iter() {
+                                    if eraser_bounds.intersects(&hitbox) {
                                         trash_current_stroke = true;
 
                                         break;
@@ -133,6 +133,7 @@ impl StrokeStore {
                 match stroke {
                     Stroke::BrushStroke(brushstroke) => {
                         if eraser_bounds.intersects(&stroke_bounds) {
+                            let stroke_width = brushstroke.style.stroke_width();
                             brushstroke.path.make_contiguous();
 
                             let split_segments = brushstroke
@@ -140,14 +141,16 @@ impl StrokeStore {
                                 .as_slices()
                                 .0
                                 .split(|segment| {
-                                    segment
-                                        .hitboxes()
-                                        .iter()
-                                        .any(|bounds| bounds.intersects(&eraser_bounds))
+                                    segment.hitboxes().iter().any(|hitbox| {
+                                        // The hitboxes of the individual segments need to be loosened with the style stroke width
+                                        hitbox
+                                            .loosened(stroke_width * 0.5)
+                                            .intersects(&eraser_bounds)
+                                    })
                                 })
                                 .collect::<Vec<&[Segment]>>();
 
-                            // If this is met, we intersect the stroke but we cant form any new split strokes, so we trash it ( e.g. strokes that only have a single element)
+                            // If this is met, we intersect with the stroke but we cant form any new split strokes, so we trash it ( e.g. strokes that only have a single element )
                             if split_segments.iter().all(|segments| segments.is_empty()) {
                                 trash_current_stroke = true;
                             } else {

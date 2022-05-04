@@ -65,9 +65,9 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
 impl RectangleBuilder {
     /// The current state as rectangle
     pub fn state_as_rect(&self) -> Rectangle {
-        let center = (self.start + self.current) / 2.0;
+        let center = (self.start + self.current) * 0.5;
         let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
-        let half_extents = (self.current - self.start) / 2.0;
+        let half_extents = (self.current - self.start) * 0.5;
         let cuboid = Cuboid::new(half_extents);
 
         Rectangle { cuboid, transform }

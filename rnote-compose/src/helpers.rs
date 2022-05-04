@@ -27,7 +27,7 @@ where
 
 impl Vector2Helpers for na::Vector2<f64> {
     fn orth_unit(&self) -> Self {
-        let rot_90deg = na::Rotation2::new(std::f64::consts::PI / 2.0);
+        let rot_90deg = na::Rotation2::new(std::f64::consts::PI * 0.5);
 
         let normalized = if self.magnitude() > 0.0 {
             self.normalize()

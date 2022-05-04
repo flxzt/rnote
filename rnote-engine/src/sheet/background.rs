@@ -44,7 +44,7 @@ pub fn gen_hline_pattern(
 ) -> svg::node::element::Element {
     let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_hline_pattern";
 
-    let line_offset = line_width / 2.0;
+    let line_offset = line_width * 0.5;
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
@@ -86,7 +86,7 @@ pub fn gen_grid_pattern(
 ) -> svg::node::element::Element {
     let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_grid_pattern";
 
-    let line_offset = line_width / 2.0;
+    let line_offset = line_width * 0.5;
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()

@@ -123,7 +123,7 @@ impl ShapeStroke {
         self.shape
             .hitboxes()
             .into_iter()
-            .map(|hitbox| hitbox.loosened(width / 2.0))
+            .map(|hitbox| hitbox.loosened(width * 0.5))
             .collect()
     }
 }

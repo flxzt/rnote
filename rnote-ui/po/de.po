@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-02 21:02+0200\n"
-"PO-Revision-Date: 2022-05-02 21:27+0200\n"
+"PO-Revision-Date: 2022-05-04 14:59+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -160,7 +160,7 @@ msgstr "Zurück zur Ursprungsseite"
 
 #: rnote-ui/data/ui/appwindow.ui:188
 msgid "Undo"
-msgstr "Zurück"
+msgstr "Rückgängig"
 
 #: rnote-ui/data/ui/appwindow.ui:199
 msgid "Redo"
@@ -323,7 +323,7 @@ msgstr "Öffne Datei"
 #: rnote-ui/data/ui/dialogs.ui:72
 msgid "Opening this file overwrites any unsaved changes."
 msgstr ""
-"Diese Datei zu öffnen überschreibt sämtliche ungespeicherten Änderungen."
+"Diese Datei zu öffnen überschreibt sämtliche ungespeicherte Änderungen."
 
 #: rnote-ui/data/ui/dialogs.ui:103
 msgid "Clear Sheet"
@@ -450,7 +450,7 @@ msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:204
 msgid "Set the DPI (dots per inch). Defaults to 96"
-msgstr "Ändere die DPI ( Punkte pro Zoll ). Standardwert auf 96"
+msgstr "Ändere die DPI ( Punkte pro Zoll ). Standard ist 96"
 
 #: rnote-ui/data/ui/settingspanel.ui:227
 msgid "Revert"
@@ -787,11 +787,11 @@ msgstr "Lösche die Auswahl"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"
-msgstr "Former Stil"
+msgstr "Formenstil"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:57
 msgid "Shaper styles"
-msgstr "Former Stile"
+msgstr "Formenstile"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:75
 msgid "Smooth"
@@ -851,7 +851,7 @@ msgstr ""
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254
 msgid "Shape builders"
-msgstr "Formen Ersteller"
+msgstr "Formen-Ersteller"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:272
 msgid "Line"

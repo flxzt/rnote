@@ -763,11 +763,18 @@ impl RnoteCanvas {
     pub fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
 
-        let new_offset = na::vector![
-            ((self.engine().borrow().sheet.format.width * 0.5) * zoom)
-                - f64::from(self.parent().unwrap().width()) * 0.5,
-            -Sheet::SHADOW_WIDTH * zoom
-        ];
+        let new_offset = if self.engine().borrow().sheet.format.width * zoom
+            <= f64::from(self.parent().unwrap().width())
+        {
+            na::vector![
+                (self.engine().borrow().sheet.format.width * 0.5 * zoom)
+                    - f64::from(self.parent().unwrap().width()) * 0.5,
+                -Sheet::SHADOW_WIDTH * zoom
+            ]
+        } else {
+            // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
+            na::vector![-Sheet::SHADOW_WIDTH * zoom, -Sheet::SHADOW_WIDTH * zoom]
+        };
 
         self.update_camera_offset(new_offset);
     }

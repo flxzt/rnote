@@ -63,6 +63,24 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.0" date="2022-05-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>disclaimer: breaking file format compatibility</li>
+          <li>more shape types (curves, ellipse with foci)</li>
+          <li>feature: new eraser type: split strokes</li>
+          <li>feature: autosave</li>
+          <li>reduced handwriting latency</li>
+          <li>improved selector</li>
+          <li>improved undo / redo system</li>
+          <li>Xournal++ file import: drawn shapes are now imported correctly</li>
+          <li>UI tweaks</li>
+          <li>bug fixes</li>
+          <li>a lot of code refactoring</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.4.0" date="2022-03-17">
       <description>
         <p>this release changes:</p>
@@ -95,7 +113,7 @@
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>UX: Adaptive pen selection buttons (support smaller screens)</li>
+          <li>UX: Adaptive pen buttons (support smaller screens)</li>
         </ul>
       </description>
     </release>

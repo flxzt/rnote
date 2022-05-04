@@ -90,8 +90,6 @@ impl PenBehaviour for Shaper {
 
         let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
-                store.record();
-
                 // A new seed for a new shape
                 let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
                 self.rough_options.seed = seed;
@@ -149,6 +147,11 @@ impl PenBehaviour for Shaper {
                 BuilderProgress::EmitContinue(shapes) => {
                     let drawstyle = self.gen_style_for_current_options();
 
+                    if !shapes.is_empty() {
+                        // Only record if new shapes actually were emitted
+                        surface_flags.merge_with_other(store.record());
+                    }
+
                     for shape in shapes {
                         let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
                             shape,
@@ -170,6 +173,11 @@ impl PenBehaviour for Shaper {
                 }
                 BuilderProgress::Finished(shapes) => {
                     let drawstyle = self.gen_style_for_current_options();
+
+                    if !shapes.is_empty() {
+                        // Only record if new shapes actually were emitted
+                        surface_flags.merge_with_other(store.record());
+                    }
 
                     if !shapes.is_empty() {
                         sheet.resize_autoexpand(store, camera);

@@ -16,6 +16,7 @@ use std::collections::VecDeque;
 use std::sync::Arc;
 
 use crate::strokes::Stroke;
+use crate::SurfaceFlags;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -194,10 +195,12 @@ impl StrokeStore {
         // so we can actually skip rebuilding it when importing a history entry. This avoids visual glitches where we have already rebuilt the components
         // and can't display anything until the asynchronous rendering is finished
         //self.reload_render_components_slotmap();
+
+        self.set_rendering_dirty_all_keys();
     }
 
-    /// Saves the current state in the history
-    pub fn record(&mut self) {
+    /// records the current state and saves it in the history
+    pub fn record(&mut self) -> SurfaceFlags {
         /*
                log::debug!(
                    "before record - history len: {}, pos: {:?}",
@@ -205,7 +208,7 @@ impl StrokeStore {
                    self.history_pos
                );
         */
-        self.simple_style_record();
+        self.simple_style_record()
         /*
                log::debug!(
                    "after record - history len: {}, pos: {:?}",
@@ -215,8 +218,9 @@ impl StrokeStore {
         */
     }
 
-    /// Undos the latest changes
-    pub fn undo(&mut self) {
+    /// Undo the latest changes
+    /// Should only be called inside the engine undo wrapper function
+    pub(super) fn undo(&mut self) -> SurfaceFlags {
         /*
                log::debug!(
                    "before undo - history len: {}, pos: {:?}",
@@ -224,7 +228,7 @@ impl StrokeStore {
                    self.history_pos
                );
         */
-        self.simple_style_undo();
+        self.simple_style_undo()
         /*
                log::debug!(
                    "after undo - history len: {}, pos: {:?}",
@@ -234,8 +238,9 @@ impl StrokeStore {
         */
     }
 
-    /// Redos the latest changes. The actual behaviour might differ depending on the history mode (simple style, emacs style, ..)
-    pub fn redo(&mut self) {
+    /// Redo the latest changes. The actual behaviour might differ depending on the history mode (simple style, emacs style, ..)
+    /// Should only be called inside the engine redo wrapper function
+    pub(super) fn redo(&mut self) -> SurfaceFlags {
         /*
                log::debug!(
                    "before redo - history len: {}, pos: {:?}",
@@ -243,7 +248,7 @@ impl StrokeStore {
                    self.history_pos
                );
         */
-        self.simple_style_redo();
+        self.simple_style_redo()
         /*
                log::debug!(
                    "after redo - history len: {}, pos: {:?}",
@@ -253,7 +258,9 @@ impl StrokeStore {
         */
     }
 
-    fn simple_style_record(&mut self) {
+    fn simple_style_record(&mut self) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         // as soon as the current state is recorded, remove the future
         self.history.truncate(
             self.history_pos
@@ -277,9 +284,16 @@ impl StrokeStore {
         } else {
             log::trace!("state has not changed, no need to record");
         }
+
+        surface_flags.hide_redo = Some(true);
+        surface_flags.hide_undo = Some(false);
+
+        surface_flags
     }
 
-    fn simple_style_undo(&mut self) {
+    fn simple_style_undo(&mut self) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         let index = match self.history_pos {
             Some(index) => index,
             None => {
@@ -296,12 +310,23 @@ impl StrokeStore {
             self.import_history_entry(&prev);
 
             self.history_pos = Some(index - 1);
+
+            surface_flags.hide_redo = Some(false);
+
+            if index - 1 == 0 {
+                surface_flags.hide_undo = Some(true);
+            }
         } else {
+            surface_flags.hide_undo = Some(true);
             log::debug!("no history, can't undo");
         }
+
+        surface_flags
     }
 
-    fn simple_style_redo(&mut self) {
+    fn simple_style_redo(&mut self) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         let index = self.history_pos.unwrap_or(self.history.len() - 1);
 
         if index < self.history.len() - 1 {
@@ -309,9 +334,18 @@ impl StrokeStore {
             self.import_history_entry(&next);
 
             self.history_pos = Some(index + 1);
+
+            surface_flags.hide_undo = Some(false);
+
+            if index + 1 == self.history.len() - 1 {
+                surface_flags.hide_redo = Some(true);
+            }
         } else {
+            surface_flags.hide_redo = Some(true);
             log::debug!("no future history entries, can't redo");
         }
+
+        surface_flags
     }
 
     /// Saves the current state in the history.

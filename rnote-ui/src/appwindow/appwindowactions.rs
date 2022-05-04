@@ -932,7 +932,8 @@ impl RnoteAppWindow {
         // Trash Selection
         action_selection_trash.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_trash, _| {
-                appwindow.canvas().engine().borrow_mut().store.record();
+                let surface_flags = appwindow.canvas().engine().borrow_mut().record();
+                appwindow.handle_surface_flags(surface_flags);
 
                 let selection_keys = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
@@ -946,7 +947,8 @@ impl RnoteAppWindow {
         // Duplicate Selection
         action_selection_duplicate.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
-                appwindow.canvas().engine().borrow_mut().store.record();
+                let surface_flags = appwindow.canvas().engine().borrow_mut().record();
+                appwindow.handle_surface_flags(surface_flags);
 
                 let new_selected = appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
                 appwindow.canvas().engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
@@ -961,7 +963,8 @@ impl RnoteAppWindow {
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
-                appwindow.canvas().engine().borrow_mut().store.record();
+                let surface_flags = appwindow.canvas().engine().borrow_mut().record();
+                appwindow.handle_surface_flags(surface_flags);
 
                 let all_strokes = appwindow.canvas().engine().borrow().store.stroke_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
@@ -976,7 +979,8 @@ impl RnoteAppWindow {
         // deselect all strokes
         action_selection_deselect_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
-                appwindow.canvas().engine().borrow_mut().store.record();
+                let surface_flags = appwindow.canvas().engine().borrow_mut().record();
+                appwindow.handle_surface_flags(surface_flags);
 
                 let all_strokes = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);

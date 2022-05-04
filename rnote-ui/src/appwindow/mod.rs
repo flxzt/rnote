@@ -63,6 +63,10 @@ mod imp {
         #[template_child]
         pub canvas_fixedsize_quickactions_revealer: TemplateChild<Revealer>,
         #[template_child]
+        pub undo_button: TemplateChild<Button>,
+        #[template_child]
+        pub redo_button: TemplateChild<Button>,
+        #[template_child]
         pub canvas_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
         pub canvas_progressbar: TemplateChild<ProgressBar>,
@@ -130,6 +134,8 @@ mod imp {
                 canvas_box: TemplateChild::<gtk4::Box>::default(),
                 canvas_quickactions_box: TemplateChild::<gtk4::Box>::default(),
                 canvas_fixedsize_quickactions_revealer: TemplateChild::<Revealer>::default(),
+                undo_button: TemplateChild::<Button>::default(),
+                redo_button: TemplateChild::<Button>::default(),
                 canvas_progressbar: TemplateChild::<ProgressBar>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
                 canvas: TemplateChild::<RnoteCanvas>::default(),
@@ -634,6 +640,14 @@ impl RnoteAppWindow {
         self.imp().canvas_fixedsize_quickactions_revealer.get()
     }
 
+    pub fn undo_button(&self) -> Button {
+        self.imp().undo_button.get()
+    }
+
+    pub fn redo_button(&self) -> Button {
+        self.imp().redo_button.get()
+    }
+
     pub fn canvas_progressbar(&self) -> ProgressBar {
         self.imp().canvas_progressbar.get()
     }
@@ -753,6 +767,12 @@ impl RnoteAppWindow {
                 self.canvas_scroller()
                     .set_policy(PolicyType::Automatic, PolicyType::Automatic);
             }
+        }
+        if let Some(hide_undo) = surface_flags.hide_undo {
+            self.undo_button().set_sensitive(!hide_undo);
+        }
+        if let Some(hide_redo) = surface_flags.hide_redo {
+            self.redo_button().set_sensitive(!hide_redo);
         }
 
         false

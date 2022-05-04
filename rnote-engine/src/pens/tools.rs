@@ -286,7 +286,7 @@ impl PenBehaviour for Tools {
                     shortcut_keys: _,
                 },
             ) => {
-                store.record();
+                surface_flags.merge_with_other(store.record());
 
                 match self.style {
                     ToolsStyle::ExpandSheet => {

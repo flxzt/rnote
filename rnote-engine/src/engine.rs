@@ -8,6 +8,7 @@ use crate::{Camera, PenHolder, Sheet, StrokeStore};
 use gtk4::Snapshot;
 use itertools::Itertools;
 use rnote_compose::helpers::AABBHelpers;
+use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
 use rnote_fileformats::xoppformat;
@@ -145,44 +146,69 @@ impl RnoteEngine {
         );
     }
 
+    /// Wraps store.record().
+    pub fn record(&mut self) -> SurfaceFlags {
+        self.store.record()
+    }
+
+    /// Undo the latest changes
     pub fn undo(&mut self) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
-        self.store.undo();
-
-        self.update_selector();
-        if !self.store.selection_keys_unordered().is_empty() {
+        if self.penholder.style_w_override() != PenStyle::Selector {
             surface_flags.merge_with_other(
-                self.handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector)),
+                self.handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel)),
             );
         }
 
+        surface_flags.merge_with_other(self.store.undo());
+
+        if !self.store.selection_keys_unordered().is_empty() {
+            surface_flags.merge_with_other(
+                self.penholder
+                    .force_change_style_override_without_sideeffects(None),
+            );
+            surface_flags.merge_with_other(
+                self.penholder
+                    .force_change_style_without_sideeffects(PenStyle::Selector),
+            );
+        }
+        self.update_selector();
+
         self.resize_autoexpand();
-        self.store.regenerate_rendering_in_viewport_threaded(
-            self.tasks_tx(),
-            true,
-            self.camera.viewport(),
-            self.camera.image_scale(),
-        );
+        self.update_rendering_current_viewport();
 
         surface_flags.redraw = true;
 
         surface_flags
     }
 
+    /// redo the latest changes
     pub fn redo(&mut self) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
-        self.store.redo();
+        if self.penholder.style_w_override() != PenStyle::Selector {
+            surface_flags.merge_with_other(
+                self.handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel)),
+            );
+        }
 
+        surface_flags.merge_with_other(self.store.redo());
+
+        if !self.store.selection_keys_unordered().is_empty() {
+            surface_flags.merge_with_other(
+                self.penholder
+                    .force_change_style_override_without_sideeffects(None),
+            );
+            surface_flags.merge_with_other(
+                self.penholder
+                    .force_change_style_without_sideeffects(PenStyle::Selector),
+            );
+        }
         self.update_selector();
+
         self.resize_autoexpand();
-        self.store.regenerate_rendering_in_viewport_threaded(
-            self.tasks_tx(),
-            true,
-            self.camera.viewport(),
-            self.camera.image_scale(),
-        );
+        self.update_rendering_current_viewport();
 
         surface_flags.redraw = true;
 
@@ -638,8 +664,7 @@ impl RnoteEngine {
     }
 
     pub fn import_generated_strokes(&mut self, strokes: Vec<Stroke>) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
-        self.store.record();
+        let mut surface_flags = self.store.record();
 
         let all_strokes = self.store.keys_unordered();
         self.store.set_selected_keys(&all_strokes, false);
@@ -1107,7 +1132,10 @@ pub mod visual_debug {
                     surface_bounds.maxs[0] - 320.0,
                     surface_bounds.mins[1] + 20.0
                 ],
-                na::point![surface_bounds.maxs[0] - 20.0, surface_bounds.mins[1] + 80.0],
+                na::point![
+                    surface_bounds.maxs[0] - 20.0,
+                    surface_bounds.mins[1] + 100.0
+                ],
             );
             let cairo_cx = snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(text_bounds));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
@@ -1117,11 +1145,13 @@ pub mod visual_debug {
             let strokes_in_viewport = engine
                 .store
                 .keys_unordered_intersecting_bounds(engine.camera.viewport());
+            let selected_strokes = engine.store.selection_keys_unordered();
 
             let statistics_text_string = format!(
-                "strokes in store:   {}\nstrokes in current viewport:   {}",
+                "strokes in store:   {}\nstrokes in current viewport:   {}\nstrokes selected: {}",
                 strokes_total.len(),
-                strokes_in_viewport.len()
+                strokes_in_viewport.len(),
+                selected_strokes.len()
             );
 
             let text_layout = piet_cx

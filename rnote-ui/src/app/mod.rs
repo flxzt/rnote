@@ -137,6 +137,10 @@ impl RnoteApp {
 
     // Anything that needs to be done right before showing the appwindow
     pub fn init_misc(&self, appwindow: &RnoteAppWindow) {
+        // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
+        appwindow.undo_button().set_sensitive(false);
+        appwindow.redo_button().set_sensitive(false);
+
         appwindow.canvas().regenerate_background_pattern();
         appwindow.canvas().update_engine_rendering();
     }

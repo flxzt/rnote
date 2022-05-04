@@ -16,6 +16,10 @@ pub struct SurfaceFlags {
     pub camera_changed: bool,
     /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
     pub hide_scrollbars: Option<bool>,
+    /// Is Some when undo button visibility should be changed. Is None if should not be changed
+    pub hide_undo: Option<bool>,
+    /// Is Some when undo button visibility should be changed. Is None if should not be changed
+    pub hide_redo: Option<bool>,
 }
 
 impl Default for SurfaceFlags {
@@ -28,6 +32,8 @@ impl Default for SurfaceFlags {
             store_changed: false,
             camera_changed: false,
             hide_scrollbars: None,
+            hide_undo: None,
+            hide_redo: None,
         }
     }
 }
@@ -45,6 +51,16 @@ impl SurfaceFlags {
             other.hide_scrollbars
         } else {
             self.hide_scrollbars
+        };
+        self.hide_undo = if other.hide_undo.is_some() {
+            other.hide_undo
+        } else {
+            self.hide_undo
+        };
+        self.hide_redo = if other.hide_redo.is_some() {
+            other.hide_redo
+        } else {
+            self.hide_redo
         };
 
         self

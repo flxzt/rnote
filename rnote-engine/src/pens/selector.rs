@@ -115,7 +115,7 @@ impl PenBehaviour for Selector {
 
         let pen_progress = match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
-                store.record();
+                surface_flags.merge_with_other(store.record());
 
                 // Deselect on start
                 let selection_keys =
@@ -220,7 +220,7 @@ impl PenBehaviour for Selector {
 
                 match modify_state {
                     ModifyState::Up => {
-                        store.record();
+                        surface_flags.merge_with_other(store.record());
 
                         if Self::rotate_node_sphere(*selection_bounds, camera)
                             .contains_local_point(&na::Point2::from(element.pos))
@@ -595,6 +595,7 @@ impl Selector {
     pub fn update_from_store(&mut self, store: &StrokeStore) {
         let selection = store.selection_keys_as_rendered();
         let selection_bounds = store.gen_bounds_for_strokes(&selection);
+
         if let Some(selection_bounds) = selection_bounds {
             self.set_selection(selection, selection_bounds);
         } else {

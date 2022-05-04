@@ -1,5 +1,6 @@
 use super::{StrokeKey, StrokeStore};
 use crate::strokes::{BrushStroke, Stroke};
+use crate::SurfaceFlags;
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::penpath::Segment;
@@ -68,7 +69,9 @@ impl StrokeStore {
     }
 
     /// trash strokes that collide with the given bounds
-    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: AABB) {
+    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: AABB) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
@@ -98,10 +101,12 @@ impl StrokeStore {
                 }
 
                 if trash_current_stroke {
-                    self.record();
+                    surface_flags.merge_with_other(self.record());
                     self.set_trashed(key, true);
                 }
             });
+
+        surface_flags
     }
 
     /// remove colliding stroke segments with the given bounds. The stroke is then split. For strokes that don't have segments, trash the entire stroke.

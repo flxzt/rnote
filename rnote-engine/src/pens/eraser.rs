@@ -74,14 +74,14 @@ impl PenBehaviour for Eraser {
                     shortcut_keys: _,
                 },
             ) => {
-                store.record();
+                surface_flags.merge_with_other(store.record());
 
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        store.trash_colliding_strokes(
+                        surface_flags.merge_with_other(store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             camera.viewport(),
-                        );
+                        ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
                         let new_strokes = store.split_colliding_strokes(
@@ -111,10 +111,10 @@ impl PenBehaviour for Eraser {
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        store.trash_colliding_strokes(
+                        surface_flags.merge_with_other(store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             camera.viewport(),
-                        );
+                        ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
                         let new_strokes = store.split_colliding_strokes(
@@ -142,10 +142,10 @@ impl PenBehaviour for Eraser {
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        store.trash_colliding_strokes(
+                        surface_flags.merge_with_other(store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             camera.viewport(),
-                        );
+                        ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
                         let new_strokes = store.split_colliding_strokes(

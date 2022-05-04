@@ -188,6 +188,33 @@ impl PenHolder {
         self.style_override.unwrap_or(self.style)
     }
 
+    /// Only to be called when forcing changing the style without any side effects
+    pub fn force_change_style_without_sideeffects(&mut self, style: PenStyle) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
+        self.style = style;
+
+        surface_flags.penholder_changed = true;
+        surface_flags.redraw = true;
+
+        surface_flags
+    }
+
+    /// Only to be called when forcing changing the style override without any side effects
+    pub fn force_change_style_override_without_sideeffects(
+        &mut self,
+        style_override: Option<PenStyle>,
+    ) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
+
+        self.style_override = style_override;
+
+        surface_flags.penholder_changed = true;
+        surface_flags.redraw = true;
+
+        surface_flags
+    }
+
     /// Registers a new shortcut key and action
     pub fn register_new_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
         self.shortcuts.insert(key, action);

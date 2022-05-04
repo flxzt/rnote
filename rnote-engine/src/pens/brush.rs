@@ -97,7 +97,7 @@ impl PenBehaviour for Brush {
                 },
             ) => {
                 if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
-                    store.record();
+                    surface_flags.merge_with_other(store.record());
 
                     Self::start_audio(style, audioplayer);
 

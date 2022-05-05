@@ -127,25 +127,6 @@ impl RnoteEngine {
         self.tasks_tx.clone()
     }
 
-    pub fn update_rendering_current_viewport(&mut self) {
-        let viewport = self.camera.viewport();
-        let image_scale = self.camera.image_scale();
-
-        // Update background and strokes for the new viewport
-        if let Err(e) = self.sheet.background.update_rendernodes(viewport) {
-            log::error!(
-                "failed to update background rendernodes on canvas resize with Err {}",
-                e
-            );
-        }
-        self.store.regenerate_rendering_in_viewport_threaded(
-            self.tasks_tx(),
-            false,
-            viewport,
-            image_scale,
-        );
-    }
-
     /// Wraps store.record().
     pub fn record(&mut self) -> SurfaceFlags {
         self.store.record()
@@ -273,6 +254,32 @@ impl RnoteEngine {
             &mut self.store,
             &mut self.camera,
         )
+    }
+
+    pub fn update_background_rendering_current_viewport(&mut self) {
+        let viewport = self.camera.viewport();
+
+        // Update background and strokes for the new viewport
+        if let Err(e) = self.sheet.background.update_rendernodes(viewport) {
+            log::error!(
+                "failed to update background rendernodes on canvas resize with Err {}",
+                e
+            );
+        }
+    }
+
+    pub fn update_rendering_current_viewport(&mut self) {
+        let viewport = self.camera.viewport();
+        let image_scale = self.camera.image_scale();
+
+        self.update_background_rendering_current_viewport();
+
+        self.store.regenerate_rendering_in_viewport_threaded(
+            self.tasks_tx(),
+            false,
+            viewport,
+            image_scale,
+        );
     }
 
     // Generates bounds for each page which is containing content, extended to align with the sheet format

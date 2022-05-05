@@ -416,7 +416,7 @@ impl RnoteCanvas {
         if let Some(ref hadjustment) = adj {
             let signal_id = hadjustment.connect_value_changed(
                 clone!(@weak self as canvas => move |_hadjustment| {
-                    canvas.update_engine_rendering();
+                    canvas.queue_resize();
                 }),
             );
             self.imp().hadjustment_signal.replace(Some(signal_id));
@@ -433,7 +433,7 @@ impl RnoteCanvas {
         if let Some(ref vadjustment) = adj {
             let signal_id = vadjustment.connect_value_changed(
                 clone!(@weak self as canvas => move |_vadjustment| {
-                    canvas.update_engine_rendering();
+                    canvas.queue_resize();
                 }),
             );
             self.imp().vadjustment_signal.replace(Some(signal_id));
@@ -727,7 +727,7 @@ impl RnoteCanvas {
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
 
-        self.queue_resize();
+        self.update_engine_background_rendering();
     }
 
     /// returns the center of the current view on the sheet
@@ -847,7 +847,16 @@ impl RnoteCanvas {
     /// To force the rerendering of the background pattern, call regenerate_background_pattern().
     /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
     pub fn update_engine_rendering(&self) {
-        // Updating the engine rendering in the layout manager.
+        self.update_engine_background_rendering();
+
+        // Update engine rendering for the new viewport
+        self.engine()
+            .borrow_mut()
+            .update_rendering_current_viewport();
+    }
+
+    pub fn update_engine_background_rendering(&self) {
+        // background rendering update is handled in layout manager
         self.queue_resize();
     }
 

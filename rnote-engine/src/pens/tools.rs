@@ -375,14 +375,15 @@ impl PenBehaviour for Tools {
 
                         if offset.magnitude() > 1.0 {
                             camera.offset -= offset;
+
+                            sheet.resize_autoexpand(store, camera);
+
                             surface_flags.camera_changed = true;
                         }
 
                         PenProgress::InProgress
                     }
                 };
-
-                sheet.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
                 surface_flags.store_changed = true;

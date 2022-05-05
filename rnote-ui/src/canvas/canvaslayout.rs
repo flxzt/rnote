@@ -119,11 +119,8 @@ mod imp {
             canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
             canvas.engine().borrow_mut().camera.size = new_size;
 
-            // Update engine rendering for the new viewport
-            canvas
-                .engine()
-                .borrow_mut()
-                .update_rendering_current_viewport();
+            // Update the background rendering
+            canvas.engine().borrow_mut().update_background_rendering_current_viewport();
         }
     }
 }

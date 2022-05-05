@@ -669,12 +669,18 @@ impl RnoteEngine {
         let all_strokes = self.store.keys_unordered();
         self.store.set_selected_keys(&all_strokes, false);
 
-        for stroke in strokes {
-            let inserted = self.store.insert_stroke(stroke);
-            self.store.set_selected(inserted, true);
-        }
+        let inserted = strokes
+            .into_iter()
+            .map(|stroke| self.store.insert_stroke(stroke))
+            .collect::<Vec<StrokeKey>>();
 
+        // Before set the inserted strokes selected
         self.resize_to_fit_strokes();
+
+        inserted.into_iter().for_each(|key| {
+            self.store.set_selected(key, true);
+        });
+
         self.update_selector();
 
         surface_flags.merge_with_other(

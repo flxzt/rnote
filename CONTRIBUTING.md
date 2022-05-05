@@ -12,6 +12,8 @@ Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.vis
 
 - As long as the flatpak is not installed on the system, The DirectoryList in the workspace browser does not update when files are created, removed or changed. It will work in the released flatpak.
 
+- Building the flatpak aborts randomly with status `137` out of memory: Reset the flatpak app-id permissions with `flatpak permission-reset com.github.flxzt.rnote`, so it is able to run in the background.
+
 ### Prerequisites
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:
 

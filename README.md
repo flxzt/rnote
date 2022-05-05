@@ -60,9 +60,9 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 * Stylus buttons move canvas / are not functional: make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
 
 ## Credits
-- Thanks to all the translators and their contributions!
+- A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!
 - [Freesound](https://freesound.org/) is the source for the pen sounds. The individual sounds are credited in `sounds/Licenses.md`
-- [Rough.js](https://roughjs.com/) provided the algorithms for implementation of Rnote's rough shapes.
+- [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
 - [Pizarra](https://pizarra.categulario.tk/en/) is a innovative drawing app with advanced shaping and featuring a infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
 
 ## Community

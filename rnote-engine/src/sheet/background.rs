@@ -153,7 +153,9 @@ pub fn gen_dots_pattern(
                     .set("x", 0_f64)
                     .set("y", 0_f64)
                     .set("width", dots_width)
-                    .set("height", dots_width),
+                    .set("height", dots_width)
+                    .set("rx", dots_width / 3.0)
+                    .set("ry", dots_width / 3.0),
             ),
     );
 

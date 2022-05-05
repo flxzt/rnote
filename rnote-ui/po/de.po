@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-05 18:27+0200\n"
-"PO-Revision-Date: 2022-05-05 18:30+0200\n"
+"PO-Revision-Date: 2022-05-05 18:39+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -1020,79 +1020,3 @@ msgstr "'engine config' exportieren gescheitert."
 #: rnote-ui/src/dialogs.rs:658
 msgid "Exported engine config successfully."
 msgstr "'engine config' erfolgreich exportiert."
-
-#~ msgid "Export engine config (as saved in settings)"
-#~ msgstr "Exportiere die 'engine config' (wie in den Einstellungen gesichert)"
-
-#~ msgid "Developer settings"
-#~ msgstr "Entwicklereinstellungen"
-
-#~ msgid "A simple drawing application to create handwritten notes"
-#~ msgstr "Eine simple Zeichenapp zum Erstellen von handgeschrieben Notizen"
-
-#~ msgid "Undo last stroke"
-#~ msgstr "Letzter Strich rückgängig"
-
-#~ msgid "Redo last stroke"
-#~ msgstr "Letzter Strich wiederherstellen"
-
-#~ msgid "Return"
-#~ msgstr "Zurück"
-
-#~ msgid "Renderer backend"
-#~ msgstr "Renderer backend"
-
-#~ msgid "Brush styles configuration"
-#~ msgstr "Pinselstil Konfiguration"
-
-#~ msgid "Rough shapes"
-#~ msgstr "Grobe Formen"
-
-#~ msgctxt "shortcut window"
-#~ msgid "Enable temporary Eraser"
-#~ msgstr "Aktiviere den temporären Radierer"
-
-#~ msgid "Sheet margin"
-#~ msgstr "Blatt Rand"
-
-#~ msgid "Set the margins around the sheet"
-#~ msgstr "Setzt den Rand um das Blatt"
-
-#~ msgid "An easy and simple vector-based note taking app"
-#~ msgstr "Eine simple und leicht zu handhabende, vektor-basierte Notizapp"
-
-#~ msgid "Multiple pages"
-#~ msgstr "Mehrere Seiten"
-
-#~ msgid "Step back one element in stroke"
-#~ msgstr "Ein Schritt zurück eines Elements des Strichs"
-
-#~ msgid "Step forward one element in stroke"
-#~ msgstr "Ein Schritt vor eines Elements des Strichs"
-
-#~ msgid "Experimental"
-#~ msgstr "Experimental"
-
-#~ msgid "Reset brush width"
-#~ msgstr "Pinselstärke zurücksetzen"
-
-#~ msgid "Reset eraser width"
-#~ msgstr "Radiererstärke zurücksetzen"
-
-#~ msgid "Reset marker width"
-#~ msgstr "Markiererstärke zurücksetzen"
-
-#~ msgid "Reset shape stroke width"
-#~ msgstr "Formen Linienstärke zurücksetzen"
-
-#~ msgid "Save Sheet As"
-#~ msgstr "Blatt speichern als"
-
-#~ msgid "Save As"
-#~ msgstr "Speichern als"
-
-#~ msgid "Import File"
-#~ msgstr "Datei importieren"
-
-#~ msgid "SVG File"
-#~ msgstr "SVG Datei"

@@ -92,7 +92,7 @@ pub struct Selector {
 impl Default for Selector {
     fn default() -> Self {
         Self {
-            style: SelectorType::Polygon,
+            style: SelectorType::Rectangle,
             resize_lock_aspectratio: false,
             state: SelectorState::default(),
         }

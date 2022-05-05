@@ -16,6 +16,8 @@ use gtk4::{
     ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
+use rnote_compose::penhelpers::PenEvent;
+use rnote_engine::pens::penholder::PenHolderEvent;
 use rnote_engine::strokes::Stroke;
 
 use crate::{
@@ -957,6 +959,9 @@ impl RnoteAppWindow {
                     let current_zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
+                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                    appwindow.handle_surface_flags(surface_flags);
+
                     zoom_begin.set(current_zoom);
                     new_zoom.set(current_zoom);
                     prev_scale.set(1.0);
@@ -999,6 +1004,10 @@ impl RnoteAppWindow {
             canvas_zoom_gesture.connect_cancel(
                 clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     bbcenter_begin.set(None);
+
+                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                    appwindow.handle_surface_flags(surface_flags);
+
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
@@ -1008,6 +1017,10 @@ impl RnoteAppWindow {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
 
                     bbcenter_begin.set(None);
+
+                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                    appwindow.handle_surface_flags(surface_flags);
+
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );

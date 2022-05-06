@@ -1,14 +1,29 @@
 mod imp {
+    use std::cell::Cell;
+    use std::rc::Rc;
+
     use gtk4::{
         glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
     };
+    use p2d::bounding_volume::{BoundingVolume, AABB};
+    use rnote_compose::helpers::AABBHelpers;
 
     use crate::canvas::RnoteCanvas;
     use rnote_engine::sheet::ExpandMode;
-    use rnote_engine::Sheet;
+    use rnote_engine::{render, Sheet};
 
-    #[derive(Debug, Default)]
-    pub struct CanvasLayout {}
+    #[derive(Debug, Clone)]
+    pub struct CanvasLayout {
+        old_viewport: Rc<Cell<AABB>>,
+    }
+
+    impl Default for CanvasLayout {
+        fn default() -> Self {
+            Self {
+                old_viewport: Rc::new(Cell::new(AABB::new_zero())),
+            }
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for CanvasLayout {
@@ -119,11 +134,43 @@ mod imp {
             canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
             canvas.engine().borrow_mut().camera.size = new_size;
 
-            // Update the background rendering
+            // always update the background rendering
             canvas
                 .engine()
                 .borrow_mut()
                 .update_background_rendering_current_viewport();
+
+            let viewport = canvas.engine().borrow().camera.viewport();
+            let viewport_extents = viewport.extents();
+            let old_viewport = self.old_viewport.get();
+            let old_viewport_extents = old_viewport.extents();
+
+            let old_viewport_render_margins =
+                old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+
+            /*
+                       log::debug!(
+                           "viewport: {:#?}\nold_loosened_viewport: {:#?}",
+                           viewport,
+                           old_loosened_viewport
+                       );
+            */
+
+            // Either when we have zoomed out beyond the extended old viewport
+            if viewport_extents > old_viewport_extents * render::VIEWPORT_EXTENTS_MARGIN_FACTOR
+                // or if the viewport is moved beyond the extended old viewport
+                || !old_viewport
+                    .extend_by(old_viewport_render_margins)
+                    .contains(&viewport)
+            {
+                // conditionally update the engine rendering when the thresholds are crossed
+                canvas
+                    .engine()
+                    .borrow_mut()
+                    .update_rendering_current_viewport();
+
+                self.old_viewport.set(viewport);
+            }
         }
     }
 }

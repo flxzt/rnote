@@ -681,7 +681,6 @@ impl SettingsPanel {
                 appwindow.canvas().engine().borrow_mut().sheet.format = temporary_format;
 
                 appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
-
                 appwindow.canvas().update_engine_rendering();
             }),
         );

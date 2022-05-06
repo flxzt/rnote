@@ -33,10 +33,10 @@ pub const USVG_XML_OPTIONS: usvg::XmlOptions = usvg::XmlOptions {
     },
 };
 
-/// size at which we split surfaces, so that cairo does not panic when rendering large images
-pub const CAIRO_IMGSURFACE_SPLIT_SIZE: na::Vector2<f64> = na::vector![3000.0, 3000.0];
-/// the margin around a viewport for rendering. In px value
-pub const VIEWPORT_RENDER_MARGIN: f64 = 600.0;
+// the factor the rendering for the current viewport is extended. e.g.: 1.0 means the viewport is extended by its extents on all sides.
+// Used when checking rendering for new zooms or a moved viewport.
+// There is a trade off: a larger value will consume more ram, a smaller value will mean more stuttering on zooms and when moving the view
+pub const VIEWPORT_EXTENTS_MARGIN_FACTOR: f64 = 0.5;
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum ImageMemoryFormat {

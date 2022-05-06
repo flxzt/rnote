@@ -439,7 +439,7 @@ impl StrokeStore {
     }
 
     /// Clears the entire store
-    pub fn clear(&mut self) {
+    pub(super) fn clear(&mut self) {
         Arc::make_mut(&mut self.stroke_components).clear();
         Arc::make_mut(&mut self.trash_components).clear();
         Arc::make_mut(&mut self.selection_components).clear();

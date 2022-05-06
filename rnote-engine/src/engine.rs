@@ -196,6 +196,12 @@ impl RnoteEngine {
         surface_flags
     }
 
+    // Clears the stroke store
+    pub fn clear(&mut self) {
+        self.store.clear();
+        self.update_selector();
+    }
+
     /// processes the received task from tasks_rx.
     /// Returns surface flags to indicate what needs to be updated in the UI.
     /// An example how to use it:

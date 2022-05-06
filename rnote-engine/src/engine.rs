@@ -431,8 +431,12 @@ impl RnoteEngine {
         Ok(serde_json::to_string(&engine_config)?)
     }
 
-    /// opens a .rnote file and replaces the current state with it.
-    pub async fn open_from_rnote_bytes(&mut self, bytes: Vec<u8>) -> anyhow::Result<()> {
+    /// opens a .rnote file. We need to split this into two methods,
+    /// because we can't have it as a async function and await when the engine is wrapped in a refcell without causing panics :/
+    pub fn open_from_rnote_bytes_p1(
+        &mut self,
+        bytes: Vec<u8>,
+    ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<StoreSnapshot>>> {
         let rnote_file = RnotefileMaj0Min5::load_from_bytes(&bytes)?;
 
         self.sheet = serde_json::from_value(rnote_file.sheet)?;
@@ -450,7 +454,15 @@ impl RnoteEngine {
             }
         });
 
-        self.store.import_snapshot(&store_snapshot_receiver.await??);
+        Ok(store_snapshot_receiver)
+    }
+
+    // Part two for opening a file. imports the store snapshot.
+    pub fn open_from_store_snapshot_p2(
+        &mut self,
+        store_snapshot: &StoreSnapshot,
+    ) -> anyhow::Result<()> {
+        self.store.import_snapshot(store_snapshot);
 
         self.update_selector();
 

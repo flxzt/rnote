@@ -1290,11 +1290,18 @@ impl RnoteAppWindow {
     {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
+        let store_snapshot_receiver = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .open_from_rnote_bytes_p1(bytes)?;
+
+        let store_snapshot = store_snapshot_receiver.await??;
+
         self.canvas()
             .engine()
             .borrow_mut()
-            .open_from_rnote_bytes(bytes)
-            .await?;
+            .open_from_store_snapshot_p2(&store_snapshot)?;
 
         self.canvas().set_unsaved_changes(false);
         app.set_input_file(None);

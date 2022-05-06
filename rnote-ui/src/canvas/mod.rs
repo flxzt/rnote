@@ -9,7 +9,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use crate::config;
-use rnote_engine::RnoteEngine;
+use rnote_engine::{RnoteEngine, render};
 
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
@@ -20,7 +20,7 @@ use gtk4::{
 use crate::appwindow::RnoteAppWindow;
 use futures::StreamExt;
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::AABB;
+use p2d::bounding_volume::{AABB, BoundingVolume};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
 use rnote_engine::utils::GrapheneRectHelpers;
@@ -413,12 +413,23 @@ impl RnoteCanvas {
             old_adj.disconnect(signal_id);
         }
 
+
         if let Some(ref hadjustment) = adj {
+            let old_viewport = Rc::new(Cell::new(AABB::new_zero()));
+
             let signal_id = hadjustment.connect_value_changed(
-                clone!(@weak self as canvas => move |_hadjustment| {
-                    canvas.queue_resize();
+                clone!(@strong old_viewport, @weak self as canvas => move |_hadjustment| {
+                    canvas.update_engine_background_rendering();
+
+                    let viewport = canvas.engine().borrow().camera.viewport();
+                    let image_scale = canvas.engine().borrow().camera.image_scale();
+                    if !old_viewport.get().loosened(render::VIEWPORT_RENDER_MARGIN / image_scale).contains(&viewport) {
+                        canvas.update_engine_rendering();
+                        old_viewport.set(viewport);
+                    }
                 }),
             );
+
             self.imp().hadjustment_signal.replace(Some(signal_id));
         }
         self.imp().hadjustment.replace(adj);
@@ -431,11 +442,21 @@ impl RnoteCanvas {
         }
 
         if let Some(ref vadjustment) = adj {
+            let old_viewport = Rc::new(Cell::new(AABB::new_zero()));
+
             let signal_id = vadjustment.connect_value_changed(
-                clone!(@weak self as canvas => move |_vadjustment| {
-                    canvas.queue_resize();
+                clone!(@strong old_viewport, @weak self as canvas => move |_vadjustment| {
+                    canvas.update_engine_background_rendering();
+
+                    let viewport = canvas.engine().borrow().camera.viewport();
+                    let image_scale = canvas.engine().borrow().camera.image_scale();
+                    if !old_viewport.get().loosened(render::VIEWPORT_RENDER_MARGIN / image_scale).contains(&viewport) {
+                        canvas.update_engine_rendering();
+                        old_viewport.set(viewport);
+                    }
                 }),
             );
+
             self.imp().vadjustment_signal.replace(Some(signal_id));
         }
         self.imp().vadjustment.replace(adj);
@@ -724,10 +745,10 @@ impl RnoteCanvas {
     pub fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
         self.engine().borrow_mut().update_camera_offset(new_offset);
 
+        // By setting new adjustment values, the callback connected to their value property is called,
+        // Which is where the engine rendering is updated.
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
-
-        self.update_engine_background_rendering();
     }
 
     /// returns the center of the current view on the sheet

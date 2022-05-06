@@ -120,7 +120,10 @@ mod imp {
             canvas.engine().borrow_mut().camera.size = new_size;
 
             // Update the background rendering
-            canvas.engine().borrow_mut().update_background_rendering_current_viewport();
+            canvas
+                .engine()
+                .borrow_mut()
+                .update_background_rendering_current_viewport();
         }
     }
 }

@@ -1,20 +1,22 @@
+use std::cell::Cell;
+use std::rc::Rc;
+
+use gtk4::{
+    glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
+};
+use p2d::bounding_volume::{BoundingVolume, AABB};
+use rnote_compose::helpers::AABBHelpers;
+
+use crate::canvas::RnoteCanvas;
+use rnote_engine::sheet::ExpandMode;
+use rnote_engine::{render, Sheet};
+
 mod imp {
-    use std::cell::Cell;
-    use std::rc::Rc;
-
-    use gtk4::{
-        glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
-    };
-    use p2d::bounding_volume::{BoundingVolume, AABB};
-    use rnote_compose::helpers::AABBHelpers;
-
-    use crate::canvas::RnoteCanvas;
-    use rnote_engine::sheet::ExpandMode;
-    use rnote_engine::{render, Sheet};
+    use super::*;
 
     #[derive(Debug, Clone)]
     pub struct CanvasLayout {
-        old_viewport: Rc<Cell<AABB>>,
+        pub old_viewport: Rc<Cell<AABB>>,
     }
 
     impl Default for CanvasLayout {
@@ -141,29 +143,27 @@ mod imp {
                 .update_background_rendering_current_viewport();
 
             let viewport = canvas.engine().borrow().camera.viewport();
-            let viewport_extents = viewport.extents();
             let old_viewport = self.old_viewport.get();
-            let old_viewport_extents = old_viewport.extents();
 
-            let old_viewport_render_margins =
-                old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
-
+            // We only extend the viewport by half of the margin, because we want to trigger rendering before we reach it.
+            // This has two advantages: Strokes that might take longer to render have a head start while still being out of view,
+            // And the rendering gets triggered more often, so not that many strokes start to get rendered. This avoids stutters,
+            // because while the rendering itself is on worker threads, we still have to `integrate` the resulted textures,
+            // which can also take up quite some time on the main UI thread.
+            let old_viewport_extended = old_viewport
+                .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.5);
             /*
                        log::debug!(
-                           "viewport: {:#?}\nold_loosened_viewport: {:#?}",
+                           "viewport: {:#?}\nold_viewport_extended: {:#?}",
                            viewport,
-                           old_loosened_viewport
+                           old_viewport_extended
                        );
             */
 
-            // Either when we have zoomed out beyond the extended old viewport
-            if viewport_extents > old_viewport_extents * render::VIEWPORT_EXTENTS_MARGIN_FACTOR
-                // or if the viewport is moved beyond the extended old viewport
-                || !old_viewport
-                    .extend_by(old_viewport_render_margins)
-                    .contains(&viewport)
-            {
-                // conditionally update the engine rendering when the thresholds are crossed
+            // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming into view.
+            // But after zoom ins we need to update old_viewport with layout_manager.update_state()
+            if !old_viewport_extended.contains(&viewport) {
+                // Because we don't set the rendering of strokes that are already in the view dirty, we only render those that may come into the view.
                 canvas
                     .engine()
                     .borrow_mut()
@@ -174,8 +174,6 @@ mod imp {
         }
     }
 }
-
-use gtk4::{glib, LayoutManager};
 
 glib::wrapper! {
     pub struct CanvasLayout(ObjectSubclass<imp::CanvasLayout>)
@@ -191,5 +189,12 @@ impl Default for CanvasLayout {
 impl CanvasLayout {
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("Failed to create CanvasLayout")
+    }
+
+    // needs to be called after zooming
+    pub fn update_state(&self, canvas: &RnoteCanvas) {
+        self.imp()
+            .old_viewport
+            .set(canvas.engine().borrow().camera.viewport());
     }
 }

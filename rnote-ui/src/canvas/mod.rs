@@ -799,6 +799,13 @@ impl RnoteCanvas {
 
         self.regenerate_background_pattern();
         self.update_engine_rendering();
+
+        // We need to update the layout managers internal state after zooming
+        self.layout_manager()
+            .unwrap()
+            .downcast::<CanvasLayout>()
+            .unwrap()
+            .update_state(self);
     }
 
     /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.

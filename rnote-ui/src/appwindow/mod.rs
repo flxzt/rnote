@@ -989,10 +989,8 @@ impl RnoteAppWindow {
             let new_zoom = Rc::new(Cell::new(1.0));
             let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
             let adjs_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-            let start_viewport = Rc::new(Cell::new(AABB::new_zero()));
 
             canvas_zoom_gesture.connect_begin(clone!(
-                @strong start_viewport,
                 @strong zoom_begin,
                 @strong new_zoom,
                 @strong prev_scale,
@@ -1011,12 +1009,9 @@ impl RnoteAppWindow {
 
                     bbcenter_begin.set(canvas_zoom_gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
                     adjs_begin.set(na::vector![appwindow.canvas().hadjustment().unwrap().value(), appwindow.canvas().vadjustment().unwrap().value()]);
-
-                    start_viewport.set(appwindow.canvas().engine().borrow().camera.viewport());
             }));
 
             canvas_zoom_gesture.connect_scale_changed(clone!(
-                @strong start_viewport,
                 @strong zoom_begin,
                 @strong new_zoom,
                 @strong prev_scale,
@@ -1044,12 +1039,7 @@ impl RnoteAppWindow {
 
                         appwindow.canvas().update_camera_offset(new_adj_values);
 
-                        let viewport = appwindow.canvas().engine().borrow().camera.viewport();
-                        let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
-                        if !start_viewport.get().loosened(render::VIEWPORT_RENDER_MARGIN / image_scale).contains(&viewport) {
-                            appwindow.canvas().update_engine_rendering();
-                            start_viewport.set(viewport);
-                        }
+                        // In this touch zoom gesture we dont update the rendering until we are finished. It would be too expensive.
                     }
             }));
 

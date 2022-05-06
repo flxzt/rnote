@@ -139,6 +139,8 @@ impl StrokeStore {
 
         self.chrono_counter = store_snapshot.chrono_counter;
 
+        self.update_geometry_for_strokes(&self.keys_unordered());
+
         self.reload_tree();
         self.reload_render_components_slotmap();
     }

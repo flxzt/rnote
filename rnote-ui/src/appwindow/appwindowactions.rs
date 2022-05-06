@@ -1021,7 +1021,6 @@ impl RnoteAppWindow {
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
-            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom fit to width
@@ -1035,7 +1034,6 @@ impl RnoteAppWindow {
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
-            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom in
@@ -1045,7 +1043,6 @@ impl RnoteAppWindow {
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
-            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom out
@@ -1055,7 +1052,6 @@ impl RnoteAppWindow {
             let current_sheet_center = appwindow.canvas().current_center_on_sheet();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
             appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
-            appwindow.canvas().update_engine_rendering();
         }));
 
         // Zoom to value

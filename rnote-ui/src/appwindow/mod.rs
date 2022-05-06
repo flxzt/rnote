@@ -760,8 +760,9 @@ impl RnoteAppWindow {
             self.canvas().set_empty(false);
         }
         if surface_flags.camera_changed {
-            // This is simiply calling queue_resize()
-            self.canvas().update_engine_background_rendering();
+            let camera_offset = self.canvas().engine().borrow().camera.offset;
+            // this updates the canvas adjustment values with the ones from the camera
+            self.canvas().update_camera_offset(camera_offset);
         }
         if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
             if hide_scrollbars {

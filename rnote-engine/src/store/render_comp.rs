@@ -378,8 +378,8 @@ impl StrokeStore {
     }
 
     /// Draws the strokes without the selection
-    pub fn draw_strokes_snapshot(&self, snapshot: &Snapshot, sheet_bounds: AABB, viewport: AABB) {
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
+    pub fn draw_strokes_snapshot(&self, snapshot: &Snapshot, doc_bounds: AABB, viewport: AABB) {
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .iter()
@@ -405,7 +405,7 @@ impl StrokeStore {
     pub fn draw_selection_snapshot(
         &self,
         snapshot: &Snapshot,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         viewport: AABB,
     ) {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
@@ -439,7 +439,7 @@ impl StrokeStore {
     pub fn draw_strokes_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
@@ -470,7 +470,7 @@ impl StrokeStore {
     pub fn draw_selection_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {

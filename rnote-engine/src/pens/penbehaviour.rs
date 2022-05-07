@@ -1,20 +1,20 @@
 use rnote_compose::penhelpers::PenEvent;
 
 use crate::engine::EngineTaskSender;
-use crate::sheet::Sheet;
-use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use crate::document::Document;
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
 use super::AudioPlayer;
 
 /// types that are pens and can handle pen events
-pub trait PenBehaviour: DrawOnSheetBehaviour {
+pub trait PenBehaviour: DrawOnDocBehaviour {
     /// Handles a pen event
     #[must_use]
     fn handle_event(
         &mut self,
         event: PenEvent,
         tasks_tx: EngineTaskSender,
-        sheet: &mut Sheet,
+        doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         audioplayer: Option<&mut AudioPlayer>,

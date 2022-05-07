@@ -8,8 +8,8 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::helpers::AABBHelpers;
 
 use crate::canvas::RnoteCanvas;
-use rnote_engine::sheet::ExpandMode;
-use rnote_engine::{render, Sheet};
+use rnote_engine::document::Layout;
+use rnote_engine::{render, Document};
 
 mod imp {
     use super::*;
@@ -51,15 +51,15 @@ mod imp {
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
 
             if orientation == Orientation::Vertical {
-                let natural_height = ((canvas.engine().borrow().sheet.height
-                    + 2.0 * Sheet::SHADOW_WIDTH)
+                let natural_height = ((canvas.engine().borrow().document.height
+                    + 2.0 * Document::SHADOW_WIDTH)
                     * total_zoom)
                     .ceil() as i32;
 
                 (0, natural_height, -1, -1)
             } else {
-                let natural_width = ((canvas.engine().borrow().sheet.width
-                    + 2.0 * Sheet::SHADOW_WIDTH)
+                let natural_width = ((canvas.engine().borrow().document.width
+                    + 2.0 * Document::SHADOW_WIDTH)
                     * total_zoom)
                     .ceil() as i32;
 
@@ -77,39 +77,39 @@ mod imp {
         ) {
             let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
             let total_zoom = canvas.engine().borrow().camera.total_zoom();
-            let expand_mode = canvas.engine().borrow().expand_mode();
+            let doc_layout = canvas.engine().borrow().doc_layout();
 
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
             let new_size = na::vector![f64::from(width), f64::from(height)];
 
             // Update the adjustments
-            let (h_lower, h_upper) = match expand_mode {
-                ExpandMode::FixedSize | ExpandMode::EndlessVertical => (
-                    (canvas.engine().borrow().sheet.x - Sheet::SHADOW_WIDTH) * total_zoom,
-                    (canvas.engine().borrow().sheet.x
-                        + canvas.engine().borrow().sheet.width
-                        + Sheet::SHADOW_WIDTH)
+            let (h_lower, h_upper) = match doc_layout {
+                Layout::FixedSize | Layout::ContinuousVertical => (
+                    (canvas.engine().borrow().document.x - Document::SHADOW_WIDTH) * total_zoom,
+                    (canvas.engine().borrow().document.x
+                        + canvas.engine().borrow().document.width
+                        + Document::SHADOW_WIDTH)
                         * total_zoom,
                 ),
-                ExpandMode::Infinite => (
-                    canvas.engine().borrow().sheet.x * total_zoom,
-                    (canvas.engine().borrow().sheet.x + canvas.engine().borrow().sheet.width)
+                Layout::Infinite => (
+                    canvas.engine().borrow().document.x * total_zoom,
+                    (canvas.engine().borrow().document.x + canvas.engine().borrow().document.width)
                         * total_zoom,
                 ),
             };
 
-            let (v_lower, v_upper) = match canvas.engine().borrow().expand_mode() {
-                ExpandMode::FixedSize | ExpandMode::EndlessVertical => (
-                    (canvas.engine().borrow().sheet.y - Sheet::SHADOW_WIDTH) * total_zoom,
-                    (canvas.engine().borrow().sheet.y
-                        + canvas.engine().borrow().sheet.height
-                        + Sheet::SHADOW_WIDTH)
+            let (v_lower, v_upper) = match canvas.engine().borrow().doc_layout() {
+                Layout::FixedSize | Layout::ContinuousVertical => (
+                    (canvas.engine().borrow().document.y - Document::SHADOW_WIDTH) * total_zoom,
+                    (canvas.engine().borrow().document.y
+                        + canvas.engine().borrow().document.height
+                        + Document::SHADOW_WIDTH)
                         * total_zoom,
                 ),
-                ExpandMode::Infinite => (
-                    canvas.engine().borrow().sheet.y * total_zoom,
-                    (canvas.engine().borrow().sheet.y + canvas.engine().borrow().sheet.height)
+                Layout::Infinite => (
+                    canvas.engine().borrow().document.y * total_zoom,
+                    (canvas.engine().borrow().document.y + canvas.engine().borrow().document.height)
                         * total_zoom,
                 ),
             };

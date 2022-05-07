@@ -6,28 +6,28 @@ use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
 use crate::utils::GrapheneRectHelpers;
 use crate::Camera;
 
-/// Trait for types that can draw themselves on the sheet.
-/// In the coordinate space of the sheet
-pub trait DrawOnSheetBehaviour {
-    fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB>;
-    /// draws itself on the sheet. the implementors are expected save / restore context
-    fn draw_on_sheet(
+/// Trait for types that can draw themselves on the document.
+/// In the coordinate space of the document
+pub trait DrawOnDocBehaviour {
+    fn bounds_on_doc(&self, doc_bounds: AABB, camera: &Camera) -> Option<AABB>;
+    /// draws itself on the document. the implementors are expected save / restore context
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        sheet_bounds: AABB,
+        doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()>;
 
     /// Expects snapshot untransformed in surface coordinate space.
-    fn draw_on_sheet_snapshot(
+    fn draw_on_doc_snapshot(
         &self,
         snapshot: &gtk4::Snapshot,
-        sheet_bounds: AABB,
+        doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         snapshot.save();
 
-        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
+        if let Some(bounds) = self.bounds_on_doc(doc_bounds, camera) {
             let viewport = camera.viewport();
 
             // Restrict to viewport as maximum bounds. Else cairo will panic for very large bounds
@@ -45,10 +45,10 @@ pub trait DrawOnSheetBehaviour {
                 snapshot.append_cairo(&graphene::Rect::from_p2d_aabb(bounds_transformed));
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
-            // Transform to sheet coordinate space
+            // Transform to doc coordinate space
             piet_cx.transform(camera.transform().to_kurbo());
 
-            self.draw_on_sheet(&mut piet_cx, sheet_bounds, camera)?;
+            self.draw_on_doc(&mut piet_cx, doc_bounds, camera)?;
         }
 
         snapshot.restore();

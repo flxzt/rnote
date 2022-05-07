@@ -2,9 +2,9 @@ use crate::engine::EngineTaskSender;
 use crate::pens::shortcuts::ShortcutAction;
 use crate::pens::Tools;
 
-use crate::sheet::Sheet;
+use crate::document::Document;
 use crate::surfaceflags::SurfaceFlags;
-use crate::{Camera, DrawOnSheetBehaviour, StrokeStore};
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore};
 use piet::RenderContext;
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 
@@ -253,7 +253,7 @@ impl PenHolder {
         &mut self,
         event: PenHolderEvent,
         tasks_tx: EngineTaskSender,
-        sheet: &mut crate::sheet::Sheet,
+        doc: &mut crate::document::Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
     ) -> SurfaceFlags {
@@ -272,19 +272,19 @@ impl PenHolder {
         match event {
             PenHolderEvent::PenEvent(pen_event) => {
                 let (pen_progress, pen_surface_flags) =
-                    self.handle_pen_event(pen_event, tasks_tx, sheet, store, camera);
+                    self.handle_pen_event(pen_event, tasks_tx, doc, store, camera);
                 surface_flags.merge_with_other(pen_surface_flags);
                 surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
             }
             PenHolderEvent::ChangeStyle(new_style) => {
                 surface_flags
-                    .merge_with_other(self.change_style(new_style, tasks_tx, sheet, store, camera));
+                    .merge_with_other(self.change_style(new_style, tasks_tx, doc, store, camera));
             }
             PenHolderEvent::ChangeStyleOverride(new_style_override) => {
                 surface_flags.merge_with_other(self.change_style_override(
                     new_style_override,
                     tasks_tx,
-                    sheet,
+                    doc,
                     store,
                     camera,
                 ));
@@ -298,13 +298,13 @@ impl PenHolder {
                         } => {
                             if permanent {
                                 surface_flags.merge_with_other(
-                                    self.change_style(new_style, tasks_tx, sheet, store, camera),
+                                    self.change_style(new_style, tasks_tx, doc, store, camera),
                                 );
                             } else {
                                 surface_flags.merge_with_other(self.change_style_override(
                                     Some(new_style),
                                     tasks_tx,
-                                    sheet,
+                                    doc,
                                     store,
                                     camera,
                                 ));
@@ -322,7 +322,7 @@ impl PenHolder {
         &mut self,
         new_style: PenStyle,
         tasks_tx: EngineTaskSender,
-        sheet: &mut crate::sheet::Sheet,
+        doc: &mut crate::document::Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
     ) -> SurfaceFlags {
@@ -331,7 +331,7 @@ impl PenHolder {
         if self.style != new_style {
             // Cancel current pen
             let (pen_progress, pen_surface_flags) =
-                self.handle_pen_event(PenEvent::Cancel, tasks_tx, sheet, store, camera);
+                self.handle_pen_event(PenEvent::Cancel, tasks_tx, doc, store, camera);
             surface_flags.merge_with_other(pen_surface_flags);
 
             surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
@@ -353,7 +353,7 @@ impl PenHolder {
         &mut self,
         new_style_override: Option<PenStyle>,
         tasks_tx: EngineTaskSender,
-        sheet: &mut crate::sheet::Sheet,
+        doc: &mut crate::document::Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
     ) -> SurfaceFlags {
@@ -364,7 +364,7 @@ impl PenHolder {
         if self.style_override != new_style_override {
             // Cancel current pen
             let (pen_progress, pen_surface_flags) =
-                self.handle_pen_event(PenEvent::Cancel, tasks_tx, sheet, store, camera);
+                self.handle_pen_event(PenEvent::Cancel, tasks_tx, doc, store, camera);
             surface_flags.merge_with_other(pen_surface_flags);
             surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
@@ -403,7 +403,7 @@ impl PenHolder {
         &mut self,
         event: PenEvent,
         tasks_tx: EngineTaskSender,
-        sheet: &mut Sheet,
+        doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
     ) -> (PenProgress, SurfaceFlags) {
@@ -411,7 +411,7 @@ impl PenHolder {
             PenStyle::Brush => self.brush.handle_event(
                 event,
                 tasks_tx,
-                sheet,
+                doc,
                 store,
                 camera,
                 self.audioplayer.as_mut(),
@@ -419,7 +419,7 @@ impl PenHolder {
             PenStyle::Shaper => self.shaper.handle_event(
                 event,
                 tasks_tx,
-                sheet,
+                doc,
                 store,
                 camera,
                 self.audioplayer.as_mut(),
@@ -427,7 +427,7 @@ impl PenHolder {
             PenStyle::Eraser => self.eraser.handle_event(
                 event,
                 tasks_tx,
-                sheet,
+                doc,
                 store,
                 camera,
                 self.audioplayer.as_mut(),
@@ -435,7 +435,7 @@ impl PenHolder {
             PenStyle::Selector => self.selector.handle_event(
                 event,
                 tasks_tx,
-                sheet,
+                doc,
                 store,
                 camera,
                 self.audioplayer.as_mut(),
@@ -443,7 +443,7 @@ impl PenHolder {
             PenStyle::Tools => self.tools.handle_event(
                 event,
                 tasks_tx,
-                sheet,
+                doc,
                 store,
                 camera,
                 self.audioplayer.as_mut(),
@@ -452,30 +452,30 @@ impl PenHolder {
     }
 }
 
-impl DrawOnSheetBehaviour for PenHolder {
-    fn bounds_on_sheet(&self, sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for PenHolder {
+    fn bounds_on_doc(&self, doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
         match self.style_w_override() {
-            PenStyle::Brush => self.brush.bounds_on_sheet(sheet_bounds, camera),
-            PenStyle::Shaper => self.shaper.bounds_on_sheet(sheet_bounds, camera),
-            PenStyle::Eraser => self.eraser.bounds_on_sheet(sheet_bounds, camera),
-            PenStyle::Selector => self.selector.bounds_on_sheet(sheet_bounds, camera),
-            PenStyle::Tools => self.tools.bounds_on_sheet(sheet_bounds, camera),
+            PenStyle::Brush => self.brush.bounds_on_doc(doc_bounds, camera),
+            PenStyle::Shaper => self.shaper.bounds_on_doc(doc_bounds, camera),
+            PenStyle::Eraser => self.eraser.bounds_on_doc(doc_bounds, camera),
+            PenStyle::Selector => self.selector.bounds_on_doc(doc_bounds, camera),
+            PenStyle::Tools => self.tools.bounds_on_doc(doc_bounds, camera),
         }
     }
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        sheet_bounds: AABB,
+        doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         match self.style_w_override() {
-            PenStyle::Brush => self.brush.draw_on_sheet(cx, sheet_bounds, camera),
-            PenStyle::Shaper => self.shaper.draw_on_sheet(cx, sheet_bounds, camera),
-            PenStyle::Eraser => self.eraser.draw_on_sheet(cx, sheet_bounds, camera),
-            PenStyle::Selector => self.selector.draw_on_sheet(cx, sheet_bounds, camera),
-            PenStyle::Tools => self.tools.draw_on_sheet(cx, sheet_bounds, camera),
+            PenStyle::Brush => self.brush.draw_on_doc(cx, doc_bounds, camera),
+            PenStyle::Shaper => self.shaper.draw_on_doc(cx, doc_bounds, camera),
+            PenStyle::Eraser => self.eraser.draw_on_doc(cx, doc_bounds, camera),
+            PenStyle::Selector => self.selector.draw_on_doc(cx, doc_bounds, camera),
+            PenStyle::Tools => self.tools.draw_on_doc(cx, doc_bounds, camera),
         }?;
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;

@@ -41,9 +41,9 @@ struct RnotefileWrapper {
 
 #[serde(rename = "rnotefile_maj0_min5")]
 pub struct RnotefileMaj0Min5 {
-    /// sheet
-    #[serde(rename = "sheet")]
-    pub sheet: serde_json::Value,
+    /// the document
+    #[serde(rename = "document", alias = "sheet")]
+    pub document: serde_json::Value,
     /// A snapshot of the store
     #[serde(rename = "store_snapshot")]
     pub store_snapshot: serde_json::Value,
@@ -90,5 +90,5 @@ impl FileFormatSaver for RnotefileMaj0Min5 {
 
 /* #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RnoteFileMaj0Min4 {
-    sheet: serde_json::Value,
+    doc: serde_json::Value,
 } */

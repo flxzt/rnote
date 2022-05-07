@@ -1,9 +1,9 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 use crate::engine::EngineTaskSender;
-use crate::sheet::Sheet;
+use crate::document::Document;
 use crate::store::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use kurbo::Shape;
 use p2d::query::PointQuery;
 use piet::RenderContext;
@@ -104,7 +104,7 @@ impl PenBehaviour for Selector {
         &mut self,
         event: PenEvent,
         tasks_tx: EngineTaskSender,
-        sheet: &mut Sheet,
+        doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -423,7 +423,7 @@ impl PenBehaviour for Selector {
                 }
                 *modify_state = ModifyState::Up;
 
-                sheet.resize_autoexpand(store, camera);
+                doc.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -445,7 +445,7 @@ impl PenBehaviour for Selector {
                 store.set_selected_keys(&selection, false);
                 self.state = SelectorState::Idle;
 
-                sheet.resize_autoexpand(store, camera);
+                doc.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -459,8 +459,8 @@ impl PenBehaviour for Selector {
     }
 }
 
-impl DrawOnSheetBehaviour for Selector {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for Selector {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
         let total_zoom = camera.total_zoom();
 
         match &self.state {
@@ -493,10 +493,10 @@ impl DrawOnSheetBehaviour for Selector {
         }
     }
 
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;

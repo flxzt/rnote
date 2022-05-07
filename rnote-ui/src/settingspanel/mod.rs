@@ -12,8 +12,8 @@ use gtk4::{
     CompositeTemplate, ScrolledWindow, SpinButton, Switch, ToggleButton, Widget,
 };
 use rnote_compose::penhelpers::ShortcutKey;
-use rnote_engine::sheet::background::PatternStyle;
-use rnote_engine::sheet::format::{self, Format};
+use rnote_engine::document::background::PatternStyle;
+use rnote_engine::document::format::{self, Format};
 use rnote_engine::utils::GdkRGBAHelpers;
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -508,7 +508,7 @@ impl SettingsPanel {
             .canvas()
             .engine()
             .borrow()
-            .sheet
+            .document
             .format
             .border_color;
 
@@ -523,7 +523,7 @@ impl SettingsPanel {
     }
 
     pub fn load_format(&self, appwindow: &RnoteAppWindow) {
-        let format = appwindow.canvas().engine().borrow().sheet.format.clone();
+        let format = appwindow.canvas().engine().borrow().document.format.clone();
 
         self.set_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
@@ -545,10 +545,10 @@ impl SettingsPanel {
             .canvas()
             .engine()
             .borrow()
-            .sheet
+            .document
             .background
             .clone();
-        let format = appwindow.canvas().engine().borrow().sheet.format.clone();
+        let format = appwindow.canvas().engine().borrow().document.format.clone();
 
         self.background_color_choosebutton()
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
@@ -671,8 +671,8 @@ impl SettingsPanel {
         // revert format
         self.imp().format_revert_button.get().connect_clicked(
             clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
-                *settings_panel.imp().temporary_format.borrow_mut() = appwindow.canvas().engine().borrow().sheet.format.clone();
-                let revert_format = appwindow.canvas().engine().borrow().sheet.format.clone();
+                *settings_panel.imp().temporary_format.borrow_mut() = appwindow.canvas().engine().borrow().document.format.clone();
+                let revert_format = appwindow.canvas().engine().borrow().document.format.clone();
 
                 settings_panel.set_predefined_format_variant(format::PredefinedFormat::Custom);
 
@@ -693,7 +693,7 @@ impl SettingsPanel {
         self.imp().format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
                 let temporary_format = temporary_format.borrow().clone();
-                appwindow.canvas().engine().borrow_mut().sheet.format = temporary_format;
+                appwindow.canvas().engine().borrow_mut().document.format = temporary_format;
 
                 appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
                 appwindow.canvas().update_engine_rendering();
@@ -702,7 +702,7 @@ impl SettingsPanel {
 
         // Background
         self.imp().background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.canvas().engine().borrow_mut().sheet.background.color = background_color_choosebutton.rgba().into_compose_color();
+            appwindow.canvas().engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
 
             appwindow.canvas().regenerate_background_pattern();
             appwindow.canvas().update_engine_rendering();
@@ -717,23 +717,23 @@ impl SettingsPanel {
                     .as_str()
                 {
                     "none" => {
-                        appwindow.canvas().engine().borrow_mut().sheet.background.pattern = PatternStyle::None;
+                        appwindow.canvas().engine().borrow_mut().document.background.pattern = PatternStyle::None;
                         settings_panel.background_pattern_width_unitentry().set_sensitive(false);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(false);
 
                     },
                     "lines" => {
-                        appwindow.canvas().engine().borrow_mut().sheet.background.pattern = PatternStyle::Lines;
+                        appwindow.canvas().engine().borrow_mut().document.background.pattern = PatternStyle::Lines;
                         settings_panel.background_pattern_width_unitentry().set_sensitive(false);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
                     "grid" => {
-                        appwindow.canvas().engine().borrow_mut().sheet.background.pattern = PatternStyle::Grid;
+                        appwindow.canvas().engine().borrow_mut().document.background.pattern = PatternStyle::Grid;
                         settings_panel.background_pattern_width_unitentry().set_sensitive(true);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
                     "dots" => {
-                        appwindow.canvas().engine().borrow_mut().sheet.background.pattern = PatternStyle::Dots;
+                        appwindow.canvas().engine().borrow_mut().document.background.pattern = PatternStyle::Dots;
                         settings_panel.background_pattern_width_unitentry().set_sensitive(true);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
@@ -750,7 +750,7 @@ impl SettingsPanel {
         }));
 
         self.imp().background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
-            appwindow.canvas().engine().borrow_mut().sheet.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
+            appwindow.canvas().engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
 
             appwindow.canvas().regenerate_background_pattern();
             appwindow.canvas().update_engine_rendering();
@@ -758,7 +758,7 @@ impl SettingsPanel {
 
         self.imp().general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
             let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
-            appwindow.canvas().engine().borrow_mut().sheet.format.border_color = format_border_color;
+            appwindow.canvas().engine().borrow_mut().document.format.border_color = format_border_color;
 
             // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
             settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
@@ -770,10 +770,10 @@ impl SettingsPanel {
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.canvas().engine().borrow().sheet.background.pattern_size;
+                    let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
                     pattern_size[0] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
 
-                    appwindow.canvas().engine().borrow_mut().sheet.background.pattern_size = pattern_size;
+                    appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
                     appwindow.canvas().regenerate_background_pattern();
                     appwindow.canvas().update_engine_rendering();
@@ -785,10 +785,10 @@ impl SettingsPanel {
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.canvas().engine().borrow().sheet.background.pattern_size;
+                    let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
                     pattern_size[1] = f64::from(settings_panel.background_pattern_height_unitentry().value_in_px());
 
-                    appwindow.canvas().engine().borrow_mut().sheet.background.pattern_size = pattern_size;
+                    appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
                     appwindow.canvas().regenerate_background_pattern();
                     appwindow.canvas().update_engine_rendering();

@@ -8,7 +8,7 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/toolspage.ui")]
     pub struct ToolsPage {
         #[template_child]
-        pub toolstyle_expandsheet_toggle: TemplateChild<ToggleButton>,
+        pub toolstyle_verticalspace_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub toolstyle_dragproximity_toggle: TemplateChild<ToggleButton>,
         #[template_child]
@@ -61,8 +61,8 @@ impl ToolsPage {
         glib::Object::new(&[]).expect("Failed to create ToolsPage")
     }
 
-    pub fn toolstyle_expandsheet_toggle(&self) -> ToggleButton {
-        self.imp().toolstyle_expandsheet_toggle.get()
+    pub fn toolstyle_verticalspace_toggle(&self) -> ToggleButton {
+        self.imp().toolstyle_verticalspace_toggle.get()
     }
 
     pub fn toolstyle_dragproximity_toggle(&self) -> ToggleButton {
@@ -74,9 +74,9 @@ impl ToolsPage {
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
-        self.toolstyle_expandsheet_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_expandsheet_toggle| {
-            if toolstyle_expandsheet_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"expandsheet".to_variant()));
+        self.toolstyle_verticalspace_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
+            if toolstyle_verticalspace_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"verticalspace".to_variant()));
             }
         }));
 

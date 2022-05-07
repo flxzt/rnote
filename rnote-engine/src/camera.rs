@@ -86,7 +86,7 @@ impl Camera {
         self.zoom * self.temporary_zoom * self.scale_factor
     }
 
-    /// the viewport in sheet coordinate space
+    /// the viewport in document coordinate space
     pub fn viewport(&self) -> AABB {
         let inv_zoom = 1.0 / self.total_zoom();
 
@@ -96,17 +96,17 @@ impl Camera {
         )
     }
 
-    /// from sheet coords -> surface coords
+    /// from document coords -> surface coords
     pub fn transform_bounds(&self, bounds: AABB) -> AABB {
         bounds.scale(self.total_zoom()).translate(-self.offset)
     }
 
-    /// from surface coords -> sheet coords
+    /// from surface coords -> document coords
     pub fn transform_inv_bounds(&self, bounds: AABB) -> AABB {
         bounds.translate(self.offset).scale(1.0 / self.total_zoom())
     }
 
-    /// The transform from sheet coords -> surface coords
+    /// The transform from document coords -> surface coords
     /// To have the inverse, call .inverse()
     pub fn transform(&self) -> na::Affine2<f64> {
         let total_zoom = self.total_zoom();
@@ -147,7 +147,7 @@ mod tests {
         let zoom = 1.5;
         let camera = Camera::default().with_zoom(zoom).with_offset(offset);
 
-        // Point in sheet coordinates
+        // Point in document coordinates
         let p0 = na::point![10.0, 2.0];
 
         // First zoom, then scale

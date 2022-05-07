@@ -12,7 +12,7 @@ use rnote_engine::pens::selector::SelectorType;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::tools::ToolsStyle;
 use rnote_engine::pens::{brush, selector, shaper, tools};
-use rnote_engine::sheet::ExpandMode;
+use rnote_engine::document::Layout;
 use rnote_engine::{render, Camera};
 
 use gettextrs::gettext;
@@ -82,12 +82,12 @@ impl RnoteAppWindow {
         let action_format_borders =
             gio::SimpleAction::new_stateful("format-borders", None, &true.to_variant());
         self.add_action(&action_format_borders);
-        let action_expand_mode = gio::SimpleAction::new_stateful(
-            "expand-mode",
+        let action_doc_layout = gio::SimpleAction::new_stateful(
+            "doc-layout",
             Some(&glib::VariantType::new("s").unwrap()),
             &String::from("infinite").to_variant(),
         );
-        self.add_action(&action_expand_mode);
+        self.add_action(&action_doc_layout);
         let action_undo_stroke = gio::SimpleAction::new("undo", None);
         self.add_action(&action_undo_stroke);
         let action_redo_stroke = gio::SimpleAction::new("redo", None);
@@ -103,8 +103,8 @@ impl RnoteAppWindow {
         let action_zoom_to_value =
             gio::SimpleAction::new("zoom-to-value", Some(&glib::VariantType::new("d").unwrap()));
         self.add_action(&action_zoom_to_value);
-        let action_add_page_to_sheet = gio::SimpleAction::new("add-page-to-sheet", None);
-        self.add_action(&action_add_page_to_sheet);
+        let action_add_page_to_doc = gio::SimpleAction::new("add-page-to-doc", None);
+        self.add_action(&action_add_page_to_doc);
         let action_resize_to_fit_strokes = gio::SimpleAction::new("resize-to-fit-strokes", None);
         self.add_action(&action_resize_to_fit_strokes);
         let action_return_origin_page = gio::SimpleAction::new("return-origin-page", None);
@@ -118,33 +118,33 @@ impl RnoteAppWindow {
         self.add_action(&action_selection_select_all);
         let action_selection_deselect_all = gio::SimpleAction::new("selection-deselect-all", None);
         self.add_action(&action_selection_deselect_all);
-        let action_clear_sheet = gio::SimpleAction::new("clear-sheet", None);
-        self.add_action(&action_clear_sheet);
-        let action_new_sheet = gio::SimpleAction::new("new-sheet", None);
-        self.add_action(&action_new_sheet);
-        let action_save_sheet = gio::SimpleAction::new("save-sheet", None);
-        self.add_action(&action_save_sheet);
-        let action_save_sheet_as = gio::SimpleAction::new("save-sheet-as", None);
-        self.add_action(&action_save_sheet_as);
+        let action_clear_doc = gio::SimpleAction::new("clear-doc", None);
+        self.add_action(&action_clear_doc);
+        let action_new_doc = gio::SimpleAction::new("new-doc", None);
+        self.add_action(&action_new_doc);
+        let action_save_doc = gio::SimpleAction::new("save-doc", None);
+        self.add_action(&action_save_doc);
+        let action_save_doc_as = gio::SimpleAction::new("save-doc-as", None);
+        self.add_action(&action_save_doc_as);
         let action_autosave = gio::PropertyAction::new("autosave", self, "autosave");
         self.add_action(&action_autosave);
-        let action_open_sheet = gio::SimpleAction::new("open-sheet", None);
-        self.add_action(&action_open_sheet);
+        let action_open_doc = gio::SimpleAction::new("open-doc", None);
+        self.add_action(&action_open_doc);
         let action_open_workspace = gio::SimpleAction::new("open-workspace", None);
         self.add_action(&action_open_workspace);
-        let action_print_sheet = gio::SimpleAction::new("print-sheet", None);
-        self.add_action(&action_print_sheet);
+        let action_print_doc = gio::SimpleAction::new("print-doc", None);
+        self.add_action(&action_print_doc);
         let action_import_file = gio::SimpleAction::new("import-file", None);
         self.add_action(&action_import_file);
         let action_export_selection_as_svg =
             gio::SimpleAction::new("export-selection-as-svg", None);
         self.add_action(&action_export_selection_as_svg);
-        let action_export_sheet_as_svg = gio::SimpleAction::new("export-sheet-as-svg", None);
-        self.add_action(&action_export_sheet_as_svg);
-        let action_export_sheet_as_pdf = gio::SimpleAction::new("export-sheet-as-pdf", None);
-        self.add_action(&action_export_sheet_as_pdf);
-        let action_export_sheet_as_xopp = gio::SimpleAction::new("export-sheet-as-xopp", None);
-        self.add_action(&action_export_sheet_as_xopp);
+        let action_export_doc_as_svg = gio::SimpleAction::new("export-doc-as-svg", None);
+        self.add_action(&action_export_doc_as_svg);
+        let action_export_doc_as_pdf = gio::SimpleAction::new("export-doc-as-pdf", None);
+        self.add_action(&action_export_doc_as_pdf);
+        let action_export_doc_as_xopp = gio::SimpleAction::new("export-doc-as-xopp", None);
+        self.add_action(&action_export_doc_as_xopp);
         let action_clipboard_copy_selection =
             gio::SimpleAction::new("clipboard-copy-selection", None);
         self.add_action(&action_clipboard_copy_selection);
@@ -279,32 +279,32 @@ impl RnoteAppWindow {
             }),
         );
 
-        // Expand Mode
-        action_expand_mode.connect_activate(
-            clone!(@weak self as appwindow => move |action_expand_mode, target| {
-                let expand_mode = target.unwrap().str().unwrap();
+        // Doc layout
+        action_doc_layout.connect_activate(
+            clone!(@weak self as appwindow => move |action_doc_layout, target| {
+                let doc_layout = target.unwrap().str().unwrap();
 
-                match expand_mode {
+                match doc_layout {
                     "fixed-size" => {
-                        appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::FixedSize);
+                        appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::FixedSize);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(true);
                     },
-                    "endless-vertical" => {
-                        appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::EndlessVertical);
+                    "continuous-vertical" => {
+                        appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::ContinuousVertical);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
                     },
                     "infinite" => {
-                        appwindow.canvas().engine().borrow_mut().set_expand_mode(ExpandMode::Infinite);
+                        appwindow.canvas().engine().borrow_mut().set_doc_layout(Layout::Infinite);
                         appwindow.canvas_fixedsize_quickactions_revealer().set_reveal_child(false);
                     }
                     invalid_str => {
-                        log::error!("action expand mode failed, invalid str: {}", invalid_str);
+                        log::error!("action doc-layout failed, invalid str: {}", invalid_str);
                         return;
                     }
                 }
                 appwindow.canvas().update_engine_rendering();
 
-                action_expand_mode.set_state(&expand_mode.to_variant());
+                action_doc_layout.set_state(&doc_layout.to_variant());
             }));
 
         // Righthanded
@@ -509,7 +509,7 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |action_format_borders, state_request| {
                 let format_borders = state_request.unwrap().get::<bool>().unwrap();
 
-                appwindow.canvas().engine().borrow_mut().sheet.format.show_borders = format_borders;
+                appwindow.canvas().engine().borrow_mut().document.format.show_borders = format_borders;
                 appwindow.canvas().queue_draw();
 
                 action_format_borders.set_state(&format_borders.to_variant());
@@ -728,8 +728,8 @@ impl RnoteAppWindow {
             let tool_style = target.unwrap().str().unwrap();
 
             match tool_style {
-                "expandsheet" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::ExpandSheet;
+                "verticalspace" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::VerticalSpace;
                 },
                 "dragproximity" => {
                     appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::DragProximity;
@@ -749,14 +749,14 @@ impl RnoteAppWindow {
             clone!(
                 @weak self as appwindow,
                 @strong action_pen_sounds,
-                @strong action_expand_mode,
+                @strong action_doc_layout,
                 @strong action_format_borders,
                 @strong action_pdf_import_width_perc,
                 @strong action_pdf_import_as_vector
-                => move |_action_refresh_ui_for_sheet, _| {
+                => move |_action_refresh_ui_for_engine, _| {
                 // Avoids borrow errors
-                let format = appwindow.canvas().engine().borrow().sheet.format.clone();
-                let expand_mode = appwindow.canvas().engine().borrow().expand_mode();
+                let format = appwindow.canvas().engine().borrow().document.format.clone();
+                let doc_layout = appwindow.canvas().engine().borrow().doc_layout();
                 let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
                 let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
                 let pen_sounds = appwindow.canvas().engine().borrow().penholder.pen_sounds();
@@ -768,12 +768,12 @@ impl RnoteAppWindow {
 
                 {
                     // Engine
-                    let expand_mode_str = match expand_mode {
-                        ExpandMode::FixedSize => "fixed-size",
-                        ExpandMode::EndlessVertical => "endless-vertical",
-                        ExpandMode::Infinite => "infinite",
+                    let doc_layout = match doc_layout {
+                        Layout::FixedSize => "fixed-size",
+                        Layout::ContinuousVertical => "continuous-vertical",
+                        Layout::Infinite => "infinite",
                     };
-                    action_expand_mode.activate(Some(&expand_mode_str.to_variant()));
+                    action_doc_layout.activate(Some(&doc_layout.to_variant()));
                     action_pdf_import_as_vector.activate(Some(&pdf_import_as_vector.to_variant()));
                     action_pdf_import_width_perc.activate(Some(&pdf_import_width_perc.to_variant()));
                     action_pen_sounds.change_state(&pen_sounds.to_variant());
@@ -919,7 +919,7 @@ impl RnoteAppWindow {
 
                 // Tools
                 match tools.style {
-                    ToolsStyle::ExpandSheet => appwindow.penssidebar().tools_page().toolstyle_expandsheet_toggle().set_active(true),
+                    ToolsStyle::VerticalSpace => appwindow.penssidebar().tools_page().toolstyle_verticalspace_toggle().set_active(true),
                     ToolsStyle::DragProximity => appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true),
                     ToolsStyle::OffsetCamera => appwindow.penssidebar().tools_page().toolstyle_offsetcamera_toggle().set_active(true),
                 }
@@ -991,9 +991,9 @@ impl RnoteAppWindow {
             }),
         );
 
-        // Clear sheet
-        action_clear_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_clear_sheet(&appwindow);
+        // Clear doc
+        action_clear_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            dialogs::dialog_clear_doc(&appwindow);
         }));
 
         // Undo stroke
@@ -1016,9 +1016,9 @@ impl RnoteAppWindow {
         action_zoom_reset.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let new_zoom = Camera::ZOOM_DEFAULT;
 
-            let current_sheet_center = appwindow.canvas().current_center_on_sheet();
+            let current_doc_center = appwindow.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+            appwindow.canvas().center_around_coord_on_doc(current_doc_center);
         }));
 
         // Zoom fit to width
@@ -1026,30 +1026,30 @@ impl RnoteAppWindow {
             let mut new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom();
 
             for _ in 0..2 {
-                new_zoom = f64::from(appwindow.canvas_scroller().width()) / appwindow.canvas().engine().borrow().sheet.format.width as f64;
+                new_zoom = f64::from(appwindow.canvas_scroller().width()) / appwindow.canvas().engine().borrow().document.format.width as f64;
             }
 
-            let current_sheet_center = appwindow.canvas().current_center_on_sheet();
+            let current_doc_center = appwindow.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+            appwindow.canvas().center_around_coord_on_doc(current_doc_center);
         }));
 
         // Zoom in
         action_zoomin.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 + RnoteCanvas::ZOOM_STEP);
 
-            let current_sheet_center = appwindow.canvas().current_center_on_sheet();
+            let current_doc_center = appwindow.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+            appwindow.canvas().center_around_coord_on_doc(current_doc_center);
         }));
 
         // Zoom out
         action_zoomout.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - RnoteCanvas::ZOOM_STEP);
 
-            let current_sheet_center = appwindow.canvas().current_center_on_sheet();
+            let current_doc_center = appwindow.canvas().current_center_on_doc();
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-            appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+            appwindow.canvas().center_around_coord_on_doc(current_doc_center);
         }));
 
         // Zoom to value
@@ -1062,12 +1062,12 @@ impl RnoteAppWindow {
                 appwindow.mainheader().canvasmenu().zoomreset_button().set_label(format!("{:.0}%", (100.0 * new_zoom).round()).as_str());
             }));
 
-        // Add page to sheet in fixed size mode
-        action_add_page_to_sheet.connect_activate(
-            clone!(@weak self as appwindow => move |_action_add_page_to_sheet, _target| {
-            let format_height = appwindow.canvas().engine().borrow().sheet.format.height;
-            let new_sheet_height = appwindow.canvas().engine().borrow().sheet.height + format_height;
-            appwindow.canvas().engine().borrow_mut().sheet.height = new_sheet_height;
+        // Add page to doc in fixed size mode
+        action_add_page_to_doc.connect_activate(
+            clone!(@weak self as appwindow => move |_action_add_page_to_doc, _target| {
+            let format_height = appwindow.canvas().engine().borrow().document.format.height;
+            let new_doc_height = appwindow.canvas().engine().borrow().document.height + format_height;
+            appwindow.canvas().engine().borrow_mut().document.height = new_doc_height;
 
             appwindow.canvas().update_engine_rendering();
         }));
@@ -1089,9 +1089,9 @@ impl RnoteAppWindow {
             appwindow.canvas().update_engine_rendering();
         }));
 
-        // New sheet
-        action_new_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_new_sheet(&appwindow);
+        // New doc
+        action_new_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            dialogs::dialog_new_doc(&appwindow);
         }));
 
         // Open workspace
@@ -1099,15 +1099,15 @@ impl RnoteAppWindow {
             dialogs::dialog_open_workspace(&appwindow);
         }));
 
-        // Open sheet
-        action_open_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_open_sheet(&appwindow);
+        // Open doc
+        action_open_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            dialogs::dialog_open_doc(&appwindow);
         }));
 
-        // Save sheet
-        action_save_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+        // Save doc
+        action_save_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             if appwindow.canvas().output_file().is_none() {
-                dialogs::dialog_save_sheet_as(&appwindow);
+                dialogs::dialog_save_doc_as(&appwindow);
             }
 
             // check again if a file was selected from the dialog
@@ -1115,11 +1115,11 @@ impl RnoteAppWindow {
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     appwindow.start_pulsing_canvas_progressbar();
 
-                    if let Err(e) = appwindow.save_sheet_to_file(&output_file).await {
+                    if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                         appwindow.canvas().set_output_file(None);
 
-                        log::error!("saving sheet failed with error `{}`", e);
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving sheet failed.").to_variant()));
+                        log::error!("saving document failed with error `{}`", e);
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
                     }
 
                     appwindow.finish_canvas_progressbar();
@@ -1128,13 +1128,13 @@ impl RnoteAppWindow {
             }
         }));
 
-        // Save sheet as
-        action_save_sheet_as.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_save_sheet_as(&appwindow);
+        // Save doc as
+        action_save_doc_as.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            dialogs::dialog_save_doc_as(&appwindow);
         }));
 
-        // Print sheet
-        action_print_sheet.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+        // Print doc
+        action_print_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             appwindow.start_pulsing_canvas_progressbar();
 
             let print_op = PrintOperation::builder()
@@ -1148,15 +1148,15 @@ impl RnoteAppWindow {
                 print_op.set_n_pages(n_pages as i32);
             }));
 
-            let sheet_bounds = appwindow.canvas().engine().borrow().sheet.bounds();
+            let doc_bounds = appwindow.canvas().engine().borrow().document.bounds();
 
             print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
                 let cx = print_cx.cairo_context();
 
                 if let Err(e) = || -> anyhow::Result<()> {
                     let print_zoom = {
-                        let width_scale = print_cx.width() / appwindow.canvas().engine().borrow().sheet.format.width;
-                        let height_scale = print_cx.height() / appwindow.canvas().engine().borrow().sheet.format.height;
+                        let width_scale = print_cx.width() / appwindow.canvas().engine().borrow().document.format.width;
+                        let height_scale = print_cx.height() / appwindow.canvas().engine().borrow().document.format.height;
                         width_scale.min(height_scale)
                     };
 
@@ -1175,7 +1175,7 @@ impl RnoteAppWindow {
                     );
                     cx.clip();
 
-                    render::Svg::draw_svgs_to_cairo_context(&page_svgs, sheet_bounds, &cx)?;
+                    render::Svg::draw_svgs_to_cairo_context(&page_svgs, doc_bounds, &cx)?;
                     Ok(())
                 }() {
                     log::error!("draw_page() failed while printing page: {}, Err {}", page_nr, e);
@@ -1186,7 +1186,7 @@ impl RnoteAppWindow {
                 log::debug!("{:?}", print_op.status());
                 match print_op.status() {
                     PrintStatus::Finished => {
-                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Printed sheet successfully").to_variant()));
+                        adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Printed document successfully").to_variant()));
                     }
                     _ => {}
                 }
@@ -1195,7 +1195,7 @@ impl RnoteAppWindow {
             // Run the print op
             if let Err(e) = print_op.run(PrintOperationAction::PrintDialog, Some(&appwindow)){
                 log::error!("print_op.run() failed with Err, {}", e);
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing sheet failed").to_variant()));
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing document failed").to_variant()));
             }
 
 
@@ -1214,20 +1214,20 @@ impl RnoteAppWindow {
             }),
         );
 
-        // Export sheet as SVG
-        action_export_sheet_as_svg.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_export_sheet_as_svg(&appwindow);
+        // Export document as SVG
+        action_export_doc_as_svg.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::dialog_export_doc_as_svg(&appwindow);
         }));
 
-        // Export sheet as PDF
-        action_export_sheet_as_pdf.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            dialogs::dialog_export_sheet_as_pdf(&appwindow);
+        // Export document as PDF
+        action_export_doc_as_pdf.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::dialog_export_doc_as_pdf(&appwindow);
         }));
 
-        // Export sheet as Xopp
-        action_export_sheet_as_xopp.connect_activate(
+        // Export document as Xopp
+        action_export_doc_as_xopp.connect_activate(
             clone!(@weak self as appwindow => move |_,_| {
-                dialogs::dialog_export_sheet_as_xopp(&appwindow);
+                dialogs::dialog_export_doc_as_xopp(&appwindow);
             }),
         );
 
@@ -1288,12 +1288,12 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
         app.set_accels_for_action("win.open-appmenu", &["F10"]);
-        app.set_accels_for_action("win.new-sheet", &["<Ctrl>n"]);
-        app.set_accels_for_action("win.open-sheet", &["<Ctrl>o"]);
-        app.set_accels_for_action("win.save-sheet", &["<Ctrl>s"]);
-        app.set_accels_for_action("win.save-sheet-as", &["<Ctrl><Shift>s"]);
-        app.set_accels_for_action("win.clear-sheet", &["<Ctrl>l"]);
-        app.set_accels_for_action("win.print-sheet", &["<Ctrl>p"]);
+        app.set_accels_for_action("win.new-doc", &["<Ctrl>n"]);
+        app.set_accels_for_action("win.open-doc", &["<Ctrl>o"]);
+        app.set_accels_for_action("win.save-doc", &["<Ctrl>s"]);
+        app.set_accels_for_action("win.save-doc-as", &["<Ctrl><Shift>s"]);
+        app.set_accels_for_action("win.clear-doc", &["<Ctrl>l"]);
+        app.set_accels_for_action("win.print-doc", &["<Ctrl>p"]);
         app.set_accels_for_action("win.import-file", &["<Ctrl>i"]);
         app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);

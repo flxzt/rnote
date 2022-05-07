@@ -26,21 +26,21 @@
             <attribute name="action">win.touch-drawing</attribute>
           </item>
           <submenu>
-            <attribute name="label" translatable="yes">Expand mode</attribute>
+            <attribute name="label" translatable="yes">Document layout</attribute>
             <section>
               <item>
-                <attribute name="label" translatable="yes">fixed size</attribute>
-                <attribute name="action">win.expand-mode</attribute>
+                <attribute name="label" translatable="yes">Fixed size</attribute>
+                <attribute name="action">win.doc-layout</attribute>
                 <attribute name="target">fixed-size</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">endless vertical</attribute>
-                <attribute name="action">win.expand-mode</attribute>
-                <attribute name="target">endless-vertical</attribute>
+                <attribute name="label" translatable="yes">Continuous vertical</attribute>
+                <attribute name="action">win.doc-layout</attribute>
+                <attribute name="target">continuous-vertical</attribute>
               </item>
               <item>
-                <attribute name="label" translatable="yes">infinite</attribute>
-                <attribute name="action">win.expand-mode</attribute>
+                <attribute name="label" translatable="yes">Infinite</attribute>
+                <attribute name="action">win.doc-layout</attribute>
                 <attribute name="target">infinite</attribute>
               </item>
             </section>
@@ -56,52 +56,52 @@
             <attribute name="action">win.pen-sounds</attribute>
           </item>
           <item>
-            <attribute name="label" translatable="yes">Clear sheet</attribute>
-            <attribute name="action">win.clear-sheet</attribute>
+            <attribute name="label" translatable="yes">Clear document</attribute>
+            <attribute name="action">win.clear-doc</attribute>
           </item>
         </section>
         <section>
           <item>
             <attribute name="label" translatable="yes">New</attribute>
-            <attribute name="action">win.new-sheet</attribute>
+            <attribute name="action">win.new-doc</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Open</attribute>
-            <attribute name="action">win.open-sheet</attribute>
+            <attribute name="action">win.open-doc</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Save</attribute>
-            <attribute name="action">win.save-sheet</attribute>
+            <attribute name="action">win.save-doc</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Save as</attribute>
-            <attribute name="action">win.save-sheet-as</attribute>
+            <attribute name="action">win.save-doc-as</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Print</attribute>
-            <attribute name="action">win.print-sheet</attribute>
+            <attribute name="action">win.print-doc</attribute>
           </item>
           <item>
             <attribute name="label" translatable="yes">Import file</attribute>
             <attribute name="action">win.import-file</attribute>
           </item>
           <submenu>
-            <attribute name="label" translatable="yes">Export ..</attribute>
+            <attribute name="label" translatable="yes">Export…</attribute>
             <item>
               <attribute name="label" translatable="yes">Export selection as SVG</attribute>
               <attribute name="action">win.export-selection-as-svg</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">Export sheet as SVG</attribute>
-              <attribute name="action">win.export-sheet-as-svg</attribute>
+              <attribute name="label" translatable="yes">Export document as SVG</attribute>
+              <attribute name="action">win.export-doc-as-svg</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">Export sheet as PDF</attribute>
-              <attribute name="action">win.export-sheet-as-pdf</attribute>
+              <attribute name="label" translatable="yes">Export document as PDF</attribute>
+              <attribute name="action">win.export-doc-as-pdf</attribute>
             </item>
             <item>
-              <attribute name="label" translatable="yes">Export sheet as Xournal++ .xopp</attribute>
-              <attribute name="action">win.export-sheet-as-xopp</attribute>
+              <attribute name="label" translatable="yes">Export document as Xournal++ .xopp</attribute>
+              <attribute name="action">win.export-doc-as-xopp</attribute>
             </item>
           </submenu>
         </section>
@@ -155,7 +155,7 @@
             <object class="GtkButton" id="zoom_fit_width_button">
               <property name="hexpand">false</property>
               <property name="icon_name">zoom-fit-width-symbolic</property>
-              <property name="tooltip_text" translatable="yes">Zoom to fit sheet width</property>
+              <property name="tooltip_text" translatable="yes">Zoom to fit page width</property>
               <property name="action-name">win.zoom-fit-width</property>
             </object>
           </child>

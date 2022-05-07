@@ -6,8 +6,8 @@ use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use rnote_engine::pens::penholder::PenStyle;
 use rnote_engine::{
-    sheet::format::MeasureUnit,
-    sheet::{background::PatternStyle, format::PredefinedFormat},
+    document::format::MeasureUnit,
+    document::{background::PatternStyle, format::PredefinedFormat},
 };
 
 use crate::{

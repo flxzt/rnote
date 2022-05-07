@@ -45,7 +45,7 @@ $ flatpak mask com.github.flxzt.rnote
 $ flatpak mask --remove com.github.flxzt.rnote
 ```
 
-Then the sheets can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
+Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
 ## Screenshots
 ![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)

@@ -74,7 +74,7 @@
                     <child>
                       <object class="AdwActionRow" id="general_pdf_import_width_row">
                         <property name="title" translatable="yes">PDF import width (%)</property>
-                        <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the sheet format width</property>
+                        <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the format width</property>
                         <child type="suffix">
                           <object class="GtkAdjustment" id="general_pdf_import_width_adj">
                             <property name="step-increment">1</property>
@@ -144,7 +144,7 @@
                 <!-- Format Group -->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title" translatable="yes">Sheet Format</property>
+                    <property name="title" translatable="yes">Page format</property>
                     <child>
                       <object class="AdwComboRow" id="format_predefined_formats_row">
                         <property name="title" translatable="yes">Format</property>
@@ -264,7 +264,7 @@
                 <!-- Background Group -->
                 <child>
                   <object class="AdwPreferencesGroup">
-                    <property name="title" translatable="yes">Sheet Background</property>
+                    <property name="title" translatable="yes">Document background</property>
                     <child>
                       <object class="AdwActionRow" id="background_color_row">
                         <property name="title" translatable="yes">Color</property>

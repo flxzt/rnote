@@ -78,40 +78,40 @@
         </child>
         <child>
           <object class="GtkShortcutsGroup">
-            <property name="title" context="shortcut window" translatable="yes">Sheet</property>
+            <property name="title" context="shortcut window" translatable="yes">Document</property>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">New sheet</property>
+                <property name="title" context="shortcut window" translatable="yes">New document</property>
                 <property name="accelerator">&lt;ctrl&gt;n</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Open sheet</property>
+                <property name="title" context="shortcut window" translatable="yes">Open document</property>
                 <property name="accelerator">&lt;ctrl&gt;o</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Save sheet</property>
+                <property name="title" context="shortcut window" translatable="yes">Save document</property>
                 <property name="accelerator">&lt;ctrl&gt;s</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Save sheet as</property>
+                <property name="title" context="shortcut window" translatable="yes">Save document as</property>
                 <property name="accelerator">&lt;ctrl&gt;&lt;shift&gt;s</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Clear sheet</property>
+                <property name="title" context="shortcut window" translatable="yes">Clear document</property>
                 <property name="accelerator">&lt;ctrl&gt;l</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
-                <property name="title" context="shortcut window" translatable="yes">Print sheet</property>
+                <property name="title" context="shortcut window" translatable="yes">Print document</property>
                 <property name="accelerator">&lt;ctrl&gt;p</property>
               </object>
             </child>

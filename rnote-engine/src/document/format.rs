@@ -195,7 +195,7 @@ impl Format {
     pub fn draw(
         &self,
         snapshot: &Snapshot,
-        sheet_bounds: AABB,
+        doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         if self.show_borders {
@@ -203,10 +203,10 @@ impl Format {
             let border_width = 1.0 / total_zoom;
             let viewport = camera.viewport();
 
-            snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds.loosened(2.0)));
+            snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds.loosened(2.0)));
 
             for page_bounds in
-                sheet_bounds.split_extended_origin_aligned(na::vector![self.width, self.height])
+                doc_bounds.split_extended_origin_aligned(na::vector![self.width, self.height])
             {
                 if !page_bounds.intersects(&viewport) {
                     continue;

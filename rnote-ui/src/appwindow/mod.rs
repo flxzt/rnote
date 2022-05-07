@@ -345,7 +345,7 @@ mod imp {
     impl WindowImpl for RnoteAppWindow {
         // Save window state right before the window will be closed
         fn close_request(&self, obj: &Self::Type) -> Inhibit {
-            // Save current sheet
+            // Save current doc
             if obj.unsaved_changes() {
                 dialogs::dialog_quit_save(obj);
             } else {
@@ -366,11 +366,11 @@ mod imp {
             if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(), clone!(@strong obj as appwindow => @default-return glib::source::Continue(false), move || {
                 if let Some(output_file) = appwindow.canvas().output_file() {
                     glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                        if let Err(e) = appwindow.save_sheet_to_file(&output_file).await {
+                        if let Err(e) = appwindow.save_document_to_file(&output_file).await {
                             appwindow.canvas().set_output_file(None);
 
-                            log::error!("saving sheet failed with error `{}`", e);
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving sheet failed.").to_variant()));
+                            log::error!("saving document failed with error `{}`", e);
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
                         }
                     }));
                 }
@@ -874,9 +874,9 @@ impl RnoteAppWindow {
                 if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
                     let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
 
-                    let current_sheet_center = appwindow.canvas().current_center_on_sheet();
+                    let current_doc_center = appwindow.canvas().current_center_on_doc();
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
-                    appwindow.canvas().center_around_coord_on_sheet(current_sheet_center);
+                    appwindow.canvas().center_around_coord_on_doc(current_doc_center);
 
                     // Stop event propagation
                     Inhibit(true)
@@ -1177,7 +1177,7 @@ impl RnoteAppWindow {
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos).await {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Vectorimage file failed.").to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening vector image file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -1196,7 +1196,7 @@ impl RnoteAppWindow {
 
                     if let Ok((file_bytes, _)) = result {
                         if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos).await {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening Bitmapimage file failed.").to_variant()));
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening bitmap image file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
@@ -1324,7 +1324,7 @@ impl RnoteAppWindow {
     pub async fn load_in_vectorimage_bytes(
         &self,
         bytes: Vec<u8>,
-        // In coordinate space of the sheet
+        // In coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
@@ -1356,11 +1356,11 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    /// Target position is in the coordinate space of the sheet
+    /// Target position is in the coordinate space of the doc
     pub async fn load_in_bitmapimage_bytes(
         &self,
         bytes: Vec<u8>,
-        // In the coordinate space of the sheet
+        // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
@@ -1390,11 +1390,11 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    /// Target position is in the coordinate space of the sheet
+    /// Target position is in the coordinate space of the doc
     pub async fn load_in_pdf_bytes(
         &self,
         bytes: Vec<u8>,
-        // In the coordinate space of the sheet
+        // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
@@ -1424,7 +1424,7 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn save_sheet_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let rnote_bytes_receiver = self
                 .canvas()
@@ -1440,12 +1440,12 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_sheet_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn export_doc_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
         let svg_data = self
             .canvas()
             .engine()
             .borrow()
-            .export_sheet_as_svg_string()?;
+            .export_doc_as_svg_string()?;
 
         utils::replace_file_future(svg_data.into_bytes(), file).await?;
 
@@ -1465,13 +1465,13 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_sheet_as_xopp(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn export_doc_as_xopp(&self, file: &gio::File) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let bytes = self
                 .canvas()
                 .engine()
                 .borrow()
-                .export_sheet_as_xopp_bytes(&basename.to_string_lossy())?;
+                .export_doc_as_xopp_bytes(&basename.to_string_lossy())?;
 
             utils::replace_file_future(bytes, file).await?;
         }
@@ -1479,13 +1479,13 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn export_doc_as_pdf(&self, file: &gio::File) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let pdf_data_receiver = self
                 .canvas()
                 .engine()
                 .borrow()
-                .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string());
+                .export_doc_as_pdf_bytes(basename.to_string_lossy().to_string());
             let bytes = pdf_data_receiver.await??;
 
             utils::replace_file_future(bytes, file).await?;

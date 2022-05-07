@@ -344,16 +344,16 @@ impl Background {
     pub fn draw(
         &self,
         snapshot: &Snapshot,
-        sheet_bounds: AABB,
+        doc_bounds: AABB,
         _camera: &Camera,
     ) -> anyhow::Result<()> {
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_node(
             &gsk::ColorNode::new(
                 &gdk::RGBA::from_compose_color(self.color),
-                &graphene::Rect::from_p2d_aabb(sheet_bounds),
+                &graphene::Rect::from_p2d_aabb(doc_bounds),
             )
             .upcast(),
         );

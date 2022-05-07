@@ -92,7 +92,7 @@ pub struct Image {
     /// The image data. is (de) serialized in base64 encoding
     #[serde(rename = "data", with = "base64")]
     pub data: Vec<u8>,
-    /// the target rect in the coordinate space of the sheet
+    /// the target rect in the coordinate space of the doc
     #[serde(rename = "rectangle")]
     pub rect: Rectangle,
     /// width of the data

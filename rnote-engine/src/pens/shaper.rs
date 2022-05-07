@@ -1,10 +1,10 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
 use crate::engine::EngineTaskSender;
-use crate::sheet::Sheet;
+use crate::document::Document;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
@@ -81,7 +81,7 @@ impl PenBehaviour for Shaper {
         &mut self,
         event: PenEvent,
         _tasks_tx: EngineTaskSender,
-        sheet: &mut Sheet,
+        doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -180,7 +180,7 @@ impl PenBehaviour for Shaper {
                     }
 
                     if !shapes.is_empty() {
-                        sheet.resize_autoexpand(store, camera);
+                        doc.resize_autoexpand(store, camera);
 
                         surface_flags.resize = true;
                         surface_flags.store_changed = true;
@@ -213,8 +213,8 @@ impl PenBehaviour for Shaper {
     }
 }
 
-impl DrawOnSheetBehaviour for Shaper {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for Shaper {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
@@ -225,10 +225,10 @@ impl DrawOnSheetBehaviour for Shaper {
         }
     }
 
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;

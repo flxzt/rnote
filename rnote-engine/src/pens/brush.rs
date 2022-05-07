@@ -2,7 +2,7 @@ use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
@@ -80,7 +80,7 @@ impl PenBehaviour for Brush {
         &mut self,
         event: PenEvent,
         tasks_tx: EngineTaskSender,
-        sheet: &mut Sheet,
+        doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         audioplayer: Option<&mut AudioPlayer>,
@@ -96,7 +96,7 @@ impl PenBehaviour for Brush {
                     shortcut_keys: _,
                 },
             ) => {
-                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
+                if !element.filter_by_bounds(doc.bounds().loosened(Self::INPUT_OVERSHOOT)) {
                     surface_flags.merge_with_other(store.record());
 
                     Self::start_audio(style, audioplayer);
@@ -154,7 +154,7 @@ impl PenBehaviour for Brush {
 
                 self.state = BrushState::Idle;
 
-                sheet.resize_autoexpand(store, camera);
+                doc.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -237,7 +237,7 @@ impl PenBehaviour for Brush {
 
                         self.state = BrushState::Idle;
 
-                        sheet.resize_autoexpand(store, camera);
+                        doc.resize_autoexpand(store, camera);
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
@@ -254,8 +254,8 @@ impl PenBehaviour for Brush {
     }
 }
 
-impl DrawOnSheetBehaviour for Brush {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for Brush {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
@@ -266,10 +266,10 @@ impl DrawOnSheetBehaviour for Brush {
         }
     }
 
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;

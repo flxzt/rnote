@@ -1,5 +1,5 @@
 use crate::engine::EngineTaskSender;
-use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;
@@ -59,7 +59,7 @@ impl PenBehaviour for Eraser {
         &mut self,
         event: PenEvent,
         _tasks_tx: EngineTaskSender,
-        _sheet: &mut Sheet,
+        _doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -206,8 +206,8 @@ impl Eraser {
     }
 }
 
-impl DrawOnSheetBehaviour for Eraser {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for Eraser {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, _camera: &Camera) -> Option<AABB> {
         match &self.state {
             EraserState::Up => None,
             EraserState::Down(current_element) => {
@@ -216,10 +216,10 @@ impl DrawOnSheetBehaviour for Eraser {
         }
     }
 
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        sheet_bounds: AABB,
+        doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -228,7 +228,7 @@ impl DrawOnSheetBehaviour for Eraser {
         const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x80);
         let outline_width = 2.0 / camera.total_zoom();
 
-        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
+        if let Some(bounds) = self.bounds_on_doc(doc_bounds, camera) {
             let fill_rect = bounds.to_kurbo_rect();
             let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
 

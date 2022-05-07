@@ -15,25 +15,25 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
-#[serde(rename = "expand_mode")]
-pub enum ExpandMode {
+#[serde(rename = "layout")]
+pub enum Layout {
     #[serde(rename = "fixed_size")]
     FixedSize,
-    #[serde(rename = "endless_vertical")]
-    EndlessVertical,
+    #[serde(rename = "continuous_vertical", alias = "endless_vertical")]
+    ContinuousVertical,
     #[serde(rename = "infinite")]
     Infinite,
 }
 
-impl Default for ExpandMode {
+impl Default for Layout {
     fn default() -> Self {
         Self::Infinite
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(default, rename = "sheet")]
-pub struct Sheet {
+#[serde(default, rename = "document")]
+pub struct Document {
     #[serde(rename = "x")]
     pub x: f64,
     #[serde(rename = "y")]
@@ -46,11 +46,11 @@ pub struct Sheet {
     pub format: Format,
     #[serde(rename = "background")]
     pub background: Background,
-    #[serde(rename = "expand_mode")]
-    expand_mode: ExpandMode,
+    #[serde(rename = "layout", alias = "expand_mode")]
+    layout: Layout,
 }
 
-impl Default for Sheet {
+impl Default for Document {
     fn default() -> Self {
         Self {
             x: 0.0,
@@ -59,12 +59,12 @@ impl Default for Sheet {
             height: Format::default().height,
             format: Format::default(),
             background: Background::default(),
-            expand_mode: ExpandMode::default(),
+            layout: Layout::default(),
         }
     }
 }
 
-impl Sheet {
+impl Document {
     pub const SHADOW_WIDTH: f64 = 30.0;
     pub const SHADOW_OFFSET: na::Vector2<f64> = na::vector![8.0, 8.0];
     pub const SHADOW_COLOR: Color = Color {
@@ -74,17 +74,17 @@ impl Sheet {
         a: 0.3,
     };
 
-    pub(crate) fn expand_mode(&self) -> ExpandMode {
-        self.expand_mode
+    pub(crate) fn layout(&self) -> Layout {
+        self.layout
     }
 
-    pub(crate) fn set_expand_mode(
+    pub(crate) fn set_layout(
         &mut self,
-        expand_mode: ExpandMode,
+        layout: Layout,
         store: &StrokeStore,
         camera: &Camera,
     ) {
-        self.expand_mode = expand_mode;
+        self.layout = layout;
 
         self.resize_to_fit_strokes(store, camera);
     }
@@ -96,12 +96,12 @@ impl Sheet {
         )
     }
 
-    // Generates bounds for each page for the sheet size, extended to fit the sheet format. May contain many empty pages (in infinite mode)
+    // Generates bounds for each page for the doc size, extended to fit the format. May contain many empty pages (in infinite mode)
     pub fn pages_bounds(&self) -> Vec<AABB> {
-        let sheet_bounds = self.bounds();
+        let doc_bounds = self.bounds();
 
         if self.format.height > 0.0 && self.format.width > 0.0 {
-            sheet_bounds
+            doc_bounds
                 .split_extended_origin_aligned(na::vector![self.format.width, self.format.height])
         } else {
             vec![]
@@ -119,36 +119,36 @@ impl Sheet {
     }
 
     pub(crate) fn resize_to_fit_strokes(&mut self, store: &StrokeStore, camera: &Camera) {
-        match self.expand_mode {
-            ExpandMode::FixedSize => {
-                self.resize_sheet_mode_fixed_size(store);
+        match self.layout {
+            Layout::FixedSize => {
+                self.resize_doc_fixed_size_layout(store);
             }
-            ExpandMode::EndlessVertical => {
-                self.resize_sheet_mode_endless_vertical(store);
+            Layout::ContinuousVertical => {
+                self.resize_doc_continuous_vertical_layout(store);
             }
-            ExpandMode::Infinite => {
-                self.resize_sheet_mode_infinite_to_fit_strokes(store);
-                self.expand_sheet_mode_infinite(camera.viewport());
+            Layout::Infinite => {
+                self.resize_doc_infinite_layout_to_fit_strokes(store);
+                self.expand_doc_infinite_layout(camera.viewport());
             }
         }
     }
 
     pub(crate) fn resize_autoexpand(&mut self, store: &StrokeStore, camera: &Camera) {
-        match self.expand_mode {
-            ExpandMode::FixedSize => {
-                // Does not resize in fixed size mode, use resize_sheet_to_fit_strokes() for it.
+        match self.layout {
+            Layout::FixedSize => {
+                // Does not resize in fixed size mode, if wanted use resize_doc_to_fit_strokes() for it.
             }
-            ExpandMode::EndlessVertical => {
-                self.resize_sheet_mode_endless_vertical(store);
+            Layout::ContinuousVertical => {
+                self.resize_doc_continuous_vertical_layout(store);
             }
-            ExpandMode::Infinite => {
-                self.resize_sheet_mode_infinite_to_fit_strokes(store);
-                self.expand_sheet_mode_infinite(camera.viewport());
+            Layout::Infinite => {
+                self.resize_doc_infinite_layout_to_fit_strokes(store);
+                self.expand_doc_infinite_layout(camera.viewport());
             }
         }
     }
 
-    pub(crate) fn resize_sheet_mode_fixed_size(&mut self, store: &StrokeStore) {
+    pub(crate) fn resize_doc_fixed_size_layout(&mut self, store: &StrokeStore) {
         let format_height = self.format.height;
 
         let new_width = self.format.width;
@@ -162,7 +162,7 @@ impl Sheet {
         self.height = new_height;
     }
 
-    pub(crate) fn resize_sheet_mode_endless_vertical(&mut self, store: &StrokeStore) {
+    pub(crate) fn resize_doc_continuous_vertical_layout(&mut self, store: &StrokeStore) {
         let padding_bottom = self.format.height;
         let new_height = store.calc_height() + padding_bottom;
         let new_width = self.format.width;
@@ -173,7 +173,7 @@ impl Sheet {
         self.height = new_height;
     }
 
-    pub(crate) fn expand_sheet_mode_infinite(&mut self, viewport: AABB) {
+    pub(crate) fn expand_doc_infinite_layout(&mut self, viewport: AABB) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
@@ -187,7 +187,7 @@ impl Sheet {
         self.height = new_bounds.extents()[1];
     }
 
-    pub(crate) fn resize_sheet_mode_infinite_to_fit_strokes(&mut self, store: &StrokeStore) {
+    pub(crate) fn resize_doc_infinite_layout_to_fit_strokes(&mut self, store: &StrokeStore) {
         let padding_horizontal = self.format.width * 2.0;
         let padding_vertical = self.format.height * 2.0;
 
@@ -197,7 +197,7 @@ impl Sheet {
         let new_bounds = if let Some(new_bounds) = store.gen_bounds_for_strokes(&keys) {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
-            // If sheet is empty, resize to one page with the format size
+            // If doc is empty, resize to one page with the format size
             AABB::new(
                 na::point![0.0, 0.0],
                 na::point![self.format.width, self.format.height],

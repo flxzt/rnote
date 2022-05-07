@@ -149,7 +149,7 @@
                                   <object class="GtkButton" id="add_page_button">
                                     <property name="icon_name">add-page-symbolic</property>
                                     <property name="tooltip_text" translatable="yes">Add page</property>
-                                    <property name="action-name">win.add-page-to-sheet</property>
+                                    <property name="action-name">win.add-page-to-doc</property>
                                     <style>
                                       <class name="osd" />
                                       <class name="circular" />
@@ -159,7 +159,7 @@
                                 <child>
                                   <object class="GtkButton" id="resize_to_fit_strokes_button">
                                     <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                                    <property name="tooltip_text" translatable="yes">Resize sheet to fit the strokes</property>
+                                    <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
                                     <property name="action-name">win.resize-to-fit-strokes</property>
                                     <style>
                                       <class name="osd" />

@@ -24,7 +24,7 @@ use p2d::bounding_volume::AABB;
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
 use rnote_engine::utils::GrapheneRectHelpers;
-use rnote_engine::Sheet;
+use rnote_engine::Document;
 
 use std::collections::VecDeque;
 use std::time;
@@ -732,9 +732,9 @@ impl RnoteCanvas {
         self.vadjustment().unwrap().set_value(new_offset[1]);
     }
 
-    /// returns the center of the current view on the sheet
+    /// returns the center of the current view on the doc
     // update_engine_rendering() then needs to be called.
-    pub fn current_center_on_sheet(&self) -> na::Vector2<f64> {
+    pub fn current_center_on_doc(&self) -> na::Vector2<f64> {
         (self.engine().borrow().camera.transform().inverse()
             * na::point![
                 f64::from(self.width()) * 0.5,
@@ -743,9 +743,9 @@ impl RnoteCanvas {
         .coords
     }
 
-    /// Centers the view around a coord on the sheet. The coord parameter has the coordinate space of the sheet!
+    /// Centers the view around a coord on the doc. The coord parameter has the coordinate space of the doc.
     // update_engine_rendering() then needs to be called.
-    pub fn center_around_coord_on_sheet(&self, coord: na::Vector2<f64>) {
+    pub fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
         let (parent_width, parent_height) = (
             f64::from(self.parent().unwrap().width()),
             f64::from(self.parent().unwrap().height()),
@@ -765,17 +765,17 @@ impl RnoteCanvas {
     pub fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
 
-        let new_offset = if self.engine().borrow().sheet.format.width * zoom
+        let new_offset = if self.engine().borrow().document.format.width * zoom
             <= f64::from(self.parent().unwrap().width())
         {
             na::vector![
-                (self.engine().borrow().sheet.format.width * 0.5 * zoom)
+                (self.engine().borrow().document.format.width * 0.5 * zoom)
                     - f64::from(self.parent().unwrap().width()) * 0.5,
-                -Sheet::SHADOW_WIDTH * zoom
+                -Document::SHADOW_WIDTH * zoom
             ]
         } else {
             // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-            na::vector![-Sheet::SHADOW_WIDTH * zoom, -Sheet::SHADOW_WIDTH * zoom]
+            na::vector![-Document::SHADOW_WIDTH * zoom, -Document::SHADOW_WIDTH * zoom]
         };
 
         self.update_camera_offset(new_offset);
@@ -879,7 +879,7 @@ impl RnoteCanvas {
         if let Err(e) = self
             .engine()
             .borrow_mut()
-            .sheet
+            .document
             .background
             .regenerate_pattern(viewport, image_scale)
         {

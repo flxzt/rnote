@@ -1083,10 +1083,16 @@ pub mod visual_debug {
         b: 1.0,
         a: 1.0,
     };
-    pub const COLOR_STROKE_DIRTY: Color = Color {
+    pub const COLOR_STROKE_RENDERING_DIRTY: Color = Color {
         r: 0.9,
         g: 0.0,
         b: 0.8,
+        a: 0.10,
+    };
+    pub const COLOR_STROKE_RENDERING_BUSY: Color = Color {
+        r: 0.0,
+        g: 0.8,
+        b: 1.0,
         a: 0.10,
     };
     pub const COLOR_SELECTOR_BOUNDS: Color = Color {

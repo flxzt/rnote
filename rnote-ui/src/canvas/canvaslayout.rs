@@ -145,13 +145,13 @@ mod imp {
             let viewport = canvas.engine().borrow().camera.viewport();
             let old_viewport = self.old_viewport.get();
 
-            // We only extend the viewport by half of the margin, because we want to trigger rendering before we reach it.
+            // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering before we reach it.
             // This has two advantages: Strokes that might take longer to render have a head start while still being out of view,
             // And the rendering gets triggered more often, so not that many strokes start to get rendered. This avoids stutters,
             // because while the rendering itself is on worker threads, we still have to `integrate` the resulted textures,
             // which can also take up quite some time on the main UI thread.
             let old_viewport_extended = old_viewport
-                .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.5);
+                .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
             /*
                        log::debug!(
                            "viewport: {:#?}\nold_viewport_extended: {:#?}",

@@ -16,6 +16,7 @@ use rnote_compose::shapes::ShapeBehaviour;
 pub enum RenderCompState {
     Complete,
     ForViewport(AABB),
+    BusyRenderingInTask,
     Dirty,
 }
 
@@ -65,11 +66,6 @@ impl StrokeStore {
     pub fn set_rendering_dirty(&mut self, key: StrokeKey) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             render_comp.state = RenderCompState::Dirty;
-        } else {
-            log::debug!(
-                "get render_comp failed in set_state() of stroke for key {:?}, invalid key used or stroke does not support rendering",
-                key
-            );
         }
     }
 
@@ -123,6 +119,10 @@ impl StrokeStore {
             self.stroke_components.get(key),
             self.render_components.get_mut(key),
         ) {
+            if render_comp.state == RenderCompState::BusyRenderingInTask {
+                return Ok(());
+            }
+
             // extending the viewport by the factor
             let viewport_render_margins =
                 viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
@@ -179,19 +179,19 @@ impl StrokeStore {
             self.render_components.get_mut(key),
             self.stroke_components.get(key),
         ) {
+            if render_comp.state == RenderCompState::BusyRenderingInTask {
+                return;
+            }
+
             let stroke = stroke.clone();
-            let stroke_bounds = stroke.bounds();
 
             // extending the viewport by the factor
-            let viewport_render_margins = viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+            let viewport_render_margins =
+                viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
             let viewport = viewport.extend_by(viewport_render_margins);
 
-            // we need to check and set the state **before** spawning a task thread, to avoid repeated rendering of already outdated images
-            render_comp.state = if viewport.contains(&stroke_bounds) {
-                RenderCompState::Complete
-            } else {
-                RenderCompState::ForViewport(viewport)
-            };
+            // indicates that a task is now started rendering the stroke
+            render_comp.state = RenderCompState::BusyRenderingInTask;
 
             // Spawn a new thread for image rendering
             rayon::spawn(move || match stroke.gen_images(viewport, image_scale) {
@@ -243,7 +243,7 @@ impl StrokeStore {
                 // only check if rerendering is not forced
                 if !force_regenerate {
                     match render_comp.state {
-                        RenderCompState::Complete => {
+                        RenderCompState::Complete | RenderCompState::BusyRenderingInTask => {
                             return;
                         }
                         RenderCompState::ForViewport(old_viewport) => {
@@ -261,12 +261,8 @@ impl StrokeStore {
                     }
                 }
 
-                // we need to check and set the state **before** spawning a task thread, to avoid repeated rendering of already outdated images
-                render_comp.state = if viewport.contains(&stroke_bounds) {
-                    RenderCompState::Complete
-                } else {
-                    RenderCompState::ForViewport(viewport)
-                };
+                // indicates that a task is now started rendering the stroke
+                render_comp.state = RenderCompState::BusyRenderingInTask;
 
                 let stroke = stroke.clone();
 
@@ -329,51 +325,7 @@ impl StrokeStore {
         Ok(())
     }
 
-    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completelyd
-    #[allow(unused)]
-    pub fn append_rendering_last_segments_threaded(
-        &mut self,
-        tasks_tx: EngineTaskSender,
-        key: StrokeKey,
-        n_segments: usize,
-        viewport: AABB,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
-        if let Some(stroke) = self.stroke_components.get(key) {
-            match &**stroke {
-                Stroke::BrushStroke(brushstroke) => {
-                    let brushstroke = brushstroke.clone();
-                    // Spawn a new thread for image rendering
-                    rayon::spawn(move || {
-                        match brushstroke.gen_images_for_last_segments(n_segments, image_scale) {
-                            Ok(images) => {
-                                tasks_tx.unbounded_send(EngineTask::AppendImagesToStroke {
-                                    key,
-                                    images: GeneratedStrokeImages::Partial{images, viewport},
-                                }).unwrap_or_else(|e| {
-                                    log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
-                                });
-                            }
-                            Err(e) => {
-                                log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
-                            }
-                        }
-                    });
-                }
-                // regenerate the whole stroke for strokes that don't support generating images for the last added segments
-                Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                    self.regenerate_rendering_for_stroke_threaded(
-                        tasks_tx,
-                        key,
-                        viewport,
-                        image_scale,
-                    );
-                }
-            }
-        }
-        Ok(())
-    }
-
+    /// Replaces the entire current rendering with the given new images. Alos updates the renderstate
     pub fn replace_rendering_with_images(
         &mut self,
         key: StrokeKey,
@@ -564,12 +516,22 @@ impl StrokeStore {
                 }
 
                 if let Some(render_comp) = self.render_components.get(key) {
-                    if render_comp.state == RenderCompState::Dirty {
-                                           visual_debug::draw_fill(
-                                               stroke.bounds(),
-                                               visual_debug::COLOR_STROKE_DIRTY,
-                                               snapshot,
-                                           );
+                    match render_comp.state {
+                        RenderCompState::Dirty => {
+                            visual_debug::draw_fill(
+                                stroke.bounds(),
+                                visual_debug::COLOR_STROKE_RENDERING_DIRTY,
+                                snapshot,
+                            );
+                        }
+                        RenderCompState::BusyRenderingInTask => {
+                            visual_debug::draw_fill(
+                                stroke.bounds(),
+                                visual_debug::COLOR_STROKE_RENDERING_BUSY,
+                                snapshot,
+                            );
+                        }
+                        _ => {}
                     }
                     render_comp.images.iter().for_each(|image| {
                         visual_debug::draw_bounds(

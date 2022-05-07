@@ -971,8 +971,11 @@ impl RnoteAppWindow {
                     let current_zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
-                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
-                    appwindow.handle_surface_flags(surface_flags);
+                    // Only cancel the current pen when touch drawing is enabled
+                    if appwindow.canvas().touch_drawing() {
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        appwindow.handle_surface_flags(surface_flags);
+                    }
 
                     zoom_begin.set(current_zoom);
                     new_zoom.set(current_zoom);
@@ -1016,8 +1019,10 @@ impl RnoteAppWindow {
                 clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
                     bbcenter_begin.set(None);
 
-                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
-                    appwindow.handle_surface_flags(surface_flags);
+                    if appwindow.canvas().touch_drawing() {
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        appwindow.handle_surface_flags(surface_flags);
+                    }
 
                     appwindow.canvas().update_engine_rendering();
 
@@ -1031,8 +1036,10 @@ impl RnoteAppWindow {
 
                     bbcenter_begin.set(None);
 
-                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
-                    appwindow.handle_surface_flags(surface_flags);
+                    if appwindow.canvas().touch_drawing() {
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        appwindow.handle_surface_flags(surface_flags);
+                    }
 
                     appwindow.canvas().update_engine_rendering();
 
@@ -1441,11 +1448,7 @@ impl RnoteAppWindow {
     }
 
     pub async fn export_doc_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
-        let svg_data = self
-            .canvas()
-            .engine()
-            .borrow()
-            .export_doc_as_svg_string()?;
+        let svg_data = self.canvas().engine().borrow().export_doc_as_svg_string()?;
 
         utils::replace_file_future(svg_data.into_bytes(), file).await?;
 

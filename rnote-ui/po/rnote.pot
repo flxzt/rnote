@@ -232,7 +232,7 @@ msgid "Import file"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:89
-msgid "Export .."
+msgid "Export…"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:91

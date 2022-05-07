@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-07 21:54+0200\n"
-"PO-Revision-Date: 2022-05-07 22:12+0200\n"
+"PO-Revision-Date: 2022-05-07 23:46+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -849,7 +849,7 @@ msgstr "Mehrere Striche"
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Multiple stroke generation for a sketched look. Defaults to true"
 msgstr ""
-"Generiert mehrer Striche für eine skizzierte Darstellung. Standard ist wahr"
+"Generiert mehrere Striche für eine skizzierte Darstellung. Standard ist wahr"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254
@@ -899,7 +899,7 @@ msgstr "Felix Zwettler"
 
 #: rnote-ui/src/dialogs.rs:165
 msgid "Opening file failed."
-msgstr "Blatt öffnen gescheitert."
+msgstr "Datei öffnen gescheitert."
 
 #: rnote-ui/src/dialogs.rs:191
 msgid ".rnote / .xopp File"

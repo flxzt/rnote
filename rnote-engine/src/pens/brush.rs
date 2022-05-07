@@ -157,6 +157,7 @@ impl PenBehaviour for Brush {
                 sheet.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
+                surface_flags.resize = true;
                 surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
@@ -239,6 +240,7 @@ impl PenBehaviour for Brush {
                         sheet.resize_autoexpand(store, camera);
 
                         surface_flags.redraw = true;
+                        surface_flags.resize = true;
                         surface_flags.store_changed = true;
                         surface_flags.hide_scrollbars = Some(false);
 

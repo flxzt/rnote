@@ -426,6 +426,7 @@ impl PenBehaviour for Selector {
                 sheet.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
+                surface_flags.resize = true;
                 surface_flags.store_changed = true;
 
                 PenProgress::InProgress
@@ -447,6 +448,7 @@ impl PenBehaviour for Selector {
                 sheet.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
+                surface_flags.resize = true;
                 surface_flags.store_changed = true;
 
                 PenProgress::Finished

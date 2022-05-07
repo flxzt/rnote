@@ -74,7 +74,7 @@ impl FileFormatLoader for RnotefileMaj0Min5 {
 impl FileFormatSaver for RnotefileMaj0Min5 {
     fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let output = RnotefileWrapper {
-            version: semver::Version::parse("0.5.0").unwrap(),
+            version: semver::Version::parse("0.5.1").unwrap(),
             data: serde_json::to_value(self)?,
         };
 

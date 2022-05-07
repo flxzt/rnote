@@ -64,14 +64,14 @@ pub fn dialog_clear_sheet(appwindow: &RnoteAppWindow) {
                 ResponseType::Ok => {
                     dialog_clear_sheet.close();
 
-                    appwindow.canvas().engine().borrow_mut().store.clear();
-                    appwindow.canvas().set_unsaved_changes(false);
-                    appwindow.canvas().set_empty(true);
+                    appwindow.canvas().engine().borrow_mut().clear();
 
                     appwindow.canvas().return_to_origin_page();
-
                     appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                     appwindow.canvas().update_engine_rendering();
+
+                    appwindow.canvas().set_unsaved_changes(false);
+                    appwindow.canvas().set_empty(true);
                 },
                 _ => {
                     dialog_clear_sheet.close();
@@ -94,16 +94,16 @@ pub fn dialog_new_sheet(appwindow: &RnoteAppWindow) {
             ResponseType::Ok => {
                 dialog_new_sheet.close();
 
-                appwindow.canvas().engine().borrow_mut().store.clear();
+                appwindow.canvas().engine().borrow_mut().clear();
+
+                appwindow.canvas().return_to_origin_page();
+                appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+                appwindow.canvas().update_engine_rendering();
+
                 appwindow.canvas().set_unsaved_changes(false);
                 appwindow.canvas().set_empty(true);
                 appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
                 appwindow.canvas().set_output_file(None);
-
-                appwindow.canvas().return_to_origin_page();
-
-                appwindow.canvas().engine().borrow_mut().resize_autoexpand();
-                appwindow.canvas().update_engine_rendering();
             },
             ResponseType::Apply => {
                 dialog_new_sheet.close();

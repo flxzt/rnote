@@ -388,6 +388,21 @@ pub fn process_pen_proximity(
 ) {
     let mut surface_flags = SurfaceFlags::default();
 
+    // switching to the eraser mode as a seperate event. Other stylus buttons are emitted as down/ up event so we don't need to handle them here.
+    // TODO: handle this better
+    // TODO: make the eraser mode equivalent to the Pen mode, see https://github.com/flxzt/rnote/issues/136
+    if shortcut_keys.contains(&ShortcutKey::StylusEraserMode) {
+        surface_flags.merge_with_other(
+            appwindow
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
+                    ShortcutKey::StylusEraserMode,
+                )),
+        );
+    }
+
     surface_flags.merge_with_other(
         data_entries
             .into_iter()

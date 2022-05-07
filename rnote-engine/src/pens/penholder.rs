@@ -318,7 +318,6 @@ impl PenHolder {
         surface_flags
     }
 
-    #[must_use]
     fn change_style(
         &mut self,
         new_style: PenStyle,
@@ -350,7 +349,6 @@ impl PenHolder {
         surface_flags
     }
 
-    #[must_use]
     fn change_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
@@ -383,7 +381,6 @@ impl PenHolder {
         surface_flags
     }
 
-    #[must_use]
     fn handle_pen_progress(&mut self, pen_progress: PenProgress) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 

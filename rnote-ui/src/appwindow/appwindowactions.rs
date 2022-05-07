@@ -1001,7 +1001,6 @@ impl RnoteAppWindow {
             let surface_flags =appwindow.canvas().engine().borrow_mut().undo();
             appwindow.handle_surface_flags(surface_flags);
 
-            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
             appwindow.canvas().update_engine_rendering();
         }));
 
@@ -1010,7 +1009,6 @@ impl RnoteAppWindow {
             let surface_flags =appwindow.canvas().engine().borrow_mut().redo();
             appwindow.handle_surface_flags(surface_flags);
 
-            appwindow.canvas().engine().borrow_mut().resize_autoexpand();
             appwindow.canvas().update_engine_rendering();
         }));
 

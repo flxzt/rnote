@@ -16,11 +16,8 @@ use gtk4::{
     ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::{BoundingVolume, AABB};
-use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penhelpers::PenEvent;
 use rnote_engine::pens::penholder::PenHolderEvent;
-use rnote_engine::render;
 use rnote_engine::strokes::Stroke;
 
 use crate::{
@@ -760,8 +757,9 @@ impl RnoteAppWindow {
             self.canvas().set_empty(false);
         }
         if surface_flags.camera_changed {
-            // This is simiply calling queue_resize()
-            self.canvas().update_engine_background_rendering();
+            let camera_offset = self.canvas().engine().borrow().camera.offset;
+            // this updates the canvas adjustment values with the ones from the camera
+            self.canvas().update_camera_offset(camera_offset);
         }
         if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
             if hide_scrollbars {
@@ -891,26 +889,17 @@ impl RnoteAppWindow {
         // Drag canvas with touch gesture
         {
             let touch_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-            let start_viewport = Rc::new(Cell::new(AABB::new_zero()));
 
-            canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong start_viewport, @strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
+            canvas_touch_drag_gesture.connect_drag_begin(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
                 touch_drag_start.set(na::vector![
                     appwindow.canvas().hadjustment().unwrap().value(),
                     appwindow.canvas().vadjustment().unwrap().value()
                 ]);
-                start_viewport.set(appwindow.canvas().engine().borrow().camera.viewport());
             }));
-            canvas_touch_drag_gesture.connect_drag_update(clone!(@strong start_viewport, @strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
+            canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
                 let new_adj_values = touch_drag_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
-
-                let viewport = appwindow.canvas().engine().borrow().camera.viewport();
-                let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
-                if !start_viewport.get().loosened(render::VIEWPORT_RENDER_MARGIN / image_scale).contains(&viewport) {
-                    appwindow.canvas().update_engine_rendering();
-                    start_viewport.set(viewport);
-                }
             }));
 
             canvas_touch_drag_gesture.connect_drag_end(
@@ -923,26 +912,17 @@ impl RnoteAppWindow {
         // Move Canvas with middle mouse button
         {
             let mouse_drag_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-            let start_viewport = Rc::new(Cell::new(AABB::new_zero()));
 
-            canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong start_viewport, @strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
+            canvas_mouse_drag_middle_gesture.connect_drag_begin(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
                 mouse_drag_start.set(na::vector![
                     appwindow.canvas().hadjustment().unwrap().value(),
                     appwindow.canvas().vadjustment().unwrap().value()
                 ]);
-                start_viewport.set(appwindow.canvas().engine().borrow().camera.viewport());
             }));
-            canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong start_viewport, @strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+            canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
                 let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
-
-                let viewport = appwindow.canvas().engine().borrow().camera.viewport();
-                let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
-                if !start_viewport.get().loosened(render::VIEWPORT_RENDER_MARGIN / image_scale).contains(&viewport) {
-                    appwindow.canvas().update_engine_rendering();
-                    start_viewport.set(viewport);
-                }
             }));
 
             canvas_mouse_drag_middle_gesture.connect_drag_end(
@@ -955,26 +935,17 @@ impl RnoteAppWindow {
         // Move Canvas by dragging in empty area
         {
             let mouse_drag_empty_area_start = Rc::new(Cell::new(na::vector![0.0, 0.0]));
-            let start_viewport = Rc::new(Cell::new(AABB::new_zero()));
 
-            canvas_mouse_drag_empty_area_gesture.connect_drag_begin(clone!(@strong start_viewport, @strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_empty_area_gesture, _x, _y| {
+            canvas_mouse_drag_empty_area_gesture.connect_drag_begin(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_empty_area_gesture, _x, _y| {
                 mouse_drag_empty_area_start.set(na::vector![
                     appwindow.canvas().hadjustment().unwrap().value(),
                     appwindow.canvas().vadjustment().unwrap().value()
                 ]);
-                start_viewport.set(appwindow.canvas().engine().borrow().camera.viewport());
             }));
-            canvas_mouse_drag_empty_area_gesture.connect_drag_update(clone!(@strong start_viewport, @strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
+            canvas_mouse_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
                 let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
 
                 appwindow.canvas().update_camera_offset(new_adj_values);
-
-                let viewport = appwindow.canvas().engine().borrow().camera.viewport();
-                let image_scale = appwindow.canvas().engine().borrow().camera.image_scale();
-                if !start_viewport.get().loosened(render::VIEWPORT_RENDER_MARGIN / image_scale).contains(&viewport) {
-                    appwindow.canvas().update_engine_rendering();
-                    start_viewport.set(viewport);
-                }
             }));
 
             canvas_mouse_drag_empty_area_gesture.connect_drag_end(clone!(@weak self as appwindow => move |_canvas_mouse_drag_empty_area_gesture, _x, _y| {
@@ -1038,8 +1009,6 @@ impl RnoteAppWindow {
                         let new_adj_values = adjs_begin.get() * prev_scale.get() - bbcenter_delta;
 
                         appwindow.canvas().update_camera_offset(new_adj_values);
-
-                        // In this touch zoom gesture we dont update the rendering until we are finished. It would be too expensive.
                     }
             }));
 

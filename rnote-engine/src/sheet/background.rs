@@ -1,7 +1,6 @@
 use anyhow::Context;
 use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::AABB;
-use piet::RenderContext;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
@@ -9,7 +8,7 @@ use svg::node::element;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{render, Camera};
 use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::{color, Color};
+use rnote_compose::Color;
 
 #[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
 #[repr(u32)]
@@ -278,44 +277,6 @@ impl Background {
         Ok(render::Svg { svg_data, bounds })
     }
 
-    fn draw_origin_indicator(camera: &Camera) -> anyhow::Result<gsk::RenderNode> {
-        const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
-        let path_width: f64 = 1.0 / camera.total_zoom();
-
-        let indicator_bounds = AABB::from_half_extents(
-            na::point![0.0, 0.0],
-            na::Vector2::repeat(6.0 / camera.total_zoom()),
-        );
-
-        let cairo_node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(indicator_bounds));
-        let cairo_cx = cairo_node.draw_context();
-        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-        let mut indicator_path = kurbo::BezPath::new();
-        indicator_path.move_to(kurbo::Point::new(
-            indicator_bounds.mins[0],
-            indicator_bounds.mins[1],
-        ));
-        indicator_path.line_to(kurbo::Point::new(
-            indicator_bounds.maxs[0],
-            indicator_bounds.maxs[1],
-        ));
-        indicator_path.move_to(kurbo::Point::new(
-            indicator_bounds.mins[0],
-            indicator_bounds.maxs[1],
-        ));
-        indicator_path.line_to(kurbo::Point::new(
-            indicator_bounds.maxs[0],
-            indicator_bounds.mins[1],
-        ));
-
-        piet_cx.stroke(indicator_path, &PATH_COLOR, path_width);
-
-        piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
-
-        Ok(cairo_node.upcast())
-    }
-
     fn gen_image(
         &self,
         bounds: AABB,
@@ -384,7 +345,7 @@ impl Background {
         &self,
         snapshot: &Snapshot,
         sheet_bounds: AABB,
-        camera: &Camera,
+        _camera: &Camera,
     ) -> anyhow::Result<()> {
         snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
 
@@ -400,9 +361,6 @@ impl Background {
         self.rendernodes.iter().for_each(|rendernode| {
             snapshot.append_node(&rendernode);
         });
-
-        // Draw an indicator at the origin
-        snapshot.append_node(&Self::draw_origin_indicator(camera)?);
 
         snapshot.pop();
         Ok(())

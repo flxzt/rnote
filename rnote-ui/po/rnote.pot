@@ -182,7 +182,7 @@ msgid "Layout"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
-msgid "fixed size"
+msgid "Fixed size"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
@@ -190,7 +190,7 @@ msgid "Continuous vertical"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
-msgid "infinite"
+msgid "Infinite"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:49

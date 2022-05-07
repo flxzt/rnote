@@ -10,6 +10,7 @@ use anyhow::Context;
 use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::color;
+use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::shapes::ShapeBehaviour;
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
@@ -122,9 +123,10 @@ impl StrokeStore {
             self.stroke_components.get(key),
             self.render_components.get_mut(key),
         ) {
-            // margin is constant in pixel values, so we need to divide by the image_scale
-            let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
-            let viewport = viewport.loosened(viewport_render_margin);
+            // extending the viewport by the factor
+            let viewport_render_margins =
+                viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+            let viewport = viewport.extend_by(viewport_render_margins);
 
             let images = stroke
                 .gen_images(viewport, image_scale)
@@ -180,9 +182,9 @@ impl StrokeStore {
             let stroke = stroke.clone();
             let stroke_bounds = stroke.bounds();
 
-            // margin is constant in pixel values, so we need to divide by the image_scale
-            let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
-            let viewport = viewport.loosened(viewport_render_margin);
+            // extending the viewport by the factor
+            let viewport_render_margins = viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+            let viewport = viewport.extend_by(viewport_render_margins);
 
             // we need to check and set the state **before** spawning a task thread, to avoid repeated rendering of already outdated images
             render_comp.state = if viewport.contains(&stroke_bounds) {
@@ -225,9 +227,9 @@ impl StrokeStore {
                 let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
 
-                // margin is constant in pixel values, so we need to divide by the image_scale
-                let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
-                let viewport = viewport.loosened(viewport_render_margin);
+                // extending the viewport by the factor
+                let viewport_render_margins = viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+                let viewport = viewport.extend_by(viewport_render_margins);
 
                 // skip and empty image buffer if stroke is not in viewport
                 if !viewport.intersects(&stroke_bounds) {
@@ -249,7 +251,7 @@ impl StrokeStore {
                             const SKIP_RERENDER_MARGIN_THRESHOLD: f64 = 0.7;
 
                             let diff  = (old_viewport.center().coords - viewport.center().coords).abs();
-                            if diff[0] < viewport_render_margin * SKIP_RERENDER_MARGIN_THRESHOLD && diff[1] < viewport_render_margin * SKIP_RERENDER_MARGIN_THRESHOLD {
+                            if diff[0] < viewport_render_margins[0] * SKIP_RERENDER_MARGIN_THRESHOLD && diff[1] < viewport_render_margins[1] * SKIP_RERENDER_MARGIN_THRESHOLD {
                                 // We don't update the state, to have the old bounds on the next call
                                 // so we only update the rendering after it crossed the margin threshold
                                 return;
@@ -267,6 +269,8 @@ impl StrokeStore {
                 };
 
                 let stroke = stroke.clone();
+
+                //log::debug!("updating stroke with viewport: {:#?}", viewport);
 
                 // Spawn a new thread for image rendering
                 rayon::spawn(move || {

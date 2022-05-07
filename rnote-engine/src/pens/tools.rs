@@ -310,6 +310,7 @@ impl PenBehaviour for Tools {
                 sheet.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
+                surface_flags.resize = true;
                 surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(true);
 
@@ -378,6 +379,7 @@ impl PenBehaviour for Tools {
 
                             sheet.resize_autoexpand(store, camera);
 
+                            surface_flags.resize = true;
                             surface_flags.camera_changed = true;
                         }
 
@@ -411,6 +413,7 @@ impl PenBehaviour for Tools {
                 sheet.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
+                surface_flags.resize = true;
                 surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
@@ -424,6 +427,7 @@ impl PenBehaviour for Tools {
                 sheet.resize_autoexpand(store, camera);
 
                 surface_flags.redraw = true;
+                surface_flags.resize = true;
                 surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 

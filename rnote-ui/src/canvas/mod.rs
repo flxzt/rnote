@@ -9,7 +9,7 @@ use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
 use crate::config;
-use rnote_engine::{RnoteEngine, render};
+use rnote_engine::RnoteEngine;
 
 use gtk4::{
     gdk, gio, glib, glib::clone, graphene, prelude::*, subclass::prelude::*, AccessibleRole,
@@ -20,7 +20,7 @@ use gtk4::{
 use crate::appwindow::RnoteAppWindow;
 use futures::StreamExt;
 use once_cell::sync::Lazy;
-use p2d::bounding_volume::{AABB, BoundingVolume};
+use p2d::bounding_volume::AABB;
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
 use rnote_engine::utils::GrapheneRectHelpers;
@@ -413,20 +413,10 @@ impl RnoteCanvas {
             old_adj.disconnect(signal_id);
         }
 
-
         if let Some(ref hadjustment) = adj {
-            let old_viewport = Rc::new(Cell::new(AABB::new_zero()));
-
             let signal_id = hadjustment.connect_value_changed(
-                clone!(@strong old_viewport, @weak self as canvas => move |_hadjustment| {
-                    canvas.update_engine_background_rendering();
-
-                    let viewport = canvas.engine().borrow().camera.viewport();
-                    let image_scale = canvas.engine().borrow().camera.image_scale();
-                    if !old_viewport.get().loosened(render::VIEWPORT_RENDER_MARGIN / image_scale).contains(&viewport) {
-                        canvas.update_engine_rendering();
-                        old_viewport.set(viewport);
-                    }
+                clone!(@weak self as canvas => move |_hadjustment| {
+                    canvas.queue_resize();
                 }),
             );
 
@@ -442,18 +432,9 @@ impl RnoteCanvas {
         }
 
         if let Some(ref vadjustment) = adj {
-            let old_viewport = Rc::new(Cell::new(AABB::new_zero()));
-
             let signal_id = vadjustment.connect_value_changed(
-                clone!(@strong old_viewport, @weak self as canvas => move |_vadjustment| {
-                    canvas.update_engine_background_rendering();
-
-                    let viewport = canvas.engine().borrow().camera.viewport();
-                    let image_scale = canvas.engine().borrow().camera.image_scale();
-                    if !old_viewport.get().loosened(render::VIEWPORT_RENDER_MARGIN / image_scale).contains(&viewport) {
-                        canvas.update_engine_rendering();
-                        old_viewport.set(viewport);
-                    }
+                clone!(@weak self as canvas => move |_vadjustment| {
+                    canvas.queue_resize();
                 }),
             );
 
@@ -818,27 +799,37 @@ impl RnoteCanvas {
 
         self.regenerate_background_pattern();
         self.update_engine_rendering();
+
+        // We need to update the layout managers internal state after zooming
+        self.layout_manager()
+            .unwrap()
+            .downcast::<CanvasLayout>()
+            .unwrap()
+            .update_state(self);
     }
 
     /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.
     /// Repeated calls to this function reset the timeout.
-    /// should only be called in the "zoom-to-value" action.
+    /// should only be called from the "zoom-to-value" action.
     pub fn zoom_temporarily_then_scale_to_after_timeout(
         &self,
-        zoom: f64,
+        new_zoom: f64,
         timeout_time: time::Duration,
     ) {
         if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
             zoom_timeout_id.remove();
         }
 
+        let old_perm_zoom = self.engine().borrow().camera.zoom();
+
         // Zoom temporarily
-        let new_temp_zoom = zoom / self.engine().borrow().camera.zoom();
+        let new_temp_zoom = new_zoom / old_perm_zoom;
         self.engine()
             .borrow_mut()
             .camera
             .set_temporary_zoom(new_temp_zoom);
 
+        // In resize we render the strokes that came into view
         self.queue_resize();
 
         if let Some(zoom_timeout_id) =
@@ -850,7 +841,7 @@ impl RnoteCanvas {
                     clone!(@weak self as canvas => move || {
 
                         // After timeout zoom permanent
-                        canvas.zoom_to(zoom);
+                        canvas.zoom_to(new_zoom);
 
                         // Removing the timeout id
                         let mut zoom_timeout_id = canvas.imp().zoom_timeout_id.borrow_mut();
@@ -868,17 +859,15 @@ impl RnoteCanvas {
     /// To force the rerendering of the background pattern, call regenerate_background_pattern().
     /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
     pub fn update_engine_rendering(&self) {
-        self.update_engine_background_rendering();
+        // background rendering is updated in the layout manager
+        self.queue_resize();
 
         // Update engine rendering for the new viewport
         self.engine()
             .borrow_mut()
             .update_rendering_current_viewport();
-    }
 
-    pub fn update_engine_background_rendering(&self) {
-        // background rendering update is handled in layout manager
-        self.queue_resize();
+        self.queue_draw();
     }
 
     /// updates the background pattern and rendering for the current viewport.

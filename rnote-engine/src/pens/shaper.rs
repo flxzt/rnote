@@ -182,6 +182,7 @@ impl PenBehaviour for Shaper {
                     if !shapes.is_empty() {
                         sheet.resize_autoexpand(store, camera);
 
+                        surface_flags.resize = true;
                         surface_flags.store_changed = true;
                     }
 

@@ -2,6 +2,7 @@ use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, DrawBehaviour};
 use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
@@ -230,7 +231,7 @@ impl VectorImage {
                     page.render(&cx);
 
                     // Draw outline around page
-                    cx.set_source_rgba(0.7, 0.5, 0.5, 1.0);
+                    cx.set_source_rgba(color::GNOME_REDS[4].as_rgba().0, color::GNOME_REDS[4].as_rgba().1, color::GNOME_REDS[4].as_rgba().2, 1.0);
 
                     let line_width = 1.0;
                     cx.set_line_width(line_width);

@@ -121,6 +121,24 @@
                         </child>
                       </object>
                     </child>
+                    <child>
+                      <object class="AdwActionRow" id="general_format_border_color_row">
+                        <property name="title" translatable="yes">Format border color</property>
+                        <property name="subtitle" translatable="yes">Set the format border color</property>
+                        <child type="suffix">
+                          <object class="GtkBox">
+                            <property name="orientation">horizontal</property>
+                            <property name="spacing">6</property>
+                            <property name="hexpand">false</property>
+                            <property name="vexpand">false</property>
+                            <property name="valign">center</property>
+                            <child>
+                              <object class="GtkColorButton" id="general_format_border_color_choosebutton"></object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <!-- Format Group -->

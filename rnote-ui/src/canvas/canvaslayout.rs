@@ -1,14 +1,31 @@
+use std::cell::Cell;
+use std::rc::Rc;
+
+use gtk4::{
+    glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
+};
+use p2d::bounding_volume::{BoundingVolume, AABB};
+use rnote_compose::helpers::AABBHelpers;
+
+use crate::canvas::RnoteCanvas;
+use rnote_engine::sheet::ExpandMode;
+use rnote_engine::{render, Sheet};
+
 mod imp {
-    use gtk4::{
-        glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
-    };
+    use super::*;
 
-    use crate::canvas::RnoteCanvas;
-    use rnote_engine::sheet::ExpandMode;
-    use rnote_engine::Sheet;
+    #[derive(Debug, Clone)]
+    pub struct CanvasLayout {
+        pub old_viewport: Rc<Cell<AABB>>,
+    }
 
-    #[derive(Debug, Default)]
-    pub struct CanvasLayout {}
+    impl Default for CanvasLayout {
+        fn default() -> Self {
+            Self {
+                old_viewport: Rc::new(Cell::new(AABB::new_zero())),
+            }
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for CanvasLayout {
@@ -119,16 +136,44 @@ mod imp {
             canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
             canvas.engine().borrow_mut().camera.size = new_size;
 
-            // Update the background rendering
+            // always update the background rendering
             canvas
                 .engine()
                 .borrow_mut()
                 .update_background_rendering_current_viewport();
+
+            let viewport = canvas.engine().borrow().camera.viewport();
+            let old_viewport = self.old_viewport.get();
+
+            // We only extend the viewport by half of the margin, because we want to trigger rendering before we reach it.
+            // This has two advantages: Strokes that might take longer to render have a head start while still being out of view,
+            // And the rendering gets triggered more often, so not that many strokes start to get rendered. This avoids stutters,
+            // because while the rendering itself is on worker threads, we still have to `integrate` the resulted textures,
+            // which can also take up quite some time on the main UI thread.
+            let old_viewport_extended = old_viewport
+                .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.5);
+            /*
+                       log::debug!(
+                           "viewport: {:#?}\nold_viewport_extended: {:#?}",
+                           viewport,
+                           old_viewport_extended
+                       );
+            */
+
+            // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming into view.
+            // But after zoom ins we need to update old_viewport with layout_manager.update_state()
+            if !old_viewport_extended.contains(&viewport) {
+                // Because we don't set the rendering of strokes that are already in the view dirty, we only render those that may come into the view.
+                canvas
+                    .engine()
+                    .borrow_mut()
+                    .update_rendering_current_viewport();
+
+                self.old_viewport.set(viewport);
+            }
         }
     }
 }
-
-use gtk4::{glib, LayoutManager};
 
 glib::wrapper! {
     pub struct CanvasLayout(ObjectSubclass<imp::CanvasLayout>)
@@ -144,5 +189,12 @@ impl Default for CanvasLayout {
 impl CanvasLayout {
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("Failed to create CanvasLayout")
+    }
+
+    // needs to be called after zooming
+    pub fn update_state(&self, canvas: &RnoteCanvas) {
+        self.imp()
+            .old_viewport
+            .set(canvas.engine().borrow().camera.viewport());
     }
 }

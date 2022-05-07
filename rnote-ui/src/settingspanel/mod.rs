@@ -40,6 +40,8 @@ mod imp {
         #[template_child]
         pub general_pdf_import_as_bitmap_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub general_format_border_color_choosebutton: TemplateChild<ColorButton>,
+        #[template_child]
         pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub format_orientation_row: TemplateChild<adw::ActionRow>,
@@ -456,6 +458,10 @@ impl SettingsPanel {
         self.imp().general_pdf_import_as_bitmap_toggle.clone()
     }
 
+    pub fn general_format_border_color_choosebutton(&self) -> ColorButton {
+        self.imp().general_format_border_color_choosebutton.clone()
+    }
+
     pub fn format_width_unitentry(&self) -> UnitEntry {
         self.imp().format_width_unitentry.clone()
     }
@@ -498,6 +504,13 @@ impl SettingsPanel {
     pub fn load_general(&self, appwindow: &RnoteAppWindow) {
         let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
         let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
+        let format_border_color = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .sheet
+            .format
+            .border_color;
 
         self.general_pdf_import_as_vector_toggle()
             .set_active(pdf_import_as_vector);
@@ -505,6 +518,8 @@ impl SettingsPanel {
             .set_active(!pdf_import_as_vector);
         self.general_pdf_import_width_adj()
             .set_value(pdf_import_width_perc);
+        self.general_format_border_color_choosebutton()
+            .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
     pub fn load_format(&self, appwindow: &RnoteAppWindow) {
@@ -738,6 +753,16 @@ impl SettingsPanel {
             appwindow.canvas().engine().borrow_mut().sheet.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
 
             appwindow.canvas().regenerate_background_pattern();
+            appwindow.canvas().update_engine_rendering();
+        }));
+
+        self.imp().general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
+            let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
+            appwindow.canvas().engine().borrow_mut().sheet.format.border_color = format_border_color;
+
+            // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
+            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
+
             appwindow.canvas().update_engine_rendering();
         }));
 

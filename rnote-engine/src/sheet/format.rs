@@ -3,7 +3,7 @@ use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
 use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::Color;
+use rnote_compose::{Color, color};
 
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::Camera;
@@ -121,7 +121,8 @@ pub struct Format {
     pub dpi: f64,
     #[serde(rename = "orientation")]
     pub orientation: Orientation,
-
+    #[serde(rename = "border_color")]
+    pub border_color: Color,
     #[serde(rename = "show_borders")]
     pub show_borders: bool,
 }
@@ -133,6 +134,7 @@ impl Default for Format {
             height: Self::HEIGHT_DEFAULT,
             dpi: Self::DPI_DEFAULT,
             orientation: Orientation::default(),
+            border_color: Color::from(color::GNOME_REDS[0]),
             show_borders: true,
         }
     }
@@ -157,16 +159,9 @@ impl Format {
         sheet_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
-        const FORMAT_BORDER_COLOR: Color = Color {
-            r: 0.6,
-            g: 0.0,
-            b: 0.0,
-            a: 1.0,
-        };
-
         if self.show_borders {
             let total_zoom = camera.total_zoom();
-            let border_width = 1.0 / total_zoom;
+            let border_width = 0.5 / total_zoom;
             let viewport = camera.viewport();
 
             snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds.loosened(2.0)));
@@ -195,10 +190,10 @@ impl Format {
                         border_width as f32,
                     ],
                     &[
-                        gdk::RGBA::from_compose_color(FORMAT_BORDER_COLOR),
-                        gdk::RGBA::from_compose_color(FORMAT_BORDER_COLOR),
-                        gdk::RGBA::from_compose_color(FORMAT_BORDER_COLOR),
-                        gdk::RGBA::from_compose_color(FORMAT_BORDER_COLOR),
+                        gdk::RGBA::from_compose_color(self.border_color),
+                        gdk::RGBA::from_compose_color(self.border_color),
+                        gdk::RGBA::from_compose_color(self.border_color),
+                        gdk::RGBA::from_compose_color(self.border_color),
                     ],
                 )
             }

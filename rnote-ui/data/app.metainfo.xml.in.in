@@ -54,7 +54,6 @@
   <url type="homepage">https://github.com/flxzt/rnote</url>
   <url type="bugtracker">https://github.com/flxzt/rnote/issues</url>
   <url type="donation">https://www.paypal.com/donate?hosted_button_id=LQ9Q4868GKQGG</url>
-  <url type="contribute">https://github.com/flxzt/rnote/blob/main/CONTRIBUTING.md</url>
   <developer_name translatable="no">Felix Zwettler</developer_name>
   <update_contact>f.zwettler@posteo.de</update_contact>
   <content_rating type="oars-1.0" />

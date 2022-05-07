@@ -2,6 +2,13 @@
 Please ask in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section if you need help with anything!
 
 # Building
+
+First clone the repository and init its submodules
+```
+git clone https://github.com/flxzt/rnote
+git submodule update --init --recursive
+```
+
 ## Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.json`.
 

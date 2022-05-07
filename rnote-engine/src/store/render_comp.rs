@@ -564,15 +564,13 @@ impl StrokeStore {
                 }
 
                 if let Some(render_comp) = self.render_components.get(key) {
-                    /*
-                                       if render_comp.regenerate_flag {
+                    if render_comp.state == RenderCompState::Dirty {
                                            visual_debug::draw_fill(
                                                stroke.bounds(),
-                                               visual_debug::COLOR_STROKE_REGENERATE_FLAG,
+                                               visual_debug::COLOR_STROKE_DIRTY,
                                                snapshot,
                                            );
-                                       }
-                    */
+                    }
                     render_comp.images.iter().for_each(|image| {
                         visual_debug::draw_bounds(
                             // a little tightened not to overlap with other bounds

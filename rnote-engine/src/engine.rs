@@ -1083,11 +1083,11 @@ pub mod visual_debug {
         b: 1.0,
         a: 1.0,
     };
-    pub const COLOR_STROKE_REGENERATE_FLAG: Color = Color {
+    pub const COLOR_STROKE_DIRTY: Color = Color {
         r: 0.9,
         g: 0.0,
         b: 0.8,
-        a: 0.15,
+        a: 0.10,
     };
     pub const COLOR_SELECTOR_BOUNDS: Color = Color {
         r: 1.0,
@@ -1216,12 +1216,13 @@ pub mod visual_debug {
         surface_bounds: AABB,
     ) -> anyhow::Result<()> {
         let viewport = engine.camera.viewport();
+        let total_zoom = engine.camera.total_zoom();
         let sheet_bounds = engine.sheet.bounds();
-        let border_widths = 1.0 / engine.camera.total_zoom();
+        let border_widths = 1.0 / total_zoom;
 
         draw_bounds(sheet_bounds, COLOR_SHEET_BOUNDS, snapshot, border_widths);
 
-        let tightened_viewport = viewport.tightened(3.0);
+        let tightened_viewport = viewport.tightened(2.0 / total_zoom);
         draw_bounds(
             tightened_viewport,
             COLOR_STROKE_BOUNDS,

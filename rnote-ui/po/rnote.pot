@@ -178,7 +178,7 @@ msgid "Draw with touch input"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
-msgid "Expand mode"
+msgid "Layout"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
@@ -186,7 +186,7 @@ msgid "fixed size"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:37
-msgid "endless vertical"
+msgid "Continuous vertical"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:42
@@ -202,7 +202,7 @@ msgid "Pen sounds"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:59
-msgid "Clear sheet"
+msgid "Clear document"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:65 rnote-ui/data/ui/dialogs.ui:24
@@ -240,15 +240,15 @@ msgid "Export selection as SVG"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:95
-msgid "Export sheet as SVG"
+msgid "Export document as SVG"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:99
-msgid "Export sheet as PDF"
+msgid "Export document as PDF"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:103
-msgid "Export sheet as Xournal++ .xopp"
+msgid "Export document as Xournal++ .xopp"
 msgstr ""
 
 #: rnote-ui/data/ui/canvasmenu.ui:130
@@ -272,11 +272,11 @@ msgid "Select"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:7
-msgid "New Sheet"
+msgid "New document"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:8
-msgid "Creating a new sheet erases any unsaved changes. Are you sure?"
+msgid "Creating a new document erases any unsaved changes. Are you sure?"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:11 rnote-ui/data/ui/dialogs.ui:43
@@ -292,7 +292,7 @@ msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:16 rnote-ui/data/ui/dialogs.ui:48
 #: rnote-ui/data/ui/dialogs.ui:80
-msgid "Save current sheet as"
+msgid "Save current document as"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:39
@@ -316,11 +316,11 @@ msgid "Opening this file overwrites any unsaved changes."
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:103
-msgid "Clear Sheet"
+msgid "Clear document"
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:104
-msgid "This clears the entire sheet. Please confirm."
+msgid "This clears the entire document. Please confirm."
 msgstr ""
 
 #: rnote-ui/data/ui/dialogs.ui:112
@@ -344,7 +344,7 @@ msgid "Draft"
 msgstr ""
 
 #: rnote-ui/data/ui/mainheader.ui:37
-msgid "Save sheet"
+msgid "Save document"
 msgstr ""
 
 #: rnote-ui/data/ui/settingspanel.ui:41
@@ -584,37 +584,37 @@ msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:81
 msgctxt "shortcut window"
-msgid "Sheet"
+msgid "Document"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:84
 msgctxt "shortcut window"
-msgid "New sheet"
+msgid "New document"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:90
 msgctxt "shortcut window"
-msgid "Open sheet"
+msgid "Open document"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:96
 msgctxt "shortcut window"
-msgid "Save sheet"
+msgid "Save document"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:102
 msgctxt "shortcut window"
-msgid "Save sheet as"
+msgid "Save document as"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:108
 msgctxt "shortcut window"
-msgid "Clear sheet"
+msgid "Clear document"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:114
 msgctxt "shortcut window"
-msgid "Print sheet"
+msgid "Print document"
 msgstr ""
 
 #: rnote-ui/data/ui/shortcuts.ui:120
@@ -903,15 +903,15 @@ msgid ".rnote file"
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:266
-msgid "Save sheet as"
+msgid "Save document as"
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:297
-msgid "Saving sheet failed."
+msgid "Saving document failed."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:299
-msgid "Saved sheet successfully."
+msgid "Saved document successfully."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:327
@@ -941,7 +941,7 @@ msgid "Export"
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:397
-msgid "Export selection as SVG failed."
+msgid "Exporting selection as SVG failed."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:399
@@ -950,15 +950,15 @@ msgstr ""
 
 #: rnote-ui/src/dialogs.rs:422 rnote-ui/src/dialogs.rs:473
 #: rnote-ui/src/dialogs.rs:524
-msgid "Export Sheet"
+msgid "Export Document"
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:446
-msgid "Export sheet as SVG failed."
+msgid "Exporting document as SVG failed."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:448
-msgid "Exported sheet as SVG successfully."
+msgid "Exported document as SVG successfully."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:470
@@ -966,11 +966,11 @@ msgid "PDF file"
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:497
-msgid "Export sheet as PDF failed."
+msgid "Exporting document as PDF failed."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:499
-msgid "Exported sheet as PDF successfully."
+msgid "Exported document as PDF successfully."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:521
@@ -978,11 +978,11 @@ msgid ".xopp file"
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:548
-msgid "Exporting sheet as .xopp failed."
+msgid "Exporting document as .xopp failed."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:550
-msgid "Exported sheet as .xopp successfully."
+msgid "Exported document as .xopp successfully."
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:571 rnote-ui/src/dialogs.rs:625

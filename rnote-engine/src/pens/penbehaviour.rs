@@ -1,46 +1,29 @@
-use std::collections::VecDeque;
-use std::sync::{Arc, RwLock};
+use rnote_compose::penhelpers::PenEvent;
 
-use gtk4::Snapshot;
-use p2d::bounding_volume::AABB;
+use crate::engine::EngineTaskSender;
+use crate::document::Document;
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
-use crate::render::Renderer;
-use crate::sheet::Sheet;
-use crate::strokes::inputdata::InputData;
+use super::AudioPlayer;
 
-pub trait PenBehaviour {
-    fn begin(
+/// types that are pens and can handle pen events
+pub trait PenBehaviour: DrawOnDocBehaviour {
+    /// Handles a pen event
+    #[must_use]
+    fn handle_event(
         &mut self,
-        data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    );
-    fn motion(
-        &mut self,
-        data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    );
-    fn end(
-        &mut self,
-        data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    );
-    fn draw(
-        &self,
-        _snapshot: &Snapshot,
-        _sheet: &Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) -> Result<(), anyhow::Error> {
-        Ok(())
-    }
+        event: PenEvent,
+        tasks_tx: EngineTaskSender,
+        doc: &mut Document,
+        store: &mut StrokeStore,
+        camera: &mut Camera,
+        audioplayer: Option<&mut AudioPlayer>,
+    ) -> (PenProgress, SurfaceFlags);
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum PenProgress {
+    Idle,
+    InProgress,
+    Finished,
 }

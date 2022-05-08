@@ -1,8 +1,7 @@
 use gtk4::Align;
 use gtk4::{glib::prelude::*, prelude::*, Image, Label, Orientation, SignalListItemFactory};
+use rnote_engine::pens::penholder::PenStyle;
 use std::ops::{Deref, DerefMut};
-
-use rnote_engine::pens::PenStyle;
 
 #[derive(Debug, Clone)]
 pub struct ChangePenStyleListModel(adw::EnumListModel);
@@ -71,7 +70,7 @@ impl Default for ChangePenStyleListFactory {
                     next_child
                         .downcast_ref::<Label>()
                         .unwrap()
-                        .set_label(pen_style.display_name().as_str());
+                        .set_label(pen_style.name().as_str());
                 } else if next_child.type_() == Image::static_type() {
                     next_child
                         .downcast_ref::<Image>()

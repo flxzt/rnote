@@ -1,9 +1,18 @@
+use crate::appwindow::RnoteAppWindow;
+use adw::prelude::*;
+use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, SpinButton, ToggleButton};
+use rnote_engine::pens::eraser::Eraser;
+
 mod imp {
-    use gtk4::{glib, prelude::*, subclass::prelude::*, CompositeTemplate, SpinButton};
+    use super::*;
 
     #[derive(Default, Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/penssidebar/eraserpage.ui")]
     pub struct EraserPage {
+        #[template_child]
+        pub eraserstyle_trash_colliding_strokes_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub eraserstyle_split_colliding_strokes_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub width_spinbutton: TemplateChild<SpinButton>,
     }
@@ -38,10 +47,6 @@ mod imp {
     impl WidgetImpl for EraserPage {}
 }
 
-use crate::appwindow::RnoteAppWindow;
-use gtk4::{glib, glib::clone, subclass::prelude::*, SpinButton};
-use rnote_engine::pens::eraser::Eraser;
-
 glib::wrapper! {
     pub struct EraserPage(ObjectSubclass<imp::EraserPage>)
         @extends gtk4::Widget;
@@ -58,11 +63,31 @@ impl EraserPage {
         glib::Object::new(&[]).expect("Failed to create EraserPage")
     }
 
+    pub fn eraserstyle_trash_colliding_strokes_toggle(&self) -> ToggleButton {
+        self.imp().eraserstyle_trash_colliding_strokes_toggle.get()
+    }
+
+    pub fn eraserstyle_split_colliding_strokes_toggle(&self) -> ToggleButton {
+        self.imp().eraserstyle_split_colliding_strokes_toggle.get()
+    }
+
     pub fn width_spinbutton(&self) -> SpinButton {
-        imp::EraserPage::from_instance(self).width_spinbutton.get()
+        self.imp().width_spinbutton.get()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.eraserstyle_trash_colliding_strokes_toggle().connect_toggled(clone!(@weak appwindow => move |eraserstyle_trash_colliding_strokes_toggle| {
+            if eraserstyle_trash_colliding_strokes_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "eraser-style", Some(&"trash-colliding-strokes".to_variant()));
+            }
+        }));
+
+        self.eraserstyle_split_colliding_strokes_toggle().connect_toggled(clone!(@weak appwindow => move |eraserstyle_split_colliding_strokes_toggle| {
+            if eraserstyle_split_colliding_strokes_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "eraser-style", Some(&"split-colliding-strokes".to_variant()));
+            }
+        }));
+
         self.width_spinbutton().set_increments(1.0, 5.0);
         self.width_spinbutton()
             .set_range(Eraser::WIDTH_MIN, Eraser::WIDTH_MAX);
@@ -70,7 +95,7 @@ impl EraserPage {
 
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
-                appwindow.canvas().pens().borrow_mut().eraser.width = width_spinbutton.value();
+                appwindow.canvas().engine().borrow_mut().penholder.eraser.width = width_spinbutton.value();
             }),
         );
     }

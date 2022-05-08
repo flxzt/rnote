@@ -1,25 +1,25 @@
+use super::penholder::PenStyle;
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 
+use rnote_compose::penhelpers::ShortcutKey;
+
 use serde::{Deserialize, Serialize};
 
-use super::PenStyle;
-
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[serde(rename = "shortcut_action")]
 pub enum ShortcutAction {
-    ChangePenStyle { style: PenStyle, permanent: bool },
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-pub enum ShortcutKey {
-    KeyboardKey(String),
-    StylusPrimaryButton,
-    StylusSecondaryButton,
-    StylusEraserButton,
-    MouseSecondaryButton,
+    #[serde(rename = "change_pen_style")]
+    ChangePenStyle {
+        #[serde(rename = "style")]
+        style: PenStyle,
+        #[serde(rename = "permanent")]
+        permanent: bool,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename = "shortcuts")]
 pub struct Shortcuts(HashMap<ShortcutKey, ShortcutAction>);
 
 impl Default for Shortcuts {
@@ -28,28 +28,28 @@ impl Default for Shortcuts {
         map.insert(
             ShortcutKey::StylusPrimaryButton,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::SelectorStyle,
+                style: PenStyle::Selector,
                 permanent: false,
             },
         );
         map.insert(
             ShortcutKey::StylusSecondaryButton,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::SelectorStyle,
+                style: PenStyle::Selector,
                 permanent: false,
             },
         );
         map.insert(
-            ShortcutKey::StylusEraserButton,
+            ShortcutKey::StylusEraserMode,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::EraserStyle,
+                style: PenStyle::Eraser,
                 permanent: false,
             },
         );
         map.insert(
             ShortcutKey::MouseSecondaryButton,
             ShortcutAction::ChangePenStyle {
-                style: PenStyle::ShaperStyle,
+                style: PenStyle::Shaper,
                 permanent: false,
             },
         );

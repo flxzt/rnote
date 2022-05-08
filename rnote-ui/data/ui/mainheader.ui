@@ -29,67 +29,14 @@
         <property name="vexpand">false</property>
         <child type="start">
           <object class="GtkBox">
-            <property name="width_request">52</property>
-            <property name="margin-end">6</property>
+            <property name="width_request">55</property>
             <child>
               <object class="GtkButton">
                 <property name="visible">true</property>
-                <property name="halign">center</property>
-                <property name="tooltip-text">Save sheet</property>
-                <property name="icon-name">sheet-save-symbolic</property>
-                <property name="action-name">win.save-sheet</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkSeparator">
-                <style>
-                  <class name="spacer" />
-                </style>
-                <property name="halign">fill</property>
-                <property name="orientation">vertical</property>
-                <property name="visible">true</property>
-              </object>
-            </child>
-          </object>
-        </child>
-        <child type="start">
-          <object class="GtkBox" id="quickactions_box">
-            <property name="margin-end">12</property>
-            <child>
-              <object class="GtkRevealer" id="pageedit_revealer">
-                <property name="transition_type">GTK_REVEALER_TRANSITION_TYPE_SLIDE_RIGHT</property>
-                <property name="transition_duration">300</property>
-                <child>
-                  <object class="GtkBox">
-                    <property name="homogeneous">true</property>
-                    <property name="spacing">6</property>
-                    <property name="margin-end">12</property>
-                    <child>
-                      <object class="GtkButton" id="add_page_button">
-                        <property name="icon_name">add-page-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Add page</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="resize_to_format_button">
-                        <property name="icon_name">resize-to-format-symbolic</property>
-                        <property name="tooltip_text" translatable="yes">Resize to fit sheet format</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="undo_button">
-                <property name="icon_name">edit-undo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Undo last stroke</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="redo_button">
-                <property name="icon_name">edit-redo-symbolic</property>
-                <property name="tooltip_text" translatable="yes">Redo last stroke</property>
+                <property name="halign">start</property>
+                <property name="tooltip-text" translatable="yes">Save document</property>
+                <property name="icon-name">doc-save-symbolic</property>
+                <property name="action-name">win.save-doc</property>
               </object>
             </child>
           </object>
@@ -97,6 +44,7 @@
         <child type="end">
           <object class="GtkBox" id="menus_box">
             <property name="spacing">6</property>
+            <property name="margin-start">22</property>
             <child>
               <object class="CanvasMenu" id="canvasmenu"></object>
             </child>
@@ -113,7 +61,6 @@
               <object class="AdwClamp" id="pens_toggles_clamp">
                 <property name="maximum-size">500</property>
                 <property name="tightening-threshold">450</property>
-                <property name="margin-end">24</property>
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
                 <property name="valign">fill</property>

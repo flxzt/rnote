@@ -1,46 +1,34 @@
-pub mod appactions;
+mod appactions;
+
+use std::{cell::RefCell, path};
+
+use adw::subclass::prelude::AdwApplicationImpl;
+use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use rnote_engine::pens::penholder::PenStyle;
+use rnote_engine::{
+    document::format::MeasureUnit,
+    document::{background::PatternStyle, format::PredefinedFormat},
+};
+
+use crate::{
+    colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
+    penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
+    settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow, AppMenu, CanvasMenu,
+    ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas, SettingsPanel, UnitEntry,
+    WorkspaceBrowser,
+};
 
 mod imp {
-    use std::{
-        cell::{Cell, RefCell},
-        path,
-    };
-
-    use adw::subclass::prelude::AdwApplicationImpl;
-    use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
-    use once_cell::sync::Lazy;
-    use rnote_engine::compose::textured::TexturedDotsDistribution;
-    use rnote_engine::{
-        pens::PenStyle,
-        sheet::format::MeasureUnit,
-        sheet::{background::PatternStyle, format::PredefinedFormat},
-    };
-
-    use crate::{
-        appmenu::AppMenu, appwindow::RnoteAppWindow, canvas::Canvas, canvas::ExpandMode,
-        canvasmenu::CanvasMenu, colorpicker::colorsetter::ColorSetter, colorpicker::ColorPicker,
-        config, mainheader::MainHeader, penssidebar::brushpage::BrushPage,
-        penssidebar::eraserpage::EraserPage, penssidebar::selectorpage::SelectorPage,
-        penssidebar::shaperpage::ShaperPage, penssidebar::toolspage::ToolsPage,
-        penssidebar::PensSideBar, selectionmodifier::modifiernode::ModifierNode,
-        selectionmodifier::SelectionModifier, settingspanel::penshortcutrow::PenShortcutRow,
-        settingspanel::SettingsPanel, unitentry::UnitEntry, utils,
-        workspacebrowser::filerow::FileRow, workspacebrowser::WorkspaceBrowser,
-    };
-
-    #[derive(Debug)]
+    use super::*;
+    #[allow(missing_debug_implementations)]
     pub struct RnoteApp {
         pub input_file: RefCell<Option<gio::File>>,
-        pub output_file: RefCell<Option<gio::File>>,
-        pub unsaved_changes: Cell<bool>,
     }
 
     impl Default for RnoteApp {
         fn default() -> Self {
             Self {
                 input_file: RefCell::new(None),
-                output_file: RefCell::new(None),
-                unsaved_changes: Cell::new(false),
             }
         }
     }
@@ -52,56 +40,15 @@ mod imp {
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for RnoteApp {
-        fn properties() -> &'static [glib::ParamSpec] {
-            static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
-                // Any unsaved changes of the current application state
-                vec![glib::ParamSpecBoolean::new(
-                    "unsaved-changes",
-                    "unsaved-changes",
-                    "unsaved-changes",
-                    false,
-                    glib::ParamFlags::READWRITE,
-                )]
-            });
-            PROPERTIES.as_ref()
-        }
-
-        fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
-            match pspec.name() {
-                "unsaved-changes" => self.unsaved_changes.get().to_value(),
-                _ => unimplemented!(),
-            }
-        }
-
-        fn set_property(
-            &self,
-            _obj: &Self::Type,
-            _id: usize,
-            value: &glib::Value,
-            pspec: &glib::ParamSpec,
-        ) {
-            match pspec.name() {
-                "unsaved-changes" => {
-                    let unsaved_changes: bool =
-                        value.get().expect("The value needs to be of type `bool`.");
-                    self.unsaved_changes.replace(unsaved_changes);
-                }
-                _ => unimplemented!(),
-            }
-        }
-    }
+    impl ObjectImpl for RnoteApp {}
 
     impl ApplicationImpl for RnoteApp {
         fn activate(&self, app: &Self::Type) {
             // Custom buildable Widgets need to register
             RnoteAppWindow::static_type();
-            Canvas::static_type();
-            ExpandMode::static_type();
+            RnoteCanvas::static_type();
             ColorPicker::static_type();
             ColorSetter::static_type();
-            SelectionModifier::static_type();
-            ModifierNode::static_type();
             CanvasMenu::static_type();
             SettingsPanel::static_type();
             AppMenu::static_type();
@@ -119,7 +66,6 @@ mod imp {
             MeasureUnit::static_type();
             PatternStyle::static_type();
             UnitEntry::static_type();
-            TexturedDotsDistribution::static_type();
             PenShortcutRow::static_type();
 
             // Load the resources
@@ -127,12 +73,6 @@ mod imp {
             let resource = gio::Resource::load(path::Path::new(config::RESOURCES_FILE))
                 .expect("Could not load gresource file");
             gio::resources_register(&resource);
-
-            // init gstreamer
-            if let Err(e) = gst::init() {
-                log::error!("failed to initialize gstreamer. Err `{}`. Aborting.", e);
-                return;
-            }
 
             let appwindow = RnoteAppWindow::new(app.upcast_ref::<gtk4::Application>());
             appwindow.init();
@@ -150,7 +90,7 @@ mod imp {
         fn open(&self, application: &Self::Type, files: &[gio::File], _hint: &str) {
             for file in files {
                 match utils::FileType::lookup_file_type(file) {
-                    utils::FileType::UnknownFile => {
+                    utils::FileType::Unsupported => {
                         log::warn!("tried to open unsupported file type");
                     }
                     _ => {
@@ -165,11 +105,6 @@ mod imp {
     impl GtkApplicationImpl for RnoteApp {}
     impl AdwApplicationImpl for RnoteApp {}
 }
-
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
-
-use crate::appwindow::RnoteAppWindow;
-use crate::config;
 
 glib::wrapper! {
     pub struct RnoteApp(ObjectSubclass<imp::RnoteApp>)
@@ -193,41 +128,20 @@ impl RnoteApp {
     }
 
     pub fn input_file(&self) -> Option<gio::File> {
-        imp::RnoteApp::from_instance(self)
-            .input_file
-            .borrow()
-            .clone()
+        self.imp().input_file.borrow().clone()
     }
 
     pub fn set_input_file(&self, input_file: Option<gio::File>) {
-        *imp::RnoteApp::from_instance(self).input_file.borrow_mut() = input_file;
-    }
-
-    pub fn output_file(&self) -> Option<gio::File> {
-        imp::RnoteApp::from_instance(self)
-            .output_file
-            .borrow()
-            .clone()
-    }
-
-    pub fn set_output_file(&self, output_file: Option<&gio::File>, appwindow: &RnoteAppWindow) {
-        appwindow.mainheader().set_title_for_file(output_file);
-        *imp::RnoteApp::from_instance(self).output_file.borrow_mut() = output_file.cloned();
-    }
-
-    pub fn unsaved_changes(&self) -> bool {
-        self.property::<bool>("unsaved-changes")
-    }
-
-    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
-        self.set_property("unsaved-changes", unsaved_changes.to_value());
+        *self.imp().input_file.borrow_mut() = input_file;
     }
 
     // Anything that needs to be done right before showing the appwindow
     pub fn init_misc(&self, appwindow: &RnoteAppWindow) {
-        appwindow.canvas().return_to_origin_page();
-        appwindow.canvas().resize_sheet_autoexpand();
-        appwindow.canvas().regenerate_background(false);
-        appwindow.canvas().regenerate_content(true, true);
+        // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
+        appwindow.undo_button().set_sensitive(false);
+        appwindow.redo_button().set_sensitive(false);
+
+        appwindow.canvas().regenerate_background_pattern();
+        appwindow.canvas().update_engine_rendering();
     }
 }

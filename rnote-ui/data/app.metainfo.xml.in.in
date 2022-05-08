@@ -6,7 +6,7 @@
   <project_license>GPL-3.0</project_license>
   <name translatable="no">@APP_NAME_CAPITALIZED@</name>
   <launchable type="desktop-id">@APP_ID@.desktop</launchable>
-  <summary>A simple drawing application to create handwritten notes</summary>
+  <summary>Sketch and take handwritten notes</summary>
 
   <categories>
     <category>Graphics</category>
@@ -19,10 +19,10 @@
 
   <description>
     <p>
-      Rnote is a simple vector based drawing application for handwritten notes and to annotate documents and pictures.
+      Rnote is a simple vector-based drawing application for sketching, handwritten notes and to annotate documents and pictures.
     </p>
     <p>
-      Disclaimer: The file format is still unstable. It might change between versions and break backward compatibility.
+      Disclaimer: The file format is still unstable. It might change and break compatibility between versions.
     </p>
   </description>
 
@@ -53,6 +53,7 @@
 
   <url type="homepage">https://github.com/flxzt/rnote</url>
   <url type="bugtracker">https://github.com/flxzt/rnote/issues</url>
+  <url type="donation">https://www.paypal.com/donate?hosted_button_id=LQ9Q4868GKQGG</url>
   <developer_name translatable="no">Felix Zwettler</developer_name>
   <update_contact>f.zwettler@posteo.de</update_contact>
   <content_rating type="oars-1.0" />
@@ -63,6 +64,34 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.1" date="2022-05-08">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>feature: seting to change the format border color</li>
+          <li>UI text string improvements</li>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
+    <release version="0.5.0" date="2022-05-04">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>disclaimer: breaking file format compatibility</li>
+          <li>more shape types (curves, ellipse with foci)</li>
+          <li>feature: new eraser type: split strokes</li>
+          <li>feature: autosave</li>
+          <li>reduced handwriting latency</li>
+          <li>improved selector</li>
+          <li>improved undo / redo system</li>
+          <li>Xournal++ file import: drawn shapes are now imported correctly</li>
+          <li>UI tweaks</li>
+          <li>bug fixes</li>
+          <li>a lot of code refactoring</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.4.0" date="2022-03-17">
       <description>
         <p>this release changes:</p>
@@ -95,7 +124,7 @@
       <description>
         <p>this release changes:</p>
         <ul>
-          <li>UX: Adaptive pen selection buttons (support smaller screens)</li>
+          <li>UX: Adaptive pen buttons (support smaller screens)</li>
         </ul>
       </description>
     </release>

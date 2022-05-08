@@ -2,7 +2,9 @@
 
 [workspace]
 members = [
+    "rnote-compose",
     "rnote-engine",
     "rnote-ui",
     "rnote-fileformats",
 ]
+exclude = [ "./piet" ]

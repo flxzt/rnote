@@ -1,19 +1,25 @@
 pub mod penshortcutmodels;
-pub mod penshortcutrow;
+mod penshortcutrow;
+
+// Re-exports
+pub use penshortcutrow::PenShortcutRow;
+
+use super::appwindow::RnoteAppWindow;
+use crate::unitentry::UnitEntry;
+use adw::prelude::*;
+use gtk4::{
+    gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorButton,
+    CompositeTemplate, ScrolledWindow, SpinButton, Switch, ToggleButton, Widget,
+};
+use rnote_compose::penhelpers::ShortcutKey;
+use rnote_engine::document::background::PatternStyle;
+use rnote_engine::document::format::{self, Format};
+use rnote_engine::utils::GdkRGBAHelpers;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 mod imp {
-    use std::cell::RefCell;
-    use std::rc::Rc;
-
-    use adw::prelude::*;
-    use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate};
-    use gtk4::{Adjustment, Button, ColorButton, ScrolledWindow, ToggleButton};
-
-    use crate::unitentry::UnitEntry;
-    use rnote_engine::sheet::format::{self, Format};
-
-    use super::penshortcutrow::PenShortcutRow;
-
+    use super::*;
     #[derive(Debug, Default, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/settingspanel.ui")]
     pub struct SettingsPanel {
@@ -22,11 +28,19 @@ mod imp {
         #[template_child]
         pub settings_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
+        pub general_autosave_enable_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub general_autosave_interval_secs_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
+        #[template_child]
         pub general_pdf_import_width_adj: TemplateChild<Adjustment>,
         #[template_child]
         pub general_pdf_import_as_vector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub general_pdf_import_as_bitmap_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub general_format_border_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
         pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -366,20 +380,6 @@ mod imp {
     }
 }
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
-use adw::prelude::*;
-use gtk4::{glib, glib::clone, subclass::prelude::*, Widget};
-use gtk4::{Adjustment, ColorButton, ScrolledWindow, ToggleButton};
-use rnote_engine::pens::shortcuts::ShortcutKey;
-
-use super::appwindow::RnoteAppWindow;
-use crate::unitentry::UnitEntry;
-use rnote_engine::compose::color::Color;
-use rnote_engine::sheet::background::PatternStyle;
-use rnote_engine::sheet::format::{self, Format};
-
 glib::wrapper! {
     pub struct SettingsPanel(ObjectSubclass<imp::SettingsPanel>)
     @extends Widget;
@@ -443,91 +443,87 @@ impl SettingsPanel {
     }
 
     pub fn settings_scroller(&self) -> ScrolledWindow {
-        imp::SettingsPanel::from_instance(self)
-            .settings_scroller
-            .clone()
+        self.imp().settings_scroller.clone()
     }
 
     pub fn general_pdf_import_width_adj(&self) -> Adjustment {
-        imp::SettingsPanel::from_instance(self)
-            .general_pdf_import_width_adj
-            .clone()
+        self.imp().general_pdf_import_width_adj.clone()
     }
 
     pub fn general_pdf_import_as_vector_toggle(&self) -> ToggleButton {
-        imp::SettingsPanel::from_instance(self)
-            .general_pdf_import_as_vector_toggle
-            .clone()
+        self.imp().general_pdf_import_as_vector_toggle.clone()
     }
 
     pub fn general_pdf_import_as_bitmap_toggle(&self) -> ToggleButton {
-        imp::SettingsPanel::from_instance(self)
-            .general_pdf_import_as_bitmap_toggle
-            .clone()
+        self.imp().general_pdf_import_as_bitmap_toggle.clone()
+    }
+
+    pub fn general_format_border_color_choosebutton(&self) -> ColorButton {
+        self.imp().general_format_border_color_choosebutton.clone()
     }
 
     pub fn format_width_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .format_width_unitentry
-            .clone()
+        self.imp().format_width_unitentry.clone()
     }
 
     pub fn format_height_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .format_height_unitentry
-            .clone()
+        self.imp().format_height_unitentry.clone()
     }
 
     pub fn format_dpi_adj(&self) -> Adjustment {
-        imp::SettingsPanel::from_instance(self)
-            .format_dpi_adj
-            .clone()
+        self.imp().format_dpi_adj.clone()
     }
 
     pub fn background_color_choosebutton(&self) -> ColorButton {
-        imp::SettingsPanel::from_instance(self)
-            .background_color_choosebutton
-            .clone()
+        self.imp().background_color_choosebutton.clone()
     }
 
     pub fn background_patterns_row(&self) -> adw::ComboRow {
-        imp::SettingsPanel::from_instance(self)
-            .background_patterns_row
-            .clone()
+        self.imp().background_patterns_row.clone()
     }
 
     pub fn background_pattern_color_choosebutton(&self) -> ColorButton {
-        imp::SettingsPanel::from_instance(self)
-            .background_pattern_color_choosebutton
-            .clone()
+        self.imp().background_pattern_color_choosebutton.clone()
     }
 
     pub fn background_pattern_width_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .background_pattern_width_unitentry
-            .clone()
+        self.imp().background_pattern_width_unitentry.clone()
     }
 
     pub fn background_pattern_height_unitentry(&self) -> UnitEntry {
-        imp::SettingsPanel::from_instance(self)
-            .background_pattern_height_unitentry
-            .clone()
+        self.imp().background_pattern_height_unitentry.clone()
     }
 
-    pub fn refresh_for_sheet(&self, appwindow: &RnoteAppWindow) {
-        self.load_misc(appwindow);
+    pub fn refresh_for_engine(&self, appwindow: &RnoteAppWindow) {
+        self.load_general(appwindow);
         self.load_format(appwindow);
         self.load_background(appwindow);
         self.load_shortcuts(appwindow);
     }
 
-    pub fn load_misc(&self, appwindow: &RnoteAppWindow) {
+    pub fn load_general(&self, appwindow: &RnoteAppWindow) {
+        let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
+        let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
+        let format_border_color = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .document
+            .format
+            .border_color;
+
+        self.general_pdf_import_as_vector_toggle()
+            .set_active(pdf_import_as_vector);
+        self.general_pdf_import_as_bitmap_toggle()
+            .set_active(!pdf_import_as_vector);
         self.general_pdf_import_width_adj()
-            .set_value(appwindow.canvas().pdf_import_width());
+            .set_value(pdf_import_width_perc);
+        self.general_format_border_color_choosebutton()
+            .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
     pub fn load_format(&self, appwindow: &RnoteAppWindow) {
-        let format = appwindow.canvas().sheet().borrow().format.clone();
+        let format = appwindow.canvas().engine().borrow().document.format.clone();
 
         self.set_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
@@ -545,15 +541,21 @@ impl SettingsPanel {
     }
 
     pub fn load_background(&self, appwindow: &RnoteAppWindow) {
-        let background = appwindow.canvas().sheet().borrow().background.clone();
-        let format = appwindow.canvas().sheet().borrow().format.clone();
+        let background = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .document
+            .background
+            .clone();
+        let format = appwindow.canvas().engine().borrow().document.format.clone();
 
         self.background_color_choosebutton()
-            .set_rgba(&background.color.to_gdk());
+            .set_rgba(&gdk::RGBA::from_compose_color(background.color));
 
         self.set_background_pattern_variant(background.pattern);
         self.background_pattern_color_choosebutton()
-            .set_rgba(&background.pattern_color.to_gdk());
+            .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
 
         // Background pattern Unit Entries
         self.background_pattern_width_unitentry()
@@ -572,7 +574,12 @@ impl SettingsPanel {
     }
 
     pub fn load_shortcuts(&self, appwindow: &RnoteAppWindow) {
-        let current_shortcuts = appwindow.canvas().pens().borrow().list_current_shortcuts();
+        let current_shortcuts = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .list_current_shortcuts();
 
         current_shortcuts
             .into_iter()
@@ -587,7 +594,7 @@ impl SettingsPanel {
                         .penshortcut_stylus_button_secondary_row
                         .set_action(action.clone());
                 }
-                ShortcutKey::StylusEraserButton => {
+                ShortcutKey::StylusEraserMode => {
                     self.imp()
                         .penshortcut_stylus_button_eraser_row
                         .set_action(action.clone());
@@ -612,37 +619,60 @@ impl SettingsPanel {
         let penshortcut_mouse_button_secondary_row =
             self.imp().penshortcut_mouse_button_secondary_row.get();
 
+        // autosave enable switch
+        self.imp()
+            .general_autosave_enable_switch
+            .bind_property("state", appwindow, "autosave")
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
+
+        self.imp()
+            .general_autosave_enable_switch
+            .get()
+            .bind_property(
+                "state",
+                &self.imp().general_autosave_interval_secs_row.get(),
+                "sensitive",
+            )
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+            .build();
+
+        self.imp()
+            .general_autosave_interval_secs_spinbutton
+            .get()
+            .bind_property("value", appwindow, "autosave-interval-secs")
+            .transform_to(|_, value| Some((value.get::<f64>().unwrap().round() as u32).to_value()))
+            .transform_from(|_, value| Some(f64::from(value.get::<u32>().unwrap()).to_value()))
+            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
+            .build();
+
         // Pdf import width
         self.imp()
             .general_pdf_import_width_adj
             .get()
-            .bind_property("value", &appwindow.canvas(), "pdf-import-width")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
+            .connect_value_changed(clone!(@weak appwindow => move |general_pdf_import_width_adj| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-width-perc", Some(&general_pdf_import_width_adj.value().to_variant()));
+            }));
 
-        // Pdf import as vector or bitmap
         self.imp()
             .general_pdf_import_as_vector_toggle
             .get()
-            .bind_property("active", &appwindow.canvas(), "pdf-import-as-vector")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
+            .connect_active_notify(clone!(@weak appwindow => move |general_pdf_import_as_vector_toggle| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-as-vector", Some(&general_pdf_import_as_vector_toggle.is_active().to_variant()));
+            }));
+
         self.imp()
             .general_pdf_import_as_bitmap_toggle
             .get()
-            .bind_property("active", &appwindow.canvas(), "pdf-import-as-vector")
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
-            .build();
+            .connect_active_notify(clone!(@weak appwindow => move |general_pdf_import_as_bitmap_toggle| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-as-vector", Some(&(!general_pdf_import_as_bitmap_toggle.is_active()).to_variant()));
+            }));
 
         // revert format
         self.imp().format_revert_button.get().connect_clicked(
             clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
-                *settings_panel.imp().temporary_format.borrow_mut() = appwindow.canvas().sheet().borrow().format.clone();
-                let revert_format = appwindow.canvas().sheet().borrow().format.clone();
+                *settings_panel.imp().temporary_format.borrow_mut() = appwindow.canvas().engine().borrow().document.format.clone();
+                let revert_format = appwindow.canvas().engine().borrow().document.format.clone();
 
                 settings_panel.set_predefined_format_variant(format::PredefinedFormat::Custom);
 
@@ -663,18 +693,19 @@ impl SettingsPanel {
         self.imp().format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
                 let temporary_format = temporary_format.borrow().clone();
-                appwindow.canvas().sheet().borrow_mut().format = temporary_format;
+                appwindow.canvas().engine().borrow_mut().document.format = temporary_format;
 
-                appwindow.canvas().resize_sheet_to_fit_strokes();
-                appwindow.canvas().regenerate_background(false);
-                appwindow.canvas().regenerate_content(true, true);
+                appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
+                appwindow.canvas().update_engine_rendering();
             }),
         );
 
         // Background
         self.imp().background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.canvas().sheet().borrow_mut().background.color = Color::from(background_color_choosebutton.rgba());
-            appwindow.canvas().regenerate_background(true);
+            appwindow.canvas().engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
+
+            appwindow.canvas().regenerate_background_pattern();
+            appwindow.canvas().update_engine_rendering();
         }));
 
         self.imp().background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |background_patterns_row| {
@@ -686,23 +717,23 @@ impl SettingsPanel {
                     .as_str()
                 {
                     "none" => {
-                        appwindow.canvas().sheet().borrow_mut().background.pattern = PatternStyle::None;
+                        appwindow.canvas().engine().borrow_mut().document.background.pattern = PatternStyle::None;
                         settings_panel.background_pattern_width_unitentry().set_sensitive(false);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(false);
 
                     },
                     "lines" => {
-                        appwindow.canvas().sheet().borrow_mut().background.pattern = PatternStyle::Lines;
+                        appwindow.canvas().engine().borrow_mut().document.background.pattern = PatternStyle::Lines;
                         settings_panel.background_pattern_width_unitentry().set_sensitive(false);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
                     "grid" => {
-                        appwindow.canvas().sheet().borrow_mut().background.pattern = PatternStyle::Grid;
+                        appwindow.canvas().engine().borrow_mut().document.background.pattern = PatternStyle::Grid;
                         settings_panel.background_pattern_width_unitentry().set_sensitive(true);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
                     "dots" => {
-                        appwindow.canvas().sheet().borrow_mut().background.pattern = PatternStyle::Dots;
+                        appwindow.canvas().engine().borrow_mut().document.background.pattern = PatternStyle::Dots;
                         settings_panel.background_pattern_width_unitentry().set_sensitive(true);
                         settings_panel.background_pattern_height_unitentry().set_sensitive(true);
                     },
@@ -713,25 +744,39 @@ impl SettingsPanel {
                     }
                 };
 
-                appwindow.canvas().regenerate_background(true);
+                appwindow.canvas().regenerate_background_pattern();
+                appwindow.canvas().update_engine_rendering();
             }
         }));
 
         self.imp().background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
-            appwindow.canvas().sheet().borrow_mut().background.pattern_color = Color::from(background_pattern_color_choosebutton.rgba());
-            appwindow.canvas().regenerate_background(true);
+            appwindow.canvas().engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
+
+            appwindow.canvas().regenerate_background_pattern();
+            appwindow.canvas().update_engine_rendering();
+        }));
+
+        self.imp().general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
+            let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
+            appwindow.canvas().engine().borrow_mut().document.format.border_color = format_border_color;
+
+            // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
+            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
+
+            appwindow.canvas().update_engine_rendering();
         }));
 
         self.imp().background_pattern_width_unitentry.get().connect_local(
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.canvas().sheet().borrow().background.pattern_size;
+                    let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
                     pattern_size[0] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
 
-                    appwindow.canvas().sheet().borrow_mut().background.pattern_size = pattern_size;
-                    appwindow.canvas().regenerate_background(true);
+                    appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
+                    appwindow.canvas().regenerate_background_pattern();
+                    appwindow.canvas().update_engine_rendering();
                     None
             }),
         );
@@ -740,12 +785,13 @@ impl SettingsPanel {
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.canvas().sheet().borrow().background.pattern_size;
+                    let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
                     pattern_size[1] = f64::from(settings_panel.background_pattern_height_unitentry().value_in_px());
 
-                    appwindow.canvas().sheet().borrow_mut().background.pattern_size = pattern_size;
-                    appwindow.canvas().regenerate_background(true);
+                    appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
+                    appwindow.canvas().regenerate_background_pattern();
+                    appwindow.canvas().update_engine_rendering();
                     None
             }),
         );
@@ -756,7 +802,7 @@ impl SettingsPanel {
             .set_key(Some(ShortcutKey::StylusPrimaryButton));
         self.imp().penshortcut_stylus_button_primary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_primary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_primary_row.action();
-            appwindow.canvas().pens().borrow_mut().register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
+            appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusPrimaryButton, action);
             None
         }));
 
@@ -765,16 +811,16 @@ impl SettingsPanel {
             .set_key(Some(ShortcutKey::StylusSecondaryButton));
         self.imp().penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
-            appwindow.canvas().pens().borrow_mut().register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
+            appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
             None
         }));
 
         self.imp()
             .penshortcut_stylus_button_eraser_row
-            .set_key(Some(ShortcutKey::StylusEraserButton));
+            .set_key(Some(ShortcutKey::StylusEraserMode));
         self.imp().penshortcut_stylus_button_eraser_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_eraser_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_eraser_row.action();
-            appwindow.canvas().pens().borrow_mut().register_new_shortcut(ShortcutKey::StylusEraserButton, action);
+            appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusEraserMode, action);
             None
         }));
 
@@ -783,7 +829,7 @@ impl SettingsPanel {
             .set_key(Some(ShortcutKey::StylusSecondaryButton));
         self.imp().penshortcut_mouse_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_mouse_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_mouse_button_secondary_row.action();
-            appwindow.canvas().pens().borrow_mut().register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
+            appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::MouseSecondaryButton, action);
             None
         }));
     }

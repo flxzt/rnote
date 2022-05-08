@@ -1,15 +1,25 @@
-use crate::pens::PenStyle;
-
-/// Flags returned to the UI surface
+/// Flags returned to the surface drawing the engine
+#[must_use]
 #[derive(Debug, Clone, Copy)]
 pub struct SurfaceFlags {
+    /// application should be quit
     pub quit: bool,
+    /// needs surface redrawing
     pub redraw: bool,
+    /// needs surface resizing
     pub resize: bool,
-    pub resize_to_fit_strokes: bool,
-    pub pen_change: Option<PenStyle>,
-    pub sheet_changed: bool,
-    pub selection_changed: bool,
+    /// Penholder state has has changed
+    pub penholder_changed: bool,
+    /// wether the store has changed, i.e. new strokes inserted, modified, etc.
+    pub store_changed: bool,
+    /// camera has changed
+    pub camera_changed: bool,
+    /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
+    pub hide_scrollbars: Option<bool>,
+    /// Is Some when undo button visibility should be changed. Is None if should not be changed
+    pub hide_undo: Option<bool>,
+    /// Is Some when undo button visibility should be changed. Is None if should not be changed
+    pub hide_redo: Option<bool>,
 }
 
 impl Default for SurfaceFlags {
@@ -18,10 +28,46 @@ impl Default for SurfaceFlags {
             quit: false,
             redraw: false,
             resize: false,
-            resize_to_fit_strokes: false,
-            pen_change: None,
-            sheet_changed: false,
-            selection_changed: false,
+            penholder_changed: false,
+            store_changed: false,
+            camera_changed: false,
+            hide_scrollbars: None,
+            hide_undo: None,
+            hide_redo: None,
         }
+    }
+}
+
+impl SurfaceFlags {
+    /// Merging with another SurfaceFlags struct, prioritizing other for conflicting values.
+    pub fn merged_with_other(mut self, other: Self) -> Self {
+        self.quit |= other.quit;
+        self.redraw |= other.redraw;
+        self.resize |= other.resize;
+        self.penholder_changed |= other.penholder_changed;
+        self.store_changed |= other.store_changed;
+        self.camera_changed |= other.camera_changed;
+        self.hide_scrollbars = if other.hide_scrollbars.is_some() {
+            other.hide_scrollbars
+        } else {
+            self.hide_scrollbars
+        };
+        self.hide_undo = if other.hide_undo.is_some() {
+            other.hide_undo
+        } else {
+            self.hide_undo
+        };
+        self.hide_redo = if other.hide_redo.is_some() {
+            other.hide_redo
+        } else {
+            self.hide_redo
+        };
+
+        self
+    }
+
+    /// Merging with another SurfaceFlags struct in place, prioritizing other for conflicting values.
+    pub fn merge_with_other(&mut self, other: Self) {
+        *self = self.merged_with_other(other);
     }
 }

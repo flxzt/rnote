@@ -1,35 +1,31 @@
-use std::collections::VecDeque;
+use crate::engine::EngineTaskSender;
+use crate::store::StrokeKey;
+use crate::strokes::BrushStroke;
+use crate::strokes::Stroke;
+use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
+use piet::RenderContext;
+use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
+use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::penpath::Segment;
+use rnote_compose::{Shape, Style};
 
-use crate::compose::smooth::SmoothOptions;
-use crate::compose::textured::TexturedOptions;
-use crate::render::Renderer;
-use crate::sheet::Sheet;
-use crate::strokes::brushstroke::BrushStroke;
-use crate::strokes::element::Element;
-use crate::strokes::inputdata::InputData;
-use crate::strokes::strokestyle::StrokeStyle;
-use crate::strokesstate::StrokeKey;
-use crate::utils;
-
-use gtk4::glib;
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use rand::{Rng, SeedableRng};
+use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::style::textured::TexturedOptions;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, RwLock};
 
-use super::penbehaviour::PenBehaviour;
+use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::AudioPlayer;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, glib::Enum)]
-#[repr(u32)]
-#[enum_type(name = "BrushStyle")]
-#[serde(rename = "brushstyle")]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename = "brush_style")]
 pub enum BrushStyle {
-    #[enum_value(name = "Marker", nick = "marker")]
     #[serde(rename = "marker")]
     Marker,
-    #[enum_value(name = "Solid", nick = "solid")]
     #[serde(rename = "solid")]
     Solid,
-    #[enum_value(name = "Textured", nick = "textured")]
     #[serde(rename = "textured")]
     Textured,
 }
@@ -38,6 +34,15 @@ impl Default for BrushStyle {
     fn default() -> Self {
         Self::Solid
     }
+}
+
+#[derive(Debug, Clone)]
+enum BrushState {
+    Idle,
+    Drawing {
+        path_builder: PenPathBuilder,
+        current_stroke_key: StrokeKey,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -51,90 +56,281 @@ pub struct Brush {
     pub textured_options: TexturedOptions,
 
     #[serde(skip)]
-    pub current_stroke: Option<StrokeKey>,
+    state: BrushState,
 }
 
 impl Default for Brush {
     fn default() -> Self {
+        let mut smooth_options = SmoothOptions::default();
+        let mut textured_options = TexturedOptions::default();
+        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        textured_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+
         Self {
             style: BrushStyle::default(),
-            smooth_options: SmoothOptions::default(),
-            textured_options: TexturedOptions::default(),
-            current_stroke: None,
+            smooth_options,
+            textured_options,
+            state: BrushState::Idle,
         }
     }
 }
 
 impl PenBehaviour for Brush {
-    fn begin(
+    fn handle_event(
         &mut self,
-        mut data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
-        self.current_stroke = None;
-        let filter_bounds = sheet.bounds().loosened(utils::INPUT_OVERSHOOT);
+        event: PenEvent,
+        tasks_tx: EngineTaskSender,
+        doc: &mut Document,
+        store: &mut StrokeStore,
+        camera: &mut Camera,
+        audioplayer: Option<&mut AudioPlayer>,
+    ) -> (PenProgress, SurfaceFlags) {
+        let mut surface_flags = SurfaceFlags::default();
+        let style = self.style;
 
-        utils::filter_mapped_inputdata(filter_bounds, &mut data_entries);
+        let pen_progress = match (&mut self.state, event) {
+            (
+                BrushState::Idle,
+                PenEvent::Down {
+                    element,
+                    shortcut_keys: _,
+                },
+            ) => {
+                if !element.filter_by_bounds(doc.bounds().loosened(Self::INPUT_OVERSHOOT)) {
+                    surface_flags.merge_with_other(store.record());
 
-        let elements_iter = data_entries
-            .into_iter()
-            .map(|inputdata| Element::new(inputdata));
+                    Self::start_audio(style, audioplayer);
 
-        let brushstroke = BrushStroke::new_w_elements(elements_iter, &self);
+                    // A new seed for a new brush stroke
+                    let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+                    self.textured_options.seed = seed;
 
-        if let Some(brushstroke) = brushstroke {
-            let brushstroke = StrokeStyle::BrushStroke(brushstroke);
+                    let brushstroke = Stroke::BrushStroke(BrushStroke::new(
+                        Segment::Dot { element },
+                        self.gen_style_for_current_options(),
+                    ));
+                    let current_stroke_key = store.insert_stroke(brushstroke);
 
-            let current_stroke_key = Some(sheet.strokes_state.insert_stroke(brushstroke));
-            self.current_stroke = current_stroke_key;
-        }
-    }
+                    let path_builder = PenPathBuilder::start(element);
 
-    fn motion(
-        &mut self,
-        mut data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
-        let current_stroke_key = self.current_stroke;
-        if let Some(current_stroke_key) = current_stroke_key {
-            let filter_bounds = sheet.bounds().loosened(utils::INPUT_OVERSHOOT);
+                    if let Err(e) = store.regenerate_rendering_for_stroke(
+                        current_stroke_key,
+                        camera.viewport(),
+                        camera.image_scale(),
+                    ) {
+                        log::error!("regenerate_rendering_for_stroke() failed after inserting brush stroke, Err {}", e);
+                    }
 
-            utils::filter_mapped_inputdata(filter_bounds, &mut data_entries);
+                    self.state = BrushState::Drawing {
+                        path_builder,
+                        current_stroke_key,
+                    };
 
-            for inputdata in data_entries {
-                sheet.strokes_state.add_to_brushstroke(
-                    current_stroke_key,
-                    Element::new(inputdata),
-                    renderer.clone(),
-                    zoom,
+                    surface_flags.redraw = true;
+                    surface_flags.hide_scrollbars = Some(true);
+
+                    PenProgress::InProgress
+                } else {
+                    PenProgress::Idle
+                }
+            }
+            (BrushState::Idle, _) => PenProgress::Idle,
+            (
+                BrushState::Drawing {
+                    current_stroke_key, ..
+                },
+                PenEvent::Cancel,
+            ) => {
+                Self::stop_audio(style, audioplayer);
+
+                // Finish up the last stroke
+                store.update_geometry_for_stroke(*current_stroke_key);
+                store.regenerate_rendering_for_stroke_threaded(
+                    tasks_tx,
+                    *current_stroke_key,
+                    camera.viewport(),
+                    camera.image_scale(),
                 );
+
+                self.state = BrushState::Idle;
+
+                doc.resize_autoexpand(store, camera);
+
+                surface_flags.redraw = true;
+                surface_flags.resize = true;
+                surface_flags.store_changed = true;
+                surface_flags.hide_scrollbars = Some(false);
+
+                PenProgress::Finished
+            }
+            (
+                BrushState::Drawing {
+                    path_builder,
+                    current_stroke_key,
+                },
+                pen_event,
+            ) => {
+                match path_builder.handle_event(pen_event) {
+                    BuilderProgress::InProgress => {
+                        surface_flags.redraw = true;
+
+                        PenProgress::InProgress
+                    }
+                    BuilderProgress::EmitContinue(shapes) => {
+                        let mut n_segments = 0;
+
+                        for shape in shapes {
+                            match shape {
+                                Shape::Segment(new_segment) => {
+                                    store.add_segment_to_brushstroke(
+                                        *current_stroke_key,
+                                        new_segment,
+                                    );
+                                    n_segments += 1;
+                                    surface_flags.store_changed = true;
+                                }
+                                _ => {
+                                    // not reachable, pen builder should only produce segments
+                                }
+                            }
+                        }
+
+                        if let Err(e) = store.append_rendering_last_segments(
+                            tasks_tx,
+                            *current_stroke_key,
+                            n_segments,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
+                        }
+                        surface_flags.redraw = true;
+
+                        PenProgress::InProgress
+                    }
+                    BuilderProgress::Finished(shapes) => {
+                        for shape in shapes {
+                            match shape {
+                                Shape::Segment(new_segment) => {
+                                    store.add_segment_to_brushstroke(
+                                        *current_stroke_key,
+                                        new_segment,
+                                    );
+                                    surface_flags.store_changed = true;
+                                }
+                                _ => {
+                                    // not reachable, pen builder should only produce segments
+                                }
+                            }
+                        }
+
+                        // Finish up the last stroke
+                        store.update_geometry_for_stroke(*current_stroke_key);
+                        store.regenerate_rendering_for_stroke_threaded(
+                            tasks_tx,
+                            *current_stroke_key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        );
+
+                        Self::stop_audio(style, audioplayer);
+
+                        self.state = BrushState::Idle;
+
+                        doc.resize_autoexpand(store, camera);
+
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.store_changed = true;
+                        surface_flags.hide_scrollbars = Some(false);
+
+                        PenProgress::Finished
+                    }
+                }
+            }
+        };
+
+        (pen_progress, surface_flags)
+    }
+}
+
+impl DrawOnDocBehaviour for Brush {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+        let style = self.gen_style_for_current_options();
+
+        match &self.state {
+            BrushState::Idle => None,
+            BrushState::Drawing { path_builder, .. } => {
+                Some(path_builder.bounds(&style, camera.zoom()))
             }
         }
     }
 
-    fn end(
-        &mut self,
-        _data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
-        let current_stroke_key = self.current_stroke.take();
-        if let Some(current_stroke_key) = current_stroke_key {
-            sheet
-                .strokes_state
-                .update_geometry_for_stroke(current_stroke_key);
+    fn draw_on_doc(
+        &self,
+        cx: &mut piet_cairo::CairoRenderContext,
+        _doc_bounds: AABB,
+        camera: &Camera,
+    ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-            sheet
-                .strokes_state
-                .regenerate_rendering_for_stroke_threaded(current_stroke_key, renderer, zoom);
+        match &self.state {
+            BrushState::Idle => {}
+            BrushState::Drawing { path_builder, .. } => {
+                let style = self.gen_style_for_current_options();
+                path_builder.draw_styled(cx, &style, camera.total_zoom());
+            }
+        }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        Ok(())
+    }
+}
+
+impl Brush {
+    const INPUT_OVERSHOOT: f64 = 30.0;
+
+    pub const STROKE_WIDTH_MIN: f64 = 1.0;
+    pub const STROKE_WIDTH_MAX: f64 = 500.0;
+    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
+
+    fn start_audio(style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
+        if let Some(audioplayer) = audioplayer {
+            match style {
+                BrushStyle::Marker => {
+                    audioplayer.play_random_marker_sound();
+                }
+                BrushStyle::Solid | BrushStyle::Textured => {
+                    audioplayer.start_random_brush_sound();
+                }
+            }
+        }
+    }
+
+    fn stop_audio(_style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
+        if let Some(audioplayer) = audioplayer {
+            audioplayer.stop_random_brush_sond();
+        }
+    }
+
+    pub fn gen_style_for_current_options(&self) -> Style {
+        match &self.style {
+            BrushStyle::Marker => {
+                let mut options = self.smooth_options.clone();
+                options.segment_constant_width = true;
+
+                Style::Smooth(options)
+            }
+            BrushStyle::Solid => {
+                let options = self.smooth_options.clone();
+
+                Style::Smooth(options)
+            }
+            BrushStyle::Textured => {
+                let options = self.textured_options.clone();
+
+                Style::Textured(options)
+            }
         }
     }
 }

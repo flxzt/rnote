@@ -9,7 +9,6 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/settingspanel.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/mainheader.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/colorpicker.ui</file>
-        <file compressed="true" preprocess="xml-stripblanks">ui/selectionmodifier.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/workspacebrowser.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/filerow.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/unitentry.ui</file>
@@ -25,9 +24,11 @@
         <file compressed="true">icons/scalable/apps/rnote-devel.svg</file>
         <file compressed="true">icons/scalable/actions/settings-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/appwindow-fullscreen-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/zoom-in-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/zoom-out-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-undo-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/edit-redo-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/sheet-save-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/doc-save-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvasmenu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-trash-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/selection-duplicate-symbolic.svg</file>
@@ -51,15 +52,19 @@
         <file compressed="true">icons/scalable/actions/pen-shaper-style-smooth-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-shaper-style-rough-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-selector-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-selector-polygon-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-selector-rectangle-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-eraser-trash-colliding-strokes-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-eraser-split-colliding-strokes-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/pen-tools-expandsheettool-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-tools-verticalspacetool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-dragproximitytool-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/selector-polygon-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/selector-rectangle-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-tools-offsetcameratool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/add-page-symbolic.svg</file>
-        <file compressed="true">icons/scalable/actions/resize-to-format-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/resize-to-fit-strokes-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/return-origin-page-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/zoom-fit-width-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/padlock-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/padlock-open-symbolic.svg</file>
@@ -76,6 +81,9 @@
         <file compressed="true">icons/scalable/actions/shape-line-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-rectangle-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/shape-ellipse-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-fociellipse-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-quadbez-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/shape-cubbez-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/stroke-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/fill-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/workspacebrowser-symbolic.svg</file>

@@ -1,7 +1,31 @@
+use std::io::{Read, Write};
+
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
 
 use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
+
+/// Compress bytes with gzip
+fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
+    let compressed_bytes = Vec::<u8>::new();
+
+    let mut encoder = flate2::GzBuilder::new()
+        .filename(file_name)
+        .write(compressed_bytes, flate2::Compression::default());
+
+    encoder.write_all(to_compress)?;
+
+    Ok(encoder.finish()?)
+}
+
+/// Decompress from gzip
+fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
+    let mut decoder = flate2::read::MultiGzDecoder::new(compressed);
+    let mut bytes: Vec<u8> = Vec::new();
+    decoder.read_to_end(&mut bytes)?;
+
+    Ok(bytes)
+}
 
 /// Represents a Xournal++ `.xopp` file.
 /// The original Xournal spec can be found here: <http://xournal.sourceforge.net/manual.html#file-format>
@@ -13,8 +37,8 @@ pub struct XoppFile {
 }
 
 impl FileFormatLoader for XoppFile {
-    fn load_from_bytes(bytes: &[u8]) -> Result<Self, anyhow::Error> {
-        let decompressed = String::from_utf8(super::decompress_from_gzip(&bytes)?)?;
+    fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
+        let decompressed = String::from_utf8(decompress_from_gzip(&bytes)?)?;
 
         let options = roxmltree::ParsingOptions::default();
         let parsed_doc = roxmltree::Document::parse_with_options(decompressed.as_str(), options)?;
@@ -27,13 +51,13 @@ impl FileFormatLoader for XoppFile {
 }
 
 impl FileFormatSaver for XoppFile {
-    fn save_as_bytes(&self, file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
+    fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let options = xmlwriter::Options::default();
         let mut xml_writer = xmlwriter::XmlWriter::new(options);
         self.xopp_root.write_to_xml(&mut xml_writer);
         let output = xml_writer.end_document();
 
-        let compressed = super::compress_to_gzip(output.as_bytes(), file_name)?;
+        let compressed = compress_to_gzip(output.as_bytes(), file_name)?;
 
         Ok(compressed)
     }
@@ -58,7 +82,7 @@ pub struct XoppRoot {
 }
 
 impl XmlLoadable for XoppRoot {
-    fn load_from_xml(&mut self, root_node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, root_node: Node) -> anyhow::Result<()> {
         if let Some(fileversion) = root_node.attribute("fileversion") {
             self.fileversion = fileversion.to_string();
         }
@@ -118,12 +142,12 @@ pub struct XoppPage {
 }
 
 impl XmlLoadable for XoppPage {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.width = node
             .attribute("width")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse width attribute of XoppPage with id {:?}",
+                    "failed to parse width attribute of XoppPage for node with id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -133,7 +157,7 @@ impl XmlLoadable for XoppPage {
             .attribute("height")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse height attribute of XoppPage with id {:?}",
+                    "failed to parse height attribute of XoppPage with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -296,25 +320,25 @@ pub struct XoppBackground {
 }
 
 impl XmlLoadable for XoppBackground {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.name = node.attribute("name").map(|name| name.to_string());
 
         match node.attribute("type").ok_or_else(|| {
             anyhow::anyhow!(
-                "failed to parse `type` attribute of XoppBackground with id {:?}",
+                "failed to parse `type` attribute of XoppBackground with node id {:?}, could not find attribute",
                 node.id()
             )
         })? {
             "solid" => {
                 let style = match node.attribute("style").ok_or_else(|| {
-                    anyhow::anyhow!("failed to parse `style` attribute in XoppBackground")
+                    anyhow::anyhow!("failed to parse `style` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
                 })? {
                     "plain" => XoppBackgroundSolidStyle::Plain,
                     "lined" => XoppBackgroundSolidStyle::Lined,
                     "ruled" => XoppBackgroundSolidStyle::Ruled,
                     "graph" => XoppBackgroundSolidStyle::Graph,
                     _ => {
-                        return Err(anyhow::anyhow!("Err while parsing `style` attribute of XoppBackground with id {:?}, is not a valid value", node.id()));
+                        return Err(anyhow::anyhow!("Err while parsing `style` attribute of XoppBackground with node id {:?}, is not a valid value", node.id()));
                     }
                 };
 
@@ -330,19 +354,19 @@ impl XmlLoadable for XoppBackground {
             }
             "pixmap" => {
                 let domain = match node.attribute("domain").ok_or_else(|| {
-                    anyhow::anyhow!("failed to parse `domain` attribute in XoppBackground")
+                    anyhow::anyhow!("failed to parse `domain` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
                 })? {
                     "absolute" => XoppBackgroundPixmapDomain::Absolute,
                     "attach" => XoppBackgroundPixmapDomain::Attach,
                     "clone" => XoppBackgroundPixmapDomain::Clone,
                     _ => {
-                        return Err(anyhow::anyhow!("Err while parsing `style` attribute of XoppBackground with id {:?}, is not a valid value", node.id()));
+                        return Err(anyhow::anyhow!("Err while parsing `style` attribute of XoppBackground with node id {:?}, is not a valid value", node.id()));
                     }
                 };
                 let filename = node
                     .attribute("filename")
                     .ok_or_else(|| {
-                        anyhow::anyhow!("failed to parse `filename` attribute in XoppBackground")
+                        anyhow::anyhow!("failed to parse `filename` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
                     })?
                     .to_string();
                 self.bg_type = XoppBackgroundType::Pixmap { domain, filename };
@@ -351,7 +375,7 @@ impl XmlLoadable for XoppBackground {
                 self.bg_type = XoppBackgroundType::Pdf;
             }
             _ => {
-                return Err(anyhow::anyhow!("Err while parsing `type` attribute of XoppBackground with id {:?}, is not a valid value", node.id()));
+                return Err(anyhow::anyhow!("Err while parsing `type` attribute of XoppBackground with node id {:?}, is not a valid value", node.id()));
             }
         }
 
@@ -384,7 +408,7 @@ pub struct XoppLayer {
 }
 
 impl XmlLoadable for XoppLayer {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.name = node.attribute("name").map(|name| name.to_string());
 
         for child in node.children() {
@@ -591,14 +615,14 @@ impl XoppColor {
     }
 }
 
-/// Helper enum to bundle stroke types into one type
+/// Helper to bundle stroke types into one type
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum XoppStrokeStyle {
-    /// A stroke as strokestyle
+pub enum XoppStrokeType {
+    /// A stroke
     XoppStroke(XoppStroke),
-    /// A text as strokestyle
+    /// A text
     XoppText(XoppText),
-    /// An image as strokestyle
+    /// An image
     XoppImage(XoppImage),
 }
 
@@ -611,8 +635,9 @@ pub struct XoppStroke {
     pub color: XoppColor,
     /// Stroke fill. None if is not filled, 255 if fully opaque filled
     pub fill: Option<i32>,
-    /// The stroke width.
-    /// The first element is the absolute width of the stroke in points, and every following is the relative width (between 0.0 and 1.0)
+    /// The stroke widths.
+    /// The first element is the width of the entire stroke, and if existent, every following is a absolute width for the corresponding coordinate.
+    /// If they don't exist, the stroke has the first width as constant width
     pub width: Vec<f64>,
     /// The stroke coordinates ( as points where a vec (1.0, 0.0) has length of 1 / 72inch )
     pub coords: Vec<na::Vector2<f64>>,
@@ -623,10 +648,10 @@ pub struct XoppStroke {
 }
 
 impl XmlLoadable for XoppStroke {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         match node.attribute("tool").ok_or_else(|| {
             anyhow::anyhow!(
-                "failed to parse `tool` attribute in XoppStroke with id {:?}",
+                "failed to parse `tool` attribute in XoppStroke with node id {:?}, could not find attribute",
                 node.id()
             )
         })? {
@@ -645,7 +670,7 @@ impl XmlLoadable for XoppStroke {
         self.color =
             XoppColor::from_strokecolor_attr_value(node.attribute("color").ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `color` attribute in XoppStroke with id {:?}",
+                    "failed to parse `color` attribute in XoppStroke with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?)?;
@@ -660,7 +685,7 @@ impl XmlLoadable for XoppStroke {
             .attribute("width")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `width` attribute in XoppStroke with id {:?}",
+                    "failed to parse `width` attribute in XoppStroke with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -668,9 +693,10 @@ impl XmlLoadable for XoppStroke {
             .filter_map(|splitted| splitted.parse::<f64>().ok())
             .collect::<Vec<f64>>();
 
-        self.timestamp = if let Some(ts) = node.attribute("ts") {
-            // the timestamp parsing is fallible
-            ts.parse::<u64>().ok()
+        self.timestamp = if let Some(_ts) = node.attribute("ts") {
+            // the timestamp parsing is fallible and currently not implemented
+            // ts.parse::<u64>().ok()
+            None
         } else {
             None
         };
@@ -770,12 +796,12 @@ pub struct XoppText {
 }
 
 impl XmlLoadable for XoppText {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         self.font = node
             .attribute("font")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `font` attribute in XoppText with id {:?}",
+                    "failed to parse `font` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -785,7 +811,7 @@ impl XmlLoadable for XoppText {
             .attribute("size")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `size` attribute in XoppText with id {:?}",
+                    "failed to parse `size` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -795,7 +821,7 @@ impl XmlLoadable for XoppText {
             .attribute("x")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `x` attribute in XoppText with id {:?}",
+                    "failed to parse `x` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -805,7 +831,7 @@ impl XmlLoadable for XoppText {
             .attribute("y")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `y` attribute in XoppText with id {:?}",
+                    "failed to parse `y` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -814,7 +840,7 @@ impl XmlLoadable for XoppText {
         self.color =
             XoppColor::from_strokecolor_attr_value(node.attribute("color").ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `color` attribute in XoppText with id {:?}",
+                    "failed to parse `color` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?)?;
@@ -855,13 +881,13 @@ pub struct XoppImage {
 }
 
 impl XmlLoadable for XoppImage {
-    fn load_from_xml(&mut self, node: Node) -> Result<(), anyhow::Error> {
+    fn load_from_xml(&mut self, node: Node) -> anyhow::Result<()> {
         // Left
         self.left = node
             .attribute("left")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `left` attribute in XoppText with id {:?}",
+                    "failed to parse `left` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -872,7 +898,7 @@ impl XmlLoadable for XoppImage {
             .attribute("top")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `top` attribute in XoppText with id {:?}",
+                    "failed to parse `top` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -883,7 +909,7 @@ impl XmlLoadable for XoppImage {
             .attribute("right")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `right` attribute in XoppText with id {:?}",
+                    "failed to parse `right` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -894,7 +920,7 @@ impl XmlLoadable for XoppImage {
             .attribute("bottom")
             .ok_or_else(|| {
                 anyhow::anyhow!(
-                    "failed to parse `bottom` attribute in XoppText with id {:?}",
+                    "failed to parse `bottom` attribute in XoppText with node id {:?}, could not find attribute",
                     node.id()
                 )
             })?
@@ -935,7 +961,7 @@ mod tests {
     }
 
     #[test]
-    fn load_simple_xopp() -> Result<(), anyhow::Error> {
+    fn load_simple_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/simple.xopp");
         let to_save = PathBuf::from("./temp/simple.json");
@@ -951,7 +977,7 @@ mod tests {
     }
 
     #[test]
-    fn load_image_xopp() -> Result<(), anyhow::Error> {
+    fn load_image_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/image.xopp");
         let to_save = PathBuf::from("./temp/image.json");
@@ -967,7 +993,7 @@ mod tests {
     }
 
     #[test]
-    fn load_and_save_simple_xopp() -> Result<(), anyhow::Error> {
+    fn load_and_save_simple_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/simple.xopp");
         let to_save = PathBuf::from("./temp/simple-new.xopp");
@@ -982,7 +1008,7 @@ mod tests {
     }
 
     #[test]
-    fn load_and_save_image_xopp() -> Result<(), anyhow::Error> {
+    fn load_and_save_image_xopp() -> anyhow::Result<()> {
         setup();
         let to_load = PathBuf::from("./tests/image.xopp");
         let to_save = PathBuf::from("./temp/image-new.xopp");

@@ -1,7 +1,7 @@
 project(
     'rnote',
     'rust',
-    version: '0.4.0',
+    version: '0.5.1',
     meson_version: '>= 0.56',
 )
 i18n = import('i18n')
@@ -48,7 +48,6 @@ dependency('gio-2.0', version: '>= 2.66')
 dependency('gtk4', version: '>= 4.6')
 dependency('libadwaita-1', version: '>= 1.0')
 dependency('poppler-glib', version: '>= 21.08')
-dependency('gstreamer-1.0', version: '>= 1.18')
 
 cargo = find_program('cargo', required: true)
 cargo_script = find_program('build-aux/cargo.sh')
@@ -67,16 +66,18 @@ meson.add_dist_script(
 # local crates
 cargo_sources= files(
   meson.project_source_root() + '/' + 'Cargo.toml',
+  meson.project_source_root() + '/' + 'rnote-compose' + '/' + 'Cargo.toml',
   meson.project_source_root() + '/' + 'rnote-engine' + '/' + 'Cargo.toml',
-  meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
   meson.project_source_root() + '/' + 'rnote-fileformats' + '/' + 'Cargo.toml',
+  meson.project_source_root() + '/' + 'rnote-ui' + '/' + 'Cargo.toml',
 )
 
+subdir('rnote-compose')
 subdir('rnote-engine')
-subdir('rnote-ui')
 subdir('rnote-fileformats')
+subdir('rnote-ui')
 
-sources = [rnote_fileformats_sources, rnote_ui_sources, cargo_sources]
+sources = [rnote_compose_sources, rnote_engine_sources, rnote_fileformats_sources, rnote_ui_sources, cargo_sources]
 
 custom_target(
   'cargo-build',

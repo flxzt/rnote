@@ -1,15 +1,68 @@
-use std::collections::VecDeque;
-use std::io::prelude::*;
-
-use flate2::read::MultiGzDecoder;
-use flate2::{Compression, GzBuilder};
-use gtk4::glib;
+use geo::line_string;
+use gtk4::{gdk, glib, graphene, gsk};
 use p2d::bounding_volume::AABB;
-use rand::{Rng, SeedableRng};
+use rnote_compose::Transform;
 
-use crate::strokes::inputdata::InputData;
+pub trait GdkRGBAHelpers
+where
+    Self: Sized,
+{
+    fn from_compose_color(color: rnote_compose::Color) -> Self;
+    fn into_compose_color(self) -> rnote_compose::Color;
+    fn from_piet_color(color: piet::Color) -> Self;
+    fn into_piet_color(self) -> piet::Color;
+}
 
-pub const INPUT_OVERSHOOT: f64 = 30.0;
+impl GdkRGBAHelpers for gdk::RGBA {
+    fn from_compose_color(color: rnote_compose::Color) -> Self {
+        gdk::RGBA::new(
+            color.r as f32,
+            color.g as f32,
+            color.b as f32,
+            color.a as f32,
+        )
+    }
+    fn into_compose_color(self) -> rnote_compose::Color {
+        rnote_compose::Color {
+            r: f64::from(self.red()),
+            g: f64::from(self.green()),
+            b: f64::from(self.blue()),
+            a: f64::from(self.alpha()),
+        }
+    }
+
+    fn from_piet_color(color: piet::Color) -> Self {
+        let (r, g, b, a) = color.as_rgba();
+        gdk::RGBA::new(r as f32, g as f32, b as f32, a as f32)
+    }
+
+    fn into_piet_color(self) -> piet::Color {
+        piet::Color::rgba(
+            f64::from(self.red()),
+            f64::from(self.green()),
+            f64::from(self.blue()),
+            f64::from(self.alpha()),
+        )
+    }
+}
+
+pub trait GrapheneRectHelpers
+where
+    Self: Sized,
+{
+    fn from_p2d_aabb(aabb: AABB) -> Self;
+}
+
+impl GrapheneRectHelpers for graphene::Rect {
+    fn from_p2d_aabb(aabb: AABB) -> Self {
+        graphene::Rect::new(
+            aabb.mins[0] as f32,
+            aabb.mins[1] as f32,
+            (aabb.extents()[0]) as f32,
+            (aabb.extents()[1]) as f32,
+        )
+    }
+}
 
 pub fn now_formatted_string() -> String {
     match glib::DateTime::now_local() {
@@ -19,12 +72,6 @@ pub fn now_formatted_string() -> String {
         },
         Err(_) => String::from("1970-01-01_12-00-00"),
     }
-}
-
-/// returns a new seed by generating a random value seeded from the old seed
-pub fn seed_advance(seed: u64) -> u64 {
-    let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
-    rng.gen()
 }
 
 pub fn convert_value_dpi(value: f64, current_dpi: f64, target_dpi: f64) -> f64 {
@@ -39,28 +86,42 @@ pub fn convert_coord_dpi(
     (coord / current_dpi) * target_dpi
 }
 
-pub fn compress_to_gzip(to_compress: &[u8], file_name: &str) -> Result<Vec<u8>, anyhow::Error> {
-    let compressed_bytes = Vec::<u8>::new();
-
-    let mut encoder = GzBuilder::new()
-        .filename(file_name)
-        .comment("test")
-        .write(compressed_bytes, Compression::default());
-
-    encoder.write_all(to_compress)?;
-
-    Ok(encoder.finish()?)
+pub fn transform_to_gsk(transform: &Transform) -> gsk::Transform {
+    gsk::Transform::new().matrix(&graphene::Matrix::from_2d(
+        transform.affine[(0, 0)],
+        transform.affine[(1, 0)],
+        transform.affine[(0, 1)],
+        transform.affine[(1, 1)],
+        transform.affine[(0, 2)],
+        transform.affine[(1, 2)],
+    ))
 }
 
-pub fn decompress_from_gzip(compressed: &[u8]) -> Result<Vec<u8>, anyhow::Error> {
-    let mut decoder = MultiGzDecoder::new(compressed);
-    let mut bytes: Vec<u8> = Vec::new();
-    decoder.read_to_end(&mut bytes)?;
-
-    Ok(bytes)
+/// Converts a AABB to a geo::Polygon
+pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
+    let line_string = line_string![
+        (x: aabb.mins[0], y: aabb.mins[1]),
+        (x: aabb.maxs[0], y: aabb.mins[1]),
+        (x: aabb.maxs[0], y: aabb.maxs[1]),
+        (x: aabb.mins[0], y: aabb.maxs[1]),
+        (x: aabb.mins[0], y: aabb.mins[1]),
+    ];
+    geo::Polygon::new(line_string, vec![])
 }
 
-/// Filter inputdata to
-pub fn filter_mapped_inputdata(filter_bounds: AABB, data_entries: &mut VecDeque<InputData>) {
-    data_entries.retain(|data| filter_bounds.contains_local_point(&na::Point2::from(data.pos())));
+pub mod base64 {
+    use serde::{Deserialize, Serialize};
+    use serde::{Deserializer, Serializer};
+
+    /// Serialize a Vec<u8> as base64 encoded
+    pub fn serialize<S: Serializer>(v: &Vec<u8>, s: S) -> Result<S::Ok, S::Error> {
+        let base64 = base64::encode(v);
+        String::serialize(&base64, s)
+    }
+
+    /// Deserialize base64 encoded Vec<u8>
+    pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u8>, D::Error> {
+        let base64 = String::deserialize(d)?;
+        base64::decode(base64.as_bytes()).map_err(|e| serde::de::Error::custom(e))
+    }
 }

@@ -1,19 +1,31 @@
+use std::cell::Cell;
+use std::rc::Rc;
+
+use gtk4::{
+    glib, prelude::*, subclass::prelude::*, LayoutManager, Orientation, SizeRequestMode, Widget,
+};
+use p2d::bounding_volume::{BoundingVolume, AABB};
+use rnote_compose::helpers::AABBHelpers;
+
+use crate::canvas::RnoteCanvas;
+use rnote_engine::document::Layout;
+use rnote_engine::{render, Document};
+
 mod imp {
-    use gtk4::gdk;
-    use gtk4::glib;
-    use gtk4::prelude::*;
-    use gtk4::subclass::prelude::*;
-    use gtk4::LayoutManager;
-    use gtk4::Orientation;
-    use gtk4::SizeRequestMode;
-    use gtk4::Widget;
+    use super::*;
 
-    use crate::canvas::Canvas;
-    use crate::selectionmodifier::SelectionModifier;
-    use rnote_engine::compose::geometry::AABBHelpers;
+    #[derive(Debug, Clone)]
+    pub struct CanvasLayout {
+        pub old_viewport: Rc<Cell<AABB>>,
+    }
 
-    #[derive(Debug, Default)]
-    pub struct CanvasLayout {}
+    impl Default for CanvasLayout {
+        fn default() -> Self {
+            Self {
+                old_viewport: Rc::new(Cell::new(AABB::new_zero())),
+            }
+        }
+    }
 
     #[glib::object_subclass]
     impl ObjectSubclass for CanvasLayout {
@@ -35,17 +47,19 @@ mod imp {
             orientation: Orientation,
             _for_size: i32,
         ) -> (i32, i32, i32, i32) {
-            let canvas = widget.downcast_ref::<Canvas>().unwrap();
-            let total_zoom = canvas.zoom() * canvas.temporary_zoom();
+            let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
 
             if orientation == Orientation::Vertical {
-                let natural_height = ((canvas.sheet().borrow().height + 2.0 * Canvas::SHADOW_WIDTH)
+                let natural_height = ((canvas.engine().borrow().document.height
+                    + 2.0 * Document::SHADOW_WIDTH)
                     * total_zoom)
                     .ceil() as i32;
 
                 (0, natural_height, -1, -1)
             } else {
-                let natural_width = ((canvas.sheet().borrow().width + 2.0 * Canvas::SHADOW_WIDTH)
+                let natural_width = ((canvas.engine().borrow().document.width
+                    + 2.0 * Document::SHADOW_WIDTH)
                     * total_zoom)
                     .ceil() as i32;
 
@@ -61,61 +75,105 @@ mod imp {
             height: i32,
             _baseline: i32,
         ) {
-            let canvas = widget.downcast_ref::<Canvas>().unwrap();
-            let canvas_priv = canvas.imp();
-            let total_zoom = canvas.total_zoom();
+            let canvas = widget.downcast_ref::<RnoteCanvas>().unwrap();
+            let total_zoom = canvas.engine().borrow().camera.total_zoom();
+            let doc_layout = canvas.engine().borrow().doc_layout();
 
             let hadj = canvas.hadjustment().unwrap();
             let vadj = canvas.vadjustment().unwrap();
+            let new_size = na::vector![f64::from(width), f64::from(height)];
 
             // Update the adjustments
-            canvas.update_adj_config(na::vector![f64::from(width), f64::from(height)]);
-            canvas.update_background_rendernode(true);
+            let (h_lower, h_upper) = match doc_layout {
+                Layout::FixedSize | Layout::ContinuousVertical => (
+                    (canvas.engine().borrow().document.x - Document::SHADOW_WIDTH) * total_zoom,
+                    (canvas.engine().borrow().document.x
+                        + canvas.engine().borrow().document.width
+                        + Document::SHADOW_WIDTH)
+                        * total_zoom,
+                ),
+                Layout::Infinite => (
+                    canvas.engine().borrow().document.x * total_zoom,
+                    (canvas.engine().borrow().document.x + canvas.engine().borrow().document.width)
+                        * total_zoom,
+                ),
+            };
 
-            // Allocate the selection_modifier child
-            {
-                canvas_priv
-                    .selection_modifier
-                    .update_translate_node_size_request(&canvas);
+            let (v_lower, v_upper) = match canvas.engine().borrow().doc_layout() {
+                Layout::FixedSize | Layout::ContinuousVertical => (
+                    (canvas.engine().borrow().document.y - Document::SHADOW_WIDTH) * total_zoom,
+                    (canvas.engine().borrow().document.y
+                        + canvas.engine().borrow().document.height
+                        + Document::SHADOW_WIDTH)
+                        * total_zoom,
+                ),
+                Layout::Infinite => (
+                    canvas.engine().borrow().document.y * total_zoom,
+                    (canvas.engine().borrow().document.y + canvas.engine().borrow().document.height)
+                        * total_zoom,
+                ),
+            };
 
-                let (_, selection_modifier_width, _, _) = canvas_priv
-                    .selection_modifier
-                    .measure(Orientation::Horizontal, -1);
-                let (_, selection_modifier_height, _, _) = canvas_priv
-                    .selection_modifier
-                    .measure(Orientation::Vertical, -1);
+            hadj.configure(
+                hadj.value(),
+                h_lower,
+                h_upper,
+                0.1 * new_size[0],
+                0.9 * new_size[0],
+                new_size[0],
+            );
 
-                let (selection_modifier_x, selection_modifier_y) = if let Some(selection_bounds) =
-                    canvas_priv.selection_modifier.selection_bounds()
-                {
-                    let selection_bounds_zoomed =
-                        selection_bounds.scale(na::Vector2::from_element(total_zoom));
+            vadj.configure(
+                vadj.value(),
+                v_lower,
+                v_upper,
+                0.1 * new_size[1],
+                0.9 * new_size[1],
+                new_size[1],
+            );
 
-                    (
-                        (selection_bounds_zoomed.mins[0] - hadj.value()).ceil() as i32
-                            - SelectionModifier::RESIZE_NODE_SIZE,
-                        (selection_bounds_zoomed.mins[1] - vadj.value()).ceil() as i32
-                            - SelectionModifier::RESIZE_NODE_SIZE,
-                    )
-                } else {
-                    (0, 0)
-                };
+            // Update the camera
+            canvas.engine().borrow_mut().camera.offset = na::vector![hadj.value(), vadj.value()];
+            canvas.engine().borrow_mut().camera.size = new_size;
 
-                canvas_priv.selection_modifier.size_allocate(
-                    &gdk::Rectangle::new(
-                        selection_modifier_x,
-                        selection_modifier_y,
-                        selection_modifier_width,
-                        selection_modifier_height,
-                    ),
-                    -1,
-                );
+            // always update the background rendering
+            canvas
+                .engine()
+                .borrow_mut()
+                .update_background_rendering_current_viewport();
+
+            let viewport = canvas.engine().borrow().camera.viewport();
+            let old_viewport = self.old_viewport.get();
+
+            // We only extend the viewport by a (tweakable) fraction of the margin, because we want to trigger rendering before we reach it.
+            // This has two advantages: Strokes that might take longer to render have a head start while still being out of view,
+            // And the rendering gets triggered more often, so not that many strokes start to get rendered. This avoids stutters,
+            // because while the rendering itself is on worker threads, we still have to `integrate` the resulted textures,
+            // which can also take up quite some time on the main UI thread.
+            let old_viewport_extended = old_viewport
+                .extend_by(old_viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR * 0.8);
+            /*
+                       log::debug!(
+                           "viewport: {:#?}\nold_viewport_extended: {:#?}",
+                           viewport,
+                           old_viewport_extended
+                       );
+            */
+
+            // On zoom outs or viewport translations this will evaluate true, so we render the strokes that are coming into view.
+            // But after zoom ins we need to update old_viewport with layout_manager.update_state()
+            if !old_viewport_extended.contains(&viewport) {
+                // Because we don't set the rendering of strokes that are already in the view dirty, we only render those that may come into the view.
+                canvas
+                    .engine()
+                    .borrow_mut()
+                    .update_rendering_current_viewport();
+
+                self.old_viewport.set(viewport);
             }
         }
     }
 }
-
-use gtk4::{glib, LayoutManager};
 
 glib::wrapper! {
     pub struct CanvasLayout(ObjectSubclass<imp::CanvasLayout>)
@@ -131,5 +189,12 @@ impl Default for CanvasLayout {
 impl CanvasLayout {
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("Failed to create CanvasLayout")
+    }
+
+    // needs to be called after zooming
+    pub fn update_state(&self, canvas: &RnoteCanvas) {
+        self.imp()
+            .old_viewport
+            .set(canvas.engine().borrow().camera.viewport());
     }
 }

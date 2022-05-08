@@ -26,26 +26,21 @@
             <attribute name="action">win.devel-mode</attribute>
           </item>
           <submenu>
-            <attribute name="label" translatable="yes">Developer settings</attribute>
-            <attribute name="action">win.devel-settings</attribute>
+            <attribute name="label" translatable="yes">Developer menu</attribute>
+            <attribute name="action">win.devel-menu</attribute>
             <attribute name="hidden-when">action-disabled</attribute>
             <section>
               <item>
                 <attribute name="label" translatable="yes">Visual debugging</attribute>
                 <attribute name="action">win.visual-debug</attribute>
               </item>
-            </section>
-            <section>
-              <attribute name="label" translatable="yes">Renderer backend</attribute>
               <item>
-                <attribute name="label">librsvg (default)</attribute>
-                <attribute name="action">win.renderer-backend</attribute>
-                <attribute name="target">librsvg</attribute>
+                <attribute name="label" translatable="yes">Export engine state</attribute>
+                <attribute name="action">win.debug-export-engine-state</attribute>
               </item>
               <item>
-                <attribute name="label">resvg</attribute>
-                <attribute name="action">win.renderer-backend</attribute>
-                <attribute name="target">resvg</attribute>
+                <attribute name="label" translatable="yes">Export engine config</attribute>
+                <attribute name="action">win.debug-export-engine-config</attribute>
               </item>
             </section>
           </submenu>
@@ -87,6 +82,7 @@
                   <child>
                     <object class="GtkToggleButton" id="righthanded_toggle">
                       <property name="icon_name">dock-left-symbolic</property>
+                      <property name="tooltip_text" translatable="yes">Sidebar on the left side</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>
@@ -95,6 +91,7 @@
                       <property name="group">righthanded_toggle</property>
                       <property name="active">true</property>
                       <property name="icon_name">dock-right-symbolic</property>
+                      <property name="tooltip_text" translatable="yes">Sidebar on the right side</property>
                       <property name="hexpand">true</property>
                     </object>
                   </child>

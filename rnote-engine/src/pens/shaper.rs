@@ -1,176 +1,269 @@
-use crate::render::Renderer;
-use crate::strokes::inputdata::InputData;
-use crate::utils;
-use gtk4::glib;
-use p2d::bounding_volume::{BoundingVolume, AABB};
+use super::penbehaviour::{PenBehaviour, PenProgress};
+use super::AudioPlayer;
+use crate::engine::EngineTaskSender;
+use crate::document::Document;
+use crate::strokes::ShapeStroke;
+use crate::strokes::Stroke;
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
+
+use p2d::bounding_volume::AABB;
+use piet::RenderContext;
+use rand::{Rng, SeedableRng};
+use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
+use rnote_compose::builders::{
+    EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder, ShapeBuilderBehaviour,
+};
+use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::style::rough::RoughOptions;
+use rnote_compose::style::smooth::SmoothOptions;
+use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
-use std::collections::VecDeque;
 
-use std::sync::{Arc, RwLock};
-
-use crate::compose::rough::roughoptions::RoughOptions;
-use crate::compose::smooth::SmoothOptions;
-use crate::sheet::Sheet;
-use crate::strokes::element::Element;
-use crate::strokes::shapestroke::ShapeStroke;
-use crate::strokes::strokestyle::StrokeStyle;
-use crate::strokesstate::StrokeKey;
-
-use super::penbehaviour::PenBehaviour;
-
-#[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
-#[serde(rename = "shaperstyle")]
-#[enum_type(name = "ShaperStyle")]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[serde(rename = "shaper_style")]
 pub enum ShaperStyle {
-    #[serde(rename = "line")]
-    #[enum_value(name = "Line", nick = "line")]
-    Line,
-    #[serde(rename = "rectangle")]
-    #[enum_value(name = "Rectangle", nick = "rectangle")]
-    Rectangle,
-    #[serde(rename = "ellipse")]
-    #[enum_value(name = "Ellipse", nick = "ellipse")]
-    Ellipse,
-}
-
-impl Default for ShaperStyle {
-    fn default() -> Self {
-        Self::Line
-    }
-}
-
-#[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
-#[enum_type(name = "ShaperDrawStyle")]
-#[serde(rename = "shaper_drawstyle")]
-pub enum ShaperDrawStyle {
-    #[enum_value(name = "Smooth", nick = "smooth")]
     #[serde(rename = "smooth")]
     Smooth,
-    #[enum_value(name = "Rough", nick = "rough")]
     #[serde(rename = "rough")]
     Rough,
 }
 
-impl Default for ShaperDrawStyle {
+impl Default for ShaperStyle {
     fn default() -> Self {
         Self::Smooth
     }
 }
 
-impl ShaperDrawStyle {
-    pub const SMOOTH_MARGIN: f64 = 1.0;
-    pub const ROUGH_MARGIN: f64 = 20.0;
+#[derive(Debug)]
+enum ShaperState {
+    Idle,
+    BuildShape {
+        builder: Box<dyn ShapeBuilderBehaviour>,
+    },
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "shaper")]
 pub struct Shaper {
+    #[serde(rename = "builder_type")]
+    pub builder_type: ShapeBuilderType,
     #[serde(rename = "style")]
     pub style: ShaperStyle,
-    #[serde(rename = "drawstyle")]
-    pub drawstyle: ShaperDrawStyle,
     #[serde(rename = "smooth_options")]
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
     pub rough_options: RoughOptions,
 
     #[serde(skip)]
-    pub current_stroke: Option<StrokeKey>,
-    #[serde(skip)]
-    pub rect_start: na::Vector2<f64>,
-    #[serde(skip)]
-    pub rect_current: na::Vector2<f64>,
+    state: ShaperState,
 }
 
 impl Default for Shaper {
     fn default() -> Self {
+        let mut smooth_options = SmoothOptions::default();
+        let mut rough_options = RoughOptions::default();
+        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        rough_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+
         Self {
+            builder_type: ShapeBuilderType::default(),
             style: ShaperStyle::default(),
-            drawstyle: ShaperDrawStyle::default(),
-            smooth_options: SmoothOptions::default(),
-            rough_options: RoughOptions::default(),
-            current_stroke: None,
-            rect_start: na::vector![0.0, 0.0],
-            rect_current: na::vector![0.0, 0.0],
+            smooth_options,
+            rough_options,
+            state: ShaperState::Idle,
         }
     }
 }
 
 impl PenBehaviour for Shaper {
-    fn begin(
+    fn handle_event(
         &mut self,
-        mut data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        _zoom: f64,
-        _renderer: Arc<RwLock<Renderer>>,
-    ) {
-        self.current_stroke = None;
+        event: PenEvent,
+        _tasks_tx: EngineTaskSender,
+        doc: &mut Document,
+        store: &mut StrokeStore,
+        camera: &mut Camera,
+        _audioplayer: Option<&mut AudioPlayer>,
+    ) -> (PenProgress, SurfaceFlags) {
+        let mut surface_flags = SurfaceFlags::default();
 
-        let filter_bounds = sheet.bounds().loosened(utils::INPUT_OVERSHOOT);
+        let pen_progress = match (&mut self.state, event) {
+            (ShaperState::Idle, PenEvent::Down { element, .. }) => {
+                // A new seed for a new shape
+                let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
+                self.rough_options.seed = seed;
 
-        utils::filter_mapped_inputdata(filter_bounds, &mut data_entries);
+                match self.builder_type {
+                    ShapeBuilderType::Line => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(LineBuilder::start(element)),
+                        }
+                    }
+                    ShapeBuilderType::Rectangle => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(RectangleBuilder::start(element)),
+                        }
+                    }
+                    ShapeBuilderType::Ellipse => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(EllipseBuilder::start(element)),
+                        }
+                    }
+                    ShapeBuilderType::FociEllipse => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(FociEllipseBuilder::start(element)),
+                        }
+                    }
+                    ShapeBuilderType::QuadBez => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(QuadBezBuilder::start(element)),
+                        }
+                    }
+                    ShapeBuilderType::CubBez => {
+                        self.state = ShaperState::BuildShape {
+                            builder: Box::new(CubBezBuilder::start(element)),
+                        }
+                    }
+                }
 
-        if let Some(inputdata) = data_entries.pop_back() {
-            let element = Element::new(inputdata);
+                surface_flags.redraw = true;
 
-            let shapestroke = StrokeStyle::ShapeStroke(ShapeStroke::new(element, self));
-            self.rect_start = element.inputdata.pos();
-            self.rect_current = element.inputdata.pos();
+                PenProgress::InProgress
+            }
+            (ShaperState::Idle, _) => PenProgress::Idle,
+            (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
+                self.state = ShaperState::Idle;
 
-            let current_stroke_key = Some(sheet.strokes_state.insert_stroke(shapestroke));
-            self.current_stroke = current_stroke_key;
-        }
+                surface_flags.redraw = true;
+                PenProgress::Finished
+            }
+            (ShaperState::BuildShape { builder }, event) => match builder.handle_event(event) {
+                BuilderProgress::InProgress => {
+                    surface_flags.redraw = true;
+
+                    PenProgress::InProgress
+                }
+                BuilderProgress::EmitContinue(shapes) => {
+                    let drawstyle = self.gen_style_for_current_options();
+
+                    if !shapes.is_empty() {
+                        // Only record if new shapes actually were emitted
+                        surface_flags.merge_with_other(store.record());
+                    }
+
+                    for shape in shapes {
+                        let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
+                            shape,
+                            drawstyle.clone(),
+                        )));
+                        if let Err(e) = store.regenerate_rendering_for_stroke(
+                            key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
+                        }
+                    }
+
+                    surface_flags.redraw = true;
+                    surface_flags.store_changed = true;
+
+                    PenProgress::InProgress
+                }
+                BuilderProgress::Finished(shapes) => {
+                    let drawstyle = self.gen_style_for_current_options();
+
+                    if !shapes.is_empty() {
+                        // Only record if new shapes actually were emitted
+                        surface_flags.merge_with_other(store.record());
+                    }
+
+                    if !shapes.is_empty() {
+                        doc.resize_autoexpand(store, camera);
+
+                        surface_flags.resize = true;
+                        surface_flags.store_changed = true;
+                    }
+
+                    for shape in shapes {
+                        let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
+                            shape,
+                            drawstyle.clone(),
+                        )));
+                        if let Err(e) = store.regenerate_rendering_for_stroke(
+                            key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err {}", e);
+                        }
+                    }
+
+                    self.state = ShaperState::Idle;
+
+                    surface_flags.redraw = true;
+
+                    PenProgress::Finished
+                }
+            },
+        };
+
+        (pen_progress, surface_flags)
     }
+}
 
-    fn motion(
-        &mut self,
-        mut data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
-        let current_stroke_key = self.current_stroke;
-        if let Some(current_stroke_key) = current_stroke_key {
-            let filter_bounds = sheet.bounds().loosened(utils::INPUT_OVERSHOOT);
+impl DrawOnDocBehaviour for Shaper {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+        let style = self.gen_style_for_current_options();
 
-            utils::filter_mapped_inputdata(filter_bounds, &mut data_entries);
-
-            for inputdata in data_entries {
-                sheet.strokes_state.add_to_shapestroke(
-                    current_stroke_key,
-                    self,
-                    Element::new(inputdata),
-                    renderer.clone(),
-                    zoom,
-                );
+        match &self.state {
+            ShaperState::Idle => None,
+            ShaperState::BuildShape { builder } => {
+                Some(builder.bounds(&style, camera.total_zoom()))
             }
         }
     }
 
-    fn end(
-        &mut self,
-        data_entries: VecDeque<InputData>,
-        sheet: &mut Sheet,
-        _viewport: Option<AABB>,
-        zoom: f64,
-        renderer: Arc<RwLock<Renderer>>,
-    ) {
-        let current_stroke_key = self.current_stroke.take();
-        if let Some(current_stroke_key) = current_stroke_key {
-            sheet
-                .strokes_state
-                .update_geometry_for_stroke(current_stroke_key);
+    fn draw_on_doc(
+        &self,
+        cx: &mut piet_cairo::CairoRenderContext,
+        _doc_bounds: AABB,
+        camera: &Camera,
+    ) -> anyhow::Result<()> {
+        cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+        let style = self.gen_style_for_current_options();
 
-            for inputdata in data_entries {
-                sheet.strokes_state.add_to_shapestroke(
-                    current_stroke_key,
-                    self,
-                    Element::new(inputdata),
-                    renderer.clone(),
-                    zoom,
-                );
+        match &self.state {
+            ShaperState::Idle => {}
+            ShaperState::BuildShape { builder } => {
+                builder.draw_styled(cx, &style, camera.total_zoom())
+            }
+        }
+
+        cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
+        Ok(())
+    }
+}
+
+impl Shaper {
+    pub const INPUT_OVERSHOOT: f64 = 30.0;
+
+    pub const STROKE_WIDTH_MIN: f64 = 1.0;
+    pub const STROKE_WIDTH_MAX: f64 = 500.0;
+    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
+
+    pub fn gen_style_for_current_options(&self) -> Style {
+        match &self.style {
+            ShaperStyle::Smooth => {
+                let options = self.smooth_options.clone();
+
+                Style::Smooth(options)
+            }
+            ShaperStyle::Rough => {
+                let options = self.rough_options.clone();
+
+                Style::Rough(options)
             }
         }
     }

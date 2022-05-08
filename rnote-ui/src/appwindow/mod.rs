@@ -1,33 +1,58 @@
-pub mod appsettings;
-pub mod appwindowactions;
+mod appsettings;
+mod appwindowactions;
+
+use std::{
+    cell::{Cell, RefCell},
+    path::Path,
+    rc::Rc,
+};
+
+use adw::{prelude::*, subclass::prelude::*};
+use gettextrs::gettext;
+use gtk4::{
+    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, CompositeTemplate,
+    CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
+    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
+    ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
+};
+use once_cell::sync::Lazy;
+use rnote_compose::penhelpers::PenEvent;
+use rnote_engine::pens::penholder::PenHolderEvent;
+use rnote_engine::strokes::Stroke;
+
+use crate::{
+    app::RnoteApp,
+    canvas::RnoteCanvas,
+    config,
+    penssidebar::PensSideBar,
+    settingspanel::SettingsPanel,
+    utils,
+    workspacebrowser::WorkspaceBrowser,
+    {dialogs, mainheader::MainHeader},
+};
+use rnote_engine::{
+    engine::EngineTask,
+    pens::penholder::PenStyle,
+    strokes::{BitmapImage, VectorImage},
+    Camera, SurfaceFlags,
+};
 
 mod imp {
-    use std::cell::RefCell;
-    use std::{cell::Cell, rc::Rc};
+    use super::*;
 
-    use adw::{prelude::*, subclass::prelude::*};
-    use gtk4::{
-        gdk, glib, glib::clone, subclass::prelude::*, Box, CompositeTemplate, CssProvider,
-        FileChooserNative, Grid, Inhibit, PackType, ScrolledWindow, StyleContext, ToggleButton,
-    };
-    use gtk4::{gio, GestureDrag, PropagationPhase, Revealer, Separator};
-    use once_cell::sync::Lazy;
-
-    use crate::audioplayer::RnoteAudioPlayer;
-    use crate::{
-        app::RnoteApp, canvas::Canvas, config, dialogs, mainheader::MainHeader,
-        penssidebar::PensSideBar, settingspanel::SettingsPanel, workspacebrowser::WorkspaceBrowser,
-    };
-
-    #[derive(Debug, CompositeTemplate)]
+    #[allow(missing_debug_implementations)]
+    #[derive(CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/appwindow.ui")]
     pub struct RnoteAppWindow {
         pub app_settings: gio::Settings,
-        pub audioplayer: Rc<RefCell<RnoteAudioPlayer>>,
         pub filechoosernative: Rc<RefCell<Option<FileChooserNative>>>,
+        pub autosave_source_id: Rc<RefCell<Option<glib::SourceId>>>,
+        pub progresspulse_source_id: Rc<RefCell<Option<glib::SourceId>>>,
 
+        pub unsaved_changes: Cell<bool>,
+        pub autosave: Cell<bool>,
+        pub autosave_interval_secs: Cell<u32>,
         pub righthanded: Cell<bool>,
-        pub pen_sounds: Cell<bool>,
 
         #[template_child]
         pub toast_overlay: TemplateChild<adw::ToastOverlay>,
@@ -36,9 +61,19 @@ mod imp {
         #[template_child]
         pub canvas_box: TemplateChild<gtk4::Box>,
         #[template_child]
+        pub canvas_quickactions_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub canvas_fixedsize_quickactions_revealer: TemplateChild<Revealer>,
+        #[template_child]
+        pub undo_button: TemplateChild<Button>,
+        #[template_child]
+        pub redo_button: TemplateChild<Button>,
+        #[template_child]
         pub canvas_scroller: TemplateChild<ScrolledWindow>,
         #[template_child]
-        pub canvas: TemplateChild<Canvas>,
+        pub canvas_progressbar: TemplateChild<ProgressBar>,
+        #[template_child]
+        pub canvas: TemplateChild<RnoteCanvas>,
         #[template_child]
         pub settings_panel: TemplateChild<SettingsPanel>,
         #[template_child]
@@ -57,6 +92,8 @@ mod imp {
         pub flap_resizer: TemplateChild<gtk4::Box>,
         #[template_child]
         pub flap_resizer_box: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub flap_close_button: TemplateChild<Button>,
         #[template_child]
         pub workspacebrowser: TemplateChild<WorkspaceBrowser>,
         #[template_child]
@@ -85,17 +122,25 @@ mod imp {
         fn default() -> Self {
             Self {
                 app_settings: gio::Settings::new(config::APP_ID),
-                audioplayer: Rc::new(RefCell::new(RnoteAudioPlayer::default())),
                 filechoosernative: Rc::new(RefCell::new(None)),
+                autosave_source_id: Rc::new(RefCell::new(None)),
+                progresspulse_source_id: Rc::new(RefCell::new(None)),
 
+                unsaved_changes: Cell::new(false),
+                autosave: Cell::new(true),
+                autosave_interval_secs: Cell::new(super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT),
                 righthanded: Cell::new(true),
-                pen_sounds: Cell::new(true),
 
                 toast_overlay: TemplateChild::<adw::ToastOverlay>::default(),
                 main_grid: TemplateChild::<Grid>::default(),
                 canvas_box: TemplateChild::<gtk4::Box>::default(),
+                canvas_quickactions_box: TemplateChild::<gtk4::Box>::default(),
+                canvas_fixedsize_quickactions_revealer: TemplateChild::<Revealer>::default(),
+                undo_button: TemplateChild::<Button>::default(),
+                redo_button: TemplateChild::<Button>::default(),
+                canvas_progressbar: TemplateChild::<ProgressBar>::default(),
                 canvas_scroller: TemplateChild::<ScrolledWindow>::default(),
-                canvas: TemplateChild::<Canvas>::default(),
+                canvas: TemplateChild::<RnoteCanvas>::default(),
                 settings_panel: TemplateChild::<SettingsPanel>::default(),
                 sidebar_scroller: TemplateChild::<ScrolledWindow>::default(),
                 sidebar_grid: TemplateChild::<Grid>::default(),
@@ -105,6 +150,7 @@ mod imp {
                 flap_header: TemplateChild::<adw::HeaderBar>::default(),
                 flap_resizer: TemplateChild::<gtk4::Box>::default(),
                 flap_resizer_box: TemplateChild::<gtk4::Box>::default(),
+                flap_close_button: TemplateChild::<Button>::default(),
                 workspacebrowser: TemplateChild::<WorkspaceBrowser>::default(),
                 flapreveal_toggle: TemplateChild::<ToggleButton>::default(),
                 flap_menus_box: TemplateChild::<Box>::default(),
@@ -161,31 +207,31 @@ mod imp {
             // pens narrow toggles
             self.narrow_brush_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_brush_toggle| {
                 if narrow_brush_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"brush_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Brush.nick().to_variant()));
                 }
             }));
 
             self.narrow_shaper_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_shaper_toggle| {
                 if narrow_shaper_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"shaper_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
                 }
             }));
 
             self.narrow_eraser_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_eraser_toggle| {
                 if narrow_eraser_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"eraser_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));
                 }
             }));
 
             self.narrow_selector_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_selector_toggle| {
                 if narrow_selector_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"selector_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Selector.nick().to_variant()));
                 }
             }));
 
             self.narrow_tools_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_tools_toggle| {
                 if narrow_tools_toggle.is_active() {
-                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "current-pen", Some(&"tools_style".to_variant()));
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
                 }
             }));
         }
@@ -193,19 +239,36 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
-                    // Pen sounds
                     glib::ParamSpecBoolean::new(
-                        "righthanded",
-                        "righthanded",
-                        "righthanded",
+                        "unsaved-changes",
+                        "unsaved-changes",
+                        "unsaved-changes",
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
-                    // Pen sounds
+                    // autosave
                     glib::ParamSpecBoolean::new(
-                        "pen-sounds",
-                        "pen-sounds",
-                        "pen-sounds",
+                        "autosave",
+                        "autosave",
+                        "autosave",
+                        false,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // autosave interval in secs
+                    glib::ParamSpecUInt::new(
+                        "autosave-interval-secs",
+                        "autosave-interval-secs",
+                        "autosave-interval-secs",
+                        5,
+                        u32::MAX,
+                        super::RnoteAppWindow::AUTOSAVE_INTERVAL_DEFAULT,
+                        glib::ParamFlags::READWRITE,
+                    ),
+                    // righthanded
+                    glib::ParamSpecBoolean::new(
+                        "righthanded",
+                        "righthanded",
+                        "righthanded",
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
@@ -216,34 +279,61 @@ mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
+                "unsaved-changes" => self.unsaved_changes.get().to_value(),
+                "autosave" => self.autosave.get().to_value(),
+                "autosave-interval-secs" => self.autosave_interval_secs.get().to_value(),
                 "righthanded" => self.righthanded.get().to_value(),
-                "pen-sounds" => self.pen_sounds.get().to_value(),
                 _ => unimplemented!(),
             }
         }
 
         fn set_property(
             &self,
-            _obj: &Self::Type,
+            obj: &Self::Type,
             _id: usize,
             value: &glib::Value,
             pspec: &glib::ParamSpec,
         ) {
             match pspec.name() {
+                "unsaved-changes" => {
+                    let unsaved_changes: bool =
+                        value.get().expect("The value needs to be of type `bool`.");
+                    self.unsaved_changes.replace(unsaved_changes);
+                }
+                "autosave" => {
+                    let autosave = value
+                        .get::<bool>()
+                        .expect("The value needs to be of type `bool`.");
+
+                    self.autosave.replace(autosave);
+
+                    if autosave {
+                        self.update_autosave_handler(obj);
+                    } else {
+                        if let Some(autosave_source_id) =
+                            self.autosave_source_id.borrow_mut().take()
+                        {
+                            autosave_source_id.remove();
+                        }
+                    }
+                }
+                "autosave-interval-secs" => {
+                    let autosave_interval_secs = value
+                        .get::<u32>()
+                        .expect("The value needs to be of type `u32`.");
+
+                    self.autosave_interval_secs.replace(autosave_interval_secs);
+
+                    if self.autosave.get() {
+                        self.update_autosave_handler(obj);
+                    }
+                }
                 "righthanded" => {
                     let righthanded = value
                         .get::<bool>()
                         .expect("The value needs to be of type `bool`.");
 
                     self.righthanded.replace(righthanded);
-                }
-                "pen-sounds" => {
-                    let pen_sounds = value
-                        .get::<bool>()
-                        .expect("The value needs to be of type `bool`.");
-
-                    self.pen_sounds.replace(pen_sounds);
-                    self.audioplayer.borrow_mut().set_enabled(pen_sounds);
                 }
                 _ => unimplemented!(),
             }
@@ -255,17 +345,11 @@ mod imp {
     impl WindowImpl for RnoteAppWindow {
         // Save window state right before the window will be closed
         fn close_request(&self, obj: &Self::Type) -> Inhibit {
-            // Save current sheet
-            if obj
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .unsaved_changes()
-            {
+            // Save current doc
+            if obj.unsaved_changes() {
                 dialogs::dialog_quit_save(obj);
             } else {
-                obj.close();
+                obj.close_force();
             }
 
             // Inhibit (Overwrite) the default handler. This handler is then responsible for destoying the window.
@@ -278,6 +362,25 @@ mod imp {
     impl AdwApplicationWindowImpl for RnoteAppWindow {}
 
     impl RnoteAppWindow {
+        fn update_autosave_handler(&self, obj: &super::RnoteAppWindow) {
+            if let Some(removed_id) = self.autosave_source_id.borrow_mut().replace(glib::source::timeout_add_seconds_local(self.autosave_interval_secs.get(), clone!(@strong obj as appwindow => @default-return glib::source::Continue(false), move || {
+                if let Some(output_file) = appwindow.canvas().output_file() {
+                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        if let Err(e) = appwindow.save_document_to_file(&output_file).await {
+                            appwindow.canvas().set_output_file(None);
+
+                            log::error!("saving document failed with error `{}`", e);
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Saving document failed.").to_variant()));
+                        }
+                    }));
+                }
+
+                glib::source::Continue(true)
+            }))) {
+                removed_id.remove();
+            }
+        }
+
         // Setting up the sidebar flap
         fn setup_flap(&self, obj: &super::RnoteAppWindow) {
             let flap = self.flap.get();
@@ -313,11 +416,14 @@ mod imp {
                     }
 
                     if flap.reveals_flap() && !flap.is_folded() {
+                        // Set visible before appending, to avoid allocation glitch
+                        appwindow.flap_menus_box().set_visible(true);
+                        appwindow.flap_close_button().set_visible(false);
                         appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(false);
                     } else {
+                        appwindow.flap_menus_box().set_visible(false);
+                        appwindow.flap_close_button().set_visible(true);
                         appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(true);
                     }
 
                     if flap.is_folded() {
@@ -344,10 +450,12 @@ mod imp {
 
                     if flap.reveals_flap() && !flap.is_folded() {
                         appwindow.flap_menus_box().append(&appwindow.mainheader().appmenu());
-                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(false);
+                        appwindow.flap_menus_box().set_visible(true);
+                        appwindow.flap_close_button().set_visible(false);
                     } else {
                         appwindow.mainheader().menus_box().append(&appwindow.mainheader().appmenu());
-                        appwindow.workspacebrowser().flap_close_buttonbox().set_visible(true);
+                        appwindow.flap_menus_box().set_visible(false);
+                        appwindow.flap_close_button().set_visible(true);
                     }
 
                     if flap.flap_position() == PackType::Start {
@@ -367,22 +475,18 @@ mod imp {
 
                         flap_resizer_box.reorder_child_after(&flap_resizer, Some(&flap_box));
 
-                        appwindow.workspacebrowser().workspace_controlbox().remove(&appwindow.workspacebrowser().flap_close_buttonbox());
-                        appwindow.workspacebrowser().workspace_controlbox().prepend(&appwindow.workspacebrowser().flap_close_buttonbox());
-                        appwindow.workspacebrowser().flap_close_buttonbox().remove(&appwindow.workspacebrowser().flap_close_buttonseparator());
-                        appwindow.workspacebrowser().flap_close_buttonbox().append(&appwindow.workspacebrowser().flap_close_buttonseparator());
-                        appwindow.workspacebrowser().flap_close_button().set_icon_name("arrow1-left-symbolic");
+                        appwindow.flap_header().remove(&appwindow.flap_close_button());
+                        appwindow.flap_header().pack_end(&appwindow.flap_close_button());
+                        appwindow.flap_close_button().set_icon_name("arrow1-left-symbolic");
                     } else if flap.flap_position() == PackType::End {
                         workspace_headerbar.set_show_start_title_buttons(false);
                         workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
 
                         flap_resizer_box.reorder_child_after(&flap_box, Some(&flap_resizer));
 
-                        appwindow.workspacebrowser().workspace_controlbox().remove(&appwindow.workspacebrowser().flap_close_buttonbox());
-                        appwindow.workspacebrowser().workspace_controlbox().append(&appwindow.workspacebrowser().flap_close_buttonbox());
-                        appwindow.workspacebrowser().flap_close_buttonbox().remove(&appwindow.workspacebrowser().flap_close_buttonseparator());
-                        appwindow.workspacebrowser().flap_close_buttonbox().prepend(&appwindow.workspacebrowser().flap_close_buttonseparator());
-                        appwindow.workspacebrowser().flap_close_button().set_icon_name("arrow1-right-symbolic");
+                        appwindow.flap_header().remove(&appwindow.flap_close_button());
+                        appwindow.flap_header().pack_start(&appwindow.flap_close_button());
+                        appwindow.flap_close_button().set_icon_name("arrow1-right-symbolic");
                     }
                 }),
             );
@@ -394,7 +498,7 @@ mod imp {
                 .build();
             self.flap_resizer.add_controller(&resizer_drag_gesture);
 
-            // Dirty hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
+            // hack to stop resizing when it is switching from non-folded to folded or vice versa (else gtk crashes)
             let prev_folded = Rc::new(Cell::new(self.flap.get().is_folded()));
 
             resizer_drag_gesture.connect_drag_begin(clone!(@strong prev_folded, @weak flap, @weak flap_box => move |_resizer_drag_gesture, _x , _y| {
@@ -411,7 +515,8 @@ mod imp {
                     } else {
                         flap_box.width() - x.floor() as i32
                     };
-                    if new_width > 0 && new_width < obj.mainheader().width() - 64 {
+
+                    if new_width > 0 && new_width < obj.mainheader().width() - super::RnoteAppWindow::FLAP_FOLDED_RESIZE_MARGIN as i32 {
                         flap_box.set_width_request(new_width);
                     }
                 } else if flap.is_folded() {
@@ -426,42 +531,17 @@ mod imp {
                 )
                 .as_ref(),
             );
+
+            self.flap_close_button.get().connect_clicked(
+                clone!(@weak obj => move |_flap_close_button| {
+                    if obj.flap().reveals_flap() && obj.flap().is_folded() {
+                        obj.flap().set_reveal_flap(false);
+                    }
+                }),
+            );
         }
     }
 }
-
-use std::{
-    cell::{Cell, RefCell},
-    path::Path,
-    rc::Rc,
-};
-
-use adw::prelude::*;
-use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, EventControllerScroll,
-    EventControllerScrollFlags, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme,
-    Inhibit, PropagationPhase, ScrolledWindow, Separator, ToggleButton,
-};
-use gtk4::{EventSequenceState, Revealer};
-use rnote_engine::surfaceflags::SurfaceFlags;
-
-use crate::{
-    app::RnoteApp,
-    audioplayer::RnoteAudioPlayer,
-    canvas::Canvas,
-    config,
-    penssidebar::PensSideBar,
-    settingspanel::SettingsPanel,
-    utils,
-    workspacebrowser::WorkspaceBrowser,
-    {dialogs, mainheader::MainHeader},
-};
-use rnote_engine::{
-    strokes::{bitmapimage::BitmapImage, vectorimage::VectorImage},
-    strokesstate::StateTask,
-};
-
-// The renderer as a global singleton
 
 glib::wrapper! {
     pub struct RnoteAppWindow(ObjectSubclass<imp::RnoteAppWindow>)
@@ -470,34 +550,31 @@ glib::wrapper! {
 }
 
 impl RnoteAppWindow {
-    pub const CANVAS_ZOOMGESTURE_THRESHOLD: f64 = 0.005; // Sets the delta threshold (eg. 0.01 = 1% ) when to update the canvas when doing a zoom gesture
-    pub const CANVAS_ZOOM_SCROLL_STEP: f64 = 0.1; // Sets the canvas zoom scroll step in % for one unit of the event controller delta
+    const AUTOSAVE_INTERVAL_DEFAULT: u32 = 120;
+
+    const FLAP_FOLDED_RESIZE_MARGIN: u32 = 64;
 
     pub fn new(app: &Application) -> Self {
         glib::Object::new(&[("application", app)]).expect("Failed to create `RnoteAppWindow`.")
     }
 
     /// Called to close the window
-    pub fn close(&self) {
+    pub fn close_force(&self) {
         // Saving all state
         if let Err(err) = self.save_to_settings() {
             log::error!("Failed to save appwindow to settings, with Err `{}`", &err);
         }
 
-        // Setting all gstreamer pipelines state to Null
-        self.audioplayer().borrow_mut().set_states_null();
-
         // Closing the state tasks channel receiver
         if let Err(e) = self
             .canvas()
-            .sheet()
+            .engine()
             .borrow()
-            .strokes_state
-            .tasks_tx
-            .unbounded_send(StateTask::Quit)
+            .tasks_tx()
+            .unbounded_send(EngineTask::Quit)
         {
             log::error!(
-                "failed to send StateTask::Quit on strokes_state tasks_tx, Err {}",
+                "failed to send StateTask::Quit on store tasks_tx, Err {}",
                 e
             );
         }
@@ -510,153 +587,155 @@ impl RnoteAppWindow {
     }
 
     pub fn filechoosernative(&self) -> Rc<RefCell<Option<FileChooserNative>>> {
-        imp::RnoteAppWindow::from_instance(self)
-            .filechoosernative
-            .clone()
+        self.imp().filechoosernative.clone()
+    }
+
+    pub fn unsaved_changes(&self) -> bool {
+        self.property::<bool>("unsaved-changes")
+    }
+
+    pub fn set_unsaved_changes(&self, unsaved_changes: bool) {
+        self.set_property("unsaved-changes", unsaved_changes.to_value());
+    }
+
+    pub fn autosave(&self) -> bool {
+        self.property::<bool>("autosave")
+    }
+
+    pub fn set_autosave(&self, autosave: bool) {
+        self.set_property("autosave", autosave.to_value());
+    }
+
+    pub fn autosave_interval_secs(&self) -> u32 {
+        self.property::<u32>("autosave-interval-secs")
+    }
+
+    pub fn set_autosave_interval_secs(&self, autosave_interval_secs: u32) {
+        self.set_property("autosave-interval-secs", autosave_interval_secs.to_value());
+    }
+
+    pub fn righthanded(&self) -> bool {
+        self.property::<bool>("righthanded")
+    }
+
+    pub fn set_righthanded(&self, righthanded: bool) {
+        self.set_property("righthanded", righthanded.to_value());
     }
 
     pub fn toast_overlay(&self) -> adw::ToastOverlay {
-        imp::RnoteAppWindow::from_instance(self).toast_overlay.get()
+        self.imp().toast_overlay.get()
     }
 
     pub fn main_grid(&self) -> Grid {
-        imp::RnoteAppWindow::from_instance(self).main_grid.get()
+        self.imp().main_grid.get()
     }
 
     pub fn canvas_box(&self) -> gtk4::Box {
-        imp::RnoteAppWindow::from_instance(self).canvas_box.get()
+        self.imp().canvas_box.get()
+    }
+
+    pub fn canvas_quickactions_box(&self) -> gtk4::Box {
+        self.imp().canvas_quickactions_box.get()
+    }
+
+    pub fn canvas_fixedsize_quickactions_revealer(&self) -> Revealer {
+        self.imp().canvas_fixedsize_quickactions_revealer.get()
+    }
+
+    pub fn undo_button(&self) -> Button {
+        self.imp().undo_button.get()
+    }
+
+    pub fn redo_button(&self) -> Button {
+        self.imp().redo_button.get()
+    }
+
+    pub fn canvas_progressbar(&self) -> ProgressBar {
+        self.imp().canvas_progressbar.get()
     }
 
     pub fn canvas_scroller(&self) -> ScrolledWindow {
-        imp::RnoteAppWindow::from_instance(self)
-            .canvas_scroller
-            .get()
+        self.imp().canvas_scroller.get()
     }
 
-    pub fn canvas(&self) -> Canvas {
-        imp::RnoteAppWindow::from_instance(self).canvas.get()
+    pub fn canvas(&self) -> RnoteCanvas {
+        self.imp().canvas.get()
     }
 
     pub fn settings_panel(&self) -> SettingsPanel {
-        imp::RnoteAppWindow::from_instance(self)
-            .settings_panel
-            .get()
+        self.imp().settings_panel.get()
     }
 
     pub fn sidebar_scroller(&self) -> ScrolledWindow {
-        imp::RnoteAppWindow::from_instance(self)
-            .sidebar_scroller
-            .get()
+        self.imp().sidebar_scroller.get()
     }
 
     pub fn sidebar_grid(&self) -> Grid {
-        imp::RnoteAppWindow::from_instance(self).sidebar_grid.get()
+        self.imp().sidebar_grid.get()
     }
 
     pub fn sidebar_sep(&self) -> Separator {
-        imp::RnoteAppWindow::from_instance(self).sidebar_sep.get()
+        self.imp().sidebar_sep.get()
+    }
+
+    pub fn flap_box(&self) -> gtk4::Box {
+        self.imp().flap_box.get()
     }
 
     pub fn flap_header(&self) -> adw::HeaderBar {
-        imp::RnoteAppWindow::from_instance(self).flap_header.get()
+        self.imp().flap_header.get()
     }
 
     pub fn workspacebrowser(&self) -> WorkspaceBrowser {
-        imp::RnoteAppWindow::from_instance(self)
-            .workspacebrowser
-            .get()
+        self.imp().workspacebrowser.get()
     }
 
     pub fn flap(&self) -> adw::Flap {
-        imp::RnoteAppWindow::from_instance(self).flap.get()
+        self.imp().flap.get()
     }
 
     pub fn flapreveal_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .flapreveal_toggle
-            .get()
+        self.imp().flapreveal_toggle.get()
     }
 
     pub fn flap_menus_box(&self) -> Box {
-        imp::RnoteAppWindow::from_instance(self)
-            .flap_menus_box
-            .get()
+        self.imp().flap_menus_box.get()
+    }
+
+    pub fn flap_close_button(&self) -> Button {
+        self.imp().flap_close_button.get()
     }
 
     pub fn mainheader(&self) -> MainHeader {
-        imp::RnoteAppWindow::from_instance(self).mainheader.get()
+        self.imp().mainheader.get()
     }
 
     pub fn narrow_pens_toggles_revealer(&self) -> Revealer {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_pens_toggles_revealer
-            .get()
+        self.imp().narrow_pens_toggles_revealer.get()
     }
 
     pub fn narrow_brush_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_brush_toggle
-            .get()
+        self.imp().narrow_brush_toggle.get()
     }
 
     pub fn narrow_shaper_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_shaper_toggle
-            .get()
+        self.imp().narrow_shaper_toggle.get()
     }
 
     pub fn narrow_eraser_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_eraser_toggle
-            .get()
+        self.imp().narrow_eraser_toggle.get()
     }
 
     pub fn narrow_selector_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_selector_toggle
-            .get()
+        self.imp().narrow_selector_toggle.get()
     }
 
     pub fn narrow_tools_toggle(&self) -> ToggleButton {
-        imp::RnoteAppWindow::from_instance(self)
-            .narrow_tools_toggle
-            .get()
+        self.imp().narrow_tools_toggle.get()
     }
 
     pub fn penssidebar(&self) -> PensSideBar {
-        imp::RnoteAppWindow::from_instance(self).penssidebar.get()
-    }
-
-    pub fn audioplayer(&self) -> Rc<RefCell<RnoteAudioPlayer>> {
-        imp::RnoteAppWindow::from_instance(self).audioplayer.clone()
-    }
-
-    pub fn save_window_size(&self) -> Result<(), anyhow::Error> {
-        let mut width = self.width();
-        let mut height = self.height();
-
-        // Window would grow without subtracting this size. Why? I dont know
-        width -= 122;
-        height -= 122;
-
-        self.app_settings().set_int("window-width", width)?;
-        self.app_settings().set_int("window-height", height)?;
-        self.app_settings()
-            .set_boolean("is-maximized", self.is_maximized())?;
-
-        Ok(())
-    }
-
-    pub fn load_window_size(&self) {
-        let width = self.app_settings().int("window-width");
-        let height = self.app_settings().int("window-height");
-        let is_maximized = self.app_settings().boolean("is-maximized");
-
-        self.set_default_size(width, height);
-
-        if is_maximized {
-            self.maximize();
-        }
+        self.imp().penssidebar.get()
     }
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (Mainloop, or event loop in another thread)
@@ -668,29 +747,34 @@ impl RnoteAppWindow {
             self.canvas().queue_draw();
         }
         if surface_flags.resize {
-            self.canvas().resize_sheet_autoexpand();
-            self.canvas().update_background_rendernode(true);
+            self.canvas().queue_resize();
         }
-        if surface_flags.resize_to_fit_strokes {
-            self.canvas().resize_sheet_to_fit_strokes();
+        if surface_flags.penholder_changed {
+            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
         }
-        if let Some(pen_change) = surface_flags.pen_change {
-            adw::prelude::ActionGroupExt::activate_action(
-                self,
-                "current-pen",
-                Some(&pen_change.nick().to_variant()),
-            );
-        }
-        if surface_flags.sheet_changed {
+        if surface_flags.store_changed {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
         }
-        if surface_flags.selection_changed {
-            self
-                .canvas()
-                .selection_modifier()
-                .update_state(&self.canvas());
-            self.queue_resize();
+        if surface_flags.camera_changed {
+            let camera_offset = self.canvas().engine().borrow().camera.offset;
+            // this updates the canvas adjustment values with the ones from the camera
+            self.canvas().update_camera_offset(camera_offset);
+        }
+        if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
+            if hide_scrollbars {
+                self.canvas_scroller()
+                    .set_policy(PolicyType::Never, PolicyType::Never);
+            } else {
+                self.canvas_scroller()
+                    .set_policy(PolicyType::Automatic, PolicyType::Automatic);
+            }
+        }
+        if let Some(hide_undo) = surface_flags.hide_undo {
+            self.undo_button().set_sensitive(!hide_undo);
+        }
+        if let Some(hide_redo) = surface_flags.hide_redo {
+            self.redo_button().set_sensitive(!hide_redo);
         }
 
         false
@@ -698,9 +782,6 @@ impl RnoteAppWindow {
 
     // Must be called after application is associated with it else it fails
     pub fn init(&self) {
-        if let Err(e) = self.imp().audioplayer.borrow_mut().init(self) {
-            log::error!("failed to init audio_player with Err {}", e);
-        }
         self.imp().workspacebrowser.get().init(self);
         self.imp().settings_panel.get().init(self);
         self.imp().mainheader.get().init(self);
@@ -713,23 +794,20 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get().selector_page().init(self);
         self.imp().penssidebar.get().tools_page().init(self);
         self.imp().canvas.get().init(self);
-        //StrokesState::init(self);
-        self.imp().canvas.get().selection_modifier().init(self);
 
         // add icon theme resource path because automatic lookup does not work in the devel build.
         let app_icon_theme = IconTheme::for_display(&self.display());
         app_icon_theme.add_resource_path((String::from(config::APP_IDPATH) + "icons").as_str());
 
-        self.setup_controllers();
+        self.setup_input();
 
-        // actions and settings AFTER widget callback declarations
+        // actions and settings AFTER widget inits
         self.setup_actions();
         self.setup_action_accels();
         self.setup_settings();
 
-        if let Err(e) = self.load_settings() {
-            log::debug!("failed to load appwindow settings with Err `{}`", e);
-        }
+        // Load settings
+        self.load_settings();
 
         // Loading in input file, if Some
         if let Some(input_file) = self
@@ -739,13 +817,7 @@ impl RnoteAppWindow {
             .unwrap()
             .input_file()
         {
-            if self
-                .application()
-                .unwrap()
-                .downcast::<RnoteApp>()
-                .unwrap()
-                .unsaved_changes()
-            {
+            if self.unsaved_changes() {
                 dialogs::dialog_open_overwrite(self);
             } else if let Err(e) = self.load_in_file(&input_file, None) {
                 log::error!("failed to load in input file, {}", e);
@@ -753,7 +825,7 @@ impl RnoteAppWindow {
         }
     }
 
-    pub fn setup_controllers(&self) {
+    pub fn setup_input(&self) {
         let canvas_zoom_scroll_controller = EventControllerScroll::builder()
             .name("canvas_zoom_scroll_controller")
             .propagation_phase(PropagationPhase::Bubble)
@@ -799,22 +871,13 @@ impl RnoteAppWindow {
         // zoom scrolling with <ctrl> + scroll
         {
             canvas_zoom_scroll_controller.connect_scroll(clone!(@weak self as appwindow => @default-return Inhibit(false), move |zoom_scroll_controller, _dx, dy| {
-                let total_zoom = appwindow.canvas().total_zoom();
                 if zoom_scroll_controller.current_event_state() == gdk::ModifierType::CONTROL_MASK {
-                    let delta = dy * Self::CANVAS_ZOOM_SCROLL_STEP * total_zoom;
-                    let new_zoom = total_zoom - delta;
+                    let new_zoom = appwindow.canvas().engine().borrow().camera.total_zoom() * (1.0 - dy * RnoteCanvas::ZOOM_STEP);
 
-                    // the sheet position BEFORE zooming
-                    let sheet_center_pos = appwindow.canvas().transform_canvas_coords_to_sheet_coords(
-                        na::vector![
-                            f64::from(appwindow.canvas_scroller().width()) * 0.5,
-                            f64::from(appwindow.canvas_scroller().height()) * 0.5
-                        ]);
+                    let current_doc_center = appwindow.canvas().current_center_on_doc();
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.to_variant()));
+                    appwindow.canvas().center_around_coord_on_doc(current_doc_center);
 
-                    appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom, Canvas::ZOOM_TIMEOUT_TIME);
-
-                    // Reposition scroller center to the previous sheet position
-                    appwindow.canvas().center_around_coord_on_sheet(sheet_center_pos);
                     // Stop event propagation
                     Inhibit(true)
                 } else {
@@ -836,8 +899,14 @@ impl RnoteAppWindow {
             canvas_touch_drag_gesture.connect_drag_update(clone!(@strong touch_drag_start, @weak self as appwindow => move |_canvas_touch_drag_gesture, x, y| {
                 let new_adj_values = touch_drag_start.get() - na::vector![x,y];
 
-                appwindow.canvas().update_adj_values(new_adj_values);
+                appwindow.canvas().update_camera_offset(new_adj_values);
             }));
+
+            canvas_touch_drag_gesture.connect_drag_end(
+                clone!(@weak self as appwindow => move |_canvas_touch_drag_gesture, _x, _y| {
+                    appwindow.canvas().update_engine_rendering();
+                }),
+            );
         }
 
         // Move Canvas with middle mouse button
@@ -853,8 +922,14 @@ impl RnoteAppWindow {
             canvas_mouse_drag_middle_gesture.connect_drag_update(clone!(@strong mouse_drag_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
                 let new_adj_values = mouse_drag_start.get() - na::vector![x,y];
 
-                appwindow.canvas().update_adj_values(new_adj_values);
+                appwindow.canvas().update_camera_offset(new_adj_values);
             }));
+
+            canvas_mouse_drag_middle_gesture.connect_drag_end(
+                clone!(@weak self as appwindow => move |_canvas_mouse_drag_middle_gesture, _x, _y| {
+                    appwindow.canvas().update_engine_rendering();
+                }),
+            );
         }
 
         // Move Canvas by dragging in empty area
@@ -870,7 +945,11 @@ impl RnoteAppWindow {
             canvas_mouse_drag_empty_area_gesture.connect_drag_update(clone!(@strong mouse_drag_empty_area_start, @weak self as appwindow => move |_canvas_mouse_drag_gesture, x, y| {
                 let new_adj_values = mouse_drag_empty_area_start.get() - na::vector![x,y];
 
-                appwindow.canvas().update_adj_values(new_adj_values);
+                appwindow.canvas().update_camera_offset(new_adj_values);
+            }));
+
+            canvas_mouse_drag_empty_area_gesture.connect_drag_end(clone!(@weak self as appwindow => move |_canvas_mouse_drag_empty_area_gesture, _x, _y| {
+                appwindow.canvas().update_engine_rendering();
             }));
         }
 
@@ -878,7 +957,7 @@ impl RnoteAppWindow {
         {
             let prev_scale = Rc::new(Cell::new(1_f64));
             let zoom_begin = Rc::new(Cell::new(1_f64));
-            let new_zoom = Rc::new(Cell::new(self.canvas().zoom()));
+            let new_zoom = Rc::new(Cell::new(1.0));
             let bbcenter_begin: Rc<Cell<Option<na::Vector2<f64>>>> = Rc::new(Cell::new(None));
             let adjs_begin = Rc::new(Cell::new(na::vector![0.0, 0.0]));
 
@@ -889,10 +968,17 @@ impl RnoteAppWindow {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
+                    let current_zoom = appwindow.canvas().engine().borrow().camera.zoom();
                     canvas_zoom_gesture.set_state(EventSequenceState::Claimed);
 
-                    zoom_begin.set(appwindow.canvas().zoom());
-                    new_zoom.set(appwindow.canvas().zoom());
+                    // Only cancel the current pen when touch drawing is enabled
+                    if appwindow.canvas().touch_drawing() {
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        appwindow.handle_surface_flags(surface_flags);
+                    }
+
+                    zoom_begin.set(current_zoom);
+                    new_zoom.set(current_zoom);
                     prev_scale.set(1.0);
 
                     bbcenter_begin.set(canvas_zoom_gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]));
@@ -906,12 +992,12 @@ impl RnoteAppWindow {
                 @strong bbcenter_begin,
                 @strong adjs_begin,
                 @weak self as appwindow => move |canvas_zoom_gesture, scale| {
-                    if zoom_begin.get() * scale <= Canvas::ZOOM_MAX && zoom_begin.get() * scale >= Canvas::ZOOM_MIN {
+                    if zoom_begin.get() * scale <= Camera::ZOOM_MAX && zoom_begin.get() * scale >= Camera::ZOOM_MIN {
                         new_zoom.set(zoom_begin.get() * scale);
                         prev_scale.set(scale);
                     }
 
-                    appwindow.canvas().zoom_temporarily_then_scale_to_after_timeout(new_zoom.get(), Canvas::ZOOM_TIMEOUT_TIME);
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
 
                     if let Some(bbcenter_current) = canvas_zoom_gesture.bounding_box_center().map(|coords| na::vector![coords.0, coords.1]) {
                         let bbcenter_begin = if let Some(bbcenter_begin) = bbcenter_begin.get() {
@@ -925,26 +1011,84 @@ impl RnoteAppWindow {
                         let bbcenter_delta = bbcenter_current - bbcenter_begin * prev_scale.get();
                         let new_adj_values = adjs_begin.get() * prev_scale.get() - bbcenter_delta;
 
-                        appwindow.canvas().update_adj_values(new_adj_values);
+                        appwindow.canvas().update_camera_offset(new_adj_values);
                     }
             }));
 
             canvas_zoom_gesture.connect_cancel(
                 clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    appwindow.canvas().zoom_to(new_zoom.get());
                     bbcenter_begin.set(None);
+
+                    if appwindow.canvas().touch_drawing() {
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        appwindow.handle_surface_flags(surface_flags);
+                    }
+
+                    appwindow.canvas().update_engine_rendering();
+
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
 
             canvas_zoom_gesture.connect_end(
                 clone!(@strong new_zoom, @strong bbcenter_begin, @weak self as appwindow => move |canvas_zoom_gesture, _event_sequence| {
-                    appwindow.canvas().zoom_to(new_zoom.get());
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "zoom-to-value", Some(&new_zoom.get().to_variant()));
+
                     bbcenter_begin.set(None);
+
+                    if appwindow.canvas().touch_drawing() {
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        appwindow.handle_surface_flags(surface_flags);
+                    }
+
+                    appwindow.canvas().update_engine_rendering();
+
                     canvas_zoom_gesture.set_state(EventSequenceState::Denied);
                 }),
             );
         }
+    }
+
+    pub fn start_pulsing_canvas_progressbar(&self) {
+        const PROGRESS_BAR_PULSE_INTERVAL: std::time::Duration =
+            std::time::Duration::from_millis(300);
+
+        if let Some(old_pulse_source) = self.imp().progresspulse_source_id.replace(Some(glib::source::timeout_add_local(
+            PROGRESS_BAR_PULSE_INTERVAL,
+            clone!(@weak self as appwindow => @default-return glib::source::Continue(false), move || {
+                appwindow.canvas_progressbar().pulse();
+
+                glib::source::Continue(true)
+            })),
+        )) {
+            old_pulse_source.remove();
+        }
+    }
+
+    pub fn finish_canvas_progressbar(&self) {
+        const PROGRESS_BAR_TIMEOUT_TIME: std::time::Duration =
+            std::time::Duration::from_millis(300);
+
+        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
+            pulse_source.remove();
+        }
+
+        self.canvas_progressbar().set_fraction(1.0);
+
+        glib::source::timeout_add_local_once(
+            PROGRESS_BAR_TIMEOUT_TIME,
+            clone!(@weak self as appwindow => move || {
+                appwindow.canvas_progressbar().set_fraction(0.0);
+            }),
+        );
+    }
+
+    pub fn abort_canvas_progressbar(&self) {
+        if let Some(pulse_source) = self.imp().progresspulse_source_id.take() {
+            pulse_source.remove();
+        }
+
+        self.canvas_progressbar().set_fraction(0.0);
     }
 
     pub fn open_file_w_dialogs(&self, file: &gio::File, target_pos: Option<na::Vector2<f64>>) {
@@ -954,13 +1098,15 @@ impl RnoteAppWindow {
                 // Setting input file to hand it to the open overwrite dialog
                 app.set_input_file(Some(file.clone()));
 
-                if app.unsaved_changes() {
+                if self.unsaved_changes() {
                     dialogs::dialog_open_overwrite(self);
-                } else if let Err(e) = self.load_in_file(file, target_pos) {
-                    log::error!(
-                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
-                        e
-                    );
+                } else {
+                    if let Err(e) = self.load_in_file(file, target_pos) {
+                        log::error!(
+                            "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
+                            e
+                        );
+                    }
                 }
             }
             utils::FileType::VectorImageFile
@@ -975,393 +1121,398 @@ impl RnoteAppWindow {
                     self.workspacebrowser().set_primary_path(Some(&path));
                 }
             }
-            utils::FileType::UnknownFile => {
-                log::warn!("tried to open unsupported file type.");
+            utils::FileType::Unsupported => {
+                log::error!("tried to open unsupported file type.");
             }
         }
     }
 
-    /// Loads in a file of any supported type into the current sheet.
+    /// Loads in a file of any supported type into the engine.
     pub fn load_in_file(
         &self,
         file: &gio::File,
         target_pos: Option<na::Vector2<f64>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let main_cx = glib::MainContext::default();
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
         let file = file.clone();
 
         match utils::FileType::lookup_file_type(&file) {
             utils::FileType::RnoteFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
+                    appwindow.start_pulsing_canvas_progressbar();
+
                     let result = file.load_bytes_future().await;
+
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_rnote_bytes(file_bytes, file.path()) {
+                        if let Err(e) = appwindow.load_in_rnote_bytes(file_bytes.to_vec(), file.path()).await {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .rnote file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::XoppFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
+                    appwindow.start_pulsing_canvas_progressbar();
+
                     let result = file.load_bytes_future().await;
+
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes, file.path()) {
+                        if let Err(e) = appwindow.load_in_xopp_bytes(file_bytes.to_vec(), file.path()) {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening .xopp file failed.").to_variant()));
                             log::error!(
                                 "load_in_xopp_bytes() failed in load_in_file() with Err {}",
                                 e
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::VectorImageFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
+                    appwindow.start_pulsing_canvas_progressbar();
+
                     let result = file.load_bytes_future().await;
+
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes, target_pos) {
+                        if let Err(e) = appwindow.load_in_vectorimage_bytes(file_bytes.to_vec(), target_pos).await {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening vector image file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::BitmapImageFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
+                    appwindow.start_pulsing_canvas_progressbar();
+
                     let result = file.load_bytes_future().await;
+
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes, target_pos) {
+                        if let Err(e) = appwindow.load_in_bitmapimage_bytes(file_bytes.to_vec(), target_pos).await {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening bitmap image file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::PdfFile => {
-                main_cx.spawn_local(clone!(@weak self as appwindow => async move {
+                main_cx.spawn_local(clone!(@strong self as appwindow => async move {
+                    appwindow.start_pulsing_canvas_progressbar();
+
                     let result = file.load_bytes_future().await;
+
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes, target_pos) {
+                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos).await {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
                                 e
                             );
                         }
                     }
+
+                    appwindow.finish_canvas_progressbar();
                 }));
             }
             utils::FileType::Folder => {
-                log::warn!("tried to open folder as sheet.");
-            }
-            utils::FileType::UnknownFile => {
-                log::warn!("tried to open a unsupported file type.");
                 app.set_input_file(None);
+                log::error!("tried to open a folder as a file.");
+                adw::prelude::ActionGroupExt::activate_action(
+                    self,
+                    "error-toast",
+                    Some(&gettext("Error: Tried opening folder as file").to_variant()),
+                );
+            }
+            utils::FileType::Unsupported => {
+                app.set_input_file(None);
+                log::error!("tried to open a unsupported file type.");
+                adw::prelude::ActionGroupExt::activate_action(
+                    self,
+                    "error-toast",
+                    Some(&gettext("Failed to open file, is a unsupported file type.").to_variant()),
+                );
             }
         }
 
         Ok(())
     }
 
-    pub fn load_in_rnote_bytes<P>(
+    pub async fn load_in_rnote_bytes<P>(
         &self,
-        bytes: glib::Bytes,
+        bytes: Vec<u8>,
         path: Option<P>,
-    ) -> Result<(), anyhow::Error>
+    ) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
     {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
-        self.canvas()
-            .sheet()
-            .borrow_mut()
-            .open_sheet_from_rnote_bytes(bytes)?;
 
-        // Loading the sheet properties into the format settings panel
-        self.settings_panel().refresh_for_sheet(self);
+        let store_snapshot_receiver = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .open_from_rnote_bytes_p1(bytes)?;
+
+        let store_snapshot = store_snapshot_receiver.await??;
+
+        self.canvas()
+            .engine()
+            .borrow_mut()
+            .open_from_store_snapshot_p2(&store_snapshot)?;
 
         self.canvas().set_unsaved_changes(false);
         app.set_input_file(None);
         if let Some(path) = path {
             let file = gio::File::for_path(path);
-            app.set_output_file(Some(&file), self);
+            self.canvas().set_output_file(Some(file));
         }
 
         self.canvas().set_unsaved_changes(false);
         self.canvas().set_empty(false);
         self.canvas().return_to_origin_page();
-        self.canvas().regenerate_background(false);
-        self.canvas().regenerate_content(true, true);
 
-        self.canvas()
-            .selection_modifier()
-            .update_state(&self.canvas());
+        self.canvas().regenerate_background_pattern();
+        self.canvas().engine().borrow_mut().resize_autoexpand();
+        self.canvas().update_engine_rendering();
 
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
 
         Ok(())
     }
 
-    pub fn load_in_xopp_bytes<P>(
-        &self,
-        bytes: glib::Bytes,
-        _path: Option<P>,
-    ) -> Result<(), anyhow::Error>
+    pub fn load_in_xopp_bytes<P>(&self, bytes: Vec<u8>, _path: Option<P>) -> anyhow::Result<()>
     where
         P: AsRef<Path>,
     {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
         self.canvas()
-            .sheet()
+            .engine()
             .borrow_mut()
             .open_from_xopp_bytes(bytes)?;
 
-        // Loading the sheet properties into the format settings panel
-        self.settings_panel().refresh_for_sheet(self);
-
-        app.set_input_file(None);
-        app.set_output_file(None, self);
+        self.application()
+            .unwrap()
+            .downcast::<RnoteApp>()
+            .unwrap()
+            .set_input_file(None);
+        self.canvas().set_output_file(None);
 
         self.canvas().set_unsaved_changes(true);
         self.canvas().set_empty(false);
         self.canvas().return_to_origin_page();
-        self.canvas().regenerate_background(false);
-        self.canvas().regenerate_content(true, true);
 
-        self.canvas()
-            .selection_modifier()
-            .update_state(&self.canvas());
+        self.canvas().regenerate_background_pattern();
+        self.canvas().engine().borrow_mut().resize_autoexpand();
+        self.canvas().update_engine_rendering();
 
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
 
         Ok(())
     }
 
-    pub fn load_in_vectorimage_bytes(
+    pub async fn load_in_vectorimage_bytes(
         &self,
-        bytes: glib::Bytes,
+        bytes: Vec<u8>,
+        // In coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            self.canvas()
-                .transform_canvas_coords_to_sheet_coords(na::vector![
-                    VectorImage::OFFSET_X_DEFAULT,
-                    VectorImage::OFFSET_Y_DEFAULT
-                ])
+            (self.canvas().engine().borrow().camera.transform().inverse()
+                * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
+            .coords
         });
-        let all_strokes = self
+
+        // we need the split the import operation between generate_vectorimage_from_bytes() which returns a receiver and import_generated_strokes(),
+        // to avoid borrowing the entire engine refcell while awaiting the stroke
+        let vectorimage_receiver = self
             .canvas()
-            .sheet()
-            .borrow()
-            .strokes_state
-            .keys_sorted_chrono();
-        self.canvas()
-            .sheet()
+            .engine()
             .borrow_mut()
-            .strokes_state
-            .set_selected_keys(&all_strokes, false);
+            .generate_vectorimage_from_bytes(pos, bytes);
+        let vectorimage = vectorimage_receiver.await??;
 
-        self.canvas()
-            .sheet()
-            .borrow_mut()
-            .strokes_state
-            .insert_vectorimage_bytes_threaded(pos, bytes.to_vec(), self.canvas().renderer());
-
-        app.set_input_file(None);
-        self.canvas().set_unsaved_changes(true);
-        self.canvas().set_empty(false);
-
-        self.canvas()
-            .selection_modifier()
-            .update_state(&self.canvas());
-
-        self.canvas().queue_draw();
-
-        Ok(())
-    }
-
-    /// Target position is in the coordinate space of the sheet
-    pub fn load_in_bitmapimage_bytes(
-        &self,
-        bytes: glib::Bytes,
-        target_pos: Option<na::Vector2<f64>>,
-    ) -> Result<(), anyhow::Error> {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
-
-        let pos = target_pos.unwrap_or_else(|| {
-            self.canvas()
-                .transform_canvas_coords_to_sheet_coords(na::vector![
-                    BitmapImage::OFFSET_X_DEFAULT,
-                    BitmapImage::OFFSET_Y_DEFAULT
-                ])
-        });
-        let all_strokes = self
+        let surface_flags = self
             .canvas()
-            .sheet()
-            .borrow()
-            .strokes_state
-            .keys_sorted_chrono();
-        self.canvas()
-            .sheet()
+            .engine()
             .borrow_mut()
-            .strokes_state
-            .set_selected_keys(&all_strokes, false);
-
-        self.canvas()
-            .sheet()
-            .borrow_mut()
-            .strokes_state
-            .insert_bitmapimage_bytes_threaded(pos, bytes.to_vec());
+            .import_generated_strokes(vec![Stroke::VectorImage(vectorimage)]);
+        self.handle_surface_flags(surface_flags);
 
         app.set_input_file(None);
 
-        self.canvas().set_unsaved_changes(true);
-        self.canvas().set_empty(false);
+        Ok(())
+    }
+
+    /// Target position is in the coordinate space of the doc
+    pub async fn load_in_bitmapimage_bytes(
+        &self,
+        bytes: Vec<u8>,
+        // In the coordinate space of the doc
+        target_pos: Option<na::Vector2<f64>>,
+    ) -> anyhow::Result<()> {
+        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+
+        let pos = target_pos.unwrap_or_else(|| {
+            (self.canvas().engine().borrow().camera.transform().inverse()
+                * na::Point2::from(BitmapImage::IMPORT_OFFSET_DEFAULT))
+            .coords
+        });
+
+        let bitmapimage_receiver = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .generate_bitmapimage_from_bytes(pos, bytes);
+        let bitmapimage = bitmapimage_receiver.await??;
+
+        let surface_flags = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .import_generated_strokes(vec![Stroke::BitmapImage(bitmapimage)]);
+        self.handle_surface_flags(surface_flags);
+
+        app.set_input_file(None);
 
         Ok(())
     }
 
-    /// Target position is in the coordinate space of the sheet
-    pub fn load_in_pdf_bytes(
+    /// Target position is in the coordinate space of the doc
+    pub async fn load_in_pdf_bytes(
         &self,
-        bytes: glib::Bytes,
+        bytes: Vec<u8>,
+        // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
-    ) -> Result<(), anyhow::Error> {
+    ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         let pos = target_pos.unwrap_or_else(|| {
-            self.canvas()
-                .transform_canvas_coords_to_sheet_coords(na::vector![
-                    VectorImage::OFFSET_X_DEFAULT,
-                    VectorImage::OFFSET_Y_DEFAULT
-                ])
+            (self.canvas().engine().borrow().camera.transform().inverse()
+                * na::Point2::from(VectorImage::IMPORT_OFFSET_DEFAULT))
+            .coords
         });
-        let page_width = (f64::from(self.canvas().sheet().borrow().format.width)
-            * (self.canvas().pdf_import_width() / 100.0))
-            .round() as i32;
 
-        let all_strokes = self
+        let strokes_receiver = self
             .canvas()
-            .sheet()
-            .borrow()
-            .strokes_state
-            .keys_sorted_chrono();
-        self.canvas()
-            .sheet()
+            .engine()
             .borrow_mut()
-            .strokes_state
-            .set_selected_keys(&all_strokes, false);
+            .generate_strokes_from_pdf_bytes(pos, bytes);
+        let strokes = strokes_receiver.await??;
 
-        if self.canvas().pdf_import_as_vector() {
-            self.canvas()
-                .sheet()
-                .borrow_mut()
-                .strokes_state
-                .insert_pdf_bytes_as_vector_threaded(
-                    pos,
-                    Some(page_width),
-                    bytes.to_vec(),
-                    self.canvas().renderer(),
-                );
-        } else {
-            self.canvas()
-                .sheet()
-                .borrow_mut()
-                .strokes_state
-                .insert_pdf_bytes_as_bitmap_threaded(pos, Some(page_width), bytes.to_vec());
+        let surface_flags = self
+            .canvas()
+            .engine()
+            .borrow_mut()
+            .import_generated_strokes(strokes);
+        self.handle_surface_flags(surface_flags);
+
+        app.set_input_file(None);
+
+        Ok(())
+    }
+
+    pub async fn save_document_to_file(&self, file: &gio::File) -> anyhow::Result<()> {
+        if let Some(basename) = file.basename() {
+            let rnote_bytes_receiver = self
+                .canvas()
+                .engine()
+                .borrow()
+                .save_as_rnote_bytes(basename.to_string_lossy().to_string())?;
+
+            utils::replace_file_future(rnote_bytes_receiver.await??, file).await?;
+
+            self.canvas().set_output_file(Some(file.to_owned()));
+            self.canvas().set_unsaved_changes(false);
+        }
+        Ok(())
+    }
+
+    pub async fn export_doc_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
+        let svg_data = self.canvas().engine().borrow().export_doc_as_svg_string()?;
+
+        utils::replace_file_future(svg_data.into_bytes(), file).await?;
+
+        Ok(())
+    }
+
+    pub async fn export_selection_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
+        if let Some(selection_svg_data) = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_selection_as_svg_string()?
+        {
+            utils::replace_file_future(selection_svg_data.into_bytes(), file).await?;
         }
 
-        app.set_input_file(None);
+        Ok(())
+    }
 
-        self.canvas().set_unsaved_changes(true);
-        self.canvas().set_empty(false);
+    pub async fn export_doc_as_xopp(&self, file: &gio::File) -> anyhow::Result<()> {
+        if let Some(basename) = file.basename() {
+            let bytes = self
+                .canvas()
+                .engine()
+                .borrow()
+                .export_doc_as_xopp_bytes(&basename.to_string_lossy())?;
+
+            utils::replace_file_future(bytes, file).await?;
+        }
 
         Ok(())
     }
 
-    pub fn export_sheet_as_svg(&self, file: &gio::File) -> Result<(), anyhow::Error> {
-        let svg_data = self
-            .canvas()
-            .sheet()
-            .borrow()
-            .export_sheet_as_svg_string()?;
-
-        file.replace_async(
-            None,
-            false,
-            gio::FileCreateFlags::REPLACE_DESTINATION,
-            glib::PRIORITY_HIGH_IDLE,
-            None::<&gio::Cancellable>,
-            move |result| {
-                let output_stream = match result {
-                    Ok(output_stream) => output_stream,
-                    Err(e) => {
-                        log::error!(
-                            "replace_async() failed in export_sheet_as_svg() with Err {}",
-                            e
-                        );
-                        return;
-                    }
-                };
-
-                if let Err(e) = output_stream.write(svg_data.as_bytes(), None::<&gio::Cancellable>)
-                {
-                    log::error!(
-                        "output_stream().write() failed in export_sheet_as_svg() with Err {}",
-                        e
-                    );
-                };
-                if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                    log::error!(
-                        "output_stream().close() failed in export_sheet_as_svg() with Err {}",
-                        e
-                    );
-                };
-            },
-        );
-
-        Ok(())
-    }
-
-    pub async fn export_sheet_as_pdf(&self, file: &gio::File) -> Result<(), anyhow::Error> {
+    pub async fn export_doc_as_pdf(&self, file: &gio::File) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let pdf_data_receiver = self
                 .canvas()
-                .sheet()
+                .engine()
                 .borrow()
-                .export_sheet_as_pdf_bytes(basename.to_string_lossy().to_string());
-            let pdf_data = pdf_data_receiver.await?;
+                .export_doc_as_pdf_bytes(basename.to_string_lossy().to_string());
+            let bytes = pdf_data_receiver.await??;
 
-            let output_stream = file
-                .replace_future(
-                    None,
-                    false,
-                    gio::FileCreateFlags::REPLACE_DESTINATION,
-                    glib::PRIORITY_HIGH_IDLE,
-                )
-                .await?;
-
-            if let Err(e) = output_stream.write(&pdf_data, None::<&gio::Cancellable>) {
-                log::error!(
-                    "output_stream().write() failed in export_sheet_as_pdf() with Err {}",
-                    e
-                );
-            };
-            if let Err(e) = output_stream.close(None::<&gio::Cancellable>) {
-                log::error!(
-                    "output_stream().close() failed in export_sheet_as_pdf() with Err {}",
-                    e
-                );
-            };
+            utils::replace_file_future(bytes, file).await?;
         }
+
+        Ok(())
+    }
+
+    /// exports and writes the engine state as json into the file.
+    /// Only for debugging!
+    pub async fn export_engine_state(&self, file: &gio::File) -> anyhow::Result<()> {
+        let exported_engine_state = self.canvas().engine().borrow().export_state_as_json()?;
+
+        utils::replace_file_future(exported_engine_state.into_bytes(), file).await?;
+
+        Ok(())
+    }
+
+    /// exports and writes the engine config as json into the file.
+    /// Only for debugging!
+    pub async fn export_engine_config(&self, file: &gio::File) -> anyhow::Result<()> {
+        let exported_engine_config = self.canvas().engine().borrow().save_engine_config()?;
+
+        utils::replace_file_future(exported_engine_config.into_bytes(), file).await?;
 
         Ok(())
     }

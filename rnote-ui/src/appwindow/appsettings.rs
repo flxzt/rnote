@@ -2,11 +2,7 @@ use std::path::PathBuf;
 
 use crate::app::RnoteApp;
 use crate::appwindow::RnoteAppWindow;
-use crate::canvas::ExpandMode;
-use rnote_engine::compose::color::Color;
-use rnote_engine::pens::Pens;
-use rnote_engine::sheet::background::Background;
-use rnote_engine::sheet::format::Format;
+use rnote_compose::Color;
 
 use adw::prelude::*;
 use gtk4::gio;
@@ -61,67 +57,24 @@ impl RnoteAppWindow {
             })
             .build();
 
+        // autosave
+        self.app_settings()
+            .bind("autosave", self, "autosave")
+            .build();
+
+        // autosave interval secs
+        self.app_settings()
+            .bind("autosave-interval-secs", self, "autosave-interval-secs")
+            .build();
+
         // righthanded
         self.app_settings()
             .bind("righthanded", self, "righthanded")
             .build();
 
-        // pen sounds
-        self.app_settings()
-            .bind("pen-sounds", self, "pen-sounds")
-            .build();
-
         // touch drawing
         self.app_settings()
             .bind("touch-drawing", &self.canvas(), "touch-drawing")
-            .build();
-
-        // expand mode
-        self.app_settings()
-            .bind("expand-mode", &self.canvas(), "expand-mode")
-            .mapping(move |settings_value, _type_| {
-                let value = settings_value.get::<String>().unwrap();
-                match value.as_str() {
-                    "fixed-size" => Some(ExpandMode::FixedSize.to_value()),
-                    "endless-vertical" => Some(ExpandMode::EndlessVertical.to_value()),
-                    "infinite" => Some(ExpandMode::Infinite.to_value()),
-                    _ => {
-                        log::error!(
-                            "mapping expand-mode to setting failed, invalid str {}",
-                            value.as_str()
-                        );
-                        None
-                    }
-                }
-            })
-            .set_mapping(
-                move |value, _type_| match value.get::<ExpandMode>().unwrap() {
-                    ExpandMode::FixedSize => Some(String::from("fixed-size").to_variant()),
-                    ExpandMode::EndlessVertical => {
-                        Some(String::from("endless-vertical").to_variant())
-                    }
-                    ExpandMode::Infinite => Some(String::from("infinite").to_variant()),
-                },
-            )
-            .build();
-
-        // format borders
-        self.app_settings()
-            .bind("format-borders", &self.canvas(), "format-borders")
-            .build();
-
-        // pdf import width
-        self.app_settings()
-            .bind("pdf-import-width", &self.canvas(), "pdf-import-width")
-            .build();
-
-        // pdf import as vector image
-        self.app_settings()
-            .bind(
-                "pdf-import-as-vector",
-                &self.canvas(),
-                "pdf-import-as-vector",
-            )
             .build();
 
         // Brush page
@@ -148,30 +101,46 @@ impl RnoteAppWindow {
                 "selected",
             )
             .build();
-
-        // lock resize aspectratio
-        self.app_settings()
-            .bind(
-                "resize-lock-aspectratio",
-                &self.canvas().selection_modifier(),
-                "resize-lock-aspectratio",
-            )
-            .build();
     }
 
-    /// load settings that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
-    pub fn load_settings(&self) -> Result<(), anyhow::Error> {
+    /// load settings at start that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
+    pub fn load_settings(&self) {
         let _app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
         // appwindow
-        self.load_window_size();
+        {
+            let window_width = self.app_settings().int("window-width");
+            let window_height = self.app_settings().int("window-height");
+            let is_maximized = self.app_settings().boolean("is-maximized");
+
+            self.set_default_size(window_width, window_height);
+
+            if is_maximized {
+                self.maximize();
+            }
+
+            self.flap_box()
+                .set_width_request(self.app_settings().int("flap-width"));
+        }
 
         // colorscheme
         // Set the buttons, as the style manager colorscheme property may not be changed from the binding
         match self.app_settings().string("color-scheme").as_str() {
-            "default" => self.mainheader().appmenu().default_theme_toggle().set_active(true),
-            "force-light" => self.mainheader().appmenu().light_theme_toggle().set_active(true),
-            "force-dark" => self.mainheader().appmenu().dark_theme_toggle().set_active(true),
+            "default" => self
+                .mainheader()
+                .appmenu()
+                .default_theme_toggle()
+                .set_active(true),
+            "force-light" => self
+                .mainheader()
+                .appmenu()
+                .light_theme_toggle()
+                .set_active(true),
+            "force-dark" => self
+                .mainheader()
+                .appmenu()
+                .dark_theme_toggle()
+                .set_active(true),
             _ => {}
         }
 
@@ -218,40 +187,43 @@ impl RnoteAppWindow {
         }
 
         {
-            // Load format
-            if let Ok(loaded_format) =
-                serde_json::from_str::<Format>(self.app_settings().string("sheet-format").as_str())
+            // load engine config
+            let engine_config = self.app_settings().string("engine-config");
+            match self
+                .canvas()
+                .engine()
+                .borrow_mut()
+                .load_engine_config(&engine_config)
             {
-                self.canvas().sheet().borrow_mut().format = loaded_format;
-            }
-        }
-
-        {
-            // Load background
-            if let Ok(loaded_background) = serde_json::from_str::<Background>(
-                self.app_settings().string("sheet-background").as_str(),
-            ) {
-                self.canvas().sheet().borrow_mut().background = loaded_background;
-            }
-        }
-
-        {
-            // Load pens
-            if let Ok(loaded_pens) =
-                serde_json::from_str::<Pens>(self.app_settings().string("pens").as_str())
-            {
-                *self.canvas().pens().borrow_mut() = loaded_pens;
+                Err(e) => {
+                    // On first app startup the engine config is empty, so we don't log an error
+                    if engine_config.is_empty() {
+                        log::debug!("did not load `engine-config` from settings, was empty");
+                    } else {
+                        log::error!("failed to load `engine-config` from settings, Err {}", e);
+                    }
+                }
+                Ok(()) => {}
             }
         }
 
         // refresh the UI
-        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-sheet", None);
-        Ok(())
+        adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
     }
 
-    /// Save all state that is not bound in setup_settings
-    pub fn save_to_settings(&self) -> Result<(), anyhow::Error> {
-        self.save_window_size()?;
+    /// Save all settings at shutdown that are not bound in setup_settings
+    pub fn save_to_settings(&self) -> anyhow::Result<()> {
+        {
+            // Appwindow
+            self.app_settings().set_int("window-width", self.width())?;
+            self.app_settings()
+                .set_int("window-height", self.height())?;
+            self.app_settings()
+                .set_boolean("is-maximized", self.is_maximized())?;
+
+            self.app_settings()
+                .set_int("flap-width", self.flap_box().width())?;
+        }
 
         {
             // Brush page
@@ -261,7 +233,7 @@ impl RnoteAppWindow {
                 .colorpicker()
                 .fetch_all_colors()
                 .into_iter()
-                .map(|color| color.to_u32())
+                .map(|color| color.into())
                 .collect::<Vec<u32>>();
             let colors = (
                 colors[0], colors[1], colors[2], colors[3], colors[4], colors[5], colors[6],
@@ -279,7 +251,7 @@ impl RnoteAppWindow {
                 .stroke_colorpicker()
                 .fetch_all_colors()
                 .into_iter()
-                .map(|color| color.to_u32())
+                .map(|color| color.into())
                 .collect::<Vec<u32>>();
             let colors = (colors[0], colors[1]);
             self.app_settings()
@@ -292,33 +264,18 @@ impl RnoteAppWindow {
                 .fill_colorpicker()
                 .fetch_all_colors()
                 .into_iter()
-                .map(|color| color.to_u32())
+                .map(|color| color.into())
                 .collect::<Vec<u32>>();
             let fills = (fills[0], fills[1]);
             self.app_settings()
                 .set_value("shaperpage-fills", &fills.to_variant())?;
+        }
 
-            // Save format
-            let format_string = serde_json::to_string(&self.canvas().sheet().borrow().format)?;
+        {
+            // Save engine config
+            let engine_config = self.canvas().engine().borrow().save_engine_config()?;
             self.app_settings()
-                .set_string("sheet-format", format_string.as_str())?;
-
-            //println!("format:\n{}", format_string);
-
-            // Save background
-            let background_string =
-                serde_json::to_string(&self.canvas().sheet().borrow().background)?;
-            self.app_settings()
-                .set_string("sheet-background", background_string.as_str())?;
-
-            //println!("background:\n{}", background_string);
-
-            // Save pens
-            let pens_string = serde_json::to_string(&*self.canvas().pens().borrow())?;
-            self.app_settings()
-                .set_string("pens", pens_string.as_str())?;
-
-            //println!("pens:\n{}", pens_string);
+                .set_string("engine-config", engine_config.as_str())?;
         }
 
         Ok(())

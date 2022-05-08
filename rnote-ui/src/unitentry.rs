@@ -1,14 +1,13 @@
+use gtk4::{
+    glib, glib::clone, prelude::*, subclass::prelude::*, Adjustment, CompositeTemplate, DropDown,
+    SpinButton, Widget,
+};
+use once_cell::sync::Lazy;
+use rnote_engine::document::format;
+use std::cell::Cell;
+
 mod imp {
-    use std::cell::Cell;
-
-    use gtk4::{
-        glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, SpinButton, Widget,
-    };
-    use gtk4::{Adjustment, DropDown};
-    use once_cell::sync::Lazy;
-
-    use rnote_engine::sheet::format;
-
+    use super::*;
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/unitentry.ui")]
     pub struct UnitEntry {
@@ -212,11 +211,6 @@ mod imp {
     impl WidgetImpl for UnitEntry {}
 }
 
-use gtk4::Adjustment;
-use gtk4::{glib, prelude::*, subclass::prelude::*, DropDown, SpinButton};
-
-use rnote_engine::sheet::format;
-
 glib::wrapper! {
     pub struct UnitEntry(ObjectSubclass<imp::UnitEntry>)
         @extends gtk4::Widget,
@@ -236,15 +230,15 @@ impl UnitEntry {
     }
 
     pub fn value_adj(&self) -> Adjustment {
-        imp::UnitEntry::from_instance(self).value_adj.get()
+        self.imp().value_adj.get()
     }
 
     pub fn value_spinner(&self) -> SpinButton {
-        imp::UnitEntry::from_instance(self).value_spinner.get()
+        self.imp().value_spinner.get()
     }
 
     pub fn unit_dropdown(&self) -> DropDown {
-        imp::UnitEntry::from_instance(self).unit_dropdown.get()
+        self.imp().unit_dropdown.get()
     }
 
     pub fn value(&self) -> f64 {

@@ -7,10 +7,11 @@ edition = "2021"
 nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
 anyhow = "1.0"
 serde = {version = "1.0", features = ["derive"]}
+serde_json = { version="1.0" }
 flate2 = "1.0"
 roxmltree = "0.14.1"
 xmlwriter = "0.1.0"
+semver = { version = "1.0", features = ["serde"]}
 
 [dev-dependencies]
 pretty_env_logger = "0.4.0"
-serde_json = { version="1.0" }

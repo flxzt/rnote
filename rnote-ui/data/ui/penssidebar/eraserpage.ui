@@ -22,6 +22,53 @@
       </object>
     </child>
     <child>
+      <object class="GtkBox" id="eraserstyle_togglebox">
+        <property name="orientation">vertical</property>
+        <property name="homogeneous">true</property>
+        <property name="vexpand">false</property>
+        <style>
+          <class name="linked" />
+        </style>
+        <child>
+          <object class="GtkToggleButton" id="eraserstyle_trash_colliding_strokes_toggle">
+            <property name="tooltip_text" translatable="yes">Trash strokes</property>
+            <property name="vexpand">true</property>
+            <property name="active">true</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">pen-eraser-trash-colliding-strokes-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="eraserstyle_split_colliding_strokes_toggle">
+            <property name="group">eraserstyle_trash_colliding_strokes_toggle</property>
+            <property name="tooltip_text" translatable="yes">Split strokes</property>
+            <property name="vexpand">true</property>
+            <style>
+              <class name="sidebar_action_button" />
+            </style>
+            <child>
+              <object class="GtkImage">
+                <property name="icon_name">pen-eraser-split-colliding-strokes-symbolic</property>
+                <property name="icon-size">large</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
       <object class="GtkSpinButton" id="width_spinbutton">
         <property name="orientation">vertical</property>
         <property name="numeric">true</property>

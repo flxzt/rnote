@@ -1,14 +1,16 @@
-mod imp {
-    use std::cell::RefCell;
+use crate::RnoteAppWindow;
+use gettextrs::gettext;
+use gtk4::pango;
+use gtk4::{
+    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, Align, Button,
+    CompositeTemplate, DragSource, Entry, GestureClick, GestureLongPress, Grid, Image, Label,
+    MenuButton, Popover, PopoverMenu, PositionType, Widget,
+};
+use once_cell::sync::Lazy;
+use std::cell::RefCell;
 
-    use gtk4::{
-        gdk, Button, DragSource, Entry, GestureClick, GestureLongPress, Image, Label, MenuButton,
-        Orientation, Popover, PopoverMenu, PositionType,
-    };
-    use gtk4::{
-        gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Widget,
-    };
-    use once_cell::sync::Lazy;
+mod imp {
+    use super::*;
 
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/filerow.ui")]
@@ -69,8 +71,7 @@ mod imp {
             self.parent_constructed(obj);
             obj.set_widget_name("filerow");
 
-            Self::setup_controllers(obj);
-            Self::setup_actions(obj);
+            Self::setup_input(obj);
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -85,7 +86,6 @@ mod imp {
                     "current-file",
                     "current-file",
                     Option::<gio::File>::static_type(),
-                    // The property can be read and written to
                     glib::ParamFlags::READWRITE,
                 )]
             });
@@ -121,7 +121,7 @@ mod imp {
     impl WidgetImpl for FileRow {}
 
     impl FileRow {
-        fn setup_controllers(obj: &super::FileRow) {
+        fn setup_input(obj: &super::FileRow) {
             obj.add_controller(&obj.imp().drag_source);
 
             let rightclick_gesture = GestureClick::builder()
@@ -148,89 +148,8 @@ mod imp {
                 }),
             );
         }
-
-        fn setup_actions(obj: &super::FileRow) {
-            // Actions
-            obj.insert_action_group("filerow", Some(&obj.imp().action_group));
-
-            let action_trash_file = gio::SimpleAction::new("trash-file", None);
-            obj.imp().action_group.add_action(&action_trash_file);
-            let action_rename_file = gio::SimpleAction::new("rename-file", None);
-            obj.imp().action_group.add_action(&action_rename_file);
-
-            // Trash file
-            action_trash_file.connect_activate(clone!(@weak obj => move |_test, _| {
-                if let Some(current_file) = obj.current_file() {
-                    current_file.trash_async(glib::PRIORITY_DEFAULT, None::<&gio::Cancellable>, clone!(@weak obj => move |res| {
-                        if let Err(e) = res {
-                            log::error!("filerow trash file failed with Err {}", e);
-                        } else {
-                            obj.set_current_file(None);
-                        }
-                    }));
-                }
-            }));
-
-            // Rename file
-            action_rename_file.connect_activate(clone!(@weak obj => move |_test, _| {
-                if let Some(current_file) = obj.current_file() {
-                    if let Some(current_path) = current_file.path() {
-                        if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
-                            let current_name = current_path.file_name().map(|current_file_name| current_file_name.to_string_lossy().to_string()).unwrap_or(String::from(""));
-
-                            let rename_entry = Entry::builder()
-                                .text(current_name.as_str())
-                                .build();
-
-                            let rename_apply_button = Button::builder().label("Apply").build();
-                            rename_apply_button.style_context().add_class("suggested-action");
-
-                            let rename_box = gtk4::Box::builder().orientation(Orientation::Horizontal).margin_start(12).margin_end(12).margin_top(6).margin_bottom(6).build();
-                            rename_box.style_context().add_class("linked");
-                            rename_box.prepend(&rename_entry);
-                            rename_box.append(&rename_apply_button);
-
-                            let rename_popover = Popover::builder().autohide(true).has_arrow(true).position(PositionType::Bottom).build();
-                            rename_popover.set_child(Some(&rename_box));
-                            obj.menubutton_box().append(&rename_popover);
-
-                            let parent_path_1 = parent_path.clone();
-                            rename_entry.connect_text_notify(clone!(@weak rename_apply_button => move |rename_entry| {
-                                let new_file_path = parent_path_1.join(rename_entry.text().to_string());
-                                let new_file = gio::File::for_path(new_file_path);
-
-                                // Disable apply button to prevent overwrites when file already exists
-                                rename_apply_button.set_sensitive(!new_file.query_exists(None::<&gio::Cancellable>));
-                            }));
-
-
-                            rename_apply_button.connect_clicked(clone!(@weak rename_popover, @weak rename_entry => move |_| {
-                                let new_file_path = parent_path.join(rename_entry.text().to_string());
-                                let new_file = gio::File::for_path(new_file_path);
-
-                                if new_file.query_exists(None::<&gio::Cancellable>) {
-                                    // Should have been caught earlier, but making sure
-                                    log::error!("file already exists");
-                                } else {
-                                    if let Err(e) = current_file.move_(&new_file, gio::FileCopyFlags::NONE, None::<&gio::Cancellable>, None) {
-                                        log::error!("rename file failed with Err {}", e);
-                                    } else {
-                                        rename_popover.popdown();
-                                    }
-                                }
-                            }));
-
-                            rename_popover.popup();
-                        }
-                    }
-                }
-            }));
-        }
     }
 }
-
-use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
-use gtk4::{DragSource, Image, Label};
 
 glib::wrapper! {
     pub struct FileRow(ObjectSubclass<imp::FileRow>)
@@ -274,5 +193,109 @@ impl FileRow {
 
     pub fn menubutton_box(&self) -> gtk4::Box {
         self.imp().menubutton_box.get()
+    }
+
+    pub fn init(&self, appwindow: &RnoteAppWindow) {
+        self.setup_actions(appwindow);
+    }
+
+    fn setup_actions(&self, appwindow: &RnoteAppWindow) {
+        // Actions
+        self.insert_action_group("filerow", Some(&self.imp().action_group));
+
+        let action_open_file = gio::SimpleAction::new("open-file", None);
+        self.imp().action_group.add_action(&action_open_file);
+        let action_rename_file = gio::SimpleAction::new("rename-file", None);
+        self.imp().action_group.add_action(&action_rename_file);
+        let action_trash_file = gio::SimpleAction::new("trash-file", None);
+        self.imp().action_group.add_action(&action_trash_file);
+
+        // Open file
+        action_open_file.connect_activate(
+            clone!(@weak self as filerow, @weak appwindow => move |_action_open_file, _| {
+                    if let Some(current_file) = filerow.current_file() {
+                                if let Err(e) = appwindow.load_in_file(&current_file, None) {
+                                    log::error!("failed to load_in_file() from filerow, {}", e);
+                                }
+                    }
+            }),
+        );
+
+        // Rename file
+        action_rename_file.connect_activate(clone!(@weak self as filerow => move |_action_rename_file, _| {
+                if let Some(current_file) = filerow.current_file() {
+                    if let Some(current_path) = current_file.path() {
+                        if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
+                            let current_name = current_path.file_name().map(|current_file_name| current_file_name.to_string_lossy().to_string()).unwrap_or(String::from(""));
+
+                            let rename_entry = Entry::builder()
+                                .text(current_name.as_str())
+                                .build();
+
+                            let rename_cancel_button = Button::builder().halign(Align::Start).label(&gettext("Cancel")).build();
+
+                            let rename_apply_button = Button::builder().halign(Align::End).label(&gettext("Apply")).build();
+                            rename_apply_button.style_context().add_class("suggested-action");
+
+                            let rename_label = Label::builder().margin_bottom(12).halign(Align::Center).label(&gettext("Rename")).width_chars(24).ellipsize(pango::EllipsizeMode::End).build();
+                            rename_label.style_context().add_class("title-4");
+
+                            let rename_grid = Grid::builder().margin_top(6).margin_bottom(6).column_spacing(18).row_spacing(6).build();
+                            rename_grid.attach(&rename_label, 0, 0, 2, 1);
+                            rename_grid.attach(&rename_entry, 0, 1, 2, 1);
+                            rename_grid.attach(&rename_cancel_button, 0, 2, 1, 1);
+                            rename_grid.attach(&rename_apply_button, 1, 2, 1, 1);
+
+                            let rename_popover = Popover::builder().autohide(true).has_arrow(true).position(PositionType::Bottom).build();
+                            rename_popover.set_child(Some(&rename_grid));
+                            filerow.menubutton_box().append(&rename_popover);
+
+                            let parent_path_1 = parent_path.clone();
+                            rename_entry.connect_text_notify(clone!(@weak rename_apply_button => move |rename_entry| {
+                                let new_file_path = parent_path_1.join(rename_entry.text().to_string());
+                                let new_file = gio::File::for_path(new_file_path);
+
+                                // Disable apply button to prevent overwrites when file already exists
+                                rename_apply_button.set_sensitive(!new_file.query_exists(None::<&gio::Cancellable>));
+                            }));
+
+                            rename_cancel_button.connect_clicked(clone!(@weak rename_popover => move |_| {
+                                rename_popover.popdown();
+                            }));
+
+                            rename_apply_button.connect_clicked(clone!(@weak rename_popover, @weak rename_entry => move |_| {
+                                let new_file_path = parent_path.join(rename_entry.text().to_string());
+                                let new_file = gio::File::for_path(new_file_path);
+
+                                if new_file.query_exists(None::<&gio::Cancellable>) {
+                                    // Should have been caught earlier, but making sure
+                                    log::error!("file already exists");
+                                } else {
+                                    if let Err(e) = current_file.move_(&new_file, gio::FileCopyFlags::NONE, None::<&gio::Cancellable>, None) {
+                                        log::error!("rename file failed with Err {}", e);
+                                    }
+
+                                    rename_popover.popdown();
+                                }
+                            }));
+
+                            rename_popover.popup();
+                        }
+                    }
+                }
+            }));
+
+        // Trash file
+        action_trash_file.connect_activate(clone!(@weak self as filerow => move |_action_trash_file, _| {
+                if let Some(current_file) = filerow.current_file() {
+                    current_file.trash_async(glib::PRIORITY_DEFAULT, None::<&gio::Cancellable>, clone!(@weak filerow => move |res| {
+                        if let Err(e) = res {
+                            log::error!("filerow trash file failed with Err {}", e);
+                        } else {
+                            filerow.set_current_file(None);
+                        }
+                    }));
+                }
+            }));
     }
 }

@@ -216,12 +216,12 @@ impl Background {
             na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
         let tile_width = if tile_factor[0] > 1.0 {
-            tile_factor[0] * self.pattern_size[0]
+            tile_factor[0].floor() * self.pattern_size[0]
         } else {
             self.pattern_size[0]
         };
         let tile_height = if tile_factor[1] > 1.0 {
-            tile_factor[1] * self.pattern_size[1]
+            tile_factor[1].floor() * self.pattern_size[1]
         } else {
             self.pattern_size[1]
         };

@@ -201,11 +201,11 @@ msgstr "Infini"
 
 #: rnote-ui/data/ui/canvasmenu.ui:49
 msgid "Show format borders"
-msgstr "Afficher les formats de bordures"
+msgstr "Afficher les bordures du format"
 
 #: rnote-ui/data/ui/canvasmenu.ui:54
 msgid "Pen sounds"
-msgstr "Son du stylo"
+msgstr "Sons du stylo"
 
 #: rnote-ui/data/ui/canvasmenu.ui:59 rnote-ui/data/ui/dialogs.ui:103
 msgid "Clear document"
@@ -271,7 +271,7 @@ msgstr "Zoom avant"
 
 #: rnote-ui/data/ui/canvasmenu.ui:158
 msgid "Zoom to fit page width"
-msgstr "Ajuster à la largeur de la page"
+msgstr "Ajuster le zoom à la largeur de la page"
 
 #: rnote-ui/data/ui/colorpicker.ui:61
 msgid "Select"
@@ -340,7 +340,7 @@ msgstr "Renommer"
 
 #: rnote-ui/data/ui/filerow.ui:63
 msgid "Move into trash"
-msgstr "Déplacer à la corbeille"
+msgstr "Déplacer dans la corbeille"
 
 #: rnote-ui/data/ui/mainheader.ui:19
 msgid "Draft"
@@ -388,15 +388,15 @@ msgstr "Type d'image des PDF importés"
 msgid "Set wether PDFs should be imported as vector or bitmap images"
 msgstr ""
 "Défini si les PDF doivent être importés en tant qu'images vectorielles ou "
-"bitmap"
+"matricielles (bitmap)"
 
 #: rnote-ui/data/ui/settingspanel.ui:110
 msgid "Vector"
-msgstr "Vecteur"
+msgstr "Vectorielle"
 
 #: rnote-ui/data/ui/settingspanel.ui:117
 msgid "Bitmap"
-msgstr "Bitmap"
+msgstr "Matricielle"
 
 #: rnote-ui/data/ui/settingspanel.ui:126
 msgid "Format border color"
@@ -424,7 +424,7 @@ msgstr "Orientation"
 
 #: rnote-ui/data/ui/settingspanel.ui:165
 msgid "Set the format orientation"
-msgstr "Défini le format d'orientation"
+msgstr "Défini l'orientation du format"
 
 #: rnote-ui/data/ui/settingspanel.ui:177
 msgid "Portrait"
@@ -513,7 +513,7 @@ msgstr "Défini la hauteur du motif d'arrière-plan"
 
 #: rnote-ui/data/ui/settingspanel.ui:351
 msgid "Button Shortcuts"
-msgstr "Bouton raccourcis"
+msgstr "Raccourcis des boutons"
 
 #: rnote-ui/data/ui/settingspanel.ui:354
 msgid "Stylus primary button action"
@@ -541,7 +541,7 @@ msgstr "Défini l'action du bouton effacer du stylet"
 
 #: rnote-ui/data/ui/settingspanel.ui:390
 msgid "Mouse secondary button action"
-msgstr "Action du bouton secondaire (droit) de la souris"
+msgstr "Action du bouton secondaire de la souris"
 
 #: rnote-ui/data/ui/settingspanel.ui:391
 msgid "Set the action for the secondary mouse button"
@@ -610,32 +610,32 @@ msgstr "Nouveau document"
 #: rnote-ui/data/ui/shortcuts.ui:90
 msgctxt "shortcut window"
 msgid "Open document"
-msgstr "Ouvrir document"
+msgstr "Ouvrir un document"
 
 #: rnote-ui/data/ui/shortcuts.ui:96
 msgctxt "shortcut window"
 msgid "Save document"
-msgstr "Enregistrer document"
+msgstr "Enregistrer le document"
 
 #: rnote-ui/data/ui/shortcuts.ui:102
 msgctxt "shortcut window"
 msgid "Save document as"
-msgstr "Enregistrer document sous"
+msgstr "Enregistrer le document sous"
 
 #: rnote-ui/data/ui/shortcuts.ui:108
 msgctxt "shortcut window"
 msgid "Clear document"
-msgstr "Effacer document"
+msgstr "Effacer le document"
 
 #: rnote-ui/data/ui/shortcuts.ui:114
 msgctxt "shortcut window"
 msgid "Print document"
-msgstr "Imprimer document"
+msgstr "Imprimer le document"
 
 #: rnote-ui/data/ui/shortcuts.ui:120
 msgctxt "shortcut window"
 msgid "Import file"
-msgstr "Importer fichier"
+msgstr "Importer un fichier"
 
 #: rnote-ui/data/ui/shortcuts.ui:126
 msgctxt "shortcut window"
@@ -688,11 +688,11 @@ msgstr "Changer d'espace de travail"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
-msgstr "Style de pinceau"
+msgstr "Style du pinceau"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:57
 msgid "Brush styles"
-msgstr "Styles de pinceaux"
+msgstr "Styles du pinceau"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:75
 msgid "Marker"
@@ -733,11 +733,11 @@ msgstr "Les rayons de chaque point dans le trait texturé"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:211
 msgid "Distribution"
-msgstr "Loi de probabilité"
+msgstr "Distribution"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:212
 msgid "Choose a dots position probability distribution"
-msgstr "Choisir une loi de probabilité pour la position des points"
+msgstr "Choisir une distribution de probabilité pour la position des points"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:216
 msgid "Uniform"
@@ -797,7 +797,7 @@ msgstr "Style de forme"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:57
 msgid "Shaper styles"
-msgstr "Style de formes"
+msgstr "Styles de formes"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:75
 msgid "Smooth"

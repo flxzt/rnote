@@ -1,41 +1,41 @@
-use gtk4::{prelude::*, gdk, glib, graphene, gsk, Snapshot};
+use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use piet::RenderContext;
 use serde::{Deserialize, Serialize};
 
 use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::{Color, color};
+use rnote_compose::{color, Color};
 
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::Camera;
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
-#[repr(u32)]
-#[enum_type(name = "PredefinedFormat")]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "predefined_format")]
 pub enum PredefinedFormat {
-    #[enum_value(name = "A6", nick = "a6")]
     #[serde(rename = "a6")]
     A6 = 0,
-    #[enum_value(name = "A5", nick = "a5")]
     #[serde(rename = "a5")]
     A5,
-    #[enum_value(name = "A4", nick = "a4")]
     #[serde(rename = "a4")]
     A4,
-    #[enum_value(name = "A3", nick = "a3")]
     #[serde(rename = "a3")]
     A3,
-    #[enum_value(name = "A2", nick = "a2")]
     #[serde(rename = "a2")]
     A2,
-    #[enum_value(name = "US Letter", nick = "us-letter")]
     #[serde(rename = "us_letter")]
     UsLetter,
-    #[enum_value(name = "US Legal", nick = "us-legal")]
     #[serde(rename = "us_legal")]
     UsLegal,
-    #[enum_value(name = "Custom", nick = "custom")]
     #[serde(rename = "custom")]
     Custom,
 }
@@ -43,6 +43,32 @@ pub enum PredefinedFormat {
 impl Default for PredefinedFormat {
     fn default() -> Self {
         Self::A3
+    }
+}
+
+impl TryFrom<u32> for PredefinedFormat {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
+            "PredefinedFormat try_from::<u32>() for value {} failed",
+            value
+        ))
+    }
+}
+
+impl PredefinedFormat {
+    pub fn size_portrait_mm(&self) -> Option<(f64, f64)> {
+        match self {
+            PredefinedFormat::A6 => Some((105.0, 148.0)),
+            PredefinedFormat::A5 => Some((148.0, 210.0)),
+            PredefinedFormat::A4 => Some((210.0, 297.0)),
+            PredefinedFormat::A3 => Some((297.0, 420.0)),
+            PredefinedFormat::A2 => Some((420.0, 594.0)),
+            PredefinedFormat::UsLetter => Some((215.9, 279.4)),
+            PredefinedFormat::UsLegal => Some((215.9, 355.6)),
+            PredefinedFormat::Custom => None,
+        }
     }
 }
 

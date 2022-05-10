@@ -7,7 +7,6 @@ use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use rnote_engine::pens::penholder::PenStyle;
 use rnote_engine::{
     document::format::MeasureUnit,
-    document::{background::PatternStyle, format::PredefinedFormat},
 };
 
 use crate::{
@@ -62,9 +61,7 @@ mod imp {
             PenStyle::static_type();
             WorkspaceBrowser::static_type();
             FileRow::static_type();
-            PredefinedFormat::static_type();
             MeasureUnit::static_type();
-            PatternStyle::static_type();
             UnitEntry::static_type();
             PenShortcutRow::static_type();
 

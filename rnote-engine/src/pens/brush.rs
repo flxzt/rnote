@@ -4,6 +4,7 @@ use crate::strokes::Stroke;
 use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use rnote_compose::builders::Constraint;
 use rnote_compose::builders::ConstraintRatio;
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
@@ -105,7 +106,7 @@ impl PenBehaviour for Brush {
                     ));
                     let current_stroke_key = store.insert_stroke(brushstroke);
 
-                    let path_builder = PenPathBuilder::start(element, ConstraintRatio::Disabled);
+                    let path_builder = PenPathBuilder::start(element);
 
                     if let Err(e) = store.regenerate_rendering_for_stroke(
                         current_stroke_key,
@@ -161,7 +162,7 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event) {
+                match path_builder.handle_event(pen_event, Constraint::default()) {
                     BuilderProgress::InProgress => {
                         surface_flags.redraw = true;
 

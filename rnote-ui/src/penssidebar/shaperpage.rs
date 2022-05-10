@@ -1,5 +1,4 @@
 use crate::{appwindow::RnoteAppWindow, colorpicker::ColorPicker};
-use adw::traits::ComboRowExt;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
     MenuButton, Popover, SpinButton, Switch,

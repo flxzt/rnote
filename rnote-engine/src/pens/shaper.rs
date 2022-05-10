@@ -10,7 +10,7 @@ use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use rnote_compose::builders::{ConstraintRatio, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
+use rnote_compose::builders::{Constraint, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{
     EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
@@ -43,47 +43,6 @@ enum ShaperState {
     },
 }
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize, glib::Enum)]
-#[enum_type(name = "ShaperConstraintRatio")]
-#[serde(rename = "shaper_constraint_ratio")]
-pub enum ShaperConstraintRatio {
-    #[enum_value(name = "Disabled", nick = "disabled")]
-    #[serde(rename = "disabled")]
-    Disabled,
-    #[enum_value(name = "1:1", nick = "one_to_one")]
-    #[serde(rename = "one_to_one")]
-    OneToOne,
-    #[enum_value(name = "3:2", nick = "three_to_two")]
-    #[serde(rename = "three_to_two")]
-    ThreeToTwo,
-    #[enum_value(name = "Golden ratio", nick = "golden")]
-    #[serde(rename = "golden")]
-    Golden,
-}
-
-impl From<glib::GString> for ShaperConstraintRatio {
-    fn from(nick: glib::GString) -> Self {
-        match nick.to_string().as_str() {
-            "disabled" => ShaperConstraintRatio::Disabled,
-            "one_to_one" => ShaperConstraintRatio::OneToOne,
-            "three_to_two" => ShaperConstraintRatio::ThreeToTwo,
-            "golden" => ShaperConstraintRatio::Golden,
-            _ => unreachable!(),
-        }
-    }
-}
-
-impl From<ShaperConstraintRatio> for ConstraintRatio {
-    fn from(r: ShaperConstraintRatio) -> Self {
-        match r {
-            ShaperConstraintRatio::Disabled => ConstraintRatio::Disabled,
-            ShaperConstraintRatio::OneToOne => ConstraintRatio::OneToOne,
-            ShaperConstraintRatio::ThreeToTwo => ConstraintRatio::ThreeToTwo,
-            ShaperConstraintRatio::Golden => ConstraintRatio::Golden,
-        }
-    }
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "shaper")]
 pub struct Shaper {
@@ -97,7 +56,7 @@ pub struct Shaper {
     pub rough_options: RoughOptions,
 
     #[serde(skip)]
-    pub ratio: ShaperConstraintRatio,
+    pub constraint: Constraint,
     #[serde(skip)]
     state: ShaperState,
 }
@@ -109,7 +68,7 @@ impl Default for Shaper {
             style: ShaperStyle::default(),
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
-            ratio: ShaperConstraintRatio::Disabled,
+            constraint: Constraint::default(),
             state: ShaperState::Idle,
         }
     }
@@ -137,35 +96,32 @@ impl PenBehaviour for Shaper {
                 match self.builder_type {
                     ShapeBuilderType::Line => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(LineBuilder::start(element, self.ratio.into())),
+                            builder: Box::new(LineBuilder::start(element)),
                         }
                     }
                     ShapeBuilderType::Rectangle => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(RectangleBuilder::start(element, self.ratio.into())),
+                            builder: Box::new(RectangleBuilder::start(element)),
                         }
                     }
                     ShapeBuilderType::Ellipse => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(EllipseBuilder::start(element, self.ratio.into())),
+                            builder: Box::new(EllipseBuilder::start(element)),
                         }
                     }
                     ShapeBuilderType::FociEllipse => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(FociEllipseBuilder::start(
-                                element,
-                                self.ratio.into(),
-                            )),
+                            builder: Box::new(FociEllipseBuilder::start(element)),
                         }
                     }
                     ShapeBuilderType::QuadBez => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(QuadBezBuilder::start(element, self.ratio.into())),
+                            builder: Box::new(QuadBezBuilder::start(element)),
                         }
                     }
                     ShapeBuilderType::CubBez => {
                         self.state = ShaperState::BuildShape {
-                            builder: Box::new(CubBezBuilder::start(element, self.ratio.into())),
+                            builder: Box::new(CubBezBuilder::start(element)),
                         }
                     }
                 }
@@ -181,64 +137,66 @@ impl PenBehaviour for Shaper {
                 surface_flags.redraw = true;
                 PenProgress::Finished
             }
-            (ShaperState::BuildShape { builder }, event) => match builder.handle_event(event) {
-                BuilderProgress::InProgress => {
-                    surface_flags.redraw = true;
+            (ShaperState::BuildShape { builder }, event) => {
+                match builder.handle_event(event, self.constraint.clone()) {
+                    BuilderProgress::InProgress => {
+                        surface_flags.redraw = true;
 
-                    PenProgress::InProgress
-                }
-                BuilderProgress::EmitContinue(shapes) => {
-                    let drawstyle = self.gen_style_for_current_options();
-
-                    for shape in shapes {
-                        let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
-                            shape,
-                            drawstyle.clone(),
-                        )));
-                        if let Err(e) = store.regenerate_rendering_for_stroke(
-                            key,
-                            camera.viewport(),
-                            camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
-                        }
+                        PenProgress::InProgress
                     }
+                    BuilderProgress::EmitContinue(shapes) => {
+                        let drawstyle = self.gen_style_for_current_options();
 
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.sheet_changed = true;
+                        for shape in shapes {
+                            let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
+                                shape,
+                                drawstyle.clone(),
+                            )));
+                            if let Err(e) = store.regenerate_rendering_for_stroke(
+                                key,
+                                camera.viewport(),
+                                camera.image_scale(),
+                            ) {
+                                log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
+                            }
+                        }
 
-                    PenProgress::InProgress
-                }
-                BuilderProgress::Finished(shapes) => {
-                    let drawstyle = self.gen_style_for_current_options();
-
-                    if !shapes.is_empty() {
+                        surface_flags.redraw = true;
                         surface_flags.resize = true;
                         surface_flags.sheet_changed = true;
-                    }
 
-                    for shape in shapes {
-                        let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
-                            shape,
-                            drawstyle.clone(),
-                        )));
-                        if let Err(e) = store.regenerate_rendering_for_stroke(
-                            key,
-                            camera.viewport(),
-                            camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err {}", e);
+                        PenProgress::InProgress
+                    }
+                    BuilderProgress::Finished(shapes) => {
+                        let drawstyle = self.gen_style_for_current_options();
+
+                        if !shapes.is_empty() {
+                            surface_flags.resize = true;
+                            surface_flags.sheet_changed = true;
                         }
+
+                        for shape in shapes {
+                            let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
+                                shape,
+                                drawstyle.clone(),
+                            )));
+                            if let Err(e) = store.regenerate_rendering_for_stroke(
+                                key,
+                                camera.viewport(),
+                                camera.image_scale(),
+                            ) {
+                                log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err {}", e);
+                            }
+                        }
+
+                        self.state = ShaperState::Idle;
+
+                        surface_flags.redraw = true;
+
+                        PenProgress::Finished
                     }
-
-                    self.state = ShaperState::Idle;
-
-                    surface_flags.redraw = true;
-
-                    PenProgress::Finished
                 }
-            },
+            }
         };
 
         (pen_progress, surface_flags)

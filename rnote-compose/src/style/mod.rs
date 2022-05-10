@@ -201,3 +201,44 @@ impl Composer<Style> for Shape {
         }
     }
 }
+
+/// The pressure profile used by some styles
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+#[serde(rename = "pressure_profile")]
+pub enum PressureProfile {
+    /// Constant
+    #[serde(rename = "const")]
+    Const = 0,
+    /// Linear curve applied to the width
+    #[serde(rename = "linear")]
+    Linear,
+    /// Sqrt curve applied to the width
+    #[serde(rename = "sqrt")]
+    Sqrt,
+    /// Cbrt curve applied to the width
+    #[serde(rename = "cbrt")]
+    Cbrt,
+}
+
+impl PressureProfile {
+    /// Expects pressure to be between range 0.0 to 1.0
+    pub fn apply(&self, width: f64, pressure: f64) -> f64 {
+        match self {
+            Self::Const => width,
+            Self::Linear => width * pressure,
+            Self::Sqrt => width * (pressure.sqrt()),
+            Self::Cbrt => width * (pressure.cbrt()),
+        }
+    }
+}
+
+impl TryFrom<u32> for PressureProfile {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
+            "PressureProfile try_from::<u32>() for value {} failed",
+            value
+        ))
+    }
+}

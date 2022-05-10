@@ -1,23 +1,24 @@
 use crate::Color;
+use crate::style::PressureProfile;
 
 use serde::{Deserialize, Serialize};
 
+/// Options for shapes that can be drawn smoothly (plain)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "smooth_options")]
-/// Options for shapes that can be drawn smoothly (plain)
 pub struct SmoothOptions {
-    #[serde(rename = "stroke_width")]
     /// The stroke width
+    #[serde(rename = "stroke_width")]
     pub stroke_width: f64,
-    #[serde(rename = "stroke_color")]
     /// The stroke color
+    #[serde(rename = "stroke_color")]
     pub stroke_color: Option<Color>,
-    #[serde(rename = "fill_color")]
     /// The fill color
+    #[serde(rename = "fill_color")]
     pub fill_color: Option<Color>,
-    #[serde(rename = "segment_constant_width")]
-    /// True if segments should have a constant width ( ignoring pen pressures )
-    pub segment_constant_width: bool,
+    /// Pressure profile
+    #[serde(rename = "pressure_profile")]
+    pub pressure_profile: PressureProfile,
 }
 
 impl Default for SmoothOptions {
@@ -26,7 +27,7 @@ impl Default for SmoothOptions {
             stroke_width: Self::WIDTH_DEFAULT,
             stroke_color: Some(Color::BLACK),
             fill_color: None,
-            segment_constant_width: false,
+            pressure_profile: PressureProfile::Cbrt,
         }
     }
 }

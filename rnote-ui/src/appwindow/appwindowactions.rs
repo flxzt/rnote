@@ -5,6 +5,7 @@ use crate::{
     {dialogs, RnoteCanvas},
 };
 use rnote_compose::builders::ShapeBuilderType;
+use rnote_engine::document::Layout;
 use rnote_engine::pens::brush::BrushStyle;
 use rnote_engine::pens::eraser::EraserStyle;
 use rnote_engine::pens::penholder::{PenHolderEvent, PenStyle};
@@ -12,7 +13,6 @@ use rnote_engine::pens::selector::SelectorType;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::tools::ToolsStyle;
 use rnote_engine::pens::{brush, selector, shaper, tools};
-use rnote_engine::document::Layout;
 use rnote_engine::{render, Camera};
 
 use gettextrs::gettext;
@@ -810,6 +810,7 @@ impl RnoteAppWindow {
                 }
 
                 // Brush
+                appwindow.penssidebar().brush_page().set_solidstyle_pressure_profile(brush.smooth_options.pressure_profile);
                 appwindow.penssidebar().brush_page().texturedstyle_density_spinbutton()
                     .set_value(brush.textured_options.density);
                 appwindow.penssidebar().brush_page().texturedstyle_radius_x_spinbutton()
@@ -1225,11 +1226,9 @@ impl RnoteAppWindow {
         }));
 
         // Export document as Xopp
-        action_export_doc_as_xopp.connect_activate(
-            clone!(@weak self as appwindow => move |_,_| {
-                dialogs::dialog_export_doc_as_xopp(&appwindow);
-            }),
-        );
+        action_export_doc_as_xopp.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            dialogs::dialog_export_doc_as_xopp(&appwindow);
+        }));
 
         // Clipboard copy selection
         action_clipboard_copy_selection.connect_activate(clone!(@weak self as appwindow => move |_, _| {

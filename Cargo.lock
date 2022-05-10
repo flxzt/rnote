@@ -2926,6 +2926,8 @@ dependencies = [
  "kurbo",
  "log",
  "nalgebra 0.30.1",
+ "num-derive",
+ "num-traits",
  "parry2d-f64",
  "piet",
  "piet-cairo",

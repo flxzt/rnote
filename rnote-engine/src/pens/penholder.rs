@@ -9,7 +9,6 @@ use piet::RenderContext;
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 
 use gtk4::{glib, glib::prelude::*};
-use num_derive::FromPrimitive;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
@@ -28,7 +27,7 @@ use super::{AudioPlayer, Brush, Eraser, PenBehaviour, Selector, Shaper, Shortcut
     PartialOrd,
     Ord,
     Hash,
-    FromPrimitive,
+    num_derive::FromPrimitive,
 )]
 #[repr(u32)]
 #[enum_type(name = "PenStyle")]
@@ -36,7 +35,7 @@ use super::{AudioPlayer, Brush, Eraser, PenBehaviour, Selector, Shaper, Shortcut
 pub enum PenStyle {
     #[enum_value(name = "Brush", nick = "brush")]
     #[serde(rename = "brush")]
-    Brush,
+    Brush = 0,
     #[enum_value(name = "Shaper", nick = "shaper")]
     #[serde(rename = "shaper")]
     Shaper,

@@ -142,6 +142,28 @@
             </object>
           </child>
           <child>
+            <!-- Solid options -->
+            <object class="AdwPreferencesGroup">
+              <property name="title" translatable="yes">Solid style</property>
+              <child>
+                <object class="AdwComboRow" id="solidstyle_pressure_profiles_row">
+                  <property name="title" translatable="yes">Pressure profiles</property>
+                  <property name="subtitle" translatable="yes">Choose a pressure profile</property>
+                  <property name="model">
+                    <object class="GtkStringList">
+                      <items>
+                        <item translatable="yes">Constant</item>
+                        <item translatable="yes">Linear</item>
+                        <item translatable="yes">Square Root</item>
+                        <item translatable="yes">Cubic root</item>
+                      </items>
+                    </object>
+                  </property>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
             <!-- Textured options -->
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Textured style</property>
@@ -208,7 +230,7 @@
               </child>
               <child>
                 <object class="AdwComboRow" id="texturedstyle_distribution_row">
-                  <property name="title" translatable="yes">Distribution</property>
+                  <property name="title" translatable="yes">Stroke dots position distribution</property>
                   <property name="subtitle" translatable="yes">Choose a dots position probability distribution</property>
                   <property name="model">
                     <object class="GtkStringList">

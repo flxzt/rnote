@@ -19,8 +19,6 @@ use crate::{
 };
 
 mod imp {
-    use rnote_engine::pens::shaper::ShaperConstraintRatio;
-
     use super::*;
     #[allow(missing_debug_implementations)]
     pub struct RnoteApp {
@@ -69,7 +67,6 @@ mod imp {
             PatternStyle::static_type();
             UnitEntry::static_type();
             PenShortcutRow::static_type();
-            ShaperConstraintRatio::static_type();
 
             // Load the resources
             app.set_resource_base_path(Some(config::APP_IDPATH));

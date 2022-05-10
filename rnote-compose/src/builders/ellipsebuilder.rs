@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style, Transform};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{ConstraintRatio, ShapeBuilderBehaviour};
+use super::{Constraint, ConstraintRatio, ShapeBuilderBehaviour};
 
 /// line builder
 #[derive(Debug, Clone)]
@@ -18,21 +18,23 @@ pub struct EllipseBuilder {
     /// the current position
     pub current: na::Vector2<f64>,
 
-    ratio: ConstraintRatio,
+    constraint: Constraint,
 }
 
 impl ShapeBuilderCreator for EllipseBuilder {
-    fn start(element: Element, ratio: ConstraintRatio) -> Self {
+    fn start(element: Element) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
-            ratio,
+            constraint: Constraint::default(),
         }
     }
 }
 
 impl ShapeBuilderBehaviour for EllipseBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
+        self.constraint = constraint;
+
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = element.pos;
@@ -68,7 +70,7 @@ impl EllipseBuilder {
     /// The current state as rectangle
     pub fn state_as_ellipse(&self) -> Ellipse {
         let transform = Transform::new_w_isometry(na::Isometry2::new(self.start, 0.0));
-        let radii = self.ratio.constrain(self.current - self.start).abs();
+        let radii = self.constraint.constrain(self.current - self.start).abs();
 
         Ellipse { radii, transform }
     }

@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{ConstraintRatio, ShapeBuilderBehaviour};
+use super::{Constraint, ConstraintRatio, ShapeBuilderBehaviour};
 
 /// line builder
 #[derive(Debug, Clone)]
@@ -18,21 +18,23 @@ pub struct LineBuilder {
     /// the current position
     pub current: na::Vector2<f64>,
 
-    ratio: ConstraintRatio,
+    constraint: Constraint,
 }
 
 impl ShapeBuilderCreator for LineBuilder {
-    fn start(element: Element, ratio: ConstraintRatio) -> Self {
+    fn start(element: Element) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
-            ratio,
+            constraint: Constraint::default(),
         }
     }
 }
 
 impl ShapeBuilderBehaviour for LineBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
+        self.constraint = constraint;
+
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = element.pos;
@@ -69,7 +71,7 @@ impl LineBuilder {
     pub fn state_as_line(&self) -> Line {
         Line {
             start: self.start,
-            end: self.ratio.constrain(self.current - self.start) + self.start,
+            end: self.constraint.constrain(self.current - self.start) + self.start,
         }
     }
 }

@@ -255,17 +255,64 @@
                 <class name="medium" />
               </style>
               <child>
-                <object class="AdwComboRow" id="constraint_ratio_combo">
-                  <property name="title" translatable="yes">Ratio</property>
+                <object class="AdwActionRow">
+                  <property name="title" translatable="yes">Enabled</property>
                   <property name="subtitle" translatable="yes">Hold Ctrl to enable this on keyboard</property>
-                  <property name="model">
-                    <object class="AdwEnumListModel">
-                      <property name="enum-type">ShaperConstraintRatio</property>
+                  <child type="suffix">
+                    <object class="GtkSwitch" id="constraint_enabled_switch">
+                      <property name="valign">center</property>
                     </object>
-                  </property>
-                  <property name="expression">
-                    <lookup type="AdwEnumListItem" name="name" />
-                  </property>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow">
+                  <property name="title" translatable="yes">1:1</property>
+                  <child type="suffix">
+                    <object class="GtkSwitch" id="constraint_one_to_one_switch">
+                      <property name="valign">center</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow">
+                  <property name="title" translatable="yes">3:2</property>
+                  <child type="suffix">
+                    <object class="GtkSwitch" id="constraint_three_to_two_switch">
+                      <property name="valign">center</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow">
+                  <property name="title" translatable="yes">Golden ratio</property>
+                  <child type="suffix">
+                    <object class="GtkSwitch" id="constraint_golden_switch">
+                      <property name="valign">center</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow">
+                  <property name="title" translatable="yes">Horizontal</property>
+                  <child type="suffix">
+                    <object class="GtkSwitch" id="constraint_horizontal_switch">
+                      <property name="valign">center</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="AdwActionRow">
+                  <property name="title" translatable="yes">Vertical</property>
+                  <child type="suffix">
+                    <object class="GtkSwitch" id="constraint_vertical_switch">
+                      <property name="valign">center</property>
+                    </object>
+                  </child>
                 </object>
               </child>
             </object>

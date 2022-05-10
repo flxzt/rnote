@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{ConstraintRatio, ShapeBuilderBehaviour};
+use super::{Constraint, ConstraintRatio, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state
@@ -52,7 +52,7 @@ pub struct CubBezBuilder {
 }
 
 impl ShapeBuilderCreator for CubBezBuilder {
-    fn start(element: Element, ratio: ConstraintRatio) -> Self {
+    fn start(element: Element) -> Self {
         Self {
             state: CubBezBuilderState::Start(element.pos),
         }
@@ -60,7 +60,7 @@ impl ShapeBuilderCreator for CubBezBuilder {
 }
 
 impl ShapeBuilderBehaviour for CubBezBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {

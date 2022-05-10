@@ -4,6 +4,7 @@ use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
     MenuButton, Popover, SpinButton, Switch,
 };
+use rnote_compose::builders::ConstraintRatio;
 use rnote_compose::style::rough::RoughOptions;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::utils::GdkRGBAHelpers;
@@ -49,8 +50,6 @@ mod imp {
         #[template_child]
         pub shapebuildertype_listbox: TemplateChild<ListBox>,
         #[template_child]
-        pub constraint_ratio_combo: TemplateChild<adw::ComboRow>,
-        #[template_child]
         pub shapebuildertype_line_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub shapebuildertype_rectangle_row: TemplateChild<adw::ActionRow>,
@@ -62,6 +61,18 @@ mod imp {
         pub shapebuildertype_quadbez_row: TemplateChild<adw::ActionRow>,
         #[template_child]
         pub shapebuildertype_cubbez_row: TemplateChild<adw::ActionRow>,
+        #[template_child]
+        pub constraint_enabled_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub constraint_one_to_one_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub constraint_three_to_two_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub constraint_golden_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub constraint_horizontal_switch: TemplateChild<Switch>,
+        #[template_child]
+        pub constraint_vertical_switch: TemplateChild<Switch>,
     }
 
     #[glib::object_subclass]
@@ -209,10 +220,6 @@ impl ShaperPage {
         self.imp().shapebuildertype_cubbez_row.get()
     }
 
-    pub fn constraint_ratio_combo(&self) -> adw::ComboRow {
-        self.imp().constraint_ratio_combo.get()
-    }
-
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         // Width
         self.width_spinbutton().set_increments(0.1, 2.0);
@@ -347,17 +354,60 @@ impl ShaperPage {
         );
 
         // Constraints
-        self.constraint_ratio_combo().connect_selected_item_notify(
-            clone!(@weak appwindow => move |combo| {
-                let nick = combo
-                    .selected_item()
-                    .unwrap()
-                    .downcast::<adw::EnumListItem>()
-                    .unwrap()
-                    .nick();
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.ratio = nick.into();
-            }),
-        );
+        self.imp()
+            .constraint_enabled_switch
+            .get()
+            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.enabled = switch.state();
+            }));
+
+        self.imp()
+            .constraint_one_to_one_switch
+            .get()
+            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::OneToOne, switch.state());
+            }));
+
+        self.imp()
+            .constraint_three_to_two_switch
+            .get()
+            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::ThreeToTwo, switch.state());
+            }));
+
+        self.imp()
+            .constraint_golden_switch
+            .get()
+            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::Golden, switch.state());
+            }));
+
+        self.imp()
+            .constraint_horizontal_switch
+            .get()
+            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::Horizontal, switch.state());
+            }));
+
+        self.imp()
+            .constraint_vertical_switch
+            .get()
+            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::Vertical, switch.state());
+            }));
+
+        //self.constraint_ratio_combo().connect_selected_item_notify(
+        //    clone!(@weak appwindow => move |combo| {
+        //        let ratio = match combo.selected() {
+        //            0 => ConstraintRatio::Disabled,
+        //            1 => ConstraintRatio::OneToOne,
+        //            2 => ConstraintRatio::ThreeToTwo,
+        //            3 => ConstraintRatio::Golden,
+        //            _ => unreachable!()
+        //        }
+        //        appwindow.canvas().engine().borrow_mut().penholder.shaper.ratio = ratio;
+        //    }),
+        //);
 
         // shape builder type
         self.shapebuildertype_listbox().connect_row_selected(

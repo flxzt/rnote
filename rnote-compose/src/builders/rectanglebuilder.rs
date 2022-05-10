@@ -9,7 +9,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style, Transform};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{ConstraintRatio, ShapeBuilderBehaviour};
+use super::{Constraint, ShapeBuilderBehaviour};
 
 /// rect builder
 #[derive(Debug, Clone)]
@@ -19,21 +19,23 @@ pub struct RectangleBuilder {
     /// the current position
     pub current: na::Vector2<f64>,
 
-    ratio: ConstraintRatio,
+    constraint: Constraint,
 }
 
 impl ShapeBuilderCreator for RectangleBuilder {
-    fn start(element: Element, ratio: ConstraintRatio) -> Self {
+    fn start(element: Element) -> Self {
         Self {
             start: element.pos,
             current: element.pos,
-            ratio,
+            constraint: Constraint::default(),
         }
     }
 }
 
 impl ShapeBuilderBehaviour for RectangleBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
+        self.constraint = constraint;
+
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = element.pos;
@@ -68,7 +70,7 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
 impl RectangleBuilder {
     /// The current state as rectangle
     pub fn state_as_rect(&self) -> Rectangle {
-        let relative_extents = self.ratio.constrain(self.current - self.start);
+        let relative_extents = self.constraint.constrain(self.current - self.start);
         let current = relative_extents + self.start;
 
         let center = (self.start + current) / 2.0;

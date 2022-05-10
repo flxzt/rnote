@@ -10,7 +10,7 @@ use crate::style::Composer;
 use crate::{PenPath, Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{ConstraintRatio, ShapeBuilderBehaviour};
+use super::{Constraint, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum PenPathBuilderState {
@@ -27,7 +27,7 @@ pub struct PenPathBuilder {
 }
 
 impl ShapeBuilderCreator for PenPathBuilder {
-    fn start(element: Element, ratio: ConstraintRatio) -> Self {
+    fn start(element: Element) -> Self {
         let mut buffer = VecDeque::new();
         buffer.push_back(element);
 
@@ -39,7 +39,7 @@ impl ShapeBuilderCreator for PenPathBuilder {
 }
 
 impl ShapeBuilderBehaviour for PenPathBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, _constraint: Constraint) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,

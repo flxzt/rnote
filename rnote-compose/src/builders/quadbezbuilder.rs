@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{ConstraintRatio, ShapeBuilderBehaviour};
+use super::{Constraint, ConstraintRatio, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state
@@ -41,7 +41,7 @@ pub struct QuadBezBuilder {
 }
 
 impl ShapeBuilderCreator for QuadBezBuilder {
-    fn start(element: Element, ratio: ConstraintRatio) -> Self {
+    fn start(element: Element) -> Self {
         Self {
             state: QuadBezBuilderState::Start(element.pos),
         }
@@ -49,7 +49,7 @@ impl ShapeBuilderCreator for QuadBezBuilder {
 }
 
 impl ShapeBuilderBehaviour for QuadBezBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {

@@ -192,7 +192,7 @@ impl Composer<SmoothOptions> for Segment {
                 Segment::Dot { element } => {
                     let radii = na::Vector2::from_element(
                         options
-                            .pressure_profile
+                            .pressure_curve
                             .apply(options.stroke_width * 0.5, element.pressure),
                     );
 
@@ -202,10 +202,10 @@ impl Composer<SmoothOptions> for Segment {
                 Segment::Line { start, end } => {
                     let (width_start, width_end) = (
                         options
-                            .pressure_profile
+                            .pressure_curve
                             .apply(options.stroke_width, start.pressure),
                         options
-                            .pressure_profile
+                            .pressure_curve
                             .apply(options.stroke_width, end.pressure),
                     );
 
@@ -220,10 +220,10 @@ impl Composer<SmoothOptions> for Segment {
                 Segment::QuadBez { start, cp, end } => {
                     let (width_start, width_end) = (
                         options
-                            .pressure_profile
+                            .pressure_curve
                             .apply(options.stroke_width, start.pressure),
                         options
-                            .pressure_profile
+                            .pressure_curve
                             .apply(options.stroke_width, end.pressure),
                     );
 
@@ -269,10 +269,10 @@ impl Composer<SmoothOptions> for Segment {
                 } => {
                     let (width_start, width_end) = (
                         options
-                            .pressure_profile
+                            .pressure_curve
                             .apply(options.stroke_width, start.pressure),
                         options
-                            .pressure_profile
+                            .pressure_curve
                             .apply(options.stroke_width, end.pressure),
                     );
 

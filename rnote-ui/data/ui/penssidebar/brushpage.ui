@@ -146,16 +146,18 @@
             <object class="AdwPreferencesGroup">
               <property name="title" translatable="yes">Solid style</property>
               <child>
-                <object class="AdwComboRow" id="solidstyle_pressure_profiles_row">
-                  <property name="title" translatable="yes">Pressure profiles</property>
-                  <property name="subtitle" translatable="yes">Choose a pressure profile</property>
+                <object class="AdwComboRow" id="solidstyle_pressure_curves_row">
+                  <property name="title" translatable="yes">Pressure curves</property>
+                  <property name="subtitle" translatable="yes">Choose a pressure curve</property>
                   <property name="model">
                     <object class="GtkStringList">
                       <items>
                         <item translatable="yes">Constant</item>
                         <item translatable="yes">Linear</item>
-                        <item translatable="yes">Square Root</item>
+                        <item translatable="yes">Square root</item>
                         <item translatable="yes">Cubic root</item>
+                        <item translatable="yes">Quadratic Parabola</item>
+                        <item translatable="yes">Cubic Parabola</item>
                       </items>
                     </object>
                   </property>
@@ -189,39 +191,53 @@
                   <property name="subtitle" translatable="yes">The radii of the individual dots in the textured stroke</property>
                   <child type="suffix">
                     <object class="GtkBox">
-                      <property name="orientation">horizontal</property>
+                      <property name="orientation">vertical</property>
+                      <property name="margin-top">6</property>
+                      <property name="margin-bottom">6</property>
+                      <property name="spacing">6</property>
+                      <property name="halign">end</property>
                       <child>
-                        <object class="GtkLabel">
-                          <property name="label">X:</property>
-                          <property name="margin-start">6</property>
-                          <property name="margin-end">6</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkSpinButton" id="texturedstyle_radius_x_spinbutton">
-                          <property name="valign">center</property>
-                          <property name="margin_start">12</property>
+                        <object class="GtkBox">
                           <property name="orientation">horizontal</property>
-                          <property name="numeric">true</property>
-                          <property name="digits">1</property>
-                          <property name="climb-rate">0.5</property>
+                          <property name="halign">end</property>
+                          <child>
+                            <object class="GtkLabel">
+                              <property name="label">X:</property>
+                              <property name="margin-start">6</property>
+                              <property name="margin-end">6</property>
+                            </object>
+                          </child>
+                          <child>
+                            <object class="GtkSpinButton" id="texturedstyle_radius_x_spinbutton">
+                              <property name="valign">center</property>
+                              <property name="orientation">horizontal</property>
+                              <property name="numeric">true</property>
+                              <property name="digits">1</property>
+                              <property name="climb-rate">0.5</property>
+                            </object>
+                          </child>
                         </object>
                       </child>
                       <child>
-                        <object class="GtkLabel">
-                          <property name="label">Y:</property>
-                          <property name="margin-start">6</property>
-                          <property name="margin-end">6</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkSpinButton" id="texturedstyle_radius_y_spinbutton">
-                          <property name="valign">center</property>
-                          <property name="margin_start">12</property>
+                        <object class="GtkBox">
                           <property name="orientation">horizontal</property>
-                          <property name="numeric">true</property>
-                          <property name="digits">1</property>
-                          <property name="climb-rate">0.5</property>
+                          <property name="halign">end</property>
+                          <child>
+                            <object class="GtkLabel">
+                              <property name="label">Y:</property>
+                              <property name="margin-start">6</property>
+                              <property name="margin-end">6</property>
+                            </object>
+                          </child>
+                          <child>
+                            <object class="GtkSpinButton" id="texturedstyle_radius_y_spinbutton">
+                              <property name="valign">center</property>
+                              <property name="orientation">horizontal</property>
+                              <property name="numeric">true</property>
+                              <property name="digits">1</property>
+                              <property name="climb-rate">0.5</property>
+                            </object>
+                          </child>
                         </object>
                       </child>
                     </object>

@@ -5,7 +5,7 @@ use gtk4::{
 };
 use num_traits::cast::ToPrimitive;
 
-use rnote_compose::style::PressureProfile;
+use rnote_compose::style::PressureCurve;
 use rnote_engine::pens::Brush;
 
 use crate::{appwindow::RnoteAppWindow, ColorPicker};
@@ -40,7 +40,7 @@ mod imp {
         #[template_child]
         pub brushconfig_popover: TemplateChild<Popover>,
         #[template_child]
-        pub solidstyle_pressure_profiles_row: TemplateChild<adw::ComboRow>,
+        pub solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -153,16 +153,16 @@ impl BrushPage {
         self.imp().texturedstyle_radius_y_spinbutton.clone()
     }
 
-    pub fn solidstyle_pressure_profile(&self) -> PressureProfile {
-        PressureProfile::try_from(self.imp().solidstyle_pressure_profiles_row.get().selected())
+    pub fn solidstyle_pressure_curve(&self) -> PressureCurve {
+        PressureCurve::try_from(self.imp().solidstyle_pressure_curves_row.get().selected())
             .unwrap()
     }
 
-    pub fn set_solidstyle_pressure_profile(&self, pressure_profile: PressureProfile) {
-        let position = pressure_profile.to_u32().unwrap();
+    pub fn set_solidstyle_pressure_curve(&self, pressure_curve: PressureCurve) {
+        let position = pressure_curve.to_u32().unwrap();
 
         self.imp()
-            .solidstyle_pressure_profiles_row
+            .solidstyle_pressure_curves_row
             .get()
             .set_selected(position);
     }
@@ -240,9 +240,9 @@ impl BrushPage {
         );
 
         // Solid style
-        // Pressure profile
-        self.imp().solidstyle_pressure_profiles_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_profiles_row| {
-            appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.pressure_profile = brushpage.solidstyle_pressure_profile();
+        // Pressure curve
+        self.imp().solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
+            appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.pressure_curve = brushpage.solidstyle_pressure_curve();
         }));
 
         // Textured style

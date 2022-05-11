@@ -810,7 +810,7 @@ impl RnoteAppWindow {
                 }
 
                 // Brush
-                appwindow.penssidebar().brush_page().set_solidstyle_pressure_profile(brush.smooth_options.pressure_profile);
+                appwindow.penssidebar().brush_page().set_solidstyle_pressure_curve(brush.smooth_options.pressure_curve);
                 appwindow.penssidebar().brush_page().texturedstyle_density_spinbutton()
                     .set_value(brush.textured_options.density);
                 appwindow.penssidebar().brush_page().texturedstyle_radius_x_spinbutton()

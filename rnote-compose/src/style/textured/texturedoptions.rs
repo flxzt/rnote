@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::Color;
-use crate::style::PressureProfile;
+use crate::style::PressureCurve;
 
 use super::textureddotsdistribution::TexturedDotsDistribution;
 
@@ -28,9 +28,9 @@ pub struct TexturedOptions {
     /// the distribution type
     #[serde(rename = "distribution")]
     pub distribution: TexturedDotsDistribution,
-    /// Pressure profile
-    #[serde(rename = "pressure_profile")]
-    pub pressure_profile: PressureProfile,
+    /// Pressure curve
+    #[serde(rename = "pressure_curve")]
+    pub pressure_curve: PressureCurve,
 }
 
 impl Default for TexturedOptions {
@@ -42,7 +42,7 @@ impl Default for TexturedOptions {
             stroke_color: Some(Color::BLACK),
             radii: Self::RADII_DEFAULT,
             distribution: TexturedDotsDistribution::default(),
-            pressure_profile: PressureProfile::Cbrt,
+            pressure_curve: PressureCurve::Cbrt,
         }
     }
 }

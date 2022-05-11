@@ -202,37 +202,47 @@ impl Composer<Style> for Shape {
     }
 }
 
-/// The pressure profile used by some styles
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive)]
-#[serde(rename = "pressure_profile")]
-pub enum PressureProfile {
+/// The pressure curve used by some styles
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
+#[serde(rename = "pressure_curve")]
+pub enum PressureCurve {
     /// Constant
     #[serde(rename = "const")]
     Const = 0,
-    /// Linear curve applied to the width
+    /// Linear pressure
     #[serde(rename = "linear")]
     Linear,
-    /// Sqrt curve applied to the width
+    /// Sqrt
     #[serde(rename = "sqrt")]
     Sqrt,
-    /// Cbrt curve applied to the width
+    /// Cbrt
     #[serde(rename = "cbrt")]
     Cbrt,
+    /// pow(2)
+    #[serde(rename = "pow2")]
+    Pow2,
+    /// pow(3)
+    #[serde(rename = "pow3")]
+    Pow3,
 }
 
-impl PressureProfile {
+impl PressureCurve {
     /// Expects pressure to be between range 0.0 to 1.0
     pub fn apply(&self, width: f64, pressure: f64) -> f64 {
         match self {
             Self::Const => width,
             Self::Linear => width * pressure,
-            Self::Sqrt => width * (pressure.sqrt()),
-            Self::Cbrt => width * (pressure.cbrt()),
+            Self::Sqrt => width * pressure.sqrt(),
+            Self::Cbrt => width * pressure.cbrt(),
+            Self::Pow2 => width * pressure.powi(2),
+            Self::Pow3 => width * pressure.powi(3),
         }
     }
 }
 
-impl TryFrom<u32> for PressureProfile {
+impl TryFrom<u32> for PressureCurve {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {

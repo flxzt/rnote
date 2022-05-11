@@ -1,5 +1,5 @@
 use crate::Color;
-use crate::style::PressureProfile;
+use crate::style::PressureCurve;
 
 use serde::{Deserialize, Serialize};
 
@@ -16,9 +16,9 @@ pub struct SmoothOptions {
     /// The fill color
     #[serde(rename = "fill_color")]
     pub fill_color: Option<Color>,
-    /// Pressure profile
-    #[serde(rename = "pressure_profile")]
-    pub pressure_profile: PressureProfile,
+    /// Pressure curve
+    #[serde(rename = "pressure_curve")]
+    pub pressure_curve: PressureCurve,
 }
 
 impl Default for SmoothOptions {
@@ -27,7 +27,7 @@ impl Default for SmoothOptions {
             stroke_width: Self::WIDTH_DEFAULT,
             stroke_color: Some(Color::BLACK),
             fill_color: None,
-            pressure_profile: PressureProfile::Cbrt,
+            pressure_curve: PressureCurve::Cbrt,
         }
     }
 }

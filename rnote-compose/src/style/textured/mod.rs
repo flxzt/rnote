@@ -114,7 +114,7 @@ impl Composer<TexturedOptions> for Segment {
                 let mut options = options.clone();
                 // Line width with the mean of the start and end pressure
                 options.stroke_width = options
-                    .pressure_profile
+                    .pressure_curve
                     .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
 
                 line.draw_composed(cx, &options);
@@ -128,7 +128,7 @@ impl Composer<TexturedOptions> for Segment {
                 let mut options = options.clone();
                 // Line width with the mean of the start and end pressure
                 options.stroke_width = options
-                    .pressure_profile
+                    .pressure_curve
                     .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
 
                 line.draw_composed(cx, &options);
@@ -147,7 +147,7 @@ impl Composer<TexturedOptions> for Segment {
                 let mut options = options.clone();
                 // Line width with the mean of the start and end pressure
                 options.stroke_width = options
-                    .pressure_profile
+                    .pressure_curve
                     .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
 
                 line.draw_composed(cx, &options);

@@ -8,7 +8,7 @@ use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuild
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
-use rnote_compose::style::PressureProfile;
+use rnote_compose::style::PressureCurve;
 use rnote_compose::{Shape, Style};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -318,7 +318,7 @@ impl Brush {
         match &self.style {
             BrushStyle::Marker => {
                 let mut options = self.smooth_options.clone();
-                options.pressure_profile = PressureProfile::Const;
+                options.pressure_curve = PressureCurve::Const;
 
                 Style::Smooth(options)
             }

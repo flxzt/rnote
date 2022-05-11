@@ -148,9 +148,9 @@ impl RnoteAppWindow {
         let action_clipboard_copy_selection =
             gio::SimpleAction::new("clipboard-copy-selection", None);
         self.add_action(&action_clipboard_copy_selection);
-        let action_clipboard_paste_selection =
-            gio::SimpleAction::new("clipboard-paste-selection", None);
-        self.add_action(&action_clipboard_paste_selection);
+        let action_clipboard_paste =
+            gio::SimpleAction::new("clipboard-paste", None);
+        self.add_action(&action_clipboard_paste);
         let action_pen_override = gio::SimpleAction::new(
             "pen-style-override",
             Some(&glib::VariantType::new("s").unwrap()),
@@ -1249,34 +1249,45 @@ impl RnoteAppWindow {
     }));
 
         // Clipboard paste as selection
-        action_clipboard_paste_selection.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-        let clipboard = appwindow.clipboard();
-            for mime_type in clipboard.formats().mime_types() {
-                    match mime_type.as_str() {
-                        "image/svg+xml" => {
-                            appwindow.clipboard().read_text_async(None::<&gio::Cancellable>, clone!(@weak appwindow => move |text_res| {
-                                match text_res {
-                                    Ok(Some(text)) => {
-                                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                                            if let Err(e) = appwindow.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
-                                                log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err, {}", e);
-                                            };
-                                        }));
-                                    }
-                                    Ok(None) => {}
-                                    Err(e) => {
-                                        log::error!("failed to paste clipboard as vector image, read_text_async() returned Err, {}", e);
+        action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let content_formats = appwindow.clipboard().formats();
 
-                                    }
-                                }
-                            }));
-                            break;
+            if content_formats.contain_mime_type("image/svg+xml") {
+                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                    match appwindow.clipboard().read_text_future().await {
+                        Ok(Some(text)) => {
+                                if let Err(e) = appwindow.load_in_vectorimage_bytes(text.as_bytes().to_vec(), None).await {
+                                    log::error!("failed to paste clipboard as vector image, load_in_vectorimage_bytes() returned Err, {}", e);
+                                };
                         }
-                        "image/png" | "image/jpeg" => {}
-                        _ => {}
+                        Ok(None) => {}
+                        Err(e) => {
+                            log::error!("failed to paste clipboard as vector image, read_text() failed with Err {}", e);
+
+                        }
                     }
+                }));
+            } else if content_formats.contain_mime_type("text/uri-list") {
+                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                    match appwindow.clipboard().read_text_future().await {
+                        Ok(Some(text)) => {
+                            let path = std::path::Path::new(text.as_str());
+
+                            if path.exists() {
+                                appwindow.open_file_w_dialogs(&gio::File::for_path(&path), None);
+                            }
+                        }
+                        Ok(None) => {}
+                        Err(e) => {
+                            log::error!("failed to paste clipboard from path, read_text() failed with Err {}", e);
+
+                        }
+                    }
+                }));
+            } else {
+                log::debug!("failed to paste clipboard as vector image, unsupported mime-type");
             }
-    }));
+        }));
     }
 
     pub fn setup_action_accels(&self) {
@@ -1303,7 +1314,7 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.selection-select-all", &["<Ctrl>a"]);
         app.set_accels_for_action("win.selection-deselect-all", &["<Ctrl><Shift>a"]);
         app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
-        app.set_accels_for_action("win.clipboard-paste-selection", &["<Ctrl>v"]);
+        app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
 
         // shortcuts for devel builds
         if config::PROFILE.to_lowercase().as_str() == "devel" {

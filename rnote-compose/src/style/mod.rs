@@ -228,6 +228,12 @@ pub enum PressureCurve {
     Pow3,
 }
 
+impl Default for PressureCurve {
+    fn default() -> Self {
+        Self::Linear
+    }
+}
+
 impl PressureCurve {
     /// Expects pressure to be between range 0.0 to 1.0
     pub fn apply(&self, width: f64, pressure: f64) -> f64 {

@@ -27,7 +27,7 @@ impl Default for SmoothOptions {
             stroke_width: Self::WIDTH_DEFAULT,
             stroke_color: Some(Color::BLACK),
             fill_color: None,
-            pressure_curve: PressureCurve::Cbrt,
+            pressure_curve: PressureCurve::default(),
         }
     }
 }

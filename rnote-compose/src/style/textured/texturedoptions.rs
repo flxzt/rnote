@@ -42,7 +42,7 @@ impl Default for TexturedOptions {
             stroke_color: Some(Color::BLACK),
             radii: Self::RADII_DEFAULT,
             distribution: TexturedDotsDistribution::default(),
-            pressure_curve: PressureCurve::Cbrt,
+            pressure_curve: PressureCurve::default(),
         }
     }
 }

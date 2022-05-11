@@ -147,7 +147,7 @@
               <property name="title" translatable="yes">Solid style</property>
               <child>
                 <object class="AdwComboRow" id="solidstyle_pressure_curves_row">
-                  <property name="title" translatable="yes">Pressure curves</property>
+                  <property name="title" translatable="yes">Pressure curve</property>
                   <property name="subtitle" translatable="yes">Choose a pressure curve</property>
                   <property name="model">
                     <object class="GtkStringList">

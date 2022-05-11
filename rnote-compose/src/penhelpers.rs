@@ -6,25 +6,25 @@ use serde::{Deserialize, Serialize};
 /// As a result, multiple down events are emitted if the pen is pressed down and drawing. This should be handled accordingly by the state machines which receives the events.
 #[derive(Debug, Clone)]
 pub enum PenEvent {
-    /// A pen down event. Is repeatetly emitted while the pen is pressed and moved
+    /// A pen down event. Is repeatedly emitted while the pen is pressed and moved
     Down {
         /// The element for the down event
         element: Element,
-        /// wether a shortcut key is pressed during the down event
+        /// whether a shortcut key is pressed during the down event
         shortcut_keys: Vec<ShortcutKey>,
     },
     /// A pen up event.
     Up {
         /// The element for the down event
         element: Element,
-        /// wether a shortcut key is pressed during the up event
+        /// whether a shortcut key is pressed during the up event
         shortcut_keys: Vec<ShortcutKey>,
     },
-    /// A pen down event. Is repeatetly emitted while the pen is in proximity and moved
+    /// A pen down event. Is repeatedly emitted while the pen is in proximity and moved
     Proximity {
         /// The element for the proximity event
         element: Element,
-        /// wether a shortcut key is pressed during the proximity event
+        /// whether a shortcut key is pressed during the proximity event
         shortcut_keys: Vec<ShortcutKey>,
     },
     /// event when the pen vanishes unexpected. should reset all pending actions and state

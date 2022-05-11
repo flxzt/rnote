@@ -71,7 +71,7 @@ impl StrokeBehaviour for VectorImage {
     ) -> Result<GeneratedStrokeImages, anyhow::Error> {
         let bounds = self.bounds();
 
-        // Always generate full stroke images for vectorimages, as they are too expensive to be repeatetly rendered
+        // Always generate full stroke images for vectorimages, as they are too expensive to be repeatedly rendered
         Ok(GeneratedStrokeImages::Full(vec![
             render::Image::gen_with_piet(
                 |piet_cx| self.draw(piet_cx, image_scale),

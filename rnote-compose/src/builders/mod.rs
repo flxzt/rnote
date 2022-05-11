@@ -93,34 +93,44 @@ impl Constraint {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub enum ConstraintRatio {
+    /// Horizontal axis
     Horizontal,
+    /// Vertical axis
     Vertical,
+    /// 1:1 (enables drawing circles, squares, etc.)
     OneToOne,
+    /// 3:2
     ThreeToTwo,
+    /// Golden ratio
     Golden,
 }
 
 impl ConstraintRatio {
     pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
-        let max = pos.max();
         let dx = *pos.index((0, 0));
         let dy = *pos.index((1, 0));
         match self {
             ConstraintRatio::Horizontal => na::vector![dx, 0.0],
             ConstraintRatio::Vertical => na::vector![0.0, dy],
-            ConstraintRatio::OneToOne => na::vector![max, max],
-            ConstraintRatio::ThreeToTwo => {
-                if dx > dy {
-                    na::vector![dx, dx / 1.5]
+            ConstraintRatio::OneToOne => {
+                if dx.abs() > dy.abs() {
+                    na::vector![dx, dx.abs() * dy.signum()]
                 } else {
-                    na::vector![dy / 1.5, dy]
+                    na::vector![dy.abs() * dx.signum(), dy]
+                }
+            }
+            ConstraintRatio::ThreeToTwo => {
+                if dx.abs() > dy.abs() {
+                    na::vector![dx, (dx / 1.5).abs() * dy.signum()]
+                } else {
+                    na::vector![(dy / 1.5).abs() * dx.signum(), dy]
                 }
             }
             ConstraintRatio::Golden => {
-                if dx > dy {
-                    na::vector![dx, dx / 1.618]
+                if dx.abs() > dy.abs() {
+                    na::vector![dx, (dx / 1.618).abs() * dy.signum()]
                 } else {
-                    na::vector![dy / 1.618, dy]
+                    na::vector![(dy / 1.618) * dx.signum(), dy]
                 }
             }
         }

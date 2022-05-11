@@ -9,7 +9,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraint, ConstraintRatio, ShapeBuilderBehaviour};
+use super::{Constraint, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state

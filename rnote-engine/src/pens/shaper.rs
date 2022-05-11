@@ -14,7 +14,7 @@ use rnote_compose::builders::{Constraint, CubBezBuilder, QuadBezBuilder, ShapeBu
 use rnote_compose::builders::{
     EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
-use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::Style;
@@ -138,7 +138,21 @@ impl PenBehaviour for Shaper {
                 PenProgress::Finished
             }
             (ShaperState::BuildShape { builder }, event) => {
-                match builder.handle_event(event, self.constraint.clone()) {
+                // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
+                let mut constraint = self.constraint.clone();
+                constraint.enabled = match event {
+                    PenEvent::Down {
+                        ref shortcut_keys, ..
+                    } => constraint.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
+                    PenEvent::Up {
+                        ref shortcut_keys, ..
+                    } => constraint.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
+                    PenEvent::Proximity {
+                        ref shortcut_keys, ..
+                    } => constraint.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
+                    PenEvent::Cancel => false,
+                };
+                match builder.handle_event(event, constraint) {
                     BuilderProgress::InProgress => {
                         surface_flags.redraw = true;
 
@@ -197,6 +211,27 @@ impl PenBehaviour for Shaper {
                     }
                 }
             }
+            (
+                ShaperState::BuildShape { builder },
+                PenEvent::Down {
+                    element,
+                    shortcut_keys,
+                },
+            ) => todo!(),
+            (
+                ShaperState::BuildShape { builder },
+                PenEvent::Up {
+                    element,
+                    shortcut_keys,
+                },
+            ) => todo!(),
+            (
+                ShaperState::BuildShape { builder },
+                PenEvent::Proximity {
+                    element,
+                    shortcut_keys,
+                },
+            ) => todo!(),
         };
 
         (pen_progress, surface_flags)

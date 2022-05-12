@@ -88,6 +88,17 @@
       )</default>
       <summary>the shaper page fill colors</summary>
     </key>
+    <key name="typewriterpage-colors" type="(uu)">
+      <default>(
+        0x000000ff,
+        0x1a5fb4ff
+      )</default>
+      <summary>the typewriter page colors</summary>
+    </key>
+    <key name="typewriterpage-selected-color" type="u">
+      <default>0</default>
+      <summary>the default selected color row on the typewriter page</summary>
+    </key>
     <key name="resize-lock-aspectratio" type="b">
       <default>false</default>
       <summary>if the aspect ratio while resizing is locked</summary>

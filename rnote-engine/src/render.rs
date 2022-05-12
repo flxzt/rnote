@@ -33,6 +33,11 @@ pub const USVG_XML_OPTIONS: usvg::XmlOptions = usvg::XmlOptions {
     },
 };
 
+// Px unit (96 DPI ) to Point unit ( 72 DPI ) conversion factor
+pub const PX_TO_POINT_CONV_FACTOR: f64 = 96.0 / 72.0;
+// Point unit ( 72 DPI ) to Px unit (96 DPI ) conversion factor
+pub const POINT_TO_PX_CONV_FACTOR: f64 = 72.0 / 96.0;
+
 // the factor the rendering for the current viewport is extended. e.g.: 1.0 means the viewport is extended by its extents on all sides.
 // Used when checking rendering for new zooms or a moved viewport.
 // There is a trade off: a larger value will consume more ram, a smaller value will mean more stuttering on zooms and when moving the view
@@ -352,6 +357,7 @@ impl Image {
         Ok(snapshot.to_node())
     }
 
+    // Join multiple images together. The resulted bounds is the union of all given images bounds
     pub fn join_images(images: Vec<Self>) -> Result<Option<Image>, anyhow::Error> {
         if images.is_empty() {
             return Ok(None);
@@ -585,21 +591,134 @@ pub struct Svg {
 }
 
 impl Svg {
-    pub fn join_svgs(svgs: Vec<Self>) -> Option<Self> {
-        if svgs.is_empty() {
-            return None;
+    pub fn merge<T>(&mut self, other: T)
+    where
+        T: IntoIterator<Item = Self>,
+    {
+        for svg in other {
+            self.svg_data += format!("\n{}", svg.svg_data).as_str();
+            self.bounds.merge(&svg.bounds);
+        }
+    }
+
+    /// Generates an svg with piet, using the piet_svg backend (context creation might be slow due to font loading).
+    pub fn gen_with_piet_svg_backend<F>(mut draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
+    where
+        F: FnMut(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
+    {
+        bounds.ensure_positive();
+        bounds.assert_valid()?;
+
+        let mut piet_cx = piet_svg::RenderContext::new(kurbo::Size::new(
+            bounds.extents()[0],
+            bounds.extents()[1],
+        ));
+
+        // Apply the draw function
+        draw_func(&mut piet_cx)?;
+
+        piet_cx
+            .finish()
+            .map_err(|e| anyhow::anyhow!("cx.finish() failed in svg_cx_to_svg() with Err {}", e))?;
+
+        let mut data: Vec<u8> = vec![];
+        piet_cx.write(&mut data)?;
+
+        let svg_data = rnote_compose::utils::remove_xml_header(String::from_utf8(data)?.as_str());
+
+        Ok(Self { svg_data, bounds })
+    }
+
+    /// Generates an svg with piet, using the piet_svg backend without text loading (for faster context creation).
+    pub fn gen_with_piet_svg_backend_no_text<F>(
+        mut draw_func: F,
+        mut bounds: AABB,
+    ) -> anyhow::Result<Self>
+    where
+        F: FnMut(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
+    {
+        bounds.ensure_positive();
+        bounds.assert_valid()?;
+
+        let mut piet_cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
+            bounds.extents()[0],
+            bounds.extents()[1],
+        ));
+
+        // Apply the draw function
+        draw_func(&mut piet_cx)?;
+
+        piet_cx
+            .finish()
+            .map_err(|e| anyhow::anyhow!("cx.finish() failed in svg_cx_to_svg() with Err {}", e))?;
+
+        let mut data: Vec<u8> = vec![];
+        piet_cx.write(&mut data)?;
+
+        let svg_data = rnote_compose::utils::remove_xml_header(String::from_utf8(data)?.as_str());
+
+        Ok(Self { svg_data, bounds })
+    }
+
+    /// Generates an svg with piet, using the piet_cairo backend and a SvgSurface.
+    /// This might be preferable to the piet_svg backend, because especially text alignment and sizes can be different with it.
+    pub fn gen_with_piet_cairo_backend<F>(
+        mut draw_func: F,
+        mut bounds: AABB,
+    ) -> anyhow::Result<Self>
+    where
+        F: FnMut(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
+    {
+        bounds.ensure_positive();
+        bounds.assert_valid()?;
+
+        let width = bounds.extents()[0];
+        let height = bounds.extents()[1];
+
+        let svg_stream: Vec<u8> = vec![];
+
+        let mut svg_surface = cairo::SvgSurface::for_stream(
+            width, height, svg_stream
+        )
+        .map_err(|e| {
+            anyhow::anyhow!(
+                "create SvgSurface with dimensions ({}, {}) failed in Svg gen_with_piet_cairo_backend(), {}",
+                width,height,
+                e
+            )
+        })?;
+
+        svg_surface.set_document_unit(cairo::SvgUnit::User);
+
+        {
+            let cairo_cx = cairo::Context::new(&svg_surface)?;
+            let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+            // Apply the draw function
+            draw_func(&mut piet_cx)?;
+
+            piet_cx.finish().map_err(|e| {
+                anyhow::anyhow!(
+                    "piet_cx.finish() failed in Svg gen_with_piet_cairo_backend() with Err {}",
+                    e
+                )
+            })?;
         }
 
-        Some(svgs.into_iter().fold(
-            Self {
-                svg_data: String::from(""),
-                bounds: AABB::new_invalid(),
-            },
-            |acc, x| Svg {
-                svg_data: acc.svg_data + "\n" + x.svg_data.as_str(),
-                bounds: acc.bounds.merged(&x.bounds),
-            },
-        ))
+        let file_content = svg_surface
+            .finish_output_stream()
+            .map_err(|e| anyhow::anyhow!("{}", e))?;
+
+        let svg_data = rnote_compose::utils::remove_xml_header(
+            String::from_utf8(*file_content.downcast::<Vec<u8>>().map_err(|_e| {
+                anyhow::anyhow!(
+                    "failed to downcast svg surface content in Svg gen_with_piet_cairo_backend()"
+                )
+            })?)?
+            .as_str(),
+        );
+
+        Ok(Self { svg_data, bounds })
     }
 
     pub fn draw_svgs_to_cairo_context(
@@ -626,6 +745,7 @@ impl Svg {
                     &stream, None, None,
                 )
                 .context("read stream to librsvg Loader failed")?;
+
             let renderer = librsvg::CairoRenderer::new(&handle);
             renderer
                 .render_document(

@@ -1,5 +1,5 @@
-use crate::engine::EngineTaskSender;
 use crate::document::Document;
+use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
@@ -46,7 +46,12 @@ impl VerticalSpaceTool {
 }
 
 impl DrawOnDocBehaviour for VerticalSpaceTool {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(
+        &self,
+        _doc: &Document,
+        _store: &StrokeStore,
+        camera: &Camera,
+    ) -> Option<AABB> {
         let viewport = camera.viewport();
 
         let x = viewport.mins[0];
@@ -61,7 +66,8 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc_bounds: AABB,
+        _doc: &Document,
+        _store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -135,7 +141,12 @@ impl DragProximityTool {
 }
 
 impl DrawOnDocBehaviour for DragProximityTool {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, _camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(
+        &self,
+        _doc: &Document,
+        _store: &StrokeStore,
+        _camera: &Camera,
+    ) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.pos),
             na::Vector2::repeat(self.radius),
@@ -145,7 +156,8 @@ impl DrawOnDocBehaviour for DragProximityTool {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc_bounds: AABB,
+        _doc: &Document,
+        _store: &StrokeStore,
         _camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -189,7 +201,12 @@ impl OffsetCameraTool {
 }
 
 impl DrawOnDocBehaviour for OffsetCameraTool {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(
+        &self,
+        _doc: &Document,
+        _store: &StrokeStore,
+        camera: &Camera,
+    ) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.start),
             ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5) / camera.total_zoom(),
@@ -199,18 +216,20 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc_bounds: AABB,
+        doc: &Document,
+        store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        if let Some(bounds) = self.bounds_on_doc(doc_bounds, camera) {
+        if let Some(bounds) = self.bounds_on_doc(doc, store, camera) {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
             cx.transform(kurbo::Affine::scale(1.0 / camera.total_zoom()));
 
-            let bez_path =
-                kurbo::BezPath::from_svg(include_str!("../../data/images/offsetcameratool-path.txt"))
-                    .unwrap();
+            let bez_path = kurbo::BezPath::from_svg(include_str!(
+                "../../data/images/offsetcameratool-path.txt"
+            ))
+            .unwrap();
 
             cx.stroke(bez_path.clone(), &Self::OUTLINE_COLOR, Self::PATH_WIDTH);
             cx.fill(bez_path, &Self::FILL_COLOR);
@@ -420,6 +439,7 @@ impl PenBehaviour for Tools {
                 PenProgress::Finished
             }
             (ToolsState::Active, PenEvent::Proximity { .. }) => PenProgress::InProgress,
+            (ToolsState::Active, PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
             (ToolsState::Active, PenEvent::Cancel) => {
                 self.reset();
                 self.state = ToolsState::Idle;
@@ -440,17 +460,17 @@ impl PenBehaviour for Tools {
 }
 
 impl DrawOnDocBehaviour for Tools {
-    fn bounds_on_doc(&self, doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(&self, doc: &Document, store: &StrokeStore, camera: &Camera) -> Option<AABB> {
         match self.state {
             ToolsState::Active => match self.style {
                 ToolsStyle::VerticalSpace => {
-                    self.verticalspace_tool.bounds_on_doc(doc_bounds, camera)
+                    self.verticalspace_tool.bounds_on_doc(doc, store, camera)
                 }
-                ToolsStyle::DragProximity => self
-                    .dragproximity_tool
-                    .bounds_on_doc(doc_bounds, camera),
+                ToolsStyle::DragProximity => {
+                    self.dragproximity_tool.bounds_on_doc(doc, store, camera)
+                }
                 ToolsStyle::OffsetCamera => {
-                    self.offsetcamera_tool.bounds_on_doc(doc_bounds, camera)
+                    self.offsetcamera_tool.bounds_on_doc(doc, store, camera)
                 }
             },
             ToolsState::Idle => None,
@@ -460,7 +480,8 @@ impl DrawOnDocBehaviour for Tools {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc_bounds: AABB,
+        doc: &Document,
+        store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -468,15 +489,14 @@ impl DrawOnDocBehaviour for Tools {
         match &self.style {
             ToolsStyle::VerticalSpace => {
                 self.verticalspace_tool
-                    .draw_on_doc(cx, doc_bounds, camera)?;
+                    .draw_on_doc(cx, doc, store, camera)?;
             }
             ToolsStyle::DragProximity => {
                 self.dragproximity_tool
-                    .draw_on_doc(cx, doc_bounds, camera)?;
+                    .draw_on_doc(cx, doc, store, camera)?;
             }
             ToolsStyle::OffsetCamera => {
-                self.offsetcamera_tool
-                    .draw_on_doc(cx, doc_bounds, camera)?;
+                self.offsetcamera_tool.draw_on_doc(cx, doc, store, camera)?;
             }
         }
 

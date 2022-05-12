@@ -10,30 +10,98 @@ pub enum PenEvent {
     Down {
         /// The element for the down event
         element: Element,
-        /// wether a shortcut key is pressed during the down event
+        /// pressed shortcut keys during the proximity event
         shortcut_keys: Vec<ShortcutKey>,
     },
     /// A pen up event.
     Up {
         /// The element for the down event
         element: Element,
-        /// wether a shortcut key is pressed during the up event
+        /// pressed shortcut keys during the proximity event
         shortcut_keys: Vec<ShortcutKey>,
     },
     /// A pen down event. Is repeatetly emitted while the pen is in proximity and moved
     Proximity {
         /// The element for the proximity event
         element: Element,
-        /// wether a shortcut key is pressed during the proximity event
+        /// pressed shortcut keys during the proximity event
+        shortcut_keys: Vec<ShortcutKey>,
+    },
+    /// A keyboard key pressed event
+    KeyPressed {
+        /// the key
+        keyboard_key: KeyboardKey,
+        /// pressed shortcut keys during the keyboard key event
         shortcut_keys: Vec<ShortcutKey>,
     },
     /// event when the pen vanishes unexpected. should reset all pending actions and state
     Cancel,
 }
 
+/// A key on the keyboard
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone)]
+pub enum KeyboardKey {
+    /// a unicode character. Expects that control characters are already converted and filtered out wih the method `filter_convert_unicode_control_chars`
+    Unicode(char),
+    /// backspace
+    BackSpace,
+    /// Tab
+    HorizontalTab,
+    /// Line feed
+    Linefeed,
+    /// delete
+    Delete,
+    /// Arrow up
+    NavUp,
+    /// Arrow down
+    NavDown,
+    /// Arrow left
+    NavLeft,
+    /// Arrow right
+    NavRight,
+    /// Shift left
+    ShiftLeft,
+    /// Shift right
+    ShiftRight,
+    /// Ctrl left
+    CtrlLeft,
+    /// Ctrl right
+    CtrlRight,
+    /// Unsupported
+    Unsupported,
+}
+
+impl KeyboardKey {
+    /// Filters and converts unicode control characters to a fitting variant, or `Unsupported`
+    pub fn filter_convert_unicode_control_chars(self) -> Self {
+        match self {
+            key @ Self::Unicode(keychar) => {
+                if keychar.is_control() {
+                    match keychar as u32 {
+                        0x08 => Self::BackSpace,
+                        0x09 => Self::HorizontalTab,
+                        // 0x0a is Line Feed
+                        0x0a => Self::Linefeed,
+                        // 0x0d is Carriage Return, but we only need LF
+                        0x0d => Self::Linefeed,
+                        // On VT-100 compatible terminals also backspace
+                        0x7f => Self::BackSpace,
+                        _ => Self::Unsupported,
+                    }
+                } else {
+                    key
+                }
+            }
+            other => other,
+        }
+    }
+}
+
+#[non_exhaustive]
 #[derive(Debug, Copy, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 #[serde(rename = "shortcut_key")]
-/// A input shortcut key
+/// A input shortcut key (could also be named modifier key)
 pub enum ShortcutKey {
     /// A keyboard key
     #[serde(rename = "keyboard_key")]

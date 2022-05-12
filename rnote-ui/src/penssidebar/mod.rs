@@ -3,6 +3,7 @@ mod eraserpage;
 mod selectorpage;
 mod shaperpage;
 mod toolspage;
+mod typewriterpage;
 
 // Re-exports
 pub use brushpage::BrushPage;
@@ -11,6 +12,7 @@ use rnote_engine::pens::penholder::PenStyle;
 pub use selectorpage::SelectorPage;
 pub use shaperpage::ShaperPage;
 pub use toolspage::ToolsPage;
+pub use typewriterpage::TypewriterPage;
 
 use gtk4::{
     glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Stack, StackPage,
@@ -35,6 +37,10 @@ mod imp {
         pub shaper_stackpage: TemplateChild<StackPage>,
         #[template_child]
         pub shaper_page: TemplateChild<ShaperPage>,
+        #[template_child]
+        pub typewriter_stackpage: TemplateChild<StackPage>,
+        #[template_child]
+        pub typewriter_page: TemplateChild<TypewriterPage>,
         #[template_child]
         pub eraser_stackpage: TemplateChild<StackPage>,
         #[template_child]
@@ -108,8 +114,20 @@ impl PensSideBar {
         self.imp().brush_page.get()
     }
 
+    pub fn shaper_stackpage(&self) -> StackPage {
+        self.imp().shaper_stackpage.get()
+    }
+
     pub fn shaper_page(&self) -> ShaperPage {
         self.imp().shaper_page.get()
+    }
+
+    pub fn typewriter_stackpage(&self) -> StackPage {
+        self.imp().typewriter_stackpage.get()
+    }
+
+    pub fn typewriter_page(&self) -> TypewriterPage {
+        self.imp().typewriter_page.get()
     }
 
     pub fn eraser_stackpage(&self) -> StackPage {
@@ -146,6 +164,9 @@ impl PensSideBar {
                         },
                         "shaper_page" => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
+                        },
+                        "typewriter_page" => {
+                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
                         },
                         "eraser_page" => {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Eraser.nick().to_variant()));

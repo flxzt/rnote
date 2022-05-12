@@ -14,7 +14,9 @@ use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
-use super::{AudioPlayer, Brush, Eraser, PenBehaviour, PenMode, Selector, Shaper, Shortcuts};
+use super::{
+    AudioPlayer, Brush, Eraser, PenBehaviour, PenMode, Selector, Shaper, Shortcuts, Typewriter,
+};
 
 #[derive(
     Eq,
@@ -40,6 +42,9 @@ pub enum PenStyle {
     #[enum_value(name = "Shaper", nick = "shaper")]
     #[serde(rename = "shaper")]
     Shaper,
+    #[enum_value(name = "Typewriter", nick = "typewriter")]
+    #[serde(rename = "typewriter")]
+    Typewriter,
     #[enum_value(name = "Eraser", nick = "eraser")]
     #[serde(rename = "eraser")]
     Eraser,
@@ -89,6 +94,7 @@ impl PenStyle {
         match self {
             Self::Brush => String::from("pen-brush-symbolic"),
             Self::Shaper => String::from("pen-shaper-symbolic"),
+            Self::Typewriter => String::from("pen-typewriter-symbolic"),
             Self::Eraser => String::from("pen-eraser-symbolic"),
             Self::Selector => String::from("pen-selector-symbolic"),
             Self::Tools => String::from("pen-tools-symbolic"),
@@ -105,6 +111,8 @@ pub struct PenHolder {
     pub brush: Brush,
     #[serde(rename = "shaper")]
     pub shaper: Shaper,
+    #[serde(rename = "typewriter")]
+    pub typewriter: Typewriter,
     #[serde(rename = "eraser")]
     pub eraser: Eraser,
     #[serde(rename = "selector")]
@@ -146,6 +154,7 @@ impl Default for PenHolder {
             shaper: Shaper::default(),
             eraser: Eraser::default(),
             selector: Selector::default(),
+            typewriter: Typewriter::default(),
             tools: Tools::default(),
             pen_mode_state: PenModeState::default(),
             shortcuts: Shortcuts::default(),
@@ -175,6 +184,7 @@ impl PenHolder {
         self.shortcuts.remove(&key)
     }
 
+    // Gets the current registered action the the given shortcut key
     pub fn get_shortcut_action(&self, key: ShortcutKey) -> Option<ShortcutAction> {
         self.shortcuts.get(&key).cloned()
     }
@@ -380,6 +390,7 @@ impl PenHolder {
                     ));
                 }
             }
+            PenEvent::KeyPressed { .. } => {}
             PenEvent::Cancel => {}
         }
 
@@ -394,6 +405,14 @@ impl PenHolder {
                 self.audioplayer.as_mut(),
             ),
             PenStyle::Shaper => self.shaper.handle_event(
+                event,
+                tasks_tx,
+                doc,
+                store,
+                camera,
+                self.audioplayer.as_mut(),
+            ),
+            PenStyle::Typewriter => self.typewriter.handle_event(
                 event,
                 tasks_tx,
                 doc,
@@ -484,29 +503,32 @@ impl PenHolder {
 }
 
 impl DrawOnDocBehaviour for PenHolder {
-    fn bounds_on_doc(&self, doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(&self, doc: &Document, store: &StrokeStore, camera: &Camera) -> Option<AABB> {
         match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.bounds_on_doc(doc_bounds, camera),
-            PenStyle::Shaper => self.shaper.bounds_on_doc(doc_bounds, camera),
-            PenStyle::Eraser => self.eraser.bounds_on_doc(doc_bounds, camera),
-            PenStyle::Selector => self.selector.bounds_on_doc(doc_bounds, camera),
-            PenStyle::Tools => self.tools.bounds_on_doc(doc_bounds, camera),
+            PenStyle::Brush => self.brush.bounds_on_doc(doc, store, camera),
+            PenStyle::Shaper => self.shaper.bounds_on_doc(doc, store, camera),
+            PenStyle::Typewriter => self.typewriter.bounds_on_doc(doc, store, camera),
+            PenStyle::Eraser => self.eraser.bounds_on_doc(doc, store, camera),
+            PenStyle::Selector => self.selector.bounds_on_doc(doc, store, camera),
+            PenStyle::Tools => self.tools.bounds_on_doc(doc, store, camera),
         }
     }
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc_bounds: AABB,
+        doc: &Document,
+        store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.draw_on_doc(cx, doc_bounds, camera),
-            PenStyle::Shaper => self.shaper.draw_on_doc(cx, doc_bounds, camera),
-            PenStyle::Eraser => self.eraser.draw_on_doc(cx, doc_bounds, camera),
-            PenStyle::Selector => self.selector.draw_on_doc(cx, doc_bounds, camera),
-            PenStyle::Tools => self.tools.draw_on_doc(cx, doc_bounds, camera),
+            PenStyle::Brush => self.brush.draw_on_doc(cx, doc, store, camera),
+            PenStyle::Shaper => self.shaper.draw_on_doc(cx, doc, store, camera),
+            PenStyle::Typewriter => self.typewriter.draw_on_doc(cx, doc, store, camera),
+            PenStyle::Eraser => self.eraser.draw_on_doc(cx, doc, store, camera),
+            PenStyle::Selector => self.selector.draw_on_doc(cx, doc, store, camera),
+            PenStyle::Tools => self.tools.draw_on_doc(cx, doc, store, camera),
         }?;
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;

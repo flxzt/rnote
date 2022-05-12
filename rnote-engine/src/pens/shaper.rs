@@ -1,7 +1,7 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
-use crate::engine::EngineTaskSender;
 use crate::document::Document;
+use crate::engine::EngineTaskSender;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
@@ -214,7 +214,12 @@ impl PenBehaviour for Shaper {
 }
 
 impl DrawOnDocBehaviour for Shaper {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(
+        &self,
+        _doc: &Document,
+        _store: &StrokeStore,
+        camera: &Camera,
+    ) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
@@ -228,7 +233,8 @@ impl DrawOnDocBehaviour for Shaper {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc_bounds: AABB,
+        _doc: &Document,
+        _store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;

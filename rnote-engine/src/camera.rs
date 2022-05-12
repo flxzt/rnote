@@ -19,7 +19,7 @@ pub struct Camera {
     #[serde(rename = "temporary_zoom")]
     temporary_zoom: f64,
 
-    /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi values. (Could become a non-integer value in the future, so it is stored as float.)
+    /// The scale factor of the surface, usually 1.0 or 2.0 for high-dpi screens. (Could become a non-integer value in the future, so it is stored as float.)
     #[serde(rename = "scale_factor")]
     pub scale_factor: f64,
 }

@@ -1927,9 +1927,9 @@ dependencies = [
 
 [[package]]
 name = "nalgebra"
-version = "0.30.1"
+version = "0.31.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fb2d0de08694bed883320212c18ee3008576bfe8c306f4c3c4a58b4876998be"
+checksum = "18a89248335f688e4bd994e6d030fd7e185eb41769b8c435395075425e100ac6"
 dependencies = [
  "approx 0.5.1",
  "matrixmultiply",
@@ -2232,6 +2232,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "87f3e037eac156d1775da914196f0f37741a274155e34a0b7e427c35d2a2ecb9"
 
 [[package]]
+name = "optional"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "978aa494585d3ca4ad74929863093e87cac9790d81fe7aba2b3dc2890643a0fc"
+
+[[package]]
 name = "pango"
 version = "0.15.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2333,16 +2339,16 @@ dependencies = [
 
 [[package]]
 name = "parry2d-f64"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e96040e0f10b65df992e8367983b7c3ac779046cd6d9a4a7cd1496e8c6b6ef51"
+checksum = "54a90c7ec8458eea1d7034c49feebff0998424506f72c2ea3cab7494d8c6acf3"
 dependencies = [
  "approx 0.5.1",
  "arrayvec",
  "bitflags",
  "downcast-rs",
  "either",
- "nalgebra 0.30.1",
+ "nalgebra 0.31.0",
  "num-derive",
  "num-traits",
  "rustc-hash",
@@ -2350,6 +2356,7 @@ dependencies = [
  "simba 0.7.1",
  "slab",
  "smallvec",
+ "spade",
 ]
 
 [[package]]
@@ -2896,7 +2903,7 @@ dependencies = [
  "kurbo",
  "libadwaita",
  "log",
- "nalgebra 0.30.1",
+ "nalgebra 0.31.0",
  "num-derive",
  "num-traits",
  "once_cell",
@@ -2925,7 +2932,7 @@ dependencies = [
  "image 0.23.14",
  "kurbo",
  "log",
- "nalgebra 0.30.1",
+ "nalgebra 0.31.0",
  "num-derive",
  "num-traits",
  "parry2d-f64",
@@ -2961,7 +2968,7 @@ dependencies = [
  "lazy_static",
  "librsvg",
  "log",
- "nalgebra 0.30.1",
+ "nalgebra 0.31.0",
  "num-derive",
  "num-traits",
  "parry2d-f64",
@@ -2984,6 +2991,7 @@ dependencies = [
  "serde_json",
  "slotmap",
  "svg",
+ "unicode-segmentation",
  "usvg",
  "xmlwriter",
 ]
@@ -2994,7 +3002,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "flate2",
- "nalgebra 0.30.1",
+ "nalgebra 0.31.0",
  "pretty_env_logger",
  "roxmltree",
  "semver 1.0.9",
@@ -3356,6 +3364,18 @@ name = "smallvec"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2dd574626839106c320a323308629dcb1acfc96e32a8cba364ddc61ac23ee83"
+
+[[package]]
+name = "spade"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "333b8c21ebd9a45c5e955f3d7a1f0c4a2214847dd7e8e1abb69f34ec9b88882d"
+dependencies = [
+ "num-traits",
+ "optional",
+ "robust",
+ "smallvec",
+]
 
 [[package]]
 name = "spin"

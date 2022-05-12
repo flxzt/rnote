@@ -18,6 +18,7 @@
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/shaperpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/eraserpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/selectorpage.ui</file>
+        <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/typewriterpage.ui</file>
         <file compressed="true" preprocess="xml-stripblanks">ui/penssidebar/toolspage.ui</file>
         <file preprocess="xml-stripblanks">ui/dialogs.ui</file>
         <file compressed="true">icons/scalable/apps/rnote.svg</file>
@@ -41,7 +42,7 @@
         <file compressed="true">icons/scalable/actions/modifiernode-rotate-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvas-cursor.svg</file>
         <file compressed="true">icons/scalable/actions/canvas-motion-cursor.svg</file>
-        <file compressed="true">icons/scalable/actions/reset-width-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/reset-state-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-style-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-brush-style-marker-symbolic.svg</file>
@@ -56,6 +57,8 @@
         <file compressed="true">icons/scalable/actions/pen-selector-rectangle-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-trash-colliding-strokes-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-eraser-split-colliding-strokes-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-typewriter-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/pen-typewriter-fontchooser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-verticalspacetool-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/pen-tools-dragproximitytool-symbolic.svg</file>
@@ -73,6 +76,16 @@
         <file compressed="true">icons/scalable/actions/arrow1-right-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/arrow1-up-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/arrow1-down-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-bold-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-indent-less-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-indent-more-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-italic-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-underline-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-strikethrough-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-align-center-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-align-fill-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-align-start-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/text-align-end-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/question-round-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/preferences-color-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/test-valid-symbolic.svg</file>

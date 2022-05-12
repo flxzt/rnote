@@ -7,8 +7,8 @@ use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{render, DrawOnDocBehaviour, SurfaceFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use gtk4::Snapshot;
-use itertools::Itertools;
-use rnote_compose::helpers::AABBHelpers;
+use piet::RenderContext;
+use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::transform::TransformBehaviour;
 use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
@@ -328,81 +328,52 @@ impl RnoteEngine {
         );
     }
 
-    // Generates bounds for each page on the document which contains content, extended to align with the format
-    pub fn pages_bounds_containing_content(&self) -> Vec<AABB> {
+    // Generates bounds for each page on the document which contains content
+    pub fn pages_bounds_w_content(&self) -> Vec<AABB> {
         let doc_bounds = self.document.bounds();
-        let keys = self.store.stroke_keys_as_rendered();
-        let strokes_bounds = self.store.bounds_for_strokes(&keys);
+        let mut keys = self.store.stroke_keys_as_rendered();
+        keys.extend(self.store.selection_keys_as_rendered());
 
-        if self.document.format.height > 0.0 && self.document.format.width > 0.0 {
-            doc_bounds
-                .split_extended_origin_aligned(na::vector![
-                    self.document.format.width,
-                    self.document.format.height
-                ])
-                .into_iter()
-                .filter(|page_bounds| {
-                    strokes_bounds
-                        .iter()
-                        .any(|stroke_bounds| stroke_bounds.intersects(&page_bounds))
-                })
-                .collect::<Vec<AABB>>()
+        let strokes_bounds = self.store.strokes_bounds(&keys);
+
+        let pages_bounds = doc_bounds
+            .split_extended_origin_aligned(na::vector![
+                self.document.format.width,
+                self.document.format.height
+            ])
+            .into_iter()
+            .filter(|page_bounds| {
+                // Filter the pages out that doesn't intersect with any stroke
+                strokes_bounds
+                    .iter()
+                    .any(|stroke_bounds| stroke_bounds.intersects(&page_bounds))
+            })
+            .collect::<Vec<AABB>>();
+
+        if pages_bounds.is_empty() {
+            // If no page has content, return the origin page
+            vec![AABB::new(
+                na::point![0.0, 0.0],
+                na::point![self.document.format.width, self.document.format.height],
+            )]
         } else {
-            vec![]
+            pages_bounds
         }
     }
 
-    /// Generates bounds which contain all pages on the doc with content, and are extended to align with the format.
+    /// Generates bounds which contain all pages on the doc with content extended to fit the format.
     pub fn bounds_w_content_extended(&self) -> Option<AABB> {
-        let bounds = self.pages_bounds_containing_content();
-        if bounds.is_empty() {
+        let pages_bounds = self.pages_bounds_w_content();
+
+        if pages_bounds.is_empty() {
             return None;
         }
 
-        let doc_bounds = self.document.bounds();
-
         Some(
-            bounds
+            pages_bounds
                 .into_iter()
-                // Filter out the page bounds that are not intersecting with the doc bounds.
-                .filter(|bounds| doc_bounds.intersects(&bounds.tightened(2.0)))
                 .fold(AABB::new_invalid(), |prev, next| prev.merged(&next)),
         )
-    }
-
-    /// Generates all svgs for all strokes, including the background. Exluding the current selection.
-    /// without root or xml header.
-    pub fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let doc_bounds = self.document.bounds();
-        let mut svgs = vec![];
-
-        svgs.push(self.document.background.gen_svg(doc_bounds.loosened(1.0))?);
-
-        let strokes = self.store.stroke_keys_as_rendered();
-        svgs.append(&mut self.store.gen_svgs_for_strokes(&strokes));
-
-        Ok(svgs)
-    }
-
-    /// Generates all svgs intersecting the given bounds, including the background.
-    /// without root or xml header.
-    pub fn gen_svgs_intersecting_bounds(
-        &self,
-        viewport: AABB,
-    ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let doc_bounds = self.document.bounds();
-        let mut svgs = vec![];
-
-        // Background bounds are still doc bounds, for correct alignment of the background patterns
-        svgs.push(self.document.background.gen_svg(doc_bounds.loosened(1.0))?);
-
-        let keys = self
-            .store
-            .stroke_keys_as_rendered_intersecting_bounds(viewport);
-
-        svgs.append(&mut self.store.gen_svgs_for_strokes(&keys));
-
-        Ok(svgs)
     }
 
     pub fn doc_layout(&self) -> Layout {
@@ -762,55 +733,216 @@ impl RnoteEngine {
         surface_flags
     }
 
-    /// Exports the doc with the strokes as a SVG string. Excluding the current selection.
-    pub fn export_doc_as_svg_string(&self) -> Result<String, anyhow::Error> {
-        let bounds = if let Some(bounds) = self.bounds_w_content_extended() {
-            bounds
+    /// generates the doc svg.
+    /// The coordinates are translated so that the svg has origin 0.0, 0.0
+    /// without root or xml header.
+    pub fn gen_doc_svg(&self, with_background: bool) -> Result<render::Svg, anyhow::Error> {
+        let image_scale = self.camera.image_scale();
+        let doc_bounds = self.document.bounds();
+
+        let mut strokes = self.store.stroke_keys_as_rendered();
+        strokes.extend(self.store.selection_keys_as_rendered());
+
+        let mut doc_svg = if with_background {
+            self.document.background.gen_svg(doc_bounds)?
         } else {
-            return Err(anyhow::anyhow!(
-                "export_doc_as_svg_string() failed, bounds_w_content_extended() returned None"
-            ));
+            // we can have invalid bounds here, because we know we merge them with the strokes svg
+            render::Svg {
+                svg_data: String::new(),
+                bounds: AABB::new(na::point![0.0, 0.0], na::Point2::from(doc_bounds.extents())),
+            }
         };
 
-        let svgs = self.gen_svgs()?;
+        doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+            |piet_cx| {
+                piet_cx.transform(kurbo::Affine::translate(
+                    doc_bounds.mins.coords.to_kurbo_vec(),
+                ));
 
-        let mut svg_data = svgs
-            .iter()
-            .map(|svg| svg.svg_data.as_str())
-            .collect::<Vec<&str>>()
-            .join("\n");
+                self.store
+                    .draw_strokes_to_piet(&strokes, piet_cx, image_scale)
+            },
+            AABB::new(na::point![0.0, 0.0], na::Point2::from(doc_bounds.extents())),
+        )?]);
 
-        svg_data = rnote_compose::utils::wrap_svg_root(
-            svg_data.as_str(),
-            Some(bounds),
-            Some(bounds),
-            true,
+        Ok(doc_svg)
+    }
+
+    /// generates the doc svg for the given viewport.
+    /// The coordinates are translated so that the svg has origin 0.0, 0.0
+    /// without root or xml header.
+    pub fn gen_doc_svg_with_viewport(
+        &self,
+        viewport: AABB,
+        with_background: bool,
+    ) -> Result<render::Svg, anyhow::Error> {
+        let image_scale = self.camera.image_scale();
+
+        // Background bounds are still doc bounds, for correct alignment of the background pattern
+        let mut doc_svg = if with_background {
+            self.document.background.gen_svg(AABB::new(
+                na::point![0.0, 0.0],
+                na::Point2::from(viewport.extents()),
+            ))?
+        } else {
+            // we can have invalid bounds here, because we know we merge them with the other svg
+            render::Svg {
+                svg_data: String::new(),
+                bounds: AABB::new(na::point![0.0, 0.0], na::Point2::from(viewport.extents())),
+            }
+        };
+
+        let mut strokes_in_viewport = self
+            .store
+            .stroke_keys_as_rendered_intersecting_bounds(viewport);
+        strokes_in_viewport.extend(
+            self.store
+                .selection_keys_as_rendered_intersecting_bounds(viewport),
         );
 
-        Ok(svg_data)
+        doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+            |piet_cx| {
+                piet_cx.transform(kurbo::Affine::translate(
+                    -viewport.mins.coords.to_kurbo_vec(),
+                ));
+
+                self.store
+                    .draw_strokes_to_piet(&strokes_in_viewport, piet_cx, image_scale)
+            },
+            AABB::new(na::point![0.0, 0.0], na::Point2::from(viewport.extents())),
+        )?]);
+
+        Ok(doc_svg)
+    }
+
+    /// generates the selection svg.
+    /// The coordinates are translated so that the svg has origin 0.0, 0.0
+    /// without root or xml header.
+    pub fn gen_selection_svg(
+        &self,
+        with_background: bool,
+    ) -> Result<Option<render::Svg>, anyhow::Error> {
+        let image_scale = self.camera.image_scale();
+
+        let selection_keys = self.store.selection_keys_as_rendered();
+
+        if selection_keys.is_empty() {
+            return Ok(None);
+        }
+
+        let selection_bounds =
+            if let Some(selection_bounds) = self.store.bounds_for_strokes(&selection_keys) {
+                selection_bounds
+            } else {
+                return Ok(None);
+            };
+
+        let mut selection_svg = if with_background {
+            self.document.background.gen_svg(AABB::new(
+                na::point![0.0, 0.0],
+                na::Point2::from(selection_bounds.extents()),
+            ))?
+        } else {
+            render::Svg {
+                svg_data: String::new(),
+                bounds: AABB::new(
+                    na::point![0.0, 0.0],
+                    na::Point2::from(selection_bounds.extents()),
+                ),
+            }
+        };
+
+        selection_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+            |piet_cx| {
+                piet_cx.transform(kurbo::Affine::translate(
+                    -selection_bounds.mins.coords.to_kurbo_vec(),
+                ));
+
+                self.store
+                    .draw_strokes_to_piet(&selection_keys, piet_cx, image_scale)
+            },
+            AABB::new(
+                na::point![0.0, 0.0],
+                na::Point2::from(selection_bounds.extents()),
+            ),
+        )?]);
+
+        Ok(Some(selection_svg))
+    }
+
+    /// Exports the doc with the strokes as a SVG string. Excluding the current selection.
+    pub fn export_doc_as_svg_string(&self, with_background: bool) -> Result<String, anyhow::Error> {
+        let doc_svg = self.gen_doc_svg(with_background)?;
+
+        Ok(rnote_compose::utils::add_xml_header(
+            rnote_compose::utils::wrap_svg_root(
+                doc_svg.svg_data.as_str(),
+                Some(doc_svg.bounds),
+                Some(doc_svg.bounds),
+                true,
+            )
+            .as_str(),
+        ))
     }
 
     /// Exports the current selection as a SVG string
-    pub fn export_selection_as_svg_string(&self) -> anyhow::Result<Option<String>> {
-        let selection_keys = self.store.selection_keys_as_rendered();
-        if let Some(selection_bounds) = self.store.gen_bounds_for_strokes(&selection_keys) {
-            let mut svg_data = self
-                .store
-                .gen_svgs_for_strokes(&selection_keys)
-                .into_iter()
-                .map(|svg| svg.svg_data)
-                .join("\n");
+    pub fn export_selection_as_svg_string(
+        &self,
+        with_background: bool,
+    ) -> anyhow::Result<Option<String>> {
+        let selection_svg = match self.gen_selection_svg(with_background)? {
+            Some(selection_svg) => selection_svg,
+            None => return Ok(None),
+        };
 
-            svg_data = rnote_compose::utils::wrap_svg_root(
-                svg_data.as_str(),
-                Some(selection_bounds),
-                Some(selection_bounds),
+        Ok(Some(rnote_compose::utils::add_xml_header(
+            rnote_compose::utils::wrap_svg_root(
+                selection_svg.svg_data.as_str(),
+                Some(selection_svg.bounds),
+                Some(selection_svg.bounds),
                 true,
-            );
-            Ok(Some(svg_data))
-        } else {
-            Ok(None)
-        }
+            )
+            .as_str(),
+        )))
+    }
+
+    /// Exporting doc as encoded image bytes (Png / Jpg, etc.)
+    #[allow(unused)]
+    fn export_doc_as_image_bytes(
+        &self,
+        format: image::ImageOutputFormat,
+        with_background: bool,
+    ) -> Result<Vec<u8>, anyhow::Error> {
+        let image_scale = self.camera.image_scale();
+
+        let doc_svg = self.gen_doc_svg(with_background)?;
+        let doc_svg_bounds = doc_svg.bounds;
+
+        Ok(
+            render::Image::gen_image_from_svg(doc_svg, doc_svg_bounds, image_scale)?
+                .into_encoded_bytes(format)?,
+        )
+    }
+
+    /// Exporting selection as encoded image bytes (Png / Jpg, etc.)
+    #[allow(unused)]
+    fn export_selection_as_image_bytes(
+        &self,
+        format: image::ImageOutputFormat,
+        with_background: bool,
+    ) -> Result<Option<Vec<u8>>, anyhow::Error> {
+        let image_scale = self.camera.image_scale();
+
+        let selection_svg = match self.gen_selection_svg(with_background)? {
+            Some(selection_svg) => selection_svg,
+            None => return Ok(None),
+        };
+        let selection_svg_bounds = selection_svg.bounds;
+
+        Ok(Some(
+            render::Image::gen_image_from_svg(selection_svg, selection_svg_bounds, image_scale)?
+                .into_encoded_bytes(format)?,
+        ))
     }
 
     /// Exports the doc with the strokes as a Xournal++ .xopp file. Excluding the current selection.
@@ -826,9 +958,9 @@ impl RnoteEngine {
             },
         };
 
-        // xopp spec needs at least one page in vec, but its fine since pages_bounds() always produces at least one
+        // xopp spec needs at least one page in vec, but its fine because pages_bounds_w_content() always produces at least one
         let pages = self
-            .pages_bounds_containing_content()
+            .pages_bounds_w_content()
             .iter()
             .map(|&page_bounds| {
                 let page_keys = self
@@ -925,21 +1057,22 @@ impl RnoteEngine {
     pub fn export_doc_as_pdf_bytes(
         &self,
         title: String,
+        with_background: bool,
     ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
 
-        let pages = self
-            .pages_bounds_containing_content()
+        let pages_svgs = self
+            .pages_bounds_w_content()
             .into_iter()
             .filter_map(|page_bounds| {
                 Some((
                     page_bounds,
-                    self.gen_svgs_intersecting_bounds(page_bounds).ok()?,
+                    self.gen_doc_svg_with_viewport(page_bounds, with_background)
+                        .ok()?,
                 ))
             })
-            .collect::<Vec<(AABB, Vec<render::Svg>)>>();
+            .collect::<Vec<(AABB, render::Svg)>>();
 
-        let doc_bounds = self.document.bounds();
         let format_size = na::vector![
             f64::from(self.document.format.width),
             f64::from(self.document.format.height)
@@ -967,11 +1100,14 @@ impl RnoteEngine {
                     let cairo_cx =
                         cairo::Context::new(&surface).context("cario cx new() failed")?;
 
-                    for (page_bounds, page_svgs) in pages.into_iter() {
-                        cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                        render::Svg::draw_svgs_to_cairo_context(&page_svgs, doc_bounds, &cairo_cx)?;
+                    for (page_bounds, page_svg) in pages_svgs.into_iter() {
+                        render::Svg::draw_svgs_to_cairo_context(
+                            &[page_svg],
+                            page_bounds,
+                            &cairo_cx,
+                        )?;
+
                         cairo_cx.show_page().context("show page failed")?;
-                        cairo_cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
                     }
                 }
                 let data = *surface
@@ -1027,7 +1163,7 @@ impl RnoteEngine {
         snapshot.restore();
 
         self.penholder
-            .draw_on_doc_snapshot(snapshot, doc_bounds, &self.camera)?;
+            .draw_on_doc_snapshot(snapshot, &self.document, &self.store, &self.camera)?;
         /*
                {
                    use crate::utils::GrapheneRectHelpers;
@@ -1290,15 +1426,15 @@ pub mod visual_debug {
                 }
             }
             PenStyle::Selector => {
-                if let Some(bounds) = engine
-                    .penholder
-                    .selector
-                    .bounds_on_doc(doc_bounds, &engine.camera)
-                {
+                if let Some(bounds) = engine.penholder.selector.bounds_on_doc(
+                    &engine.document,
+                    &engine.store,
+                    &engine.camera,
+                ) {
                     draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
                 }
             }
-            PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools => {}
+            PenStyle::Brush | PenStyle::Shaper | PenStyle::Typewriter | PenStyle::Tools => {}
         }
 
         Ok(())

@@ -2,8 +2,7 @@ use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::pens::tools::DragProximityTool;
 use crate::strokes::Stroke;
-use crate::strokes::StrokeBehaviour;
-use crate::{render, StrokeStore};
+use crate::{render, DrawBehaviour, StrokeStore};
 use rnote_compose::helpers;
 use rnote_compose::penpath::Segment;
 use rnote_compose::shapes::ShapeBehaviour;
@@ -14,6 +13,18 @@ use std::sync::Arc;
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
+    /// Gets a reference to a stroke
+    pub fn get_stroke_ref(&self, key: StrokeKey) -> Option<&Stroke> {
+        self.stroke_components.get(key).map(|stroke| &**stroke)
+    }
+
+    /// Gets a mutable reference to a stroke
+    pub fn get_stroke_mut(&mut self, key: StrokeKey) -> Option<&mut Stroke> {
+        Arc::make_mut(&mut self.stroke_components)
+            .get_mut(key)
+            .map(Arc::make_mut)
+    }
+
     /// Adds a segment to the brush stroke. If the stroke is not a brushstroke this does nothing.
     /// stroke then needs to update its geometry and its rendering
     pub fn add_segment_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
@@ -92,19 +103,15 @@ impl StrokeStore {
             match stroke {
                 Stroke::BrushStroke(ref mut brushstroke) => {
                     brushstroke.update_geometry();
-                    self.key_tree.update_with_key(key, stroke.bounds());
-
-                    self.set_rendering_dirty(key);
                 }
                 Stroke::ShapeStroke(shapestroke) => {
                     shapestroke.update_geometry();
-                    self.key_tree.update_with_key(key, stroke.bounds());
-
-                    self.set_rendering_dirty(key);
                 }
-                Stroke::VectorImage(_) => {}
-                Stroke::BitmapImage(_) => {}
+                Stroke::TextStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {}
             }
+
+            self.key_tree.update_with_key(key, stroke.bounds());
+            self.set_rendering_dirty(key);
         }
     }
 
@@ -158,7 +165,7 @@ impl StrokeStore {
     }
 
     /// Generates the enclosing bounds for the given stroke keys
-    pub fn gen_bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<AABB> {
+    pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<AABB> {
         let mut keys_iter = keys.iter();
         if let Some(&key) = keys_iter.next() {
             if let Some(first) = self.stroke_components.get(key) {
@@ -178,30 +185,24 @@ impl StrokeStore {
     }
 
     /// Collects all bounds for the given strokes
-    pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Vec<AABB> {
+    pub fn strokes_bounds(&self, keys: &[StrokeKey]) -> Vec<AABB> {
         keys.iter()
             .filter_map(|&key| Some(self.stroke_components.get(key)?.bounds()))
             .collect::<Vec<AABB>>()
     }
 
-    /// Generates a Svg for all strokes as drawn onto the canvas without xml headers or svg roots. Does not include the selection.
-    pub fn gen_svgs_for_strokes(&self, keys: &[StrokeKey]) -> Vec<render::Svg> {
-        keys.iter()
-            .filter_map(|&key| {
-                let stroke = self.stroke_components.get(key)?;
-
-                match stroke.gen_svg() {
-                    Ok(svgs) => Some(svgs),
-                    Err(e) => {
-                        log::error!(
-                            "stroke.gen_svg() failed in gen_svg_for_strokes() with Err {}",
-                            e
-                        );
-                        None
-                    }
-                }
-            })
-            .collect::<Vec<render::Svg>>()
+    pub fn draw_strokes_to_piet(
+        &self,
+        keys: &[StrokeKey],
+        piet_cx: &mut impl piet::RenderContext,
+        image_scale: f64,
+    ) -> anyhow::Result<()> {
+        for &key in keys {
+            if let Some(stroke) = self.stroke_components.get(key) {
+                stroke.draw(piet_cx, image_scale)?;
+            }
+        }
+        Ok(())
     }
 
     /// Translate the strokes with the offset.
@@ -351,7 +352,7 @@ impl StrokeStore {
     /// Resizes the strokes to new bounds.
     /// strokes then need to update their rendering
     pub fn resize_strokes(&mut self, keys: &[StrokeKey], new_bounds: AABB) {
-        let old_bounds = match self.gen_bounds_for_strokes(keys) {
+        let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
             None => return,
         };
@@ -386,7 +387,7 @@ impl StrokeStore {
     }
 
     pub fn resize_strokes_images(&mut self, keys: &[StrokeKey], new_bounds: AABB) {
-        let old_bounds = match self.gen_bounds_for_strokes(keys) {
+        let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
             None => return,
         };
@@ -425,6 +426,26 @@ impl StrokeStore {
                 }
             }
         });
+    }
+
+    /// returns Some(key) if coord is inside at least one of the stroke hitboxes
+    pub fn query_stroke_hitboxes_contain_coord(
+        &self,
+        viewport: AABB,
+        coord: na::Vector2<f64>,
+    ) -> Option<StrokeKey> {
+        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
+            .into_iter()
+            .find(|&key| {
+                if let Some(stroke) = self.stroke_components.get(key) {
+                    stroke
+                        .hitboxes()
+                        .into_iter()
+                        .any(|hitbox| hitbox.contains_local_point(&na::Point2::from(coord)))
+                } else {
+                    false
+                }
+            })
     }
 
     /// Returns all keys below the y_pos

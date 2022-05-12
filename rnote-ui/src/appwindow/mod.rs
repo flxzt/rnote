@@ -112,6 +112,8 @@ mod imp {
         #[template_child]
         pub narrow_selector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub narrow_typewriter_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub narrow_tools_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub penssidebar: TemplateChild<PensSideBar>,
@@ -157,6 +159,7 @@ mod imp {
                 narrow_pens_toggles_revealer: TemplateChild::<Revealer>::default(),
                 narrow_brush_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_shaper_toggle: TemplateChild::<ToggleButton>::default(),
+                narrow_typewriter_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_eraser_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_selector_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_tools_toggle: TemplateChild::<ToggleButton>::default(),
@@ -213,6 +216,12 @@ mod imp {
             self.narrow_shaper_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_shaper_toggle| {
                 if narrow_shaper_toggle.is_active() {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
+                }
+            }));
+
+            self.narrow_typewriter_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_typewriter_toggle| {
+                if narrow_typewriter_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
                 }
             }));
 
@@ -721,6 +730,10 @@ impl RnoteAppWindow {
         self.imp().narrow_shaper_toggle.get()
     }
 
+    pub fn narrow_typewriter_toggle(&self) -> ToggleButton {
+        self.imp().narrow_typewriter_toggle.get()
+    }
+
     pub fn narrow_eraser_toggle(&self) -> ToggleButton {
         self.imp().narrow_eraser_toggle.get()
     }
@@ -789,6 +802,7 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get().init(self);
         self.imp().penssidebar.get().brush_page().init(self);
         self.imp().penssidebar.get().shaper_page().init(self);
+        self.imp().penssidebar.get().typewriter_page().init(self);
         self.imp().penssidebar.get().eraser_page().init(self);
         self.imp().penssidebar.get().selector_page().init(self);
         self.imp().penssidebar.get().tools_page().init(self);
@@ -1446,20 +1460,20 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
-        let svg_data = self.canvas().engine().borrow().export_doc_as_svg_string()?;
+    pub async fn export_doc_as_svg(&self, file: &gio::File, with_background: bool) -> anyhow::Result<()> {
+        let svg_data = self.canvas().engine().borrow().export_doc_as_svg_string(with_background)?;
 
         utils::replace_file_future(svg_data.into_bytes(), file).await?;
 
         Ok(())
     }
 
-    pub async fn export_selection_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn export_selection_as_svg(&self, file: &gio::File, with_background: bool) -> anyhow::Result<()> {
         if let Some(selection_svg_data) = self
             .canvas()
             .engine()
             .borrow()
-            .export_selection_as_svg_string()?
+            .export_selection_as_svg_string(with_background)?
         {
             utils::replace_file_future(selection_svg_data.into_bytes(), file).await?;
         }
@@ -1481,13 +1495,13 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc_as_pdf(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn export_doc_as_pdf(&self, file: &gio::File, with_background: bool) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let pdf_data_receiver = self
                 .canvas()
                 .engine()
                 .borrow()
-                .export_doc_as_pdf_bytes(basename.to_string_lossy().to_string());
+                .export_doc_as_pdf_bytes(basename.to_string_lossy().to_string(), with_background);
             let bytes = pdf_data_receiver.await??;
 
             utils::replace_file_future(bytes, file).await?;

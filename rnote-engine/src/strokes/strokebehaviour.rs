@@ -23,6 +23,7 @@ where
     Self: Sized,
 {
     /// generates the svg, without the xml header or the svg root. used for exporting.
+    /// implementors should translate the stroke drawing so that the svg has origin 0.0, 0.0
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error>;
 
     /// generates pixel images for this stroke

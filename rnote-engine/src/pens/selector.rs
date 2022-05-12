@@ -1,7 +1,7 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
-use crate::engine::EngineTaskSender;
 use crate::document::Document;
+use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use kurbo::Shape;
@@ -169,7 +169,7 @@ impl PenBehaviour for Selector {
                         }
                     }
                 {
-                    if let Some(selection_bounds) = store.gen_bounds_for_strokes(&selection) {
+                    if let Some(selection_bounds) = store.bounds_for_strokes(&selection) {
                         // Change to the modifiy state
                         state = SelectorState::ModifySelection {
                             modify_state: ModifyState::default(),
@@ -189,6 +189,9 @@ impl PenBehaviour for Selector {
                 pen_progress
             }
             (SelectorState::Selecting { .. }, PenEvent::Proximity { .. }) => {
+                PenProgress::InProgress
+            }
+            (SelectorState::Selecting { .. }, PenEvent::KeyPressed { .. }) => {
                 PenProgress::InProgress
             }
             (SelectorState::Selecting { .. }, PenEvent::Cancel) => {
@@ -337,7 +340,7 @@ impl PenBehaviour for Selector {
                             store.rotate_strokes(selection, angle_delta, *rotation_center);
                             store.rotate_strokes_images(selection, angle_delta, *rotation_center);
 
-                            if let Some(new_bounds) = store.gen_bounds_for_strokes(selection) {
+                            if let Some(new_bounds) = store.bounds_for_strokes(selection) {
                                 *selection_bounds = new_bounds;
                             }
                             *current_rotation_angle = new_rotation_angle;
@@ -418,7 +421,7 @@ impl PenBehaviour for Selector {
                     camera.image_scale(),
                 );
 
-                if let Some(new_bounds) = store.gen_bounds_for_strokes(selection) {
+                if let Some(new_bounds) = store.bounds_for_strokes(selection) {
                     *selection_bounds = new_bounds;
                 }
                 *modify_state = ModifyState::Up;
@@ -432,6 +435,9 @@ impl PenBehaviour for Selector {
                 PenProgress::InProgress
             }
             (SelectorState::ModifySelection { .. }, PenEvent::Proximity { .. }) => {
+                PenProgress::InProgress
+            }
+            (SelectorState::ModifySelection { .. }, PenEvent::KeyPressed { .. }) => {
                 PenProgress::InProgress
             }
             (
@@ -460,7 +466,12 @@ impl PenBehaviour for Selector {
 }
 
 impl DrawOnDocBehaviour for Selector {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(
+        &self,
+        _doc: &Document,
+        _store: &StrokeStore,
+        camera: &Camera,
+    ) -> Option<AABB> {
         let total_zoom = camera.total_zoom();
 
         match &self.state {
@@ -496,7 +507,8 @@ impl DrawOnDocBehaviour for Selector {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc_bounds: AABB,
+        _doc: &Document,
+        _store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -596,7 +608,7 @@ impl Selector {
     /// Updates the selector from the stroke store
     pub fn update_from_store(&mut self, store: &StrokeStore) {
         let selection = store.selection_keys_as_rendered();
-        let selection_bounds = store.gen_bounds_for_strokes(&selection);
+        let selection_bounds = store.bounds_for_strokes(&selection);
 
         if let Some(selection_bounds) = selection_bounds {
             self.set_selection(selection, selection_bounds);

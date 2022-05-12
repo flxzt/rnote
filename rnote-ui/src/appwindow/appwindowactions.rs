@@ -13,6 +13,7 @@ use rnote_engine::pens::selector::SelectorType;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::tools::ToolsStyle;
 use rnote_engine::pens::{brush, selector, shaper, tools};
+use rnote_engine::strokes::textstroke::TextAlignment;
 use rnote_engine::{render, Camera};
 
 use gettextrs::gettext;
@@ -389,6 +390,11 @@ impl RnoteAppWindow {
                         .shaper_page()
                         .shapebuildertype_menubutton()
                         .set_direction(ArrowType::Right);
+                    appwindow
+                        .penssidebar()
+                        .typewriter_page()
+                        .colorpicker()
+                        .set_property("position", PositionType::Left.to_value());
                 } else {
                     appwindow.flap().set_flap_position(PackType::End);
                     appwindow.main_grid().remove(&appwindow.canvas_box());
@@ -466,6 +472,11 @@ impl RnoteAppWindow {
                         .shaper_page()
                         .shapebuildertype_menubutton()
                         .set_direction(ArrowType::Left);
+                    appwindow
+                        .penssidebar()
+                        .typewriter_page()
+                        .colorpicker()
+                        .set_property("position", PositionType::Right.to_value());
                 }
             }),
         );
@@ -527,6 +538,9 @@ impl RnoteAppWindow {
                     "shaper" => {
                         Some(PenStyle::Shaper)
                     }
+                    "typewriter" => {
+                        Some(PenStyle::Typewriter)
+                    }
                     "eraser" => {
                         Some(PenStyle::Eraser)
                     }
@@ -570,6 +584,9 @@ impl RnoteAppWindow {
                     }
                     "shaper" => {
                         Some(Some(PenStyle::Shaper))
+                    }
+                    "typewriter" => {
+                        Some(Some(PenStyle::Typewriter))
                     }
                     "eraser" => {
                         Some(Some(PenStyle::Eraser))
@@ -761,6 +778,7 @@ impl RnoteAppWindow {
                 let pen_sounds = appwindow.canvas().engine().borrow().penholder.pen_sounds();
                 let pen_style = appwindow.canvas().engine().borrow().penholder.current_style_w_override();
                 let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
+                let typewriter = appwindow.canvas().engine().borrow().penholder.typewriter.clone();
                 let eraser = appwindow.canvas().engine().borrow().penholder.eraser.clone();
                 let selector = appwindow.canvas().engine().borrow().penholder.selector.clone();
                 let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
@@ -790,6 +808,11 @@ impl RnoteAppWindow {
                         appwindow.mainheader().shaper_toggle().set_active(true);
                         appwindow.narrow_shaper_toggle().set_active(true);
                         appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
+                    }
+                    PenStyle::Typewriter => {
+                        appwindow.mainheader().typewriter_toggle().set_active(true);
+                        appwindow.narrow_typewriter_toggle().set_active(true);
+                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
                     }
                     PenStyle::Eraser => {
                         appwindow.mainheader().eraser_toggle().set_active(true);
@@ -901,6 +924,17 @@ impl RnoteAppWindow {
                             appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-rough-symbolic"));
                         },
                     }
+                }
+
+                // Typewriter
+                appwindow.penssidebar().typewriter_page().fontchooser().set_font_desc(&typewriter.text_style.extract_pango_font_desc());
+                appwindow.penssidebar().typewriter_page().font_size_spinbutton().set_value(typewriter.text_style.font_size);
+                appwindow.penssidebar().typewriter_page().colorpicker().set_current_color(Some(typewriter.text_style.color));
+                match typewriter.text_style.alignment {
+                    TextAlignment::Start => appwindow.penssidebar().typewriter_page().text_align_start_togglebutton().set_active(true),
+                    TextAlignment::Center => appwindow.penssidebar().typewriter_page().text_align_center_togglebutton().set_active(true),
+                    TextAlignment::End => appwindow.penssidebar().typewriter_page().text_align_end_togglebutton().set_active(true),
+                    TextAlignment::Fill => appwindow.penssidebar().typewriter_page().text_align_fill_togglebutton().set_active(true),
                 }
 
                 // Eraser
@@ -1135,20 +1169,24 @@ impl RnoteAppWindow {
 
         // Print doc
         action_print_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let pages_bounds = appwindow.canvas().engine().borrow().pages_bounds_w_content();
+            let n_pages = pages_bounds.len();
+
+            if n_pages == 0 {
+                log::debug!("printing aborted, no pages with content.");
+                return;
+            }
+
             appwindow.start_pulsing_canvas_progressbar();
 
             let print_op = PrintOperation::builder()
-                .unit(Unit::Points)
+                .unit(Unit::None)
                 .build();
-
-                let pages_bounds = appwindow.canvas().engine().borrow().pages_bounds_containing_content();
-                let n_pages = pages_bounds.len();
 
             print_op.connect_begin_print(clone!(@weak appwindow => move |print_op, _print_cx| {
                 print_op.set_n_pages(n_pages as i32);
             }));
 
-            let doc_bounds = appwindow.canvas().engine().borrow().document.bounds();
 
             print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
                 let cx = print_cx.cairo_context();
@@ -1161,21 +1199,20 @@ impl RnoteAppWindow {
                     };
 
                     let page_bounds = pages_bounds[page_nr as usize];
-
-                    let page_svgs = appwindow.canvas().engine().borrow().gen_svgs_intersecting_bounds(page_bounds)?;
+                    let page_svg = appwindow.canvas().engine().borrow().gen_doc_svg_with_viewport(page_bounds, true)?;
 
                     cx.scale(print_zoom, print_zoom);
-                    cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
 
                     cx.rectangle(
-                        page_bounds.mins[0],
-                        page_bounds.mins[1],
-                        page_bounds.extents()[0],
-                        page_bounds.extents()[1]
+                        page_svg.bounds.mins[0],
+                        page_svg.bounds.mins[1],
+                        page_svg.bounds.extents()[0],
+                        page_svg.bounds.extents()[1]
                     );
                     cx.clip();
 
-                    render::Svg::draw_svgs_to_cairo_context(&page_svgs, doc_bounds, &cx)?;
+                    render::Svg::draw_svgs_to_cairo_context(&[page_svg], page_bounds, &cx)?;
+
                     Ok(())
                 }() {
                     log::error!("draw_page() failed while printing page: {}, Err {}", page_nr, e);
@@ -1197,7 +1234,6 @@ impl RnoteAppWindow {
                 log::error!("print_op.run() failed with Err, {}", e);
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Printing document failed").to_variant()));
             }
-
 
             appwindow.finish_canvas_progressbar();
         }));
@@ -1231,7 +1267,7 @@ impl RnoteAppWindow {
 
         // Clipboard copy selection
         action_clipboard_copy_selection.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-        match appwindow.canvas().engine().borrow().export_selection_as_svg_string() {
+        match appwindow.canvas().engine().borrow().export_selection_as_svg_string(false) {
             Ok(Some(selection_svg_data)) => {
                 let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(selection_svg_data.as_bytes()));
                 if let Err(e) = appwindow.clipboard().set_content(Some(&svg_content_provider)) {

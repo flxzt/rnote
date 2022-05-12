@@ -83,7 +83,7 @@ mod imp {
 
             let key_controller = EventControllerKey::builder()
                 .name("key_controller")
-                .propagation_phase(PropagationPhase::Bubble)
+                .propagation_phase(PropagationPhase::Capture)
                 .build();
 
             // Gesture grouping
@@ -686,27 +686,40 @@ impl RnoteCanvas {
 
         // Key controller
 
-        // modifiers not really working in connect_key_pressed, use connect_modifiers for it
-        self.imp().key_controller.connect_key_pressed(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, key, _raw, _modifier| {
-            //log::debug!("key_pressed: {:?}, {:?}, {:?}", key.to_unicode(), raw, modifier);
+        self.imp().key_controller.connect_key_pressed(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
+            //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+            canvas.grab_focus();
 
-            if let Some(shortcut_key) = input::retreive_keyboard_key_shortcut_key(key) {
-                input::process_keyboard_pressed(shortcut_key, &appwindow);
-            }
-
-            Inhibit(true)
-        }));
-        self.imp().key_controller.connect_modifiers(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
-            //log::debug!("key_controller modifier: {:?}", modifier);
-
+            let keyboard_key = input::retreive_keyboard_key(key);
             let shortcut_keys = input::retreive_modifier_shortcut_key(modifier);
 
+            //log::debug!("keyboard key: {:?}", keyboard_key);
+
+            input::process_keyboard_key_pressed(keyboard_key, shortcut_keys, &appwindow);
+
+            Inhibit(true)
+        }));
+
+        /*
+        self.imp().key_controller.connect_key_released(clone!(@weak self as canvas, @weak appwindow => move |_key_controller, _key, _raw, _modifier| {
+            //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+        }));
+
+        self.imp().key_controller.connect_modifiers(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
+            //log::debug!("key_controller modifier pressed: {:?}", modifier);
+
+            let shortcut_keys = input::retreive_modifier_shortcut_key(modifier);
+            canvas.grab_focus();
+
             for shortcut_key in shortcut_keys {
-                input::process_keyboard_pressed(shortcut_key, &appwindow);
+                log::debug!("shortcut key pressed: {:?}", shortcut_key);
+
+                input::process_shortcut_key_pressed(shortcut_key, &appwindow);
             }
 
             Inhibit(true)
         }));
+        */
 
         // Drop Target
         let drop_target = DropTarget::builder()

@@ -78,12 +78,7 @@ impl Document {
         self.layout
     }
 
-    pub(crate) fn set_layout(
-        &mut self,
-        layout: Layout,
-        store: &StrokeStore,
-        camera: &Camera,
-    ) {
+    pub(crate) fn set_layout(&mut self, layout: Layout, store: &StrokeStore, camera: &Camera) {
         self.layout = layout;
 
         self.resize_to_fit_strokes(store, camera);
@@ -194,7 +189,7 @@ impl Document {
         let mut keys = store.stroke_keys_as_rendered();
         keys.append(&mut store.selection_keys_as_rendered());
 
-        let new_bounds = if let Some(new_bounds) = store.gen_bounds_for_strokes(&keys) {
+        let new_bounds = if let Some(new_bounds) = store.bounds_for_strokes(&keys) {
             new_bounds.extend_by(na::vector![padding_horizontal, padding_vertical])
         } else {
             // If doc is empty, resize to one page with the format size

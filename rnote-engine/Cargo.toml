@@ -29,8 +29,8 @@ flate2 = "1.0"
 chrono = {version ="0.4.19", features = ["serde"] }
 slotmap = { version = "1.0", features = ["serde"] }
 rstar = "0.9.2"
-nalgebra = { version = "0.30.1", features = ["serde-serialize"] }
-parry2d-f64 = { version = "0.8.0", features = ["serde-serialize"] }
+nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
+parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
 gtk4 = {version = "0.4.6"}
 cairo-rs = {version = "0.15.10", features = ["png", "svg", "pdf"]}
 librsvg = { git="https://gitlab.gnome.org/GNOME/librsvg" }
@@ -46,6 +46,7 @@ usvg = "0.22"
 poppler-rs = "0.19.0"
 rodio = "0.15.0"
 semver = { version = "1.0"}
+unicode-segmentation = "1.9.0"
 
 [dev-dependencies]
 approx = "0.5.1"

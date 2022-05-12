@@ -4,17 +4,18 @@ use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
 
 use crate::utils::GrapheneRectHelpers;
-use crate::Camera;
+use crate::{Camera, Document, StrokeStore};
 
 /// Trait for types that can draw themselves on the document.
 /// In the coordinate space of the document
 pub trait DrawOnDocBehaviour {
-    fn bounds_on_doc(&self, doc_bounds: AABB, camera: &Camera) -> Option<AABB>;
+    fn bounds_on_doc(&self, doc: &Document, store: &StrokeStore, camera: &Camera) -> Option<AABB>;
     /// draws itself on the document. the implementors are expected save / restore context
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc_bounds: AABB,
+        doc: &Document,
+        store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()>;
 
@@ -22,12 +23,13 @@ pub trait DrawOnDocBehaviour {
     fn draw_on_doc_snapshot(
         &self,
         snapshot: &gtk4::Snapshot,
-        doc_bounds: AABB,
+        doc: &Document,
+        store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         snapshot.save();
 
-        if let Some(bounds) = self.bounds_on_doc(doc_bounds, camera) {
+        if let Some(bounds) = self.bounds_on_doc(doc, store, camera) {
             let viewport = camera.viewport();
 
             // Restrict to viewport as maximum bounds. Else cairo will panic for very large bounds
@@ -48,7 +50,7 @@ pub trait DrawOnDocBehaviour {
             // Transform to doc coordinate space
             piet_cx.transform(camera.transform().to_kurbo());
 
-            self.draw_on_doc(&mut piet_cx, doc_bounds, camera)?;
+            self.draw_on_doc(&mut piet_cx, doc, store, camera)?;
         }
 
         snapshot.restore();

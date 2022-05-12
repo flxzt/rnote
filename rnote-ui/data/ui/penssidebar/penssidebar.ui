@@ -43,6 +43,22 @@
           </object>
         </child>
 
+        <!-- Typewriter Page -->
+        <child>
+          <object class="GtkStackPage" id="typewriter_stackpage">
+            <property name="name">typewriter_page</property>
+            <property name="title" translatable="yes">Typewriter</property>
+            <property name="child">
+              <object class="TypewriterPage" id="typewriter_page">
+                <property name="margin_top">6</property>
+                <property name="margin_bottom">6</property>
+                <property name="margin_start">9</property>
+                <property name="margin_end">9</property>
+              </object>
+            </property>
+          </object>
+        </child>
+
         <!-- Eraser Page -->
         <child>
           <object class="GtkStackPage" id="eraser_stackpage">

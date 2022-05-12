@@ -114,7 +114,10 @@ impl PenBehaviour for Eraser {
 
                 PenProgress::Idle
             }
-            (EraserState::Up, PenEvent::Up { .. } | PenEvent::Cancel) => PenProgress::Idle,
+            (
+                EraserState::Up,
+                PenEvent::KeyPressed { .. } | PenEvent::Up { .. } | PenEvent::Cancel,
+            ) => PenProgress::Idle,
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
@@ -178,6 +181,7 @@ impl PenBehaviour for Eraser {
 
                 PenProgress::Finished
             }
+            (EraserState::Down(_), PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
             (EraserState::Proximity(_), PenEvent::Up { .. }) => {
                 self.state = EraserState::Up;
                 surface_flags.redraw = true;
@@ -198,6 +202,7 @@ impl PenBehaviour for Eraser {
 
                 PenProgress::Finished
             }
+            (EraserState::Proximity(_), PenEvent::KeyPressed { .. }) => PenProgress::Idle,
         };
 
         (pen_progress, surface_flags)
@@ -225,7 +230,12 @@ impl Eraser {
 }
 
 impl DrawOnDocBehaviour for Eraser {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, _camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(
+        &self,
+        _doc: &Document,
+        _store: &StrokeStore,
+        _camera: &Camera,
+    ) -> Option<AABB> {
         match &self.state {
             EraserState::Up => None,
             EraserState::Proximity(current_element) | EraserState::Down(current_element) => {
@@ -237,7 +247,8 @@ impl DrawOnDocBehaviour for Eraser {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc_bounds: AABB,
+        _doc: &Document,
+        _store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;

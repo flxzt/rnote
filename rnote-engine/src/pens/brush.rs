@@ -2,7 +2,7 @@ use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
+use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
@@ -256,7 +256,12 @@ impl PenBehaviour for Brush {
 }
 
 impl DrawOnDocBehaviour for Brush {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(
+        &self,
+        _doc: &Document,
+        _store: &StrokeStore,
+        camera: &Camera,
+    ) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
@@ -270,7 +275,8 @@ impl DrawOnDocBehaviour for Brush {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc_bounds: AABB,
+        _doc: &Document,
+        _store: &StrokeStore,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;

@@ -8,6 +8,7 @@ pub mod selector;
 pub mod shaper;
 pub mod shortcuts;
 pub mod tools;
+pub mod typewriter;
 
 // Re-exports
 pub use audioplayer::AudioPlayer;
@@ -20,3 +21,4 @@ pub use selector::Selector;
 pub use shaper::Shaper;
 pub use shortcuts::Shortcuts;
 pub use tools::Tools;
+pub use typewriter::Typewriter;

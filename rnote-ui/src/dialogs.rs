@@ -275,11 +275,7 @@ pub fn dialog_save_doc_as(appwindow: &RnoteAppWindow) {
     dialog_save_doc_as.add_filter(&filter);
 
     dialog_save_doc_as.set_current_name(
-        format!(
-            "{}_doc.rnote",
-            rnote_engine::utils::now_formatted_string()
-        )
-        .as_str(),
+        format!("{}_doc.rnote", rnote_engine::utils::now_formatted_string()).as_str(),
     );
 
     dialog_save_doc_as.connect_response(
@@ -392,7 +388,7 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.start_pulsing_canvas_progressbar();
 
-                            if let Err(e) = appwindow.export_selection_as_svg(&file).await {
+                            if let Err(e) = appwindow.export_selection_as_svg(&file, false).await {
                                 log::error!("exporting selection failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection as SVG failed.").to_variant()));
                             } else {
@@ -441,7 +437,7 @@ pub fn dialog_export_doc_as_svg(appwindow: &RnoteAppWindow) {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.start_pulsing_canvas_progressbar();
 
-                            if let Err(e) = appwindow.export_doc_as_svg(&file).await {
+                            if let Err(e) = appwindow.export_doc_as_svg(&file, true).await {
                                 log::error!("exporting document failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document as SVG failed.").to_variant()));
                             } else {
@@ -492,7 +488,7 @@ pub fn dialog_export_doc_as_pdf(appwindow: &RnoteAppWindow) {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow, @strong file => async move {
                             appwindow.start_pulsing_canvas_progressbar();
 
-                            if let Err(e) = appwindow.export_doc_as_pdf(&file).await {
+                            if let Err(e) = appwindow.export_doc_as_pdf(&file, true).await {
                                 log::error!("export_doc_as_pdf() failed in export dialog with Err {}", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export document as PDF failed.").to_variant()));
                             } else {

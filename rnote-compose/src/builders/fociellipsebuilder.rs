@@ -55,7 +55,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             }
             (FociEllipseBuilderState::First(_), _) => {}
             (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
-                foci[1] = element.pos;
+                foci[1] = constraint.constrain(element.pos - foci[0]) + foci[0];
             }
             (FociEllipseBuilderState::Foci(foci), PenEvent::Up { element, .. }) => {
                 self.state = FociEllipseBuilderState::FociAndPoint {

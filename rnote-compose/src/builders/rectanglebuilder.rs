@@ -73,9 +73,9 @@ impl RectangleBuilder {
         let relative_extents = self.constraint.constrain(self.current - self.start);
         let current = relative_extents + self.start;
 
-        let center = (self.start + current) / 2.0;
+        let center = (self.start + current) * 0.5;
         let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
-        let half_extents = relative_extents / 2.0;
+        let half_extents = relative_extents * 0.5;
         let cuboid = Cuboid::new(half_extents);
 
         Rectangle { cuboid, transform }

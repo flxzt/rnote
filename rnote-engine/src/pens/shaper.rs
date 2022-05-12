@@ -1,9 +1,10 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
-use crate::sheet::Sheet;
+use crate::engine::EngineTaskSender;
+use crate::document::Document;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
 use gtk4::glib;
 use p2d::bounding_volume::AABB;
@@ -63,12 +64,22 @@ pub struct Shaper {
 
 impl Default for Shaper {
     fn default() -> Self {
+        let mut smooth_options = SmoothOptions::default();
+        let mut rough_options = RoughOptions::default();
+        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        rough_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+
         Self {
             builder_type: ShapeBuilderType::default(),
             style: ShaperStyle::default(),
+<<<<<<< HEAD
             smooth_options: SmoothOptions::default(),
             rough_options: RoughOptions::default(),
             constraint: Constraint::default(),
+=======
+            smooth_options,
+            rough_options,
+>>>>>>> main
             state: ShaperState::Idle,
         }
     }
@@ -78,7 +89,8 @@ impl PenBehaviour for Shaper {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _sheet: &mut Sheet,
+        _tasks_tx: EngineTaskSender,
+        doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -87,8 +99,6 @@ impl PenBehaviour for Shaper {
 
         let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
-                store.record();
-
                 // A new seed for a new shape
                 let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
                 self.rough_options.seed = seed;
@@ -152,6 +162,7 @@ impl PenBehaviour for Shaper {
                     } => constraint.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
                     PenEvent::Cancel => false,
                 };
+
                 match builder.handle_event(event, constraint) {
                     BuilderProgress::InProgress => {
                         surface_flags.redraw = true;
@@ -160,6 +171,11 @@ impl PenBehaviour for Shaper {
                     }
                     BuilderProgress::EmitContinue(shapes) => {
                         let drawstyle = self.gen_style_for_current_options();
+
+                        if !shapes.is_empty() {
+                            // Only record if new shapes actually were emitted
+                            surface_flags.merge_with_other(store.record());
+                        }
 
                         for shape in shapes {
                             let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
@@ -176,8 +192,7 @@ impl PenBehaviour for Shaper {
                         }
 
                         surface_flags.redraw = true;
-                        surface_flags.resize = true;
-                        surface_flags.sheet_changed = true;
+                        surface_flags.store_changed = true;
 
                         PenProgress::InProgress
                     }
@@ -185,8 +200,15 @@ impl PenBehaviour for Shaper {
                         let drawstyle = self.gen_style_for_current_options();
 
                         if !shapes.is_empty() {
+                            // Only record if new shapes actually were emitted
+                            surface_flags.merge_with_other(store.record());
+                        }
+
+                        if !shapes.is_empty() {
+                            doc.resize_autoexpand(store, camera);
+
                             surface_flags.resize = true;
-                            surface_flags.sheet_changed = true;
+                            surface_flags.store_changed = true;
                         }
 
                         for shape in shapes {
@@ -211,35 +233,14 @@ impl PenBehaviour for Shaper {
                     }
                 }
             }
-            (
-                ShaperState::BuildShape { builder },
-                PenEvent::Down {
-                    element,
-                    shortcut_keys,
-                },
-            ) => todo!(),
-            (
-                ShaperState::BuildShape { builder },
-                PenEvent::Up {
-                    element,
-                    shortcut_keys,
-                },
-            ) => todo!(),
-            (
-                ShaperState::BuildShape { builder },
-                PenEvent::Proximity {
-                    element,
-                    shortcut_keys,
-                },
-            ) => todo!(),
         };
 
         (pen_progress, surface_flags)
     }
 }
 
-impl DrawOnSheetBehaviour for Shaper {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for Shaper {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
@@ -250,10 +251,10 @@ impl DrawOnSheetBehaviour for Shaper {
         }
     }
 
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -273,6 +274,10 @@ impl DrawOnSheetBehaviour for Shaper {
 
 impl Shaper {
     pub const INPUT_OVERSHOOT: f64 = 30.0;
+
+    pub const STROKE_WIDTH_MIN: f64 = 1.0;
+    pub const STROKE_WIDTH_MAX: f64 = 500.0;
+    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
 
     pub fn gen_style_for_current_options(&self) -> Style {
         match &self.style {

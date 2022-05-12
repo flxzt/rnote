@@ -1,6 +1,8 @@
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, DrawBehaviour};
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
+use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
@@ -150,14 +152,14 @@ impl VectorImage {
 
         let rectangle = if let Some(size) = size {
             Rectangle {
-                cuboid: p2d::shape::Cuboid::new(size / 2.0),
-                transform: Transform::new_w_isometry(na::Isometry2::new(pos + size / 2.0, 0.0)),
+                cuboid: p2d::shape::Cuboid::new(size * 0.5),
+                transform: Transform::new_w_isometry(na::Isometry2::new(pos + size * 0.5, 0.0)),
             }
         } else {
             Rectangle {
-                cuboid: p2d::shape::Cuboid::new(intrinsic_size / 2.0),
+                cuboid: p2d::shape::Cuboid::new(intrinsic_size * 0.5),
                 transform: Transform::new_w_isometry(na::Isometry2::new(
-                    pos + intrinsic_size / 2.0,
+                    pos + intrinsic_size * 0.5,
                     0.0,
                 )),
             }
@@ -177,10 +179,14 @@ impl VectorImage {
     ) -> Result<Vec<Self>, anyhow::Error> {
         let doc = poppler::Document::from_data(to_be_read, None)?;
 
-        let mut vector_images = Vec::new();
+        struct SvgDataWithPos {
+            svg_data: String,
+            pos: na::Vector2<f64>,
+            size: na::Vector2<f64>,
+        }
 
-        for i in 0..doc.n_pages() {
-            if let Some(page) = doc.page(i) {
+        let svg_datas = (0..doc.n_pages()).filter_map(|i| {
+            let page = doc.page(i)?;
                 let intrinsic_size = page.size();
 
                 let (width, height, _zoom) = if let Some(page_width) = page_width {
@@ -193,8 +199,10 @@ impl VectorImage {
 
                 let x = pos[0];
                 let y = pos[1]
-                    + f64::from(i) * (height + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) / 2.0);
+                    + f64::from(i) * (height + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5);
 
+
+                let res = || -> anyhow::Result<String> {
                 let svg_stream: Vec<u8> = vec![];
 
                 let surface =
@@ -223,42 +231,51 @@ impl VectorImage {
                     page.render(&cx);
 
                     // Draw outline around page
-                    cx.set_source_rgba(0.7, 0.5, 0.5, 1.0);
+                    cx.set_source_rgba(color::GNOME_REDS[4].as_rgba().0, color::GNOME_REDS[4].as_rgba().1, color::GNOME_REDS[4].as_rgba().2, 1.0);
 
                     let line_width = 1.0;
                     cx.set_line_width(line_width);
                     cx.rectangle(
-                        line_width / 2.0,
-                        line_width / 2.0,
+                        line_width * 0.5,
+                        line_width * 0.5,
                         intrinsic_size.0 - line_width,
                         intrinsic_size.1 - line_width,
                     );
                     cx.stroke()?;
                 }
-                let svg_data = match surface.finish_output_stream() {
-                    Ok(file_content) => match file_content.downcast::<Vec<u8>>() {
-                        Ok(file_content) => *file_content,
-                        Err(_) => {
-                            log::error!("file_content.downcast() in VectorImage::import_from_pdf_bytes() failed");
-                            continue;
-                        }
-                    },
-                    Err(e) => {
-                        log::error!("surface.finish_output_stream() in VectorImage::import_from_pdf_bytes() failed with Err {}", e);
-                        continue;
-                    }
+                let file_content = surface.finish_output_stream().map_err(|e| anyhow::anyhow!("{}", e))?;
+                Ok(String::from_utf8(*file_content.downcast::<Vec<u8>>().map_err(|_e| anyhow::anyhow!("failed to downcast pdf file content in import_from_pdf_bytes()"))?)?)
                 };
-                let svg_data = String::from_utf8(svg_data)?;
 
-                vector_images.push(Self::import_from_svg_data(
-                    svg_data.as_str(),
-                    na::vector![x, y],
-                    Some(na::vector![width, height]),
-                )?);
-            }
-        }
+                match res() {
+                    Ok(svg_data) => Some(SvgDataWithPos {
+                        svg_data,
+                        pos: na::vector![x, y],
+                        size: na::vector![width, height]
+                    }),
+                    Err(e) => {
+                        log::error!("importing page {} from pdf failed with Err {}", i, e);
+                        None
+                    }
+                }
+        }).collect::<Vec<SvgDataWithPos>>();
 
-        Ok(vector_images)
+        Ok(svg_datas
+            .into_par_iter()
+            .filter_map(|svg_data| {
+                match Self::import_from_svg_data(
+                    svg_data.svg_data.as_str(),
+                    svg_data.pos,
+                    Some(svg_data.size),
+                ) {
+                    Ok(vectorimage) => Some(vectorimage),
+                    Err(e) => {
+                        log::error!("import_from_svg_data() failed failed in vectorimage import_from_pdf_bytes() with Err {}", e);
+                        None
+                    }
+                }
+            })
+            .collect())
     }
 
     pub fn export_as_svg(&self) -> Result<String, anyhow::Error> {

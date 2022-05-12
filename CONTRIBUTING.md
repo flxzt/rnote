@@ -2,6 +2,13 @@
 Please ask in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section if you need help with anything!
 
 # Building
+
+First clone the repository and init its submodules
+```
+git clone https://github.com/flxzt/rnote
+git submodule update --init --recursive
+```
+
 ## Building with Flatpak
 There is a flatpak manifest in `build-aux/com.github.flxzt.rnote.Devel.json`.
 
@@ -11,6 +18,8 @@ Use Gnome Builder or VSCode with the [flatpak extension](https://marketplace.vis
 - If you encounter `bwrap: Can't find source path /run/user/1000/doc/by-app/com.github.flxzt.rnote: No such file or directory` when trying to run the flatpak, `xdg-document-portal` did not start yet. Starting it manually with `systemctl start --user xdg-document-portal` should fix it.
 
 - As long as the flatpak is not installed on the system, The DirectoryList in the workspace browser does not update when files are created, removed or changed. It will work in the released flatpak.
+
+- Building the flatpak aborts randomly with status `137` out of memory: Reset the flatpak app-id permissions with `flatpak permission-reset com.github.flxzt.rnote`, so it is able to run in the background. (see [this issue](https://github.com/flatpak/xdg-desktop-portal/issues/478))
 
 ### Prerequisites
 If you don't have an IDE or extension to handle building flatpaks, you can also do it manually:

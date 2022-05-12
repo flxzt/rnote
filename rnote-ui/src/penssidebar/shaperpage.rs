@@ -6,6 +6,7 @@ use gtk4::{
 use rnote_compose::builders::ConstraintRatio;
 use rnote_compose::style::rough::RoughOptions;
 use rnote_engine::pens::shaper::ShaperStyle;
+use rnote_engine::pens::Shaper;
 use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
@@ -116,13 +117,6 @@ impl Default for ShaperPage {
 }
 
 impl ShaperPage {
-    /// The default width
-    pub const WIDTH_DEFAULT: f64 = 2.0;
-    /// The min width
-    pub const WIDTH_MIN: f64 = 0.1;
-    /// The max width
-    pub const WIDTH_MAX: f64 = 1000.0;
-
     pub fn new() -> Self {
         glib::Object::new(&[]).expect("Failed to create ShaperPage")
     }
@@ -223,8 +217,10 @@ impl ShaperPage {
         // Width
         self.width_spinbutton().set_increments(0.1, 2.0);
         self.width_spinbutton()
-            .set_range(Self::WIDTH_MIN, Self::WIDTH_MAX);
-        self.width_spinbutton().set_value(Self::WIDTH_DEFAULT);
+            .set_range(Shaper::STROKE_WIDTH_MIN, Shaper::STROKE_WIDTH_MAX);
+        // Must be set after set_range()
+        self.width_spinbutton()
+            .set_value(Shaper::STROKE_WIDTH_DEFAULT);
 
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {

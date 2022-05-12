@@ -1,20 +1,22 @@
-use super::StoreTask;
 use super::{Stroke, StrokeKey, StrokeStore};
 use crate::engine::visual_debug;
+use crate::engine::{EngineTask, EngineTaskSender};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::StrokeBehaviour;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
-use crate::{render, DrawBehaviour};
+use crate::{render, DrawBehaviour, RnoteEngine};
 
 use anyhow::Context;
 use gtk4::{gdk, graphene, gsk, Snapshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::color;
+use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::shapes::ShapeBehaviour;
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RenderCompState {
     Complete,
     ForViewport(AABB),
+    BusyRenderingInTask,
     Dirty,
 }
 
@@ -64,16 +66,15 @@ impl StrokeStore {
     pub fn set_rendering_dirty(&mut self, key: StrokeKey) {
         if let Some(render_comp) = self.render_components.get_mut(key) {
             render_comp.state = RenderCompState::Dirty;
-        } else {
-            log::debug!(
-                "get render_comp failed in set_state() of stroke for key {:?}, invalid key used or stroke does not support rendering",
-                key
-            );
         }
     }
 
     pub fn set_rendering_dirty_for_strokes(&mut self, keys: &[StrokeKey]) {
         keys.iter().for_each(|&key| self.set_rendering_dirty(key));
+    }
+
+    pub fn set_rendering_dirty_all_keys(&mut self) {
+        self.set_rendering_dirty_for_strokes(&self.keys_unordered());
     }
 
     pub fn gen_bounds_for_stroke_images(&self, key: StrokeKey) -> Option<AABB> {
@@ -118,9 +119,14 @@ impl StrokeStore {
             self.stroke_components.get(key),
             self.render_components.get_mut(key),
         ) {
-            // margin is constant in pixel values, so we need to divide by the image_scale
-            let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
-            let viewport = viewport.loosened(viewport_render_margin);
+            if render_comp.state == RenderCompState::BusyRenderingInTask {
+                return Ok(());
+            }
+
+            // extending the viewport by the factor
+            let viewport_render_margins =
+                viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+            let viewport = viewport.extend_by(viewport_render_margins);
 
             let images = stroke
                 .gen_images(viewport, image_scale)
@@ -164,44 +170,41 @@ impl StrokeStore {
 
     pub fn regenerate_rendering_for_stroke_threaded(
         &mut self,
+        tasks_tx: EngineTaskSender,
         key: StrokeKey,
         viewport: AABB,
         image_scale: f64,
     ) {
-        let tasks_tx = self.tasks_tx.clone();
-
         if let (Some(render_comp), Some(stroke)) = (
             self.render_components.get_mut(key),
             self.stroke_components.get(key),
         ) {
+            if render_comp.state == RenderCompState::BusyRenderingInTask {
+                return;
+            }
+
             let stroke = stroke.clone();
-            let stroke_bounds = stroke.bounds();
 
-            // margin is constant in pixel values, so we need to divide by the image_scale
-            let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
-            let viewport = viewport.loosened(viewport_render_margin);
+            // extending the viewport by the factor
+            let viewport_render_margins =
+                viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+            let viewport = viewport.extend_by(viewport_render_margins);
 
-            // we need to check and set the state **before** spawning a task thread, to avoid repeated rendering of already outdated images
-            render_comp.state = if viewport.contains(&stroke_bounds) {
-                RenderCompState::Complete
-            } else {
-                RenderCompState::ForViewport(viewport)
-            };
+            // indicates that a task is now started rendering the stroke
+            render_comp.state = RenderCompState::BusyRenderingInTask;
 
             // Spawn a new thread for image rendering
-            self.threadpool.spawn(move || {
-                match stroke.gen_images(viewport, image_scale) {
-                    Ok(images) => {
-                        tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
+            rayon::spawn(move || match stroke.gen_images(viewport, image_scale) {
+                Ok(images) => {
+                    tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                             key,
                             images,
                         }).unwrap_or_else(|e| {
                             log::error!("tasks_tx.send() UpdateStrokeWithImages failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err, {}",key, e);
                         });
-                    }
-                    Err(e) => {
-                        log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
-                    }
+                }
+                Err(e) => {
+                    log::debug!("stroke.gen_image() failed in regenerate_rendering_for_stroke_threaded() for stroke with key {:?}, with Err {}", key, e);
                 }
             });
         }
@@ -210,6 +213,7 @@ impl StrokeStore {
     /// Regenerates the rendering of all keys for the given viewport that need rerendering
     pub fn regenerate_rendering_in_viewport_threaded(
         &mut self,
+        tasks_tx: EngineTaskSender,
         force_regenerate: bool,
         viewport: AABB,
         image_scale: f64,
@@ -220,11 +224,12 @@ impl StrokeStore {
             if let (Some(stroke), Some(render_comp)) =
                 (self.stroke_components.get(key), self.render_components.get_mut(key))
             {
+                let tasks_tx = tasks_tx.clone();
                 let stroke_bounds = stroke.bounds();
 
-                // margin is constant in pixel values, so we need to divide by the image_scale
-                let viewport_render_margin = render::VIEWPORT_RENDER_MARGIN / image_scale;
-                let viewport = viewport.loosened(viewport_render_margin);
+                // extending the viewport by the factor
+                let viewport_render_margins = viewport.extents() * render::VIEWPORT_EXTENTS_MARGIN_FACTOR;
+                let viewport = viewport.extend_by(viewport_render_margins);
 
                 // skip and empty image buffer if stroke is not in viewport
                 if !viewport.intersects(&stroke_bounds) {
@@ -238,7 +243,7 @@ impl StrokeStore {
                 // only check if rerendering is not forced
                 if !force_regenerate {
                     match render_comp.state {
-                        RenderCompState::Complete => {
+                        RenderCompState::Complete | RenderCompState::BusyRenderingInTask => {
                             return;
                         }
                         RenderCompState::ForViewport(old_viewport) => {
@@ -246,7 +251,7 @@ impl StrokeStore {
                             const SKIP_RERENDER_MARGIN_THRESHOLD: f64 = 0.7;
 
                             let diff  = (old_viewport.center().coords - viewport.center().coords).abs();
-                            if diff[0] < viewport_render_margin * SKIP_RERENDER_MARGIN_THRESHOLD && diff[1] < viewport_render_margin * SKIP_RERENDER_MARGIN_THRESHOLD {
+                            if diff[0] < viewport_render_margins[0] * SKIP_RERENDER_MARGIN_THRESHOLD && diff[1] < viewport_render_margins[1] * SKIP_RERENDER_MARGIN_THRESHOLD {
                                 // We don't update the state, to have the old bounds on the next call
                                 // so we only update the rendering after it crossed the margin threshold
                                 return;
@@ -256,21 +261,18 @@ impl StrokeStore {
                     }
                 }
 
-                // we need to check and set the state **before** spawning a task thread, to avoid repeated rendering of already outdated images
-                render_comp.state = if viewport.contains(&stroke_bounds) {
-                    RenderCompState::Complete
-                } else {
-                    RenderCompState::ForViewport(viewport)
-                };
+                // indicates that a task is now started rendering the stroke
+                render_comp.state = RenderCompState::BusyRenderingInTask;
 
-                let tasks_tx = self.tasks_tx.clone();
                 let stroke = stroke.clone();
 
+                //log::debug!("updating stroke with viewport: {:#?}", viewport);
+
                 // Spawn a new thread for image rendering
-                self.threadpool.spawn(move || {
+                rayon::spawn(move || {
                     match stroke.gen_images(viewport, image_scale) {
                         Ok(images) => {
-                            tasks_tx.unbounded_send(StoreTask::UpdateStrokeWithImages {
+                            tasks_tx.unbounded_send(EngineTask::UpdateStrokeWithImages {
                                 key,
                                 images,
                             }).unwrap_or_else(|e| {
@@ -289,6 +291,7 @@ impl StrokeStore {
     /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completely
     pub fn append_rendering_last_segments(
         &mut self,
+        tasks_tx: EngineTaskSender,
         key: StrokeKey,
         n_segments: usize,
         viewport: AABB,
@@ -310,55 +313,19 @@ impl StrokeStore {
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
                 Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                    self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
+                    self.regenerate_rendering_for_stroke_threaded(
+                        tasks_tx,
+                        key,
+                        viewport,
+                        image_scale,
+                    );
                 }
             }
         }
         Ok(())
     }
 
-    /// generates images and appends them to the render component for the last segments of brushstrokes. For other strokes the rendering is regenerated completelyd
-    #[allow(unused)]
-    pub fn append_rendering_last_segments_threaded(
-        &mut self,
-        key: StrokeKey,
-        n_segments: usize,
-        viewport: AABB,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
-        if let Some(stroke) = self.stroke_components.get(key) {
-            let tasks_tx = self.tasks_tx.clone();
-
-            match &**stroke {
-                Stroke::BrushStroke(brushstroke) => {
-                    let brushstroke = brushstroke.clone();
-                    // Spawn a new thread for image rendering
-                    self.threadpool.spawn(move || {
-                        match brushstroke.gen_images_for_last_segments(n_segments, image_scale) {
-                            Ok(images) => {
-                                tasks_tx.unbounded_send(StoreTask::AppendImagesToStroke {
-                                    key,
-                                    images: GeneratedStrokeImages::Partial{images, viewport},
-                                }).unwrap_or_else(|e| {
-                                    log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
-                                });
-                            }
-                            Err(e) => {
-                                log::error!("tasks_tx.send() AppendImagesToStroke failed in append_rendering_last_segments_threaded() for stroke with key {:?}, with Err, {}",key, e);
-                            }
-                        }
-
-                    });
-                }
-                // regenerate the whole stroke for strokes that don't support generating images for the last added segments
-                Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
-                    self.regenerate_rendering_for_stroke_threaded(key, viewport, image_scale);
-                }
-            }
-        }
-        Ok(())
-    }
-
+    /// Replaces the entire current rendering with the given new images. Alos updates the renderstate
     pub fn replace_rendering_with_images(
         &mut self,
         key: StrokeKey,
@@ -411,8 +378,8 @@ impl StrokeStore {
     }
 
     /// Draws the strokes without the selection
-    pub fn draw_strokes_snapshot(&self, snapshot: &Snapshot, sheet_bounds: AABB, viewport: AABB) {
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
+    pub fn draw_strokes_snapshot(&self, snapshot: &Snapshot, doc_bounds: AABB, viewport: AABB) {
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .iter()
@@ -438,7 +405,7 @@ impl StrokeStore {
     pub fn draw_selection_snapshot(
         &self,
         snapshot: &Snapshot,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         viewport: AABB,
     ) {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
@@ -472,7 +439,7 @@ impl StrokeStore {
     pub fn draw_strokes_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
@@ -503,7 +470,7 @@ impl StrokeStore {
     pub fn draw_selection_immediate_w_piet(
         &self,
         piet_cx: &mut impl piet::RenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         viewport: AABB,
         image_scale: f64,
     ) -> anyhow::Result<()> {
@@ -531,7 +498,14 @@ impl StrokeStore {
     }
 
     /// Draws bounds, positions, etc. for all strokes for visual debugging
-    pub fn draw_debug(&self, snapshot: &Snapshot, border_widths: f64) {
+    pub fn draw_debug(
+        &self,
+        snapshot: &Snapshot,
+        engine: &RnoteEngine,
+        _surface_bounds: AABB,
+    ) -> anyhow::Result<()> {
+        let border_widths = 1.0 / engine.camera.total_zoom();
+
         self.keys_sorted_chrono().into_iter().for_each(|key| {
             if let Some(stroke) = self.stroke_components.get(key) {
                 // Push opacity for strokes which are normally hidden
@@ -542,15 +516,23 @@ impl StrokeStore {
                 }
 
                 if let Some(render_comp) = self.render_components.get(key) {
-                    /*
-                                       if render_comp.regenerate_flag {
-                                           visual_debug::draw_fill(
-                                               stroke.bounds(),
-                                               visual_debug::COLOR_STROKE_REGENERATE_FLAG,
-                                               snapshot,
-                                           );
-                                       }
-                    */
+                    match render_comp.state {
+                        RenderCompState::Dirty => {
+                            visual_debug::draw_fill(
+                                stroke.bounds(),
+                                visual_debug::COLOR_STROKE_RENDERING_DIRTY,
+                                snapshot,
+                            );
+                        }
+                        RenderCompState::BusyRenderingInTask => {
+                            visual_debug::draw_fill(
+                                stroke.bounds(),
+                                visual_debug::COLOR_STROKE_RENDERING_BUSY,
+                                snapshot,
+                            );
+                        }
+                        _ => {}
+                    }
                     render_comp.images.iter().for_each(|image| {
                         visual_debug::draw_bounds(
                             // a little tightened not to overlap with other bounds
@@ -601,5 +583,7 @@ impl StrokeStore {
                 }
             }
         });
+
+        Ok(())
     }
 }

@@ -24,7 +24,7 @@ use p2d::bounding_volume::AABB;
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::Element;
 use rnote_engine::utils::GrapheneRectHelpers;
-use rnote_engine::Sheet;
+use rnote_engine::Document;
 
 use std::collections::VecDeque;
 use std::time;
@@ -55,8 +55,6 @@ mod imp {
         pub empty: Cell<bool>,
 
         pub touch_drawing: Cell<bool>,
-        pub pdf_import_width: Cell<f64>,
-        pub pdf_import_as_vector: Cell<bool>,
     }
 
     impl Default for RnoteCanvas {
@@ -133,8 +131,6 @@ mod imp {
                 empty: Cell::new(true),
 
                 touch_drawing: Cell::new(false),
-                pdf_import_width: Cell::new(super::RnoteCanvas::PDF_IMPORT_WIDTH_DEFAULT),
-                pdf_import_as_vector: Cell::new(true),
             }
         }
     }
@@ -213,24 +209,6 @@ mod imp {
                         false,
                         glib::ParamFlags::READWRITE,
                     ),
-                    // import PDFs with with in percentage to sheet width
-                    glib::ParamSpecDouble::new(
-                        "pdf-import-width",
-                        "pdf-import-width",
-                        "pdf-import-width",
-                        1.0,
-                        100.0,
-                        super::RnoteCanvas::PDF_IMPORT_WIDTH_DEFAULT,
-                        glib::ParamFlags::READWRITE,
-                    ),
-                    // import PDFs as vector images ( if false = as bitmap images )
-                    glib::ParamSpecBoolean::new(
-                        "pdf-import-as-vector",
-                        "pdf-import-as-vector",
-                        "pdf-import-as-vector",
-                        true,
-                        glib::ParamFlags::READWRITE,
-                    ),
                     // Scrollable properties
                     glib::ParamSpecOverride::for_interface::<Scrollable>("hscroll-policy"),
                     glib::ParamSpecOverride::for_interface::<Scrollable>("vscroll-policy"),
@@ -251,8 +229,6 @@ mod imp {
                 "hscroll-policy" => self.hscroll_policy.get().to_value(),
                 "vscroll-policy" => self.vscroll_policy.get().to_value(),
                 "touch-drawing" => self.touch_drawing.get().to_value(),
-                "pdf-import-width" => self.pdf_import_width.get().to_value(),
-                "pdf-import-as-vector" => self.pdf_import_as_vector.get().to_value(),
                 _ => unimplemented!(),
             }
         }
@@ -314,21 +290,6 @@ mod imp {
                         self.touch_drawing_gesture
                             .set_propagation_phase(PropagationPhase::None);
                     }
-                }
-                "pdf-import-width" => {
-                    let pdf_import_width = value
-                        .get::<f64>()
-                        .expect("The value needs to be of type `f64`.")
-                        .clamp(1.0, 100.0);
-
-                    self.pdf_import_width.replace(pdf_import_width);
-                }
-                "pdf-import-as-vector" => {
-                    let pdf_import_as_vector = value
-                        .get::<bool>()
-                        .expect("The value needs to be of type `bool`.");
-
-                    self.pdf_import_as_vector.replace(pdf_import_as_vector);
                 }
                 _ => unimplemented!(),
             }
@@ -394,8 +355,6 @@ impl RnoteCanvas {
     pub const ZOOM_TIMEOUT_TIME: time::Duration = time::Duration::from_millis(300);
     // Sets the canvas zoom scroll step in % for one unit of the event controller delta
     pub const ZOOM_STEP: f64 = 0.1;
-    // The default width of imported PDF's in percentage to the sheet width
-    pub const PDF_IMPORT_WIDTH_DEFAULT: f64 = 50.0;
 
     pub fn new() -> Self {
         let canvas: RnoteCanvas = glib::Object::new(&[]).expect("Failed to create RnoteCanvas");
@@ -422,22 +381,6 @@ impl RnoteCanvas {
 
     pub fn set_output_file(&self, output_file: Option<gio::File>) {
         self.set_property("output-file", output_file.to_value());
-    }
-
-    pub fn pdf_import_width(&self) -> f64 {
-        self.property::<f64>("pdf-import-width")
-    }
-
-    pub fn set_pdf_import_width(&self, pdf_import_width: f64) {
-        self.set_property("pdf-import-width", pdf_import_width.to_value());
-    }
-
-    pub fn pdf_import_as_vector(&self) -> bool {
-        self.property::<bool>("pdf-import-as-vector")
-    }
-
-    pub fn set_pdf_import_as_vector(&self, as_vector: bool) {
-        self.set_property("pdf-import-as-vector", as_vector.to_value());
     }
 
     pub fn unsaved_changes(&self) -> bool {
@@ -474,9 +417,9 @@ impl RnoteCanvas {
             let signal_id = hadjustment.connect_value_changed(
                 clone!(@weak self as canvas => move |_hadjustment| {
                     canvas.queue_resize();
-                    // Everything is updated in canvaslayout allocate
                 }),
             );
+
             self.imp().hadjustment_signal.replace(Some(signal_id));
         }
         self.imp().hadjustment.replace(adj);
@@ -492,9 +435,9 @@ impl RnoteCanvas {
             let signal_id = vadjustment.connect_value_changed(
                 clone!(@weak self as canvas => move |_vadjustment| {
                     canvas.queue_resize();
-                    // Everything is updated in canvaslayout allocate
                 }),
             );
+
             self.imp().vadjustment_signal.replace(Some(signal_id));
         }
         self.imp().vadjustment.replace(adj);
@@ -503,11 +446,8 @@ impl RnoteCanvas {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
-        // receive store tasks
-        let main_cx = glib::MainContext::default();
-
-        main_cx.spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
-            let mut task_rx = canvas.engine().borrow_mut().store.tasks_rx.take().unwrap();
+        glib::MainContext::default().spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
+            let mut task_rx = canvas.engine().borrow_mut().tasks_rx.take().unwrap();
 
             loop {
                 if let Some(task) = task_rx.next().await {
@@ -543,8 +483,15 @@ impl RnoteCanvas {
         self.connect_notify_local(Some("scale-factor"), move |canvas, _pspec| {
             let scale_factor = f64::from(canvas.scale_factor());
             canvas.engine().borrow_mut().camera.scale_factor = scale_factor;
-            canvas.regenerate_background(false);
-            canvas.regenerate_content(true, true);
+
+            canvas
+                .engine()
+                .borrow_mut()
+                .store
+                .set_rendering_dirty_all_keys();
+
+            canvas.regenerate_background_pattern();
+            canvas.update_engine_rendering();
         });
     }
 
@@ -775,15 +722,19 @@ impl RnoteCanvas {
     }
 
     // updates the camera offset with a new one ( for example from touch drag gestures )
+    // update_engine_rendering() then needs to be called.
     pub fn update_camera_offset(&self, new_offset: na::Vector2<f64>) {
         self.engine().borrow_mut().update_camera_offset(new_offset);
 
+        // By setting new adjustment values, the callback connected to their value property is called,
+        // Which is where the engine rendering is updated.
         self.hadjustment().unwrap().set_value(new_offset[0]);
         self.vadjustment().unwrap().set_value(new_offset[1]);
-        self.queue_resize();
     }
 
-    pub fn current_center_on_sheet(&self) -> na::Vector2<f64> {
+    /// returns the center of the current view on the doc
+    // update_engine_rendering() then needs to be called.
+    pub fn current_center_on_doc(&self) -> na::Vector2<f64> {
         (self.engine().borrow().camera.transform().inverse()
             * na::point![
                 f64::from(self.width()) * 0.5,
@@ -792,8 +743,9 @@ impl RnoteCanvas {
         .coords
     }
 
-    /// Centers the view around a coord on the sheet. The coord parameter has the coordinate space of the sheet!
-    pub fn center_around_coord_on_sheet(&self, coord: na::Vector2<f64>) {
+    /// Centers the view around a coord on the doc. The coord parameter has the coordinate space of the doc.
+    // update_engine_rendering() then needs to be called.
+    pub fn center_around_coord_on_doc(&self, coord: na::Vector2<f64>) {
         let (parent_width, parent_height) = (
             f64::from(self.parent().unwrap().width()),
             f64::from(self.parent().unwrap().height()),
@@ -809,14 +761,22 @@ impl RnoteCanvas {
     }
 
     /// Centering the view to the origin page
+    // update_engine_rendering() then needs to be called.
     pub fn return_to_origin_page(&self) {
         let zoom = self.engine().borrow().camera.zoom();
 
-        let new_offset = na::vector![
-            ((self.engine().borrow().sheet.format.width / 2.0) * zoom)
-                - f64::from(self.parent().unwrap().width()) * 0.5,
-            -Sheet::SHADOW_WIDTH * zoom
-        ];
+        let new_offset = if self.engine().borrow().document.format.width * zoom
+            <= f64::from(self.parent().unwrap().width())
+        {
+            na::vector![
+                (self.engine().borrow().document.format.width * 0.5 * zoom)
+                    - f64::from(self.parent().unwrap().width()) * 0.5,
+                -Document::SHADOW_WIDTH * zoom
+            ]
+        } else {
+            // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
+            na::vector![-Document::SHADOW_WIDTH * zoom, -Document::SHADOW_WIDTH * zoom]
+        };
 
         self.update_camera_offset(new_offset);
     }
@@ -832,36 +792,44 @@ impl RnoteCanvas {
         self.engine().borrow_mut().camera.set_temporary_zoom(1.0);
         self.engine().borrow_mut().camera.set_zoom(new_zoom);
 
-        let all_keys = self.engine().borrow().store.keys_sorted_chrono();
         self.engine()
             .borrow_mut()
             .store
-            .set_rendering_dirty_for_strokes(&all_keys);
+            .set_rendering_dirty_all_keys();
 
-        self.engine().borrow_mut().resize_autoexpand();
-        self.regenerate_background(false);
-        self.regenerate_content(false, true);
+        self.regenerate_background_pattern();
+        self.update_engine_rendering();
+
+        // We need to update the layout managers internal state after zooming
+        self.layout_manager()
+            .unwrap()
+            .downcast::<CanvasLayout>()
+            .unwrap()
+            .update_state(self);
     }
 
     /// Zooms temporarily and then scale the canvas and its contents to a new zoom after a given time.
     /// Repeated calls to this function reset the timeout.
-    /// should only be called in the "zoom-to-value" action.
+    /// should only be called from the "zoom-to-value" action.
     pub fn zoom_temporarily_then_scale_to_after_timeout(
         &self,
-        zoom: f64,
+        new_zoom: f64,
         timeout_time: time::Duration,
     ) {
         if let Some(zoom_timeout_id) = self.imp().zoom_timeout_id.take() {
             zoom_timeout_id.remove();
         }
 
+        let old_perm_zoom = self.engine().borrow().camera.zoom();
+
         // Zoom temporarily
-        let new_temp_zoom = zoom / self.engine().borrow().camera.zoom();
+        let new_temp_zoom = new_zoom / old_perm_zoom;
         self.engine()
             .borrow_mut()
             .camera
             .set_temporary_zoom(new_temp_zoom);
 
+        // In resize we render the strokes that came into view
         self.queue_resize();
 
         if let Some(zoom_timeout_id) =
@@ -873,7 +841,7 @@ impl RnoteCanvas {
                     clone!(@weak self as canvas => move || {
 
                         // After timeout zoom permanent
-                        canvas.zoom_to(zoom);
+                        canvas.zoom_to(new_zoom);
 
                         // Removing the timeout id
                         let mut zoom_timeout_id = canvas.imp().zoom_timeout_id.borrow_mut();
@@ -887,59 +855,37 @@ impl RnoteCanvas {
         }
     }
 
-    /// Update rendernodes of the background. Used when the background itself did not change, but for example the sheet size.
-    /// Only to be called on allocation from the layout manager
-    fn update_background_rendernodes(&self, redraw: bool) {
-        let viewport = self.engine().borrow().camera.viewport();
+    /// Updates the rendering of the background and strokes that are flagged for rerendering for the current viewport.
+    /// To force the rerendering of the background pattern, call regenerate_background_pattern().
+    /// To force the rerendering for all strokes in the current viewport, first flag their rendering as dirty.
+    pub fn update_engine_rendering(&self) {
+        // background rendering is updated in the layout manager
+        self.queue_resize();
 
-        if let Err(e) = self
-            .engine()
+        // Update engine rendering for the new viewport
+        self.engine()
             .borrow_mut()
-            .sheet
-            .background
-            .update_rendernodes(viewport)
-        {
-            log::error!("failed to update rendernode for background in update_background_rendernode() with Err {}", e);
-        }
+            .update_rendering_current_viewport();
 
-        if redraw {
-            self.queue_resize();
-        }
+        self.queue_draw();
     }
-    /// regenerating the background image and rendernode.
-    /// use for example when changing the background pattern or zoom
-    pub fn regenerate_background(&self, redraw: bool) {
+
+    /// updates the background pattern and rendering for the current viewport.
+    /// to be called for example when changing the background pattern or zoom.
+    pub fn regenerate_background_pattern(&self) {
         let viewport = self.engine().borrow().camera.viewport();
         let image_scale = self.engine().borrow().camera.image_scale();
 
         if let Err(e) = self
             .engine()
             .borrow_mut()
-            .sheet
+            .document
             .background
-            .regenerate_background(viewport, image_scale)
+            .regenerate_pattern(viewport, image_scale)
         {
             log::error!("failed to regenerate background, {}", e)
         };
 
-        if redraw {
-            self.queue_resize();
-        }
-    }
-
-    /// regenerate the rendernodes of the canvas content. force_regenerate regenerate all images and rendernodes from scratch.
-    /// redraw: queue canvas redrawing
-    pub fn regenerate_content(&self, force_regenerate: bool, redraw: bool) {
-        let image_scale = self.engine().borrow().camera.image_scale();
-        let viewport = self.engine().borrow().camera.viewport();
-
-        self.engine()
-            .borrow_mut()
-            .store
-            .regenerate_rendering_in_viewport_threaded(force_regenerate, viewport, image_scale);
-
-        if redraw {
-            self.queue_resize();
-        }
+        self.queue_draw();
     }
 }

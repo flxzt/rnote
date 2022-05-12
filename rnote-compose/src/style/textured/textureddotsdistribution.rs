@@ -3,11 +3,11 @@ use std::ops::Range;
 use rand_distr::Distribution;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive)]
 /// The distribution for the spread of dots across the width of a textured shape
 pub enum TexturedDotsDistribution {
     /// Uniform distribution
-    Uniform,
+    Uniform = 0,
     /// Normal distribution
     Normal,
     /// Exponential distribution distribution, from the outline increasing in probability symmetrically to the center
@@ -22,6 +22,17 @@ impl Default for TexturedDotsDistribution {
     }
 }
 
+impl TryFrom<u32> for TexturedDotsDistribution {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
+            "TexturedDotsDistribution try_from::<u32>() for value {} failed",
+            value
+        ))
+    }
+}
+
 impl TexturedDotsDistribution {
     /// Samples a value for the given range, symmetrical to the center of the range. For distributions that are open ended, samples are clipped to the range
     pub fn sample_for_range_symmetrical_clipped<G: rand::Rng + ?Sized>(
@@ -33,14 +44,14 @@ impl TexturedDotsDistribution {
             Self::Uniform => rand_distr::Uniform::from(range.clone()).sample(rng),
             Self::Normal => {
                 // setting the mean to the mid of the range
-                let mean = (range.end + range.start) / 2.0;
+                let mean = (range.end + range.start) * 0.5;
                 // the standard deviation
-                let std_dev = ((range.end - range.start) / 2.0) / 3.0;
+                let std_dev = ((range.end - range.start) * 0.5) / 3.0;
 
                 rand_distr::Normal::new(mean, std_dev).unwrap().sample(rng)
             }
             Self::Exponential => {
-                let mid = (range.end + range.start) / 2.0;
+                let mid = (range.end + range.start) * 0.5;
                 let width = (range.end - range.start) / 4.0;
                 // The lambda
                 let lambda = 1.0;

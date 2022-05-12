@@ -2,25 +2,25 @@
 <!-- RnoteDialogs -->
 <interface>
 
-  <object class="GtkMessageDialog" id="dialog_new_sheet">
+  <object class="GtkMessageDialog" id="dialog_new_doc">
     <property name="modal">true</property>
-    <property name="title" translatable="yes">New Sheet</property>
-    <property name="text" translatable="yes">Creating a new sheet erases any unsaved changes. Are you sure?</property>
+    <property name="title" translatable="yes">New document</property>
+    <property name="text" translatable="yes">Creating a new document erases any unsaved changes. Are you sure?</property>
     <child type="action">
-      <object class="GtkButton" id="new_sheet_button_cancel">
+      <object class="GtkButton" id="new_doc_button_cancel">
         <property name="label" translatable="yes">Cancel</property>
       </object>
     </child>
     <child type="action">
-      <object class="GtkButton" id="new_sheet_button_save_as">
-        <property name="label" translatable="yes">Save current sheet as</property>
+      <object class="GtkButton" id="new_doc_button_save_as">
+        <property name="label" translatable="yes">Save current document as</property>
         <style>
           <class name="suggested-action" />
         </style>
       </object>
     </child>
     <child type="action">
-      <object class="GtkButton" id="new_sheet_button_ok">
+      <object class="GtkButton" id="new_doc_button_ok">
         <property name="label" translatable="yes">New</property>
         <style>
           <class name="destructive-action" />
@@ -28,9 +28,9 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="cancel" default="true">new_sheet_button_cancel</action-widget>
-      <action-widget response="ok">new_sheet_button_ok</action-widget>
-      <action-widget response="apply">new_sheet_button_save_as</action-widget>
+      <action-widget response="cancel" default="true">new_doc_button_cancel</action-widget>
+      <action-widget response="ok">new_doc_button_ok</action-widget>
+      <action-widget response="apply">new_doc_button_save_as</action-widget>
     </action-widgets>
   </object>
 
@@ -45,7 +45,7 @@
     </child>
     <child type="action">
       <object class="GtkButton" id="quit_save_button_save_as">
-        <property name="label" translatable="yes">Save current sheet as</property>
+        <property name="label" translatable="yes">Save current document as</property>
         <style>
           <class name="suggested-action" />
         </style>
@@ -77,7 +77,7 @@
     </child>
     <child type="action">
       <object class="GtkButton" id="open_overwrite_button_save_as">
-        <property name="label" translatable="yes">Save current sheet as</property>
+        <property name="label" translatable="yes">Save current document as</property>
         <style>
           <class name="suggested-action" />
         </style>
@@ -98,17 +98,17 @@
     </action-widgets>
   </object>
 
-  <object class="GtkMessageDialog" id="dialog_clear_sheet">
+  <object class="GtkMessageDialog" id="dialog_clear_doc">
     <property name="modal">true</property>
-    <property name="title" translatable="yes">Clear Sheet</property>
-    <property name="text" translatable="yes">This clears the entire sheet. Please confirm.</property>
+    <property name="title" translatable="yes">Clear document</property>
+    <property name="text" translatable="yes">This clears the entire document. Please confirm.</property>
     <child type="action">
-      <object class="GtkButton" id="clear_sheet_button_cancel">
+      <object class="GtkButton" id="clear_doc_button_cancel">
         <property name="label" translatable="yes">Cancel</property>
       </object>
     </child>
     <child type="action">
-      <object class="GtkButton" id="clear_sheet_button_ok">
+      <object class="GtkButton" id="clear_doc_button_ok">
         <property name="label" translatable="yes">Clear</property>
         <style>
           <class name="destructive-action" />
@@ -116,8 +116,8 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="cancel" default="true">clear_sheet_button_cancel</action-widget>
-      <action-widget response="ok">clear_sheet_button_ok</action-widget>
+      <action-widget response="cancel" default="true">clear_doc_button_cancel</action-widget>
+      <action-widget response="ok">clear_doc_button_ok</action-widget>
     </action-widgets>
   </object>
 </interface>

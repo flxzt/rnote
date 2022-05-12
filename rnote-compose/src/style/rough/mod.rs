@@ -259,7 +259,7 @@ impl Composer<RoughOptions> for CubicBezier {
 
 impl Composer<RoughOptions> for Segment {
     fn composed_bounds(&self, options: &RoughOptions) -> AABB {
-        self.bounds().loosened(options.stroke_width)
+        self.bounds().loosened(options.stroke_width * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &RoughOptions) {
@@ -273,7 +273,7 @@ impl Composer<RoughOptions> for Segment {
 
             match self {
                 Segment::Dot { element } => {
-                    let radii = na::Vector2::from_element(options.stroke_width / 2.0);
+                    let radii = na::Vector2::from_element(options.stroke_width * 0.5);
                     let dot_ellipse = kurbo::Ellipse::new(
                         element.pos.to_kurbo_point(),
                         radii.to_kurbo_vec(),

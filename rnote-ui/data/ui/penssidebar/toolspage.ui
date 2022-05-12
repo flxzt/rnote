@@ -28,8 +28,8 @@
         <property name="vexpand">false</property>
         <property name="spacing">9</property>
         <child>
-          <object class="GtkToggleButton" id="toolstyle_expandsheet_toggle">
-            <property name="tooltip_text" translatable="yes">Expand the sheet vertically</property>
+          <object class="GtkToggleButton" id="toolstyle_verticalspace_toggle">
+            <property name="tooltip_text" translatable="yes">Insert vertical space</property>
             <property name="vexpand">true</property>
             <property name="active">true</property>
             <style>
@@ -37,7 +37,7 @@
             </style>
             <child>
               <object class="GtkImage">
-                <property name="icon-name">pen-tools-expandsheettool-symbolic</property>
+                <property name="icon-name">pen-tools-verticalspacetool-symbolic</property>
                 <property name="icon-size">large</property>
               </object>
             </child>
@@ -46,7 +46,7 @@
         <child>
           <object class="GtkToggleButton" id="toolstyle_dragproximity_toggle">
             <property name="tooltip_text" translatable="yes">Drag stroke elements based on proximity</property>
-            <property name="group">toolstyle_expandsheet_toggle</property>
+            <property name="group">toolstyle_verticalspace_toggle</property>
             <property name="vexpand">true</property>
             <property name="visible">false</property>
             <style>
@@ -63,7 +63,7 @@
         <child>
           <object class="GtkToggleButton" id="toolstyle_offsetcamera_toggle">
             <property name="tooltip_text" translatable="yes">Offset the camera by dragging</property>
-            <property name="group">toolstyle_expandsheet_toggle</property>
+            <property name="group">toolstyle_verticalspace_toggle</property>
             <property name="vexpand">true</property>
             <style>
               <class name="sidebar_action_button" />

@@ -102,7 +102,8 @@ impl StrokeStore {
     }
 
     /// Duplicates the selected keys
-    pub fn duplicate_selection(&mut self) {
+    /// the returned, duplicated strokes then need to update their geometry and rendering
+    pub fn duplicate_selection(&mut self) -> Vec<StrokeKey> {
         let old_selected = self.selection_keys_as_rendered();
         self.set_selected_keys(&old_selected, false);
 
@@ -120,6 +121,8 @@ impl StrokeStore {
             &new_selected,
             SelectionComponent::SELECTION_DUPLICATION_OFFSET,
         );
+
+        new_selected
     }
 
     /// selects the strokes intersecting a given polygon path. Already selected keys are **not** deselected.

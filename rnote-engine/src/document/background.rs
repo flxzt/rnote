@@ -1,7 +1,6 @@
 use anyhow::Context;
-use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
+use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::AABB;
-use piet::RenderContext;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
@@ -9,23 +8,27 @@ use svg::node::element;
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{render, Camera};
 use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::{color, Color};
+use rnote_compose::Color;
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
-#[repr(u32)]
-#[enum_type(name = "PatternStyle")]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "pattern_style")]
 pub enum PatternStyle {
-    #[enum_value(name = "None", nick = "none")]
     #[serde(rename = "none")]
     None = 0,
-    #[enum_value(name = "Lines", nick = "lines")]
     #[serde(rename = "lines")]
     Lines,
-    #[enum_value(name = "Grid", nick = "grid")]
     #[serde(rename = "grid")]
     Grid,
-    #[enum_value(name = "Dots", nick = "dots")]
     #[serde(rename = "dots")]
     Dots,
 }
@@ -33,6 +36,17 @@ pub enum PatternStyle {
 impl Default for PatternStyle {
     fn default() -> Self {
         Self::Dots
+    }
+}
+
+impl TryFrom<u32> for PatternStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
+            "PatternStyle try_from::<u32>() for value {} failed",
+            value
+        ))
     }
 }
 
@@ -44,7 +58,7 @@ pub fn gen_hline_pattern(
 ) -> svg::node::element::Element {
     let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_hline_pattern";
 
-    let line_offset = line_width / 2.0;
+    let line_offset = line_width * 0.5;
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
@@ -86,7 +100,7 @@ pub fn gen_grid_pattern(
 ) -> svg::node::element::Element {
     let pattern_id = rnote_compose::utils::random_id_prefix() + "_bg_grid_pattern";
 
-    let line_offset = line_width / 2.0;
+    let line_offset = line_width * 0.5;
 
     let pattern = element::Definitions::new().add(
         element::Pattern::new()
@@ -153,7 +167,9 @@ pub fn gen_dots_pattern(
                     .set("x", 0_f64)
                     .set("y", 0_f64)
                     .set("width", dots_width)
-                    .set("height", dots_width),
+                    .set("height", dots_width)
+                    .set("rx", dots_width / 3.0)
+                    .set("ry", dots_width / 3.0),
             ),
     );
 
@@ -215,12 +231,12 @@ impl Background {
             na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
         let tile_width = if tile_factor[0] > 1.0 {
-            tile_factor[0] * self.pattern_size[0]
+            tile_factor[0].floor() * self.pattern_size[0]
         } else {
             self.pattern_size[0]
         };
         let tile_height = if tile_factor[1] > 1.0 {
-            tile_factor[1] * self.pattern_size[1]
+            tile_factor[1].floor() * self.pattern_size[1]
         } else {
             self.pattern_size[1]
         };
@@ -274,44 +290,6 @@ impl Background {
             .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
 
         Ok(render::Svg { svg_data, bounds })
-    }
-
-    fn draw_origin_indicator(camera: &Camera) -> anyhow::Result<gsk::RenderNode> {
-        const PATH_COLOR: piet::Color = color::GNOME_GREENS[4];
-        let path_width: f64 = 1.0 / camera.total_zoom();
-
-        let indicator_bounds = AABB::from_half_extents(
-            na::point![0.0, 0.0],
-            na::Vector2::repeat(6.0 / camera.total_zoom()),
-        );
-
-        let cairo_node = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(indicator_bounds));
-        let cairo_cx = cairo_node.draw_context();
-        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
-
-        let mut indicator_path = kurbo::BezPath::new();
-        indicator_path.move_to(kurbo::Point::new(
-            indicator_bounds.mins[0],
-            indicator_bounds.mins[1],
-        ));
-        indicator_path.line_to(kurbo::Point::new(
-            indicator_bounds.maxs[0],
-            indicator_bounds.maxs[1],
-        ));
-        indicator_path.move_to(kurbo::Point::new(
-            indicator_bounds.mins[0],
-            indicator_bounds.maxs[1],
-        ));
-        indicator_path.line_to(kurbo::Point::new(
-            indicator_bounds.maxs[0],
-            indicator_bounds.mins[1],
-        ));
-
-        piet_cx.stroke(indicator_path, &PATH_COLOR, path_width);
-
-        piet_cx.finish().map_err(|e| anyhow::anyhow!("{}", e))?;
-
-        Ok(cairo_node.upcast())
     }
 
     fn gen_image(
@@ -368,11 +346,7 @@ impl Background {
         Ok(())
     }
 
-    pub fn regenerate_background(
-        &mut self,
-        viewport: AABB,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
+    pub fn regenerate_pattern(&mut self, viewport: AABB, image_scale: f64) -> anyhow::Result<()> {
         let tile_size = self.tile_size();
         let tile_bounds = AABB::new(na::point![0.0, 0.0], na::point![tile_size[0], tile_size[1]]);
 
@@ -385,16 +359,16 @@ impl Background {
     pub fn draw(
         &self,
         snapshot: &Snapshot,
-        sheet_bounds: AABB,
-        camera: &Camera,
+        doc_bounds: AABB,
+        _camera: &Camera,
     ) -> anyhow::Result<()> {
-        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(sheet_bounds));
+        snapshot.push_clip(&graphene::Rect::from_p2d_aabb(doc_bounds));
 
         // Fill with background color just in case there is any space left between the tiles
         snapshot.append_node(
             &gsk::ColorNode::new(
                 &gdk::RGBA::from_compose_color(self.color),
-                &graphene::Rect::from_p2d_aabb(sheet_bounds),
+                &graphene::Rect::from_p2d_aabb(doc_bounds),
             )
             .upcast(),
         );
@@ -402,9 +376,6 @@ impl Background {
         self.rendernodes.iter().for_each(|rendernode| {
             snapshot.append_node(&rendernode);
         });
-
-        // Draw an indicator at the origin
-        snapshot.append_node(&Self::draw_origin_indicator(camera)?);
 
         snapshot.pop();
         Ok(())

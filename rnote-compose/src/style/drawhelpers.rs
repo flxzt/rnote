@@ -22,7 +22,7 @@ pub fn pos_indicator_shape(
 ) -> kurbo::Circle {
     kurbo::Circle::new(
         pos.to_kurbo_point(),
-        (POS_INDICATOR_RADIUS - POS_INDICATOR_OUTLINE_WIDTH / 2.0) / zoom,
+        (POS_INDICATOR_RADIUS - POS_INDICATOR_OUTLINE_WIDTH * 0.5) / zoom,
     )
 }
 
@@ -101,7 +101,7 @@ pub fn rectangular_node_shape(
 
     kurbo::RoundedRect::from_rect(
         bounds
-            .tightened(RECTANGULAR_NODE_OUTLINE_WIDTH / 2.0 / zoom)
+            .tightened(RECTANGULAR_NODE_OUTLINE_WIDTH * 0.5 / zoom)
             .to_kurbo_rect(),
         CORNER_RADIUS / zoom,
     )
@@ -145,7 +145,7 @@ pub fn circular_node_shape(
     mut bounding_sphere: BoundingSphere,
     zoom: f64,
 ) -> kurbo::Circle {
-    bounding_sphere.tighten(CIRCULAR_NODE_OUTLINE_WIDTH / 2.0 / zoom);
+    bounding_sphere.tighten(CIRCULAR_NODE_OUTLINE_WIDTH * 0.5 / zoom);
 
     kurbo::Circle::new(
         bounding_sphere.center.coords.to_kurbo_point(),

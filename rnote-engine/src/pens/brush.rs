@@ -1,7 +1,8 @@
+use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::Constraint;
@@ -9,6 +10,7 @@ use rnote_compose::builders::ConstraintRatio;
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
+use rnote_compose::style::PressureCurve;
 use rnote_compose::{Shape, Style};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
@@ -62,10 +64,15 @@ pub struct Brush {
 
 impl Default for Brush {
     fn default() -> Self {
+        let mut smooth_options = SmoothOptions::default();
+        let mut textured_options = TexturedOptions::default();
+        smooth_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+        textured_options.stroke_width = Self::STROKE_WIDTH_DEFAULT;
+
         Self {
             style: BrushStyle::default(),
-            smooth_options: SmoothOptions::default(),
-            textured_options: TexturedOptions::default(),
+            smooth_options,
+            textured_options,
             state: BrushState::Idle,
         }
     }
@@ -75,7 +82,8 @@ impl PenBehaviour for Brush {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        sheet: &mut Sheet,
+        tasks_tx: EngineTaskSender,
+        doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         audioplayer: Option<&mut AudioPlayer>,
@@ -91,8 +99,8 @@ impl PenBehaviour for Brush {
                     shortcut_keys: _,
                 },
             ) => {
-                if !element.filter_by_bounds(sheet.bounds().loosened(Self::INPUT_OVERSHOOT)) {
-                    store.record();
+                if !element.filter_by_bounds(doc.bounds().loosened(Self::INPUT_OVERSHOOT)) {
+                    surface_flags.merge_with_other(store.record());
 
                     Self::start_audio(style, audioplayer);
 
@@ -141,6 +149,7 @@ impl PenBehaviour for Brush {
                 // Finish up the last stroke
                 store.update_geometry_for_stroke(*current_stroke_key);
                 store.regenerate_rendering_for_stroke_threaded(
+                    tasks_tx,
                     *current_stroke_key,
                     camera.viewport(),
                     camera.image_scale(),
@@ -148,9 +157,11 @@ impl PenBehaviour for Brush {
 
                 self.state = BrushState::Idle;
 
+                doc.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -179,7 +190,7 @@ impl PenBehaviour for Brush {
                                         new_segment,
                                     );
                                     n_segments += 1;
-                                    surface_flags.sheet_changed = true;
+                                    surface_flags.store_changed = true;
                                 }
                                 _ => {
                                     // not reachable, pen builder should only produce segments
@@ -188,6 +199,7 @@ impl PenBehaviour for Brush {
                         }
 
                         if let Err(e) = store.append_rendering_last_segments(
+                            tasks_tx,
                             *current_stroke_key,
                             n_segments,
                             camera.viewport(),
@@ -207,7 +219,7 @@ impl PenBehaviour for Brush {
                                         *current_stroke_key,
                                         new_segment,
                                     );
-                                    surface_flags.sheet_changed = true;
+                                    surface_flags.store_changed = true;
                                 }
                                 _ => {
                                     // not reachable, pen builder should only produce segments
@@ -218,6 +230,7 @@ impl PenBehaviour for Brush {
                         // Finish up the last stroke
                         store.update_geometry_for_stroke(*current_stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
+                            tasks_tx,
                             *current_stroke_key,
                             camera.viewport(),
                             camera.image_scale(),
@@ -227,9 +240,11 @@ impl PenBehaviour for Brush {
 
                         self.state = BrushState::Idle;
 
+                        doc.resize_autoexpand(store, camera);
+
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
-                        surface_flags.sheet_changed = true;
+                        surface_flags.store_changed = true;
                         surface_flags.hide_scrollbars = Some(false);
 
                         PenProgress::Finished
@@ -242,8 +257,8 @@ impl PenBehaviour for Brush {
     }
 }
 
-impl DrawOnSheetBehaviour for Brush {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for Brush {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
@@ -254,10 +269,10 @@ impl DrawOnSheetBehaviour for Brush {
         }
     }
 
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -277,6 +292,10 @@ impl DrawOnSheetBehaviour for Brush {
 
 impl Brush {
     const INPUT_OVERSHOOT: f64 = 30.0;
+
+    pub const STROKE_WIDTH_MIN: f64 = 1.0;
+    pub const STROKE_WIDTH_MAX: f64 = 500.0;
+    pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
 
     fn start_audio(style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {
@@ -301,7 +320,7 @@ impl Brush {
         match &self.style {
             BrushStyle::Marker => {
                 let mut options = self.smooth_options.clone();
-                options.segment_constant_width = true;
+                options.pressure_curve = PressureCurve::Const;
 
                 Style::Smooth(options)
             }

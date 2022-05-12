@@ -1,4 +1,5 @@
-use crate::{Camera, DrawOnSheetBehaviour, Sheet, StrokeStore, SurfaceFlags};
+use crate::engine::EngineTaskSender;
+use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;
@@ -57,7 +58,8 @@ impl PenBehaviour for Eraser {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _sheet: &mut Sheet,
+        _tasks_tx: EngineTaskSender,
+        _doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -72,14 +74,14 @@ impl PenBehaviour for Eraser {
                     shortcut_keys: _,
                 },
             ) => {
-                store.record();
+                surface_flags.merge_with_other(store.record());
 
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        store.trash_colliding_strokes(
+                        surface_flags.merge_with_other(store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             camera.viewport(),
-                        );
+                        ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
                         let new_strokes = store.split_colliding_strokes(
@@ -101,7 +103,7 @@ impl PenBehaviour for Eraser {
 
                 surface_flags.redraw = true;
                 surface_flags.hide_scrollbars = Some(true);
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::InProgress
             }
@@ -109,10 +111,10 @@ impl PenBehaviour for Eraser {
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        store.trash_colliding_strokes(
+                        surface_flags.merge_with_other(store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             camera.viewport(),
-                        );
+                        ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
                         let new_strokes = store.split_colliding_strokes(
@@ -133,17 +135,17 @@ impl PenBehaviour for Eraser {
                 *current_element = element;
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::InProgress
             }
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        store.trash_colliding_strokes(
+                        surface_flags.merge_with_other(store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             camera.viewport(),
-                        );
+                        ));
                     }
                     EraserStyle::SplitCollidingStrokes => {
                         let new_strokes = store.split_colliding_strokes(
@@ -165,7 +167,7 @@ impl PenBehaviour for Eraser {
 
                 surface_flags.redraw = true;
                 surface_flags.hide_scrollbars = Some(false);
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::Finished
             }
@@ -187,7 +189,7 @@ impl PenBehaviour for Eraser {
 impl Eraser {
     pub const WIDTH_MIN: f64 = 1.0;
     pub const WIDTH_MAX: f64 = 500.0;
-    pub const WIDTH_DEFAULT: f64 = 20.0;
+    pub const WIDTH_DEFAULT: f64 = 12.0;
 
     pub fn new(width: f64) -> Self {
         Self {
@@ -199,13 +201,13 @@ impl Eraser {
     fn eraser_bounds(eraser_width: f64, element: Element) -> AABB {
         AABB::from_half_extents(
             na::Point2::from(element.pos),
-            na::Vector2::repeat(eraser_width / 2.0),
+            na::Vector2::repeat(eraser_width * 0.5),
         )
     }
 }
 
-impl DrawOnSheetBehaviour for Eraser {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, _camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for Eraser {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, _camera: &Camera) -> Option<AABB> {
         match &self.state {
             EraserState::Up => None,
             EraserState::Down(current_element) => {
@@ -214,10 +216,10 @@ impl DrawOnSheetBehaviour for Eraser {
         }
     }
 
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        sheet_bounds: AABB,
+        doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -226,7 +228,7 @@ impl DrawOnSheetBehaviour for Eraser {
         const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x80);
         let outline_width = 2.0 / camera.total_zoom();
 
-        if let Some(bounds) = self.bounds_on_sheet(sheet_bounds, camera) {
+        if let Some(bounds) = self.bounds_on_doc(doc_bounds, camera) {
             let fill_rect = bounds.to_kurbo_rect();
             let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
 

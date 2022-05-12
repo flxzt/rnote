@@ -315,7 +315,7 @@ where
 
     // generate ellipse parameters
     let psq =
-        (std::f64::consts::PI * 2.0 * (radius_x.powi(2) + radius_y.powi(2)).sqrt() / 2.0).sqrt();
+        (std::f64::consts::PI * 2.0 * (radius_x.powi(2) + radius_y.powi(2)).sqrt() * 0.5).sqrt();
     let stepcount = options
         .curve_stepcount
         .max((options.curve_stepcount / 200.0_f64.sqrt()) * psq)
@@ -441,7 +441,7 @@ where
     let mut core_points = Vec::new();
     let mut all_points = Vec::new();
 
-    let rad_offset = offset_opt(0.5, options, rng, None) - std::f64::consts::PI / 2.0;
+    let rad_offset = offset_opt(0.5, options, rng, None) - std::f64::consts::PI * 0.5;
     all_points.push(na::vector![
         offset_opt(offset, options, rng, None)
             + center[0]

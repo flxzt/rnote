@@ -62,8 +62,8 @@ impl Line {
         let angle = na::Rotation2::rotation_between(&na::Vector2::x(), &vec).angle();
 
         Rectangle {
-            cuboid: p2d::shape::Cuboid::new(na::vector![magn / 2.0, width / 2.0]),
-            transform: Transform::new_w_isometry(na::Isometry2::new(self.start + vec / 2.0, angle)),
+            cuboid: p2d::shape::Cuboid::new(na::vector![magn * 0.5, width * 0.5]),
+            transform: Transform::new_w_isometry(na::Isometry2::new(self.start + vec * 0.5, angle)),
         }
     }
 

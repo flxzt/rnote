@@ -1,9 +1,8 @@
 use super::render_comp::RenderCompState;
-use super::{StoreTask, StrokeKey};
+use super::StrokeKey;
 use crate::pens::tools::DragProximityTool;
 use crate::strokes::Stroke;
-use crate::strokes::VectorImage;
-use crate::strokes::{BitmapImage, StrokeBehaviour};
+use crate::strokes::StrokeBehaviour;
 use crate::{render, StrokeStore};
 use rnote_compose::helpers;
 use rnote_compose::penpath::Segment;
@@ -31,6 +30,10 @@ impl StrokeStore {
     /// All stroke keys unordered
     pub fn keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components.keys().collect()
+    }
+
+    pub fn keys_unordered_intersecting_bounds(&self, bounds: AABB) -> Vec<StrokeKey> {
+        self.key_tree.keys_intersecting_bounds(bounds)
     }
 
     /// All stroke keys unordered, excluding selected or trashed keys
@@ -77,121 +80,6 @@ impl StrokeStore {
         keys.iter()
             .filter_map(|&key| Some((**self.stroke_components.get(key)?).clone()))
             .collect::<Vec<Stroke>>()
-    }
-
-    pub fn insert_vectorimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
-        let tasks_tx = self.tasks_tx.clone();
-
-        let all_strokes = self.keys_unordered();
-        self.set_selected_keys(&all_strokes, false);
-
-        self.threadpool.spawn(move || {
-                match String::from_utf8(bytes) {
-                    Ok(svg) => {
-                        match VectorImage::import_from_svg_data(svg.as_str(), pos, None) {
-                            Ok(vectorimage) => {
-                                let vectorimage = Stroke::VectorImage(vectorimage);
-
-                                tasks_tx.unbounded_send(StoreTask::InsertStroke {
-                                    stroke: vectorimage
-                                }).unwrap_or_else(|e| {
-                                    log::error!("tasks_tx.send() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
-                                });
-                            }
-                            Err(e) => {
-                                log::error!("VectorImage::import_from_svg_data() failed in insert_vectorimage_bytes_threaded() with Err, {}", e);
-                            }
-                        }
-                    }
-                    Err(e) => {
-                        log::error!("from_utf8() failed in thread from insert_vectorimages_bytes_threaded() with Err {}", e);
-                    }
-                }
-            });
-    }
-
-    pub fn insert_bitmapimage_bytes_threaded(&mut self, pos: na::Vector2<f64>, bytes: Vec<u8>) {
-        let tasks_tx = self.tasks_tx.clone();
-
-        let all_strokes = self.keys_unordered();
-        self.set_selected_keys(&all_strokes, false);
-
-        self.threadpool.spawn(move || {
-                match BitmapImage::import_from_image_bytes(&bytes, pos) {
-                    Ok(bitmapimage) => {
-                        let bitmapimage = Stroke::BitmapImage(bitmapimage);
-
-                        tasks_tx.unbounded_send(StoreTask::InsertStroke {
-                            stroke: bitmapimage
-                        }).unwrap_or_else(|e| {
-                            log::error!("tasks_tx.send() failed in insert_bitmapimage_bytes_threaded() with Err, {}", e);
-                        });
-                    }
-                    Err(e) => {
-                        log::error!("BitmapImage::import_from_svg_data() failed in insert_bitmapimage_bytes_threaded() with Err, {}", e);
-                    }
-                }
-            });
-    }
-
-    pub fn insert_pdf_bytes_as_vector_threaded(
-        &mut self,
-        pos: na::Vector2<f64>,
-        page_width: Option<i32>,
-        bytes: Vec<u8>,
-    ) {
-        let tasks_tx = self.tasks_tx.clone();
-
-        let all_strokes = self.keys_unordered();
-        self.set_selected_keys(&all_strokes, false);
-
-        self.threadpool.spawn(move || {
-                match VectorImage::import_from_pdf_bytes(&bytes, pos, page_width) {
-                    Ok(images) => {
-                        for image in images {
-                            tasks_tx.unbounded_send(StoreTask::InsertStroke {
-                                stroke: Stroke::VectorImage(image)
-                            }).unwrap_or_else(|e| {
-                                log::error!("tasks_tx.send() failed in insert_pdf_bytes_as_vector_threaded() with Err, {}", e);
-                            });
-                        }
-                    }
-                    Err(e) => {
-                        log::error!("VectorImage::import_from_pdf_bytes() failed in insert_pdf_bytes_as_vector_threaded() with Err, {}", e);
-                    }
-                }
-            });
-    }
-
-    pub fn insert_pdf_bytes_as_bitmap_threaded(
-        &mut self,
-        pos: na::Vector2<f64>,
-        page_width: Option<i32>,
-        bytes: Vec<u8>,
-    ) {
-        let tasks_tx = self.tasks_tx.clone();
-
-        let all_strokes = self.keys_unordered();
-        self.set_selected_keys(&all_strokes, false);
-
-        self.threadpool.spawn(move || {
-                match BitmapImage::import_from_pdf_bytes(&bytes, pos, page_width) {
-                    Ok(images) => {
-                        for image in images {
-                            let image = Stroke::BitmapImage(image);
-
-                            tasks_tx.unbounded_send(StoreTask::InsertStroke {
-                                stroke: image
-                            }).unwrap_or_else(|e| {
-                                log::error!("tasks_tx.send() failed in insert_pdf_bytes_as_bitmap_threaded() with Err, {}", e);
-                            });
-                        }
-                    }
-                    Err(e) => {
-                        log::error!("BitmapImage::import_from_pdf_bytes() failed in insert_pdf_bytes_as_bitmap_threaded() with Err, {}", e);
-                    }
-                }
-            });
     }
 
     /// Updates the stroke geometry.

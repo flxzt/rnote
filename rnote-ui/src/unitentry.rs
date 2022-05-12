@@ -3,7 +3,7 @@ use gtk4::{
     SpinButton, Widget,
 };
 use once_cell::sync::Lazy;
-use rnote_engine::sheet::format;
+use rnote_engine::document::format;
 use std::cell::Cell;
 
 mod imp {

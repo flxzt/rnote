@@ -149,7 +149,7 @@
                                   <object class="GtkButton" id="add_page_button">
                                     <property name="icon_name">add-page-symbolic</property>
                                     <property name="tooltip_text" translatable="yes">Add page</property>
-                                    <property name="action-name">win.add-page-to-sheet</property>
+                                    <property name="action-name">win.add-page-to-doc</property>
                                     <style>
                                       <class name="osd" />
                                       <class name="circular" />
@@ -159,7 +159,7 @@
                                 <child>
                                   <object class="GtkButton" id="resize_to_fit_strokes_button">
                                     <property name="icon_name">resize-to-fit-strokes-symbolic</property>
-                                    <property name="tooltip_text" translatable="yes">Resize sheet to fit the strokes</property>
+                                    <property name="tooltip_text" translatable="yes">Resize document to fit the strokes</property>
                                     <property name="action-name">win.resize-to-fit-strokes</property>
                                     <style>
                                       <class name="osd" />
@@ -184,6 +184,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="undo_button">
+                            <property name="sensitive">false</property>
                             <property name="icon_name">edit-undo-symbolic</property>
                             <property name="tooltip_text" translatable="yes">Undo</property>
                             <property name="action-name">win.undo</property>
@@ -195,6 +196,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="redo_button">
+                            <property name="sensitive">false</property>
                             <property name="icon_name">edit-redo-symbolic</property>
                             <property name="tooltip_text" translatable="yes">Redo</property>
                             <property name="action-name">win.redo</property>
@@ -297,8 +299,7 @@
                     </layout>
                     <property name="hexpand">true</property>
                     <property name="halign">fill</property>
-                    <property name="valign">fill</property>
-                    <property name="height-request">35</property>
+                    <property name="valign">end</property>
                     <property name="icon_name">flap-symbolic</property>
                     <property name="margin_top">6</property>
                     <property name="margin_bottom">6</property>

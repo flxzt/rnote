@@ -34,9 +34,9 @@
               <object class="GtkButton">
                 <property name="visible">true</property>
                 <property name="halign">start</property>
-                <property name="tooltip-text">Save sheet</property>
-                <property name="icon-name">sheet-save-symbolic</property>
-                <property name="action-name">win.save-sheet</property>
+                <property name="tooltip-text" translatable="yes">Save document</property>
+                <property name="icon-name">doc-save-symbolic</property>
+                <property name="action-name">win.save-doc</property>
               </object>
             </child>
           </object>
@@ -44,6 +44,7 @@
         <child type="end">
           <object class="GtkBox" id="menus_box">
             <property name="spacing">6</property>
+            <property name="margin-start">22</property>
             <child>
               <object class="CanvasMenu" id="canvasmenu"></object>
             </child>
@@ -60,7 +61,6 @@
               <object class="AdwClamp" id="pens_toggles_clamp">
                 <property name="maximum-size">500</property>
                 <property name="tightening-threshold">450</property>
-                <property name="margin-end">24</property>
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
                 <property name="valign">fill</property>

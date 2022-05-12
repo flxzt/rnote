@@ -4,8 +4,6 @@ use super::shapestroke::ShapeStroke;
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::vectorimage::VectorImage;
 use super::StrokeBehaviour;
-use crate::pens::brush::BrushStyle;
-use crate::pens::Brush;
 use crate::render;
 use crate::{utils, DrawBehaviour};
 use rnote_compose::helpers::AABBHelpers;
@@ -152,48 +150,69 @@ impl Stroke {
         stroke: xoppformat::XoppStroke,
         offset: na::Vector2<f64>,
     ) -> Result<Self, anyhow::Error> {
-        let mut width_iter = stroke.width.into_iter();
+        let mut widths = stroke.width;
 
-        let mut smooth_options = SmoothOptions::default();
-        smooth_options.stroke_color = Some(Color::from(stroke.color));
-
-        // The first element is the absolute width, every following is the relative width (between 0.0 and 1.0)
-        if let Some(width) = width_iter.next() {
-            smooth_options.stroke_width = width;
+        if widths.is_empty() {
+            return Err(anyhow::anyhow!(
+                "from_xoppstroke() failed, stroke has empty widths vector"
+            ));
         }
 
-        let mut brush = Brush::default();
-        brush.style = BrushStyle::Solid;
-        brush.smooth_options = smooth_options;
+        let mut smooth_options = SmoothOptions::default();
 
-        let absolute_width = brush.smooth_options.stroke_width;
+        match stroke.tool {
+            xoppformat::XoppTool::Pen => {
+                smooth_options.stroke_color = Some(Color::from(stroke.color));
+            }
+            xoppformat::XoppTool::Highlighter => {
+                let mut color = Color::from(stroke.color);
+                // the highlighter always has alpha 0.5
+                color.a = 0.5;
 
-        let elements = stroke
+                smooth_options.stroke_color = Some(color);
+            }
+            xoppformat::XoppTool::Eraser => {
+                smooth_options.stroke_color = Some(Color::WHITE);
+            }
+        };
+
+        // remove the first element, which will be the stroke width.
+        let mut stroke_width = widths.remove(0);
+
+        // extract the maximum width ( the widths in xournal++'s format are not relative to the stroke width).
+        let max_width = widths.iter().cloned().reduce(f64::max);
+
+        if let Some(max_width) = max_width {
+            // the stroke width in rnote needs to be the maximum of all widths
+            stroke_width = max_width;
+
+            // the coordinate widths are relative to the max width
+            widths
+                .iter_mut()
+                .for_each(|coord_width| *coord_width /= max_width);
+        } else {
+            // If there are no coordinate widths, we fill the widths vector with pressure 1.0 for a constant width stroke.
+            widths = (0..stroke.coords.len()).map(|_| 1.0).collect();
+        };
+
+        smooth_options.stroke_width = stroke_width;
+
+        let penpath = stroke
             .coords
-            .into_iter()
-            .map(|mut coords| {
-                coords[0] += offset[0];
-                coords[1] += offset[1];
-                // Defaulting to PRESSURE_DEFAULT if width iterator is shorter than the coords vec
-                let pressure = width_iter
-                    .next()
-                    .map(|width| width / absolute_width)
-                    .unwrap_or(Element::PRESSURE_DEFAULT);
-
-                Element::new(coords, pressure)
-            })
-            .collect::<Vec<Element>>();
-
-        let penpath = elements
             .iter()
-            .zip(elements.iter().skip(1))
-            .map(|(&start, &end)| Segment::Line { start, end })
+            .zip(widths.iter())
+            .zip(stroke.coords.iter().skip(1).zip(widths.iter().skip(1)))
+            .map(
+                |((start_pos, start_pressure), (end_pos, end_pressure))| Segment::Line {
+                    start: Element::new(start_pos + offset, *start_pressure),
+                    end: Element::new(end_pos + offset, *end_pressure),
+                },
+            )
             .collect::<PenPath>();
 
-        let brushstroke = BrushStroke::from_penpath(penpath, brush.gen_style_for_current_options())
-            .ok_or(anyhow::anyhow!(
-                "creating brushstroke from penpath in from_xoppstroke() failed."
-            ))?;
+        let brushstroke = BrushStroke::from_penpath(penpath, Style::Smooth(smooth_options)).ok_or(
+            anyhow::anyhow!("creating brushstroke from penpath in from_xoppstroke() failed."),
+        )?;
 
         Ok(Stroke::BrushStroke(brushstroke))
     }

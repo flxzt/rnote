@@ -41,15 +41,12 @@ struct RnotefileWrapper {
 
 #[serde(rename = "rnotefile_maj0_min5")]
 pub struct RnotefileMaj0Min5 {
-    /// sheet
-    #[serde(rename = "sheet")]
-    pub sheet: serde_json::Value,
-    /// strokes store
-    #[serde(rename = "store")]
-    pub store: serde_json::Value,
-    /// expand mode
-    #[serde(rename = "expand_mode")]
-    pub expand_mode: serde_json::Value,
+    /// the document
+    #[serde(rename = "document", alias = "sheet")]
+    pub document: serde_json::Value,
+    /// A snapshot of the store
+    #[serde(rename = "store_snapshot")]
+    pub store_snapshot: serde_json::Value,
 }
 
 impl FileFormatLoader for RnotefileMaj0Min5 {
@@ -77,7 +74,7 @@ impl FileFormatLoader for RnotefileMaj0Min5 {
 impl FileFormatSaver for RnotefileMaj0Min5 {
     fn save_as_bytes(&self, file_name: &str) -> anyhow::Result<Vec<u8>> {
         let output = RnotefileWrapper {
-            version: semver::Version::parse("0.5.0").unwrap(),
+            version: semver::Version::parse("0.5.1").unwrap(),
             data: serde_json::to_value(self)?,
         };
 
@@ -93,5 +90,5 @@ impl FileFormatSaver for RnotefileMaj0Min5 {
 
 /* #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RnoteFileMaj0Min4 {
-    sheet: serde_json::Value,
+    doc: serde_json::Value,
 } */

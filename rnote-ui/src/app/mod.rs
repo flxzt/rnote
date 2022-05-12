@@ -6,8 +6,7 @@ use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
 use rnote_engine::pens::penholder::PenStyle;
 use rnote_engine::{
-    sheet::format::MeasureUnit,
-    sheet::{background::PatternStyle, format::PredefinedFormat},
+    document::format::MeasureUnit,
 };
 
 use crate::{
@@ -62,9 +61,7 @@ mod imp {
             PenStyle::static_type();
             WorkspaceBrowser::static_type();
             FileRow::static_type();
-            PredefinedFormat::static_type();
             MeasureUnit::static_type();
-            PatternStyle::static_type();
             UnitEntry::static_type();
             PenShortcutRow::static_type();
 
@@ -137,8 +134,11 @@ impl RnoteApp {
 
     // Anything that needs to be done right before showing the appwindow
     pub fn init_misc(&self, appwindow: &RnoteAppWindow) {
-        appwindow.canvas().return_to_origin_page();
-        appwindow.canvas().regenerate_background(false);
-        appwindow.canvas().regenerate_content(true, true);
+        // Set undo / redo as not sensitive as default ( setting it in .ui file did not work for some reason )
+        appwindow.undo_button().set_sensitive(false);
+        appwindow.redo_button().set_sensitive(false);
+
+        appwindow.canvas().regenerate_background_pattern();
+        appwindow.canvas().update_engine_rendering();
     }
 }

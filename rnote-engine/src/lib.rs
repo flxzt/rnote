@@ -9,7 +9,7 @@ mod drawbehaviour;
 pub mod engine;
 pub mod pens;
 pub mod render;
-pub mod sheet;
+pub mod document;
 pub mod store;
 pub mod strokes;
 pub mod surfaceflags;
@@ -18,10 +18,10 @@ pub mod utils;
 // Re-exports
 pub use camera::Camera;
 pub use drawbehaviour::DrawBehaviour;
-pub use drawbehaviour::DrawOnSheetBehaviour;
+pub use drawbehaviour::DrawOnDocBehaviour;
 pub use engine::RnoteEngine;
 pub use pens::PenHolder;
-pub use sheet::Sheet;
+pub use document::Document;
 pub use store::StrokeStore;
 pub use surfaceflags::SurfaceFlags;
 

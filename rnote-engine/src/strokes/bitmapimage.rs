@@ -2,6 +2,7 @@ use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::render;
 use crate::DrawBehaviour;
+use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
@@ -138,8 +139,8 @@ impl BitmapImage {
         let size = na::vector![f64::from(image.pixel_width), f64::from(image.pixel_height)];
 
         let rectangle = Rectangle {
-            cuboid: p2d::shape::Cuboid::new(size / 2.0),
-            transform: Transform::new_w_isometry(na::Isometry2::new(pos + size / 2.0, 0.0)),
+            cuboid: p2d::shape::Cuboid::new(size * 0.5),
+            transform: Transform::new_w_isometry(na::Isometry2::new(pos + size * 0.5, 0.0)),
         };
 
         Ok(Self { image, rectangle })
@@ -173,7 +174,7 @@ impl BitmapImage {
                 let x = pos[0];
                 let y = pos[1]
                     + f64::from(i)
-                        * (f64::from(height) + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) / 2.0);
+                        * (f64::from(height) + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5);
 
                 let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                     .map_err(|e| {
@@ -198,12 +199,18 @@ impl BitmapImage {
                     cx.scale(1.0 / zoom, 1.0 / zoom);
 
                     // Draw outline around page
-                    cx.set_source_rgba(0.7, 0.5, 0.5, 1.0);
+                    cx.set_source_rgba(
+                        color::GNOME_REDS[4].as_rgba().0,
+                        color::GNOME_REDS[4].as_rgba().1,
+                        color::GNOME_REDS[4].as_rgba().2,
+                        1.0,
+                    );
+
                     let line_width = 1.0;
                     cx.set_line_width(line_width);
                     cx.rectangle(
-                        line_width / 2.0,
-                        line_width / 2.0,
+                        line_width * 0.5,
+                        line_width * 0.5,
                         f64::from(width) - line_width,
                         f64::from(height) - line_width,
                     );

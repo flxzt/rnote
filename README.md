@@ -11,6 +11,7 @@
     </a>
 </div><br>
 
+
 # Rnote
 > Sketch and take handwritten notes.  
 
@@ -28,6 +29,7 @@ Rnote is available as a flatpak on Flathub:
 <a href='https://flathub.org/apps/details/com.github.flxzt.rnote'><img width="256" alt='Download on Flathub' src='https://flathub.org/assets/badges/flathub-badge-en.png'/></a>
 </div><br>
 
+
 ### Downgrading
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
 | version | command                                                                                                                |
@@ -43,7 +45,7 @@ $ flatpak mask com.github.flxzt.rnote
 $ flatpak mask --remove com.github.flxzt.rnote
 ```
 
-Then the sheets can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
+Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
 ## Screenshots
 ![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)
@@ -58,9 +60,9 @@ Then the sheets can be exported as an SVG or PDF and can be re-imported into the
 * Stylus buttons move canvas / are not functional: make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
 
 ## Credits
-- Thanks to all the translators and their contributions!
+- A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!
 - [Freesound](https://freesound.org/) is the source for the pen sounds. The individual sounds are credited in `sounds/Licenses.md`
-- [Rough.js](https://roughjs.com/) provided the algorithms for implementation of Rnote's rough shapes.
+- [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
 - [Pizarra](https://pizarra.categulario.tk/en/) is a innovative drawing app with advanced shaping and featuring a infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
 
 ## Community
@@ -85,6 +87,7 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
         <img alt="Tree" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/tree.svg" height="400">
         <img alt="Love" src="https://github.com/flxzt/rnote/blob/main/misc/drawings/love.png" height="400">
 </div><br>
+
 
 # Building, contributing
 Build instructions and guidelines how to contribute are outlined in [CONTRIBUTING.md](./CONTRIBUTING.md)

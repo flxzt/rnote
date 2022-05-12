@@ -33,10 +33,10 @@ pub const USVG_XML_OPTIONS: usvg::XmlOptions = usvg::XmlOptions {
     },
 };
 
-/// size at which we split surfaces, so that cairo does not panic when rendering large images
-pub const CAIRO_IMGSURFACE_SPLIT_SIZE: na::Vector2<f64> = na::vector![3000.0, 3000.0];
-/// the margin around a viewport for rendering. In px value
-pub const VIEWPORT_RENDER_MARGIN: f64 = 600.0;
+// the factor the rendering for the current viewport is extended. e.g.: 1.0 means the viewport is extended by its extents on all sides.
+// Used when checking rendering for new zooms or a moved viewport.
+// There is a trade off: a larger value will consume more ram, a smaller value will mean more stuttering on zooms and when moving the view
+pub const VIEWPORT_EXTENTS_MARGIN_FACTOR: f64 = 0.4;
 
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 pub enum ImageMemoryFormat {
@@ -92,7 +92,7 @@ pub struct Image {
     /// The image data. is (de) serialized in base64 encoding
     #[serde(rename = "data", with = "base64")]
     pub data: Vec<u8>,
-    /// the target rect in the coordinate space of the sheet
+    /// the target rect in the coordinate space of the doc
     #[serde(rename = "rectangle")]
     pub rect: Rectangle,
     /// width of the data
@@ -132,7 +132,7 @@ impl From<image::DynamicImage> for Image {
 
         Self {
             data,
-            rect: Rectangle::from_bounds(bounds),
+            rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width,
             pixel_height,
             memory_format,
@@ -412,7 +412,7 @@ impl Image {
 
         Ok(Some(Self {
             data,
-            rect: Rectangle::from_bounds(bounds),
+            rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width,
             pixel_height: height,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
@@ -501,7 +501,7 @@ impl Image {
 
         Ok(Self {
             data,
-            rect: Rectangle::from_bounds(bounds),
+            rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: width_scaled,
             pixel_height: height_scaled,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,
@@ -567,7 +567,7 @@ impl Image {
 
         Ok(Image {
             data,
-            rect: Rectangle::from_bounds(bounds),
+            rect: Rectangle::from_p2d_aabb(bounds),
             pixel_width: splitted_width_scaled,
             pixel_height: splitted_height_scaled,
             memory_format: ImageMemoryFormat::B8g8r8a8Premultiplied,

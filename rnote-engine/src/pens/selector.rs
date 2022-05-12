@@ -1,8 +1,9 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
-use crate::sheet::Sheet;
+use crate::engine::EngineTaskSender;
+use crate::document::Document;
 use crate::store::StrokeKey;
-use crate::{Camera, DrawOnSheetBehaviour, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use kurbo::Shape;
 use p2d::query::PointQuery;
 use piet::RenderContext;
@@ -91,7 +92,7 @@ pub struct Selector {
 impl Default for Selector {
     fn default() -> Self {
         Self {
-            style: SelectorType::Polygon,
+            style: SelectorType::Rectangle,
             resize_lock_aspectratio: false,
             state: SelectorState::default(),
         }
@@ -102,7 +103,8 @@ impl PenBehaviour for Selector {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _sheet: &mut Sheet,
+        tasks_tx: EngineTaskSender,
+        doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
         _audioplayer: Option<&mut AudioPlayer>,
@@ -113,7 +115,7 @@ impl PenBehaviour for Selector {
 
         let pen_progress = match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
-                store.record();
+                surface_flags.merge_with_other(store.record());
 
                 // Deselect on start
                 let selection_keys =
@@ -125,7 +127,7 @@ impl PenBehaviour for Selector {
                 };
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
@@ -181,7 +183,7 @@ impl PenBehaviour for Selector {
                 self.state = state;
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 pen_progress
@@ -198,7 +200,7 @@ impl PenBehaviour for Selector {
                 store.set_selected_keys(&selection_keys, false);
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -218,7 +220,7 @@ impl PenBehaviour for Selector {
 
                 match modify_state {
                     ModifyState::Up => {
-                        store.record();
+                        surface_flags.merge_with_other(store.record());
 
                         if Self::rotate_node_sphere(*selection_bounds, camera)
                             .contains_local_point(&na::Point2::from(element.pos))
@@ -311,6 +313,7 @@ impl PenBehaviour for Selector {
 
                             // strokes that were far away previously might come into view
                             store.regenerate_rendering_in_viewport_threaded(
+                                tasks_tx,
                                 false,
                                 camera.viewport(),
                                 camera.image_scale(),
@@ -394,7 +397,7 @@ impl PenBehaviour for Selector {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 pen_progress
             }
@@ -409,6 +412,7 @@ impl PenBehaviour for Selector {
             ) => {
                 store.update_geometry_for_strokes(&selection);
                 store.regenerate_rendering_in_viewport_threaded(
+                    tasks_tx,
                     false,
                     camera.viewport(),
                     camera.image_scale(),
@@ -419,9 +423,11 @@ impl PenBehaviour for Selector {
                 }
                 *modify_state = ModifyState::Up;
 
+                doc.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::InProgress
             }
@@ -439,9 +445,11 @@ impl PenBehaviour for Selector {
                 store.set_selected_keys(&selection, false);
                 self.state = SelectorState::Idle;
 
+                doc.resize_autoexpand(store, camera);
+
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.sheet_changed = true;
+                surface_flags.store_changed = true;
 
                 PenProgress::Finished
             }
@@ -451,8 +459,8 @@ impl PenBehaviour for Selector {
     }
 }
 
-impl DrawOnSheetBehaviour for Selector {
-    fn bounds_on_sheet(&self, _sheet_bounds: AABB, camera: &Camera) -> Option<AABB> {
+impl DrawOnDocBehaviour for Selector {
+    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
         let total_zoom = camera.total_zoom();
 
         match &self.state {
@@ -485,10 +493,10 @@ impl DrawOnSheetBehaviour for Selector {
         }
     }
 
-    fn draw_on_sheet(
+    fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _sheet_bounds: AABB,
+        _doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -589,6 +597,7 @@ impl Selector {
     pub fn update_from_store(&mut self, store: &StrokeStore) {
         let selection = store.selection_keys_as_rendered();
         let selection_bounds = store.gen_bounds_for_strokes(&selection);
+
         if let Some(selection_bounds) = selection_bounds {
             self.set_selection(selection, selection_bounds);
         } else {

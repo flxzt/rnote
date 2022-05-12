@@ -261,11 +261,7 @@ impl BrushStroke {
 
     // internal method generating the current hitboxes.
     fn gen_hitboxes(&self) -> Vec<AABB> {
-        let width = match &self.style {
-            Style::Smooth(options) => options.stroke_width,
-            Style::Rough(options) => options.stroke_width,
-            Style::Textured(options) => options.stroke_width,
-        };
+        let stroke_width = self.style.stroke_width();
 
         self.path
             .iter()
@@ -273,7 +269,7 @@ impl BrushStroke {
                 segment
                     .hitboxes()
                     .into_iter()
-                    .map(|hitbox| hitbox.loosened(width / 2.0))
+                    .map(|hitbox| hitbox.loosened(stroke_width * 0.5))
             })
             .flatten()
             .collect()

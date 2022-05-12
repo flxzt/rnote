@@ -247,6 +247,28 @@ impl TransformBehaviour for Segment {
     }
 }
 
+impl Segment {
+    /// All segment choices have a start
+    pub fn start(&self) -> Element {
+        match self {
+            Segment::Dot { element } => *element,
+            Segment::Line { start, .. } => *start,
+            Segment::QuadBez { start, .. } => *start,
+            Segment::CubBez { start, .. } => *start,
+        }
+    }
+
+    /// All segment choices have an end
+    pub fn end(&self) -> Element {
+        match self {
+            Segment::Dot { element } => *element,
+            Segment::Line { end, .. } => *end,
+            Segment::QuadBez { end, .. } => *end,
+            Segment::CubBez { end, .. } => *end,
+        }
+    }
+}
+
 /// Calculates the number hitbox elems for the given length capped with a maximum no of hitbox elemens
 fn hitbox_elems_for_segment_len(len: f64) -> i32 {
     // Maximum hitbox diagonal ( below the threshold )

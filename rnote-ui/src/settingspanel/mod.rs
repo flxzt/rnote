@@ -4,19 +4,21 @@ mod penshortcutrow;
 // Re-exports
 pub use penshortcutrow::PenShortcutRow;
 
-use super::appwindow::RnoteAppWindow;
-use crate::unitentry::UnitEntry;
 use adw::prelude::*;
 use gtk4::{
     gdk, glib, glib::clone, subclass::prelude::*, Adjustment, Button, ColorButton,
     CompositeTemplate, ScrolledWindow, SpinButton, Switch, ToggleButton, Widget,
 };
-use rnote_compose::penhelpers::ShortcutKey;
-use rnote_engine::sheet::background::PatternStyle;
-use rnote_engine::sheet::format::{self, Format};
-use rnote_engine::utils::GdkRGBAHelpers;
+use num_traits::ToPrimitive;
 use std::cell::RefCell;
 use std::rc::Rc;
+
+use super::appwindow::RnoteAppWindow;
+use crate::unitentry::UnitEntry;
+use rnote_compose::penhelpers::ShortcutKey;
+use rnote_engine::document::background::PatternStyle;
+use rnote_engine::document::format::{self, Format, PredefinedFormat};
+use rnote_engine::utils::GdkRGBAHelpers;
 
 mod imp {
     use super::*;
@@ -39,6 +41,8 @@ mod imp {
         pub general_pdf_import_as_vector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub general_pdf_import_as_bitmap_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub general_format_border_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
         pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
         #[template_child]
@@ -241,7 +245,13 @@ mod imp {
 
     impl SettingsPanel {
         pub fn update_temporary_format_from_rows(&self) {
-            // Format
+            // border color
+            self.temporary_format.borrow_mut().border_color = self
+                .general_format_border_color_choosebutton
+                .rgba()
+                .into_compose_color();
+
+            // Format orientation
             if self.format_orientation_portrait_toggle.is_active() {
                 self.temporary_format.borrow_mut().orientation = format::Orientation::Portrait;
             } else {
@@ -266,113 +276,92 @@ mod imp {
                 .clamp(Format::HEIGHT_MIN, Format::HEIGHT_MAX);
         }
         fn apply_predefined_format(&self) {
-            if let Some(selected_item) = self.format_predefined_formats_row.selected_item() {
-                // Dimensions are in mm
-                let mut preconfigured_dimensions = match selected_item
-                    .downcast::<adw::EnumListItem>()
-                    .unwrap()
-                    .nick()
-                    .as_str()
-                {
-                    "a2" => {
-                        self.format_orientation_row.set_sensitive(true);
-                        self.format_width_row.set_sensitive(false);
-                        self.format_height_row.set_sensitive(false);
-                        Some((420.0, 594.0))
-                    }
-                    "a3" => {
-                        self.format_orientation_row.set_sensitive(true);
-                        self.format_width_row.set_sensitive(false);
-                        self.format_height_row.set_sensitive(false);
-                        Some((297.0, 420.0))
-                    }
-                    "a4" => {
-                        self.format_orientation_row.set_sensitive(true);
-                        self.format_width_row.set_sensitive(false);
-                        self.format_height_row.set_sensitive(false);
-                        Some((210.0, 297.0))
-                    }
-                    "a5" => {
-                        self.format_orientation_row.set_sensitive(true);
-                        self.format_width_row.set_sensitive(false);
-                        self.format_height_row.set_sensitive(false);
-                        Some((148.0, 210.0))
-                    }
-                    "a6" => {
-                        self.format_orientation_row.set_sensitive(true);
-                        self.format_width_row.set_sensitive(false);
-                        self.format_height_row.set_sensitive(false);
-                        Some((105.0, 148.0))
-                    }
-                    "us-letter" => {
-                        self.format_orientation_row.set_sensitive(true);
-                        self.format_width_row.set_sensitive(false);
-                        self.format_height_row.set_sensitive(false);
-                        Some((215.9, 279.4))
-                    }
-                    "us-legal" => {
-                        self.format_orientation_row.set_sensitive(true);
-                        self.format_width_row.set_sensitive(false);
-                        self.format_height_row.set_sensitive(false);
-                        Some((215.9, 355.6))
-                    }
-                    "custom" => {
-                        self.format_orientation_row.set_sensitive(false);
-                        self.format_width_row.set_sensitive(true);
-                        self.format_height_row.set_sensitive(true);
-                        self.format_orientation_portrait_toggle.set_active(true);
-                        self.temporary_format.borrow_mut().orientation =
-                            format::Orientation::Portrait;
-                        None
-                    }
-                    _ => {
-                        log::error!(
-                            "invalid nick string when selecting a format in format_predefined_formats_row"
-                        );
-                        None
-                    }
-                };
+            let predefined_format = self.instance().format_predefined_format();
 
-                if let Some(ref mut preconfigured_dimensions) = preconfigured_dimensions {
-                    if self.temporary_format.borrow().orientation == format::Orientation::Landscape
-                    {
-                        std::mem::swap(
-                            &mut preconfigured_dimensions.0,
-                            &mut preconfigured_dimensions.1,
-                        );
-                    }
-
-                    let converted_width_mm = format::MeasureUnit::convert_measurement(
-                        preconfigured_dimensions.0,
-                        format::MeasureUnit::Mm,
-                        self.temporary_format.borrow().dpi,
-                        format::MeasureUnit::Mm,
-                        self.temporary_format.borrow().dpi,
-                    );
-                    let converted_height_mm = format::MeasureUnit::convert_measurement(
-                        preconfigured_dimensions.1,
-                        format::MeasureUnit::Mm,
-                        self.temporary_format.borrow().dpi,
-                        format::MeasureUnit::Mm,
-                        self.temporary_format.borrow().dpi,
-                    );
-
-                    // Setting the unit dropdowns to Mm
-                    self.format_width_unitentry
-                        .get()
-                        .set_unit(format::MeasureUnit::Mm);
-                    self.format_height_unitentry
-                        .get()
-                        .set_unit(format::MeasureUnit::Mm);
-
-                    // setting the values
-                    self.format_width_unitentry
-                        .get()
-                        .set_value(converted_width_mm);
-                    self.format_height_unitentry
-                        .get()
-                        .set_value(converted_height_mm);
+            let preconfigured_dimensions = predefined_format.size_portrait_mm();
+            match predefined_format {
+                PredefinedFormat::A6 => {
+                    self.format_orientation_row.set_sensitive(true);
+                    self.format_width_row.set_sensitive(false);
+                    self.format_height_row.set_sensitive(false);
                 }
+                PredefinedFormat::A5 => {
+                    self.format_orientation_row.set_sensitive(true);
+                    self.format_width_row.set_sensitive(false);
+                    self.format_height_row.set_sensitive(false);
+                }
+                PredefinedFormat::A4 => {
+                    self.format_orientation_row.set_sensitive(true);
+                    self.format_width_row.set_sensitive(false);
+                    self.format_height_row.set_sensitive(false);
+                }
+                PredefinedFormat::A3 => {
+                    self.format_orientation_row.set_sensitive(true);
+                    self.format_width_row.set_sensitive(false);
+                    self.format_height_row.set_sensitive(false);
+                }
+                PredefinedFormat::A2 => {
+                    self.format_orientation_row.set_sensitive(true);
+                    self.format_width_row.set_sensitive(false);
+                    self.format_height_row.set_sensitive(false);
+                }
+                PredefinedFormat::UsLetter => {
+                    self.format_orientation_row.set_sensitive(true);
+                    self.format_width_row.set_sensitive(false);
+                    self.format_height_row.set_sensitive(false);
+                }
+                PredefinedFormat::UsLegal => {
+                    self.format_orientation_row.set_sensitive(true);
+                    self.format_width_row.set_sensitive(false);
+                    self.format_height_row.set_sensitive(false);
+                }
+                PredefinedFormat::Custom => {
+                    self.format_orientation_row.set_sensitive(false);
+                    self.format_width_row.set_sensitive(true);
+                    self.format_height_row.set_sensitive(true);
+                    self.format_orientation_portrait_toggle.set_active(true);
+                    self.temporary_format.borrow_mut().orientation = format::Orientation::Portrait;
+                }
+            };
+
+            if let Some(mut preconfigured_dimensions) = preconfigured_dimensions {
+                if self.temporary_format.borrow().orientation == format::Orientation::Landscape {
+                    std::mem::swap(
+                        &mut preconfigured_dimensions.0,
+                        &mut preconfigured_dimensions.1,
+                    );
+                }
+
+                let converted_width_mm = format::MeasureUnit::convert_measurement(
+                    preconfigured_dimensions.0,
+                    format::MeasureUnit::Mm,
+                    self.temporary_format.borrow().dpi,
+                    format::MeasureUnit::Mm,
+                    self.temporary_format.borrow().dpi,
+                );
+                let converted_height_mm = format::MeasureUnit::convert_measurement(
+                    preconfigured_dimensions.1,
+                    format::MeasureUnit::Mm,
+                    self.temporary_format.borrow().dpi,
+                    format::MeasureUnit::Mm,
+                    self.temporary_format.borrow().dpi,
+                );
+
+                // Setting the unit dropdowns to Mm
+                self.format_width_unitentry
+                    .get()
+                    .set_unit(format::MeasureUnit::Mm);
+                self.format_height_unitentry
+                    .get()
+                    .set_unit(format::MeasureUnit::Mm);
+
+                // setting the values
+                self.format_width_unitentry
+                    .get()
+                    .set_value(converted_width_mm);
+                self.format_height_unitentry
+                    .get()
+                    .set_value(converted_height_mm);
             }
         }
     }
@@ -398,34 +387,34 @@ impl SettingsPanel {
         Rc::clone(&self.imp().temporary_format)
     }
 
-    pub fn set_predefined_format_variant(&self, predefined_format: format::PredefinedFormat) {
-        let predefined_format_listmodel = self
-            .imp()
-            .format_predefined_formats_row
-            .get()
-            .model()
+    pub fn format_predefined_format(&self) -> PredefinedFormat {
+        PredefinedFormat::try_from(self.imp().format_predefined_formats_row.get().selected())
             .unwrap()
-            .downcast::<adw::EnumListModel>()
-            .unwrap();
-        self.imp()
-            .format_predefined_formats_row
-            .get()
-            .set_selected(predefined_format_listmodel.find_position(predefined_format as i32));
     }
 
-    pub fn set_background_pattern_variant(&self, pattern: PatternStyle) {
-        let background_pattern_listmodel = self
-            .imp()
-            .background_patterns_row
+    pub fn set_format_predefined_format_variant(
+        &self,
+        predefined_format: format::PredefinedFormat,
+    ) {
+        let position = predefined_format.to_u32().unwrap();
+
+        self.imp()
+            .format_predefined_formats_row
             .get()
-            .model()
-            .unwrap()
-            .downcast::<adw::EnumListModel>()
-            .unwrap();
+            .set_selected(position);
+    }
+
+    pub fn background_pattern(&self) -> PatternStyle {
+        PatternStyle::try_from(self.imp().background_patterns_row.get().selected()).unwrap()
+    }
+
+    pub fn set_background_pattern(&self, pattern: PatternStyle) {
+        let position = pattern.to_u32().unwrap();
+
         self.imp()
             .background_patterns_row
             .get()
-            .set_selected(background_pattern_listmodel.find_position(pattern as i32));
+            .set_selected(position);
     }
 
     pub fn set_format_orientation(&self, orientation: format::Orientation) {
@@ -454,6 +443,10 @@ impl SettingsPanel {
 
     pub fn general_pdf_import_as_bitmap_toggle(&self) -> ToggleButton {
         self.imp().general_pdf_import_as_bitmap_toggle.clone()
+    }
+
+    pub fn general_format_border_color_choosebutton(&self) -> ColorButton {
+        self.imp().general_format_border_color_choosebutton.clone()
     }
 
     pub fn format_width_unitentry(&self) -> UnitEntry {
@@ -489,21 +482,37 @@ impl SettingsPanel {
     }
 
     pub fn refresh_for_engine(&self, appwindow: &RnoteAppWindow) {
-        self.load_misc(appwindow);
+        self.load_general(appwindow);
         self.load_format(appwindow);
         self.load_background(appwindow);
         self.load_shortcuts(appwindow);
     }
 
-    pub fn load_misc(&self, appwindow: &RnoteAppWindow) {
+    pub fn load_general(&self, appwindow: &RnoteAppWindow) {
+        let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
+        let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
+        let format_border_color = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .document
+            .format
+            .border_color;
+
+        self.general_pdf_import_as_vector_toggle()
+            .set_active(pdf_import_as_vector);
+        self.general_pdf_import_as_bitmap_toggle()
+            .set_active(!pdf_import_as_vector);
         self.general_pdf_import_width_adj()
-            .set_value(appwindow.canvas().pdf_import_width());
+            .set_value(pdf_import_width_perc);
+        self.general_format_border_color_choosebutton()
+            .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
 
     pub fn load_format(&self, appwindow: &RnoteAppWindow) {
-        let format = appwindow.canvas().engine().borrow().sheet.format.clone();
+        let format = appwindow.canvas().engine().borrow().document.format.clone();
 
-        self.set_predefined_format_variant(format::PredefinedFormat::Custom);
+        self.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
         self.set_format_orientation(format.orientation);
         self.format_dpi_adj().set_value(format.dpi);
 
@@ -523,15 +532,15 @@ impl SettingsPanel {
             .canvas()
             .engine()
             .borrow()
-            .sheet
+            .document
             .background
             .clone();
-        let format = appwindow.canvas().engine().borrow().sheet.format.clone();
+        let format = appwindow.canvas().engine().borrow().document.format.clone();
 
         self.background_color_choosebutton()
             .set_rgba(&gdk::RGBA::from_compose_color(background.color));
 
-        self.set_background_pattern_variant(background.pattern);
+        self.set_background_pattern(background.pattern);
         self.background_pattern_color_choosebutton()
             .set_rgba(&gdk::RGBA::from_compose_color(background.pattern_color));
 
@@ -628,35 +637,31 @@ impl SettingsPanel {
         self.imp()
             .general_pdf_import_width_adj
             .get()
-            .bind_property("value", &appwindow.canvas(), "pdf-import-width")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
+            .connect_value_changed(clone!(@weak appwindow => move |general_pdf_import_width_adj| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-width-perc", Some(&general_pdf_import_width_adj.value().to_variant()));
+            }));
 
-        // Pdf import as vector or bitmap
         self.imp()
             .general_pdf_import_as_vector_toggle
             .get()
-            .bind_property("active", &appwindow.canvas(), "pdf-import-as-vector")
-            .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
-            .build();
+            .connect_active_notify(clone!(@weak appwindow => move |general_pdf_import_as_vector_toggle| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-as-vector", Some(&general_pdf_import_as_vector_toggle.is_active().to_variant()));
+            }));
+
         self.imp()
             .general_pdf_import_as_bitmap_toggle
             .get()
-            .bind_property("active", &appwindow.canvas(), "pdf-import-as-vector")
-            .flags(
-                glib::BindingFlags::SYNC_CREATE
-                    | glib::BindingFlags::BIDIRECTIONAL
-                    | glib::BindingFlags::INVERT_BOOLEAN,
-            )
-            .build();
+            .connect_active_notify(clone!(@weak appwindow => move |general_pdf_import_as_bitmap_toggle| {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-as-vector", Some(&(!general_pdf_import_as_bitmap_toggle.is_active()).to_variant()));
+            }));
 
         // revert format
         self.imp().format_revert_button.get().connect_clicked(
             clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
-                *settings_panel.imp().temporary_format.borrow_mut() = appwindow.canvas().engine().borrow().sheet.format.clone();
-                let revert_format = appwindow.canvas().engine().borrow().sheet.format.clone();
+                *settings_panel.imp().temporary_format.borrow_mut() = appwindow.canvas().engine().borrow().document.format.clone();
+                let revert_format = appwindow.canvas().engine().borrow().document.format.clone();
 
-                settings_panel.set_predefined_format_variant(format::PredefinedFormat::Custom);
+                settings_panel.set_format_predefined_format_variant(format::PredefinedFormat::Custom);
 
                 settings_panel.imp().format_dpi_adj.set_value(revert_format.dpi);
 
@@ -675,75 +680,77 @@ impl SettingsPanel {
         self.imp().format_apply_button.get().connect_clicked(
             clone!(@weak temporary_format, @weak appwindow => move |_format_apply_button| {
                 let temporary_format = temporary_format.borrow().clone();
-                appwindow.canvas().engine().borrow_mut().sheet.format = temporary_format;
+                appwindow.canvas().engine().borrow_mut().document.format = temporary_format;
 
                 appwindow.canvas().engine().borrow_mut().resize_to_fit_strokes();
-                appwindow.canvas().regenerate_background(false);
-                appwindow.canvas().regenerate_content(true, true);
+                appwindow.canvas().update_engine_rendering();
             }),
         );
 
         // Background
         self.imp().background_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_color_choosebutton| {
-            appwindow.canvas().engine().borrow_mut().sheet.background.color = background_color_choosebutton.rgba().into_compose_color();
-            appwindow.canvas().regenerate_background(true);
+            appwindow.canvas().engine().borrow_mut().document.background.color = background_color_choosebutton.rgba().into_compose_color();
+
+            appwindow.canvas().regenerate_background_pattern();
+            appwindow.canvas().update_engine_rendering();
         }));
 
-        self.imp().background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |background_patterns_row| {
-            if let Some(selected_item) = background_patterns_row.selected_item() {
-                match selected_item
-                    .downcast::<adw::EnumListItem>()
-                    .unwrap()
-                    .nick()
-                    .as_str()
-                {
-                    "none" => {
-                        appwindow.canvas().engine().borrow_mut().sheet.background.pattern = PatternStyle::None;
-                        settings_panel.background_pattern_width_unitentry().set_sensitive(false);
-                        settings_panel.background_pattern_height_unitentry().set_sensitive(false);
+        self.imp().background_patterns_row.get().connect_selected_item_notify(clone!(@weak self as settings_panel, @weak appwindow => move |_background_patterns_row| {
+            let pattern = settings_panel.background_pattern();
 
-                    },
-                    "lines" => {
-                        appwindow.canvas().engine().borrow_mut().sheet.background.pattern = PatternStyle::Lines;
-                        settings_panel.background_pattern_width_unitentry().set_sensitive(false);
-                        settings_panel.background_pattern_height_unitentry().set_sensitive(true);
-                    },
-                    "grid" => {
-                        appwindow.canvas().engine().borrow_mut().sheet.background.pattern = PatternStyle::Grid;
-                        settings_panel.background_pattern_width_unitentry().set_sensitive(true);
-                        settings_panel.background_pattern_height_unitentry().set_sensitive(true);
-                    },
-                    "dots" => {
-                        appwindow.canvas().engine().borrow_mut().sheet.background.pattern = PatternStyle::Dots;
-                        settings_panel.background_pattern_width_unitentry().set_sensitive(true);
-                        settings_panel.background_pattern_height_unitentry().set_sensitive(true);
-                    },
-                    _ => {
-                        log::error!(
-                            "invalid nick string when selecting a pattern in background_patterns_row"
-                        );
-                    }
-                };
+            appwindow.canvas().engine().borrow_mut().document.background.pattern = pattern;
 
-                appwindow.canvas().regenerate_background(true);
+            match pattern {
+                PatternStyle::None => {
+                    settings_panel.background_pattern_width_unitentry().set_sensitive(false);
+                    settings_panel.background_pattern_height_unitentry().set_sensitive(false);
+                },
+                PatternStyle::Lines => {
+                    settings_panel.background_pattern_width_unitentry().set_sensitive(false);
+                    settings_panel.background_pattern_height_unitentry().set_sensitive(true);
+                },
+                PatternStyle::Grid => {
+                    settings_panel.background_pattern_width_unitentry().set_sensitive(true);
+                    settings_panel.background_pattern_height_unitentry().set_sensitive(true);
+                },
+                PatternStyle::Dots => {
+                    settings_panel.background_pattern_width_unitentry().set_sensitive(true);
+                    settings_panel.background_pattern_height_unitentry().set_sensitive(true);
+                },
             }
+
+            appwindow.canvas().regenerate_background_pattern();
+            appwindow.canvas().update_engine_rendering();
         }));
 
         self.imp().background_pattern_color_choosebutton.connect_color_set(clone!(@weak appwindow => move |background_pattern_color_choosebutton| {
-            appwindow.canvas().engine().borrow_mut().sheet.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
-            appwindow.canvas().regenerate_background(true);
+            appwindow.canvas().engine().borrow_mut().document.background.pattern_color = background_pattern_color_choosebutton.rgba().into_compose_color();
+
+            appwindow.canvas().regenerate_background_pattern();
+            appwindow.canvas().update_engine_rendering();
+        }));
+
+        self.imp().general_format_border_color_choosebutton.connect_color_set(clone!(@weak self as settingspanel, @weak appwindow => move |general_format_border_color_choosebutton| {
+            let format_border_color = general_format_border_color_choosebutton.rgba().into_compose_color();
+            appwindow.canvas().engine().borrow_mut().document.format.border_color = format_border_color;
+
+            // Because the format border color is applied immediately to the engine, we need to update the temporary format too.
+            settingspanel.imp().temporary_format.borrow_mut().border_color = format_border_color;
+
+            appwindow.canvas().update_engine_rendering();
         }));
 
         self.imp().background_pattern_width_unitentry.get().connect_local(
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.canvas().engine().borrow().sheet.background.pattern_size;
+                    let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
                     pattern_size[0] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
 
-                    appwindow.canvas().engine().borrow_mut().sheet.background.pattern_size = pattern_size;
-                    appwindow.canvas().regenerate_background(true);
+                    appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
+                    appwindow.canvas().regenerate_background_pattern();
+                    appwindow.canvas().update_engine_rendering();
                     None
             }),
         );
@@ -752,12 +759,13 @@ impl SettingsPanel {
             "measurement-changed",
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
-                    let mut pattern_size = appwindow.canvas().engine().borrow().sheet.background.pattern_size;
+                    let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
                     pattern_size[1] = f64::from(settings_panel.background_pattern_height_unitentry().value_in_px());
 
-                    appwindow.canvas().engine().borrow_mut().sheet.background.pattern_size = pattern_size;
-                    appwindow.canvas().regenerate_background(true);
+                    appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
+                    appwindow.canvas().regenerate_background_pattern();
+                    appwindow.canvas().update_engine_rendering();
                     None
             }),
         );

@@ -70,12 +70,12 @@ impl Ellipse {
     pub fn from_foci_and_point(foci: [na::Vector2<f64>; 2], point: na::Vector2<f64>) -> Self {
         let sum = (point - foci[0]).magnitude() + (point - foci[1]).magnitude();
 
-        let d = (foci[0] - foci[1]).magnitude() / 2.0;
-        let semimajor = sum / 2.0;
+        let d = (foci[0] - foci[1]).magnitude() * 0.5;
+        let semimajor = sum * 0.5;
         let semiminor = (semimajor.powi(2) - d.powi(2)).sqrt();
         let v = foci[1] - foci[0];
 
-        let center = (foci[0] + foci[1]) / 2.0;
+        let center = (foci[0] + foci[1]) * 0.5;
         let angle = na::Vector2::x().angle_ahead(&v);
 
         let semimajor = if semimajor == 0.0 { 1.0 } else { semimajor };

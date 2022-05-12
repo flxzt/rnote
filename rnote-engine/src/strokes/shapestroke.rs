@@ -126,36 +126,4 @@ impl ShapeStroke {
             .map(|hitbox| hitbox.loosened(width * 0.5))
             .collect()
     }
-
-    /*
-    pub fn update_shape(&mut self, shaper: &mut Shaper, element: Element) {
-        match self.shape {
-            Shape::Line(ref mut line) => {
-                line.end = element.inputdata.pos();
-            }
-            Shape::Rectangle(ref mut rectangle) => {
-                let relative_pos = element.inputdata.pos() - shaper.rect_start;
-                let constrained_relative_pos = Self::constrain(relative_pos, shaper.ratio);
-
-                rectangle.cuboid.half_extents = (constrained_relative_pos / 2.0).abs();
-
-                let diff = constrained_relative_pos - shaper.rect_current + shaper.rect_start;
-                rectangle.transform.transform *= na::Translation2::from(diff / 2.0);
-
-                shaper.rect_current = shaper.rect_start + constrained_relative_pos;
-            }
-            Shape::Ellipse(ref mut ellipse) => {
-                let center = ellipse
-                    .transform
-                    .transform
-                    .transform_point(&na::point![0.0, 0.0]);
-
-                let diff = element.inputdata.pos() - center.coords;
-                ellipse.radii = Self::constrain(diff.abs(), shaper.ratio);
-            }
-        }
-
-        self.update_geometry();
-    }
-    */
 }

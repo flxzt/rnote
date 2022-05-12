@@ -391,19 +391,6 @@ impl ShaperPage {
                 appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::Vertical, switch.state());
             }));
 
-        //self.constraint_ratio_combo().connect_selected_item_notify(
-        //    clone!(@weak appwindow => move |combo| {
-        //        let ratio = match combo.selected() {
-        //            0 => ConstraintRatio::Disabled,
-        //            1 => ConstraintRatio::OneToOne,
-        //            2 => ConstraintRatio::ThreeToTwo,
-        //            3 => ConstraintRatio::Golden,
-        //            _ => unreachable!()
-        //        }
-        //        appwindow.canvas().engine().borrow_mut().penholder.shaper.ratio = ratio;
-        //    }),
-        //);
-
         // shape builder type
         self.shapebuildertype_listbox().connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shapetype_listbox, selected_row| {

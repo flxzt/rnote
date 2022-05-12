@@ -1,7 +1,7 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
-use crate::engine::EngineTaskSender;
 use crate::document::Document;
+use crate::engine::EngineTaskSender;
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
@@ -72,14 +72,9 @@ impl Default for Shaper {
         Self {
             builder_type: ShapeBuilderType::default(),
             style: ShaperStyle::default(),
-<<<<<<< HEAD
-            smooth_options: SmoothOptions::default(),
-            rough_options: RoughOptions::default(),
-            constraint: Constraint::default(),
-=======
             smooth_options,
             rough_options,
->>>>>>> main
+            constraint: Constraint::default(),
             state: ShaperState::Idle,
         }
     }

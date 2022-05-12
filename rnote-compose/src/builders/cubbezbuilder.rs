@@ -80,8 +80,8 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 };
             }
             (CubBezBuilderState::Start(_), ..) => {}
-            (CubBezBuilderState::Cp1 { cp1, .. }, PenEvent::Down { element, .. }) => {
-                *cp1 = element.pos;
+            (CubBezBuilderState::Cp1 { start, cp1, .. }, PenEvent::Down { element, .. }) => {
+                *cp1 = constraint.constrain(element.pos - *start) + *start;
             }
             (CubBezBuilderState::Cp1 { start, cp1 }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::Cp2 {
@@ -91,8 +91,8 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 };
             }
             (CubBezBuilderState::Cp1 { .. }, ..) => {}
-            (CubBezBuilderState::Cp2 { cp2, .. }, PenEvent::Down { element, .. }) => {
-                *cp2 = element.pos;
+            (CubBezBuilderState::Cp2 { cp1, cp2, .. }, PenEvent::Down { element, .. }) => {
+                *cp2 = constraint.constrain(element.pos - *cp1) + *cp1;
             }
             (CubBezBuilderState::Cp2 { start, cp1, cp2 }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::End {
@@ -103,8 +103,8 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 };
             }
             (CubBezBuilderState::Cp2 { .. }, ..) => {}
-            (CubBezBuilderState::End { end, .. }, PenEvent::Down { element, .. }) => {
-                *end = element.pos;
+            (CubBezBuilderState::End { cp2, end, .. }, PenEvent::Down { element, .. }) => {
+                *end = constraint.constrain(element.pos - *cp2) + *cp2;
             }
             (
                 CubBezBuilderState::End {

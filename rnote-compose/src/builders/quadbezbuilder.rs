@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraint, ConstraintRatio, ShapeBuilderBehaviour};
+use super::{Constraint, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state
@@ -51,7 +51,6 @@ impl ShapeBuilderCreator for QuadBezBuilder {
 impl ShapeBuilderBehaviour for QuadBezBuilder {
     fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
-
         match (&mut self.state, event) {
             (QuadBezBuilderState::Start(start), PenEvent::Down { element, .. }) => {
                 *start = element.pos;
@@ -69,8 +68,8 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                 };
             }
             (QuadBezBuilderState::Start(_), ..) => {}
-            (QuadBezBuilderState::Cp { cp, .. }, PenEvent::Down { element, .. }) => {
-                *cp = element.pos;
+            (QuadBezBuilderState::Cp { start, cp }, PenEvent::Down { element, .. }) => {
+                *cp = constraint.constrain(element.pos - *start) + *start;
             }
             (QuadBezBuilderState::Cp { start, cp }, PenEvent::Up { element, .. }) => {
                 self.state = QuadBezBuilderState::End {
@@ -80,8 +79,8 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
                 };
             }
             (QuadBezBuilderState::Cp { .. }, ..) => {}
-            (QuadBezBuilderState::End { end, .. }, PenEvent::Down { element, .. }) => {
-                *end = element.pos;
+            (QuadBezBuilderState::End { end, cp, .. }, PenEvent::Down { element, .. }) => {
+                *end = constraint.constrain(element.pos - *cp) + *cp;
             }
             (QuadBezBuilderState::End { start, cp, end }, PenEvent::Up { .. }) => {
                 return BuilderProgress::Finished(vec![Shape::QuadraticBezier(QuadraticBezier {

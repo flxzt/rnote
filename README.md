@@ -15,8 +15,25 @@
 # Rnote
 > Sketch and take handwritten notes.  
 
-Rnote is a simple vector-based drawing application for sketching, handwritten notes and to annotate documents and pictures.  
+Rnote is a vector-based drawing app for sketching, handwritten notes and to annotate documents and pictures. Targeted at students, teachers and those who own a drawing tablet, it provides features like PDF and picture import and export, an infinite canvas and an adaptive UI for big and small screens.  
+
 Written in Rust and GTK4.
+
+**Features**  
+- Adaptive UI focused on stylus input
+- Pressure-sensitive stylus input with different and configurable stroke styles
+- Draw many different shapes with the shape tool
+- Move, rotate, resize and modify existing content with the selection tool
+- Different document expand layouts ( fixed pages, continuous vertical, infinite in every direction )
+- Customizable background colors, patterns, sizes
+- Customizable page format
+- Reconfigurable stylus button shortcuts
+- An integrated workspace browser for quick access to related media files
+- Drag & drop, clipboard support
+- PDF, bitmap and SVG image import
+- Save the documents in the native `.rnote` file format
+- Document and selection export to SVG, PDF
+- Autosave, printing
 
 **Disclaimer**  
 This is my first Rust and GTK project and I am learning as I go along. Expect some bugs and crashes.  
@@ -46,6 +63,15 @@ $ flatpak mask --remove com.github.flxzt.rnote
 ```
 
 Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
+
+## Reviews, in the media:
+> It's a perfect on-demand user experience that — and this might be controversial — is more akin to professional-grade iPadOS apps than GTK apps. I know this will sound like a minor thing on paper but spatially, within the user experience, it reduces friction, and makes it so much easier to get things done.  
+> 
+> -- omg!ubuntu! - https://www.omgubuntu.co.uk/2022/01/rnote-frehand-notetaking-app-for-linux-gtk4
+
+> I[t] has everything it needs for note taking. I'm using this app for university, loading in the Data files and handwriting notes. I'm using a microsoft surface go 3 and an original pen. All functions are working like a charm. Best app i used so far.  
+>
+> -- Leroy - Gnome Software review section
 
 ## Screenshots
 ![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)

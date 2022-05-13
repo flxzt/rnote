@@ -326,10 +326,10 @@ impl PenHolder {
                 camera,
             ));
             self.pen_mode_state.set_pen_mode(pen_mode);
-        }
 
-        surface_flags.redraw = true;
-        surface_flags.penholder_changed = true;
+            surface_flags.redraw = true;
+            surface_flags.penholder_changed = true;
+        }
 
         surface_flags
     }

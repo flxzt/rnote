@@ -8,7 +8,7 @@ use rnote_compose::builders::ShapeBuilderType;
 use rnote_engine::document::Layout;
 use rnote_engine::pens::brush::BrushStyle;
 use rnote_engine::pens::eraser::EraserStyle;
-use rnote_engine::pens::penholder::{PenHolderEvent, PenStyle};
+use rnote_engine::pens::penholder::PenStyle;
 use rnote_engine::pens::selector::SelectorType;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::tools::ToolsStyle;
@@ -148,8 +148,7 @@ impl RnoteAppWindow {
         let action_clipboard_copy_selection =
             gio::SimpleAction::new("clipboard-copy-selection", None);
         self.add_action(&action_clipboard_copy_selection);
-        let action_clipboard_paste =
-            gio::SimpleAction::new("clipboard-paste", None);
+        let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
         self.add_action(&action_clipboard_paste);
         let action_pen_override = gio::SimpleAction::new(
             "pen-style-override",
@@ -545,12 +544,12 @@ impl RnoteAppWindow {
 
                 if let Some(new_pen_style) = new_pen_style {
                     // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
-                    if new_pen_style != appwindow.canvas().engine().borrow().penholder.style_w_override() {
-                        let mut surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(
-                            PenHolderEvent::ChangeStyle(new_pen_style),
+                    if new_pen_style != appwindow.canvas().engine().borrow().penholder.current_style_w_override() {
+                        let mut surface_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(
+                            new_pen_style,
                         );
-                        surface_flags = surface_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().handle_penholder_event(
-                            PenHolderEvent::ChangeStyleOverride(None),
+                        surface_flags = surface_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().change_pen_style_override(
+                            None,
                         ));
 
                         appwindow.handle_surface_flags(surface_flags);
@@ -565,24 +564,24 @@ impl RnoteAppWindow {
                 let pen_style_override = target.unwrap().str().unwrap();
                 log::trace!("pen overwrite activated with target: {}", pen_style_override);
 
-                let change_pen_style_override_event = match pen_style_override {
+                let new_pen_style_override= match pen_style_override {
                     "brush" => {
-                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Brush)))
+                        Some(Some(PenStyle::Brush))
                     }
                     "shaper" => {
-                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Shaper)))
+                        Some(Some(PenStyle::Shaper))
                     }
                     "eraser" => {
-                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Eraser)))
+                        Some(Some(PenStyle::Eraser))
                     }
                     "selector" => {
-                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Selector)))
+                        Some(Some(PenStyle::Selector))
                     }
                     "tools" => {
-                        Some(PenHolderEvent::ChangeStyleOverride(Some(PenStyle::Tools)))
+                        Some(Some(PenStyle::Tools))
                     }
                     "none" => {
-                        Some(PenHolderEvent::ChangeStyleOverride(None))
+                        Some(None)
                     }
                     _ => {
                         log::error!("invalid target for action_pen_overwrite, `{}`", pen_style_override);
@@ -590,9 +589,9 @@ impl RnoteAppWindow {
                     }
                 };
 
-                if let Some(change_pen_style_override_event) = change_pen_style_override_event {
-                    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(
-                        change_pen_style_override_event,
+                if let Some(new_pen_style_override) = new_pen_style_override {
+                    let surface_flags = appwindow.canvas().engine().borrow_mut().change_pen_style_override(
+                        new_pen_style_override,
                     );
                     appwindow.handle_surface_flags(surface_flags);
                 }
@@ -760,7 +759,7 @@ impl RnoteAppWindow {
                 let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
                 let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
                 let pen_sounds = appwindow.canvas().engine().borrow().penholder.pen_sounds();
-                let pen_style = appwindow.canvas().engine().borrow().penholder.style_w_override();
+                let pen_style = appwindow.canvas().engine().borrow().penholder.current_style_w_override();
                 let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
                 let eraser = appwindow.canvas().engine().borrow().penholder.eraser.clone();
                 let selector = appwindow.canvas().engine().borrow().penholder.selector.clone();
@@ -970,7 +969,7 @@ impl RnoteAppWindow {
                 let all_strokes = appwindow.canvas().engine().borrow().store.stroke_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
                 appwindow.canvas().engine().borrow_mut().update_selector();
-                let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector));
+                let surface_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
                 appwindow.handle_surface_flags(surface_flags);
 
                 appwindow.canvas().update_engine_rendering();

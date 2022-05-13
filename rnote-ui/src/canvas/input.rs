@@ -2,7 +2,7 @@ use gtk4::{gdk, prelude::*, GestureDrag, GestureStylus};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penhelpers::ShortcutKey;
 use rnote_compose::penpath::Element;
-use rnote_engine::pens::penholder::PenHolderEvent;
+use rnote_engine::pens::PenMode;
 use rnote_engine::SurfaceFlags;
 use std::collections::VecDeque;
 
@@ -124,22 +124,27 @@ pub fn retreive_stylus_shortcut_keys(stylus_drawing_gesture: &GestureStylus) -> 
         _ => {}
     };
 
-    if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
-        // Eraser is the lower stylus button
-        match device_tool.tool_type() {
-            gdk::DeviceToolType::Pen => {}
-            gdk::DeviceToolType::Eraser => {
-                shortcut_keys.push(ShortcutKey::StylusEraserMode);
-            }
-            _ => {}
-        }
-    }
-
     shortcut_keys.append(&mut retreive_modifier_shortcut_key(
         stylus_drawing_gesture.current_event_state(),
     ));
 
     shortcut_keys
+}
+
+pub fn retreive_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Option<PenMode> {
+    if let Some(device_tool) = stylus_drawing_gesture.device_tool() {
+        match device_tool.tool_type() {
+            gdk::DeviceToolType::Pen => {
+                return Some(PenMode::Pen);
+            }
+            gdk::DeviceToolType::Eraser => {
+                return Some(PenMode::Eraser);
+            }
+            _ => {}
+        }
+    }
+
+    None
 }
 
 pub fn retreive_keyboard_key_shortcut_key(key: gdk::Key) -> Option<ShortcutKey> {
@@ -189,6 +194,7 @@ pub fn retreive_stylus_elements(
 pub fn process_pen_down(
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
+    pen_mode: Option<PenMode>,
     appwindow: &RnoteAppWindow,
 ) {
     let mut surface_flags = SurfaceFlags::default();
@@ -206,9 +212,7 @@ pub fn process_pen_down(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::StylusPrimaryButton,
-                )),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton),
         );
 
         appwindow.handle_surface_flags(surface_flags);
@@ -220,104 +224,21 @@ pub fn process_pen_down(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::StylusSecondaryButton,
-                )),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton),
         );
 
         appwindow.handle_surface_flags(surface_flags);
         return;
     }
 
-    // handling pointer shortcut keys as seperate events
-    // TODO: handle this better
-    // TODO: make the eraser mode equivalent to the Pen mode, see https://github.com/flxzt/rnote/issues/136
-    if shortcut_keys.contains(&ShortcutKey::StylusEraserMode) {
-        surface_flags.merge_with_other(
-            appwindow
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::StylusEraserMode,
-                )),
-        );
-    }
-    if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
-        surface_flags.merge_with_other(
-            appwindow
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::MouseSecondaryButton,
-                )),
-        );
-    }
-
-    surface_flags.merge_with_other(
-        appwindow
-            .canvas()
-            .engine()
-            .borrow_mut()
-            .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
-                element,
-                shortcut_keys,
-            })),
-    );
-
-    appwindow.handle_surface_flags(surface_flags);
-}
-
-/// Process "Pen motion"
-pub fn process_pen_motion(
-    data_entries: VecDeque<Element>,
-    shortcut_keys: Vec<ShortcutKey>,
-    appwindow: &RnoteAppWindow,
-) {
-    let mut surface_flags = SurfaceFlags::default();
-
-    // handling pointer shortcut keys as seperate events
-    // TODO: handle this better
-    // TODO: make the eraser mode equivalent to the Pen mode, see https://github.com/flxzt/rnote/issues/136
-    if shortcut_keys.contains(&ShortcutKey::StylusEraserMode) {
-        surface_flags.merge_with_other(
-            appwindow
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::StylusEraserMode,
-                )),
-        );
-    }
-    if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
-        surface_flags.merge_with_other(
-            appwindow
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::MouseSecondaryButton,
-                )),
-        );
-    }
-
-    surface_flags.merge_with_other(
-        data_entries
-            .into_iter()
-            .map(|element| {
-                appwindow
-                    .canvas()
-                    .engine()
-                    .borrow_mut()
-                    .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Down {
-                        element,
-                        shortcut_keys: shortcut_keys.clone(),
-                    }))
-            })
-            .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x)),
-    );
+    // Handle all other events as pen down
+    surface_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+        PenEvent::Down {
+            element,
+            shortcut_keys,
+        },
+        pen_mode,
+    ));
 
     appwindow.handle_surface_flags(surface_flags);
 }
@@ -326,6 +247,7 @@ pub fn process_pen_motion(
 pub fn process_pen_up(
     element: Element,
     shortcut_keys: Vec<ShortcutKey>,
+    pen_mode: Option<PenMode>,
     appwindow: &RnoteAppWindow,
 ) {
     let mut surface_flags = SurfaceFlags::default();
@@ -343,9 +265,7 @@ pub fn process_pen_up(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::StylusPrimaryButton,
-                )),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton),
         );
 
         appwindow.handle_surface_flags(surface_flags);
@@ -357,67 +277,41 @@ pub fn process_pen_up(
                 .canvas()
                 .engine()
                 .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::StylusSecondaryButton,
-                )),
+                .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton),
         );
 
         appwindow.handle_surface_flags(surface_flags);
         return;
     }
 
-    surface_flags.merge_with_other(
-        appwindow
-            .canvas()
-            .engine()
-            .borrow_mut()
-            .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Up {
-                element,
-                shortcut_keys,
-            })),
-    );
+    // Handle all other events as pen up
+    surface_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+        PenEvent::Up {
+            element,
+            shortcut_keys,
+        },
+        pen_mode,
+    ));
 
     appwindow.handle_surface_flags(surface_flags);
 }
 
 /// Process "Pen proximity"
 pub fn process_pen_proximity(
-    data_entries: VecDeque<Element>,
+    element: Element,
     shortcut_keys: Vec<ShortcutKey>,
+    pen_mode: Option<PenMode>,
     appwindow: &RnoteAppWindow,
 ) {
     let mut surface_flags = SurfaceFlags::default();
 
-    // switching to the eraser mode as a seperate event. Other stylus buttons are emitted as down/ up event so we don't need to handle them here.
-    // TODO: handle this better
-    // TODO: make the eraser mode equivalent to the Pen mode, see https://github.com/flxzt/rnote/issues/136
-    if shortcut_keys.contains(&ShortcutKey::StylusEraserMode) {
-        surface_flags.merge_with_other(
-            appwindow
-                .canvas()
-                .engine()
-                .borrow_mut()
-                .handle_penholder_event(PenHolderEvent::PressedShortcutkey(
-                    ShortcutKey::StylusEraserMode,
-                )),
-        );
-    }
-
-    surface_flags.merge_with_other(
-        data_entries
-            .into_iter()
-            .map(|element| {
-                appwindow
-                    .canvas()
-                    .engine()
-                    .borrow_mut()
-                    .handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Proximity {
-                        element,
-                        shortcut_keys: shortcut_keys.clone(),
-                    }))
-            })
-            .fold(SurfaceFlags::default(), |acc, x| acc.merged_with_other(x)),
-    );
+    surface_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+        PenEvent::Proximity {
+            element,
+            shortcut_keys: shortcut_keys.clone(),
+        },
+        pen_mode,
+    ));
 
     appwindow.handle_surface_flags(surface_flags);
 }
@@ -428,7 +322,7 @@ pub fn process_keyboard_pressed(shortcut_key: ShortcutKey, appwindow: &RnoteAppW
         .canvas()
         .engine()
         .borrow_mut()
-        .handle_penholder_event(PenHolderEvent::PressedShortcutkey(shortcut_key));
+        .handle_pen_pressed_shortcut_key(shortcut_key);
 
     appwindow.handle_surface_flags(surface_flags);
 }

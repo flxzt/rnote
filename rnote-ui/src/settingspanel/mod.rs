@@ -82,8 +82,6 @@ mod imp {
         #[template_child]
         pub penshortcut_stylus_button_secondary_row: TemplateChild<PenShortcutRow>,
         #[template_child]
-        pub penshortcut_stylus_button_eraser_row: TemplateChild<PenShortcutRow>,
-        #[template_child]
         pub penshortcut_mouse_button_secondary_row: TemplateChild<PenShortcutRow>,
     }
 
@@ -581,11 +579,6 @@ impl SettingsPanel {
                         .penshortcut_stylus_button_secondary_row
                         .set_action(action.clone());
                 }
-                ShortcutKey::StylusEraserMode => {
-                    self.imp()
-                        .penshortcut_stylus_button_eraser_row
-                        .set_action(action.clone());
-                }
                 ShortcutKey::MouseSecondaryButton => {
                     self.imp()
                         .penshortcut_mouse_button_secondary_row
@@ -601,8 +594,6 @@ impl SettingsPanel {
             self.imp().penshortcut_stylus_button_primary_row.get();
         let penshortcut_stylus_button_secondary_row =
             self.imp().penshortcut_stylus_button_secondary_row.get();
-        let penshortcut_stylus_button_eraser_row =
-            self.imp().penshortcut_stylus_button_eraser_row.get();
         let penshortcut_mouse_button_secondary_row =
             self.imp().penshortcut_mouse_button_secondary_row.get();
 
@@ -786,15 +777,6 @@ impl SettingsPanel {
         self.imp().penshortcut_stylus_button_secondary_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_secondary_row, @weak appwindow => @default-return None, move |_values| {
             let action = penshortcut_stylus_button_secondary_row.action();
             appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusSecondaryButton, action);
-            None
-        }));
-
-        self.imp()
-            .penshortcut_stylus_button_eraser_row
-            .set_key(Some(ShortcutKey::StylusEraserMode));
-        self.imp().penshortcut_stylus_button_eraser_row.connect_local("action-changed", false, clone!(@weak penshortcut_stylus_button_eraser_row, @weak appwindow => @default-return None, move |_values| {
-            let action = penshortcut_stylus_button_eraser_row.action();
-            appwindow.canvas().engine().borrow_mut().penholder.register_new_shortcut(ShortcutKey::StylusEraserMode, action);
             None
         }));
 

@@ -52,7 +52,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
                 PenPathBuilderState::Start,
                 PenEvent::Down {
                     element,
-                    shortcut_keys: _,
+                    ..
                 },
             ) => {
                 self.buffer.push_back(element);
@@ -66,7 +66,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
                 PenPathBuilderState::During,
                 PenEvent::Down {
                     element,
-                    shortcut_keys: _,
+                    ..
                 },
             ) => {
                 self.buffer.push_back(element);
@@ -80,7 +80,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
                 _,
                 PenEvent::Up {
                     element,
-                    shortcut_keys: _,
+                    ..
                 },
             ) => {
                 self.buffer.push_back(element);

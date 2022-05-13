@@ -35,20 +35,17 @@ pub enum PenEvent {
 #[serde(rename = "shortcut_key")]
 /// A input shortcut key
 pub enum ShortcutKey {
-    #[serde(rename = "keyboard_key")]
     /// A keyboard key
+    #[serde(rename = "keyboard_key")]
     KeyboardKey(char),
-    #[serde(rename = "stylus_primary_button")]
     /// the primary button of the stylus
+    #[serde(rename = "stylus_primary_button")]
     StylusPrimaryButton,
-    #[serde(rename = "stylus_secondary_button")]
     /// the secondary button of the stylus
+    #[serde(rename = "stylus_secondary_button")]
     StylusSecondaryButton,
-    #[serde(rename = "stylus_eraser_mode")]
-    /// Pen is in eraser mode ( either a button, or on some pens the back side )
-    StylusEraserMode,
-    #[serde(rename = "mouse_secondary_button")]
     /// the secondary mouse button, usually right click
+    #[serde(rename = "mouse_secondary_button")]
     MouseSecondaryButton,
     /// Shift
     KeyboardShift,

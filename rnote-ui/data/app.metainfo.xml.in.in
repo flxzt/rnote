@@ -19,7 +19,7 @@
 
   <description>
     <p>
-      Rnote is a simple vector-based drawing application for sketching, handwritten notes and to annotate documents and pictures.
+      Rnote is a vector-based drawing app for sketching, handwritten notes and to annotate documents and pictures.
     </p>
     <p>
       Disclaimer: The file format is still unstable. It might change and break compatibility between versions.
@@ -64,12 +64,20 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.3" date="2022-05-14">
+      <description>
+        <p>this release changes:</p>
+        <ul>
+          <li>bug fixes</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.2" date="2022-05-13">
       <description>
         <p>this release changes:</p>
         <ul>
           <li>feature: paste clipboard files ( nautilus support )</li>
-          <li>Stylus eraser mode improvements</li>
+          <li>stylus eraser mode improvements</li>
           <li>bug fixes</li>
         </ul>
       </description>
@@ -79,7 +87,7 @@
         <p>this release changes:</p>
         <ul>
           <li>feature: setting to change the format border color</li>
-          <li>UI text string improvements</li>
+          <li>UI text improvements</li>
           <li>bug fixes</li>
         </ul>
       </description>

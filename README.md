@@ -27,11 +27,12 @@ Written in Rust and GTK4.
 - Different document expand layouts ( fixed pages, continuous vertical, infinite in every direction )
 - Customizable background colors, patterns, sizes
 - Customizable page format
+- (optional) pen sounds
 - Reconfigurable stylus button shortcuts
 - An integrated workspace browser for quick access to related media files
 - Drag & drop, clipboard support
 - PDF, bitmap and SVG image import
-- Save the documents in the native `.rnote` file format
+- Save and load the documents in the native `.rnote` file format
 - Document and selection export to SVG, PDF
 - Autosave, printing
 
@@ -47,7 +48,7 @@ Rnote is available as a flatpak on Flathub:
 </div><br>
 
 
-### Downgrading
+**Downgrading**  
 Because the file format still is unstable, downgrading to a specific version might be necessary and can be done with:
 | version | command                                                                                                                |
 | ------- | ---------------------------------------------------------------------------------------------------------------------- |
@@ -64,14 +65,23 @@ $ flatpak mask --remove com.github.flxzt.rnote
 
 Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
-## Reviews, in the media:
-> It's a perfect on-demand user experience that — and this might be controversial — is more akin to professional-grade iPadOS apps than GTK apps. I know this will sound like a minor thing on paper but spatially, within the user experience, it reduces friction, and makes it so much easier to get things done.  
+## Reviews, media:
+> It's a perfect on-demand user experience that — and this might be controversial — is more akin to professional-grade iPadOS apps than GTK apps.
+> I know this will sound like a minor thing on paper but spatially, within the user experience, it reduces friction, and makes it so much easier to get things done.  
 > 
 > -- omg!ubuntu! - https://www.omgubuntu.co.uk/2022/01/rnote-frehand-notetaking-app-for-linux-gtk4
 
-> I[t] has everything it needs for note taking. I'm using this app for university, loading in the Data files and handwriting notes. I'm using a microsoft surface go 3 and an original pen. All functions are working like a charm. Best app i used so far.  
+> #Linux always felt behind #Windows in supporting stylus-equipped 2-in-1 laptops. One of the reasons: the  lack of a good, simple handwritten notes app.
+> Until now: https://github.com/flxzt/rnote  
+> Thank you, @flx_zt  
+> !  This is my favorite app release of 2022. For the rest of the year.  
+> 
+> -- Jorge Toledo, Twitter - https://twitter.com/eldelacajita/status/1482116515717648386
+
+> I[t] has everything it needs for note taking. I'm using this app for university, loading in the Data files and handwriting notes.
+> I'm using a microsoft surface go 3 and an original pen. All functions are working like a charm. Best app i used so far.  
 >
-> -- Leroy - Gnome Software review section
+> -- Leroy, Gnome Software review section
 
 ## Screenshots
 ![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)
@@ -102,10 +112,11 @@ So far breaking changes in the format happened in versions:
 - `v0.2.0`
 - `v0.3.0`
 - `v0.4.0`
+- `v0.5.0`
 
 To be able to open and export older files that are incompatible with the newest version, look under **Installation** /**Downgrading** to install older versions of Rnote.
-# Drawings created with Rnote
 
+## Drawings created with Rnote
 If you have drawn something cool in Rnote and want to share it, submit a PR so it can be showcased here. :)  
 
 <div align="center" spacing="20px">
@@ -115,5 +126,5 @@ If you have drawn something cool in Rnote and want to share it, submit a PR so i
 </div><br>
 
 
-# Building, contributing
+## Building, contributing
 Build instructions and guidelines how to contribute are outlined in [CONTRIBUTING.md](./CONTRIBUTING.md)

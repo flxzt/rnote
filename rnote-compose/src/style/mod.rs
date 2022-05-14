@@ -201,3 +201,60 @@ impl Composer<Style> for Shape {
         }
     }
 }
+
+/// The pressure curve used by some styles
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
+#[serde(rename = "pressure_curve")]
+pub enum PressureCurve {
+    /// Constant
+    #[serde(rename = "const")]
+    Const = 0,
+    /// Linear pressure
+    #[serde(rename = "linear")]
+    Linear,
+    /// Sqrt
+    #[serde(rename = "sqrt")]
+    Sqrt,
+    /// Cbrt
+    #[serde(rename = "cbrt")]
+    Cbrt,
+    /// pow(2)
+    #[serde(rename = "pow2")]
+    Pow2,
+    /// pow(3)
+    #[serde(rename = "pow3")]
+    Pow3,
+}
+
+impl Default for PressureCurve {
+    fn default() -> Self {
+        Self::Linear
+    }
+}
+
+impl PressureCurve {
+    /// Expects pressure to be between range 0.0 to 1.0
+    pub fn apply(&self, width: f64, pressure: f64) -> f64 {
+        match self {
+            Self::Const => width,
+            Self::Linear => width * pressure,
+            Self::Sqrt => width * pressure.sqrt(),
+            Self::Cbrt => width * pressure.cbrt(),
+            Self::Pow2 => width * pressure.powi(2),
+            Self::Pow3 => width * pressure.powi(3),
+        }
+    }
+}
+
+impl TryFrom<u32> for PressureCurve {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
+            "PressureProfile try_from::<u32>() for value {} failed",
+            value
+        ))
+    }
+}

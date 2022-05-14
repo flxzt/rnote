@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::Color;
+use crate::style::PressureCurve;
 
 use super::textureddotsdistribution::TexturedDotsDistribution;
 
@@ -27,9 +28,9 @@ pub struct TexturedOptions {
     /// the distribution type
     #[serde(rename = "distribution")]
     pub distribution: TexturedDotsDistribution,
-    /// True if segments should have a constant width ( ignoring pen pressures )
-    #[serde(rename = "segment_constant_width")]
-    pub segment_constant_width: bool,
+    /// Pressure curve
+    #[serde(rename = "pressure_curve")]
+    pub pressure_curve: PressureCurve,
 }
 
 impl Default for TexturedOptions {
@@ -41,7 +42,7 @@ impl Default for TexturedOptions {
             stroke_color: Some(Color::BLACK),
             radii: Self::RADII_DEFAULT,
             distribution: TexturedDotsDistribution::default(),
-            segment_constant_width: false,
+            pressure_curve: PressureCurve::default(),
         }
     }
 }

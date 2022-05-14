@@ -10,6 +10,7 @@ rnote_engine_sources = files(
     'pens/mod.rs',
     'pens/penbehaviour.rs',
     'pens/penholder.rs',
+    'pens/penmode.rs',
     'pens/audioplayer.rs',
     'pens/brush.rs',
     'pens/shaper.rs',

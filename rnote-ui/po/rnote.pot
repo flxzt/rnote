@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-07 21:54+0200\n"
+"POT-Creation-Date: 2022-05-11 18:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -403,132 +403,180 @@ msgstr ""
 msgid "Choose a format"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:164
+#: rnote-ui/data/ui/settingspanel.ui:155
+msgid "A6"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:156
+msgid "A5"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:157
+msgid "A4"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:158
+msgid "A3"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:159
+msgid "A2"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:160
+msgid "US letter"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:161
+msgid "US legal"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:162
+msgid "Custom"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:170
 msgid "Orientation"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:165
+#: rnote-ui/data/ui/settingspanel.ui:171
 msgid "Set the format orientation"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:177
+#: rnote-ui/data/ui/settingspanel.ui:183
 msgid "Portrait"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:183
+#: rnote-ui/data/ui/settingspanel.ui:189
 msgid "Landscape"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:193
+#: rnote-ui/data/ui/settingspanel.ui:199
 msgid "Width"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:194
+#: rnote-ui/data/ui/settingspanel.ui:200
 msgid "Set the format width"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:207
+#: rnote-ui/data/ui/settingspanel.ui:213
 msgid "Height"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:208
+#: rnote-ui/data/ui/settingspanel.ui:214
 msgid "Set the format height"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:221
+#: rnote-ui/data/ui/settingspanel.ui:227
 msgid "DPI"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:222
+#: rnote-ui/data/ui/settingspanel.ui:228
 msgid "Set the DPI (dots per inch). Defaults to 96"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:245
+#: rnote-ui/data/ui/settingspanel.ui:251
 msgid "Revert"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:254
+#: rnote-ui/data/ui/settingspanel.ui:260
 #: rnote-ui/src/workspacebrowser/filerow.rs:237
 msgid "Apply"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:267
+#: rnote-ui/data/ui/settingspanel.ui:273
 msgid "Document background"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:270
+#: rnote-ui/data/ui/settingspanel.ui:276
 msgid "Color"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:271
+#: rnote-ui/data/ui/settingspanel.ui:277
 msgid "Set the background color"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:288
+#: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Pattern"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:289
+#: rnote-ui/data/ui/settingspanel.ui:295
 msgid "Choose a background pattern"
 msgstr ""
 
+#: rnote-ui/data/ui/settingspanel.ui:299
+msgid "None"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:300
+msgid "Lines"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:301
+msgid "Grid"
+msgstr ""
+
 #: rnote-ui/data/ui/settingspanel.ui:302
+msgid "Dots"
+msgstr ""
+
+#: rnote-ui/data/ui/settingspanel.ui:310
 msgid "Pattern Color"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:303
+#: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Set the background pattern color"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:320
+#: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Pattern Width"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:321
+#: rnote-ui/data/ui/settingspanel.ui:329
 msgid "Set the background pattern width"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:334
+#: rnote-ui/data/ui/settingspanel.ui:342
 msgid "Pattern Height"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:335
+#: rnote-ui/data/ui/settingspanel.ui:343
 msgid "Set the background pattern height"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:351
+#: rnote-ui/data/ui/settingspanel.ui:359
 msgid "Button Shortcuts"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:354
+#: rnote-ui/data/ui/settingspanel.ui:362
 msgid "Stylus primary button action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:355
+#: rnote-ui/data/ui/settingspanel.ui:363
 msgid "Set the action for the primary stylus button"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:366
+#: rnote-ui/data/ui/settingspanel.ui:374
 msgid "Stylus secondary button action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:367
+#: rnote-ui/data/ui/settingspanel.ui:375
 msgid "Set the action for the secondary stylus button"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:378
+#: rnote-ui/data/ui/settingspanel.ui:386
 msgid "Stylus \"Eraser\" button action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:379
+#: rnote-ui/data/ui/settingspanel.ui:387
 msgid "Set the action for the \"Eraser\" stylus button"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:390
+#: rnote-ui/data/ui/settingspanel.ui:398
 msgid "Mouse secondary button action"
 msgstr ""
 
-#: rnote-ui/data/ui/settingspanel.ui:391
+#: rnote-ui/data/ui/settingspanel.ui:399
 msgid "Set the action for the secondary mouse button"
 msgstr ""
 
@@ -697,46 +745,82 @@ msgid "Brush configuration"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:147
-msgid "Textured style"
+msgid "Solid style"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
-msgid "Density"
+msgid "Pressure curve"
 msgstr ""
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:151
+msgid "Choose a pressure curve"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:155
+msgid "Constant"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:156
+msgid "Linear"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:157
+msgid "Square root"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:158
+msgid "Cubic root"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:159
+msgid "Quadratic Parabola"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:160
+msgid "Cubic Parabola"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:171
+msgid "Textured style"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:174
+msgid "Density"
+msgstr ""
+
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "The density is the amount of dots per 10x10 area"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:166
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:190
 msgid "Stroke dots radii"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:167
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "The radii of the individual dots in the textured stroke"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:211
-msgid "Distribution"
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:249
+msgid "Stroke dots position distribution"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:212
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:250
 msgid "Choose a dots position probability distribution"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:216
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:254
 msgid "Uniform"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:217
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:255
 msgid "Normal"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:218
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:256
 msgid "Exponential"
 msgstr ""
 
-#: rnote-ui/data/ui/penssidebar/brushpage.ui:219
+#: rnote-ui/data/ui/penssidebar/brushpage.ui:257
 msgid "Reverse Exponential"
 msgstr ""
 
@@ -907,7 +991,7 @@ msgid "Save document as"
 msgstr ""
 
 #: rnote-ui/src/dialogs.rs:297 rnote-ui/src/appwindow/mod.rs:373
-#: rnote-ui/src/appwindow/appwindowactions.rs:1122
+#: rnote-ui/src/appwindow/appwindowactions.rs:1123
 msgid "Saving document failed."
 msgstr ""
 
@@ -1006,38 +1090,38 @@ msgstr ""
 msgid "Exported engine config successfully."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1142
+#: rnote-ui/src/appwindow/mod.rs:1149
 msgid "Opening .rnote file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1161
+#: rnote-ui/src/appwindow/mod.rs:1168
 msgid "Opening .xopp file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1180
+#: rnote-ui/src/appwindow/mod.rs:1187
 msgid "Opening vector image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1199
+#: rnote-ui/src/appwindow/mod.rs:1206
 msgid "Opening bitmap image file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1218
+#: rnote-ui/src/appwindow/mod.rs:1225
 msgid "Opening PDF file failed."
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1235
+#: rnote-ui/src/appwindow/mod.rs:1242
 msgid "Error: Tried opening folder as file"
 msgstr ""
 
-#: rnote-ui/src/appwindow/mod.rs:1244
+#: rnote-ui/src/appwindow/mod.rs:1251
 msgid "Failed to open file, is a unsupported file type."
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:1189
+#: rnote-ui/src/appwindow/appwindowactions.rs:1190
 msgid "Printed document successfully"
 msgstr ""
 
-#: rnote-ui/src/appwindow/appwindowactions.rs:1198
+#: rnote-ui/src/appwindow/appwindowactions.rs:1199
 msgid "Printing document failed"
 msgstr ""

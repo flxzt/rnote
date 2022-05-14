@@ -3,11 +3,11 @@ use std::ops::Range;
 use rand_distr::Distribution;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive)]
 /// The distribution for the spread of dots across the width of a textured shape
 pub enum TexturedDotsDistribution {
     /// Uniform distribution
-    Uniform,
+    Uniform = 0,
     /// Normal distribution
     Normal,
     /// Exponential distribution distribution, from the outline increasing in probability symmetrically to the center
@@ -19,6 +19,17 @@ pub enum TexturedDotsDistribution {
 impl Default for TexturedDotsDistribution {
     fn default() -> Self {
         Self::Normal
+    }
+}
+
+impl TryFrom<u32> for TexturedDotsDistribution {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
+            "TexturedDotsDistribution try_from::<u32>() for value {} failed",
+            value
+        ))
     }
 }
 

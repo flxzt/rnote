@@ -40,13 +40,6 @@ impl Default for Shortcuts {
             },
         );
         map.insert(
-            ShortcutKey::StylusEraserMode,
-            ShortcutAction::ChangePenStyle {
-                style: PenStyle::Eraser,
-                permanent: false,
-            },
-        );
-        map.insert(
             ShortcutKey::MouseSecondaryButton,
             ShortcutAction::ChangePenStyle {
                 style: PenStyle::Shaper,

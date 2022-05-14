@@ -1,14 +1,15 @@
-use crate::pens::penholder::{PenHolderEvent, PenStyle};
-use crate::document::{background, Background, Layout, Format};
+use crate::document::{background, Background, Format, Layout};
+use crate::pens::penholder::PenStyle;
+use crate::pens::PenMode;
 use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{render, DrawOnDocBehaviour, SurfaceFlags};
-use crate::{Camera, PenHolder, Document, StrokeStore};
+use crate::{Camera, Document, PenHolder, StrokeStore};
 use gtk4::Snapshot;
 use itertools::Itertools;
 use rnote_compose::helpers::AABBHelpers;
-use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::transform::TransformBehaviour;
 use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
 use rnote_fileformats::xoppformat;
@@ -136,10 +137,8 @@ impl RnoteEngine {
     pub fn undo(&mut self) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
-        if self.penholder.style_w_override() != PenStyle::Selector {
-            surface_flags.merge_with_other(
-                self.handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel)),
-            );
+        if self.penholder.current_style_w_override() != PenStyle::Selector {
+            surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
         }
 
         surface_flags.merge_with_other(self.store.undo());
@@ -147,11 +146,11 @@ impl RnoteEngine {
         if !self.store.selection_keys_unordered().is_empty() {
             surface_flags.merge_with_other(
                 self.penholder
-                    .force_change_style_override_without_sideeffects(None),
+                    .force_style_override_without_sideeffects(None),
             );
             surface_flags.merge_with_other(
                 self.penholder
-                    .force_change_style_without_sideeffects(PenStyle::Selector),
+                    .force_style_without_sideeffects(PenStyle::Selector),
             );
         }
         self.update_selector();
@@ -168,10 +167,8 @@ impl RnoteEngine {
     pub fn redo(&mut self) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
-        if self.penholder.style_w_override() != PenStyle::Selector {
-            surface_flags.merge_with_other(
-                self.handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel)),
-            );
+        if self.penholder.current_style_w_override() != PenStyle::Selector {
+            surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
         }
 
         surface_flags.merge_with_other(self.store.redo());
@@ -179,11 +176,11 @@ impl RnoteEngine {
         if !self.store.selection_keys_unordered().is_empty() {
             surface_flags.merge_with_other(
                 self.penholder
-                    .force_change_style_override_without_sideeffects(None),
+                    .force_style_override_without_sideeffects(None),
             );
             surface_flags.merge_with_other(
                 self.penholder
-                    .force_change_style_without_sideeffects(PenStyle::Selector),
+                    .force_style_without_sideeffects(PenStyle::Selector),
             );
         }
         self.update_selector();
@@ -251,10 +248,53 @@ impl RnoteEngine {
         surface_flags
     }
 
-    /// Public method to call to handle penholder events
-    pub fn handle_penholder_event(&mut self, event: PenHolderEvent) -> SurfaceFlags {
-        self.penholder.handle_penholder_event(
+    pub fn handle_pen_event(&mut self, event: PenEvent, pen_mode: Option<PenMode>) -> SurfaceFlags {
+        self.penholder.handle_pen_event(
             event,
+            pen_mode,
+            self.tasks_tx(),
+            &mut self.document,
+            &mut self.store,
+            &mut self.camera,
+        )
+    }
+
+    pub fn handle_pen_pressed_shortcut_key(&mut self, shortcut_key: ShortcutKey) -> SurfaceFlags {
+        self.penholder.handle_pressed_shortcut_key(
+            shortcut_key,
+            self.tasks_tx(),
+            &mut self.document,
+            &mut self.store,
+            &mut self.camera,
+        )
+    }
+
+    pub fn change_pen_style(&mut self, new_style: PenStyle) -> SurfaceFlags {
+        self.penholder.change_style(
+            new_style,
+            self.tasks_tx(),
+            &mut self.document,
+            &mut self.store,
+            &mut self.camera,
+        )
+    }
+
+    pub fn change_pen_style_override(
+        &mut self,
+        new_style_override: Option<PenStyle>,
+    ) -> SurfaceFlags {
+        self.penholder.change_style_override(
+            new_style_override,
+            self.tasks_tx(),
+            &mut self.document,
+            &mut self.store,
+            &mut self.camera,
+        )
+    }
+
+    pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> SurfaceFlags {
+        self.penholder.change_pen_mode(
+            pen_mode,
             self.tasks_tx(),
             &mut self.document,
             &mut self.store,
@@ -370,14 +410,14 @@ impl RnoteEngine {
     }
 
     pub fn set_doc_layout(&mut self, layout: Layout) {
-        self.document
-            .set_layout(layout, &self.store, &self.camera);
+        self.document.set_layout(layout, &self.store, &self.camera);
     }
 
     /// resizes the doc to the format and to fit all strokes
     /// Document background rendering then needs to be updated.
     pub fn resize_to_fit_strokes(&mut self) {
-        self.document.resize_to_fit_strokes(&self.store, &self.camera);
+        self.document
+            .resize_to_fit_strokes(&self.store, &self.camera);
     }
 
     /// resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke
@@ -396,7 +436,8 @@ impl RnoteEngine {
                 // Does not resize in fixed size mode, use resize_doc_to_fit_strokes() for it.
             }
             Layout::ContinuousVertical => {
-                self.document.resize_doc_continuous_vertical_layout(&self.store);
+                self.document
+                    .resize_doc_continuous_vertical_layout(&self.store);
             }
             Layout::Infinite => {
                 // only expand, don't resize to fit strokes
@@ -656,7 +697,8 @@ impl RnoteEngine {
     ) -> oneshot::Receiver<anyhow::Result<Vec<Stroke>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Stroke>>>();
 
-        let page_width = (f64::from(self.document.format.width) * (self.pdf_import_width_perc / 100.0))
+        let page_width = (f64::from(self.document.format.width)
+            * (self.pdf_import_width_perc / 100.0))
             .round() as i32;
 
         let pdf_import_as_vector = self.pdf_import_as_vector;
@@ -708,9 +750,7 @@ impl RnoteEngine {
 
         self.update_selector();
 
-        surface_flags.merge_with_other(
-            self.handle_penholder_event(PenHolderEvent::ChangeStyle(PenStyle::Selector)),
-        );
+        surface_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
 
         self.update_rendering_current_viewport();
 
@@ -929,11 +969,7 @@ impl RnoteEngine {
 
                     for (page_bounds, page_svgs) in pages.into_iter() {
                         cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                        render::Svg::draw_svgs_to_cairo_context(
-                            &page_svgs,
-                            doc_bounds,
-                            &cairo_cx,
-                        )?;
+                        render::Svg::draw_svgs_to_cairo_context(&page_svgs, doc_bounds, &cairo_cx)?;
                         cairo_cx.show_page().context("show page failed")?;
                         cairo_cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
                     }
@@ -1240,7 +1276,7 @@ pub mod visual_debug {
         engine.store.draw_debug(snapshot, engine, surface_bounds)?;
 
         // Draw the pens
-        let current_pen_style = engine.penholder.style_w_override();
+        let current_pen_style = engine.penholder.current_style_w_override();
 
         match current_pen_style {
             PenStyle::Eraser => {

@@ -150,12 +150,18 @@
                         <property name="title" translatable="yes">Format</property>
                         <property name="subtitle" translatable="yes">Choose a format</property>
                         <property name="model">
-                          <object class="AdwEnumListModel">
-                            <property name="enum-type">PredefinedFormat</property>
+                          <object class="GtkStringList">
+                            <items>
+                              <item translatable="yes">A6</item>
+                              <item translatable="yes">A5</item>
+                              <item translatable="yes">A4</item>
+                              <item translatable="yes">A3</item>
+                              <item translatable="yes">A2</item>
+                              <item translatable="yes">US letter</item>
+                              <item translatable="yes">US legal</item>
+                              <item translatable="yes">Custom</item>
+                            </items>
                           </object>
-                        </property>
-                        <property name="expression">
-                          <lookup type="AdwEnumListItem" name="name" />
                         </property>
                       </object>
                     </child>
@@ -288,12 +294,14 @@
                         <property name="title" translatable="yes">Pattern</property>
                         <property name="subtitle" translatable="yes">Choose a background pattern</property>
                         <property name="model">
-                          <object class="AdwEnumListModel">
-                            <property name="enum-type">PatternStyle</property>
+                          <object class="GtkStringList">
+                            <items>
+                              <item translatable="yes">None</item>
+                              <item translatable="yes">Lines</item>
+                              <item translatable="yes">Grid</item>
+                              <item translatable="yes">Dots</item>
+                            </items>
                           </object>
-                        </property>
-                        <property name="expression">
-                          <lookup type="AdwEnumListItem" name="name" />
                         </property>
                       </object>
                     </child>
@@ -368,18 +376,6 @@
                         <child type="prefix">
                           <object class="GtkImage">
                             <property name="icon_name">stylus-button-secondary-symbolic</property>
-                            <property name="icon-size">large</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="PenShortcutRow" id="penshortcut_stylus_button_eraser_row">
-                        <property name="title" translatable="yes">Stylus "Eraser" button action</property>
-                        <property name="subtitle" translatable="yes">Set the action for the "Eraser" stylus button</property>
-                        <child type="prefix">
-                          <object class="GtkImage">
-                            <property name="icon_name">stylus-button-eraser-symbolic</property>
                             <property name="icon-size">large</property>
                           </object>
                         </child>

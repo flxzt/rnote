@@ -96,14 +96,7 @@ impl Composer<TexturedOptions> for Line {
 
 impl Composer<TexturedOptions> for Segment {
     fn composed_bounds(&self, options: &TexturedOptions) -> AABB {
-        let max_pressure = if options.segment_constant_width {
-            1.0
-        } else {
-            self.start().pressure.max(self.end().pressure)
-        };
-
-        self.bounds()
-            .loosened(options.stroke_width * 0.5 * max_pressure)
+        self.bounds().loosened(options.stroke_width * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &TexturedOptions) {
@@ -118,15 +111,11 @@ impl Composer<TexturedOptions> for Segment {
                     end: end.pos,
                 };
 
-                let options = if options.segment_constant_width {
-                    options.clone()
-                } else {
-                    let mut options = options.clone();
-                    // Line width with the mean of the start and end pressure
-                    options.stroke_width =
-                        options.stroke_width * ((start.pressure + end.pressure) * 0.5);
-                    options
-                };
+                let mut options = options.clone();
+                // Line width with the mean of the start and end pressure
+                options.stroke_width = options
+                    .pressure_curve
+                    .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
 
                 line.draw_composed(cx, &options);
             }
@@ -135,15 +124,12 @@ impl Composer<TexturedOptions> for Segment {
                     start: start.pos,
                     end: end.pos,
                 };
-                let options = if options.segment_constant_width {
-                    options.clone()
-                } else {
-                    let mut options = options.clone();
-                    // Line width with the mean of the start and end pressure
-                    options.stroke_width =
-                        options.stroke_width * ((start.pressure + end.pressure) * 0.5);
-                    options
-                };
+
+                let mut options = options.clone();
+                // Line width with the mean of the start and end pressure
+                options.stroke_width = options
+                    .pressure_curve
+                    .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
 
                 line.draw_composed(cx, &options);
             }
@@ -157,15 +143,12 @@ impl Composer<TexturedOptions> for Segment {
                     start: start.pos,
                     end: end.pos,
                 };
-                let options = if options.segment_constant_width {
-                    options.clone()
-                } else {
-                    let mut options = options.clone();
-                    // Line width with the mean of the start and end pressure
-                    options.stroke_width =
-                        options.stroke_width * ((start.pressure + end.pressure) * 0.5);
-                    options
-                };
+
+                let mut options = options.clone();
+                // Line width with the mean of the start and end pressure
+                options.stroke_width = options
+                    .pressure_curve
+                    .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
 
                 line.draw_composed(cx, &options);
             }

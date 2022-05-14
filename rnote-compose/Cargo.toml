@@ -12,6 +12,8 @@ log = "0.4.16"
 pretty_env_logger = "0.4.0"
 anyhow = "1.0"
 serde = {version = "1.0", features = ["derive"]}
+num-derive = "0.3.3"
+num-traits = "0.2.14"
 rand = "0.8.5"
 rand_pcg = "0.3.1"
 rand_distr = "0.4.3"

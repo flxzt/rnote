@@ -182,14 +182,7 @@ impl Composer<SmoothOptions> for CubicBezier {
 
 impl Composer<SmoothOptions> for Segment {
     fn composed_bounds(&self, options: &SmoothOptions) -> AABB {
-        let max_pressure = if options.segment_constant_width {
-            1.0
-        } else {
-            self.start().pressure.max(self.end().pressure)
-        };
-
-        self.bounds()
-            .loosened(options.stroke_width * 0.5 * max_pressure)
+        self.bounds().loosened(options.stroke_width * 0.5)
     }
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
@@ -197,41 +190,43 @@ impl Composer<SmoothOptions> for Segment {
         let shape = {
             match self {
                 Segment::Dot { element } => {
-                    let radii = if options.segment_constant_width {
-                        na::Vector2::from_element(options.stroke_width * 0.5)
-                    } else {
-                        na::Vector2::from_element(element.pressure * (options.stroke_width * 0.5))
-                    };
+                    let radii = na::Vector2::from_element(
+                        options
+                            .pressure_curve
+                            .apply(options.stroke_width * 0.5, element.pressure),
+                    );
+
                     kurbo::Ellipse::new(element.pos.to_kurbo_point(), radii.to_kurbo_vec(), 0.0)
                         .into_path(0.1)
                 }
                 Segment::Line { start, end } => {
-                    let (line_width_start, line_width_end) = if options.segment_constant_width {
-                        (options.stroke_width, options.stroke_width)
-                    } else {
-                        (
-                            start.pressure * options.stroke_width,
-                            end.pressure * options.stroke_width,
-                        )
-                    };
+                    let (width_start, width_end) = (
+                        options
+                            .pressure_curve
+                            .apply(options.stroke_width, start.pressure),
+                        options
+                            .pressure_curve
+                            .apply(options.stroke_width, end.pressure),
+                    );
 
                     compose_linear_variable_width(
                         start.pos,
                         end.pos,
-                        line_width_start,
-                        line_width_end,
+                        width_start,
+                        width_end,
                         &options,
                     )
                 }
                 Segment::QuadBez { start, cp, end } => {
-                    let (width_start, width_end) = if options.segment_constant_width {
-                        (options.stroke_width, options.stroke_width)
-                    } else {
-                        (
-                            start.pressure * options.stroke_width,
-                            end.pressure * options.stroke_width,
-                        )
-                    };
+                    let (width_start, width_end) = (
+                        options
+                            .pressure_curve
+                            .apply(options.stroke_width, start.pressure),
+                        options
+                            .pressure_curve
+                            .apply(options.stroke_width, end.pressure),
+                    );
+
                     let n_splits = 5;
 
                     let quadbez = QuadraticBezier {
@@ -272,14 +267,15 @@ impl Composer<SmoothOptions> for Segment {
                     cp2,
                     end,
                 } => {
-                    let (width_start, width_end) = if options.segment_constant_width {
-                        (options.stroke_width, options.stroke_width)
-                    } else {
-                        (
-                            start.pressure * options.stroke_width,
-                            end.pressure * options.stroke_width,
-                        )
-                    };
+                    let (width_start, width_end) = (
+                        options
+                            .pressure_curve
+                            .apply(options.stroke_width, start.pressure),
+                        options
+                            .pressure_curve
+                            .apply(options.stroke_width, end.pressure),
+                    );
+
                     let n_splits = 5;
 
                     let cubbez = CubicBezier {

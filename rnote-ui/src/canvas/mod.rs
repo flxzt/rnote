@@ -3,6 +3,7 @@ mod input;
 
 // Re-exports
 pub use canvaslayout::CanvasLayout;
+use rnote_engine::pens::PenMode;
 
 // Imports
 use std::cell::{Cell, RefCell};
@@ -509,11 +510,11 @@ impl RnoteCanvas {
            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
             let shortcut_keys = input::retreive_stylus_shortcut_keys(&stylus_drawing_gesture);
+            let pen_mode = input::retreive_stylus_pen_mode(&stylus_drawing_gesture);
 
-            if let Some(first) = data_entries.pop_front() {
-                input::process_pen_down(first, shortcut_keys.clone(), &appwindow);
+            for element in data_entries {
+                input::process_pen_down(element, shortcut_keys.clone(), pen_mode, &appwindow);
             }
-            input::process_pen_motion(data_entries, shortcut_keys, &appwindow);
         }));
 
         self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
@@ -526,8 +527,11 @@ impl RnoteCanvas {
             Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
             let shortcut_keys = input::retreive_stylus_shortcut_keys(&stylus_drawing_gesture);
+            let pen_mode = input::retreive_stylus_pen_mode(&stylus_drawing_gesture);
 
-            input::process_pen_motion(data_entries, shortcut_keys, &appwindow);
+            for element in data_entries {
+                input::process_pen_down(element, shortcut_keys.clone(), pen_mode, &appwindow);
+            }
         }));
 
         self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
@@ -540,10 +544,13 @@ impl RnoteCanvas {
             Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
             let shortcut_keys = input::retreive_stylus_shortcut_keys(&stylus_drawing_gesture);
+            let pen_mode = input::retreive_stylus_pen_mode(&stylus_drawing_gesture);
 
             if let Some(last) = data_entries.pop_back() {
-                input::process_pen_motion(data_entries, shortcut_keys.clone(), &appwindow);
-                input::process_pen_up(last, shortcut_keys, &appwindow);
+                for element in data_entries {
+                    input::process_pen_down(element, shortcut_keys.clone(), pen_mode, &appwindow);
+                }
+                input::process_pen_up(last, shortcut_keys, pen_mode, &appwindow);
             }
         }));
 
@@ -557,8 +564,11 @@ impl RnoteCanvas {
             Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
             let shortcut_keys = input::retreive_stylus_shortcut_keys(&stylus_drawing_gesture);
+            let pen_mode = input::retreive_stylus_pen_mode(&stylus_drawing_gesture);
 
-            input::process_pen_proximity(data_entries, shortcut_keys.clone(), &appwindow);
+            for element in data_entries {
+                input::process_pen_proximity(element, shortcut_keys.clone(), pen_mode, &appwindow);
+            }
         }));
 
         // Mouse drawing
@@ -575,10 +585,9 @@ impl RnoteCanvas {
 
             let shortcut_keys = input::retreive_mouse_shortcut_keys(&mouse_drawing_gesture);
 
-            if let Some(first) = data_entries.pop_front() {
-                input::process_pen_down(first, shortcut_keys.clone(), &appwindow);
+            for element in data_entries {
+                input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
             }
-            input::process_pen_motion(data_entries, shortcut_keys, &appwindow);
         }));
 
         self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
@@ -593,7 +602,9 @@ impl RnoteCanvas {
 
                 let shortcut_keys = input::retreive_mouse_shortcut_keys(&mouse_drawing_gesture);
 
-                input::process_pen_motion(data_entries, shortcut_keys, &appwindow);
+                for element in data_entries {
+                    input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                }
             }
         }));
 
@@ -610,8 +621,10 @@ impl RnoteCanvas {
                 let shortcut_keys = input::retreive_mouse_shortcut_keys(&mouse_drawing_gesture);
 
                 if let Some(last) = data_entries.pop_back() {
-                    input::process_pen_motion(data_entries, shortcut_keys.clone(), &appwindow);
-                    input::process_pen_up(last, shortcut_keys, &appwindow);
+                    for element in data_entries {
+                        input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                    }
+                    input::process_pen_up(last, shortcut_keys, Some(PenMode::Pen), &appwindow);
                 }
             }
         }));
@@ -629,10 +642,9 @@ impl RnoteCanvas {
 
             let shortcut_keys = input::retreive_touch_shortcut_keys(&touch_drawing_gesture);
 
-            if let Some(first) = data_entries.pop_front() {
-                input::process_pen_down(first, shortcut_keys.clone(), &appwindow);
+            for element in data_entries {
+                input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
             }
-            input::process_pen_motion(data_entries, shortcut_keys, &appwindow);
         }));
 
         self.imp().touch_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |touch_drawing_gesture, x, y| {
@@ -646,7 +658,9 @@ impl RnoteCanvas {
 
                 let shortcut_keys = input::retreive_touch_shortcut_keys(&touch_drawing_gesture);
 
-                input::process_pen_motion(data_entries, shortcut_keys, &appwindow);
+                for element in data_entries {
+                    input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                }
             }
         }));
 
@@ -662,8 +676,10 @@ impl RnoteCanvas {
                 let shortcut_keys = input::retreive_touch_shortcut_keys(&touch_drawing_gesture);
 
                 if let Some(last) = data_entries.pop_back() {
-                    input::process_pen_motion(data_entries, shortcut_keys.clone(), &appwindow);
-                    input::process_pen_up(last, shortcut_keys, &appwindow);
+                    for element in data_entries {
+                        input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
+                    }
+                    input::process_pen_up(last, shortcut_keys, Some(PenMode::Pen), &appwindow);
                 }
             }
         }));
@@ -775,7 +791,10 @@ impl RnoteCanvas {
             ]
         } else {
             // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-            na::vector![-Document::SHADOW_WIDTH * zoom, -Document::SHADOW_WIDTH * zoom]
+            na::vector![
+                -Document::SHADOW_WIDTH * zoom,
+                -Document::SHADOW_WIDTH * zoom
+            ]
         };
 
         self.update_camera_offset(new_offset);

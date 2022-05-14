@@ -1,11 +1,14 @@
+use adw::prelude::*;
 use gtk4::{
-    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
-    MenuButton, Popover, SpinButton,
+    gdk, glib, glib::clone, subclass::prelude::*, CompositeTemplate, Image, ListBox, MenuButton,
+    Popover, SpinButton,
 };
+use num_traits::cast::ToPrimitive;
+
+use rnote_compose::style::PressureCurve;
 use rnote_engine::pens::Brush;
 
 use crate::{appwindow::RnoteAppWindow, ColorPicker};
-use adw::prelude::*;
 use rnote_compose::style::textured::{TexturedDotsDistribution, TexturedOptions};
 use rnote_engine::pens::brush::BrushStyle;
 use rnote_engine::utils::GdkRGBAHelpers;
@@ -36,6 +39,8 @@ mod imp {
         pub brushconfig_menubutton: TemplateChild<MenuButton>,
         #[template_child]
         pub brushconfig_popover: TemplateChild<Popover>,
+        #[template_child]
+        pub solidstyle_pressure_curves_row: TemplateChild<adw::ComboRow>,
         #[template_child]
         pub texturedstyle_density_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
@@ -148,13 +153,29 @@ impl BrushPage {
         self.imp().texturedstyle_radius_y_spinbutton.clone()
     }
 
+    pub fn solidstyle_pressure_curve(&self) -> PressureCurve {
+        PressureCurve::try_from(self.imp().solidstyle_pressure_curves_row.get().selected())
+            .unwrap()
+    }
+
+    pub fn set_solidstyle_pressure_curve(&self, pressure_curve: PressureCurve) {
+        let position = pressure_curve.to_u32().unwrap();
+
+        self.imp()
+            .solidstyle_pressure_curves_row
+            .get()
+            .set_selected(position);
+    }
+
+    pub fn texturedstyle_dots_distribution(&self) -> TexturedDotsDistribution {
+        TexturedDotsDistribution::try_from(
+            self.imp().texturedstyle_distribution_row.get().selected(),
+        )
+        .unwrap()
+    }
+
     pub fn set_texturedstyle_distribution_variant(&self, distribution: TexturedDotsDistribution) {
-        let position = match distribution {
-            TexturedDotsDistribution::Uniform => 0,
-            TexturedDotsDistribution::Normal => 1,
-            TexturedDotsDistribution::Exponential => 2,
-            TexturedDotsDistribution::ReverseExponential => 3,
-        };
+        let position = distribution.to_u32().unwrap();
 
         self.imp()
             .texturedstyle_distribution_row
@@ -217,6 +238,12 @@ impl BrushPage {
                 }
             }),
         );
+
+        // Solid style
+        // Pressure curve
+        self.imp().solidstyle_pressure_curves_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_smoothstyle_pressure_curves_row| {
+            appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.pressure_curve = brushpage.solidstyle_pressure_curve();
+        }));
 
         // Textured style
         // Density
@@ -289,38 +316,9 @@ impl BrushPage {
                 }),
             );
 
-        // Distribution
-        self.set_texturedstyle_distribution_variant(
-            appwindow
-                .canvas()
-                .engine()
-                .borrow()
-                .penholder
-                .brush
-                .textured_options
-                .distribution,
-        );
-
-        self.imp().texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |texturedstyle_distribution_row| {
-            match texturedstyle_distribution_row.selected() {
-                    0 => {
-                        appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Uniform;
-                    },
-                    1 => {
-                        appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Normal;
-                    },
-                    2 => {
-                        appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::Exponential;
-                    },
-                    3 => {
-                        appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = TexturedDotsDistribution::ReverseExponential;
-                    },
-                    _ => {
-                        log::error!(
-                            "invalid position when selecting a distribution in texturedstyle_distribution_row"
-                        );
-                    }
-            }
+        // dots distribution
+        self.imp().texturedstyle_distribution_row.get().connect_selected_notify(clone!(@weak self as brushpage, @weak appwindow => move |_texturedstyle_distribution_row| {
+            appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
         }));
     }
 }

@@ -1,5 +1,5 @@
 use anyhow::Context;
-use gtk4::{gdk, glib, graphene, gsk, prelude::*, Snapshot};
+use gtk4::{gdk, graphene, gsk, prelude::*, Snapshot};
 use p2d::bounding_volume::AABB;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
@@ -10,21 +10,25 @@ use crate::{render, Camera};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::Color;
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, glib::Enum, Serialize, Deserialize)]
-#[repr(u32)]
-#[enum_type(name = "PatternStyle")]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "pattern_style")]
 pub enum PatternStyle {
-    #[enum_value(name = "None", nick = "none")]
     #[serde(rename = "none")]
     None = 0,
-    #[enum_value(name = "Lines", nick = "lines")]
     #[serde(rename = "lines")]
     Lines,
-    #[enum_value(name = "Grid", nick = "grid")]
     #[serde(rename = "grid")]
     Grid,
-    #[enum_value(name = "Dots", nick = "dots")]
     #[serde(rename = "dots")]
     Dots,
 }
@@ -32,6 +36,17 @@ pub enum PatternStyle {
 impl Default for PatternStyle {
     fn default() -> Self {
         Self::Dots
+    }
+}
+
+impl TryFrom<u32> for PatternStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
+            "PatternStyle try_from::<u32>() for value {} failed",
+            value
+        ))
     }
 }
 
@@ -216,12 +231,12 @@ impl Background {
             na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
         let tile_width = if tile_factor[0] > 1.0 {
-            tile_factor[0] * self.pattern_size[0]
+            tile_factor[0].floor() * self.pattern_size[0]
         } else {
             self.pattern_size[0]
         };
         let tile_height = if tile_factor[1] > 1.0 {
-            tile_factor[1] * self.pattern_size[1]
+            tile_factor[1].floor() * self.pattern_size[1]
         } else {
             self.pattern_size[1]
         };

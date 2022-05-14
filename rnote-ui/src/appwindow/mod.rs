@@ -17,7 +17,6 @@ use gtk4::{
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penhelpers::PenEvent;
-use rnote_engine::pens::penholder::PenHolderEvent;
 use rnote_engine::strokes::Stroke;
 
 use crate::{
@@ -973,7 +972,7 @@ impl RnoteAppWindow {
 
                     // Only cancel the current pen when touch drawing is enabled
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
                         appwindow.handle_surface_flags(surface_flags);
                     }
 
@@ -1020,7 +1019,7 @@ impl RnoteAppWindow {
                     bbcenter_begin.set(None);
 
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
                         appwindow.handle_surface_flags(surface_flags);
                     }
 
@@ -1037,7 +1036,7 @@ impl RnoteAppWindow {
                     bbcenter_begin.set(None);
 
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_penholder_event(PenHolderEvent::PenEvent(PenEvent::Cancel));
+                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
                         appwindow.handle_surface_flags(surface_flags);
                     }
 

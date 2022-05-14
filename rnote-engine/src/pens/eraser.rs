@@ -1,5 +1,5 @@
 use crate::engine::EngineTaskSender;
-use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
+use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;
@@ -15,6 +15,7 @@ use super::AudioPlayer;
 #[derive(Debug, Clone, Copy)]
 pub enum EraserState {
     Up,
+    Proximity(Element),
     Down(Element),
 }
 
@@ -68,7 +69,7 @@ impl PenBehaviour for Eraser {
 
         let pen_progress = match (&mut self.state, event) {
             (
-                EraserState::Up,
+                EraserState::Up | EraserState::Proximity { .. },
                 PenEvent::Down {
                     element,
                     shortcut_keys: _,
@@ -107,7 +108,13 @@ impl PenBehaviour for Eraser {
 
                 PenProgress::InProgress
             }
-            (EraserState::Up, _) => PenProgress::Idle,
+            (EraserState::Up | EraserState::Down { .. }, PenEvent::Proximity { element, .. }) => {
+                self.state = EraserState::Proximity(element);
+                surface_flags.redraw = true;
+
+                PenProgress::Idle
+            }
+            (EraserState::Up, PenEvent::Up { .. } | PenEvent::Cancel) => PenProgress::Idle,
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
@@ -171,8 +178,19 @@ impl PenBehaviour for Eraser {
 
                 PenProgress::Finished
             }
-            (EraserState::Down { .. }, PenEvent::Proximity { .. }) => PenProgress::InProgress,
-            (EraserState::Down { .. }, PenEvent::Cancel) => {
+            (EraserState::Proximity(_), PenEvent::Up { .. }) => {
+                self.state = EraserState::Up;
+                surface_flags.redraw = true;
+
+                PenProgress::Idle
+            }
+            (EraserState::Proximity(current_element), PenEvent::Proximity { element, .. }) => {
+                *current_element = element;
+                surface_flags.redraw = true;
+
+                PenProgress::Idle
+            }
+            (EraserState::Proximity { .. } | EraserState::Down { .. }, PenEvent::Cancel) => {
                 self.state = EraserState::Up;
 
                 surface_flags.redraw = true;
@@ -210,7 +228,7 @@ impl DrawOnDocBehaviour for Eraser {
     fn bounds_on_doc(&self, _doc_bounds: AABB, _camera: &Camera) -> Option<AABB> {
         match &self.state {
             EraserState::Up => None,
-            EraserState::Down(current_element) => {
+            EraserState::Proximity(current_element) | EraserState::Down(current_element) => {
                 Some(Self::eraser_bounds(self.width, *current_element))
             }
         }
@@ -219,21 +237,36 @@ impl DrawOnDocBehaviour for Eraser {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc_bounds: AABB,
+        _doc_bounds: AABB,
         camera: &Camera,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         const OUTLINE_COLOR: piet::Color = color::GNOME_REDS[2].with_a8(0xf0);
-        const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x80);
+        const FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0xa0);
+        const PROXIMITY_FILL_COLOR: piet::Color = color::GNOME_REDS[0].with_a8(0x40);
         let outline_width = 2.0 / camera.total_zoom();
 
-        if let Some(bounds) = self.bounds_on_doc(doc_bounds, camera) {
-            let fill_rect = bounds.to_kurbo_rect();
-            let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
+        match &self.state {
+            EraserState::Up => {}
+            EraserState::Proximity(current_element) => {
+                let bounds = Self::eraser_bounds(self.width, *current_element);
 
-            cx.fill(fill_rect, &FILL_COLOR);
-            cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
+                let fill_rect = bounds.to_kurbo_rect();
+                let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
+
+                cx.fill(fill_rect, &PROXIMITY_FILL_COLOR);
+                cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
+            }
+            EraserState::Down(current_element) => {
+                let bounds = Self::eraser_bounds(self.width, *current_element);
+
+                let fill_rect = bounds.to_kurbo_rect();
+                let outline_rect = bounds.tightened(outline_width * 0.5).to_kurbo_rect();
+
+                cx.fill(fill_rect, &FILL_COLOR);
+                cx.stroke(outline_rect, &OUTLINE_COLOR, outline_width);
+            }
         }
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;

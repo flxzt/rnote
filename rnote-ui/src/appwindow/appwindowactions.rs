@@ -1283,6 +1283,20 @@ impl RnoteAppWindow {
                         }
                     }
                 }));
+            } else if content_formats.contain_mime_type("image/png") {
+                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                    match appwindow.clipboard().read_texture_future().await {
+                        Ok(Some(texture)) => {
+                            if let Err(e) = appwindow.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
+                                log::error!("failed to paste clipboard as png image, load_in_bitmapimage_bytes() returned Err {}", e);
+                            };
+                        }
+                        Ok(None) => {}
+                        Err(e) => {
+                            log::error!("failed to paste clipboard as png image, read_texture_future() failed with Err {}", e);
+                        }
+                    }
+                }));
             } else {
                 log::debug!("failed to paste clipboard as vector image, unsupported mime-type");
             }

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-05-11 18:05+0200\n"
-"PO-Revision-Date: 2022-05-19 13:46-0300\n"
+"PO-Revision-Date: 2022-05-20 11:47-0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -184,7 +184,7 @@ msgstr "Desenhar com entrada por toque"
 
 #: rnote-ui/data/ui/canvasmenu.ui:29
 msgid "Document layout"
-msgstr "Documentar estrutura"
+msgstr "Estrutura do documento"
 
 #: rnote-ui/data/ui/canvasmenu.ui:32
 msgid "Fixed size"
@@ -493,11 +493,11 @@ msgstr "Reverter"
 #: rnote-ui/data/ui/settingspanel.ui:260
 #: rnote-ui/src/workspacebrowser/filerow.rs:237
 msgid "Apply"
-msgstr "APlicar"
+msgstr "Aplicar"
 
 #: rnote-ui/data/ui/settingspanel.ui:273
 msgid "Document background"
-msgstr "Fundo do documento"
+msgstr "Plano de fundo do documento"
 
 #: rnote-ui/data/ui/settingspanel.ui:276
 msgid "Color"
@@ -505,7 +505,7 @@ msgstr "Cor"
 
 #: rnote-ui/data/ui/settingspanel.ui:277
 msgid "Set the background color"
-msgstr "Definir cor de fundo"
+msgstr "Definir cor do plano de fundo"
 
 #: rnote-ui/data/ui/settingspanel.ui:294
 msgid "Pattern"
@@ -513,7 +513,7 @@ msgstr "Padrões"
 
 #: rnote-ui/data/ui/settingspanel.ui:295
 msgid "Choose a background pattern"
-msgstr "Escolha um padrão de fundo"
+msgstr "Escolha um padrão do plano de fundo"
 
 #: rnote-ui/data/ui/settingspanel.ui:299
 msgid "None"
@@ -537,7 +537,7 @@ msgstr "Padrão de cor"
 
 #: rnote-ui/data/ui/settingspanel.ui:311
 msgid "Set the background pattern color"
-msgstr "Definir a cor do fundo de padrão"
+msgstr "Definir a cor do plano de fundo de padrão"
 
 #: rnote-ui/data/ui/settingspanel.ui:328
 msgid "Pattern Width"
@@ -545,7 +545,7 @@ msgstr "Largura do padrão"
 
 #: rnote-ui/data/ui/settingspanel.ui:329
 msgid "Set the background pattern width"
-msgstr "Definir a largura do fundo de padrão"
+msgstr "Definir a largura do plano de fundo de padrão"
 
 #: rnote-ui/data/ui/settingspanel.ui:342
 msgid "Pattern Height"
@@ -553,7 +553,7 @@ msgstr "Altura do padrão"
 
 #: rnote-ui/data/ui/settingspanel.ui:343
 msgid "Set the background pattern height"
-msgstr "Definir a altura do fundo de padrão"
+msgstr "Definir a altura do plano de fundo de padrão"
 
 #: rnote-ui/data/ui/settingspanel.ui:359
 msgid "Button Shortcuts"
@@ -561,27 +561,27 @@ msgstr "Atalhos de botões"
 
 #: rnote-ui/data/ui/settingspanel.ui:362
 msgid "Stylus primary button action"
-msgstr "Ação do botão principal da \"stylus\""
+msgstr "Ação do botão principal da caneta (\"stylus\")"
 
 #: rnote-ui/data/ui/settingspanel.ui:363
 msgid "Set the action for the primary stylus button"
-msgstr "Definir a ação do botão principal do \"stylus\""
+msgstr "Definir a ação do botão principal da caneta (\"stylus\")"
 
 #: rnote-ui/data/ui/settingspanel.ui:374
 msgid "Stylus secondary button action"
-msgstr "Ação do botão secundário do \"stylus\""
+msgstr "Ação do botão secundário da caneta (\"stylus\")"
 
 #: rnote-ui/data/ui/settingspanel.ui:375
 msgid "Set the action for the secondary stylus button"
-msgstr "Definir a ação do botão secundário do \"stylus\""
+msgstr "Definir a ação do botão secundário da caneta (\"stylus\")"
 
 #: rnote-ui/data/ui/settingspanel.ui:386
 msgid "Stylus \"Eraser\" button action"
-msgstr "Ação do botão \"apagador\" do \"stylus\""
+msgstr "Ação do botão \"apagador\" da caneta (\"stylus\")"
 
 #: rnote-ui/data/ui/settingspanel.ui:387
 msgid "Set the action for the \"Eraser\" stylus button"
-msgstr "Definir a ação do botão \"apagador\" do \"stylus\""
+msgstr "Definir a ação do botão \"apagador\" da caneta (\"stylus\")"
 
 #: rnote-ui/data/ui/settingspanel.ui:398
 msgid "Mouse secondary button action"

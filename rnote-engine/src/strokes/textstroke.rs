@@ -725,10 +725,16 @@ impl TextStroke {
 
         self.text.replace_range(cursor_range.clone(), replace_text);
 
-        *cursor =
-            unicode_segmentation::GraphemeCursor::new(cursor_range.start, self.text.len(), true);
-        *selection_cursor =
-            unicode_segmentation::GraphemeCursor::new(cursor_range.start, self.text.len(), true);
+        *cursor = unicode_segmentation::GraphemeCursor::new(
+            cursor_range.start + replace_text.len(),
+            self.text.len(),
+            true,
+        );
+        *selection_cursor = unicode_segmentation::GraphemeCursor::new(
+            cursor_range.start + replace_text.len(),
+            self.text.len(),
+            true,
+        );
 
         self.translate_attrs_after_cursor(
             cursor.cur_cursor(),

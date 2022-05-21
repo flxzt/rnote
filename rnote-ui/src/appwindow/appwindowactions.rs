@@ -975,8 +975,8 @@ impl RnoteAppWindow {
                 let selection_keys = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
 
-                appwindow.canvas().engine().borrow_mut().update_selector();
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+                appwindow.canvas().engine().borrow_mut().update_pens_states();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -991,8 +991,8 @@ impl RnoteAppWindow {
                 appwindow.canvas().engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
 
 
-                appwindow.canvas().engine().borrow_mut().update_selector();
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+                appwindow.canvas().engine().borrow_mut().update_pens_states();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -1005,10 +1005,12 @@ impl RnoteAppWindow {
 
                 let all_strokes = appwindow.canvas().engine().borrow().store.stroke_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
-                appwindow.canvas().engine().borrow_mut().update_selector();
+
                 let surface_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
                 appwindow.handle_surface_flags(surface_flags);
 
+                appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+                appwindow.canvas().engine().borrow_mut().update_pens_states();
                 appwindow.canvas().update_engine_rendering();
             }),
         );
@@ -1022,8 +1024,8 @@ impl RnoteAppWindow {
                 let all_strokes = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
 
-                appwindow.canvas().engine().borrow_mut().update_selector();
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
+                appwindow.canvas().engine().borrow_mut().update_pens_states();
                 appwindow.canvas().update_engine_rendering();
             }),
         );

@@ -390,10 +390,10 @@ impl PenBehaviour for Typewriter {
                 PenProgress::InProgress
             }
             (TypewriterState::Start(pos), PenEvent::KeyPressed { keyboard_key, .. }) => {
-                surface_flags.merge_with_other(store.record());
-
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
+                        surface_flags.merge_with_other(store.record());
+
                         let mut text_style = self.text_style.clone();
                         if self.max_width_enabled {
                             text_style.max_width = Some(self.text_width);
@@ -472,6 +472,8 @@ impl PenBehaviour for Typewriter {
                     )
                     .contains_local_point(&na::Point2::from(element.pos))
                     {
+                        surface_flags.merge_with_other(store.record());
+
                         // Clicking on the adjust text width node
                         self.state = TypewriterState::AdjustTextWidth {
                             stroke_key: *stroke_key,
@@ -538,6 +540,8 @@ impl PenBehaviour for Typewriter {
                     store.get_stroke_mut(*stroke_key)
                 {
                     let update_stroke = |store: &mut StrokeStore| {
+                        surface_flags.merge_with_other(store.record());
+
                         store.update_geometry_for_stroke(*stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
                             tasks_tx,
@@ -686,6 +690,8 @@ impl PenBehaviour for Typewriter {
                     if Self::translate_node_bounds(typewriter_bounds, camera)
                         .contains_local_point(&na::Point2::from(element.pos))
                     {
+                        surface_flags.merge_with_other(store.record());
+
                         self.state = TypewriterState::Translating {
                             stroke_key: *stroke_key,
                             cursor: cursor.clone(),
@@ -752,6 +758,8 @@ impl PenBehaviour for Typewriter {
                 //log::debug!("key: {:?}", keyboard_key);
                 if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
                     let update_stroke = |store: &mut StrokeStore| {
+                        surface_flags.merge_with_other(store.record());
+
                         store.update_geometry_for_stroke(*stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
                             tasks_tx,
@@ -1018,6 +1026,65 @@ impl PenBehaviour for Typewriter {
         };
 
         (pen_progress, surface_flags)
+    }
+
+    fn update_internal_state(
+        &mut self,
+        _doc: &Document,
+        store: &StrokeStore,
+        _camera: &Camera,
+        _audioplayer: Option<&AudioPlayer>,
+    ) {
+        match &mut self.state {
+            TypewriterState::Idle | TypewriterState::Start(_) => {}
+            TypewriterState::Selecting {
+                stroke_key,
+                cursor,
+                selection_cursor,
+                ..
+            } => {
+                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                    update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
+                }
+            }
+            TypewriterState::Modifying {
+                stroke_key, cursor, ..
+            }
+            | TypewriterState::Translating {
+                stroke_key, cursor, ..
+            }
+            | TypewriterState::AdjustTextWidth {
+                stroke_key, cursor, ..
+            } => {
+                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                    if let Some(max_width) = textstroke.text_style.max_width {
+                        self.text_width = max_width;
+                    }
+
+                    update_cursors_for_textstroke(textstroke, cursor, None);
+                }
+            }
+        }
+    }
+}
+
+// Updates the cursors to valid positions and new text length.
+fn update_cursors_for_textstroke(
+    textstroke: &TextStroke,
+    cursor: &mut unicode_segmentation::GraphemeCursor,
+    selection_cursor: Option<&mut unicode_segmentation::GraphemeCursor>,
+) {
+    *cursor = unicode_segmentation::GraphemeCursor::new(
+        cursor.cur_cursor().min(textstroke.text.len()),
+        textstroke.text.len(),
+        true,
+    );
+    if let Some(selection_cursor) = selection_cursor {
+        *selection_cursor = unicode_segmentation::GraphemeCursor::new(
+            selection_cursor.cur_cursor().min(textstroke.text.len()),
+            textstroke.text.len(),
+            true,
+        );
     }
 }
 

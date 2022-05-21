@@ -463,6 +463,22 @@ impl PenBehaviour for Selector {
 
         (pen_progress, surface_flags)
     }
+
+    fn update_internal_state(
+        &mut self,
+        _doc: &Document,
+        store: &StrokeStore,
+        _camera: &Camera,
+        _audioplayer: Option<&AudioPlayer>,
+    ) {
+        let selection = store.selection_keys_as_rendered();
+
+        if let Some(selection_bounds) = store.bounds_for_strokes(&selection) {
+            self.set_selection(selection, selection_bounds);
+        } else {
+            self.state = SelectorState::Idle;
+        }
+    }
 }
 
 impl DrawOnDocBehaviour for Selector {
@@ -603,18 +619,6 @@ impl Selector {
             selection,
             selection_bounds,
         };
-    }
-
-    /// Updates the selector from the stroke store
-    pub fn update_from_store(&mut self, store: &StrokeStore) {
-        let selection = store.selection_keys_as_rendered();
-        let selection_bounds = store.bounds_for_strokes(&selection);
-
-        if let Some(selection_bounds) = selection_bounds {
-            self.set_selection(selection, selection_bounds);
-        } else {
-            self.state = SelectorState::Idle;
-        }
     }
 
     fn add_to_select_path(style: SelectorType, path: &mut Vec<Element>, element: Element) {

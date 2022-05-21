@@ -136,8 +136,9 @@ impl RnoteEngine {
     /// Undo the latest changes
     pub fn undo(&mut self) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
+        let current_pen_style = self.penholder.current_style_w_override();
 
-        if self.penholder.current_style_w_override() != PenStyle::Selector {
+        if current_pen_style != PenStyle::Selector {
             surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
         }
 
@@ -153,9 +154,9 @@ impl RnoteEngine {
                     .force_style_without_sideeffects(PenStyle::Selector),
             );
         }
-        self.update_selector();
 
         self.resize_autoexpand();
+        self.update_pens_states();
         self.update_rendering_current_viewport();
 
         surface_flags.redraw = true;
@@ -166,8 +167,9 @@ impl RnoteEngine {
     /// redo the latest changes
     pub fn redo(&mut self) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
+        let current_pen_style = self.penholder.current_style_w_override();
 
-        if self.penholder.current_style_w_override() != PenStyle::Selector {
+        if current_pen_style != PenStyle::Selector {
             surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
         }
 
@@ -183,9 +185,9 @@ impl RnoteEngine {
                     .force_style_without_sideeffects(PenStyle::Selector),
             );
         }
-        self.update_selector();
 
         self.resize_autoexpand();
+        self.update_pens_states();
         self.update_rendering_current_viewport();
 
         surface_flags.redraw = true;
@@ -196,7 +198,7 @@ impl RnoteEngine {
     // Clears the stroke store
     pub fn clear(&mut self) {
         self.store.clear();
-        self.update_selector();
+        self.update_pens_states();
     }
 
     /// processes the received task from tasks_rx.
@@ -418,10 +420,11 @@ impl RnoteEngine {
         }
     }
 
-    /// Updates the selector pen with the current store state.
-    /// Needs to be called whenever the selected strokes change outside of the selector
-    pub fn update_selector(&mut self) {
-        self.penholder.selector.update_from_store(&self.store);
+    /// Updates pens state with the current engine state.
+    /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all stroke, set strokes selected, etc. )
+    pub fn update_pens_states(&mut self) {
+        self.penholder
+            .update_internal_state(&self.document, &self.store, &self.camera);
     }
 
     /// Imports and replace the engine config. NOT for opening files
@@ -482,7 +485,7 @@ impl RnoteEngine {
     ) -> anyhow::Result<()> {
         self.store.import_snapshot(store_snapshot);
 
-        self.update_selector();
+        self.update_pens_states();
 
         Ok(())
     }
@@ -611,7 +614,7 @@ impl RnoteEngine {
         self.document = doc;
         self.store.import_snapshot(&*store.take_store_snapshot());
 
-        self.update_selector();
+        self.update_pens_states();
 
         Ok(())
     }
@@ -719,10 +722,9 @@ impl RnoteEngine {
             self.store.set_selected(key, true);
         });
 
-        self.update_selector();
-
         surface_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
 
+        self.update_pens_states();
         self.update_rendering_current_viewport();
 
         surface_flags.redraw = true;

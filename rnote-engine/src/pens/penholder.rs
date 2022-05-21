@@ -500,6 +500,22 @@ impl PenHolder {
 
         surface_flags
     }
+
+    // Updates the penholder and pens internal state
+    pub fn update_internal_state(&mut self, doc: &Document, store: &StrokeStore, camera: &Camera) {
+        self.brush
+            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
+        self.shaper
+            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
+        self.typewriter
+            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
+        self.eraser
+            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
+        self.selector
+            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
+        self.tools
+            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
+    }
 }
 
 impl DrawOnDocBehaviour for PenHolder {

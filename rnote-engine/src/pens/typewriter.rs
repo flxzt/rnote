@@ -1182,6 +1182,8 @@ impl Typewriter {
         | TypewriterState::Translating { stroke_key, .. }
         | TypewriterState::AdjustTextWidth { stroke_key, .. } = &mut self.state
         {
+            surface_flags.merge_with_other(store.record());
+
             if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
                 textstroke.text_style.alignment = alignment;
 
@@ -1219,6 +1221,8 @@ impl Typewriter {
             stroke_key, cursor, ..
         } = &mut self.state
         {
+            surface_flags.merge_with_other(store.record());
+
             if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
                 for keychar in to_insert.chars().into_iter() {
                     textstroke.insert_char_after_cursor(keychar, cursor);
@@ -1250,6 +1254,8 @@ impl Typewriter {
         let mut surface_flags = SurfaceFlags::default();
 
         if let Some((selection_range, stroke_key)) = self.selection_range() {
+            surface_flags.merge_with_other(store.record());
+
             if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(stroke_key) {
                 textstroke.remove_attrs_for_range(selection_range);
 
@@ -1280,6 +1286,8 @@ impl Typewriter {
         let mut surface_flags = SurfaceFlags::default();
 
         if let Some((selection_range, stroke_key)) = self.selection_range() {
+            surface_flags.merge_with_other(store.record());
+
             if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(stroke_key) {
                 textstroke
                     .text_style

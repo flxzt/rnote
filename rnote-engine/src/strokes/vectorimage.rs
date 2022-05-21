@@ -95,6 +95,7 @@ impl DrawBehaviour for VectorImage {
 
         // draw() needs rgba8-prem. the gen_images() func might produces bgra8-prem format (when using librsvg as renderer backend), so we might need to convert the image first
         image.convert_to_rgba8pre()?;
+        // image_scale does not have a meaning here, as the pixel image is already provided
         image.draw(cx, image_scale)?;
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;

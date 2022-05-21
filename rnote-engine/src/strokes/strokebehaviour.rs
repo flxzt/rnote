@@ -35,7 +35,7 @@ where
     ) -> Result<GeneratedStrokeImages, anyhow::Error>;
 
     /// Exporting as encoded image bytes (Png / Jpg, etc.)
-    fn export_as_image_bytes(
+    fn export_as_bitmapimage_bytes(
         &self,
         format: image::ImageOutputFormat,
         image_scale: f64,

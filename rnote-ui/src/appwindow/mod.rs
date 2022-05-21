@@ -1460,15 +1460,27 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc_as_svg(&self, file: &gio::File, with_background: bool) -> anyhow::Result<()> {
-        let svg_data = self.canvas().engine().borrow().export_doc_as_svg_string(with_background)?;
+    pub async fn export_doc_as_svg(
+        &self,
+        file: &gio::File,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
+        let svg_data = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_doc_as_svg_string(with_background)?;
 
         utils::replace_file_future(svg_data.into_bytes(), file).await?;
 
         Ok(())
     }
 
-    pub async fn export_selection_as_svg(&self, file: &gio::File, with_background: bool) -> anyhow::Result<()> {
+    pub async fn export_selection_as_svg(
+        &self,
+        file: &gio::File,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
         if let Some(selection_svg_data) = self
             .canvas()
             .engine()
@@ -1476,6 +1488,41 @@ impl RnoteAppWindow {
             .export_selection_as_svg_string(with_background)?
         {
             utils::replace_file_future(selection_svg_data.into_bytes(), file).await?;
+        }
+
+        Ok(())
+    }
+
+    pub async fn export_doc_as_bitmapimage(
+        &self,
+        file: &gio::File,
+        format: image::ImageOutputFormat,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
+        let svg_data = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_doc_as_bitmapimage_bytes(format, with_background)?;
+
+        utils::replace_file_future(svg_data, file).await?;
+
+        Ok(())
+    }
+
+    pub async fn export_selection_as_bitmapimage(
+        &self,
+        file: &gio::File,
+        format: image::ImageOutputFormat,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
+        if let Some(selection_svg_data) = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_selection_as_bitmapimage_bytes(format, with_background)?
+        {
+            utils::replace_file_future(selection_svg_data, file).await?;
         }
 
         Ok(())
@@ -1495,7 +1542,11 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc_as_pdf(&self, file: &gio::File, with_background: bool) -> anyhow::Result<()> {
+    pub async fn export_doc_as_pdf(
+        &self,
+        file: &gio::File,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let pdf_data_receiver = self
                 .canvas()

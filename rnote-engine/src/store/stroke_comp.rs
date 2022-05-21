@@ -2,7 +2,7 @@ use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::pens::tools::DragProximityTool;
 use crate::strokes::Stroke;
-use crate::{render, DrawBehaviour, StrokeStore};
+use crate::{render, StrokeStore};
 use rnote_compose::helpers;
 use rnote_compose::penpath::Segment;
 use rnote_compose::shapes::ShapeBehaviour;
@@ -189,20 +189,6 @@ impl StrokeStore {
         keys.iter()
             .filter_map(|&key| Some(self.stroke_components.get(key)?.bounds()))
             .collect::<Vec<AABB>>()
-    }
-
-    pub fn draw_strokes_to_piet(
-        &self,
-        keys: &[StrokeKey],
-        piet_cx: &mut impl piet::RenderContext,
-        image_scale: f64,
-    ) -> anyhow::Result<()> {
-        for &key in keys {
-            if let Some(stroke) = self.stroke_components.get(key) {
-                stroke.draw(piet_cx, image_scale)?;
-            }
-        }
-        Ok(())
     }
 
     /// Translate the strokes with the offset.

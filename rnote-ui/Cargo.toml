@@ -29,6 +29,7 @@ gtk4 = {version = "0.4.7", features = ["v4_6"]}
 adw = {version = "0.1.1", package="libadwaita"}
 cairo-rs = {version = "0.15.10", features = ["png", "svg", "pdf"]}
 svg = "0.10.0"
+image = "0.23.14"
 gettext-rs = { version = "0.7.0", features = ["gettext-system"] }
 kurbo = {version = "0.8.2", features = ["serde"] }
 piet = { path = "../piet/piet", features = ["serde"]}

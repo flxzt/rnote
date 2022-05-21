@@ -2900,6 +2900,7 @@ dependencies = [
  "futures",
  "gettext-rs",
  "gtk4",
+ "image 0.23.14",
  "kurbo",
  "libadwaita",
  "log",

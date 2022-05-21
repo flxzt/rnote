@@ -315,7 +315,7 @@ impl Stroke {
             }
             Stroke::ShapeStroke(shapestroke) => {
                 let png_data = match shapestroke
-                    .export_as_image_bytes(image::ImageOutputFormat::Png, image_scale)
+                    .export_as_bitmapimage_bytes(image::ImageOutputFormat::Png, image_scale)
                 {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -352,34 +352,34 @@ impl Stroke {
                 ))
             }
             Stroke::TextStroke(textstroke) => {
-            // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here. The best solution for now is to export as an image
-/*
-                let origin = textstroke.transform.translation_part();
-                let untransformed_text_size = textstroke.text_style.untransformed_size(
-                    &mut piet_cairo::CairoText::new(),
-                    textstroke.text.clone(),
-                )?;
-                let font_scale = textstroke
-                    .bounds()
-                    .extents()
-                    .component_div(&untransformed_text_size);
-                let scaled_font_size = (textstroke.text_style.font_size * font_scale).mean();
+                // Xournal++ text strokes do not support affine transformations, so we have to convert on best effort here. The best solution for now is to export as an image
+                /*
+                                let origin = textstroke.transform.translation_part();
+                                let untransformed_text_size = textstroke.text_style.untransformed_size(
+                                    &mut piet_cairo::CairoText::new(),
+                                    textstroke.text.clone(),
+                                )?;
+                                let font_scale = textstroke
+                                    .bounds()
+                                    .extents()
+                                    .component_div(&untransformed_text_size);
+                                let scaled_font_size = (textstroke.text_style.font_size * font_scale).mean();
 
-                Some(xoppformat::XoppStrokeType::XoppText(xoppformat::XoppText {
-                    x: utils::convert_value_dpi(origin[0], current_dpi, xoppformat::XoppFile::DPI),
-                    y: utils::convert_value_dpi(origin[1], current_dpi, xoppformat::XoppFile::DPI),
-                    size: utils::convert_value_dpi(
-                        scaled_font_size,
-                        current_dpi,
-                        xoppformat::XoppFile::DPI,
-                    ),
-                    font: textstroke.text_style.font_family,
-                    color: XoppColor::from(textstroke.text_style.color),
-                    text: textstroke.text.clone(),
-                }))
-*/
+                                Some(xoppformat::XoppStrokeType::XoppText(xoppformat::XoppText {
+                                    x: utils::convert_value_dpi(origin[0], current_dpi, xoppformat::XoppFile::DPI),
+                                    y: utils::convert_value_dpi(origin[1], current_dpi, xoppformat::XoppFile::DPI),
+                                    size: utils::convert_value_dpi(
+                                        scaled_font_size,
+                                        current_dpi,
+                                        xoppformat::XoppFile::DPI,
+                                    ),
+                                    font: textstroke.text_style.font_family,
+                                    color: XoppColor::from(textstroke.text_style.color),
+                                    text: textstroke.text.clone(),
+                                }))
+                */
                 let png_data = match textstroke
-                    .export_as_image_bytes(image::ImageOutputFormat::Png, image_scale)
+                    .export_as_bitmapimage_bytes(image::ImageOutputFormat::Png, image_scale)
                 {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -417,7 +417,7 @@ impl Stroke {
             }
             Stroke::VectorImage(vectorimage) => {
                 let png_data = match vectorimage
-                    .export_as_image_bytes(image::ImageOutputFormat::Png, image_scale)
+                    .export_as_bitmapimage_bytes(image::ImageOutputFormat::Png, image_scale)
                 {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
@@ -455,7 +455,7 @@ impl Stroke {
             }
             Stroke::BitmapImage(bitmapimage) => {
                 let png_data = match bitmapimage
-                    .export_as_image_bytes(image::ImageOutputFormat::Png, image_scale)
+                    .export_as_bitmapimage_bytes(image::ImageOutputFormat::Png, image_scale)
                 {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {

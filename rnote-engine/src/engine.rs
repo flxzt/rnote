@@ -737,14 +737,27 @@ impl RnoteEngine {
     /// The coordinates are translated so that the svg has origin 0.0, 0.0
     /// without root or xml header.
     pub fn gen_doc_svg(&self, with_background: bool) -> Result<render::Svg, anyhow::Error> {
-        let image_scale = self.camera.image_scale();
+        // Use a reasonably large image scale for crisp bitmap images
+        let image_scale = 3.0;
+
         let doc_bounds = self.document.bounds();
 
         let mut strokes = self.store.stroke_keys_as_rendered();
         strokes.extend(self.store.selection_keys_as_rendered());
 
         let mut doc_svg = if with_background {
-            self.document.background.gen_svg(doc_bounds)?
+            let mut background_svg = self.document.background.gen_svg(doc_bounds)?;
+
+            background_svg.wrap_svg_root(
+                Some(AABB::new(
+                    na::point![0.0, 0.0],
+                    na::Point2::from(doc_bounds.extents()),
+                )),
+                Some(doc_bounds),
+                true,
+            );
+
+            background_svg
         } else {
             // we can have invalid bounds here, because we know we merge them with the strokes svg
             render::Svg {
@@ -760,7 +773,7 @@ impl RnoteEngine {
                 ));
 
                 self.store
-                    .draw_strokes_to_piet(&strokes, piet_cx, image_scale)
+                    .draw_stroke_keys_to_piet(&strokes, piet_cx, image_scale)
             },
             AABB::new(na::point![0.0, 0.0], na::Point2::from(doc_bounds.extents())),
         )?]);
@@ -776,14 +789,23 @@ impl RnoteEngine {
         viewport: AABB,
         with_background: bool,
     ) -> Result<render::Svg, anyhow::Error> {
-        let image_scale = self.camera.image_scale();
+        // Use a reasonably large image scale for crisp bitmap images
+        let image_scale = 3.0;
 
         // Background bounds are still doc bounds, for correct alignment of the background pattern
         let mut doc_svg = if with_background {
-            self.document.background.gen_svg(AABB::new(
-                na::point![0.0, 0.0],
-                na::Point2::from(viewport.extents()),
-            ))?
+            let mut background_svg = self.document.background.gen_svg(viewport)?;
+
+            background_svg.wrap_svg_root(
+                Some(AABB::new(
+                    na::point![0.0, 0.0],
+                    na::Point2::from(viewport.extents()),
+                )),
+                Some(viewport),
+                true,
+            );
+
+            background_svg
         } else {
             // we can have invalid bounds here, because we know we merge them with the other svg
             render::Svg {
@@ -807,7 +829,7 @@ impl RnoteEngine {
                 ));
 
                 self.store
-                    .draw_strokes_to_piet(&strokes_in_viewport, piet_cx, image_scale)
+                    .draw_stroke_keys_to_piet(&strokes_in_viewport, piet_cx, image_scale)
             },
             AABB::new(na::point![0.0, 0.0], na::Point2::from(viewport.extents())),
         )?]);
@@ -822,7 +844,8 @@ impl RnoteEngine {
         &self,
         with_background: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
-        let image_scale = self.camera.image_scale();
+        // Use a reasonably large image scale for crisp bitmap images
+        let image_scale = 3.0;
 
         let selection_keys = self.store.selection_keys_as_rendered();
 
@@ -838,10 +861,18 @@ impl RnoteEngine {
             };
 
         let mut selection_svg = if with_background {
-            self.document.background.gen_svg(AABB::new(
-                na::point![0.0, 0.0],
-                na::Point2::from(selection_bounds.extents()),
-            ))?
+            let mut background_svg = self.document.background.gen_svg(selection_bounds)?;
+
+            background_svg.wrap_svg_root(
+                Some(AABB::new(
+                    na::point![0.0, 0.0],
+                    na::Point2::from(selection_bounds.extents()),
+                )),
+                Some(selection_bounds),
+                true,
+            );
+
+            background_svg
         } else {
             render::Svg {
                 svg_data: String::new(),
@@ -859,7 +890,7 @@ impl RnoteEngine {
                 ));
 
                 self.store
-                    .draw_strokes_to_piet(&selection_keys, piet_cx, image_scale)
+                    .draw_stroke_keys_to_piet(&selection_keys, piet_cx, image_scale)
             },
             AABB::new(
                 na::point![0.0, 0.0],
@@ -907,13 +938,12 @@ impl RnoteEngine {
     }
 
     /// Exporting doc as encoded image bytes (Png / Jpg, etc.)
-    #[allow(unused)]
-    fn export_doc_as_image_bytes(
+    pub fn export_doc_as_bitmapimage_bytes(
         &self,
         format: image::ImageOutputFormat,
         with_background: bool,
     ) -> Result<Vec<u8>, anyhow::Error> {
-        let image_scale = self.camera.image_scale();
+        let image_scale = 1.0;
 
         let doc_svg = self.gen_doc_svg(with_background)?;
         let doc_svg_bounds = doc_svg.bounds;
@@ -925,13 +955,12 @@ impl RnoteEngine {
     }
 
     /// Exporting selection as encoded image bytes (Png / Jpg, etc.)
-    #[allow(unused)]
-    fn export_selection_as_image_bytes(
+    pub fn export_selection_as_bitmapimage_bytes(
         &self,
         format: image::ImageOutputFormat,
         with_background: bool,
     ) -> Result<Option<Vec<u8>>, anyhow::Error> {
-        let image_scale = self.camera.image_scale();
+        let image_scale = 1.0;
 
         let selection_svg = match self.gen_selection_svg(with_background)? {
             Some(selection_svg) => selection_svg,

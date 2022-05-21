@@ -424,6 +424,21 @@ impl StrokeStore {
             });
     }
 
+    // Draws the given strokes on a piet render context. Note that even trashed strokes get drawn
+    pub fn draw_stroke_keys_to_piet(
+        &self,
+        keys: &[StrokeKey],
+        piet_cx: &mut impl piet::RenderContext,
+        image_scale: f64,
+    ) -> anyhow::Result<()> {
+        for &key in keys {
+            if let Some(stroke) = self.stroke_components.get(key) {
+                stroke.draw(piet_cx, image_scale)?;
+            }
+        }
+        Ok(())
+    }
+
     /// Draws a placeholder for the given stroke bounds
     fn draw_stroke_placeholder(snapshot: &Snapshot, stroke_bounds: AABB) {
         snapshot.append_color(

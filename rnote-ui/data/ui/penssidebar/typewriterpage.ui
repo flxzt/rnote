@@ -169,7 +169,7 @@ or press Enter to select a new font)</property>
         <child>
           <object class="GtkToggleButton" id="text_align_start_togglebutton">
             <property name="icon-name">text-align-start-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Align feft</property>
+            <property name="tooltip_text" translatable="yes">Align left</property>
             <property name="active">true</property>
           </object>
         </child>
@@ -190,7 +190,7 @@ or press Enter to select a new font)</property>
         <child>
           <object class="GtkToggleButton" id="text_align_fill_togglebutton">
             <property name="icon-name">text-align-fill-symbolic</property>
-            <property name="tooltip_text" translatable="yes">Align fill</property>
+            <property name="tooltip_text" translatable="yes">Fill</property>
             <property name="group">text_align_start_togglebutton</property>
           </object>
         </child>

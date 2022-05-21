@@ -356,13 +356,13 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
     *appwindow.filechoosernative().borrow_mut() = Some(dialog_import_file);
 }
 
-pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
+pub fn dialog_export_selection_as_svg(appwindow: &RnoteAppWindow) {
     let filter = FileFilter::new();
     filter.add_mime_type("image/svg+xml");
     filter.add_pattern("*.svg");
     filter.set_name(Some(&gettext("SVG file")));
 
-    let dialog_export_selection: FileChooserNative = FileChooserNative::builder()
+    let dialog_export_selection_as_svg: FileChooserNative = FileChooserNative::builder()
         .title(&gettext("Export Selection"))
         .modal(true)
         .transient_for(appwindow)
@@ -371,9 +371,9 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
         .action(FileChooserAction::Save)
         .select_multiple(false)
         .build();
-    dialog_export_selection.add_filter(&filter);
+    dialog_export_selection_as_svg.add_filter(&filter);
 
-    dialog_export_selection.set_current_name(
+    dialog_export_selection_as_svg.set_current_name(
         format!(
             "{}_selection.svg",
             rnote_engine::utils::now_formatted_string()
@@ -381,15 +381,15 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
         .as_str(),
     );
 
-    dialog_export_selection.connect_response(clone!(@weak appwindow => move |dialog_export_selection, responsetype| {
+    dialog_export_selection_as_svg.connect_response(clone!(@weak appwindow => move |dialog_export_selection_as_svg, responsetype| {
             match responsetype {
                 ResponseType::Accept => {
-                    if let Some(file) = dialog_export_selection.file() {
+                    if let Some(file) = dialog_export_selection_as_svg.file() {
                         glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                             appwindow.start_pulsing_canvas_progressbar();
 
                             if let Err(e) = appwindow.export_selection_as_svg(&file, false).await {
-                                log::error!("exporting selection failed with error `{}`", e);
+                                log::error!("exporting selection as svg failed with error `{}`", e);
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection as SVG failed.").to_variant()));
                             } else {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported selection as SVG successfully.").to_variant()));
@@ -403,9 +403,61 @@ pub fn dialog_export_selection(appwindow: &RnoteAppWindow) {
             }
         }));
 
-    dialog_export_selection.show();
+    dialog_export_selection_as_svg.show();
     // keeping the filechooser around because otherwise GTK won't keep it alive
-    *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_selection);
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_selection_as_svg);
+}
+
+pub fn dialog_export_selection_as_png(appwindow: &RnoteAppWindow) {
+    let filter = FileFilter::new();
+    filter.add_mime_type("image/png");
+    filter.add_pattern("*.png");
+    filter.set_name(Some(&gettext("PNG file")));
+
+    let dialog_export_selection_as_png: FileChooserNative = FileChooserNative::builder()
+        .title(&gettext("Export Selection"))
+        .modal(true)
+        .transient_for(appwindow)
+        .accept_label(&gettext("Export"))
+        .cancel_label(&gettext("Cancel"))
+        .action(FileChooserAction::Save)
+        .select_multiple(false)
+        .build();
+    dialog_export_selection_as_png.add_filter(&filter);
+
+    dialog_export_selection_as_png.set_current_name(
+        format!(
+            "{}_selection.png",
+            rnote_engine::utils::now_formatted_string()
+        )
+        .as_str(),
+    );
+
+    dialog_export_selection_as_png.connect_response(clone!(@weak appwindow => move |dialog_export_selection_as_png, responsetype| {
+            match responsetype {
+                ResponseType::Accept => {
+                    if let Some(file) = dialog_export_selection_as_png.file() {
+                        glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                            appwindow.start_pulsing_canvas_progressbar();
+
+                            if let Err(e) = appwindow.export_selection_as_bitmapimage(&file, image::ImageOutputFormat::Png, false).await {
+                                log::error!("exporting selection as png failed with error `{}`", e);
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Export selection as PNG failed.").to_variant()));
+                            } else {
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "text-toast", Some(&gettext("Exported selection as PNG successfully.").to_variant()));
+                            }
+
+                            appwindow.finish_canvas_progressbar();
+                        }));
+                    }
+                }
+                _ => {}
+            }
+        }));
+
+    dialog_export_selection_as_png.show();
+    // keeping the filechooser around because otherwise GTK won't keep it alive
+    *appwindow.filechoosernative().borrow_mut() = Some(dialog_export_selection_as_png);
 }
 
 pub fn dialog_export_doc_as_svg(appwindow: &RnoteAppWindow) {

@@ -140,6 +140,9 @@ impl RnoteAppWindow {
         let action_export_selection_as_svg =
             gio::SimpleAction::new("export-selection-as-svg", None);
         self.add_action(&action_export_selection_as_svg);
+        let action_export_selection_as_png =
+            gio::SimpleAction::new("export-selection-as-png", None);
+        self.add_action(&action_export_selection_as_png);
         let action_export_doc_as_svg = gio::SimpleAction::new("export-doc-as-svg", None);
         self.add_action(&action_export_doc_as_svg);
         let action_export_doc_as_pdf = gio::SimpleAction::new("export-doc-as-pdf", None);
@@ -1246,7 +1249,14 @@ impl RnoteAppWindow {
         // Export selection as SVG
         action_export_selection_as_svg.connect_activate(
             clone!(@weak self as appwindow => move |_,_| {
-                dialogs::dialog_export_selection(&appwindow);
+                dialogs::dialog_export_selection_as_svg(&appwindow);
+            }),
+        );
+
+        // Export selection as PNG
+        action_export_selection_as_png.connect_activate(
+            clone!(@weak self as appwindow => move |_,_| {
+                dialogs::dialog_export_selection_as_png(&appwindow);
             }),
         );
 

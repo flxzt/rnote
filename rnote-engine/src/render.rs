@@ -601,6 +601,23 @@ impl Svg {
         }
     }
 
+    pub fn wrap_svg_root(
+        &mut self,
+        bounds: Option<AABB>,
+        viewbox: Option<AABB>,
+        preserve_aspectratio: bool,
+    ) {
+        self.svg_data = rnote_compose::utils::wrap_svg_root(
+            self.svg_data.as_str(),
+            bounds,
+            viewbox,
+            preserve_aspectratio,
+        );
+        if let Some(bounds) = bounds {
+            self.bounds = bounds
+        }
+    }
+
     /// Generates an svg with piet, using the piet_svg backend (context creation might be slow due to font loading).
     pub fn gen_with_piet_svg_backend<F>(mut draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
     where

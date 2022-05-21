@@ -1,8 +1,8 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
-use super::AudioPlayer;
 use crate::document::Document;
 use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
+use crate::AudioPlayer;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use kurbo::Shape;
 use p2d::query::PointQuery;
@@ -107,7 +107,7 @@ impl PenBehaviour for Selector {
         doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
-        _audioplayer: Option<&mut AudioPlayer>,
+        _audioplayer: &mut Option<AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -469,7 +469,7 @@ impl PenBehaviour for Selector {
         _doc: &Document,
         store: &StrokeStore,
         _camera: &Camera,
-        _audioplayer: Option<&AudioPlayer>,
+        _audioplayer: &Option<AudioPlayer>,
     ) {
         let selection = store.selection_keys_as_rendered();
 

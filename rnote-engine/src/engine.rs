@@ -4,7 +4,7 @@ use crate::pens::PenMode;
 use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{render, DrawOnDocBehaviour, SurfaceFlags};
+use crate::{render, AudioPlayer, DrawOnDocBehaviour, SurfaceFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use gtk4::Snapshot;
 use piet::RenderContext;
@@ -54,6 +54,8 @@ struct EngineConfig {
     pdf_import_width_perc: serde_json::Value,
     #[serde(rename = "pdf_import_as_vector")]
     pdf_import_as_vector: serde_json::Value,
+    #[serde(rename = "pen_sounds")]
+    pen_sounds: serde_json::Value,
 }
 
 impl Default for EngineConfig {
@@ -66,6 +68,7 @@ impl Default for EngineConfig {
 
             pdf_import_width_perc: serde_json::to_value(&engine.pdf_import_width_perc).unwrap(),
             pdf_import_as_vector: serde_json::to_value(&engine.pdf_import_as_vector).unwrap(),
+            pen_sounds: serde_json::to_value(&engine.pen_sounds).unwrap(),
         }
     }
 }
@@ -90,7 +93,11 @@ pub struct RnoteEngine {
     pub pdf_import_width_perc: f64,
     #[serde(rename = "pdf_import_as_vector")]
     pub pdf_import_as_vector: bool,
+    #[serde(rename = "pen_sounds")]
+    pub pen_sounds: bool,
 
+    #[serde(skip)]
+    audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
     pub visual_debug: bool,
     #[serde(skip)]
@@ -103,6 +110,19 @@ pub struct RnoteEngine {
 impl Default for RnoteEngine {
     fn default() -> Self {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+        let pen_sounds = false;
+        let audioplayer = AudioPlayer::new()
+            .map_err(|e| {
+                log::error!(
+                    "failed to create a new audio player in PenHolder::default(), Err {}",
+                    e
+                );
+            })
+            .map(|mut audioplayer| {
+                audioplayer.enabled = pen_sounds;
+                audioplayer
+            })
+            .ok();
 
         Self {
             document: Document::default(),
@@ -112,7 +132,9 @@ impl Default for RnoteEngine {
             camera: Camera::default(),
             pdf_import_width_perc: Self::PDF_IMPORT_WIDTH_PERC_DEFAULT,
             pdf_import_as_vector: true,
+            pen_sounds,
 
+            audioplayer,
             visual_debug: false,
             tasks_tx,
             tasks_rx: Some(tasks_rx),
@@ -126,6 +148,20 @@ impl RnoteEngine {
 
     pub fn tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
+    }
+
+    /// wether pen sounds are enabled
+    pub fn pen_sounds(&self) -> bool {
+        self.pen_sounds
+    }
+
+    /// enables / disables the pen sounds
+    pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
+        self.pen_sounds = pen_sounds;
+
+        if let Some(audioplayer) = self.audioplayer.as_mut() {
+            audioplayer.enabled = pen_sounds;
+        }
     }
 
     /// Wraps store.record().
@@ -258,6 +294,7 @@ impl RnoteEngine {
             &mut self.document,
             &mut self.store,
             &mut self.camera,
+            &mut self.audioplayer,
         )
     }
 
@@ -268,6 +305,7 @@ impl RnoteEngine {
             &mut self.document,
             &mut self.store,
             &mut self.camera,
+            &mut self.audioplayer,
         )
     }
 
@@ -278,6 +316,7 @@ impl RnoteEngine {
             &mut self.document,
             &mut self.store,
             &mut self.camera,
+            &mut self.audioplayer,
         )
     }
 
@@ -291,6 +330,7 @@ impl RnoteEngine {
             &mut self.document,
             &mut self.store,
             &mut self.camera,
+            &mut self.audioplayer,
         )
     }
 
@@ -301,6 +341,7 @@ impl RnoteEngine {
             &mut self.document,
             &mut self.store,
             &mut self.camera,
+            &mut self.audioplayer,
         )
     }
 
@@ -423,8 +464,12 @@ impl RnoteEngine {
     /// Updates pens state with the current engine state.
     /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all stroke, set strokes selected, etc. )
     pub fn update_pens_states(&mut self) {
-        self.penholder
-            .update_internal_state(&self.document, &self.store, &self.camera);
+        self.penholder.update_internal_state(
+            &self.document,
+            &self.store,
+            &self.camera,
+            &self.audioplayer,
+        );
     }
 
     /// Imports and replace the engine config. NOT for opening files
@@ -432,10 +477,13 @@ impl RnoteEngine {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
         self.document = serde_json::from_value(engine_config.document)?;
-        self.penholder
-            .import(serde_json::from_value(engine_config.penholder)?);
+        self.penholder = serde_json::from_value(engine_config.penholder)?;
         self.pdf_import_width_perc = serde_json::from_value(engine_config.pdf_import_width_perc)?;
         self.pdf_import_as_vector = serde_json::from_value(engine_config.pdf_import_as_vector)?;
+        self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
+
+        // Set the pen sounds to update the audioplayer
+        self.set_pen_sounds(self.pen_sounds);
 
         Ok(())
     }
@@ -447,6 +495,7 @@ impl RnoteEngine {
             penholder: serde_json::to_value(&self.penholder)?,
             pdf_import_width_perc: serde_json::to_value(&self.pdf_import_width_perc)?,
             pdf_import_as_vector: serde_json::to_value(&self.pdf_import_as_vector)?,
+            pen_sounds: serde_json::to_value(&self.pen_sounds)?,
         };
 
         Ok(serde_json::to_string(&engine_config)?)

@@ -1,4 +1,3 @@
-pub mod audioplayer;
 pub mod brush;
 pub mod eraser;
 pub mod penbehaviour;
@@ -11,7 +10,6 @@ pub mod tools;
 pub mod typewriter;
 
 // Re-exports
-pub use audioplayer::AudioPlayer;
 pub use brush::Brush;
 pub use eraser::Eraser;
 pub use penbehaviour::PenBehaviour;

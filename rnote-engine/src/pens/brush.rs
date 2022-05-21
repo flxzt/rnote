@@ -1,24 +1,23 @@
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
+use crate::AudioPlayer;
 use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
-use piet::RenderContext;
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
+use rnote_compose::style::textured::TexturedOptions;
 use rnote_compose::style::PressureCurve;
 use rnote_compose::{Shape, Style};
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
+use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 use rnote_compose::style::smooth::SmoothOptions;
-use rnote_compose::style::textured::TexturedOptions;
 use serde::{Deserialize, Serialize};
-
-use super::penbehaviour::{PenBehaviour, PenProgress};
-use super::AudioPlayer;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename = "brush_style")]
@@ -84,7 +83,7 @@ impl PenBehaviour for Brush {
         doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
-        audioplayer: Option<&mut AudioPlayer>,
+        audioplayer: &mut Option<AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
         let style = self.style;
@@ -301,7 +300,7 @@ impl Brush {
     pub const STROKE_WIDTH_MAX: f64 = 500.0;
     pub const STROKE_WIDTH_DEFAULT: f64 = 2.0;
 
-    fn start_audio(style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
+    fn start_audio(style: BrushStyle, audioplayer: &mut Option<AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {
             match style {
                 BrushStyle::Marker => {
@@ -314,7 +313,7 @@ impl Brush {
         }
     }
 
-    fn stop_audio(_style: BrushStyle, audioplayer: Option<&mut AudioPlayer>) {
+    fn stop_audio(_style: BrushStyle, audioplayer: &mut Option<AudioPlayer>) {
         if let Some(audioplayer) = audioplayer {
             audioplayer.stop_random_brush_sond();
         }

@@ -1,6 +1,7 @@
 use crate::document::Document;
 use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
+use crate::AudioPlayer;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::color;
@@ -11,7 +12,6 @@ use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::{PenBehaviour, PenProgress};
-use super::AudioPlayer;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "verticalspace_tool")]
@@ -293,7 +293,7 @@ impl PenBehaviour for Tools {
         doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
-        _audioplayer: Option<&mut AudioPlayer>,
+        _audioplayer: &mut Option<AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 

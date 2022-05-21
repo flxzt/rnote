@@ -1,4 +1,6 @@
+use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::EngineTaskSender;
+use crate::AudioPlayer;
 use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::color;
@@ -8,9 +10,6 @@ use rnote_compose::penpath::Element;
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
-
-use super::penbehaviour::{PenBehaviour, PenProgress};
-use super::AudioPlayer;
 
 #[derive(Debug, Clone, Copy)]
 pub enum EraserState {
@@ -63,7 +62,7 @@ impl PenBehaviour for Eraser {
         _doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
-        _audioplayer: Option<&mut AudioPlayer>,
+        _audioplayer: &mut Option<AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 

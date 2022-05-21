@@ -511,7 +511,7 @@ impl RnoteAppWindow {
             clone!(@weak self as appwindow => move |action_pen_sounds, state_request| {
                 let pen_sounds = state_request.unwrap().get::<bool>().unwrap();
 
-                appwindow.canvas().engine().borrow_mut().penholder.set_pen_sounds(pen_sounds);
+                appwindow.canvas().engine().borrow_mut().set_pen_sounds(pen_sounds);
 
                 action_pen_sounds.set_state(&pen_sounds.to_variant());
             }),
@@ -778,7 +778,7 @@ impl RnoteAppWindow {
                 let doc_layout = appwindow.canvas().engine().borrow().doc_layout();
                 let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
                 let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
-                let pen_sounds = appwindow.canvas().engine().borrow().penholder.pen_sounds();
+                let pen_sounds = appwindow.canvas().engine().borrow().pen_sounds();
                 let pen_style = appwindow.canvas().engine().borrow().penholder.current_style_w_override();
                 let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
                 let typewriter = appwindow.canvas().engine().borrow().penholder.typewriter.clone();
@@ -793,6 +793,7 @@ impl RnoteAppWindow {
                         Layout::ContinuousVertical => "continuous-vertical",
                         Layout::Infinite => "infinite",
                     };
+                    // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
                     action_doc_layout.activate(Some(&doc_layout.to_variant()));
                     action_pdf_import_as_vector.activate(Some(&pdf_import_as_vector.to_variant()));
                     action_pdf_import_width_perc.activate(Some(&pdf_import_width_perc.to_variant()));

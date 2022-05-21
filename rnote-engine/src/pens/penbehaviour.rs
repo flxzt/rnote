@@ -2,9 +2,8 @@ use rnote_compose::penhelpers::PenEvent;
 
 use crate::document::Document;
 use crate::engine::EngineTaskSender;
+use crate::AudioPlayer;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
-
-use super::AudioPlayer;
 
 /// types that are pens and can handle pen events
 pub trait PenBehaviour: DrawOnDocBehaviour {
@@ -17,7 +16,7 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
         doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
-        audioplayer: Option<&mut AudioPlayer>,
+        audioplayer: &mut Option<AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags);
 
     /// Updates the internal state of the pen ( called for example when the engine state has changed outside of pen events )
@@ -26,7 +25,7 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
         _doc: &Document,
         _store: &StrokeStore,
         _camera: &Camera,
-        _audioplayer: Option<&AudioPlayer>,
+        _audioplayer: &Option<AudioPlayer>,
     ) {
     }
 }

@@ -14,9 +14,8 @@ use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
-use super::{
-    AudioPlayer, Brush, Eraser, PenBehaviour, PenMode, Selector, Shaper, Shortcuts, Typewriter,
-};
+use super::{Brush, Eraser, PenBehaviour, PenMode, Selector, Shaper, Shortcuts, Typewriter};
+use crate::AudioPlayer;
 
 #[derive(
     Eq,
@@ -104,7 +103,7 @@ impl PenStyle {
 
 /// This holds the pens and is the main interaction point when changing the pen style / emitting pen events.
 #[allow(missing_debug_implementations)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
     #[serde(rename = "brush")]
@@ -126,29 +125,10 @@ pub struct PenHolder {
 
     #[serde(skip)]
     pen_progress: PenProgress,
-    #[serde(rename = "pen_sounds")]
-    // we need this outside of the audioplayer, because we skip (de) serializing it.
-    pen_sounds: bool,
-    #[serde(skip)]
-    audioplayer: Option<AudioPlayer>,
 }
 
 impl Default for PenHolder {
     fn default() -> Self {
-        let pen_sounds = false;
-        let audioplayer = AudioPlayer::new()
-            .map_err(|e| {
-                log::error!(
-                    "failed to create a new audio player in PenHolder::default(), Err {}",
-                    e
-                );
-            })
-            .map(|mut audioplayer| {
-                audioplayer.enabled = pen_sounds;
-                audioplayer
-            })
-            .ok();
-
         Self {
             brush: Brush::default(),
             shaper: Shaper::default(),
@@ -160,8 +140,6 @@ impl Default for PenHolder {
             shortcuts: Shortcuts::default(),
 
             pen_progress: PenProgress::Idle,
-            pen_sounds,
-            audioplayer,
         }
     }
 }
@@ -170,8 +148,6 @@ impl PenHolder {
     /// Use this to import and overwrite self (e.g. when loading from settings)
     pub fn import(&mut self, penholder: Self) {
         *self = penholder;
-        // Set the pen sounds to update the audioplayer
-        self.set_pen_sounds(self.pen_sounds)
     }
 
     /// Registers a new shortcut key and action
@@ -229,19 +205,6 @@ impl PenHolder {
         surface_flags
     }
 
-    /// wether pen sounds are enabled
-    pub fn pen_sounds(&self) -> bool {
-        self.pen_sounds
-    }
-
-    /// enables / disables the pen sounds
-    pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
-        self.pen_sounds = pen_sounds;
-        if let Some(audioplayer) = self.audioplayer.as_mut() {
-            audioplayer.enabled = pen_sounds;
-        }
-    }
-
     pub fn current_pen_progress(&self) -> PenProgress {
         self.pen_progress
     }
@@ -253,6 +216,7 @@ impl PenHolder {
         doc: &mut crate::document::Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
+        audioplayer: &mut Option<AudioPlayer>,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -265,6 +229,7 @@ impl PenHolder {
                 doc,
                 store,
                 camera,
+                audioplayer,
             ));
 
             // Deselecting when changing the style
@@ -287,6 +252,7 @@ impl PenHolder {
         doc: &mut crate::document::Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
+        audioplayer: &mut Option<AudioPlayer>,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -301,6 +267,7 @@ impl PenHolder {
                 doc,
                 store,
                 camera,
+                audioplayer,
             ));
 
             // Deselecting when changing the style override
@@ -323,6 +290,7 @@ impl PenHolder {
         doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
+        audioplayer: &mut Option<AudioPlayer>,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -334,6 +302,7 @@ impl PenHolder {
                 doc,
                 store,
                 camera,
+                audioplayer,
             ));
             self.pen_mode_state.set_pen_mode(pen_mode);
 
@@ -352,6 +321,7 @@ impl PenHolder {
         doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
+        audioplayer: &mut Option<AudioPlayer>,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
         surface_flags.redraw = true;
@@ -363,6 +333,7 @@ impl PenHolder {
                 doc,
                 store,
                 camera,
+                audioplayer,
             ));
         }
 
@@ -387,6 +358,7 @@ impl PenHolder {
                         doc,
                         store,
                         camera,
+                        audioplayer,
                     ));
                 }
             }
@@ -396,54 +368,30 @@ impl PenHolder {
 
         // Handle the events with the current pen
         let (pen_progress, other_surface_flags) = match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Shaper => self.shaper.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Typewriter => self.typewriter.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Eraser => self.eraser.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Selector => self.selector.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Tools => self.tools.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
+            PenStyle::Brush => {
+                self.brush
+                    .handle_event(event, tasks_tx, doc, store, camera, audioplayer)
+            }
+            PenStyle::Shaper => {
+                self.shaper
+                    .handle_event(event, tasks_tx, doc, store, camera, audioplayer)
+            }
+            PenStyle::Typewriter => {
+                self.typewriter
+                    .handle_event(event, tasks_tx, doc, store, camera, audioplayer)
+            }
+            PenStyle::Eraser => {
+                self.eraser
+                    .handle_event(event, tasks_tx, doc, store, camera, audioplayer)
+            }
+            PenStyle::Selector => {
+                self.selector
+                    .handle_event(event, tasks_tx, doc, store, camera, audioplayer)
+            }
+            PenStyle::Tools => {
+                self.tools
+                    .handle_event(event, tasks_tx, doc, store, camera, audioplayer)
+            }
         };
 
         surface_flags.merge_with_other(other_surface_flags);
@@ -465,6 +413,28 @@ impl PenHolder {
         surface_flags
     }
 
+    // Updates the penholder and pens internal state
+    pub fn update_internal_state(
+        &mut self,
+        doc: &Document,
+        store: &StrokeStore,
+        camera: &Camera,
+        audioplayer: &Option<AudioPlayer>,
+    ) {
+        self.brush
+            .update_internal_state(doc, store, camera, audioplayer);
+        self.shaper
+            .update_internal_state(doc, store, camera, audioplayer);
+        self.typewriter
+            .update_internal_state(doc, store, camera, audioplayer);
+        self.eraser
+            .update_internal_state(doc, store, camera, audioplayer);
+        self.selector
+            .update_internal_state(doc, store, camera, audioplayer);
+        self.tools
+            .update_internal_state(doc, store, camera, audioplayer);
+    }
+
     pub fn handle_pressed_shortcut_key(
         &mut self,
         shortcut_key: ShortcutKey,
@@ -472,6 +442,7 @@ impl PenHolder {
         doc: &mut crate::document::Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
+        audioplayer: &mut Option<AudioPlayer>,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -482,9 +453,14 @@ impl PenHolder {
                     permanent,
                 } => {
                     if permanent {
-                        surface_flags.merge_with_other(
-                            self.change_style(new_style, tasks_tx, doc, store, camera),
-                        );
+                        surface_flags.merge_with_other(self.change_style(
+                            new_style,
+                            tasks_tx,
+                            doc,
+                            store,
+                            camera,
+                            audioplayer,
+                        ));
                     } else {
                         surface_flags.merge_with_other(self.change_style_override(
                             Some(new_style),
@@ -492,6 +468,7 @@ impl PenHolder {
                             doc,
                             store,
                             camera,
+                            audioplayer,
                         ));
                     }
                 }
@@ -499,22 +476,6 @@ impl PenHolder {
         }
 
         surface_flags
-    }
-
-    // Updates the penholder and pens internal state
-    pub fn update_internal_state(&mut self, doc: &Document, store: &StrokeStore, camera: &Camera) {
-        self.brush
-            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
-        self.shaper
-            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
-        self.typewriter
-            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
-        self.eraser
-            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
-        self.selector
-            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
-        self.tools
-            .update_internal_state(doc, store, camera, self.audioplayer.as_ref());
     }
 }
 

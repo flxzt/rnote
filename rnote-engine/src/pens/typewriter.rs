@@ -13,10 +13,11 @@ use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAlignment, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
+use crate::AudioPlayer;
 use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
 use super::penbehaviour::PenProgress;
-use super::{AudioPlayer, PenBehaviour};
+use super::PenBehaviour;
 
 #[derive(Debug, Clone)]
 pub enum TypewriterState {
@@ -340,7 +341,7 @@ impl PenBehaviour for Typewriter {
         doc: &mut Document,
         store: &mut StrokeStore,
         camera: &mut Camera,
-        _audioplayer: Option<&mut AudioPlayer>,
+        _audioplayer: &mut Option<AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags) {
         //log::debug!("typewriter handle_event: state: {:#?}, event: {:#?}", self.state, event);
 
@@ -1033,7 +1034,7 @@ impl PenBehaviour for Typewriter {
         _doc: &Document,
         store: &StrokeStore,
         _camera: &Camera,
-        _audioplayer: Option<&AudioPlayer>,
+        _audioplayer: &Option<AudioPlayer>,
     ) {
         match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start(_) => {}

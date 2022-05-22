@@ -1,8 +1,6 @@
-use crate::document::Document;
-use crate::engine::EngineTaskSender;
+use crate::engine::{EngineViewMut, EngineView};
 use crate::store::StrokeKey;
-use crate::AudioPlayer;
-use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
@@ -48,11 +46,9 @@ impl VerticalSpaceTool {
 impl DrawOnDocBehaviour for VerticalSpaceTool {
     fn bounds_on_doc(
         &self,
-        _doc: &Document,
-        _store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView
     ) -> Option<AABB> {
-        let viewport = camera.viewport();
+        let viewport = engine_view.camera.viewport();
 
         let x = viewport.mins[0];
         let y = self.start_pos_y;
@@ -66,13 +62,11 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc: &Document,
-        _store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        let viewport = camera.viewport();
+        let viewport = engine_view.camera.viewport();
         let x = viewport.mins[0];
         let y = self.start_pos_y;
         let width = viewport.extents()[0];
@@ -143,9 +137,7 @@ impl DragProximityTool {
 impl DrawOnDocBehaviour for DragProximityTool {
     fn bounds_on_doc(
         &self,
-        _doc: &Document,
-        _store: &StrokeStore,
-        _camera: &Camera,
+        _engine_view: &EngineView
     ) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.pos),
@@ -156,9 +148,7 @@ impl DrawOnDocBehaviour for DragProximityTool {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc: &Document,
-        _store: &StrokeStore,
-        _camera: &Camera,
+        _engine_view: &EngineView
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let mut radius = self.radius;
@@ -203,28 +193,24 @@ impl OffsetCameraTool {
 impl DrawOnDocBehaviour for OffsetCameraTool {
     fn bounds_on_doc(
         &self,
-        _doc: &Document,
-        _store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView
     ) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.start),
-            ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5) / camera.total_zoom(),
+            ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5) / engine_view.camera.total_zoom(),
         ))
     }
 
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc: &Document,
-        store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
-        if let Some(bounds) = self.bounds_on_doc(doc, store, camera) {
+        if let Some(bounds) = self.bounds_on_doc(engine_view) {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
-            cx.transform(kurbo::Affine::scale(1.0 / camera.total_zoom()));
+            cx.transform(kurbo::Affine::scale(1.0 / engine_view.camera.total_zoom()));
 
             let bez_path = kurbo::BezPath::from_svg(include_str!(
                 "../../data/images/offsetcameratool-path.txt"
@@ -289,11 +275,7 @@ impl PenBehaviour for Tools {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-        _audioplayer: &mut Option<AudioPlayer>,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -305,15 +287,16 @@ impl PenBehaviour for Tools {
                     shortcut_keys: _,
                 },
             ) => {
-                surface_flags.merge_with_other(store.record());
+                surface_flags.merge_with_other(engine_view.store.record());
 
                 match self.style {
                     ToolsStyle::VerticalSpace => {
                         self.verticalspace_tool.start_pos_y = element.pos[1];
                         self.verticalspace_tool.current_pos_y = element.pos[1];
 
-                        self.verticalspace_tool.strokes_below =
-                            store.keys_below_y_pos(self.verticalspace_tool.current_pos_y);
+                        self.verticalspace_tool.strokes_below = engine_view
+                            .store
+                            .keys_below_y_pos(self.verticalspace_tool.current_pos_y);
                     }
                     ToolsStyle::DragProximity => {
                         self.dragproximity_tool.pos = element.pos;
@@ -326,7 +309,9 @@ impl PenBehaviour for Tools {
 
                 self.state = ToolsState::Active;
 
-                doc.resize_autoexpand(store, camera);
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -348,11 +333,11 @@ impl PenBehaviour for Tools {
                         let y_offset = element.pos[1] - self.verticalspace_tool.current_pos_y;
 
                         if y_offset.abs() > VerticalSpaceTool::Y_OFFSET_THRESHOLD {
-                            store.translate_strokes(
+                            engine_view.store.translate_strokes(
                                 &self.verticalspace_tool.strokes_below,
                                 na::vector![0.0, y_offset],
                             );
-                            store.translate_strokes_images(
+                            engine_view.store.translate_strokes_images(
                                 &self.verticalspace_tool.strokes_below,
                                 na::vector![0.0, y_offset],
                             );
@@ -369,12 +354,14 @@ impl PenBehaviour for Tools {
                         if self.dragproximity_tool.offset.magnitude()
                             > DragProximityTool::OFFSET_MAGNITUDE_THRESHOLD
                         {
-                            store.drag_strokes_proximity(&self.dragproximity_tool);
-                            store.regenerate_rendering_in_viewport_threaded(
-                                tasks_tx,
+                            engine_view
+                                .store
+                                .drag_strokes_proximity(&self.dragproximity_tool);
+                            engine_view.store.regenerate_rendering_in_viewport_threaded(
+                                engine_view.tasks_tx.clone(),
                                 false,
-                                camera.viewport(),
-                                camera.image_scale(),
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
                             );
 
                             self.dragproximity_tool.pos = element.pos;
@@ -384,19 +371,23 @@ impl PenBehaviour for Tools {
                         PenProgress::InProgress
                     }
                     ToolsStyle::OffsetCamera => {
-                        let offset = camera
+                        let offset = engine_view
+                            .camera
                             .transform()
                             .transform_point(&na::Point2::from(element.pos))
                             .coords
-                            - camera
+                            - engine_view
+                                .camera
                                 .transform()
                                 .transform_point(&na::Point2::from(self.offsetcamera_tool.start))
                                 .coords;
 
                         if offset.magnitude() > 1.0 {
-                            camera.offset -= offset;
+                            engine_view.camera.offset -= offset;
 
-                            doc.resize_autoexpand(store, camera);
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             surface_flags.resize = true;
                             surface_flags.camera_changed = true;
@@ -414,22 +405,26 @@ impl PenBehaviour for Tools {
             (ToolsState::Active, PenEvent::Up { .. }) => {
                 match self.style {
                     ToolsStyle::VerticalSpace => {
-                        store.update_geometry_for_strokes(&self.verticalspace_tool.strokes_below);
+                        engine_view
+                            .store
+                            .update_geometry_for_strokes(&self.verticalspace_tool.strokes_below);
                     }
                     ToolsStyle::DragProximity => {}
                     ToolsStyle::OffsetCamera => {}
                 }
-                store.regenerate_rendering_in_viewport_threaded(
-                    tasks_tx,
+                engine_view.store.regenerate_rendering_in_viewport_threaded(
+                    engine_view.tasks_tx.clone(),
                     false,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 );
 
                 self.reset();
                 self.state = ToolsState::Idle;
 
-                doc.resize_autoexpand(store, camera);
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -444,7 +439,9 @@ impl PenBehaviour for Tools {
                 self.reset();
                 self.state = ToolsState::Idle;
 
-                doc.resize_autoexpand(store, camera);
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -460,17 +457,20 @@ impl PenBehaviour for Tools {
 }
 
 impl DrawOnDocBehaviour for Tools {
-    fn bounds_on_doc(&self, doc: &Document, store: &StrokeStore, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(&self, 
+        
+        engine_view: &EngineView
+        ) -> Option<AABB> {
         match self.state {
             ToolsState::Active => match self.style {
                 ToolsStyle::VerticalSpace => {
-                    self.verticalspace_tool.bounds_on_doc(doc, store, camera)
+                    self.verticalspace_tool.bounds_on_doc(engine_view)
                 }
                 ToolsStyle::DragProximity => {
-                    self.dragproximity_tool.bounds_on_doc(doc, store, camera)
+                    self.dragproximity_tool.bounds_on_doc(engine_view)
                 }
                 ToolsStyle::OffsetCamera => {
-                    self.offsetcamera_tool.bounds_on_doc(doc, store, camera)
+                    self.offsetcamera_tool.bounds_on_doc(engine_view)
                 }
             },
             ToolsState::Idle => None,
@@ -480,23 +480,21 @@ impl DrawOnDocBehaviour for Tools {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc: &Document,
-        store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         match &self.style {
             ToolsStyle::VerticalSpace => {
                 self.verticalspace_tool
-                    .draw_on_doc(cx, doc, store, camera)?;
+                    .draw_on_doc(cx, engine_view)?;
             }
             ToolsStyle::DragProximity => {
                 self.dragproximity_tool
-                    .draw_on_doc(cx, doc, store, camera)?;
+                    .draw_on_doc(cx, engine_view)?;
             }
             ToolsStyle::OffsetCamera => {
-                self.offsetcamera_tool.draw_on_doc(cx, doc, store, camera)?;
+                self.offsetcamera_tool.draw_on_doc(cx, engine_view)?;
             }
         }
 

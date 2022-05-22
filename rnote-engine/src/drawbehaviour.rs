@@ -3,41 +3,37 @@ use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
 
+use crate::engine::EngineView;
 use crate::utils::GrapheneRectHelpers;
-use crate::{Camera, Document, StrokeStore};
 
 /// Trait for types that can draw themselves on the document.
 /// In the coordinate space of the document
 pub trait DrawOnDocBehaviour {
-    fn bounds_on_doc(&self, doc: &Document, store: &StrokeStore, camera: &Camera) -> Option<AABB>;
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB>;
     /// draws itself on the document. the implementors are expected save / restore context
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc: &Document,
-        store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView,
     ) -> anyhow::Result<()>;
 
     /// Expects snapshot untransformed in surface coordinate space.
     fn draw_on_doc_snapshot(
         &self,
         snapshot: &gtk4::Snapshot,
-        doc: &Document,
-        store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         snapshot.save();
 
-        if let Some(bounds) = self.bounds_on_doc(doc, store, camera) {
-            let viewport = camera.viewport();
+        if let Some(bounds) = self.bounds_on_doc(engine_view) {
+            let viewport = engine_view.camera.viewport();
 
             // Restrict to viewport as maximum bounds. Else cairo will panic for very large bounds
             let bounds = bounds.clamp(None, Some(viewport));
             // Transform the bounds into surface coords
             let mut bounds_transformed = bounds
-                .scale(camera.total_zoom())
-                .translate(-camera.offset)
+                .scale(engine_view.camera.total_zoom())
+                .translate(-engine_view.camera.offset)
                 .ceil();
 
             bounds_transformed.ensure_positive();
@@ -48,9 +44,9 @@ pub trait DrawOnDocBehaviour {
             let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
 
             // Transform to doc coordinate space
-            piet_cx.transform(camera.transform().to_kurbo());
+            piet_cx.transform(engine_view.camera.transform().to_kurbo());
 
-            self.draw_on_doc(&mut piet_cx, doc, store, camera)?;
+            self.draw_on_doc(&mut piet_cx, engine_view)?;
         }
 
         snapshot.restore();

@@ -21,6 +21,39 @@ use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
+/// A view into the rest of the engine, excluding the penholder
+#[allow(missing_debug_implementations)]
+pub struct EngineView<'a> {
+    pub tasks_tx: EngineTaskSender,
+    pub doc: &'a Document,
+    pub store: &'a StrokeStore,
+    pub camera: &'a Camera,
+    pub audioplayer: &'a Option<AudioPlayer>,
+}
+
+/// A mutable view into the rest of the engine, excluding the penholder
+#[allow(missing_debug_implementations)]
+pub struct EngineViewMut<'a> {
+    pub tasks_tx: EngineTaskSender,
+    pub doc: &'a mut Document,
+    pub store: &'a mut StrokeStore,
+    pub camera: &'a mut Camera,
+    pub audioplayer: &'a mut Option<AudioPlayer>,
+}
+
+impl<'a> EngineViewMut<'a> {
+    // converts itself to the immutable variant
+    pub fn as_im<'m>(&'m self) -> EngineView<'m> {
+        EngineView::<'m> {
+            tasks_tx: self.tasks_tx.clone(),
+            doc: self.doc,
+            store: self.store,
+            camera: self.camera,
+            audioplayer: self.audioplayer,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 /// A engine task, usually coming from a spawned thread and to be processed with `process_received_task()`.
 pub enum EngineTask {
@@ -290,33 +323,39 @@ impl RnoteEngine {
         self.penholder.handle_pen_event(
             event,
             pen_mode,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
-            &mut self.audioplayer,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
     pub fn handle_pen_pressed_shortcut_key(&mut self, shortcut_key: ShortcutKey) -> SurfaceFlags {
         self.penholder.handle_pressed_shortcut_key(
             shortcut_key,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
-            &mut self.audioplayer,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
     pub fn change_pen_style(&mut self, new_style: PenStyle) -> SurfaceFlags {
         self.penholder.change_style(
             new_style,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
-            &mut self.audioplayer,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
@@ -326,22 +365,26 @@ impl RnoteEngine {
     ) -> SurfaceFlags {
         self.penholder.change_style_override(
             new_style_override,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
-            &mut self.audioplayer,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
     pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> SurfaceFlags {
         self.penholder.change_pen_mode(
             pen_mode,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
-            &mut self.audioplayer,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
@@ -464,19 +507,25 @@ impl RnoteEngine {
     /// Updates pens state with the current engine state.
     /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all stroke, set strokes selected, etc. )
     pub fn update_pens_states(&mut self) {
-        self.penholder.update_internal_state(
-            &self.document,
-            &self.store,
-            &self.camera,
-            &self.audioplayer,
-        );
+        self.penholder.update_internal_state(&EngineView {
+            tasks_tx: self.tasks_tx(),
+            doc: &self.document,
+            store: &self.store,
+            camera: &self.camera,
+            audioplayer: &self.audioplayer,
+        });
     }
 
     /// Fetches clipboard content from current state.
     /// Returns (the content, mime_type)
     pub fn fetch_clipboard_content(&mut self) -> (Vec<u8>, String) {
-        self.penholder
-            .fetch_clipboard_content(&self.document, &self.store, &self.camera)
+        self.penholder.fetch_clipboard_content(&EngineView {
+            tasks_tx: self.tasks_tx(),
+            doc: &self.document,
+            store: &self.store,
+            camera: &self.camera,
+            audioplayer: &self.audioplayer,
+        })
     }
 
     // pastes clipboard content
@@ -488,11 +537,13 @@ impl RnoteEngine {
         self.penholder.paste_clipboard_content(
             clipboard_content,
             mime_types,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
-            &mut self.audioplayer,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
@@ -1266,8 +1317,16 @@ impl RnoteEngine {
 
         snapshot.restore();
 
-        self.penholder
-            .draw_on_doc_snapshot(snapshot, &self.document, &self.store, &self.camera)?;
+        self.penholder.draw_on_doc_snapshot(
+            snapshot,
+            &EngineView {
+                tasks_tx: self.tasks_tx(),
+                doc: &self.document,
+                store: &self.store,
+                camera: &self.camera,
+                audioplayer: &self.audioplayer,
+            },
+        )?;
         /*
                {
                    use crate::utils::GrapheneRectHelpers;
@@ -1328,6 +1387,8 @@ pub mod visual_debug {
     use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
     use crate::{DrawOnDocBehaviour, RnoteEngine};
     use rnote_compose::Color;
+
+    use super::EngineView;
 
     pub const COLOR_POS: Color = Color {
         r: 1.0,
@@ -1530,11 +1591,13 @@ pub mod visual_debug {
                 }
             }
             PenStyle::Selector => {
-                if let Some(bounds) = engine.penholder.selector.bounds_on_doc(
-                    &engine.document,
-                    &engine.store,
-                    &engine.camera,
-                ) {
+                if let Some(bounds) = engine.penholder.selector.bounds_on_doc(&EngineView {
+                    tasks_tx: engine.tasks_tx(),
+                    doc: &engine.document,
+                    store: &engine.store,
+                    camera: &engine.camera,
+                    audioplayer: &engine.audioplayer,
+                }) {
                     draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
                 }
             }

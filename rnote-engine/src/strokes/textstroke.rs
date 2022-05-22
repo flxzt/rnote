@@ -635,10 +635,7 @@ impl TextStroke {
         self.text.insert_str(cursor.cur_cursor(), text);
 
         // translate the text attributes
-        self.translate_attrs_after_cursor(
-            cursor.cur_cursor(),
-            text.len() as i32,
-        );
+        self.translate_attrs_after_cursor(cursor.cur_cursor(), text.len() as i32);
 
         *cursor = unicode_segmentation::GraphemeCursor::new(
             cursor.cur_cursor() + text.len(),
@@ -680,22 +677,18 @@ impl TextStroke {
         if self.text.len() > 0 && self.text.len() > cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
-            if let Some(next_pos) = cursor.next_boundary(&self.text, 0).unwrap() {
+            if let Some(next_pos) = cursor.clone().next_boundary(&self.text, 0).unwrap() {
                 self.text.replace_range(cur_pos..next_pos, "");
 
                 // translate the text attributes
                 self.translate_attrs_after_cursor(
                     cur_pos,
-                    cur_pos as i32 - next_pos as i32 + "".len() as i32,
+                    -(next_pos as i32 - cur_pos as i32) + "".len() as i32,
                 );
             }
 
             // New text length, new cursor
-            *cursor = unicode_segmentation::GraphemeCursor::new(
-                cursor.cur_cursor(),
-                self.text.len(),
-                true,
-            );
+            *cursor = unicode_segmentation::GraphemeCursor::new(cur_pos, self.text.len(), true);
         }
     }
 
@@ -808,6 +801,15 @@ impl TextStroke {
             retained_attrs.extend(truncated_attrs);
             retained_attrs
         };
+    }
+
+    pub fn update_selection_entire_text(
+        &self,
+        cursor: &mut unicode_segmentation::GraphemeCursor,
+        selection_cursor: &mut unicode_segmentation::GraphemeCursor,
+    ) {
+        *cursor = unicode_segmentation::GraphemeCursor::new(self.text.len(), self.text.len(), true);
+        *selection_cursor = unicode_segmentation::GraphemeCursor::new(0, self.text.len(), true);
     }
 
     pub fn move_cursor_back(&self, cursor: &mut unicode_segmentation::GraphemeCursor) {

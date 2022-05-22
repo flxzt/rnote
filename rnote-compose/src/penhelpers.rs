@@ -39,8 +39,7 @@ pub enum PenEvent {
 }
 
 /// A key on the keyboard
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum KeyboardKey {
     /// a unicode character. Expects that control characters are already converted and filtered out wih the method `filter_convert_unicode_control_chars`
     Unicode(char),
@@ -50,6 +49,8 @@ pub enum KeyboardKey {
     HorizontalTab,
     /// Line feed
     Linefeed,
+    /// Escape
+    Escape,
     /// delete
     Delete,
     /// Arrow up
@@ -85,8 +86,8 @@ impl KeyboardKey {
                         0x0a => Self::Linefeed,
                         // 0x0d is Carriage Return, but we only need LF
                         0x0d => Self::Linefeed,
-                        // On VT-100 compatible terminals also backspace
-                        0x7f => Self::BackSpace,
+                        0x1b => Self::Escape,
+                        0x7f => Self::Delete,
                         _ => Self::Unsupported,
                     }
                 } else {

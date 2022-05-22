@@ -9,11 +9,10 @@ use rnote_compose::style::drawhelpers;
 use rnote_compose::{color, Transform};
 use serde::{Deserialize, Serialize};
 
-use crate::engine::EngineTaskSender;
+use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAlignment, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
-use crate::AudioPlayer;
 use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
 use super::penbehaviour::PenProgress;
@@ -83,8 +82,8 @@ impl Default for Typewriter {
 }
 
 impl DrawOnDocBehaviour for Typewriter {
-    fn bounds_on_doc(&self, _doc: &Document, store: &StrokeStore, camera: &Camera) -> Option<AABB> {
-        let total_zoom = camera.total_zoom();
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+        let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
             TypewriterState::Idle => None,
@@ -96,7 +95,9 @@ impl DrawOnDocBehaviour for Typewriter {
             | TypewriterState::Selecting { stroke_key, .. }
             | TypewriterState::Translating { stroke_key, .. }
             | TypewriterState::AdjustTextWidth { stroke_key, .. } => {
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_ref(*stroke_key)
+                {
                     let text_rect = Self::text_rect_bounds(self.text_width, textstroke);
 
                     let typewriter_bounds = text_rect.extend_by(
@@ -115,14 +116,12 @@ impl DrawOnDocBehaviour for Typewriter {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc: &Document,
-        store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         const OUTLINE_COLOR: piet::Color = color::GNOME_BRIGHTS[4].with_a8(0xf0);
-        let total_zoom = camera.total_zoom();
+        let total_zoom = engine_view.camera.total_zoom();
 
         let outline_width = 1.5 / total_zoom;
         let outline_corner_radius = 3.0 / total_zoom;
@@ -130,7 +129,7 @@ impl DrawOnDocBehaviour for Typewriter {
         match &self.state {
             TypewriterState::Idle => {}
             TypewriterState::Start(pos) => {
-                if let Some(bounds) = self.bounds_on_doc(doc, store, camera) {
+                if let Some(bounds) = self.bounds_on_doc(engine_view) {
                     let rect = bounds
                         .tightened(outline_width * 0.5)
                         .to_kurbo_rect()
@@ -147,14 +146,16 @@ impl DrawOnDocBehaviour for Typewriter {
                         text,
                         &unicode_segmentation::GraphemeCursor::new(0, text_len, true),
                         &Transform::new_w_isometry(na::Isometry2::new(*pos, 0.0)),
-                        camera,
+                        engine_view.camera,
                     )?;
                 }
             }
             TypewriterState::Modifying {
                 stroke_key, cursor, ..
             } => {
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_ref(*stroke_key)
+                {
                     let text_rect = Self::text_rect_bounds(self.text_width, textstroke);
 
                     let text_drawrect = text_rect
@@ -170,7 +171,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         textstroke.text.clone(),
                         cursor,
                         &textstroke.transform,
-                        camera,
+                        engine_view.camera,
                     )?;
 
                     // Draw the text width adjust node
@@ -180,18 +181,18 @@ impl DrawOnDocBehaviour for Typewriter {
                         Self::adjust_text_width_node_center(
                             text_rect.mins.coords,
                             self.text_width,
-                            camera,
+                            engine_view.camera,
                         ),
                         Self::ADJUST_TEXT_WIDTH_NODE_SIZE / total_zoom,
                         total_zoom,
                     );
 
-                    if let Some(typewriter_bounds) = self.bounds_on_doc(doc, store, camera) {
+                    if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
                         // draw translate Node
                         drawhelpers::draw_rectangular_node(
                             cx,
                             PenState::Up,
-                            Self::translate_node_bounds(typewriter_bounds, camera),
+                            Self::translate_node_bounds(typewriter_bounds, engine_view.camera),
                             total_zoom,
                         );
                     }
@@ -203,7 +204,9 @@ impl DrawOnDocBehaviour for Typewriter {
                 selection_cursor,
                 ..
             } => {
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_ref(*stroke_key)
+                {
                     let text_rect = Self::text_rect_bounds(self.text_width, textstroke);
 
                     let text_drawrect = text_rect
@@ -220,7 +223,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         cursor,
                         selection_cursor,
                         &textstroke.transform,
-                        camera,
+                        engine_view.camera,
                     );
 
                     // Draw the cursor
@@ -229,7 +232,7 @@ impl DrawOnDocBehaviour for Typewriter {
                         textstroke.text.clone(),
                         cursor,
                         &textstroke.transform,
-                        camera,
+                        engine_view.camera,
                     )?;
 
                     // Draw the text width adjust node
@@ -239,25 +242,27 @@ impl DrawOnDocBehaviour for Typewriter {
                         Self::adjust_text_width_node_center(
                             text_rect.mins.coords,
                             self.text_width,
-                            camera,
+                            engine_view.camera,
                         ),
                         Self::ADJUST_TEXT_WIDTH_NODE_SIZE / total_zoom,
                         total_zoom,
                     );
 
-                    if let Some(typewriter_bounds) = self.bounds_on_doc(doc, store, camera) {
+                    if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
                         // draw translate Node
                         drawhelpers::draw_rectangular_node(
                             cx,
                             PenState::Up,
-                            Self::translate_node_bounds(typewriter_bounds, camera),
+                            Self::translate_node_bounds(typewriter_bounds, engine_view.camera),
                             total_zoom,
                         );
                     }
                 }
             }
             TypewriterState::Translating { stroke_key, .. } => {
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_ref(*stroke_key)
+                {
                     let text_rect = Self::text_rect_bounds(self.text_width, textstroke);
 
                     let text_drawrect = text_rect
@@ -274,25 +279,27 @@ impl DrawOnDocBehaviour for Typewriter {
                         Self::adjust_text_width_node_center(
                             text_rect.mins.coords,
                             self.text_width,
-                            camera,
+                            engine_view.camera,
                         ),
                         Self::ADJUST_TEXT_WIDTH_NODE_SIZE / total_zoom,
                         total_zoom,
                     );
 
                     // Translate Node
-                    if let Some(typewriter_bounds) = self.bounds_on_doc(doc, store, camera) {
+                    if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
                         drawhelpers::draw_rectangular_node(
                             cx,
                             PenState::Down,
-                            Self::translate_node_bounds(typewriter_bounds, camera),
+                            Self::translate_node_bounds(typewriter_bounds, engine_view.camera),
                             total_zoom,
                         );
                     }
                 }
             }
             TypewriterState::AdjustTextWidth { stroke_key, .. } => {
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_ref(*stroke_key)
+                {
                     let text_rect = Self::text_rect_bounds(self.text_width, textstroke);
 
                     let text_drawrect = text_rect
@@ -309,18 +316,18 @@ impl DrawOnDocBehaviour for Typewriter {
                         Self::adjust_text_width_node_center(
                             text_rect.mins.coords,
                             self.text_width,
-                            camera,
+                            engine_view.camera,
                         ),
                         Self::ADJUST_TEXT_WIDTH_NODE_SIZE / total_zoom,
                         total_zoom,
                     );
 
                     // Translate Node
-                    if let Some(typewriter_bounds) = self.bounds_on_doc(doc, store, camera) {
+                    if let Some(typewriter_bounds) = self.bounds_on_doc(engine_view) {
                         drawhelpers::draw_rectangular_node(
                             cx,
                             PenState::Up,
-                            Self::translate_node_bounds(typewriter_bounds, camera),
+                            Self::translate_node_bounds(typewriter_bounds, engine_view.camera),
                             total_zoom,
                         );
                     }
@@ -337,17 +344,13 @@ impl PenBehaviour for Typewriter {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-        _audioplayer: &mut Option<AudioPlayer>,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags) {
         //log::debug!("typewriter handle_event: state: {:#?}, event: {:#?}", self.state, event);
 
         let mut surface_flags = SurfaceFlags::default();
 
-        let typewriter_bounds = self.bounds_on_doc(doc, store, camera);
+        let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
         let pen_progress = match (&mut self.state, event) {
             (
@@ -356,10 +359,13 @@ impl PenBehaviour for Typewriter {
             ) => {
                 let mut new_state = TypewriterState::Start(element.pos);
 
-                if let Some(stroke_key) =
-                    store.query_stroke_hitboxes_contain_coord(camera.viewport(), element.pos)
+                if let Some(stroke_key) = engine_view
+                    .store
+                    .query_stroke_hitboxes_contain_coord(engine_view.camera.viewport(), element.pos)
                 {
-                    if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(stroke_key) {
+                    if let Some(Stroke::TextStroke(textstroke)) =
+                        engine_view.store.get_stroke_ref(stroke_key)
+                    {
                         let mut cursor = unicode_segmentation::GraphemeCursor::new(
                             0,
                             textstroke.text.len(),
@@ -372,7 +378,7 @@ impl PenBehaviour for Typewriter {
                             cursor = new_cursor;
                         }
 
-                        store.update_chrono_to_last(stroke_key);
+                        engine_view.store.update_chrono_to_last(stroke_key);
 
                         new_state = TypewriterState::Modifying {
                             stroke_key,
@@ -393,7 +399,7 @@ impl PenBehaviour for Typewriter {
             (TypewriterState::Start(pos), PenEvent::KeyPressed { keyboard_key, .. }) => {
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
-                        surface_flags.merge_with_other(store.record());
+                        surface_flags.merge_with_other(engine_view.store.record());
 
                         let mut text_style = self.text_style.clone();
                         if self.max_width_enabled {
@@ -409,12 +415,14 @@ impl PenBehaviour for Typewriter {
                         );
                         textstroke.move_cursor_forward(&mut cursor);
 
-                        let stroke_key = store.insert_stroke(Stroke::TextStroke(textstroke));
+                        let stroke_key = engine_view
+                            .store
+                            .insert_stroke(Stroke::TextStroke(textstroke));
 
-                        if let Err(e) = store.regenerate_rendering_for_stroke(
+                        if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                             stroke_key,
-                            camera.viewport(),
-                            camera.image_scale(),
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
                         ) {
                             log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke failed with Err {}", e);
                         }
@@ -449,14 +457,15 @@ impl PenBehaviour for Typewriter {
             ) => {
                 let mut pen_progress = PenProgress::InProgress;
 
-                if let (Some(typewriter_bounds), Some(Stroke::TextStroke(textstroke))) =
-                    (typewriter_bounds, store.get_stroke_ref(*stroke_key))
-                {
-                    if Self::translate_node_bounds(typewriter_bounds, camera)
+                if let (Some(typewriter_bounds), Some(Stroke::TextStroke(textstroke))) = (
+                    typewriter_bounds,
+                    engine_view.store.get_stroke_ref(*stroke_key),
+                ) {
+                    if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
                         .contains_local_point(&na::Point2::from(element.pos))
                     {
                         // switch to translating the text field
-                        surface_flags.merge_with_other(store.record());
+                        surface_flags.merge_with_other(engine_view.store.record());
 
                         self.state = TypewriterState::Translating {
                             stroke_key: *stroke_key,
@@ -469,11 +478,11 @@ impl PenBehaviour for Typewriter {
                             .mins
                             .coords,
                         self.text_width,
-                        camera,
+                        engine_view.camera,
                     )
                     .contains_local_point(&na::Point2::from(element.pos))
                     {
-                        surface_flags.merge_with_other(store.record());
+                        surface_flags.merge_with_other(engine_view.store.record());
 
                         // Clicking on the adjust text width node
                         self.state = TypewriterState::AdjustTextWidth {
@@ -487,7 +496,7 @@ impl PenBehaviour for Typewriter {
                     } else if typewriter_bounds.contains_local_point(&na::Point2::from(element.pos))
                     {
                         if let Some(Stroke::TextStroke(textstroke)) =
-                            store.get_stroke_ref(*stroke_key)
+                            engine_view.store.get_stroke_ref(*stroke_key)
                         {
                             if let Ok(new_cursor) =
                                 textstroke.get_cursor_for_global_coord(element.pos)
@@ -538,20 +547,20 @@ impl PenBehaviour for Typewriter {
             ) => {
                 //log::debug!("key: {:?}", keyboard_key);
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
-                    store.get_stroke_mut(*stroke_key)
+                    engine_view.store.get_stroke_mut(*stroke_key)
                 {
-                    let update_stroke = |store: &mut StrokeStore| {
+                    let mut update_stroke = |store: &mut StrokeStore| {
                         surface_flags.merge_with_other(store.record());
 
                         store.update_geometry_for_stroke(*stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
-                            tasks_tx,
+                            engine_view.tasks_tx.clone(),
                             *stroke_key,
-                            camera.viewport(),
-                            camera.image_scale(),
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
                         );
 
-                        doc.resize_autoexpand(store, camera);
+                        engine_view.doc.resize_autoexpand(store, engine_view.camera);
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
@@ -561,30 +570,50 @@ impl PenBehaviour for Typewriter {
                     // Handling keyboard input
                     let new_state = match keyboard_key {
                         KeyboardKey::Unicode(keychar) => {
-                            textstroke
-                                .insert_text_after_cursor(keychar.to_string().as_str(), cursor);
-                            update_stroke(store);
-                            None
+                            if keychar == 'a' && shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
+                            {
+                                // Select entire text
+
+                                Some(TypewriterState::Selecting {
+                                    stroke_key: *stroke_key,
+                                    cursor: unicode_segmentation::GraphemeCursor::new(
+                                        textstroke.text.len(),
+                                        textstroke.text.len(),
+                                        true,
+                                    ),
+                                    selection_cursor: unicode_segmentation::GraphemeCursor::new(
+                                        0,
+                                        textstroke.text.len(),
+                                        true,
+                                    ),
+                                    finished: true,
+                                })
+                            } else {
+                                textstroke
+                                    .insert_text_after_cursor(keychar.to_string().as_str(), cursor);
+                                update_stroke(engine_view.store);
+                                None
+                            }
                         }
                         KeyboardKey::BackSpace => {
                             textstroke.remove_grapheme_before_cursor(cursor);
-                            update_stroke(store);
+                            update_stroke(engine_view.store);
                             None
                         }
                         KeyboardKey::HorizontalTab => {
                             textstroke.insert_text_after_cursor("\t", cursor);
-                            update_stroke(store);
+                            update_stroke(engine_view.store);
                             None
                         }
                         KeyboardKey::Linefeed => {
                             textstroke.insert_text_after_cursor("\n", cursor);
-                            update_stroke(store);
+                            update_stroke(engine_view.store);
 
                             None
                         }
                         KeyboardKey::Delete => {
                             textstroke.remove_grapheme_after_cursor(cursor);
-                            update_stroke(store);
+                            update_stroke(engine_view.store);
 
                             None
                         }
@@ -690,10 +719,10 @@ impl PenBehaviour for Typewriter {
 
                 if let Some(typewriter_bounds) = typewriter_bounds {
                     // Clicking on the translate node
-                    if Self::translate_node_bounds(typewriter_bounds, camera)
+                    if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
                         .contains_local_point(&na::Point2::from(element.pos))
                     {
-                        surface_flags.merge_with_other(store.record());
+                        surface_flags.merge_with_other(engine_view.store.record());
 
                         self.state = TypewriterState::Translating {
                             stroke_key: *stroke_key,
@@ -704,7 +733,7 @@ impl PenBehaviour for Typewriter {
                     } else if typewriter_bounds.contains_local_point(&na::Point2::from(element.pos))
                     {
                         if let Some(Stroke::TextStroke(textstroke)) =
-                            store.get_stroke_ref(*stroke_key)
+                            engine_view.store.get_stroke_ref(*stroke_key)
                         {
                             // If selecting is finished, return to modifying with the current pen position as cursor
                             if *finished {
@@ -751,7 +780,7 @@ impl PenBehaviour for Typewriter {
                     stroke_key,
                     cursor,
                     selection_cursor,
-                    ..
+                    finished,
                 },
                 PenEvent::KeyPressed {
                     keyboard_key,
@@ -760,19 +789,21 @@ impl PenBehaviour for Typewriter {
             ) => {
                 //log::debug!("key: {:?}", keyboard_key);
 
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
-                    let update_stroke = |store: &mut StrokeStore| {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
+                    let mut update_stroke = |store: &mut StrokeStore| {
                         surface_flags.merge_with_other(store.record());
 
                         store.update_geometry_for_stroke(*stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
-                            tasks_tx,
+                            engine_view.tasks_tx.clone(),
                             *stroke_key,
-                            camera.viewport(),
-                            camera.image_scale(),
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
                         );
 
-                        doc.resize_autoexpand(store, camera);
+                        engine_view.doc.resize_autoexpand(store, engine_view.camera);
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
@@ -782,14 +813,22 @@ impl PenBehaviour for Typewriter {
                     // Handle keyboard keys
                     let quit_selecting = match keyboard_key {
                         KeyboardKey::Unicode(keychar) => {
-                            textstroke.replace_text_between_selection_cursors(
-                                cursor,
-                                selection_cursor,
-                                String::from(keychar).as_str(),
-                            );
+                            if keychar == 'a' && shortcut_keys.contains(&ShortcutKey::KeyboardCtrl)
+                            {
+                                textstroke.update_selection_entire_text(cursor, selection_cursor);
+                                *finished = true;
 
-                            update_stroke(store);
-                            true
+                                false
+                            } else {
+                                textstroke.replace_text_between_selection_cursors(
+                                    cursor,
+                                    selection_cursor,
+                                    String::from(keychar).as_str(),
+                                );
+
+                                update_stroke(engine_view.store);
+                                true
+                            }
                         }
                         KeyboardKey::NavLeft => {
                             if shortcut_keys.contains(&ShortcutKey::KeyboardShift) {
@@ -830,7 +869,7 @@ impl PenBehaviour for Typewriter {
                                 "\n",
                             );
 
-                            update_stroke(store);
+                            update_stroke(engine_view.store);
                             true
                         }
                         KeyboardKey::BackSpace | KeyboardKey::Delete => {
@@ -840,7 +879,7 @@ impl PenBehaviour for Typewriter {
                                 "",
                             );
 
-                            update_stroke(store);
+                            update_stroke(engine_view.store);
                             true
                         }
                         KeyboardKey::HorizontalTab => {
@@ -850,7 +889,7 @@ impl PenBehaviour for Typewriter {
                                 "\t",
                             );
 
-                            update_stroke(store);
+                            update_stroke(engine_view.store);
                             true
                         }
                         KeyboardKey::CtrlLeft
@@ -895,14 +934,18 @@ impl PenBehaviour for Typewriter {
             ) => {
                 let offset = element.pos - *current_pos;
 
-                if offset.magnitude() > Self::TRANSLATE_MAGNITUDE_THRESHOLD / camera.total_zoom() {
-                    store.translate_strokes(&[*stroke_key], offset);
-                    store.translate_strokes_images(&[*stroke_key], offset);
+                if offset.magnitude()
+                    > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
+                {
+                    engine_view.store.translate_strokes(&[*stroke_key], offset);
+                    engine_view
+                        .store
+                        .translate_strokes_images(&[*stroke_key], offset);
 
-                    if let Err(e) = store.regenerate_rendering_for_stroke(
+                    if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                         *stroke_key,
-                        camera.viewport(),
-                        camera.image_scale(),
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
                     ) {
                         log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err {}", e);
                     }
@@ -921,11 +964,13 @@ impl PenBehaviour for Typewriter {
                 },
                 PenEvent::Up { .. },
             ) => {
-                store.update_geometry_for_strokes(&[*stroke_key]);
-                if let Err(e) = store.regenerate_rendering_for_stroke(
+                engine_view
+                    .store
+                    .update_geometry_for_strokes(&[*stroke_key]);
+                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 ) {
                     log::error!("regenerate_rendering_for_stroke() while translating textstroke failed with Err {}", e);
                 }
@@ -936,7 +981,9 @@ impl PenBehaviour for Typewriter {
                     pen_down: false,
                 };
 
-                doc.resize_autoexpand(store, camera);
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -963,7 +1010,9 @@ impl PenBehaviour for Typewriter {
                 },
                 PenEvent::Down { element, .. },
             ) => {
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_mut(*stroke_key)
+                {
                     let abs_x_offset = element.pos[0] - start_pos[0];
 
                     self.text_width = (*start_text_width + abs_x_offset).max(2.0);
@@ -973,10 +1022,10 @@ impl PenBehaviour for Typewriter {
                     }
                 }
 
-                if let Err(e) = store.regenerate_rendering_for_stroke(
+                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 ) {
                     log::error!("regenerate_rendering_for_stroke() while adjusting text width textstroke failed with Err {}", e);
                 }
@@ -994,11 +1043,13 @@ impl PenBehaviour for Typewriter {
                 },
                 PenEvent::Up { .. },
             ) => {
-                store.update_geometry_for_strokes(&[*stroke_key]);
-                if let Err(e) = store.regenerate_rendering_for_stroke(
+                engine_view
+                    .store
+                    .update_geometry_for_strokes(&[*stroke_key]);
+                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 ) {
                     log::error!("regenerate_rendering_for_stroke() while adjusting textstroke text width failed with Err {}", e);
                 }
@@ -1009,7 +1060,9 @@ impl PenBehaviour for Typewriter {
                     pen_down: false,
                 };
 
-                doc.resize_autoexpand(store, camera);
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -1037,11 +1090,7 @@ impl PenBehaviour for Typewriter {
         &mut self,
         clipboard_content: &[u8],
         mime_types: Vec<String>,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-        _audioplayer: &mut Option<AudioPlayer>,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -1054,7 +1103,7 @@ impl PenBehaviour for Typewriter {
                     if let Ok(clipboard_text) = String::from_utf8(clipboard_content.to_vec()) {
                         let text_len = clipboard_text.len();
 
-                        surface_flags.merge_with_other(store.record());
+                        surface_flags.merge_with_other(engine_view.store.record());
 
                         let mut text_style = self.text_style.clone();
                         if self.max_width_enabled {
@@ -1069,12 +1118,14 @@ impl PenBehaviour for Typewriter {
                             true,
                         );
 
-                        let stroke_key = store.insert_stroke(Stroke::TextStroke(textstroke));
+                        let stroke_key = engine_view
+                            .store
+                            .insert_stroke(Stroke::TextStroke(textstroke));
 
-                        if let Err(e) = store.regenerate_rendering_for_stroke(
+                        if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                             stroke_key,
-                            camera.viewport(),
-                            camera.image_scale(),
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
                         ) {
                             log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err {}", e);
                         }
@@ -1098,23 +1149,25 @@ impl PenBehaviour for Typewriter {
                     .iter()
                     .any(|mime_type| mime_type.contains("text/plain"))
                 {
-                    surface_flags.merge_with_other(store.record());
+                    surface_flags.merge_with_other(engine_view.store.record());
 
                     if let (Some(Stroke::TextStroke(textstroke)), Ok(clipboard_text)) = (
-                        store.get_stroke_mut(*stroke_key),
+                        engine_view.store.get_stroke_mut(*stroke_key),
                         String::from_utf8(clipboard_content.to_vec()),
                     ) {
                         textstroke.insert_text_after_cursor(clipboard_text.as_str(), cursor);
 
-                        store.update_geometry_for_stroke(*stroke_key);
-                        store.regenerate_rendering_for_stroke_threaded(
-                            tasks_tx,
+                        engine_view.store.update_geometry_for_stroke(*stroke_key);
+                        engine_view.store.regenerate_rendering_for_stroke_threaded(
+                            engine_view.tasks_tx.clone(),
                             *stroke_key,
-                            camera.viewport(),
-                            camera.image_scale(),
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
                         );
 
-                        doc.resize_autoexpand(store, camera);
+                        engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
@@ -1134,10 +1187,10 @@ impl PenBehaviour for Typewriter {
                     .iter()
                     .any(|mime_type| mime_type.contains("text/plain"))
                 {
-                    surface_flags.merge_with_other(store.record());
+                    surface_flags.merge_with_other(engine_view.store.record());
 
                     if let (Some(Stroke::TextStroke(textstroke)), Ok(clipboard_text)) = (
-                        store.get_stroke_mut(*stroke_key),
+                        engine_view.store.get_stroke_mut(*stroke_key),
                         String::from_utf8(clipboard_content.to_vec()),
                     ) {
                         textstroke.replace_text_between_selection_cursors(
@@ -1146,14 +1199,16 @@ impl PenBehaviour for Typewriter {
                             clipboard_text.as_str(),
                         );
 
-                        store.update_geometry_for_stroke(*stroke_key);
-                        store.regenerate_rendering_for_stroke_threaded(
-                            tasks_tx,
+                        engine_view.store.update_geometry_for_stroke(*stroke_key);
+                        engine_view.store.regenerate_rendering_for_stroke_threaded(
+                            engine_view.tasks_tx.clone(),
                             *stroke_key,
-                            camera.viewport(),
-                            camera.image_scale(),
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
                         );
-                        doc.resize_autoexpand(store, camera);
+                        engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         self.state = TypewriterState::Modifying {
                             stroke_key: *stroke_key,
@@ -1180,13 +1235,7 @@ impl PenBehaviour for Typewriter {
         (pen_progress, surface_flags)
     }
 
-    fn update_internal_state(
-        &mut self,
-        _doc: &Document,
-        store: &StrokeStore,
-        _camera: &Camera,
-        _audioplayer: &Option<AudioPlayer>,
-    ) {
+    fn update_internal_state(&mut self, engine_view: &EngineView) {
         match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start(_) => {}
             TypewriterState::Selecting {
@@ -1195,7 +1244,9 @@ impl PenBehaviour for Typewriter {
                 selection_cursor,
                 ..
             } => {
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_ref(*stroke_key)
+                {
                     update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
                 }
             }
@@ -1208,7 +1259,9 @@ impl PenBehaviour for Typewriter {
             | TypewriterState::AdjustTextWidth {
                 stroke_key, cursor, ..
             } => {
-                if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_ref(*stroke_key) {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_ref(*stroke_key)
+                {
                     if let Some(max_width) = textstroke.text_style.max_width {
                         self.text_width = max_width;
                     }

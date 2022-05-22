@@ -153,6 +153,7 @@ pub fn keyboard_key_from_gdk(gdk_key: gdk::Key) -> KeyboardKey {
             gdk::Key::Tab => KeyboardKey::HorizontalTab,
             // We only need LF
             gdk::Key::Linefeed | gdk::Key::Return => KeyboardKey::Linefeed,
+            gdk::Key::Escape => KeyboardKey::Escape,
             gdk::Key::Delete => KeyboardKey::Delete,
             gdk::Key::Down => KeyboardKey::NavDown,
             gdk::Key::Up => KeyboardKey::NavUp,

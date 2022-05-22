@@ -149,9 +149,8 @@ impl RnoteAppWindow {
         self.add_action(&action_export_doc_as_pdf);
         let action_export_doc_as_xopp = gio::SimpleAction::new("export-doc-as-xopp", None);
         self.add_action(&action_export_doc_as_xopp);
-        let action_clipboard_copy_selection =
-            gio::SimpleAction::new("clipboard-copy-selection", None);
-        self.add_action(&action_clipboard_copy_selection);
+        let action_clipboard_copy = gio::SimpleAction::new("clipboard-copy", None);
+        self.add_action(&action_clipboard_copy);
         let action_clipboard_paste = gio::SimpleAction::new("clipboard-paste", None);
         self.add_action(&action_clipboard_paste);
         let action_pen_override = gio::SimpleAction::new(
@@ -1279,7 +1278,7 @@ impl RnoteAppWindow {
         }));
 
         // Clipboard copy selection
-        action_clipboard_copy_selection.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+        action_clipboard_copy.connect_activate(clone!(@weak self as appwindow => move |_, _| {
         match appwindow.canvas().engine().borrow().export_selection_as_svg_string(false) {
             Ok(Some(selection_svg_data)) => {
                 let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(selection_svg_data.as_bytes()));
@@ -1373,13 +1372,7 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.import-file", &["<Ctrl>i"]);
         app.set_accels_for_action("win.undo", &["<Ctrl>z"]);
         app.set_accels_for_action("win.redo", &["<Ctrl><Shift>z"]);
-        app.set_accels_for_action("win.zoomin", &["plus"]);
-        app.set_accels_for_action("win.zoomout", &["minus"]);
-        app.set_accels_for_action("win.selection-trash", &["Delete"]);
-        app.set_accels_for_action("win.selection-duplicate", &["<Ctrl>d"]);
-        app.set_accels_for_action("win.selection-select-all", &["<Ctrl>a"]);
-        app.set_accels_for_action("win.selection-deselect-all", &["<Ctrl><Shift>a"]);
-        app.set_accels_for_action("win.clipboard-copy-selection", &["<Ctrl>c"]);
+        app.set_accels_for_action("win.clipboard-copy", &["<Ctrl>c"]);
         app.set_accels_for_action("win.clipboard-paste", &["<Ctrl>v"]);
 
         // shortcuts for devel builds

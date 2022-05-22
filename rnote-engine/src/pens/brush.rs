@@ -1,10 +1,10 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
-use crate::engine::EngineTaskSender;
+use crate::engine::{EngineViewMut, EngineView};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::AudioPlayer;
-use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, SurfaceFlags};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
@@ -79,11 +79,7 @@ impl PenBehaviour for Brush {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-        audioplayer: &mut Option<AudioPlayer>,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
         let style = self.style;
@@ -96,10 +92,12 @@ impl PenBehaviour for Brush {
                     shortcut_keys: _,
                 },
             ) => {
-                if !element.filter_by_bounds(doc.bounds().loosened(Self::INPUT_OVERSHOOT)) {
-                    surface_flags.merge_with_other(store.record());
+                if !element
+                    .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
+                {
+                    surface_flags.merge_with_other(engine_view.store.record());
 
-                    Self::start_audio(style, audioplayer);
+                    Self::start_audio(style, engine_view.audioplayer);
 
                     // A new seed for a new brush stroke
                     let seed = Some(rand_pcg::Pcg64::from_entropy().gen());
@@ -109,14 +107,14 @@ impl PenBehaviour for Brush {
                         Segment::Dot { element },
                         self.gen_style_for_current_options(),
                     ));
-                    let current_stroke_key = store.insert_stroke(brushstroke);
+                    let current_stroke_key = engine_view.store.insert_stroke(brushstroke);
 
                     let path_builder = PenPathBuilder::start(element);
 
-                    if let Err(e) = store.regenerate_rendering_for_stroke(
+                    if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                         current_stroke_key,
-                        camera.viewport(),
-                        camera.image_scale(),
+                        engine_view.camera.viewport(),
+                        engine_view.camera.image_scale(),
                     ) {
                         log::error!("regenerate_rendering_for_stroke() failed after inserting brush stroke, Err {}", e);
                     }
@@ -141,20 +139,24 @@ impl PenBehaviour for Brush {
                 },
                 PenEvent::Cancel,
             ) => {
-                Self::stop_audio(style, audioplayer);
+                Self::stop_audio(style, engine_view.audioplayer);
 
                 // Finish up the last stroke
-                store.update_geometry_for_stroke(*current_stroke_key);
-                store.regenerate_rendering_for_stroke_threaded(
-                    tasks_tx,
+                engine_view
+                    .store
+                    .update_geometry_for_stroke(*current_stroke_key);
+                engine_view.store.regenerate_rendering_for_stroke_threaded(
+                    engine_view.tasks_tx.clone(),
                     *current_stroke_key,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 );
 
                 self.state = BrushState::Idle;
 
-                doc.resize_autoexpand(store, camera);
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
@@ -182,7 +184,7 @@ impl PenBehaviour for Brush {
                         for shape in shapes {
                             match shape {
                                 Shape::Segment(new_segment) => {
-                                    store.add_segment_to_brushstroke(
+                                    engine_view.store.add_segment_to_brushstroke(
                                         *current_stroke_key,
                                         new_segment,
                                     );
@@ -195,12 +197,12 @@ impl PenBehaviour for Brush {
                             }
                         }
 
-                        if let Err(e) = store.append_rendering_last_segments(
-                            tasks_tx,
+                        if let Err(e) = engine_view.store.append_rendering_last_segments(
+                            engine_view.tasks_tx.clone(),
                             *current_stroke_key,
                             n_segments,
-                            camera.viewport(),
-                            camera.image_scale(),
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
                         ) {
                             log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
                         }
@@ -212,7 +214,7 @@ impl PenBehaviour for Brush {
                         for shape in shapes {
                             match shape {
                                 Shape::Segment(new_segment) => {
-                                    store.add_segment_to_brushstroke(
+                                    engine_view.store.add_segment_to_brushstroke(
                                         *current_stroke_key,
                                         new_segment,
                                     );
@@ -225,19 +227,23 @@ impl PenBehaviour for Brush {
                         }
 
                         // Finish up the last stroke
-                        store.update_geometry_for_stroke(*current_stroke_key);
-                        store.regenerate_rendering_for_stroke_threaded(
-                            tasks_tx,
+                        engine_view
+                            .store
+                            .update_geometry_for_stroke(*current_stroke_key);
+                        engine_view.store.regenerate_rendering_for_stroke_threaded(
+                            engine_view.tasks_tx.clone(),
                             *current_stroke_key,
-                            camera.viewport(),
-                            camera.image_scale(),
+                            engine_view.camera.viewport(),
+                            engine_view.camera.image_scale(),
                         );
 
-                        Self::stop_audio(style, audioplayer);
+                        Self::stop_audio(style, engine_view.audioplayer);
 
                         self.state = BrushState::Idle;
 
-                        doc.resize_autoexpand(store, camera);
+                        engine_view
+                            .doc
+                            .resize_autoexpand(engine_view.store, engine_view.camera);
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
@@ -257,16 +263,14 @@ impl PenBehaviour for Brush {
 impl DrawOnDocBehaviour for Brush {
     fn bounds_on_doc(
         &self,
-        _doc: &Document,
-        _store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView
     ) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
             BrushState::Idle => None,
             BrushState::Drawing { path_builder, .. } => {
-                Some(path_builder.bounds(&style, camera.zoom()))
+                Some(path_builder.bounds(&style, engine_view.camera.zoom()))
             }
         }
     }
@@ -274,9 +278,7 @@ impl DrawOnDocBehaviour for Brush {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc: &Document,
-        _store: &StrokeStore,
-        camera: &Camera,
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
@@ -284,7 +286,7 @@ impl DrawOnDocBehaviour for Brush {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
                 let style = self.gen_style_for_current_options();
-                path_builder.draw_styled(cx, &style, camera.total_zoom());
+                path_builder.draw_styled(cx, &style, engine_view.camera.total_zoom());
             }
         }
 

@@ -1,9 +1,7 @@
 use rnote_compose::penhelpers::PenEvent;
 
-use crate::document::Document;
-use crate::engine::EngineTaskSender;
-use crate::AudioPlayer;
-use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
+use crate::engine::{EngineView, EngineViewMut};
+use crate::{DrawOnDocBehaviour, SurfaceFlags};
 
 /// types that are pens and can handle pen events
 pub trait PenBehaviour: DrawOnDocBehaviour {
@@ -12,20 +10,11 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-        audioplayer: &mut Option<AudioPlayer>,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags);
 
     /// fetches clipboard content from the pen
-    fn fetch_clipboard_content(
-        &self,
-        _doc: &Document,
-        _store: &StrokeStore,
-        _camera: &Camera,
-    ) -> (Vec<u8>, String) {
+    fn fetch_clipboard_content(&self, _engine_view: &EngineView) -> (Vec<u8>, String) {
         (vec![], String::from(""))
     }
 
@@ -34,24 +23,13 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
         &mut self,
         _clipboard_content: &[u8],
         _mime_types: Vec<String>,
-        _tasks_tx: EngineTaskSender,
-        _doc: &mut Document,
-        _store: &mut StrokeStore,
-        _camera: &mut Camera,
-        _audioplayer: &mut Option<AudioPlayer>,
+        _engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags) {
         (PenProgress::Idle, SurfaceFlags::default())
     }
 
     /// Updates the internal state of the pen ( called for example when the engine state has changed outside of pen events )
-    fn update_internal_state(
-        &mut self,
-        _doc: &Document,
-        _store: &StrokeStore,
-        _camera: &Camera,
-        _audioplayer: &Option<AudioPlayer>,
-    ) {
-    }
+    fn update_internal_state(&mut self, _engine_view: &EngineView) {}
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

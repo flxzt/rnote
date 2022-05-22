@@ -1,14 +1,12 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
-use super::AudioPlayer;
-use crate::engine::EngineTaskSender;
-use crate::document::Document;
+use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
-use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, SurfaceFlags};
 use kurbo::Shape;
 use p2d::query::PointQuery;
 use piet::RenderContext;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
-use rnote_compose::penhelpers::PenState;
+use rnote_compose::penhelpers::{KeyboardKey, PenState};
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::penpath::Element;
 use rnote_compose::style::drawhelpers;
@@ -103,11 +101,7 @@ impl PenBehaviour for Selector {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-        _audioplayer: Option<&mut AudioPlayer>,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -115,23 +109,63 @@ impl PenBehaviour for Selector {
 
         let pen_progress = match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
-                surface_flags.merge_with_other(store.record());
+                surface_flags.merge_with_other(engine_view.store.record());
 
                 // Deselect on start
-                let selection_keys =
-                    store.selection_keys_as_rendered_intersecting_bounds(camera.viewport());
-                store.set_selected_keys(&selection_keys, false);
+                let selection_keys = engine_view
+                    .store
+                    .selection_keys_as_rendered_intersecting_bounds(engine_view.camera.viewport());
+                engine_view.store.set_selected_keys(&selection_keys, false);
 
                 self.state = SelectorState::Selecting {
                     path: vec![element],
                 };
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
             }
+            (
+                SelectorState::Idle,
+                PenEvent::KeyPressed {
+                    keyboard_key,
+                    shortcut_keys,
+                },
+            ) => match keyboard_key {
+                KeyboardKey::Unicode('a') => {
+                    // Select all keys
+                    if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+                        let all_keys = engine_view.store.keys_sorted_chrono();
+
+                        if let Some(new_selection_bounds) =
+                            engine_view.store.bounds_for_strokes(&all_keys)
+                        {
+                            engine_view.store.set_selected_keys(&all_keys, true);
+
+                            self.state = SelectorState::ModifySelection {
+                                modify_state: ModifyState::default(),
+                                selection: all_keys,
+                                selection_bounds: new_selection_bounds,
+                            };
+
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                            surface_flags.redraw = true;
+                            surface_flags.resize = true;
+                            surface_flags.indicate_changed_store = true;
+                        }
+
+                        PenProgress::InProgress
+                    } else {
+                        PenProgress::InProgress
+                    }
+                }
+                _ => PenProgress::InProgress,
+            },
             (SelectorState::Idle, _) => PenProgress::Idle,
             (SelectorState::Selecting { path }, PenEvent::Down { element, .. }) => {
                 Self::add_to_select_path(self.style, path, element);
@@ -150,9 +184,9 @@ impl PenBehaviour for Selector {
                             if path.len() < 3 {
                                 None
                             } else {
-                                Some(store.select_keys_intersecting_polygon_path(
+                                Some(engine_view.store.select_keys_intersecting_polygon_path(
                                     &path,
-                                    camera.viewport(),
+                                    engine_view.camera.viewport(),
                                 ))
                             }
                         }
@@ -162,14 +196,18 @@ impl PenBehaviour for Selector {
                                     na::Point2::from(first.pos),
                                     na::Point2::from(last.pos),
                                 );
-                                Some(store.select_keys_intersecting_aabb(aabb, camera.viewport()))
+                                Some(engine_view.store.select_keys_intersecting_aabb(
+                                    aabb,
+                                    engine_view.camera.viewport(),
+                                ))
                             } else {
                                 None
                             }
                         }
                     }
                 {
-                    if let Some(selection_bounds) = store.gen_bounds_for_strokes(&selection) {
+                    if let Some(selection_bounds) = engine_view.store.bounds_for_strokes(&selection)
+                    {
                         // Change to the modifiy state
                         state = SelectorState::ModifySelection {
                             modify_state: ModifyState::default(),
@@ -183,7 +221,7 @@ impl PenBehaviour for Selector {
                 self.state = state;
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 pen_progress
@@ -191,16 +229,56 @@ impl PenBehaviour for Selector {
             (SelectorState::Selecting { .. }, PenEvent::Proximity { .. }) => {
                 PenProgress::InProgress
             }
+            (
+                SelectorState::Selecting { .. },
+                PenEvent::KeyPressed {
+                    keyboard_key,
+                    shortcut_keys,
+                },
+            ) => match keyboard_key {
+                KeyboardKey::Unicode('a') => {
+                    // Select all keys
+                    if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+                        let all_keys = engine_view.store.keys_sorted_chrono();
+
+                        if let Some(new_selection_bounds) =
+                            engine_view.store.bounds_for_strokes(&all_keys)
+                        {
+                            engine_view.store.set_selected_keys(&all_keys, true);
+
+                            self.state = SelectorState::ModifySelection {
+                                modify_state: ModifyState::default(),
+                                selection: all_keys,
+                                selection_bounds: new_selection_bounds,
+                            };
+
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                            surface_flags.redraw = true;
+                            surface_flags.resize = true;
+                            surface_flags.indicate_changed_store = true;
+                        }
+
+                        PenProgress::InProgress
+                    } else {
+                        PenProgress::InProgress
+                    }
+                }
+                _ => PenProgress::InProgress,
+            },
             (SelectorState::Selecting { .. }, PenEvent::Cancel) => {
                 self.state = SelectorState::Idle;
 
                 // Deselect on cancel
-                let selection_keys =
-                    store.selection_keys_as_rendered_intersecting_bounds(camera.viewport());
-                store.set_selected_keys(&selection_keys, false);
+                let selection_keys = engine_view
+                    .store
+                    .selection_keys_as_rendered_intersecting_bounds(engine_view.camera.viewport());
+                engine_view.store.set_selected_keys(&selection_keys, false);
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -220,9 +298,9 @@ impl PenBehaviour for Selector {
 
                 match modify_state {
                     ModifyState::Up => {
-                        surface_flags.merge_with_other(store.record());
+                        surface_flags.merge_with_other(engine_view.store.record());
 
-                        if Self::rotate_node_sphere(*selection_bounds, camera)
+                        if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&na::Point2::from(element.pos))
                         {
                             let rotation_angle = {
@@ -238,7 +316,7 @@ impl PenBehaviour for Selector {
                         } else if Self::resize_node_bounds(
                             ResizeCorner::TopLeft,
                             *selection_bounds,
-                            camera,
+                            engine_view.camera,
                         )
                         .contains_local_point(&na::Point2::from(element.pos))
                         {
@@ -250,7 +328,7 @@ impl PenBehaviour for Selector {
                         } else if Self::resize_node_bounds(
                             ResizeCorner::TopRight,
                             *selection_bounds,
-                            camera,
+                            engine_view.camera,
                         )
                         .contains_local_point(&na::Point2::from(element.pos))
                         {
@@ -262,7 +340,7 @@ impl PenBehaviour for Selector {
                         } else if Self::resize_node_bounds(
                             ResizeCorner::BottomLeft,
                             *selection_bounds,
-                            camera,
+                            engine_view.camera,
                         )
                         .contains_local_point(&na::Point2::from(element.pos))
                         {
@@ -274,7 +352,7 @@ impl PenBehaviour for Selector {
                         } else if Self::resize_node_bounds(
                             ResizeCorner::BottomRight,
                             *selection_bounds,
-                            camera,
+                            engine_view.camera,
                         )
                         .contains_local_point(&na::Point2::from(element.pos))
                         {
@@ -292,7 +370,7 @@ impl PenBehaviour for Selector {
                             };
                         } else {
                             // If clicking outside the selection, reset
-                            store.set_selected_keys(selection, false);
+                            engine_view.store.set_selected_keys(selection, false);
                             self.state = SelectorState::Idle;
 
                             pen_progress = PenProgress::Finished;
@@ -305,18 +383,20 @@ impl PenBehaviour for Selector {
                         let offset = element.pos - *current_pos;
 
                         if offset.magnitude()
-                            > Self::TRANSLATE_MAGNITUDE_THRESHOLD / camera.total_zoom()
+                            > Self::TRANSLATE_MAGNITUDE_THRESHOLD / engine_view.camera.total_zoom()
                         {
-                            store.translate_strokes(selection, offset);
-                            store.translate_strokes_images(selection, offset);
+                            engine_view.store.translate_strokes(selection, offset);
+                            engine_view
+                                .store
+                                .translate_strokes_images(selection, offset);
                             *selection_bounds = selection_bounds.translate(offset);
 
                             // strokes that were far away previously might come into view
-                            store.regenerate_rendering_in_viewport_threaded(
-                                tasks_tx,
+                            engine_view.store.regenerate_rendering_in_viewport_threaded(
+                                engine_view.tasks_tx.clone(),
                                 false,
-                                camera.viewport(),
-                                camera.image_scale(),
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
                             );
 
                             *current_pos = element.pos;
@@ -334,10 +414,20 @@ impl PenBehaviour for Selector {
                         let angle_delta = new_rotation_angle - *current_rotation_angle;
 
                         if angle_delta.abs() > Self::ROTATE_ANGLE_THRESHOLD {
-                            store.rotate_strokes(selection, angle_delta, *rotation_center);
-                            store.rotate_strokes_images(selection, angle_delta, *rotation_center);
+                            engine_view.store.rotate_strokes(
+                                selection,
+                                angle_delta,
+                                *rotation_center,
+                            );
+                            engine_view.store.rotate_strokes_images(
+                                selection,
+                                angle_delta,
+                                *rotation_center,
+                            );
 
-                            if let Some(new_bounds) = store.gen_bounds_for_strokes(selection) {
+                            if let Some(new_bounds) =
+                                engine_view.store.bounds_for_strokes(selection)
+                            {
                                 *selection_bounds = new_bounds;
                             }
                             *current_rotation_angle = new_rotation_angle;
@@ -382,12 +472,16 @@ impl PenBehaviour for Selector {
                         } else {
                             start_bounds.extents() + pos_offset
                         }
-                        .maxs(&((Self::RESIZE_NODE_SIZE * 2.0) / camera.total_zoom()));
+                        .maxs(&((Self::RESIZE_NODE_SIZE * 2.0) / engine_view.camera.total_zoom()));
 
                         let scale = new_extents.component_div(&selection_bounds.extents());
 
-                        store.scale_strokes_with_pivot(selection, scale, pivot);
-                        store.scale_strokes_images_with_pivot(selection, scale, pivot);
+                        engine_view
+                            .store
+                            .scale_strokes_with_pivot(selection, scale, pivot);
+                        engine_view
+                            .store
+                            .scale_strokes_images_with_pivot(selection, scale, pivot);
 
                         *selection_bounds = selection_bounds
                             .translate(-pivot)
@@ -397,7 +491,7 @@ impl PenBehaviour for Selector {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 pen_progress
             }
@@ -410,30 +504,85 @@ impl PenBehaviour for Selector {
                 },
                 PenEvent::Up { .. },
             ) => {
-                store.update_geometry_for_strokes(&selection);
-                store.regenerate_rendering_in_viewport_threaded(
-                    tasks_tx,
+                engine_view.store.update_geometry_for_strokes(&selection);
+                engine_view.store.regenerate_rendering_in_viewport_threaded(
+                    engine_view.tasks_tx.clone(),
                     false,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 );
 
-                if let Some(new_bounds) = store.gen_bounds_for_strokes(selection) {
+                if let Some(new_bounds) = engine_view.store.bounds_for_strokes(selection) {
                     *selection_bounds = new_bounds;
                 }
                 *modify_state = ModifyState::Up;
 
-                doc.resize_autoexpand(store, camera);
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
             (SelectorState::ModifySelection { .. }, PenEvent::Proximity { .. }) => {
                 PenProgress::InProgress
             }
+            (
+                SelectorState::ModifySelection { selection, .. },
+                PenEvent::KeyPressed {
+                    keyboard_key,
+                    shortcut_keys,
+                },
+            ) => match keyboard_key {
+                KeyboardKey::Escape => {
+                    engine_view.store.set_selected_keys(&selection, false);
+                    self.state = SelectorState::Idle;
+
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                    surface_flags.redraw = true;
+                    surface_flags.resize = true;
+                    surface_flags.indicate_changed_store = true;
+
+                    PenProgress::Finished
+                }
+                KeyboardKey::Unicode('a') => {
+                    // Select all keys
+                    if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
+                        let all_keys = engine_view.store.keys_sorted_chrono();
+
+                        if let Some(new_selection_bounds) =
+                            engine_view.store.bounds_for_strokes(&all_keys)
+                        {
+                            engine_view.store.set_selected_keys(&all_keys, true);
+
+                            self.state = SelectorState::ModifySelection {
+                                modify_state: ModifyState::default(),
+                                selection: all_keys,
+                                selection_bounds: new_selection_bounds,
+                            };
+
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                            surface_flags.redraw = true;
+                            surface_flags.resize = true;
+                            surface_flags.indicate_changed_store = true;
+                        }
+
+                        PenProgress::InProgress
+                    } else {
+                        PenProgress::InProgress
+                    }
+                }
+                _ => PenProgress::InProgress,
+            },
             (
                 SelectorState::ModifySelection {
                     modify_state: _,
@@ -442,14 +591,16 @@ impl PenBehaviour for Selector {
                 },
                 PenEvent::Cancel,
             ) => {
-                store.set_selected_keys(&selection, false);
+                engine_view.store.set_selected_keys(&selection, false);
                 self.state = SelectorState::Idle;
 
-                doc.resize_autoexpand(store, camera);
+                engine_view
+                    .doc
+                    .resize_autoexpand(engine_view.store, engine_view.camera);
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
             }
@@ -457,11 +608,25 @@ impl PenBehaviour for Selector {
 
         (pen_progress, surface_flags)
     }
+
+    fn update_internal_state(&mut self, engine_view: &EngineView) {
+        let selection = engine_view.store.selection_keys_as_rendered();
+
+        if let Some(selection_bounds) = engine_view.store.bounds_for_strokes(&selection) {
+            self.state = SelectorState::ModifySelection {
+                modify_state: ModifyState::default(),
+                selection,
+                selection_bounds,
+            };
+        } else {
+            self.state = SelectorState::Idle;
+        }
+    }
 }
 
 impl DrawOnDocBehaviour for Selector {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
-        let total_zoom = camera.total_zoom();
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
+        let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
             SelectorState::Idle => None,
@@ -496,11 +661,10 @@ impl DrawOnDocBehaviour for Selector {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc_bounds: AABB,
-        camera: &Camera,
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
-        let total_zoom = camera.total_zoom();
+        let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
             SelectorState::Idle => {}
@@ -542,7 +706,12 @@ impl DrawOnDocBehaviour for Selector {
                 selection_bounds,
                 ..
             } => {
-                Self::draw_selection_overlay(cx, *selection_bounds, modify_state, camera)?;
+                Self::draw_selection_overlay(
+                    cx,
+                    *selection_bounds,
+                    modify_state,
+                    engine_view.camera,
+                )?;
 
                 match modify_state {
                     ModifyState::Rotate {
@@ -555,7 +724,7 @@ impl DrawOnDocBehaviour for Selector {
                             *rotation_center,
                             *start_rotation_angle,
                             *current_rotation_angle,
-                            camera,
+                            engine_view.camera,
                         )?;
                     }
                     _ => {}
@@ -583,27 +752,6 @@ impl Selector {
     const RESIZE_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
     /// rotate node size, in surface coords
     const ROTATE_NODE_SIZE: f64 = 18.0;
-
-    /// Sets the state to a selection
-    pub fn set_selection(&mut self, selection: Vec<StrokeKey>, selection_bounds: AABB) {
-        self.state = SelectorState::ModifySelection {
-            modify_state: ModifyState::default(),
-            selection,
-            selection_bounds,
-        };
-    }
-
-    /// Updates the selector from the stroke store
-    pub fn update_from_store(&mut self, store: &StrokeStore) {
-        let selection = store.selection_keys_as_rendered();
-        let selection_bounds = store.gen_bounds_for_strokes(&selection);
-
-        if let Some(selection_bounds) = selection_bounds {
-            self.set_selection(selection, selection_bounds);
-        } else {
-            self.state = SelectorState::Idle;
-        }
-    }
 
     fn add_to_select_path(style: SelectorType, path: &mut Vec<Element>, element: Element) {
         match style {

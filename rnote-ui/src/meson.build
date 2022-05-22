@@ -51,6 +51,7 @@ rnote_ui_sources = files(
     'penssidebar/shaperpage.rs',
     'penssidebar/eraserpage.rs',
     'penssidebar/selectorpage.rs',
+    'penssidebar/typewriterpage.rs',
     'penssidebar/toolspage.rs',
     'workspacebrowser/mod.rs',
     'workspacebrowser/filerow.rs',

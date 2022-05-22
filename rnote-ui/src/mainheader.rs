@@ -30,6 +30,8 @@ mod imp {
         #[template_child]
         pub shaper_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub typewriter_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub eraser_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub selector_toggle: TemplateChild<ToggleButton>,
@@ -119,6 +121,10 @@ impl MainHeader {
         self.imp().shaper_toggle.get()
     }
 
+    pub fn typewriter_toggle(&self) -> ToggleButton {
+        self.imp().typewriter_toggle.get()
+    }
+
     pub fn eraser_toggle(&self) -> ToggleButton {
         self.imp().eraser_toggle.get()
     }
@@ -191,6 +197,12 @@ impl MainHeader {
         self.imp().shaper_toggle.get().connect_toggled(clone!(@weak appwindow => move |shaper_toggle| {
             if shaper_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
+            }
+        }));
+
+        self.imp().typewriter_toggle.get().connect_toggled(clone!(@weak appwindow => move |typewriter_toggle| {
+            if typewriter_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
             }
         }));
 

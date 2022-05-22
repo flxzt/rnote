@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="TypewriterPage" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBoxLayout">
+        <property name="spacing">6</property>
+        <property name="orientation">vertical</property>
+      </object>
+    </property>
+    <property name="hexpand">false</property>
+    <property name="vexpand">false</property>
+    <child>
+      <object class="GtkImage">
+        <property name="icon_name">pen-typewriter-symbolic</property>
+        <property name="margin-top">9</property>
+        <property name="margin-bottom">9</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuButton" id="fontchooser_menubutton">
+        <property name="direction">left</property>
+        <property name="popover">fontchooser_popover</property>
+        <property name="tooltip_text" translatable="yes">Font chooser
+(double-click, click on select
+or press Enter to select a new font)</property>
+        <style>
+          <class name="sidebar_action_button" />
+        </style>
+        <child>
+          <object class="GtkImage" id="fontchooser_buttonimage">
+            <property name="icon-name">pen-typewriter-fontchooser-symbolic</property>
+            <property name="icon-size">large</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <object class="GtkPopover" id="fontchooser_popover">
+      <property name="position">right</property>
+      <child>
+        <object class="GtkGrid">
+          <property name="row_spacing">12</property>
+          <property name="column_spacing">12</property>
+          <property name="margin_top">6</property>
+          <property name="margin_bottom">6</property>
+          <property name="margin_start">6</property>
+          <property name="margin_end">6</property>
+          <child>
+            <object class="GtkButton" id="fontchooser_cancelbutton">
+              <property name="label" translatable="yes">Cancel</property>
+              <property name="hexpand">false</property>
+              <property name="vexpand">false</property>
+              <property name="halign">start</property>
+              <layout>
+                <property name="column">0</property>
+                <property name="row">0</property>
+              </layout>
+            </object>
+          </child>
+          <child>
+            <object class="GtkButton" id="fontchooser_selectbutton">
+              <property name="label" translatable="yes">Select</property>
+              <property name="hexpand">false</property>
+              <property name="halign">end</property>
+              <property name="vexpand">false</property>
+              <style>
+                <class name="suggested-action" />
+              </style>
+              <layout>
+                <property name="column">1</property>
+                <property name="row">0</property>
+              </layout>
+            </object>
+          </child>
+          <child>
+            <object class="GtkFontChooserWidget" id="fontchooser">
+              <layout>
+                <property name="column">0</property>
+                <property name="row">1</property>
+                <property name="column-span">2</property>
+              </layout>
+            </object>
+          </child>
+        </object>
+      </child>
+    </object>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSpinButton" id="font_size_spinbutton">
+        <property name="orientation">vertical</property>
+        <property name="numeric">true</property>
+        <property name="digits">0</property>
+        <property name="climb-rate">1</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <style>
+          <class name="linked" />
+        </style>
+        <child>
+          <object class="GtkButton" id="text_reset_button">
+            <property name="icon-name">reset-state-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Reset text attributes</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="text_bold_button">
+            <property name="icon-name">text-bold-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Bold</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="text_italic_button">
+            <property name="icon-name">text-italic-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Italic</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="text_underline_button">
+            <property name="icon-name">text-underline-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Underline</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="text_strikethrough_button">
+            <property name="icon-name">text-strikethrough-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Strikethrough</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="ColorPicker" id="colorpicker">
+        <property name="height_request">120</property>
+        <property name="amount-colorbuttons">2</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator">
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <style>
+          <class name="linked" />
+        </style>
+        <child>
+          <object class="GtkToggleButton" id="text_align_start_togglebutton">
+            <property name="icon-name">text-align-start-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Align left</property>
+            <property name="active">true</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="text_align_center_togglebutton">
+            <property name="icon-name">text-align-center-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Align center</property>
+            <property name="group">text_align_start_togglebutton</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="text_align_end_togglebutton">
+            <property name="icon-name">text-align-end-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Align right</property>
+            <property name="group">text_align_start_togglebutton</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToggleButton" id="text_align_fill_togglebutton">
+            <property name="icon-name">text-align-fill-symbolic</property>
+            <property name="tooltip_text" translatable="yes">Fill</property>
+            <property name="group">text_align_start_togglebutton</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

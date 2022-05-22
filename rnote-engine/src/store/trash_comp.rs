@@ -91,6 +91,9 @@ impl StrokeStore {
                                 }
                             }
                         }
+                        Stroke::TextStroke(_textstroke) => {
+                            // Ignore text strokes when trashing with the Eraser
+                        }
                         Stroke::VectorImage(_vectorimage) => {
                             // Ignore vector images when trashing with the Eraser
                         }
@@ -199,6 +202,9 @@ impl StrokeStore {
                                 }
                             }
                         }
+                    }
+                    Stroke::TextStroke(_textstroke) => {
+                        // Ignore text strokes when trashing with the Eraser
                     }
                     Stroke::VectorImage(_vectorimage) => {
                         // Ignore vector images when trashing with the Eraser

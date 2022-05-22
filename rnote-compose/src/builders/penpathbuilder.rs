@@ -48,13 +48,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
         ); */
 
         match (&mut self.state, event) {
-            (
-                PenPathBuilderState::Start,
-                PenEvent::Down {
-                    element,
-                    ..
-                },
-            ) => {
+            (PenPathBuilderState::Start, PenEvent::Down { element, .. }) => {
                 self.buffer.push_back(element);
 
                 match self.try_build_segments_start() {
@@ -62,13 +56,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
                     None => BuilderProgress::InProgress,
                 }
             }
-            (
-                PenPathBuilderState::During,
-                PenEvent::Down {
-                    element,
-                    ..
-                },
-            ) => {
+            (PenPathBuilderState::During, PenEvent::Down { element, .. }) => {
                 self.buffer.push_back(element);
 
                 match self.try_build_segments_during() {
@@ -76,18 +64,14 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
                     None => BuilderProgress::InProgress,
                 }
             }
-            (
-                _,
-                PenEvent::Up {
-                    element,
-                    ..
-                },
-            ) => {
+            (_, PenEvent::Up { element, .. }) => {
                 self.buffer.push_back(element);
 
                 BuilderProgress::Finished(self.try_build_segments_end())
             }
             (_, PenEvent::Proximity { .. }) => BuilderProgress::InProgress,
+
+            (_, PenEvent::KeyPressed { .. }) => BuilderProgress::InProgress,
             (_, PenEvent::Cancel) => {
                 self.reset();
 

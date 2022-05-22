@@ -59,15 +59,14 @@
             <property name="switch-threshold-policy">minimum</property>
             <child>
               <object class="AdwClamp" id="pens_toggles_clamp">
-                <property name="maximum-size">500</property>
+                <property name="maximum-size">600</property>
                 <property name="tightening-threshold">450</property>
                 <property name="hexpand">true</property>
                 <property name="vexpand">true</property>
-                <property name="valign">fill</property>
                 <property name="halign">fill</property>
                 <property name="child">
                   <object class="GtkBox" id="pens_toggles_box">
-                    <property name="width-request">300</property>
+                    <property name="width-request">350</property>
                     <property name="homogeneous">true</property>
                     <style>
                       <class name="linked" />
@@ -83,6 +82,14 @@
                       <object class="GtkToggleButton" id="shaper_toggle">
                         <property name="icon_name">pen-shaper-symbolic</property>
                         <property name="tooltip_text" translatable="yes">Shaper</property>
+                        <property name="hexpand">true</property>
+                        <property name="group">brush_toggle</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="typewriter_toggle">
+                        <property name="icon_name">pen-typewriter-symbolic</property>
+                        <property name="tooltip_text" translatable="yes">Typewriter</property>
                         <property name="hexpand">true</property>
                         <property name="group">brush_toggle</property>
                       </object>

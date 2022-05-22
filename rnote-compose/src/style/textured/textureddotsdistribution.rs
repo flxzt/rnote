@@ -3,7 +3,17 @@ use std::ops::Range;
 use rand_distr::Distribution;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 /// The distribution for the spread of dots across the width of a textured shape
 pub enum TexturedDotsDistribution {
     /// Uniform distribution

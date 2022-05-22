@@ -95,6 +95,7 @@ impl DrawBehaviour for VectorImage {
 
         // draw() needs rgba8-prem. the gen_images() func might produces bgra8-prem format (when using librsvg as renderer backend), so we might need to convert the image first
         image.convert_to_rgba8pre()?;
+        // image_scale does not have a meaning here, as the pixel image is already provided
         image.draw(cx, image_scale)?;
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
@@ -179,94 +180,95 @@ impl VectorImage {
     ) -> Result<Vec<Self>, anyhow::Error> {
         let doc = poppler::Document::from_data(to_be_read, None)?;
 
-        struct SvgDataWithPos {
-            svg_data: String,
-            pos: na::Vector2<f64>,
-            size: na::Vector2<f64>,
-        }
-
-        let svg_datas = (0..doc.n_pages()).filter_map(|i| {
+        let svgs = (0..doc.n_pages()).filter_map(|i| {
             let page = doc.page(i)?;
-                let intrinsic_size = page.size();
+                let (intrinsic_width, intrinsic_height) = (page.size().0, page.size().1);
 
-                let (width, height, _zoom) = if let Some(page_width) = page_width {
-                    let zoom = f64::from(page_width) / intrinsic_size.0;
+                let (width, height) = if let Some(page_width) = page_width {
+                    let zoom = f64::from(page_width) / intrinsic_width;
 
-                    (f64::from(page_width), (intrinsic_size.1 * zoom), zoom)
+                    (f64::from(page_width), (intrinsic_height * zoom))
                 } else {
-                    (intrinsic_size.0, intrinsic_size.1, 1.0)
+                    (intrinsic_width, intrinsic_height)
                 };
 
                 let x = pos[0];
-                let y = pos[1]
-                    + f64::from(i) * (height + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5);
-
+                let y = pos[1] + f64::from(i) * (height + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5);
 
                 let res = || -> anyhow::Result<String> {
-                let svg_stream: Vec<u8> = vec![];
+                    let svg_stream: Vec<u8> = vec![];
 
-                let surface =
-                    cairo::SvgSurface::for_stream(intrinsic_size.0, intrinsic_size.1, svg_stream)
-                        .map_err(|e| {
-                        anyhow::anyhow!(
-                            "create SvgSurface with dimensions ({}, {}) failed in vectorimage import_from_pdf_bytes with Err {}",
-                            intrinsic_size.0,
-                            intrinsic_size.1,
-                            e
-                        )
-                    })?;
+                    let mut svg_surface =
+                        cairo::SvgSurface::for_stream(intrinsic_width, intrinsic_height, svg_stream)
+                            .map_err(|e| {
+                            anyhow::anyhow!(
+                                "create SvgSurface with dimensions ({}, {}) failed in vectorimage import_from_pdf_bytes with Err {}",
+                                intrinsic_width,
+                                intrinsic_height,
+                                e
+                            )
+                        })?;
 
-                {
-                    let cx = cairo::Context::new(&surface).map_err(|e| {
-                        anyhow::anyhow!(
-                            "new cairo::Context failed in vectorimage import_from_pdf_bytes() with Err {}",
-                            e
-                        )
-                    })?;
+                    // Popplers page units are in points ( ^= 1 / 72 inch )
+                    svg_surface.set_document_unit(cairo::SvgUnit::Pt);
 
-                    // Set margin to white
-                    cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
-                    cx.paint()?;
+                    {
+                        let cx = cairo::Context::new(&svg_surface).map_err(|e| {
+                            anyhow::anyhow!(
+                                "new cairo::Context failed in vectorimage import_from_pdf_bytes() with Err {}",
+                                e
+                            )
+                        })?;
 
-                    page.render(&cx);
+                        // Set margin to white
+                        cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
+                        cx.paint()?;
 
-                    // Draw outline around page
-                    cx.set_source_rgba(color::GNOME_REDS[4].as_rgba().0, color::GNOME_REDS[4].as_rgba().1, color::GNOME_REDS[4].as_rgba().2, 1.0);
+                        // Render the poppler page
+                        page.render(&cx);
 
-                    let line_width = 1.0;
-                    cx.set_line_width(line_width);
-                    cx.rectangle(
-                        line_width * 0.5,
-                        line_width * 0.5,
-                        intrinsic_size.0 - line_width,
-                        intrinsic_size.1 - line_width,
-                    );
-                    cx.stroke()?;
-                }
-                let file_content = surface.finish_output_stream().map_err(|e| anyhow::anyhow!("{}", e))?;
-                Ok(String::from_utf8(*file_content.downcast::<Vec<u8>>().map_err(|_e| anyhow::anyhow!("failed to downcast pdf file content in import_from_pdf_bytes()"))?)?)
+                        // Draw outline around page
+                        cx.set_source_rgba(color::GNOME_REDS[4].as_rgba().0, color::GNOME_REDS[4].as_rgba().1, color::GNOME_REDS[4].as_rgba().2, 1.0);
+
+                        let line_width = 1.0;
+                        cx.set_line_width(line_width);
+                        cx.rectangle(
+                            line_width * 0.5,
+                            line_width * 0.5,
+                            intrinsic_width - line_width,
+                            intrinsic_height - line_width,
+                        );
+                        cx.stroke()?;
+                    }
+
+                    let svg_content = String::from_utf8(
+                        *svg_surface.finish_output_stream()
+                            .map_err(|e| anyhow::anyhow!("{}", e))?
+                            .downcast::<Vec<u8>>()
+                            .map_err(|_e| anyhow::anyhow!("failed to downcast svg surface content in VectorImage import_from_pdf_bytes()"))?)?;
+
+                    Ok(svg_content)
                 };
 
                 match res() {
-                    Ok(svg_data) => Some(SvgDataWithPos {
+                    Ok(svg_data) => Some(render::Svg {
                         svg_data,
-                        pos: na::vector![x, y],
-                        size: na::vector![width, height]
+                        bounds: AABB::new(na::point![x, y], na::point![x + width, y + height])
                     }),
                     Err(e) => {
                         log::error!("importing page {} from pdf failed with Err {}", i, e);
                         None
                     }
                 }
-        }).collect::<Vec<SvgDataWithPos>>();
+        }).collect::<Vec<render::Svg>>();
 
-        Ok(svg_datas
+        Ok(svgs
             .into_par_iter()
-            .filter_map(|svg_data| {
+            .filter_map(|svg| {
                 match Self::import_from_svg_data(
-                    svg_data.svg_data.as_str(),
-                    svg_data.pos,
-                    Some(svg_data.size),
+                    svg.svg_data.as_str(),
+                    svg.bounds.mins.coords,
+                    Some(svg.bounds.extents()),
                 ) {
                     Ok(vectorimage) => Some(vectorimage),
                     Err(e) => {

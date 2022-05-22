@@ -1,10 +1,8 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
-use super::AudioPlayer;
-use crate::engine::EngineTaskSender;
-use crate::document::Document;
+use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, SurfaceFlags};
 
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
@@ -80,11 +78,7 @@ impl PenBehaviour for Shaper {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        _tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-        _audioplayer: Option<&mut AudioPlayer>,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags) {
         let mut surface_flags = SurfaceFlags::default();
 
@@ -138,75 +132,77 @@ impl PenBehaviour for Shaper {
                 surface_flags.redraw = true;
                 PenProgress::Finished
             }
-            (ShaperState::BuildShape { builder }, event) => match builder.handle_event(event) {
-                BuilderProgress::InProgress => {
-                    surface_flags.redraw = true;
+            (ShaperState::BuildShape { builder }, event) => {
+                match builder.handle_event(event) {
+                    BuilderProgress::InProgress => {
+                        surface_flags.redraw = true;
 
-                    PenProgress::InProgress
-                }
-                BuilderProgress::EmitContinue(shapes) => {
-                    let drawstyle = self.gen_style_for_current_options();
-
-                    if !shapes.is_empty() {
-                        // Only record if new shapes actually were emitted
-                        surface_flags.merge_with_other(store.record());
+                        PenProgress::InProgress
                     }
+                    BuilderProgress::EmitContinue(shapes) => {
+                        let drawstyle = self.gen_style_for_current_options();
 
-                    for shape in shapes {
-                        let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
-                            shape,
-                            drawstyle.clone(),
-                        )));
-                        if let Err(e) = store.regenerate_rendering_for_stroke(
-                            key,
-                            camera.viewport(),
-                            camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
+                        if !shapes.is_empty() {
+                            // Only record if new shapes actually were emitted
+                            surface_flags.merge_with_other(engine_view.store.record());
                         }
-                    }
 
-                    surface_flags.redraw = true;
-                    surface_flags.store_changed = true;
-
-                    PenProgress::InProgress
-                }
-                BuilderProgress::Finished(shapes) => {
-                    let drawstyle = self.gen_style_for_current_options();
-
-                    if !shapes.is_empty() {
-                        // Only record if new shapes actually were emitted
-                        surface_flags.merge_with_other(store.record());
-                    }
-
-                    if !shapes.is_empty() {
-                        doc.resize_autoexpand(store, camera);
-
-                        surface_flags.resize = true;
-                        surface_flags.store_changed = true;
-                    }
-
-                    for shape in shapes {
-                        let key = store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
-                            shape,
-                            drawstyle.clone(),
-                        )));
-                        if let Err(e) = store.regenerate_rendering_for_stroke(
-                            key,
-                            camera.viewport(),
-                            camera.image_scale(),
-                        ) {
-                            log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err {}", e);
+                        for shape in shapes {
+                            let key = engine_view.store.insert_stroke(Stroke::ShapeStroke(
+                                ShapeStroke::new(shape, drawstyle.clone()),
+                            ));
+                            if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                                key,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            ) {
+                                log::error!("regenerate_rendering_for_stroke() failed after inserting new line, Err {}", e);
+                            }
                         }
+
+                        surface_flags.redraw = true;
+                        surface_flags.indicate_changed_store = true;
+
+                        PenProgress::InProgress
                     }
+                    BuilderProgress::Finished(shapes) => {
+                        let drawstyle = self.gen_style_for_current_options();
 
-                    self.state = ShaperState::Idle;
+                        if !shapes.is_empty() {
+                            // Only record if new shapes actually were emitted
+                            surface_flags.merge_with_other(engine_view.store.record());
+                        }
 
-                    surface_flags.redraw = true;
+                        if !shapes.is_empty() {
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                    PenProgress::Finished
+                            surface_flags.resize = true;
+                            surface_flags.indicate_changed_store = true;
+                        }
+
+                        for shape in shapes {
+                            let key = engine_view.store.insert_stroke(Stroke::ShapeStroke(
+                                ShapeStroke::new(shape, drawstyle.clone()),
+                            ));
+                            if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
+                                key,
+                                engine_view.camera.viewport(),
+                                engine_view.camera.image_scale(),
+                            ) {
+                                log::error!("regenerate_rendering_for_stroke() failed after inserting new shape, Err {}", e);
+                            }
+                        }
+
+                        self.state = ShaperState::Idle;
+
+                        surface_flags.redraw = true;
+
+                        PenProgress::Finished
+                    }
                 }
-            },
+            }
         };
 
         (pen_progress, surface_flags)
@@ -214,13 +210,13 @@ impl PenBehaviour for Shaper {
 }
 
 impl DrawOnDocBehaviour for Shaper {
-    fn bounds_on_doc(&self, _doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
             ShaperState::Idle => None,
             ShaperState::BuildShape { builder } => {
-                Some(builder.bounds(&style, camera.total_zoom()))
+                Some(builder.bounds(&style, engine_view.camera.total_zoom()))
             }
         }
     }
@@ -228,8 +224,7 @@ impl DrawOnDocBehaviour for Shaper {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _doc_bounds: AABB,
-        camera: &Camera,
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let style = self.gen_style_for_current_options();
@@ -237,7 +232,7 @@ impl DrawOnDocBehaviour for Shaper {
         match &self.state {
             ShaperState::Idle => {}
             ShaperState::BuildShape { builder } => {
-                builder.draw_styled(cx, &style, camera.total_zoom())
+                builder.draw_styled(cx, &style, engine_view.camera.total_zoom())
             }
         }
 

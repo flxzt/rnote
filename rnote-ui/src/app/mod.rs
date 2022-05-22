@@ -4,17 +4,15 @@ use std::{cell::RefCell, path};
 
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::pens::penholder::PenStyle;
-use rnote_engine::{
-    document::format::MeasureUnit,
-};
 
 use crate::{
     colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
     penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
-    settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow, AppMenu, CanvasMenu,
-    ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas, SettingsPanel, UnitEntry,
-    WorkspaceBrowser,
+    penssidebar::TypewriterPage, settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow,
+    AppMenu, CanvasMenu, ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas,
+    SettingsPanel, UnitEntry, WorkspaceBrowser,
 };
 
 mod imp {
@@ -57,6 +55,7 @@ mod imp {
             ShaperPage::static_type();
             EraserPage::static_type();
             SelectorPage::static_type();
+            TypewriterPage::static_type();
             ToolsPage::static_type();
             PenStyle::static_type();
             WorkspaceBrowser::static_type();

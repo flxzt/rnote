@@ -92,6 +92,10 @@
               <attribute name="action">win.export-selection-as-svg</attribute>
             </item>
             <item>
+              <attribute name="label" translatable="yes">Export selection as PNG</attribute>
+              <attribute name="action">win.export-selection-as-png</attribute>
+            </item>
+            <item>
               <attribute name="label" translatable="yes">Export document as SVG</attribute>
               <attribute name="action">win.export-doc-as-svg</attribute>
             </item>

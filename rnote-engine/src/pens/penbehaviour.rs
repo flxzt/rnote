@@ -1,10 +1,7 @@
 use rnote_compose::penhelpers::PenEvent;
 
-use crate::engine::EngineTaskSender;
-use crate::document::Document;
-use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
-
-use super::AudioPlayer;
+use crate::engine::{EngineView, EngineViewMut};
+use crate::{DrawOnDocBehaviour, SurfaceFlags};
 
 /// types that are pens and can handle pen events
 pub trait PenBehaviour: DrawOnDocBehaviour {
@@ -13,12 +10,29 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     fn handle_event(
         &mut self,
         event: PenEvent,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-        audioplayer: Option<&mut AudioPlayer>,
+        engine_view: &mut EngineViewMut,
     ) -> (PenProgress, SurfaceFlags);
+
+    /// fetches clipboard content from the pen
+    fn fetch_clipboard_content(
+        &self,
+        _engine_view: &EngineView,
+    ) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+        Ok(None)
+    }
+
+    /// Pasts the clipboard content into the pen
+    fn paste_clipboard_content(
+        &mut self,
+        _clipboard_content: &[u8],
+        _mime_types: Vec<String>,
+        _engine_view: &mut EngineViewMut,
+    ) -> (PenProgress, SurfaceFlags) {
+        (PenProgress::Idle, SurfaceFlags::default())
+    }
+
+    /// Updates the internal state of the pen ( called for example when the engine state has changed outside of pen events )
+    fn update_internal_state(&mut self, _engine_view: &EngineView) {}
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]

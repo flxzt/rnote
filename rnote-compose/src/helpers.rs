@@ -23,6 +23,10 @@ where
     fn to_kurbo_point(&self) -> kurbo::Point;
     /// Converts to kurbo::Vec2
     fn to_kurbo_vec(&self) -> kurbo::Vec2;
+    /// Converts from kurbo::Point
+    fn from_kurbo_point(kurbo_point: kurbo::Point) -> Self;
+    /// Converts from kurbo::Vec2
+    fn from_kurbo_vec(kurbo_vec: kurbo::Vec2) -> Self;
 }
 
 impl Vector2Helpers for na::Vector2<f64> {
@@ -89,6 +93,14 @@ impl Vector2Helpers for na::Vector2<f64> {
             y: self[1],
         }
     }
+
+    fn from_kurbo_point(kurbo_point: kurbo::Point) -> Self {
+        na::vector![kurbo_point.x, kurbo_point.y]
+    }
+
+    fn from_kurbo_vec(kurbo_vec: kurbo::Vec2) -> Self {
+        na::vector![kurbo_vec.x, kurbo_vec.y]
+    }
 }
 
 /// Helpers that extend the AABB type
@@ -112,6 +124,14 @@ where
     fn clamp(&self, min: Option<Self>, max: Option<Self>) -> Self;
     /// extends on every side by the given size
     fn extend_by(&self, extend_by: na::Vector2<f64>) -> Self;
+    /// extends on left side by the given size
+    fn extend_left_by(&self, extend: f64) -> Self;
+    /// extends on right side by the given size
+    fn extend_right_by(&self, extend: f64) -> Self;
+    /// extends on top side by the given size
+    fn extend_top_by(&self, extend: f64) -> Self;
+    /// extends on bottom side by the given size
+    fn extend_bottom_by(&self, extend: f64) -> Self;
     /// Scales the AABB by the scalefactor
     fn scale(&self, scale: f64) -> Self;
     /// Scales the AABB by the scale vector
@@ -134,6 +154,8 @@ where
     fn split_extended_origin_aligned(self, splitted_size: na::Vector2<f64>) -> Vec<Self>;
     /// Converts a AABB to a kurbo Rectangle
     fn to_kurbo_rect(&self) -> kurbo::Rect;
+    /// Converts a kurbo Rectangle to AABB
+    fn from_kurbo_rect(rect: kurbo::Rect) -> Self;
 }
 
 impl AABBHelpers for AABB {
@@ -211,10 +233,38 @@ impl AABBHelpers for AABB {
         )
     }
 
-    fn extend_by(&self, size: nalgebra::Vector2<f64>) -> AABB {
+    fn extend_by(&self, extend_by: nalgebra::Vector2<f64>) -> AABB {
         AABB::new(
-            na::Point2::from(self.mins.coords - size),
-            na::Point2::from(self.maxs.coords + size),
+            na::Point2::from(self.mins.coords - extend_by),
+            na::Point2::from(self.maxs.coords + extend_by),
+        )
+    }
+
+    fn extend_left_by(&self, extend: f64) -> AABB {
+        AABB::new(
+            na::point![self.mins.coords[0] - extend, self.mins.coords[1]],
+            na::Point2::from(self.maxs.coords),
+        )
+    }
+
+    fn extend_right_by(&self, extend: f64) -> AABB {
+        AABB::new(
+            na::Point2::from(self.mins.coords),
+            na::point![self.maxs.coords[0] + extend, self.maxs.coords[1]],
+        )
+    }
+
+    fn extend_top_by(&self, extend: f64) -> AABB {
+        AABB::new(
+            na::point![self.mins.coords[0], self.mins.coords[1] - extend],
+            na::Point2::from(self.maxs.coords),
+        )
+    }
+
+    fn extend_bottom_by(&self, extend: f64) -> AABB {
+        AABB::new(
+            na::Point2::from(self.mins.coords),
+            na::point![self.maxs.coords[0], self.maxs.coords[1] + extend],
         )
     }
 
@@ -344,6 +394,10 @@ impl AABBHelpers for AABB {
             self.mins.coords.to_kurbo_point(),
             self.maxs.coords.to_kurbo_point(),
         )
+    }
+
+    fn from_kurbo_rect(rect: kurbo::Rect) -> Self {
+        AABB::new(na::point![rect.x0, rect.y0], na::point![rect.x1, rect.y1])
     }
 }
 

@@ -4,11 +4,11 @@ use crate::pens::PenMode;
 use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{render, DrawOnDocBehaviour, SurfaceFlags};
+use crate::{render, AudioPlayer, DrawOnDocBehaviour, SurfaceFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use gtk4::Snapshot;
-use itertools::Itertools;
-use rnote_compose::helpers::AABBHelpers;
+use piet::RenderContext;
+use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::transform::TransformBehaviour;
 use rnote_fileformats::rnoteformat::RnotefileMaj0Min5;
@@ -20,6 +20,39 @@ use anyhow::Context;
 use futures::channel::{mpsc, oneshot};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
+
+/// A view into the rest of the engine, excluding the penholder
+#[allow(missing_debug_implementations)]
+pub struct EngineView<'a> {
+    pub tasks_tx: EngineTaskSender,
+    pub doc: &'a Document,
+    pub store: &'a StrokeStore,
+    pub camera: &'a Camera,
+    pub audioplayer: &'a Option<AudioPlayer>,
+}
+
+/// A mutable view into the rest of the engine, excluding the penholder
+#[allow(missing_debug_implementations)]
+pub struct EngineViewMut<'a> {
+    pub tasks_tx: EngineTaskSender,
+    pub doc: &'a mut Document,
+    pub store: &'a mut StrokeStore,
+    pub camera: &'a mut Camera,
+    pub audioplayer: &'a mut Option<AudioPlayer>,
+}
+
+impl<'a> EngineViewMut<'a> {
+    // converts itself to the immutable variant
+    pub fn as_im<'m>(&'m self) -> EngineView<'m> {
+        EngineView::<'m> {
+            tasks_tx: self.tasks_tx.clone(),
+            doc: self.doc,
+            store: self.store,
+            camera: self.camera,
+            audioplayer: self.audioplayer,
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 /// A engine task, usually coming from a spawned thread and to be processed with `process_received_task()`.
@@ -54,6 +87,8 @@ struct EngineConfig {
     pdf_import_width_perc: serde_json::Value,
     #[serde(rename = "pdf_import_as_vector")]
     pdf_import_as_vector: serde_json::Value,
+    #[serde(rename = "pen_sounds")]
+    pen_sounds: serde_json::Value,
 }
 
 impl Default for EngineConfig {
@@ -66,6 +101,7 @@ impl Default for EngineConfig {
 
             pdf_import_width_perc: serde_json::to_value(&engine.pdf_import_width_perc).unwrap(),
             pdf_import_as_vector: serde_json::to_value(&engine.pdf_import_as_vector).unwrap(),
+            pen_sounds: serde_json::to_value(&engine.pen_sounds).unwrap(),
         }
     }
 }
@@ -90,7 +126,11 @@ pub struct RnoteEngine {
     pub pdf_import_width_perc: f64,
     #[serde(rename = "pdf_import_as_vector")]
     pub pdf_import_as_vector: bool,
+    #[serde(rename = "pen_sounds")]
+    pub pen_sounds: bool,
 
+    #[serde(skip)]
+    pub audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
     pub visual_debug: bool,
     #[serde(skip)]
@@ -103,6 +143,19 @@ pub struct RnoteEngine {
 impl Default for RnoteEngine {
     fn default() -> Self {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
+        let pen_sounds = false;
+        let audioplayer = AudioPlayer::new()
+            .map_err(|e| {
+                log::error!(
+                    "failed to create a new audio player in PenHolder::default(), Err {}",
+                    e
+                );
+            })
+            .map(|mut audioplayer| {
+                audioplayer.enabled = pen_sounds;
+                audioplayer
+            })
+            .ok();
 
         Self {
             document: Document::default(),
@@ -112,7 +165,9 @@ impl Default for RnoteEngine {
             camera: Camera::default(),
             pdf_import_width_perc: Self::PDF_IMPORT_WIDTH_PERC_DEFAULT,
             pdf_import_as_vector: true,
+            pen_sounds,
 
+            audioplayer,
             visual_debug: false,
             tasks_tx,
             tasks_rx: Some(tasks_rx),
@@ -128,6 +183,42 @@ impl RnoteEngine {
         self.tasks_tx.clone()
     }
 
+    /// Gets the EngineView
+    pub fn view(&self) -> EngineView {
+        EngineView {
+            tasks_tx: self.tasks_tx.clone(),
+            doc: &self.document,
+            store: &self.store,
+            camera: &self.camera,
+            audioplayer: &self.audioplayer,
+        }
+    }
+
+    /// Gets the EngineViewMut
+    pub fn view_mut(&mut self) -> EngineViewMut {
+        EngineViewMut {
+            tasks_tx: self.tasks_tx.clone(),
+            doc: &mut self.document,
+            store: &mut self.store,
+            camera: &mut self.camera,
+            audioplayer: &mut self.audioplayer,
+        }
+    }
+
+    /// wether pen sounds are enabled
+    pub fn pen_sounds(&self) -> bool {
+        self.pen_sounds
+    }
+
+    /// enables / disables the pen sounds
+    pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
+        self.pen_sounds = pen_sounds;
+
+        if let Some(audioplayer) = self.audioplayer.as_mut() {
+            audioplayer.enabled = pen_sounds;
+        }
+    }
+
     /// Wraps store.record().
     pub fn record(&mut self) -> SurfaceFlags {
         self.store.record()
@@ -136,8 +227,9 @@ impl RnoteEngine {
     /// Undo the latest changes
     pub fn undo(&mut self) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
+        let current_pen_style = self.penholder.current_style_w_override();
 
-        if self.penholder.current_style_w_override() != PenStyle::Selector {
+        if current_pen_style != PenStyle::Selector {
             surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
         }
 
@@ -153,9 +245,9 @@ impl RnoteEngine {
                     .force_style_without_sideeffects(PenStyle::Selector),
             );
         }
-        self.update_selector();
 
         self.resize_autoexpand();
+        self.update_pens_states();
         self.update_rendering_current_viewport();
 
         surface_flags.redraw = true;
@@ -166,8 +258,9 @@ impl RnoteEngine {
     /// redo the latest changes
     pub fn redo(&mut self) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
+        let current_pen_style = self.penholder.current_style_w_override();
 
-        if self.penholder.current_style_w_override() != PenStyle::Selector {
+        if current_pen_style != PenStyle::Selector {
             surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
         }
 
@@ -183,9 +276,9 @@ impl RnoteEngine {
                     .force_style_without_sideeffects(PenStyle::Selector),
             );
         }
-        self.update_selector();
 
         self.resize_autoexpand();
+        self.update_pens_states();
         self.update_rendering_current_viewport();
 
         surface_flags.redraw = true;
@@ -196,7 +289,7 @@ impl RnoteEngine {
     // Clears the stroke store
     pub fn clear(&mut self) {
         self.store.clear();
-        self.update_selector();
+        self.update_pens_states();
     }
 
     /// processes the received task from tasks_rx.
@@ -227,7 +320,7 @@ impl RnoteEngine {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
             }
             EngineTask::AppendImagesToStroke { key, images } => {
                 if let Err(e) = self.store.append_rendering_images(key, images) {
@@ -238,7 +331,7 @@ impl RnoteEngine {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
             }
             EngineTask::Quit => {
                 surface_flags.quit = true;
@@ -252,30 +345,39 @@ impl RnoteEngine {
         self.penholder.handle_pen_event(
             event,
             pen_mode,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
     pub fn handle_pen_pressed_shortcut_key(&mut self, shortcut_key: ShortcutKey) -> SurfaceFlags {
         self.penholder.handle_pressed_shortcut_key(
             shortcut_key,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
     pub fn change_pen_style(&mut self, new_style: PenStyle) -> SurfaceFlags {
         self.penholder.change_style(
             new_style,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
@@ -285,20 +387,26 @@ impl RnoteEngine {
     ) -> SurfaceFlags {
         self.penholder.change_style_override(
             new_style_override,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
     pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> SurfaceFlags {
         self.penholder.change_pen_mode(
             pen_mode,
-            self.tasks_tx(),
-            &mut self.document,
-            &mut self.store,
-            &mut self.camera,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
         )
     }
 
@@ -328,81 +436,52 @@ impl RnoteEngine {
         );
     }
 
-    // Generates bounds for each page on the document which contains content, extended to align with the format
-    pub fn pages_bounds_containing_content(&self) -> Vec<AABB> {
+    // Generates bounds for each page on the document which contains content
+    pub fn pages_bounds_w_content(&self) -> Vec<AABB> {
         let doc_bounds = self.document.bounds();
-        let keys = self.store.stroke_keys_as_rendered();
-        let strokes_bounds = self.store.bounds_for_strokes(&keys);
+        let mut keys = self.store.stroke_keys_as_rendered();
+        keys.extend(self.store.selection_keys_as_rendered());
 
-        if self.document.format.height > 0.0 && self.document.format.width > 0.0 {
-            doc_bounds
-                .split_extended_origin_aligned(na::vector![
-                    self.document.format.width,
-                    self.document.format.height
-                ])
-                .into_iter()
-                .filter(|page_bounds| {
-                    strokes_bounds
-                        .iter()
-                        .any(|stroke_bounds| stroke_bounds.intersects(&page_bounds))
-                })
-                .collect::<Vec<AABB>>()
+        let strokes_bounds = self.store.strokes_bounds(&keys);
+
+        let pages_bounds = doc_bounds
+            .split_extended_origin_aligned(na::vector![
+                self.document.format.width,
+                self.document.format.height
+            ])
+            .into_iter()
+            .filter(|page_bounds| {
+                // Filter the pages out that doesn't intersect with any stroke
+                strokes_bounds
+                    .iter()
+                    .any(|stroke_bounds| stroke_bounds.intersects(&page_bounds))
+            })
+            .collect::<Vec<AABB>>();
+
+        if pages_bounds.is_empty() {
+            // If no page has content, return the origin page
+            vec![AABB::new(
+                na::point![0.0, 0.0],
+                na::point![self.document.format.width, self.document.format.height],
+            )]
         } else {
-            vec![]
+            pages_bounds
         }
     }
 
-    /// Generates bounds which contain all pages on the doc with content, and are extended to align with the format.
+    /// Generates bounds which contain all pages on the doc with content extended to fit the format.
     pub fn bounds_w_content_extended(&self) -> Option<AABB> {
-        let bounds = self.pages_bounds_containing_content();
-        if bounds.is_empty() {
+        let pages_bounds = self.pages_bounds_w_content();
+
+        if pages_bounds.is_empty() {
             return None;
         }
 
-        let doc_bounds = self.document.bounds();
-
         Some(
-            bounds
+            pages_bounds
                 .into_iter()
-                // Filter out the page bounds that are not intersecting with the doc bounds.
-                .filter(|bounds| doc_bounds.intersects(&bounds.tightened(2.0)))
                 .fold(AABB::new_invalid(), |prev, next| prev.merged(&next)),
         )
-    }
-
-    /// Generates all svgs for all strokes, including the background. Exluding the current selection.
-    /// without root or xml header.
-    pub fn gen_svgs(&self) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let doc_bounds = self.document.bounds();
-        let mut svgs = vec![];
-
-        svgs.push(self.document.background.gen_svg(doc_bounds.loosened(1.0))?);
-
-        let strokes = self.store.stroke_keys_as_rendered();
-        svgs.append(&mut self.store.gen_svgs_for_strokes(&strokes));
-
-        Ok(svgs)
-    }
-
-    /// Generates all svgs intersecting the given bounds, including the background.
-    /// without root or xml header.
-    pub fn gen_svgs_intersecting_bounds(
-        &self,
-        viewport: AABB,
-    ) -> Result<Vec<render::Svg>, anyhow::Error> {
-        let doc_bounds = self.document.bounds();
-        let mut svgs = vec![];
-
-        // Background bounds are still doc bounds, for correct alignment of the background patterns
-        svgs.push(self.document.background.gen_svg(doc_bounds.loosened(1.0))?);
-
-        let keys = self
-            .store
-            .stroke_keys_as_rendered_intersecting_bounds(viewport);
-
-        svgs.append(&mut self.store.gen_svgs_for_strokes(&keys));
-
-        Ok(svgs)
     }
 
     pub fn doc_layout(&self) -> Layout {
@@ -447,10 +526,56 @@ impl RnoteEngine {
         }
     }
 
-    /// Updates the selector pen with the current store state.
-    /// Needs to be called whenever the selected strokes change outside of the selector
-    pub fn update_selector(&mut self) {
-        self.penholder.selector.update_from_store(&self.store);
+    /// Updates pens state with the current engine state.
+    /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all stroke, set strokes selected, etc. )
+    pub fn update_pens_states(&mut self) {
+        self.penholder.update_internal_state(&EngineView {
+            tasks_tx: self.tasks_tx(),
+            doc: &self.document,
+            store: &self.store,
+            camera: &self.camera,
+            audioplayer: &self.audioplayer,
+        });
+    }
+
+    /// Fetches clipboard content from current state.
+    /// Returns (the content, mime_type)
+    pub fn fetch_clipboard_content(&self) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+        // First try exporting the selection as svg
+        if let Some(selection_svg) = self.export_selection_as_svg_string(false)? {
+            return Ok(Some((
+                selection_svg.into_bytes(),
+                String::from("image/svg+xml"),
+            )));
+        }
+
+        // else fetch from pen
+        self.penholder.fetch_clipboard_content(&EngineView {
+            tasks_tx: self.tasks_tx(),
+            doc: &self.document,
+            store: &self.store,
+            camera: &self.camera,
+            audioplayer: &self.audioplayer,
+        })
+    }
+
+    // pastes clipboard content
+    pub fn paste_clipboard_content(
+        &mut self,
+        clipboard_content: &[u8],
+        mime_types: Vec<String>,
+    ) -> SurfaceFlags {
+        self.penholder.paste_clipboard_content(
+            clipboard_content,
+            mime_types,
+            &mut EngineViewMut {
+                tasks_tx: self.tasks_tx(),
+                doc: &mut self.document,
+                store: &mut self.store,
+                camera: &mut self.camera,
+                audioplayer: &mut self.audioplayer,
+            },
+        )
     }
 
     /// Imports and replace the engine config. NOT for opening files
@@ -458,10 +583,13 @@ impl RnoteEngine {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;
 
         self.document = serde_json::from_value(engine_config.document)?;
-        self.penholder
-            .import(serde_json::from_value(engine_config.penholder)?);
+        self.penholder = serde_json::from_value(engine_config.penholder)?;
         self.pdf_import_width_perc = serde_json::from_value(engine_config.pdf_import_width_perc)?;
         self.pdf_import_as_vector = serde_json::from_value(engine_config.pdf_import_as_vector)?;
+        self.pen_sounds = serde_json::from_value(engine_config.pen_sounds)?;
+
+        // Set the pen sounds to update the audioplayer
+        self.set_pen_sounds(self.pen_sounds);
 
         Ok(())
     }
@@ -473,6 +601,7 @@ impl RnoteEngine {
             penholder: serde_json::to_value(&self.penholder)?,
             pdf_import_width_perc: serde_json::to_value(&self.pdf_import_width_perc)?,
             pdf_import_as_vector: serde_json::to_value(&self.pdf_import_as_vector)?,
+            pen_sounds: serde_json::to_value(&self.pen_sounds)?,
         };
 
         Ok(serde_json::to_string(&engine_config)?)
@@ -511,7 +640,7 @@ impl RnoteEngine {
     ) -> anyhow::Result<()> {
         self.store.import_snapshot(store_snapshot);
 
-        self.update_selector();
+        self.update_pens_states();
 
         Ok(())
     }
@@ -640,7 +769,7 @@ impl RnoteEngine {
         self.document = doc;
         self.store.import_snapshot(&*store.take_store_snapshot());
 
-        self.update_selector();
+        self.update_pens_states();
 
         Ok(())
     }
@@ -748,69 +877,258 @@ impl RnoteEngine {
             self.store.set_selected(key, true);
         });
 
-        self.update_selector();
-
         surface_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
 
+        self.update_pens_states();
         self.update_rendering_current_viewport();
 
         surface_flags.redraw = true;
         surface_flags.resize = true;
-        surface_flags.store_changed = true;
-        surface_flags.penholder_changed = true;
+        surface_flags.indicate_changed_store = true;
+        surface_flags.refresh_ui = true;
 
         surface_flags
     }
 
-    /// Exports the doc with the strokes as a SVG string. Excluding the current selection.
-    pub fn export_doc_as_svg_string(&self) -> Result<String, anyhow::Error> {
-        let bounds = if let Some(bounds) = self.bounds_w_content_extended() {
-            bounds
+    /// generates the doc svg.
+    /// The coordinates are translated so that the svg has origin 0.0, 0.0
+    /// without root or xml header.
+    pub fn gen_doc_svg(&self, with_background: bool) -> Result<render::Svg, anyhow::Error> {
+        // Use a reasonably large image scale for crisp bitmap images
+        let image_scale = 3.0;
+
+        let doc_bounds = self.document.bounds();
+
+        let mut strokes = self.store.stroke_keys_as_rendered();
+        strokes.extend(self.store.selection_keys_as_rendered());
+
+        let mut doc_svg = if with_background {
+            let mut background_svg = self.document.background.gen_svg(doc_bounds)?;
+
+            background_svg.wrap_svg_root(
+                Some(AABB::new(
+                    na::point![0.0, 0.0],
+                    na::Point2::from(doc_bounds.extents()),
+                )),
+                Some(doc_bounds),
+                true,
+            );
+
+            background_svg
         } else {
-            return Err(anyhow::anyhow!(
-                "export_doc_as_svg_string() failed, bounds_w_content_extended() returned None"
-            ));
+            // we can have invalid bounds here, because we know we merge them with the strokes svg
+            render::Svg {
+                svg_data: String::new(),
+                bounds: AABB::new(na::point![0.0, 0.0], na::Point2::from(doc_bounds.extents())),
+            }
         };
 
-        let svgs = self.gen_svgs()?;
+        doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+            |piet_cx| {
+                piet_cx.transform(kurbo::Affine::translate(
+                    doc_bounds.mins.coords.to_kurbo_vec(),
+                ));
 
-        let mut svg_data = svgs
-            .iter()
-            .map(|svg| svg.svg_data.as_str())
-            .collect::<Vec<&str>>()
-            .join("\n");
+                self.store
+                    .draw_stroke_keys_to_piet(&strokes, piet_cx, image_scale)
+            },
+            AABB::new(na::point![0.0, 0.0], na::Point2::from(doc_bounds.extents())),
+        )?]);
 
-        svg_data = rnote_compose::utils::wrap_svg_root(
-            svg_data.as_str(),
-            Some(bounds),
-            Some(bounds),
-            true,
-        );
-
-        Ok(svg_data)
+        Ok(doc_svg)
     }
 
-    /// Exports the current selection as a SVG string
-    pub fn export_selection_as_svg_string(&self) -> anyhow::Result<Option<String>> {
-        let selection_keys = self.store.selection_keys_as_rendered();
-        if let Some(selection_bounds) = self.store.gen_bounds_for_strokes(&selection_keys) {
-            let mut svg_data = self
-                .store
-                .gen_svgs_for_strokes(&selection_keys)
-                .into_iter()
-                .map(|svg| svg.svg_data)
-                .join("\n");
+    /// generates the doc svg for the given viewport.
+    /// The coordinates are translated so that the svg has origin 0.0, 0.0
+    /// without root or xml header.
+    pub fn gen_doc_svg_with_viewport(
+        &self,
+        viewport: AABB,
+        with_background: bool,
+    ) -> Result<render::Svg, anyhow::Error> {
+        // Use a reasonably large image scale for crisp bitmap images
+        let image_scale = 3.0;
 
-            svg_data = rnote_compose::utils::wrap_svg_root(
-                svg_data.as_str(),
-                Some(selection_bounds),
+        // Background bounds are still doc bounds, for correct alignment of the background pattern
+        let mut doc_svg = if with_background {
+            let mut background_svg = self.document.background.gen_svg(viewport)?;
+
+            background_svg.wrap_svg_root(
+                Some(AABB::new(
+                    na::point![0.0, 0.0],
+                    na::Point2::from(viewport.extents()),
+                )),
+                Some(viewport),
+                true,
+            );
+
+            background_svg
+        } else {
+            // we can have invalid bounds here, because we know we merge them with the other svg
+            render::Svg {
+                svg_data: String::new(),
+                bounds: AABB::new(na::point![0.0, 0.0], na::Point2::from(viewport.extents())),
+            }
+        };
+
+        let mut strokes_in_viewport = self
+            .store
+            .stroke_keys_as_rendered_intersecting_bounds(viewport);
+        strokes_in_viewport.extend(
+            self.store
+                .selection_keys_as_rendered_intersecting_bounds(viewport),
+        );
+
+        doc_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+            |piet_cx| {
+                piet_cx.transform(kurbo::Affine::translate(
+                    -viewport.mins.coords.to_kurbo_vec(),
+                ));
+
+                self.store
+                    .draw_stroke_keys_to_piet(&strokes_in_viewport, piet_cx, image_scale)
+            },
+            AABB::new(na::point![0.0, 0.0], na::Point2::from(viewport.extents())),
+        )?]);
+
+        Ok(doc_svg)
+    }
+
+    /// generates the selection svg.
+    /// The coordinates are translated so that the svg has origin 0.0, 0.0
+    /// without root or xml header.
+    pub fn gen_selection_svg(
+        &self,
+        with_background: bool,
+    ) -> Result<Option<render::Svg>, anyhow::Error> {
+        // Use a reasonably large image scale for crisp bitmap images
+        let image_scale = 3.0;
+
+        let selection_keys = self.store.selection_keys_as_rendered();
+
+        if selection_keys.is_empty() {
+            return Ok(None);
+        }
+
+        let selection_bounds =
+            if let Some(selection_bounds) = self.store.bounds_for_strokes(&selection_keys) {
+                selection_bounds
+            } else {
+                return Ok(None);
+            };
+
+        let mut selection_svg = if with_background {
+            let mut background_svg = self.document.background.gen_svg(selection_bounds)?;
+
+            background_svg.wrap_svg_root(
+                Some(AABB::new(
+                    na::point![0.0, 0.0],
+                    na::Point2::from(selection_bounds.extents()),
+                )),
                 Some(selection_bounds),
                 true,
             );
-            Ok(Some(svg_data))
+
+            background_svg
         } else {
-            Ok(None)
-        }
+            render::Svg {
+                svg_data: String::new(),
+                bounds: AABB::new(
+                    na::point![0.0, 0.0],
+                    na::Point2::from(selection_bounds.extents()),
+                ),
+            }
+        };
+
+        selection_svg.merge([render::Svg::gen_with_piet_cairo_backend(
+            |piet_cx| {
+                piet_cx.transform(kurbo::Affine::translate(
+                    -selection_bounds.mins.coords.to_kurbo_vec(),
+                ));
+
+                self.store
+                    .draw_stroke_keys_to_piet(&selection_keys, piet_cx, image_scale)
+            },
+            AABB::new(
+                na::point![0.0, 0.0],
+                na::Point2::from(selection_bounds.extents()),
+            ),
+        )?]);
+
+        Ok(Some(selection_svg))
+    }
+
+    /// Exports the doc with the strokes as a SVG string. Excluding the current selection.
+    pub fn export_doc_as_svg_string(&self, with_background: bool) -> Result<String, anyhow::Error> {
+        let doc_svg = self.gen_doc_svg(with_background)?;
+
+        Ok(rnote_compose::utils::add_xml_header(
+            rnote_compose::utils::wrap_svg_root(
+                doc_svg.svg_data.as_str(),
+                Some(doc_svg.bounds),
+                Some(doc_svg.bounds),
+                true,
+            )
+            .as_str(),
+        ))
+    }
+
+    /// Exports the current selection as a SVG string
+    pub fn export_selection_as_svg_string(
+        &self,
+        with_background: bool,
+    ) -> anyhow::Result<Option<String>> {
+        let selection_svg = match self.gen_selection_svg(with_background)? {
+            Some(selection_svg) => selection_svg,
+            None => return Ok(None),
+        };
+
+        Ok(Some(rnote_compose::utils::add_xml_header(
+            rnote_compose::utils::wrap_svg_root(
+                selection_svg.svg_data.as_str(),
+                Some(selection_svg.bounds),
+                Some(selection_svg.bounds),
+                true,
+            )
+            .as_str(),
+        )))
+    }
+
+    /// Exporting doc as encoded image bytes (Png / Jpg, etc.)
+    pub fn export_doc_as_bitmapimage_bytes(
+        &self,
+        format: image::ImageOutputFormat,
+        with_background: bool,
+    ) -> Result<Vec<u8>, anyhow::Error> {
+        let image_scale = 1.0;
+
+        let doc_svg = self.gen_doc_svg(with_background)?;
+        let doc_svg_bounds = doc_svg.bounds;
+
+        Ok(
+            render::Image::gen_image_from_svg(doc_svg, doc_svg_bounds, image_scale)?
+                .into_encoded_bytes(format)?,
+        )
+    }
+
+    /// Exporting selection as encoded image bytes (Png / Jpg, etc.)
+    pub fn export_selection_as_bitmapimage_bytes(
+        &self,
+        format: image::ImageOutputFormat,
+        with_background: bool,
+    ) -> Result<Option<Vec<u8>>, anyhow::Error> {
+        let image_scale = 1.0;
+
+        let selection_svg = match self.gen_selection_svg(with_background)? {
+            Some(selection_svg) => selection_svg,
+            None => return Ok(None),
+        };
+        let selection_svg_bounds = selection_svg.bounds;
+
+        Ok(Some(
+            render::Image::gen_image_from_svg(selection_svg, selection_svg_bounds, image_scale)?
+                .into_encoded_bytes(format)?,
+        ))
     }
 
     /// Exports the doc with the strokes as a Xournal++ .xopp file. Excluding the current selection.
@@ -826,9 +1144,9 @@ impl RnoteEngine {
             },
         };
 
-        // xopp spec needs at least one page in vec, but its fine since pages_bounds() always produces at least one
+        // xopp spec needs at least one page in vec, but its fine because pages_bounds_w_content() always produces at least one
         let pages = self
-            .pages_bounds_containing_content()
+            .pages_bounds_w_content()
             .iter()
             .map(|&page_bounds| {
                 let page_keys = self
@@ -925,21 +1243,22 @@ impl RnoteEngine {
     pub fn export_doc_as_pdf_bytes(
         &self,
         title: String,
+        with_background: bool,
     ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
 
-        let pages = self
-            .pages_bounds_containing_content()
+        let pages_svgs = self
+            .pages_bounds_w_content()
             .into_iter()
             .filter_map(|page_bounds| {
                 Some((
                     page_bounds,
-                    self.gen_svgs_intersecting_bounds(page_bounds).ok()?,
+                    self.gen_doc_svg_with_viewport(page_bounds, with_background)
+                        .ok()?,
                 ))
             })
-            .collect::<Vec<(AABB, Vec<render::Svg>)>>();
+            .collect::<Vec<(AABB, render::Svg)>>();
 
-        let doc_bounds = self.document.bounds();
         let format_size = na::vector![
             f64::from(self.document.format.width),
             f64::from(self.document.format.height)
@@ -967,11 +1286,14 @@ impl RnoteEngine {
                     let cairo_cx =
                         cairo::Context::new(&surface).context("cario cx new() failed")?;
 
-                    for (page_bounds, page_svgs) in pages.into_iter() {
-                        cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                        render::Svg::draw_svgs_to_cairo_context(&page_svgs, doc_bounds, &cairo_cx)?;
+                    for (page_bounds, page_svg) in pages_svgs.into_iter() {
+                        render::Svg::draw_svgs_to_cairo_context(
+                            &[page_svg],
+                            page_bounds,
+                            &cairo_cx,
+                        )?;
+
                         cairo_cx.show_page().context("show page failed")?;
-                        cairo_cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
                     }
                 }
                 let data = *surface
@@ -1026,8 +1348,16 @@ impl RnoteEngine {
 
         snapshot.restore();
 
-        self.penholder
-            .draw_on_doc_snapshot(snapshot, doc_bounds, &self.camera)?;
+        self.penholder.draw_on_doc_snapshot(
+            snapshot,
+            &EngineView {
+                tasks_tx: self.tasks_tx(),
+                doc: &self.document,
+                store: &self.store,
+                camera: &self.camera,
+                audioplayer: &self.audioplayer,
+            },
+        )?;
         /*
                {
                    use crate::utils::GrapheneRectHelpers;
@@ -1088,6 +1418,8 @@ pub mod visual_debug {
     use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
     use crate::{DrawOnDocBehaviour, RnoteEngine};
     use rnote_compose::Color;
+
+    use super::EngineView;
 
     pub const COLOR_POS: Color = Color {
         r: 1.0,
@@ -1290,15 +1622,17 @@ pub mod visual_debug {
                 }
             }
             PenStyle::Selector => {
-                if let Some(bounds) = engine
-                    .penholder
-                    .selector
-                    .bounds_on_doc(doc_bounds, &engine.camera)
-                {
+                if let Some(bounds) = engine.penholder.selector.bounds_on_doc(&EngineView {
+                    tasks_tx: engine.tasks_tx(),
+                    doc: &engine.document,
+                    store: &engine.store,
+                    camera: &engine.camera,
+                    audioplayer: &engine.audioplayer,
+                }) {
                     draw_bounds(bounds, COLOR_SELECTOR_BOUNDS, snapshot, border_widths);
                 }
             }
-            PenStyle::Brush | PenStyle::Shaper | PenStyle::Tools => {}
+            PenStyle::Brush | PenStyle::Shaper | PenStyle::Typewriter | PenStyle::Tools => {}
         }
 
         Ok(())

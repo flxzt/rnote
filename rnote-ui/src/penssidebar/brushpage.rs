@@ -154,8 +154,7 @@ impl BrushPage {
     }
 
     pub fn solidstyle_pressure_curve(&self) -> PressureCurve {
-        PressureCurve::try_from(self.imp().solidstyle_pressure_curves_row.get().selected())
-            .unwrap()
+        PressureCurve::try_from(self.imp().solidstyle_pressure_curves_row.get().selected()).unwrap()
     }
 
     pub fn set_solidstyle_pressure_curve(&self, pressure_curve: PressureCurve) {

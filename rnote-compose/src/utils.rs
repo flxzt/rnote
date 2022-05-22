@@ -1,9 +1,7 @@
 use p2d::bounding_volume::AABB;
-use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 
 const XML_HEADER_REGEX: &str = r#"<\?xml[^\?>]*\?>"#;
-const SVG_ROOT_REGEX: &str = r#"<svg[^>]*>|<[^/svg]*/svg>"#;
 
 /// Check if a xml header is present
 pub fn check_xml_header(svg: &str) -> bool {
@@ -27,15 +25,9 @@ pub fn remove_xml_header(svg: &str) -> String {
     String::from(re.replace_all(svg, ""))
 }
 
-/// Checks is a svg root is present
-pub fn check_svg_root(svg: &str) -> bool {
-    let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
-    re.is_match(svg)
-}
-
-/// Wraps a svg str with a svg root element and its attributes
+/// Wraps a svg str in a svg root element
 pub fn wrap_svg_root(
-    data: &str,
+    svg_data: &str,
     bounds: Option<AABB>,
     viewbox: Option<AABB>,
     preserve_aspectratio: bool,
@@ -83,16 +75,10 @@ pub fn wrap_svg_root(
         .set("height", height.as_str())
         .set("viewBox", viewbox.as_str())
         .set("preserveAspectRatio", preserve_aspectratio.as_str())
-        .add(svg::node::Text::new(data));
+        .add(svg::node::Text::new(svg_data));
 
     // unwrapping because we know its a valid Svg
     svg_node_to_string(&svg_root).unwrap()
-}
-
-/// Strips the svg root element, if present
-pub fn strip_svg_root(svg: &str) -> String {
-    let re = regex::Regex::new(SVG_ROOT_REGEX).unwrap();
-    String::from(re.replace_all(svg, ""))
 }
 
 /// Converting a svg::Node to a String
@@ -127,17 +113,4 @@ pub fn random_id_prefix() -> String {
 pub fn seed_advance(seed: u64) -> u64 {
     let mut rng = rand_pcg::Pcg64::seed_from_u64(seed);
     rng.gen()
-}
-
-/// Generates a svg string from the piet context
-pub fn piet_svg_cx_to_svg(mut cx: piet_svg::RenderContext) -> Result<String, anyhow::Error> {
-    let mut data: Vec<u8> = vec![];
-    cx.write(&mut data)?;
-
-    cx.finish()
-        .map_err(|e| anyhow::anyhow!("cx.finish() failed in svg_cx_to_svg() with Err {}", e))?;
-
-    let svg_data = crate::utils::strip_svg_root(String::from_utf8(data)?.as_str());
-
-    Ok(svg_data)
 }

@@ -396,6 +396,13 @@ impl PenHolder {
 
         surface_flags.merge_with_other(other_surface_flags);
 
+        surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+
+        surface_flags
+    }
+
+    fn handle_pen_progress(&mut self, pen_progress: PenProgress) -> SurfaceFlags {
+        let mut surface_flags = SurfaceFlags::default();
         // Handle the new pen progress
         match pen_progress {
             PenProgress::Idle => {}
@@ -474,6 +481,98 @@ impl PenHolder {
                 }
             }
         }
+
+        surface_flags
+    }
+
+    /// fetches clipboard content from the current pen
+    pub fn fetch_clipboard_content(
+        &self,
+        doc: &Document,
+        store: &StrokeStore,
+        camera: &Camera,
+    ) -> (Vec<u8>, String) {
+        match self.current_style_w_override() {
+            PenStyle::Brush => self.brush.fetch_clipboard_content(doc, store, camera),
+            PenStyle::Shaper => self.shaper.fetch_clipboard_content(doc, store, camera),
+            PenStyle::Typewriter => self.typewriter.fetch_clipboard_content(doc, store, camera),
+            PenStyle::Eraser => self.eraser.fetch_clipboard_content(doc, store, camera),
+            PenStyle::Selector => self.selector.fetch_clipboard_content(doc, store, camera),
+            PenStyle::Tools => self.tools.fetch_clipboard_content(doc, store, camera),
+        }
+    }
+
+
+
+    /// Pastes the clipboard content into the current pen
+    pub fn paste_clipboard_content(
+        &mut self,
+        clipboard_content: &[u8],
+        mime_types: Vec<String>,
+        tasks_tx: EngineTaskSender,
+        doc: &mut Document,
+        store: &mut StrokeStore,
+        camera: &mut Camera,
+        audioplayer: &mut Option<AudioPlayer>,
+    ) -> SurfaceFlags {
+        let (pen_progress, mut surface_flags) = match self.current_style_w_override() {
+            PenStyle::Brush => self.brush.paste_clipboard_content(
+                clipboard_content,
+                mime_types,
+                tasks_tx,
+                doc,
+                store,
+                camera,
+                audioplayer,
+            ),
+            PenStyle::Shaper => self.shaper.paste_clipboard_content(
+                clipboard_content,
+                mime_types,
+                tasks_tx,
+                doc,
+                store,
+                camera,
+                audioplayer,
+            ),
+            PenStyle::Typewriter => self.typewriter.paste_clipboard_content(
+                clipboard_content,
+                mime_types,
+                tasks_tx,
+                doc,
+                store,
+                camera,
+                audioplayer,
+            ),
+            PenStyle::Eraser => self.eraser.paste_clipboard_content(
+                clipboard_content,
+                mime_types,
+                tasks_tx,
+                doc,
+                store,
+                camera,
+                audioplayer,
+            ),
+            PenStyle::Selector => self.selector.paste_clipboard_content(
+                clipboard_content,
+                mime_types,
+                tasks_tx,
+                doc,
+                store,
+                camera,
+                audioplayer,
+            ),
+            PenStyle::Tools => self.tools.paste_clipboard_content(
+                clipboard_content,
+                mime_types,
+                tasks_tx,
+                doc,
+                store,
+                camera,
+                audioplayer,
+            ),
+        };
+
+        surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
         surface_flags
     }

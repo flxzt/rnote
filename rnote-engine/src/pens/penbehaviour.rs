@@ -19,6 +19,30 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
         audioplayer: &mut Option<AudioPlayer>,
     ) -> (PenProgress, SurfaceFlags);
 
+    /// fetches clipboard content from the pen
+    fn fetch_clipboard_content(
+        &self,
+        _doc: &Document,
+        _store: &StrokeStore,
+        _camera: &Camera,
+    ) -> (Vec<u8>, String) {
+        (vec![], String::from(""))
+    }
+
+    /// Pasts the clipboard content into the pen
+    fn paste_clipboard_content(
+        &mut self,
+        _clipboard_content: &[u8],
+        _mime_types: Vec<String>,
+        _tasks_tx: EngineTaskSender,
+        _doc: &mut Document,
+        _store: &mut StrokeStore,
+        _camera: &mut Camera,
+        _audioplayer: &mut Option<AudioPlayer>,
+    ) -> (PenProgress, SurfaceFlags) {
+        (PenProgress::Idle, SurfaceFlags::default())
+    }
+
     /// Updates the internal state of the pen ( called for example when the engine state has changed outside of pen events )
     fn update_internal_state(
         &mut self,

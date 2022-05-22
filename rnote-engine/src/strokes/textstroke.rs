@@ -9,7 +9,6 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 use rnote_compose::{color, Color, Transform};
 use serde::{Deserialize, Serialize};
-use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{render, Camera, DrawBehaviour};
 
@@ -628,32 +627,24 @@ impl TextStroke {
         ))
     }
 
-    pub fn insert_char_after_cursor(
+    pub fn insert_text_after_cursor(
         &mut self,
-        keychar: char,
+        text: &str,
         cursor: &mut unicode_segmentation::GraphemeCursor,
     ) {
-        let graphemes_prev = self.text.graphemes(true).count();
-
-        self.text.insert(cursor.cur_cursor(), keychar);
-
-        // New text length, new cursor
-        let mut new_cursor =
-            unicode_segmentation::GraphemeCursor::new(cursor.cur_cursor(), self.text.len(), true);
-
-        let graphemes_after = self.text.graphemes(true).count();
-        if graphemes_after > graphemes_prev {
-            // We take the whole text, so it cannot fail
-            new_cursor.next_boundary(&self.text, 0).unwrap();
-        }
+        self.text.insert_str(cursor.cur_cursor(), text);
 
         // translate the text attributes
         self.translate_attrs_after_cursor(
             cursor.cur_cursor(),
-            new_cursor.cur_cursor() as i32 - cursor.cur_cursor() as i32,
+            text.len() as i32,
         );
 
-        *cursor = new_cursor;
+        *cursor = unicode_segmentation::GraphemeCursor::new(
+            cursor.cur_cursor() + text.len(),
+            self.text.len(),
+            true,
+        );
     }
 
     pub fn remove_grapheme_before_cursor(

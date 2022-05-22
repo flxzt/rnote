@@ -472,6 +472,30 @@ impl RnoteEngine {
         );
     }
 
+    /// Fetches clipboard content from current state.
+    /// Returns (the content, mime_type)
+    pub fn fetch_clipboard_content(&mut self) -> (Vec<u8>, String) {
+        self.penholder
+            .fetch_clipboard_content(&self.document, &self.store, &self.camera)
+    }
+
+    // pastes clipboard content
+    pub fn paste_clipboard_content(
+        &mut self,
+        clipboard_content: &[u8],
+        mime_types: Vec<String>,
+    ) -> SurfaceFlags {
+        self.penholder.paste_clipboard_content(
+            clipboard_content,
+            mime_types,
+            self.tasks_tx(),
+            &mut self.document,
+            &mut self.store,
+            &mut self.camera,
+            &mut self.audioplayer,
+        )
+    }
+
     /// Imports and replace the engine config. NOT for opening files
     pub fn load_engine_config(&mut self, serialized_config: &str) -> anyhow::Result<()> {
         let engine_config = serde_json::from_str::<EngineConfig>(serialized_config)?;

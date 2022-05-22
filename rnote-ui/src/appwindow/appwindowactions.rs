@@ -1300,6 +1300,7 @@ impl RnoteAppWindow {
         action_clipboard_paste.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             let content_formats = appwindow.clipboard().formats();
 
+            // Order matters here, we want to go from specific -> generic, mostly because `text/plain` is contained in many text based formats
             if content_formats.contain_mime_type("image/svg+xml") {
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
@@ -1332,8 +1333,25 @@ impl RnoteAppWindow {
                         }
                     }
                 }));
+            } else if content_formats.contain_mime_type("text/plain") || content_formats.contain_mime_type("text/plain;charset=utf-8"){
+                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                    match appwindow.clipboard().read_text_future().await {
+                        Ok(Some(text)) => {
+                            let surface_flags = appwindow.canvas().engine().borrow_mut().paste_clipboard_content(
+                                text.as_bytes(),
+                                content_formats.mime_types().into_iter().map(|mime_type| String::from(mime_type)).collect::<Vec<String>>()
+                            );
+                            appwindow.handle_surface_flags(surface_flags);
+                        }
+                        Ok(None) => {}
+                        Err(e) => {
+                            log::error!("failed to paste clipboard text, read_text() failed with Err {}", e);
+
+                        }
+                    }
+                }));
             } else {
-                log::debug!("failed to paste clipboard as vector image, unsupported mime-type");
+                log::debug!("failed to paste clipboard, unsupported mime-types: {:?}", content_formats.mime_types());
             }
         }));
     }

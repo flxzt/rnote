@@ -553,6 +553,7 @@ impl PenBehaviour for Typewriter {
 
                         doc.resize_autoexpand(store, camera);
 
+                        surface_flags.redraw = true;
                         surface_flags.resize = true;
                         surface_flags.store_changed = true;
                     };
@@ -560,7 +561,8 @@ impl PenBehaviour for Typewriter {
                     // Handling keyboard input
                     let new_state = match keyboard_key {
                         KeyboardKey::Unicode(keychar) => {
-                            textstroke.insert_char_after_cursor(keychar, cursor);
+                            textstroke
+                                .insert_text_after_cursor(keychar.to_string().as_str(), cursor);
                             update_stroke(store);
                             None
                         }
@@ -570,12 +572,12 @@ impl PenBehaviour for Typewriter {
                             None
                         }
                         KeyboardKey::HorizontalTab => {
-                            textstroke.insert_char_after_cursor('\t', cursor);
+                            textstroke.insert_text_after_cursor("\t", cursor);
                             update_stroke(store);
                             None
                         }
                         KeyboardKey::Linefeed => {
-                            textstroke.insert_char_after_cursor('\n', cursor);
+                            textstroke.insert_text_after_cursor("\n", cursor);
                             update_stroke(store);
 
                             None
@@ -757,6 +759,7 @@ impl PenBehaviour for Typewriter {
                 },
             ) => {
                 //log::debug!("key: {:?}", keyboard_key);
+
                 if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
                     let update_stroke = |store: &mut StrokeStore| {
                         surface_flags.merge_with_other(store.record());
@@ -771,6 +774,7 @@ impl PenBehaviour for Typewriter {
 
                         doc.resize_autoexpand(store, camera);
 
+                        surface_flags.redraw = true;
                         surface_flags.resize = true;
                         surface_flags.store_changed = true;
                     };
@@ -1029,6 +1033,153 @@ impl PenBehaviour for Typewriter {
         (pen_progress, surface_flags)
     }
 
+    fn paste_clipboard_content(
+        &mut self,
+        clipboard_content: &[u8],
+        mime_types: Vec<String>,
+        tasks_tx: EngineTaskSender,
+        doc: &mut Document,
+        store: &mut StrokeStore,
+        camera: &mut Camera,
+        _audioplayer: &mut Option<AudioPlayer>,
+    ) -> (PenProgress, SurfaceFlags) {
+        let mut surface_flags = SurfaceFlags::default();
+
+        let pen_progress = match &mut self.state {
+            TypewriterState::Start(pos) => {
+                if mime_types
+                    .iter()
+                    .any(|mime_type| mime_type.contains("text/plain"))
+                {
+                    if let Ok(clipboard_text) = String::from_utf8(clipboard_content.to_vec()) {
+                        let text_len = clipboard_text.len();
+
+                        surface_flags.merge_with_other(store.record());
+
+                        let mut text_style = self.text_style.clone();
+                        if self.max_width_enabled {
+                            text_style.max_width = Some(self.text_width);
+                        }
+
+                        let textstroke = TextStroke::new(clipboard_text, *pos, text_style);
+
+                        let cursor = unicode_segmentation::GraphemeCursor::new(
+                            text_len,
+                            textstroke.text.len(),
+                            true,
+                        );
+
+                        let stroke_key = store.insert_stroke(Stroke::TextStroke(textstroke));
+
+                        if let Err(e) = store.regenerate_rendering_for_stroke(
+                            stroke_key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        ) {
+                            log::error!("regenerate_rendering_for_stroke() after inserting a new textstroke from clipboard contents in typewriter paste_clipboard_contents() failed with Err {}", e);
+                        }
+
+                        self.state = TypewriterState::Modifying {
+                            stroke_key,
+                            cursor,
+                            pen_down: false,
+                        };
+
+                        surface_flags.redraw = true;
+                    }
+                }
+
+                PenProgress::InProgress
+            }
+            TypewriterState::Modifying {
+                stroke_key, cursor, ..
+            } => {
+                if mime_types
+                    .iter()
+                    .any(|mime_type| mime_type.contains("text/plain"))
+                {
+                    surface_flags.merge_with_other(store.record());
+
+                    if let (Some(Stroke::TextStroke(textstroke)), Ok(clipboard_text)) = (
+                        store.get_stroke_mut(*stroke_key),
+                        String::from_utf8(clipboard_content.to_vec()),
+                    ) {
+                        textstroke.insert_text_after_cursor(clipboard_text.as_str(), cursor);
+
+                        store.update_geometry_for_stroke(*stroke_key);
+                        store.regenerate_rendering_for_stroke_threaded(
+                            tasks_tx,
+                            *stroke_key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        );
+
+                        doc.resize_autoexpand(store, camera);
+
+                        surface_flags.redraw = true;
+                        surface_flags.resize = true;
+                        surface_flags.store_changed = true;
+                    }
+                }
+
+                PenProgress::InProgress
+            }
+            TypewriterState::Selecting {
+                stroke_key,
+                cursor,
+                selection_cursor,
+                ..
+            } => {
+                if mime_types
+                    .iter()
+                    .any(|mime_type| mime_type.contains("text/plain"))
+                {
+                    surface_flags.merge_with_other(store.record());
+
+                    if let (Some(Stroke::TextStroke(textstroke)), Ok(clipboard_text)) = (
+                        store.get_stroke_mut(*stroke_key),
+                        String::from_utf8(clipboard_content.to_vec()),
+                    ) {
+                        textstroke.replace_text_between_selection_cursors(
+                            cursor,
+                            selection_cursor,
+                            clipboard_text.as_str(),
+                        );
+
+                        store.update_geometry_for_stroke(*stroke_key);
+                        store.regenerate_rendering_for_stroke_threaded(
+                            tasks_tx,
+                            *stroke_key,
+                            camera.viewport(),
+                            camera.image_scale(),
+                        );
+                        doc.resize_autoexpand(store, camera);
+
+                        self.state = TypewriterState::Modifying {
+                            stroke_key: *stroke_key,
+                            cursor: cursor.clone(),
+                            pen_down: false,
+                        };
+
+                        surface_flags.resize = true;
+                        surface_flags.redraw = true;
+                        surface_flags.store_changed = true;
+                    }
+                }
+
+                PenProgress::InProgress
+            }
+            TypewriterState::Idle
+            | TypewriterState::Translating { .. }
+            | TypewriterState::AdjustTextWidth { .. } => {
+                // Do nothing when
+                PenProgress::InProgress
+            }
+        };
+
+        (pen_progress, surface_flags)
+    }
+
     fn update_internal_state(
         &mut self,
         _doc: &Document,
@@ -1186,47 +1337,6 @@ impl Typewriter {
 
             if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
                 textstroke.text_style.alignment = alignment;
-
-                store.update_geometry_for_stroke(*stroke_key);
-                if let Err(e) = store.regenerate_rendering_for_stroke(
-                    *stroke_key,
-                    camera.viewport(),
-                    camera.image_scale(),
-                ) {
-                    log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
-                }
-
-                surface_flags.redraw = true;
-                surface_flags.store_changed = true;
-            }
-        }
-
-        surface_flags
-    }
-
-    // Sets the alignment for the text stroke that is currently being modified
-    pub fn insert_str_modifying_stroke(
-        &mut self,
-        to_insert: &str,
-        _doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &Camera,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
-
-        if let TypewriterState::Modifying {
-            stroke_key, cursor, ..
-        }
-        | TypewriterState::Selecting {
-            stroke_key, cursor, ..
-        } = &mut self.state
-        {
-            surface_flags.merge_with_other(store.record());
-
-            if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
-                for keychar in to_insert.chars().into_iter() {
-                    textstroke.insert_char_after_cursor(keychar, cursor);
-                }
 
                 store.update_geometry_for_stroke(*stroke_key);
                 if let Err(e) = store.regenerate_rendering_for_stroke(

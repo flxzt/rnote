@@ -39,6 +39,8 @@ impl RnoteAppWindow {
         self.add_action(&action_open_canvasmenu);
         let action_open_appmenu = gio::SimpleAction::new("open-appmenu", None);
         self.add_action(&action_open_appmenu);
+        let action_drag_canvas = gio::SimpleAction::new("drag-canvas", None);
+        self.add_action(&action_drag_canvas);
         let action_text_toast =
             gio::SimpleAction::new("text-toast", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_text_toast);
@@ -208,6 +210,12 @@ impl RnoteAppWindow {
         // Open App Menu
         action_open_appmenu.connect_activate(clone!(@weak self as appwindow => move |_,_| {
             appwindow.mainheader().appmenu().popovermenu().popup();
+        }));
+
+        // Activate drag tool
+        action_drag_canvas.connect_activate(clone!(@weak self as appwindow => move |_,_| {
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Tools.nick().to_variant()));
+            adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"offsetcamera".to_variant()));
         }));
 
         // Notify with a text toast
@@ -1297,6 +1305,7 @@ impl RnoteAppWindow {
         app.set_accels_for_action("win.keyboard-shortcuts", &["<Ctrl>question"]);
         app.set_accels_for_action("win.open-canvasmenu", &["F9"]);
         app.set_accels_for_action("win.open-appmenu", &["F10"]);
+        app.set_accels_for_action("win.drag-canvas", &["<Ctrl>d"]);
         app.set_accels_for_action("win.new-doc", &["<Ctrl>n"]);
         app.set_accels_for_action("win.open-doc", &["<Ctrl>o"]);
         app.set_accels_for_action("win.save-doc", &["<Ctrl>s"]);

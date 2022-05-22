@@ -1,8 +1,8 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
-use crate::engine::{EngineViewMut, EngineView};
+use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::{ DrawOnDocBehaviour, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, SurfaceFlags};
 
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
@@ -210,10 +210,7 @@ impl PenBehaviour for Shaper {
 }
 
 impl DrawOnDocBehaviour for Shaper {
-    fn bounds_on_doc(
-        &self,
-        engine_view: &EngineView
-    ) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {
@@ -227,7 +224,7 @@ impl DrawOnDocBehaviour for Shaper {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let style = self.gen_style_for_current_options();

@@ -1246,6 +1246,51 @@ impl PenBehaviour for Typewriter {
         (pen_progress, surface_flags)
     }
 
+    fn fetch_clipboard_content(
+        &self,
+        engine_view: &EngineView,
+    ) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+        match &self.state {
+            TypewriterState::Idle
+            | TypewriterState::Start(_)
+            | TypewriterState::Modifying { .. }
+            | TypewriterState::Translating { .. }
+            | TypewriterState::AdjustTextWidth { .. } => Ok(None),
+            TypewriterState::Selecting {
+                stroke_key,
+                cursor,
+                selection_cursor,
+                ..
+            } => {
+                if let Some(Stroke::TextStroke(textstroke)) =
+                    engine_view.store.get_stroke_ref(*stroke_key)
+                {
+                    let cursor_pos = cursor.cur_cursor();
+                    let selection_cursor_pos = selection_cursor.cur_cursor();
+
+                    // ensure range is positive
+                    let pos_cursor_range = if cursor_pos < selection_cursor_pos {
+                        cursor_pos..selection_cursor_pos
+                    } else {
+                        selection_cursor_pos..cursor_pos
+                    };
+
+                    // Current selection as clipboard text
+                    let selection_text = textstroke
+                        .get_text_slice_for_range(pos_cursor_range)
+                        .to_string();
+
+                    return Ok(Some((
+                        selection_text.into_bytes(),
+                        String::from("text/plain"),
+                    )));
+                }
+
+                Ok(None)
+            }
+        }
+    }
+
     fn update_internal_state(&mut self, engine_view: &EngineView) {
         match &mut self.state {
             TypewriterState::Idle | TypewriterState::Start(_) => {}

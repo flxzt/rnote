@@ -625,10 +625,7 @@ impl PenBehaviour for Selector {
 }
 
 impl DrawOnDocBehaviour for Selector {
-    fn bounds_on_doc(
-        &self,
-        engine_view: &EngineView
-    ) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
         let total_zoom = engine_view.camera.total_zoom();
 
         match &self.state {
@@ -664,7 +661,7 @@ impl DrawOnDocBehaviour for Selector {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let total_zoom = engine_view.camera.total_zoom();
@@ -709,7 +706,12 @@ impl DrawOnDocBehaviour for Selector {
                 selection_bounds,
                 ..
             } => {
-                Self::draw_selection_overlay(cx, *selection_bounds, modify_state, engine_view.camera)?;
+                Self::draw_selection_overlay(
+                    cx,
+                    *selection_bounds,
+                    modify_state,
+                    engine_view.camera,
+                )?;
 
                 match modify_state {
                     ModifyState::Rotate {

@@ -14,8 +14,11 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
     ) -> (PenProgress, SurfaceFlags);
 
     /// fetches clipboard content from the pen
-    fn fetch_clipboard_content(&self, _engine_view: &EngineView) -> (Vec<u8>, String) {
-        (vec![], String::from(""))
+    fn fetch_clipboard_content(
+        &self,
+        _engine_view: &EngineView,
+    ) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+        Ok(None)
     }
 
     /// Pasts the clipboard content into the pen

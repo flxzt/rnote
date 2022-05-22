@@ -1,5 +1,5 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
-use crate::engine::{EngineViewMut, EngineView};
+use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
@@ -261,10 +261,7 @@ impl PenBehaviour for Brush {
 }
 
 impl DrawOnDocBehaviour for Brush {
-    fn bounds_on_doc(
-        &self,
-        engine_view: &EngineView
-    ) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
         let style = self.gen_style_for_current_options();
 
         match &self.state {

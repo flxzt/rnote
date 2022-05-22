@@ -1277,20 +1277,23 @@ impl RnoteAppWindow {
             dialogs::dialog_export_doc_as_xopp(&appwindow);
         }));
 
-        // Clipboard copy selection
+        // Clipboard copy
         action_clipboard_copy.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-        match appwindow.canvas().engine().borrow().export_selection_as_svg_string(false) {
-            Ok(Some(selection_svg_data)) => {
-                let svg_content_provider = gdk::ContentProvider::for_bytes("image/svg+xml", &glib::Bytes::from(selection_svg_data.as_bytes()));
+        match appwindow.canvas().engine().borrow().fetch_clipboard_content() {
+            Ok(Some((data, mime_type))) => {
+                //log::debug!("set clipboard with content, mime-type: {}", mime_type);
+
+                let svg_content_provider = gdk::ContentProvider::for_bytes(mime_type.as_str(), &glib::Bytes::from_owned(data));
+
                 if let Err(e) = appwindow.clipboard().set_content(Some(&svg_content_provider)) {
-                    log::error!("set_content() failed in clipboard_copy_selection actino, Err {}", e);
+                    log::error!("clipboard set_content() failed in clipboard-copy action, Err {}", e);
                 }
             }
             Ok(None) => {
-                log::debug!("can't copy selection into clipboard. Is empty");
+                log::debug!("can't copy into clipboard. Is empty");
             }
             Err(e) => {
-                log::error!("export_selection_as_svg_string() failed in clipboard_copy_selection action, Err {}", e);
+                log::error!("fetch_clipboard_content() failed in clipboard-copy action, Err {}", e);
             }
         }
     }));

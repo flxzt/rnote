@@ -399,7 +399,10 @@ impl PenHolder {
     }
 
     /// fetches clipboard content from the current pen
-    pub fn fetch_clipboard_content(&self, engine_view: &EngineView) -> (Vec<u8>, String) {
+    pub fn fetch_clipboard_content(
+        &self,
+        engine_view: &EngineView,
+    ) -> anyhow::Result<Option<(Vec<u8>, String)>> {
         match self.current_style_w_override() {
             PenStyle::Brush => self.brush.fetch_clipboard_content(engine_view),
             PenStyle::Shaper => self.shaper.fetch_clipboard_content(engine_view),

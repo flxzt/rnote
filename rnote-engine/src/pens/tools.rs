@@ -1,4 +1,4 @@
-use crate::engine::{EngineViewMut, EngineView};
+use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::{DrawOnDocBehaviour, SurfaceFlags};
 use piet::RenderContext;
@@ -44,10 +44,7 @@ impl VerticalSpaceTool {
 }
 
 impl DrawOnDocBehaviour for VerticalSpaceTool {
-    fn bounds_on_doc(
-        &self,
-        engine_view: &EngineView
-    ) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
         let viewport = engine_view.camera.viewport();
 
         let x = viewport.mins[0];
@@ -62,7 +59,7 @@ impl DrawOnDocBehaviour for VerticalSpaceTool {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
@@ -135,10 +132,7 @@ impl DragProximityTool {
 }
 
 impl DrawOnDocBehaviour for DragProximityTool {
-    fn bounds_on_doc(
-        &self,
-        _engine_view: &EngineView
-    ) -> Option<AABB> {
+    fn bounds_on_doc(&self, _engine_view: &EngineView) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.pos),
             na::Vector2::repeat(self.radius),
@@ -148,7 +142,7 @@ impl DrawOnDocBehaviour for DragProximityTool {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        _engine_view: &EngineView
+        _engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
         let mut radius = self.radius;
@@ -191,20 +185,18 @@ impl OffsetCameraTool {
 }
 
 impl DrawOnDocBehaviour for OffsetCameraTool {
-    fn bounds_on_doc(
-        &self,
-        engine_view: &EngineView
-    ) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
         Some(AABB::from_half_extents(
             na::Point2::from(self.start),
-            ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5) / engine_view.camera.total_zoom(),
+            ((Self::DRAW_SIZE + na::Vector2::repeat(Self::PATH_WIDTH)) * 0.5)
+                / engine_view.camera.total_zoom(),
         ))
     }
 
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
@@ -457,21 +449,12 @@ impl PenBehaviour for Tools {
 }
 
 impl DrawOnDocBehaviour for Tools {
-    fn bounds_on_doc(&self, 
-        
-        engine_view: &EngineView
-        ) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
         match self.state {
             ToolsState::Active => match self.style {
-                ToolsStyle::VerticalSpace => {
-                    self.verticalspace_tool.bounds_on_doc(engine_view)
-                }
-                ToolsStyle::DragProximity => {
-                    self.dragproximity_tool.bounds_on_doc(engine_view)
-                }
-                ToolsStyle::OffsetCamera => {
-                    self.offsetcamera_tool.bounds_on_doc(engine_view)
-                }
+                ToolsStyle::VerticalSpace => self.verticalspace_tool.bounds_on_doc(engine_view),
+                ToolsStyle::DragProximity => self.dragproximity_tool.bounds_on_doc(engine_view),
+                ToolsStyle::OffsetCamera => self.offsetcamera_tool.bounds_on_doc(engine_view),
             },
             ToolsState::Idle => None,
         }
@@ -480,18 +463,16 @@ impl DrawOnDocBehaviour for Tools {
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        engine_view: &EngineView
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         match &self.style {
             ToolsStyle::VerticalSpace => {
-                self.verticalspace_tool
-                    .draw_on_doc(cx, engine_view)?;
+                self.verticalspace_tool.draw_on_doc(cx, engine_view)?;
             }
             ToolsStyle::DragProximity => {
-                self.dragproximity_tool
-                    .draw_on_doc(cx, engine_view)?;
+                self.dragproximity_tool.draw_on_doc(cx, engine_view)?;
             }
             ToolsStyle::OffsetCamera => {
                 self.offsetcamera_tool.draw_on_doc(cx, engine_view)?;

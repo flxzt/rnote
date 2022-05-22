@@ -190,7 +190,7 @@ impl RnoteEngine {
             doc: &self.document,
             store: &self.store,
             camera: &self.camera,
-            audioplayer: &self.audioplayer
+            audioplayer: &self.audioplayer,
         }
     }
 
@@ -201,7 +201,7 @@ impl RnoteEngine {
             doc: &mut self.document,
             store: &mut self.store,
             camera: &mut self.camera,
-            audioplayer: &mut self.audioplayer
+            audioplayer: &mut self.audioplayer,
         }
     }
 
@@ -540,7 +540,16 @@ impl RnoteEngine {
 
     /// Fetches clipboard content from current state.
     /// Returns (the content, mime_type)
-    pub fn fetch_clipboard_content(&mut self) -> (Vec<u8>, String) {
+    pub fn fetch_clipboard_content(&self) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+        // First try exporting the selection as svg
+        if let Some(selection_svg) = self.export_selection_as_svg_string(false)? {
+            return Ok(Some((
+                selection_svg.into_bytes(),
+                String::from("image/svg+xml"),
+            )));
+        }
+
+        // else fetch from pen
         self.penholder.fetch_clipboard_content(&EngineView {
             tasks_tx: self.tasks_tx(),
             doc: &self.document,

@@ -315,7 +315,7 @@ impl PenBehaviour for Tools {
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
@@ -390,7 +390,7 @@ impl PenBehaviour for Tools {
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             surface_flags.resize = true;
-                            surface_flags.camera_changed = true;
+                            surface_flags.update_view = true;
                         }
 
                         PenProgress::InProgress
@@ -398,7 +398,7 @@ impl PenBehaviour for Tools {
                 };
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 pen_progress
             }
@@ -428,7 +428,7 @@ impl PenBehaviour for Tools {
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -445,7 +445,7 @@ impl PenBehaviour for Tools {
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished

@@ -11,9 +11,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
-use crate::strokes::textstroke::{RangedTextAttribute, TextAlignment, TextAttribute, TextStyle};
+use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
-use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
 use super::penbehaviour::PenProgress;
 use super::PenBehaviour;
@@ -349,7 +349,6 @@ impl PenBehaviour for Typewriter {
         //log::debug!("typewriter handle_event: state: {:#?}, event: {:#?}", self.state, event);
 
         let mut surface_flags = SurfaceFlags::default();
-
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
         let pen_progress = match (&mut self.state, event) {
@@ -357,12 +356,14 @@ impl PenBehaviour for Typewriter {
                 TypewriterState::Idle | TypewriterState::Start { .. },
                 PenEvent::Down { element, .. },
             ) => {
+                let mut refresh_state = false;
                 let mut new_state = TypewriterState::Start(element.pos);
 
                 if let Some(stroke_key) = engine_view
                     .store
                     .query_stroke_hitboxes_contain_coord(engine_view.camera.viewport(), element.pos)
                 {
+                    // When clicked on a textstroke, we start modifying it
                     if let Some(Stroke::TextStroke(textstroke)) =
                         engine_view.store.get_stroke_ref(stroke_key)
                     {
@@ -385,10 +386,20 @@ impl PenBehaviour for Typewriter {
                             cursor,
                             pen_down: true,
                         };
+                        refresh_state = true;
                     }
                 }
 
                 self.state = new_state;
+
+                // after setting new state
+                if refresh_state {
+                    // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
+                    self.update_internal_state(&engine_view.as_im());
+
+                    surface_flags.redraw = true;
+                    surface_flags.refresh_ui = true;
+                }
 
                 PenProgress::InProgress
             }
@@ -564,7 +575,7 @@ impl PenBehaviour for Typewriter {
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
-                        surface_flags.store_changed = true;
+                        surface_flags.indicate_changed_store = true;
                     };
 
                     // Handling keyboard input
@@ -807,7 +818,7 @@ impl PenBehaviour for Typewriter {
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
-                        surface_flags.store_changed = true;
+                        surface_flags.indicate_changed_store = true;
                     };
 
                     // Handle keyboard keys
@@ -953,7 +964,7 @@ impl PenBehaviour for Typewriter {
                     *current_pos = element.pos;
 
                     surface_flags.redraw = true;
-                    surface_flags.store_changed = true;
+                    surface_flags.indicate_changed_store = true;
                 }
 
                 PenProgress::InProgress
@@ -987,7 +998,7 @@ impl PenBehaviour for Typewriter {
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -1033,7 +1044,7 @@ impl PenBehaviour for Typewriter {
                 *current_pos = element.pos;
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -1066,7 +1077,7 @@ impl PenBehaviour for Typewriter {
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -1171,7 +1182,7 @@ impl PenBehaviour for Typewriter {
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
-                        surface_flags.store_changed = true;
+                        surface_flags.indicate_changed_store = true;
                     }
                 }
 
@@ -1218,7 +1229,7 @@ impl PenBehaviour for Typewriter {
 
                         surface_flags.resize = true;
                         surface_flags.redraw = true;
-                        surface_flags.store_changed = true;
+                        surface_flags.indicate_changed_store = true;
                     }
                 }
 
@@ -1247,6 +1258,12 @@ impl PenBehaviour for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
+                    self.text_style = textstroke.text_style.clone();
+
+                    if let Some(max_width) = textstroke.text_style.max_width {
+                        self.text_width = max_width;
+                    }
+
                     update_cursors_for_textstroke(textstroke, cursor, Some(selection_cursor));
                 }
             }
@@ -1262,6 +1279,8 @@ impl PenBehaviour for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_ref(*stroke_key)
                 {
+                    self.text_style = textstroke.text_style.clone();
+
                     if let Some(max_width) = textstroke.text_style.max_width {
                         self.text_width = max_width;
                     }
@@ -1301,6 +1320,7 @@ impl Typewriter {
     // The size of the translate node, located in the upper left corner
     const ADJUST_TEXT_WIDTH_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
 
+    /// the bounds of the text rect enclosing the textstroke
     fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> AABB {
         let origin = textstroke.transform.translation_part();
 
@@ -1311,6 +1331,7 @@ impl Typewriter {
         .merged(&textstroke.bounds())
     }
 
+    /// the bounds of the translate node
     fn translate_node_bounds(typewriter_bounds: AABB, camera: &Camera) -> AABB {
         let total_zoom = camera.total_zoom();
 
@@ -1322,6 +1343,7 @@ impl Typewriter {
         )
     }
 
+    /// the center of the adjust text width node
     fn adjust_text_width_node_center(
         text_rect_origin: na::Vector2<f64>,
         text_width: f64,
@@ -1335,6 +1357,7 @@ impl Typewriter {
         ]
     }
 
+    /// the bounds of the adjust text width node
     fn adjust_text_width_node_bounds(
         text_rect_origin: na::Vector2<f64>,
         text_width: f64,
@@ -1371,14 +1394,15 @@ impl Typewriter {
         }
     }
 
-    // Sets the alignment for the text stroke that is currently being modified
-    pub fn set_alignment_modifying_stroke(
+    // changes the text style of the text stroke that is currently being modified
+    pub fn change_text_style_in_modifying_stroke<F>(
         &mut self,
-        alignment: TextAlignment,
-        _doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &Camera,
-    ) -> SurfaceFlags {
+        modify_func: F,
+        engine_view: &mut EngineViewMut,
+    ) -> SurfaceFlags
+    where
+        F: FnOnce(&mut TextStyle),
+    {
         let mut surface_flags = SurfaceFlags::default();
 
         if let TypewriterState::Modifying { stroke_key, .. }
@@ -1386,22 +1410,24 @@ impl Typewriter {
         | TypewriterState::Translating { stroke_key, .. }
         | TypewriterState::AdjustTextWidth { stroke_key, .. } = &mut self.state
         {
-            surface_flags.merge_with_other(store.record());
+            surface_flags.merge_with_other(engine_view.store.record());
 
-            if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(*stroke_key) {
-                textstroke.text_style.alignment = alignment;
+            if let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(*stroke_key)
+            {
+                modify_func(&mut textstroke.text_style);
 
-                store.update_geometry_for_stroke(*stroke_key);
-                if let Err(e) = store.regenerate_rendering_for_stroke(
+                engine_view.store.update_geometry_for_stroke(*stroke_key);
+                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                     *stroke_key,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 ) {
                     log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
             }
         }
 
@@ -1410,29 +1436,29 @@ impl Typewriter {
 
     pub fn remove_text_attributes_current_selection(
         &mut self,
-        _doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &Camera,
+        engine_view: &mut EngineViewMut,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
         if let Some((selection_range, stroke_key)) = self.selection_range() {
-            surface_flags.merge_with_other(store.record());
+            surface_flags.merge_with_other(engine_view.store.record());
 
-            if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(stroke_key) {
+            if let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(stroke_key)
+            {
                 textstroke.remove_attrs_for_range(selection_range);
 
-                store.update_geometry_for_stroke(stroke_key);
-                if let Err(e) = store.regenerate_rendering_for_stroke(
+                engine_view.store.update_geometry_for_stroke(stroke_key);
+                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 ) {
                     log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
             }
         }
 
@@ -1442,16 +1468,16 @@ impl Typewriter {
     pub fn add_text_attribute_current_selection(
         &mut self,
         text_attribute: TextAttribute,
-        _doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &Camera,
+        engine_view: &mut EngineViewMut,
     ) -> SurfaceFlags {
         let mut surface_flags = SurfaceFlags::default();
 
         if let Some((selection_range, stroke_key)) = self.selection_range() {
-            surface_flags.merge_with_other(store.record());
+            surface_flags.merge_with_other(engine_view.store.record());
 
-            if let Some(Stroke::TextStroke(textstroke)) = store.get_stroke_mut(stroke_key) {
+            if let Some(Stroke::TextStroke(textstroke)) =
+                engine_view.store.get_stroke_mut(stroke_key)
+            {
                 textstroke
                     .text_style
                     .ranged_text_attributes
@@ -1460,17 +1486,17 @@ impl Typewriter {
                         range: selection_range,
                     });
 
-                store.update_geometry_for_stroke(stroke_key);
-                if let Err(e) = store.regenerate_rendering_for_stroke(
+                engine_view.store.update_geometry_for_stroke(stroke_key);
+                if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                     stroke_key,
-                    camera.viewport(),
-                    camera.image_scale(),
+                    engine_view.camera.viewport(),
+                    engine_view.camera.image_scale(),
                 ) {
                     log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
             }
         }
 

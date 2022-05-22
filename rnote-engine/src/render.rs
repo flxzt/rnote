@@ -515,11 +515,14 @@ impl Image {
     }
 
     /// Renders an image with a function that draws onto a piet CairoRenderContext
-    pub fn gen_with_piet(
-        mut draw_func: impl FnMut(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
+    pub fn gen_with_piet<F>(
+        draw_func: F,
         mut bounds: AABB,
         image_scale: f64,
-    ) -> anyhow::Result<Self> {
+    ) -> anyhow::Result<Self>
+    where
+        F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
+    {
         bounds.ensure_positive();
         bounds = bounds.ceil().loosened(1.0);
         bounds.assert_valid()?;
@@ -619,9 +622,9 @@ impl Svg {
     }
 
     /// Generates an svg with piet, using the piet_svg backend (context creation might be slow due to font loading).
-    pub fn gen_with_piet_svg_backend<F>(mut draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
+    pub fn gen_with_piet_svg_backend<F>(draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
     where
-        F: FnMut(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
+        F: FnOnce(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
     {
         bounds.ensure_positive();
         bounds.assert_valid()?;
@@ -648,11 +651,11 @@ impl Svg {
 
     /// Generates an svg with piet, using the piet_svg backend without text loading (for faster context creation).
     pub fn gen_with_piet_svg_backend_no_text<F>(
-        mut draw_func: F,
+        draw_func: F,
         mut bounds: AABB,
     ) -> anyhow::Result<Self>
     where
-        F: FnMut(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
+        F: FnOnce(&mut piet_svg::RenderContext) -> anyhow::Result<()>,
     {
         bounds.ensure_positive();
         bounds.assert_valid()?;
@@ -679,12 +682,9 @@ impl Svg {
 
     /// Generates an svg with piet, using the piet_cairo backend and a SvgSurface.
     /// This might be preferable to the piet_svg backend, because especially text alignment and sizes can be different with it.
-    pub fn gen_with_piet_cairo_backend<F>(
-        mut draw_func: F,
-        mut bounds: AABB,
-    ) -> anyhow::Result<Self>
+    pub fn gen_with_piet_cairo_backend<F>(draw_func: F, mut bounds: AABB) -> anyhow::Result<Self>
     where
-        F: FnMut(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
+        F: FnOnce(&mut piet_cairo::CairoRenderContext) -> anyhow::Result<()>,
     {
         bounds.ensure_positive();
         bounds.assert_valid()?;

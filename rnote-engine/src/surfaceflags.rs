@@ -8,12 +8,12 @@ pub struct SurfaceFlags {
     pub redraw: bool,
     /// needs surface resizing
     pub resize: bool,
-    /// Penholder state has has changed
-    pub penholder_changed: bool,
+    /// refresh the UI with the engine state
+    pub refresh_ui: bool,
     /// wether the store has changed, i.e. new strokes inserted, modified, etc.
-    pub store_changed: bool,
-    /// camera has changed
-    pub camera_changed: bool,
+    pub indicate_changed_store: bool,
+    /// update the current view offsets and size
+    pub update_view: bool,
     /// Is Some when scrollbar visibility should be changed. Is None if should not be changed
     pub hide_scrollbars: Option<bool>,
     /// Is Some when undo button visibility should be changed. Is None if should not be changed
@@ -28,9 +28,9 @@ impl Default for SurfaceFlags {
             quit: false,
             redraw: false,
             resize: false,
-            penholder_changed: false,
-            store_changed: false,
-            camera_changed: false,
+            refresh_ui: false,
+            indicate_changed_store: false,
+            update_view: false,
             hide_scrollbars: None,
             hide_undo: None,
             hide_redo: None,
@@ -44,9 +44,9 @@ impl SurfaceFlags {
         self.quit |= other.quit;
         self.redraw |= other.redraw;
         self.resize |= other.resize;
-        self.penholder_changed |= other.penholder_changed;
-        self.store_changed |= other.store_changed;
-        self.camera_changed |= other.camera_changed;
+        self.refresh_ui |= other.refresh_ui;
+        self.indicate_changed_store |= other.indicate_changed_store;
+        self.update_view |= other.update_view;
         self.hide_scrollbars = if other.hide_scrollbars.is_some() {
             other.hide_scrollbars
         } else {

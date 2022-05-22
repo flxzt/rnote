@@ -122,7 +122,7 @@ impl PenBehaviour for Selector {
                 };
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
@@ -156,7 +156,7 @@ impl PenBehaviour for Selector {
 
                             surface_flags.redraw = true;
                             surface_flags.resize = true;
-                            surface_flags.store_changed = true;
+                            surface_flags.indicate_changed_store = true;
                         }
 
                         PenProgress::InProgress
@@ -221,7 +221,7 @@ impl PenBehaviour for Selector {
                 self.state = state;
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 pen_progress
@@ -258,7 +258,7 @@ impl PenBehaviour for Selector {
 
                             surface_flags.redraw = true;
                             surface_flags.resize = true;
-                            surface_flags.store_changed = true;
+                            surface_flags.indicate_changed_store = true;
                         }
 
                         PenProgress::InProgress
@@ -278,7 +278,7 @@ impl PenBehaviour for Selector {
                 engine_view.store.set_selected_keys(&selection_keys, false);
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -491,7 +491,7 @@ impl PenBehaviour for Selector {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 pen_progress
             }
@@ -523,7 +523,7 @@ impl PenBehaviour for Selector {
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -547,7 +547,7 @@ impl PenBehaviour for Selector {
 
                     surface_flags.redraw = true;
                     surface_flags.resize = true;
-                    surface_flags.store_changed = true;
+                    surface_flags.indicate_changed_store = true;
 
                     PenProgress::Finished
                 }
@@ -573,7 +573,7 @@ impl PenBehaviour for Selector {
 
                             surface_flags.redraw = true;
                             surface_flags.resize = true;
-                            surface_flags.store_changed = true;
+                            surface_flags.indicate_changed_store = true;
                         }
 
                         PenProgress::InProgress
@@ -600,7 +600,7 @@ impl PenBehaviour for Selector {
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
             }

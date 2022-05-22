@@ -761,14 +761,14 @@ impl RnoteAppWindow {
         if surface_flags.resize {
             self.canvas().queue_resize();
         }
-        if surface_flags.penholder_changed {
+        if surface_flags.refresh_ui {
             adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
         }
-        if surface_flags.store_changed {
+        if surface_flags.indicate_changed_store {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
         }
-        if surface_flags.camera_changed {
+        if surface_flags.update_view {
             let camera_offset = self.canvas().engine().borrow().camera.offset;
             // this updates the canvas adjustment values with the ones from the camera
             self.canvas().update_camera_offset(camera_offset);

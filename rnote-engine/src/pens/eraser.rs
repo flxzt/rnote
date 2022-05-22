@@ -98,7 +98,7 @@ impl PenBehaviour for Eraser {
 
                 surface_flags.redraw = true;
                 surface_flags.hide_scrollbars = Some(true);
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -139,7 +139,7 @@ impl PenBehaviour for Eraser {
                 *current_element = element;
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -171,7 +171,7 @@ impl PenBehaviour for Eraser {
 
                 surface_flags.redraw = true;
                 surface_flags.hide_scrollbars = Some(false);
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
             }

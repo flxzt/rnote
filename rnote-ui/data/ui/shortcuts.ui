@@ -53,7 +53,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window" translatable="yes">Zoom in</property>
-                <property name="accelerator">ctrl&gt;ScrollUp</property>
+                <property name="accelerator">&lt;ctrl&gt;ScrollUp</property>
               </object>
             </child>
             <child>
@@ -65,7 +65,7 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" context="shortcut window" translatable="yes">Zoom out</property>
-                <property name="accelerator">ctrl&gt;ScrollDown</property>
+                <property name="accelerator">&lt;ctrl&gt;ScrollDown</property>
               </object>
             </child>
             <child>

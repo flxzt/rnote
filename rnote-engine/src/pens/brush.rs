@@ -160,7 +160,7 @@ impl PenBehaviour for Brush {
 
                 surface_flags.redraw = true;
                 surface_flags.resize = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
                 surface_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
@@ -189,7 +189,7 @@ impl PenBehaviour for Brush {
                                         new_segment,
                                     );
                                     n_segments += 1;
-                                    surface_flags.store_changed = true;
+                                    surface_flags.indicate_changed_store = true;
                                 }
                                 _ => {
                                     // not reachable, pen builder should only produce segments
@@ -218,7 +218,7 @@ impl PenBehaviour for Brush {
                                         *current_stroke_key,
                                         new_segment,
                                     );
-                                    surface_flags.store_changed = true;
+                                    surface_flags.indicate_changed_store = true;
                                 }
                                 _ => {
                                     // not reachable, pen builder should only produce segments
@@ -247,7 +247,7 @@ impl PenBehaviour for Brush {
 
                         surface_flags.redraw = true;
                         surface_flags.resize = true;
-                        surface_flags.store_changed = true;
+                        surface_flags.indicate_changed_store = true;
                         surface_flags.hide_scrollbars = Some(false);
 
                         PenProgress::Finished

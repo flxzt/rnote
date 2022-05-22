@@ -4,6 +4,7 @@ use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
     FontChooserLevel, FontChooserWidget, Image, MenuButton, Popover, SpinButton, ToggleButton,
 };
+use rnote_engine::engine::EngineViewMut;
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute};
 use rnote_engine::{strokes::textstroke::TextStyle, utils::GdkRGBAHelpers};
 
@@ -162,6 +163,19 @@ impl TypewriterPage {
 
                 engine.penholder.typewriter.text_style.font_family = font_family.to_string();
 
+                let surface_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                    |text_style| {
+                        text_style.font_family = font_family.to_string();
+                    },
+                    &mut EngineViewMut {
+                        tasks_tx: engine.tasks_tx(),
+                        doc: &mut engine.document,
+                        store: &mut engine.store,
+                        camera: &mut engine.camera,
+                        audioplayer: &mut engine.audioplayer
+                });
+                appwindow.handle_surface_flags(surface_flags);
+
                 fontchooser_popover.popdown();
             }
         }));
@@ -181,6 +195,19 @@ impl TypewriterPage {
                 let engine = &mut *engine.borrow_mut();
 
                 engine.penholder.typewriter.text_style.font_size = font_size;
+
+                let surface_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                    |text_style| {
+                        text_style.font_size = font_size;
+                    },
+                    &mut EngineViewMut {
+                        tasks_tx: engine.tasks_tx(),
+                        doc: &mut engine.document,
+                        store: &mut engine.store,
+                        camera: &mut engine.camera,
+                        audioplayer: &mut engine.audioplayer
+                });
+                appwindow.handle_surface_flags(surface_flags);
             }),
         );
 
@@ -213,6 +240,19 @@ impl TypewriterPage {
                 let engine = &mut *engine.borrow_mut();
 
                 engine.penholder.typewriter.text_style.color = color;
+
+                let surface_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                    |text_style| {
+                        text_style.color = color;
+                    },
+                    &mut EngineViewMut {
+                        tasks_tx: engine.tasks_tx(),
+                        doc: &mut engine.document,
+                        store: &mut engine.store,
+                        camera: &mut engine.camera,
+                        audioplayer: &mut engine.audioplayer
+                });
+                appwindow.handle_surface_flags(surface_flags);
             }),
         );
 
@@ -221,7 +261,16 @@ impl TypewriterPage {
             let engine = appwindow.canvas().engine();
             let engine = &mut *engine.borrow_mut();
 
-            let surface_flags = engine.penholder.typewriter.remove_text_attributes_current_selection(&mut engine.document, &mut engine.store, &engine.camera);
+            engine.penholder.typewriter.text_style.ranged_text_attributes.clear();
+
+            let surface_flags = engine.penholder.typewriter.remove_text_attributes_current_selection(
+                &mut EngineViewMut {
+                    tasks_tx: engine.tasks_tx(),
+                    doc: &mut engine.document,
+                    store: &mut engine.store,
+                    camera: &mut engine.camera,
+                    audioplayer: &mut engine.audioplayer
+            });
             appwindow.handle_surface_flags(surface_flags);
         }));
 
@@ -230,7 +279,15 @@ impl TypewriterPage {
             let engine = appwindow.canvas().engine();
             let engine = &mut *engine.borrow_mut();
 
-            let surface_flags = engine.penholder.typewriter.add_text_attribute_current_selection(TextAttribute::FontWeight(piet::FontWeight::BOLD.to_raw()), &mut engine.document, &mut engine.store, &engine.camera);
+            let surface_flags = engine.penholder.typewriter.add_text_attribute_current_selection(
+                TextAttribute::FontWeight(piet::FontWeight::BOLD.to_raw()),
+                &mut EngineViewMut {
+                    tasks_tx: engine.tasks_tx(),
+                    doc: &mut engine.document,
+                    store: &mut engine.store,
+                    camera: &mut engine.camera,
+                    audioplayer: &mut engine.audioplayer
+            });
             appwindow.handle_surface_flags(surface_flags);
         }));
 
@@ -239,7 +296,15 @@ impl TypewriterPage {
             let engine = appwindow.canvas().engine();
             let engine = &mut *engine.borrow_mut();
 
-            let surface_flags = engine.penholder.typewriter.add_text_attribute_current_selection(TextAttribute::Style(FontStyle::Italic), &mut engine.document, &mut engine.store, &engine.camera);
+            let surface_flags = engine.penholder.typewriter.add_text_attribute_current_selection(
+                TextAttribute::Style(FontStyle::Italic),
+                &mut EngineViewMut {
+                    tasks_tx: engine.tasks_tx(),
+                    doc: &mut engine.document,
+                    store: &mut engine.store,
+                    camera: &mut engine.camera,
+                    audioplayer: &mut engine.audioplayer
+            });
             appwindow.handle_surface_flags(surface_flags);
         }));
 
@@ -248,7 +313,15 @@ impl TypewriterPage {
             let engine = appwindow.canvas().engine();
             let engine = &mut *engine.borrow_mut();
 
-            let surface_flags = engine.penholder.typewriter.add_text_attribute_current_selection(TextAttribute::Underline(true), &mut engine.document, &mut engine.store, &engine.camera);
+            let surface_flags = engine.penholder.typewriter.add_text_attribute_current_selection(
+                TextAttribute::Underline(true),
+                &mut EngineViewMut {
+                    tasks_tx: engine.tasks_tx(),
+                    doc: &mut engine.document,
+                    store: &mut engine.store,
+                    camera: &mut engine.camera,
+                    audioplayer: &mut engine.audioplayer
+            });
             appwindow.handle_surface_flags(surface_flags);
         }));
 
@@ -257,54 +330,110 @@ impl TypewriterPage {
             let engine = appwindow.canvas().engine();
             let engine = &mut *engine.borrow_mut();
 
-            let surface_flags = engine.penholder.typewriter.add_text_attribute_current_selection(TextAttribute::Strikethrough(true), &mut engine.document, &mut engine.store, &engine.camera);
+            let surface_flags = engine.penholder.typewriter.add_text_attribute_current_selection(
+                TextAttribute::Strikethrough(true),
+                &mut EngineViewMut {
+                    tasks_tx: engine.tasks_tx(),
+                    doc: &mut engine.document,
+                    store: &mut engine.store,
+                    camera: &mut engine.camera,
+                    audioplayer: &mut engine.audioplayer
+            });
             appwindow.handle_surface_flags(surface_flags);
         }));
 
         // Alignment
-        self.text_align_start_togglebutton().connect_active_notify(clone!(@weak appwindow => move |text_align_start_togglebutton| {
-            let engine = appwindow.canvas().engine();
+        self.text_align_start_togglebutton().connect_active_notify(
+            clone!(@weak appwindow => move |text_align_start_togglebutton| {
+                let engine = appwindow.canvas().engine();
 
-            if text_align_start_togglebutton.is_active() {
-                let engine = &mut *engine.borrow_mut();
-                engine.penholder.typewriter.text_style.alignment = TextAlignment::Start;
+                if text_align_start_togglebutton.is_active() {
+                    let engine = &mut *engine.borrow_mut();
+                    engine.penholder.typewriter.text_style.alignment = TextAlignment::Start;
 
-                let surface_flags = engine.penholder.typewriter.set_alignment_modifying_stroke(TextAlignment::Start, &mut engine.document, &mut engine.store, &engine.camera);
-                appwindow.handle_surface_flags(surface_flags);
-            }
-        }));
-        self.text_align_center_togglebutton().connect_active_notify(clone!(@weak appwindow => move |text_align_center_togglebutton| {
-            let engine = appwindow.canvas().engine();
+                    let surface_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.alignment = TextAlignment::Start;
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx(),
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_surface_flags(surface_flags);
+                }
+            }),
+        );
+        self.text_align_center_togglebutton().connect_active_notify(
+            clone!(@weak appwindow => move |text_align_center_togglebutton| {
+                let engine = appwindow.canvas().engine();
 
-            if text_align_center_togglebutton.is_active() {
-                let engine = &mut *engine.borrow_mut();
-                engine.penholder.typewriter.text_style.alignment = TextAlignment::Center;
+                if text_align_center_togglebutton.is_active() {
+                    let engine = &mut *engine.borrow_mut();
+                    engine.penholder.typewriter.text_style.alignment = TextAlignment::Center;
 
-                let surface_flags = engine.penholder.typewriter.set_alignment_modifying_stroke(TextAlignment::Center, &mut engine.document, &mut engine.store, &engine.camera);
-                appwindow.handle_surface_flags(surface_flags);
-            }
-        }));
-        self.text_align_end_togglebutton().connect_active_notify(clone!(@weak appwindow => move |text_align_end_togglebutton| {
-            let engine = appwindow.canvas().engine();
+                    let surface_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.alignment = TextAlignment::Center;
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx(),
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_surface_flags(surface_flags);
+                }
+            }),
+        );
+        self.text_align_end_togglebutton().connect_active_notify(
+            clone!(@weak appwindow => move |text_align_end_togglebutton| {
+                let engine = appwindow.canvas().engine();
 
-            if text_align_end_togglebutton.is_active() {
-                let engine = &mut *engine.borrow_mut();
-                engine.penholder.typewriter.text_style.alignment = TextAlignment::End;
+                if text_align_end_togglebutton.is_active() {
+                    let engine = &mut *engine.borrow_mut();
+                    engine.penholder.typewriter.text_style.alignment = TextAlignment::End;
 
-                let surface_flags = engine.penholder.typewriter.set_alignment_modifying_stroke(TextAlignment::End, &mut engine.document, &mut engine.store, &engine.camera);
-                appwindow.handle_surface_flags(surface_flags);
-            }
-        }));
-        self.text_align_fill_togglebutton().connect_active_notify(clone!(@weak appwindow => move |text_align_fill_togglebutton| {
-            let engine = appwindow.canvas().engine();
+                    let surface_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.alignment = TextAlignment::End;
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx(),
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_surface_flags(surface_flags);
+                }
+            }),
+        );
+        self.text_align_fill_togglebutton().connect_active_notify(
+            clone!(@weak appwindow => move |text_align_fill_togglebutton| {
+                let engine = appwindow.canvas().engine();
 
-            if text_align_fill_togglebutton.is_active() {
-                let engine = &mut *engine.borrow_mut();
-                engine.penholder.typewriter.text_style.alignment = TextAlignment::Fill;
+                if text_align_fill_togglebutton.is_active() {
+                    let engine = &mut *engine.borrow_mut();
+                    engine.penholder.typewriter.text_style.alignment = TextAlignment::Fill;
 
-                let surface_flags = engine.penholder.typewriter.set_alignment_modifying_stroke(TextAlignment::Fill, &mut engine.document, &mut engine.store, &engine.camera);
-                appwindow.handle_surface_flags(surface_flags);
-            }
-        }));
+                    let surface_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.alignment = TextAlignment::Fill;
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx(),
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_surface_flags(surface_flags);
+                }
+            }),
+        );
     }
 }

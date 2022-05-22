@@ -161,7 +161,7 @@ impl PenBehaviour for Shaper {
                         }
 
                         surface_flags.redraw = true;
-                        surface_flags.store_changed = true;
+                        surface_flags.indicate_changed_store = true;
 
                         PenProgress::InProgress
                     }
@@ -179,7 +179,7 @@ impl PenBehaviour for Shaper {
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             surface_flags.resize = true;
-                            surface_flags.store_changed = true;
+                            surface_flags.indicate_changed_store = true;
                         }
 
                         for shape in shapes {

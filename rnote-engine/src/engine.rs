@@ -130,7 +130,7 @@ pub struct RnoteEngine {
     pub pen_sounds: bool,
 
     #[serde(skip)]
-    audioplayer: Option<AudioPlayer>,
+    pub audioplayer: Option<AudioPlayer>,
     #[serde(skip)]
     pub visual_debug: bool,
     #[serde(skip)]
@@ -181,6 +181,28 @@ impl RnoteEngine {
 
     pub fn tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()
+    }
+
+    /// Gets the EngineView
+    pub fn view(&self) -> EngineView {
+        EngineView {
+            tasks_tx: self.tasks_tx.clone(),
+            doc: &self.document,
+            store: &self.store,
+            camera: &self.camera,
+            audioplayer: &self.audioplayer
+        }
+    }
+
+    /// Gets the EngineViewMut
+    pub fn view_mut(&mut self) -> EngineViewMut {
+        EngineViewMut {
+            tasks_tx: self.tasks_tx.clone(),
+            doc: &mut self.document,
+            store: &mut self.store,
+            camera: &mut self.camera,
+            audioplayer: &mut self.audioplayer
+        }
     }
 
     /// wether pen sounds are enabled
@@ -298,7 +320,7 @@ impl RnoteEngine {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
             }
             EngineTask::AppendImagesToStroke { key, images } => {
                 if let Err(e) = self.store.append_rendering_images(key, images) {
@@ -309,7 +331,7 @@ impl RnoteEngine {
                 }
 
                 surface_flags.redraw = true;
-                surface_flags.store_changed = true;
+                surface_flags.indicate_changed_store = true;
             }
             EngineTask::Quit => {
                 surface_flags.quit = true;
@@ -853,8 +875,8 @@ impl RnoteEngine {
 
         surface_flags.redraw = true;
         surface_flags.resize = true;
-        surface_flags.store_changed = true;
-        surface_flags.penholder_changed = true;
+        surface_flags.indicate_changed_store = true;
+        surface_flags.refresh_ui = true;
 
         surface_flags
     }

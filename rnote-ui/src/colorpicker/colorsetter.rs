@@ -200,6 +200,10 @@ mod imp {
 .setter-button:hover {{
     filter: brightness(90%);
 }}
+
+.setter-button:active {{
+    filter: brightness(110%);
+}}
 ",
                 position_string,
                 properties_string,

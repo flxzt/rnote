@@ -38,8 +38,7 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
             PenEvent::Up { .. } => {
                 return BuilderProgress::Finished(vec![Shape::Rectangle(self.state_as_rect())]);
             }
-            PenEvent::Proximity { .. } => {}
-            PenEvent::Cancel => {}
+            _ => {}
         }
 
         BuilderProgress::InProgress

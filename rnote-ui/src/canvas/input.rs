@@ -1,4 +1,5 @@
 use gtk4::{gdk, prelude::*, GestureDrag, GestureStylus};
+use rnote_compose::penhelpers::KeyboardKey;
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penhelpers::ShortcutKey;
 use rnote_compose::penpath::Element;
@@ -147,9 +148,8 @@ pub fn retreive_stylus_pen_mode(stylus_drawing_gesture: &GestureStylus) -> Optio
     None
 }
 
-pub fn retreive_keyboard_key_shortcut_key(key: gdk::Key) -> Option<ShortcutKey> {
-    key.to_unicode()
-        .map(|key_char| ShortcutKey::KeyboardKey(key_char))
+pub fn retreive_keyboard_key(gdk_key: gdk::Key) -> KeyboardKey {
+    rnote_engine::utils::keyboard_key_from_gdk(gdk_key)
 }
 
 /// Retreiving modifier shortcut keys. Note that here Button modifiers are skipped, they have different meanings with different kind of pointers and have to be handled individually
@@ -316,13 +316,31 @@ pub fn process_pen_proximity(
     appwindow.handle_surface_flags(surface_flags);
 }
 
-/// Process keyboard key pressed
-pub fn process_keyboard_pressed(shortcut_key: ShortcutKey, appwindow: &RnoteAppWindow) {
+/// Process shortcut key pressed
+#[allow(unused)]
+pub fn process_shortcut_key_pressed(shortcut_key: ShortcutKey, appwindow: &RnoteAppWindow) {
     let surface_flags = appwindow
         .canvas()
         .engine()
         .borrow_mut()
         .handle_pen_pressed_shortcut_key(shortcut_key);
+
+    appwindow.handle_surface_flags(surface_flags);
+}
+
+/// Process keyboard key pressed
+pub fn process_keyboard_key_pressed(
+    keyboard_key: KeyboardKey,
+    shortcut_keys: Vec<ShortcutKey>,
+    appwindow: &RnoteAppWindow,
+) {
+    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(
+        PenEvent::KeyPressed {
+            keyboard_key,
+            shortcut_keys,
+        },
+        None,
+    );
 
     appwindow.handle_surface_flags(surface_flags);
 }

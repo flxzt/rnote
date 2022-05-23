@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use crate::Color;
 use crate::style::PressureCurve;
+use crate::Color;
 
 use super::textureddotsdistribution::TexturedDotsDistribution;
 

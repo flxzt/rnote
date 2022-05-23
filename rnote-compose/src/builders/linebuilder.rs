@@ -40,8 +40,7 @@ impl ShapeBuilderBehaviour for LineBuilder {
                     end: self.current,
                 })]);
             }
-            PenEvent::Proximity { .. } => {}
-            PenEvent::Cancel => {}
+            _ => {}
         }
 
         BuilderProgress::InProgress

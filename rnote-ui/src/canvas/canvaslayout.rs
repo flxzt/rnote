@@ -109,7 +109,8 @@ mod imp {
                 ),
                 Layout::Infinite => (
                     canvas.engine().borrow().document.y * total_zoom,
-                    (canvas.engine().borrow().document.y + canvas.engine().borrow().document.height)
+                    (canvas.engine().borrow().document.y
+                        + canvas.engine().borrow().document.height)
                         * total_zoom,
                 ),
             };

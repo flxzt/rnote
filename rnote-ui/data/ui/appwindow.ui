@@ -2,7 +2,6 @@
 <interface>
   <template class="RnoteAppWindow" parent="AdwApplicationWindow">
     <child>
-
       <object class="AdwFlap" id="flap">
         <property name="flap-position">end</property>
         <property name="transition-type">over</property>
@@ -10,6 +9,7 @@
         <property name="swipe-to-open">false</property>
         <property name="swipe-to-close">false</property>
         <property name="fold-threshold-policy">minimum</property>
+        <property name="focusable">true</property>
         <child type="separator">
           <object class="GtkSeparator">
             <property name="orientation">vertical</property>
@@ -19,6 +19,7 @@
         </child>
         <child type="content">
           <object class="GtkGrid" id="main_grid">
+            <property name="focusable">true</property>
             <child>
               <object class="MainHeader" id="mainheader">
                 <layout>
@@ -76,6 +77,14 @@
                               </object>
                             </child>
                             <child>
+                              <object class="GtkToggleButton" id="narrow_typewriter_toggle">
+                                <property name="icon_name">pen-typewriter-symbolic</property>
+                                <property name="tooltip_text" translatable="yes">Typewriter</property>
+                                <property name="hexpand">true</property>
+                                <property name="group">narrow_brush_toggle</property>
+                              </object>
+                            </child>
+                            <child>
                               <object class="GtkToggleButton" id="narrow_eraser_toggle">
                                 <property name="icon_name">pen-eraser-symbolic</property>
                                 <property name="tooltip_text" translatable="yes">Eraser</property>
@@ -112,12 +121,14 @@
             </child>
             <child>
               <object class="GtkBox" id="canvas_box">
+                <property name="focusable">true</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">2</property>
                 </layout>
                 <child>
                   <object class="GtkOverlay" id="canvas_actions_overlay">
+                    <property name="focusable">true</property>
                     <child type="overlay">
                       <object class="GtkProgressBar" id="canvas_progressbar">
                         <property name="halign">fill</property>
@@ -210,6 +221,7 @@
                     </child>
                     <child>
                       <object class="AdwToastOverlay" id="toast_overlay">
+                        <property name="focusable">true</property>
                         <property name="child">
                           <object class="GtkScrolledWindow" id="canvas_scroller">
                             <style>
@@ -224,10 +236,14 @@
                             <property name="hexpand">true</property>
                             <property name="window-placement">top-left</property>
                             <property name="overlay-scrolling">true</property>
+                            <property name="focusable">true</property>
                             <child>
                               <object class="RnoteCanvas" id="canvas">
                                 <property name="halign">center</property>
                                 <property name="valign">start</property>
+                                <property name="focusable">true</property>
+                                <property name="can-focus">true</property>
+                                <property name="can-target">true</property>
                               </object>
                             </child>
                           </object>
@@ -360,11 +376,10 @@
                     <child type="title">
                       <object class="GtkBox">
                         <property name="hexpand">true</property>
-                        <property name="halign">fill</property>
+                        <property name="halign">center</property>
                         <child>
                           <object class="AdwViewSwitcherTitle" id="flap_switcher_title">
                             <property name="stack">flap_stack</property>
-                            <property name="halign">center</property>
                           </object>
                         </child>
                       </object>

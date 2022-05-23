@@ -1349,7 +1349,6 @@ impl RnoteAppWindow {
                 ];
                 if let Some(mime_type) = MIMES.into_iter().find(|&mime| content_formats.contain_mime_type(mime)) {
                     glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                        log::error!("Mime: {}", mime_type);
                         match appwindow.clipboard().read_texture_future().await {
                             Ok(Some(texture)) => {
                                 if let Err(e) = appwindow.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {

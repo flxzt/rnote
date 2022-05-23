@@ -1340,7 +1340,7 @@ impl RnoteAppWindow {
                       content_formats.contain_mime_type("image/jpg")  ||
                       content_formats.contain_mime_type("image/tiff") ||
                       content_formats.contain_mime_type("image/bmp") {
-                const MIMES: [&str; 5]= [
+                const MIMES: [&str; 5] = [
                     "image/png",
                     "image/jpeg",
                     "image/jpg",

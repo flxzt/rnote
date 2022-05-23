@@ -376,11 +376,10 @@
                     <child type="title">
                       <object class="GtkBox">
                         <property name="hexpand">true</property>
-                        <property name="halign">fill</property>
+                        <property name="halign">center</property>
                         <child>
                           <object class="AdwViewSwitcherTitle" id="flap_switcher_title">
                             <property name="stack">flap_stack</property>
-                            <property name="halign">center</property>
                           </object>
                         </child>
                       </object>

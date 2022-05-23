@@ -1335,20 +1335,34 @@ impl RnoteAppWindow {
                         }
                     }
                 }));
-            } else if content_formats.contain_mime_type("image/png") {
-                glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
-                    match appwindow.clipboard().read_texture_future().await {
-                        Ok(Some(texture)) => {
-                            if let Err(e) = appwindow.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
-                                log::error!("failed to paste clipboard as png image, load_in_bitmapimage_bytes() returned Err {}", e);
-                            };
-                        }
-                        Ok(None) => {}
-                        Err(e) => {
-                            log::error!("failed to paste clipboard as png image, read_texture_future() failed with Err {}", e);
-                        }
-                    };
-                }));
+            } else if content_formats.contain_mime_type("image/png")  ||
+                      content_formats.contain_mime_type("image/jpeg") ||
+                      content_formats.contain_mime_type("image/jpg")  ||
+                      content_formats.contain_mime_type("image/tiff") ||
+                      content_formats.contain_mime_type("image/bmp") {
+                const MIMES: [&str; 5]= [
+                    "image/png",
+                    "image/jpeg",
+                    "image/jpg",
+                    "image/tiff",
+                    "image/bmp",
+                ];
+                if let Some(mime_type) = MIMES.into_iter().find(|&mime| content_formats.contain_mime_type(mime)) {
+                    glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
+                        log::error!("Mime: {}", mime_type);
+                        match appwindow.clipboard().read_texture_future().await {
+                            Ok(Some(texture)) => {
+                                if let Err(e) = appwindow.load_in_bitmapimage_bytes(texture.save_to_png_bytes().to_vec(), None).await {
+                                    log::error!("failed to paste clipboard as {}, load_in_bitmapimage_bytes() returned Err {}", mime_type, e);
+                                };
+                            }
+                            Ok(None) => {}
+                            Err(e) => {
+                                log::error!("failed to paste clipboard as {}, read_texture_future() failed with Err {}", mime_type, e);
+                            }
+                        };
+                    }));
+                }
             } else if content_formats.contain_mime_type("text/plain") || content_formats.contain_mime_type("text/plain;charset=utf-8"){
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {

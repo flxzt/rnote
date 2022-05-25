@@ -64,6 +64,15 @@
 
   <!-- /// Translators: Don't translate the changelog -->
   <releases>
+    <release version="0.5.4" date="2022-05-14">
+      <description>
+        <p>this release changes: (DRAFT)</p>
+        <ul>
+          <li>A new app icon and symbolic! (based on @bertob's design and with his help. Thanks a ton!)</li>
+          <li>import bitmap images (e.g. screenshots) from the clipboard (thanks @ RickStanley!)</li>
+        </ul>
+      </description>
+    </release>
     <release version="0.5.3" date="2022-05-14">
       <description>
         <p>this release changes:</p>

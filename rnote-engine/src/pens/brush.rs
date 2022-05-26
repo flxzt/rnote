@@ -267,7 +267,7 @@ impl DrawOnDocBehaviour for Brush {
         match &self.state {
             BrushState::Idle => None,
             BrushState::Drawing { path_builder, .. } => {
-                Some(path_builder.bounds(&style, engine_view.camera.zoom()))
+                path_builder.bounds(&style, engine_view.camera.zoom())
             }
         }
     }

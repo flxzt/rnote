@@ -81,23 +81,26 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
         let stroke_width = style.stroke_width();
 
         match &self.state {
-            FociEllipseBuilderState::First(point) => AABB::from_half_extents(
+            FociEllipseBuilderState::First(point) => Some(AABB::from_half_extents(
                 na::Point2::from(*point),
                 na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
-            ),
-            FociEllipseBuilderState::Foci(foci) => {
+            )),
+            FociEllipseBuilderState::Foci(foci) => Some(
                 AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom)
-            }
+                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+            ),
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
-                ellipse
-                    .composed_bounds(style)
-                    .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
+
+                Some(
+                    ellipse
+                        .composed_bounds(style)
+                        .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+                )
             }
         }
     }

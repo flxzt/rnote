@@ -216,7 +216,7 @@ impl DrawOnDocBehaviour for Shaper {
         match &self.state {
             ShaperState::Idle => None,
             ShaperState::BuildShape { builder } => {
-                Some(builder.bounds(&style, engine_view.camera.total_zoom()))
+                builder.bounds(&style, engine_view.camera.total_zoom())
             }
         }
     }

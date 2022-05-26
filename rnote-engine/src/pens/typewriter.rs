@@ -13,7 +13,7 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
-use crate::{Camera, DrawOnDocBehaviour, StrokeStore, WidgetFlags};
+use crate::{AudioPlayer, Camera, DrawOnDocBehaviour, StrokeStore, WidgetFlags};
 
 use super::penbehaviour::PenProgress;
 use super::PenBehaviour;
@@ -408,6 +408,8 @@ impl PenBehaviour for Typewriter {
                 PenProgress::InProgress
             }
             (TypewriterState::Start(pos), PenEvent::KeyPressed { keyboard_key, .. }) => {
+                Self::start_audio(keyboard_key, engine_view.audioplayer);
+
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
                         widget_flags.merge_with_other(engine_view.store.record());
@@ -560,6 +562,8 @@ impl PenBehaviour for Typewriter {
                 if let Some(Stroke::TextStroke(ref mut textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
+                    Self::start_audio(keyboard_key, engine_view.audioplayer);
+
                     let mut update_stroke = |store: &mut StrokeStore| {
                         widget_flags.merge_with_other(store.record());
 
@@ -803,6 +807,8 @@ impl PenBehaviour for Typewriter {
                 if let Some(Stroke::TextStroke(textstroke)) =
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
+                    Self::start_audio(keyboard_key, engine_view.audioplayer);
+
                     let mut update_stroke = |store: &mut StrokeStore| {
                         widget_flags.merge_with_other(store.record());
 
@@ -1364,6 +1370,12 @@ impl Typewriter {
     const TRANSLATE_MAGNITUDE_THRESHOLD: f64 = 1.0;
     // The size of the translate node, located in the upper left corner
     const ADJUST_TEXT_WIDTH_NODE_SIZE: na::Vector2<f64> = na::vector![18.0, 18.0];
+
+    fn start_audio(keyboard_key: KeyboardKey, audioplayer: &mut Option<AudioPlayer>) {
+        if let Some(audioplayer) = audioplayer {
+            audioplayer.play_typewriter_key_sound(keyboard_key);
+        }
+    }
 
     /// the bounds of the text rect enclosing the textstroke
     fn text_rect_bounds(text_width: f64, textstroke: &TextStroke) -> AABB {

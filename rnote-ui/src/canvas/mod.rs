@@ -31,6 +31,8 @@ use std::collections::VecDeque;
 use std::time;
 
 mod imp {
+    use std::path::PathBuf;
+
     use super::*;
 
     #[allow(missing_debug_implementations)]
@@ -110,6 +112,8 @@ mod imp {
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
 
+            let engine = RnoteEngine::new(Some(PathBuf::from(config::PKG_DATA_DIR)));
+
             Self {
                 hadjustment: RefCell::new(None),
                 hadjustment_signal: RefCell::new(None),
@@ -125,7 +129,7 @@ mod imp {
                 key_controller,
                 zoom_timeout_id: RefCell::new(None),
 
-                engine: Rc::new(RefCell::new(RnoteEngine::default())),
+                engine: Rc::new(RefCell::new(engine)),
 
                 output_file: RefCell::new(None),
                 unsaved_changes: Cell::new(false),

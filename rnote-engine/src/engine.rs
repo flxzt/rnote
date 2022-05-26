@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::document::{background, Background, Format, Layout};
 use crate::pens::penholder::PenStyle;
 use crate::pens::PenMode;
@@ -93,7 +95,7 @@ struct EngineConfig {
 
 impl Default for EngineConfig {
     fn default() -> Self {
-        let engine = RnoteEngine::default();
+        let engine = RnoteEngine::new(None);
 
         Self {
             document: serde_json::to_value(&engine.document).unwrap(),
@@ -143,20 +145,34 @@ pub struct RnoteEngine {
 
 impl Default for RnoteEngine {
     fn default() -> Self {
+        Self::new(None)
+    }
+}
+
+impl RnoteEngine {
+    // The default width of imported PDF's in percentage to the document width
+    pub const PDF_IMPORT_WIDTH_PERC_DEFAULT: f64 = 50.0;
+
+    #[allow(clippy::new_without_default)]
+    pub fn new(data_dir: Option<PathBuf>) -> Self {
         let (tasks_tx, tasks_rx) = futures::channel::mpsc::unbounded::<EngineTask>();
         let pen_sounds = false;
-        let audioplayer = AudioPlayer::new()
-            .map_err(|e| {
-                log::error!(
-                    "failed to create a new audio player in PenHolder::default(), Err {}",
-                    e
-                );
-            })
-            .map(|mut audioplayer| {
-                audioplayer.enabled = pen_sounds;
-                audioplayer
-            })
-            .ok();
+        let audioplayer = if let Some(data_dir) = data_dir {
+            AudioPlayer::new(data_dir)
+                .map_err(|e| {
+                    log::error!(
+                        "failed to create a new audio player in PenHolder::default(), Err {}",
+                        e
+                    );
+                })
+                .map(|mut audioplayer| {
+                    audioplayer.enabled = pen_sounds;
+                    audioplayer
+                })
+                .ok()
+        } else {
+            None
+        };
 
         Self {
             document: Document::default(),
@@ -174,11 +190,6 @@ impl Default for RnoteEngine {
             tasks_rx: Some(tasks_rx),
         }
     }
-}
-
-impl RnoteEngine {
-    // The default width of imported PDF's in percentage to the document width
-    pub const PDF_IMPORT_WIDTH_PERC_DEFAULT: f64 = 50.0;
 
     pub fn tasks_tx(&self) -> EngineTaskSender {
         self.tasks_tx.clone()

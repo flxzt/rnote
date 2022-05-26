@@ -3,6 +3,7 @@ use piet::RenderContext;
 use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 
+use crate::helpers::AABBHelpers;
 use crate::penhelpers::PenEvent;
 use crate::penpath::{Element, Segment};
 use crate::shapes::CubicBezier;
@@ -82,6 +83,10 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
 
     fn bounds(&self, style: &Style, zoom: f64) -> AABB {
         let stroke_width = style.stroke_width();
+
+        if self.buffer.is_empty() {
+            return AABB::new_zero();
+        }
 
         self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
             acc.take_point(na::Point2::from(x.pos));

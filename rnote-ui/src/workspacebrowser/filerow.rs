@@ -226,7 +226,7 @@ impl FileRow {
                 if let Some(current_file) = filerow.current_file() {
                     if let Some(current_path) = current_file.path() {
                         if let Some(parent_path) = current_path.parent().map(|parent_path| parent_path.to_path_buf()) {
-                            let current_name = current_path.file_name().map(|current_file_name| current_file_name.to_string_lossy().to_string()).unwrap_or(String::from(""));
+                            let current_name = current_path.file_name().map(|current_file_name| current_file_name.to_string_lossy().to_string()).unwrap_or_else(|| String::from(""));
 
                             let rename_entry = Entry::builder()
                                 .text(current_name.as_str())

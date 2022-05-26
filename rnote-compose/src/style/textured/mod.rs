@@ -1,8 +1,6 @@
 mod textureddotsdistribution;
 mod texturedoptions;
 
-use kurbo::Shape;
-use p2d::bounding_volume::{BoundingVolume, AABB};
 // Re-exports
 pub use textureddotsdistribution::TexturedDotsDistribution;
 pub use texturedoptions::TexturedOptions;
@@ -11,6 +9,8 @@ use crate::helpers::Vector2Helpers;
 use crate::penpath::Segment;
 use crate::shapes::{Line, ShapeBehaviour};
 use crate::PenPath;
+use kurbo::Shape;
+use p2d::bounding_volume::{BoundingVolume, AABB};
 
 use rand_distr::{Distribution, Uniform};
 
@@ -84,9 +84,6 @@ impl Composer<TexturedOptions> for Line {
         };
 
         if let Some(fill_color) = options.stroke_color {
-            // Outlines for debugging
-            //let stroke_brush = cx.solid_brush(piet::Color::RED);
-            //cx.stroke(segment.clone(), &stroke_brush, 0.4);
             let fill_brush = cx.solid_brush(fill_color.into());
             cx.fill(bez_path, &fill_brush);
         }
@@ -103,7 +100,7 @@ impl Composer<TexturedOptions> for Segment {
         cx.save().unwrap();
         match self {
             Self::Dot { .. } => {
-                // Dont draw dots for textured segments. They stand out
+                // Dont draw dots for textured segments.
             }
             Self::Line { start, end } => {
                 let line = Line {
@@ -112,7 +109,7 @@ impl Composer<TexturedOptions> for Segment {
                 };
 
                 let mut options = options.clone();
-                // Line width with the mean of the start and end pressure
+
                 options.stroke_width = options
                     .pressure_curve
                     .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
@@ -126,7 +123,7 @@ impl Composer<TexturedOptions> for Segment {
                 };
 
                 let mut options = options.clone();
-                // Line width with the mean of the start and end pressure
+
                 options.stroke_width = options
                     .pressure_curve
                     .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
@@ -145,7 +142,7 @@ impl Composer<TexturedOptions> for Segment {
                 };
 
                 let mut options = options.clone();
-                // Line width with the mean of the start and end pressure
+
                 options.stroke_width = options
                     .pressure_curve
                     .apply(options.stroke_width, (start.pressure + end.pressure) * 0.5);
@@ -169,7 +166,7 @@ impl Composer<TexturedOptions> for PenPath {
         let mut options = options.clone();
 
         for segment in self.iter() {
-            options.seed = options.seed.map(|seed| crate::utils::seed_advance(seed));
+            options.seed = options.seed.map(crate::utils::seed_advance);
             segment.draw_composed(cx, &options);
         }
         cx.restore().unwrap();

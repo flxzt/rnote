@@ -62,22 +62,20 @@ impl StrokeBehaviour for BitmapImage {
                     image_scale,
                 )?,
             ]))
+        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    intersection_bounds,
+                    image_scale,
+                )?],
+                viewport,
+            })
         } else {
-            if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-                Ok(GeneratedStrokeImages::Partial {
-                    images: vec![render::Image::gen_with_piet(
-                        |piet_cx| self.draw(piet_cx, image_scale),
-                        intersection_bounds,
-                        image_scale,
-                    )?],
-                    viewport,
-                })
-            } else {
-                Ok(GeneratedStrokeImages::Partial {
-                    images: vec![],
-                    viewport,
-                })
-            }
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![],
+                viewport,
+            })
         }
     }
 }
@@ -180,8 +178,7 @@ impl BitmapImage {
 
                 let x = pos[0];
                 let y = pos[1]
-                    + f64::from(i)
-                        * (f64::from(height) + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5);
+                    + f64::from(i) * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5;
 
                 let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                     .map_err(|e| {

@@ -4,7 +4,7 @@ use crate::pens::PenMode;
 use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{render, AudioPlayer, DrawOnDocBehaviour, SurfaceFlags};
+use crate::{render, AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use gtk4::Snapshot;
 use piet::RenderContext;
@@ -42,7 +42,7 @@ pub struct EngineViewMut<'a> {
 }
 
 impl<'a> EngineViewMut<'a> {
-    // converts itself to the immutable variant
+    // converts itself to the immutable view
     pub fn as_im<'m>(&'m self) -> EngineView<'m> {
         EngineView::<'m> {
             tasks_tx: self.tasks_tx.clone(),
@@ -109,6 +109,7 @@ impl Default for EngineConfig {
 pub type EngineTaskSender = mpsc::UnboundedSender<EngineTask>;
 pub type EngineTaskReceiver = mpsc::UnboundedReceiver<EngineTask>;
 
+/// The engine.
 #[allow(missing_debug_implementations)]
 #[derive(Serialize, Deserialize)]
 #[serde(default, rename = "engine")]
@@ -119,9 +120,9 @@ pub struct RnoteEngine {
     pub penholder: PenHolder,
     #[serde(rename = "store")]
     pub store: StrokeStore,
-
     #[serde(rename = "camera")]
     pub camera: Camera,
+
     #[serde(rename = "pdf_import_width_perc")]
     pub pdf_import_width_perc: f64,
     #[serde(rename = "pdf_import_as_vector")]
@@ -161,8 +162,8 @@ impl Default for RnoteEngine {
             document: Document::default(),
             penholder: PenHolder::default(),
             store: StrokeStore::default(),
-
             camera: Camera::default(),
+
             pdf_import_width_perc: Self::PDF_IMPORT_WIDTH_PERC_DEFAULT,
             pdf_import_as_vector: true,
             pen_sounds,
@@ -219,28 +220,28 @@ impl RnoteEngine {
         }
     }
 
-    /// Wraps store.record().
-    pub fn record(&mut self) -> SurfaceFlags {
+    /// records the current store state and saves it as a history entry.
+    pub fn record(&mut self) -> WidgetFlags {
         self.store.record()
     }
 
     /// Undo the latest changes
-    pub fn undo(&mut self) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    pub fn undo(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         let current_pen_style = self.penholder.current_style_w_override();
 
         if current_pen_style != PenStyle::Selector {
-            surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
+            widget_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
         }
 
-        surface_flags.merge_with_other(self.store.undo());
+        widget_flags.merge_with_other(self.store.undo());
 
         if !self.store.selection_keys_unordered().is_empty() {
-            surface_flags.merge_with_other(
+            widget_flags.merge_with_other(
                 self.penholder
                     .force_style_override_without_sideeffects(None),
             );
-            surface_flags.merge_with_other(
+            widget_flags.merge_with_other(
                 self.penholder
                     .force_style_without_sideeffects(PenStyle::Selector),
             );
@@ -250,28 +251,28 @@ impl RnoteEngine {
         self.update_pens_states();
         self.update_rendering_current_viewport();
 
-        surface_flags.redraw = true;
+        widget_flags.redraw = true;
 
-        surface_flags
+        widget_flags
     }
 
     /// redo the latest changes
-    pub fn redo(&mut self) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    pub fn redo(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
         let current_pen_style = self.penholder.current_style_w_override();
 
         if current_pen_style != PenStyle::Selector {
-            surface_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
+            widget_flags.merge_with_other(self.handle_pen_event(PenEvent::Cancel, None));
         }
 
-        surface_flags.merge_with_other(self.store.redo());
+        widget_flags.merge_with_other(self.store.redo());
 
         if !self.store.selection_keys_unordered().is_empty() {
-            surface_flags.merge_with_other(
+            widget_flags.merge_with_other(
                 self.penholder
                     .force_style_override_without_sideeffects(None),
             );
-            surface_flags.merge_with_other(
+            widget_flags.merge_with_other(
                 self.penholder
                     .force_style_without_sideeffects(PenStyle::Selector),
             );
@@ -281,19 +282,19 @@ impl RnoteEngine {
         self.update_pens_states();
         self.update_rendering_current_viewport();
 
-        surface_flags.redraw = true;
+        widget_flags.redraw = true;
 
-        surface_flags
+        widget_flags
     }
 
-    // Clears the stroke store
+    // Clears the store
     pub fn clear(&mut self) {
         self.store.clear();
         self.update_pens_states();
     }
 
     /// processes the received task from tasks_rx.
-    /// Returns surface flags to indicate what needs to be updated in the UI.
+    /// Returns widget flags to indicate what needs to be updated in the UI.
     /// An example how to use it:
     /// ```rust, ignore
     /// let main_cx = glib::MainContext::default();
@@ -303,15 +304,15 @@ impl RnoteEngine {
 
     ///           loop {
     ///              if let Some(task) = task_rx.next().await {
-    ///                    let surface_flags = canvas.engine().borrow_mut().process_received_task(task);
-    ///                    appwindow.handle_surface_flags(surface_flags);
+    ///                    let widget_flags = canvas.engine().borrow_mut().process_received_task(task);
+    ///                    appwindow.handle_widget_flags(widget_flags);
     ///                }
     ///            }
     ///        }));
     /// ```
     /// Processes a received store task. Usually called from a receiver loop which polls tasks_rx.
-    pub fn process_received_task(&mut self, task: EngineTask) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    pub fn process_received_task(&mut self, task: EngineTask) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         match task {
             EngineTask::UpdateStrokeWithImages { key, images } => {
@@ -319,8 +320,8 @@ impl RnoteEngine {
                     log::error!("replace_rendering_with_images() in process_received_task() failed with Err {}", e);
                 }
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
             }
             EngineTask::AppendImagesToStroke { key, images } => {
                 if let Err(e) = self.store.append_rendering_images(key, images) {
@@ -330,18 +331,19 @@ impl RnoteEngine {
                     );
                 }
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
             }
             EngineTask::Quit => {
-                surface_flags.quit = true;
+                widget_flags.quit = true;
             }
         }
 
-        surface_flags
+        widget_flags
     }
 
-    pub fn handle_pen_event(&mut self, event: PenEvent, pen_mode: Option<PenMode>) -> SurfaceFlags {
+    /// handle an pen event
+    pub fn handle_pen_event(&mut self, event: PenEvent, pen_mode: Option<PenMode>) -> WidgetFlags {
         self.penholder.handle_pen_event(
             event,
             pen_mode,
@@ -355,7 +357,8 @@ impl RnoteEngine {
         )
     }
 
-    pub fn handle_pen_pressed_shortcut_key(&mut self, shortcut_key: ShortcutKey) -> SurfaceFlags {
+    /// Handle a pressed shortcut key
+    pub fn handle_pen_pressed_shortcut_key(&mut self, shortcut_key: ShortcutKey) -> WidgetFlags {
         self.penholder.handle_pressed_shortcut_key(
             shortcut_key,
             &mut EngineViewMut {
@@ -368,7 +371,8 @@ impl RnoteEngine {
         )
     }
 
-    pub fn change_pen_style(&mut self, new_style: PenStyle) -> SurfaceFlags {
+    /// change the pen style
+    pub fn change_pen_style(&mut self, new_style: PenStyle) -> WidgetFlags {
         self.penholder.change_style(
             new_style,
             &mut EngineViewMut {
@@ -381,10 +385,11 @@ impl RnoteEngine {
         )
     }
 
+    /// change the pen style override
     pub fn change_pen_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
-    ) -> SurfaceFlags {
+    ) -> WidgetFlags {
         self.penholder.change_style_override(
             new_style_override,
             &mut EngineViewMut {
@@ -397,7 +402,8 @@ impl RnoteEngine {
         )
     }
 
-    pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> SurfaceFlags {
+    /// change the pen mode. Relevant for stylus input
+    pub fn change_pen_mode(&mut self, pen_mode: PenMode) -> WidgetFlags {
         self.penholder.change_pen_mode(
             pen_mode,
             &mut EngineViewMut {
@@ -410,6 +416,8 @@ impl RnoteEngine {
         )
     }
 
+    /// updates the background rendering for the current viewport.
+    /// if the background pattern or zoom has changed, background.regenerate_pattern() needs to be called first.
     pub fn update_background_rendering_current_viewport(&mut self) {
         let viewport = self.camera.viewport();
 
@@ -422,6 +430,7 @@ impl RnoteEngine {
         }
     }
 
+    /// updates the content rendering for the current viewport. including the background rendering.
     pub fn update_rendering_current_viewport(&mut self) {
         let viewport = self.camera.viewport();
         let image_scale = self.camera.image_scale();
@@ -454,7 +463,7 @@ impl RnoteEngine {
                 // Filter the pages out that doesn't intersect with any stroke
                 strokes_bounds
                     .iter()
-                    .any(|stroke_bounds| stroke_bounds.intersects(&page_bounds))
+                    .any(|stroke_bounds| stroke_bounds.intersects(page_bounds))
             })
             .collect::<Vec<AABB>>();
 
@@ -484,6 +493,7 @@ impl RnoteEngine {
         )
     }
 
+    /// the current document layout
     pub fn doc_layout(&self) -> Layout {
         self.document.layout()
     }
@@ -527,7 +537,7 @@ impl RnoteEngine {
     }
 
     /// Updates pens state with the current engine state.
-    /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all stroke, set strokes selected, etc. )
+    /// needs to be called when the engine state was changed outside of pen events. ( e.g. trash all strokes, set strokes selected, etc. )
     pub fn update_pens_states(&mut self) {
         self.penholder.update_internal_state(&EngineView {
             tasks_tx: self.tasks_tx(),
@@ -564,7 +574,7 @@ impl RnoteEngine {
         &mut self,
         clipboard_content: &[u8],
         mime_types: Vec<String>,
-    ) -> SurfaceFlags {
+    ) -> WidgetFlags {
         self.penholder.paste_clipboard_content(
             clipboard_content,
             mime_types,
@@ -826,9 +836,8 @@ impl RnoteEngine {
     ) -> oneshot::Receiver<anyhow::Result<Vec<Stroke>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Stroke>>>();
 
-        let page_width = (f64::from(self.document.format.width)
-            * (self.pdf_import_width_perc / 100.0))
-            .round() as i32;
+        let page_width =
+            (self.document.format.width * (self.pdf_import_width_perc / 100.0)).round() as i32;
 
         let pdf_import_as_vector = self.pdf_import_as_vector;
 
@@ -838,14 +847,14 @@ impl RnoteEngine {
                     let vectorimages =
                         VectorImage::import_from_pdf_bytes(&bytes, pos, Some(page_width))?
                             .into_iter()
-                            .map(|vectorimage| Stroke::VectorImage(vectorimage))
+                            .map(Stroke::VectorImage)
                             .collect::<Vec<Stroke>>();
                     Ok(vectorimages)
                 } else {
                     let bitmapimages =
                         BitmapImage::import_from_pdf_bytes(&bytes, pos, Some(page_width))?
                             .into_iter()
-                            .map(|vectorimage| Stroke::BitmapImage(vectorimage))
+                            .map(Stroke::BitmapImage)
                             .collect::<Vec<Stroke>>();
                     Ok(bitmapimages)
                 }
@@ -859,8 +868,9 @@ impl RnoteEngine {
         oneshot_receiver
     }
 
-    pub fn import_generated_strokes(&mut self, strokes: Vec<Stroke>) -> SurfaceFlags {
-        let mut surface_flags = self.store.record();
+    /// Imports the generated strokes into the store
+    pub fn import_generated_strokes(&mut self, strokes: Vec<Stroke>) -> WidgetFlags {
+        let mut widget_flags = self.store.record();
 
         let all_strokes = self.store.keys_unordered();
         self.store.set_selected_keys(&all_strokes, false);
@@ -870,24 +880,24 @@ impl RnoteEngine {
             .map(|stroke| self.store.insert_stroke(stroke))
             .collect::<Vec<StrokeKey>>();
 
-        // Before set the inserted strokes selected
+        // after inserting the strokes, but before set the inserted strokes selected
         self.resize_to_fit_strokes();
 
         inserted.into_iter().for_each(|key| {
             self.store.set_selected(key, true);
         });
 
-        surface_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
+        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
 
         self.update_pens_states();
         self.update_rendering_current_viewport();
 
-        surface_flags.redraw = true;
-        surface_flags.resize = true;
-        surface_flags.indicate_changed_store = true;
-        surface_flags.refresh_ui = true;
+        widget_flags.redraw = true;
+        widget_flags.resize = true;
+        widget_flags.indicate_changed_store = true;
+        widget_flags.refresh_ui = true;
 
-        surface_flags
+        widget_flags
     }
 
     /// generates the doc svg.
@@ -1058,7 +1068,7 @@ impl RnoteEngine {
         Ok(Some(selection_svg))
     }
 
-    /// Exports the doc with the strokes as a SVG string. Excluding the current selection.
+    /// Exports the doc with the strokes as a SVG string.
     pub fn export_doc_as_svg_string(&self, with_background: bool) -> Result<String, anyhow::Error> {
         let doc_svg = self.gen_doc_svg(with_background)?;
 
@@ -1105,10 +1115,8 @@ impl RnoteEngine {
         let doc_svg = self.gen_doc_svg(with_background)?;
         let doc_svg_bounds = doc_svg.bounds;
 
-        Ok(
-            render::Image::gen_image_from_svg(doc_svg, doc_svg_bounds, image_scale)?
-                .into_encoded_bytes(format)?,
-        )
+        render::Image::gen_image_from_svg(doc_svg, doc_svg_bounds, image_scale)?
+            .into_encoded_bytes(format)
     }
 
     /// Exporting selection as encoded image bytes (Png / Jpg, etc.)
@@ -1149,9 +1157,13 @@ impl RnoteEngine {
             .pages_bounds_w_content()
             .iter()
             .map(|&page_bounds| {
-                let page_keys = self
+                let mut page_keys = self
                     .store
                     .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
+                page_keys.extend(
+                    self.store
+                        .selection_keys_as_rendered_intersecting_bounds(page_bounds),
+                );
 
                 let strokes = self.store.clone_strokes(&page_keys);
 
@@ -1238,8 +1250,7 @@ impl RnoteEngine {
         Ok(xoppfile_bytes)
     }
 
-    /// Exports the doc with the strokes as a PDF file. Excluding the current selection.
-    /// Returns the receiver to be awaited on for the bytes
+    /// Exports the doc with the strokes as a PDF file.
     pub fn export_doc_as_pdf_bytes(
         &self,
         title: String,
@@ -1259,10 +1270,7 @@ impl RnoteEngine {
             })
             .collect::<Vec<(AABB, render::Svg)>>();
 
-        let format_size = na::vector![
-            f64::from(self.document.format.width),
-            f64::from(self.document.format.height)
-        ];
+        let format_size = na::vector![self.document.format.width, self.document.format.height];
 
         // Fill the pdf surface on a new thread to avoid blocking
         rayon::spawn(move || {

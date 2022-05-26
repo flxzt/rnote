@@ -167,8 +167,9 @@ impl TextAttribute {
         T: piet::Text,
     {
         match self {
-            TextAttribute::FontFamily(font_family) => piet_text.font_family(font_family.as_str()).map(|font_family|
-                piet::TextAttribute::FontFamily(font_family)).ok_or(anyhow::anyhow!("piet font_family() failed in textattribute try_into_piet() with font family name: {}", font_family)),
+            TextAttribute::FontFamily(font_family) => piet_text.font_family(font_family.as_str()).map(
+                piet::TextAttribute::FontFamily)
+                    .ok_or_else(|| anyhow::anyhow!("piet font_family() failed in textattribute try_into_piet() with font family name: {}", font_family)),
             TextAttribute::FontSize(font_size) => Ok(piet::TextAttribute::FontSize(font_size)),
             TextAttribute::FontWeight(font_weight) => Ok(piet::TextAttribute::Weight(piet::FontWeight::new(font_weight))),
             TextAttribute::TextColor(color) => Ok(piet::TextAttribute::TextColor(piet::Color::from(color))),
@@ -495,7 +496,7 @@ impl ShapeBehaviour for TextStroke {
         let untransformed_size = self
             .text_style
             .untransformed_size(&mut piet_cairo::CairoText::new(), self.text.clone())
-            .unwrap_or(na::Vector2::repeat(self.text_style.font_size));
+            .unwrap_or_else(|| na::Vector2::repeat(self.text_style.font_size));
 
         self.transform.transform_aabb(AABB::new(
             na::point![0.0, 0.0],
@@ -555,22 +556,20 @@ impl StrokeBehaviour for TextStroke {
                     image_scale,
                 )?,
             ]))
+        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    intersection_bounds,
+                    image_scale,
+                )?],
+                viewport,
+            })
         } else {
-            if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-                Ok(GeneratedStrokeImages::Partial {
-                    images: vec![render::Image::gen_with_piet(
-                        |piet_cx| self.draw(piet_cx, image_scale),
-                        intersection_bounds,
-                        image_scale,
-                    )?],
-                    viewport,
-                })
-            } else {
-                Ok(GeneratedStrokeImages::Partial {
-                    images: vec![],
-                    viewport,
-                })
-            }
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![],
+                viewport,
+            })
         }
     }
 }
@@ -648,7 +647,7 @@ impl TextStroke {
         &mut self,
         cursor: &mut unicode_segmentation::GraphemeCursor,
     ) {
-        if self.text.len() > 0 && self.text.len() >= cursor.cur_cursor() {
+        if !self.text.is_empty() && self.text.len() >= cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
             if let Some(prev_pos) = cursor.prev_boundary(&self.text, 0).unwrap() {
@@ -674,7 +673,7 @@ impl TextStroke {
         &mut self,
         cursor: &mut unicode_segmentation::GraphemeCursor,
     ) {
-        if self.text.len() > 0 && self.text.len() > cursor.cur_cursor() {
+        if !self.text.is_empty() && self.text.len() > cursor.cur_cursor() {
             let cur_pos = cursor.cur_cursor();
 
             if let Some(next_pos) = cursor.clone().next_boundary(&self.text, 0).unwrap() {
@@ -763,10 +762,10 @@ impl TextStroke {
         // Truncate and filter the ranges of intersecting attrs
         let truncated_attrs = intersecting_attrs
             .into_iter()
-            .map(|mut attr| {
+            .flat_map(|mut attr| {
                 //log::debug!("attr.range: {:?}, range: {:?}", attr.range, range);
 
-                let res = if attr.range.start <= range.start && attr.range.end >= range.end {
+                if attr.range.start <= range.start && attr.range.end >= range.end {
                     // if the attribute completely contains the given range, split it
                     let mut first_split_attr = attr.clone();
                     first_split_attr.range.end = range.start;
@@ -785,13 +784,8 @@ impl TextStroke {
                 } else {
                     // Else the attribute is in the range, so we discard it
                     vec![]
-                };
-
-                //log::debug!("res attr: {:?}", res);
-
-                res
+                }
             })
-            .flatten()
             // Filter out any that became empty or are contained in the given range
             .filter(|attr| !attr.range.is_empty())
             .collect::<Vec<RangedTextAttribute>>();

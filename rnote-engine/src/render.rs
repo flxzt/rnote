@@ -114,11 +114,11 @@ pub struct Image {
 impl Default for Image {
     fn default() -> Self {
         Self {
-            data: Default::default(),
+            data: vec![],
             rect: Rectangle::default(),
-            pixel_width: Default::default(),
-            pixel_height: Default::default(),
-            memory_format: Default::default(),
+            pixel_width: 0,
+            pixel_height: 0,
+            memory_format: ImageMemoryFormat::default(),
         }
     }
 }
@@ -192,7 +192,7 @@ impl Image {
         self.rect.bounds().assert_valid()?;
 
         if self.pixel_width == 0
-            || self.pixel_width == 0
+            || self.pixel_height == 0
             || self.data.len() as u32 != 4 * self.pixel_width * self.pixel_height
         {
             Err(anyhow::anyhow!(
@@ -222,10 +222,12 @@ impl Image {
                     self.pixel_height,
                     self.data.clone(),
                 )
-                .ok_or(anyhow::anyhow!(
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
                     "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
                     self.memory_format
-                ))?;
+                )
+                })?;
 
                 let dynamic_image = image::DynamicImage::ImageBgra8(imgbuf_bgra8).into_rgba8();
 
@@ -233,7 +235,7 @@ impl Image {
                     pixel_width: self.pixel_width,
                     pixel_height: self.pixel_height,
                     data: dynamic_image.into_vec(),
-                    rect: self.rect.clone(),
+                    rect: self.rect,
                     memory_format: ImageMemoryFormat::R8g8b8a8Premultiplied,
                 };
             }
@@ -247,12 +249,13 @@ impl Image {
 
         match self.memory_format {
             ImageMemoryFormat::R8g8b8a8Premultiplied => {
-                image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data).ok_or(
-                    anyhow::anyhow!(
+                image::RgbaImage::from_vec(self.pixel_width, self.pixel_height, self.data)
+                    .ok_or_else(|| {
+                        anyhow::anyhow!(
                     "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
                     self.memory_format
-                ),
                 )
+                    })
             }
             ImageMemoryFormat::B8g8r8a8Premultiplied => {
                 let imgbuf_bgra8 = image::ImageBuffer::<image::Bgra<u8>, Vec<u8>>::from_vec(
@@ -260,10 +263,12 @@ impl Image {
                     self.pixel_height,
                     self.data,
                 )
-                .ok_or(anyhow::anyhow!(
+                .ok_or_else(|| {
+                    anyhow::anyhow!(
                     "RgbaImage::from_vec() failed in Image to_imgbuf() for image with Format {:?}",
                     self.memory_format
-                ))?;
+                )
+                })?;
 
                 Ok(image::DynamicImage::ImageBgra8(imgbuf_bgra8).into_rgba8())
             }
@@ -766,7 +771,7 @@ impl Svg {
             let renderer = librsvg::CairoRenderer::new(&handle);
             renderer
                 .render_document(
-                    &cx,
+                    cx,
                     &cairo::Rectangle {
                         x: svg.bounds.mins[0],
                         y: svg.bounds.mins[1],

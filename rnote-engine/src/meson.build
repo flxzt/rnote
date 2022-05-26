@@ -5,7 +5,7 @@ rnote_engine_sources = files(
     'engine.rs',
     'drawbehaviour.rs',
     'render.rs',
-    'surfaceflags.rs',
+    'widgetflags.rs',
     'camera.rs',
     'audioplayer.rs',
     'pens/mod.rs',

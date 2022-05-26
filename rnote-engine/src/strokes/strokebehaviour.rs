@@ -17,7 +17,7 @@ pub enum GeneratedStrokeImages {
 }
 
 /// Specifing that a type is a stroke.
-/// Also needs to implement drawbehaviour, as some methods have default implementation based on it.
+/// Also needs to implement drawbehaviour and shapebehaviour.
 pub trait StrokeBehaviour: DrawBehaviour + ShapeBehaviour
 where
     Self: Sized,
@@ -46,6 +46,6 @@ where
             image_scale,
         )?;
 
-        Ok(image.into_encoded_bytes(format)?)
+        image.into_encoded_bytes(format)
     }
 }

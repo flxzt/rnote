@@ -149,6 +149,7 @@ glib::wrapper! {
 }
 
 impl PenShortcutRow {
+    #[allow(clippy::new_without_default)]
     pub fn new() -> Self {
         glib::Object::new(&[]).unwrap()
     }
@@ -164,7 +165,7 @@ impl PenShortcutRow {
     }
 
     pub fn key(&self) -> Option<ShortcutKey> {
-        self.imp().key.borrow().clone()
+        *self.imp().key.borrow()
     }
 
     pub fn set_key(&self, key: Option<ShortcutKey>) {
@@ -173,7 +174,7 @@ impl PenShortcutRow {
     }
 
     pub fn action(&self) -> ShortcutAction {
-        self.imp().action.borrow().clone()
+        *self.imp().action.borrow()
     }
 
     pub fn set_action(&self, action: ShortcutAction) {

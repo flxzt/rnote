@@ -51,12 +51,8 @@ impl StrokeStore {
     pub fn stroke_keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components
             .keys()
-            .filter_map(|key| {
-                if !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false)) {
-                    Some(key)
-                } else {
-                    None
-                }
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false))
             })
             .collect()
     }
@@ -65,12 +61,8 @@ impl StrokeStore {
     pub fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         self.keys_sorted_chrono()
             .into_iter()
-            .filter_map(|key| {
-                if !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false)) {
-                    Some(key)
-                } else {
-                    None
-                }
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
@@ -149,7 +141,7 @@ impl StrokeStore {
 
     /// Calculates the height needed to fit all strokes
     pub fn calc_height(&self) -> f64 {
-        let new_height = if let Some(stroke) = self
+        if let Some(stroke) = self
             .stroke_keys_unordered()
             .into_iter()
             .filter_map(|key| self.stroke_components.get(key))
@@ -159,9 +151,7 @@ impl StrokeStore {
             stroke.bounds().maxs[1]
         } else {
             0.0
-        };
-
-        new_height
+        }
     }
 
     /// Generates the enclosing bounds for the given stroke keys

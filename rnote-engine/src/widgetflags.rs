@@ -1,7 +1,7 @@
-/// Flags returned to the surface drawing the engine
+/// Flags returned to the widget holding the engine
 #[must_use]
 #[derive(Debug, Clone, Copy)]
-pub struct SurfaceFlags {
+pub struct WidgetFlags {
     /// application should be quit
     pub quit: bool,
     /// needs surface redrawing
@@ -22,7 +22,7 @@ pub struct SurfaceFlags {
     pub hide_redo: Option<bool>,
 }
 
-impl Default for SurfaceFlags {
+impl Default for WidgetFlags {
     fn default() -> Self {
         Self {
             quit: false,
@@ -38,7 +38,7 @@ impl Default for SurfaceFlags {
     }
 }
 
-impl SurfaceFlags {
+impl WidgetFlags {
     /// Merging with another SurfaceFlags struct, prioritizing other for conflicting values.
     pub fn merged_with_other(mut self, other: Self) -> Self {
         self.quit |= other.quit;

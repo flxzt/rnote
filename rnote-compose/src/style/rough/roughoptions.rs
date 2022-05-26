@@ -125,7 +125,8 @@ impl Default for RoughOptions {
 }
 
 impl RoughOptions {
-    /// The margin for the bounds of shapes composed with RoughOptions
+    /// The margin for the bounds of composed rough shapes
+    /// TODO: make this not a const margin, but dependent on the shape size
     pub const ROUGH_BOUNDS_MARGIN: f64 = 20.0;
 
     /// Default stroke width

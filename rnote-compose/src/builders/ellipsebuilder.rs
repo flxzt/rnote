@@ -10,7 +10,7 @@ use crate::{Shape, Style, Transform};
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::ShapeBuilderBehaviour;
 
-/// line builder
+/// ellipse builder
 #[derive(Debug, Clone)]
 pub struct EllipseBuilder {
     /// the start position
@@ -61,7 +61,7 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
 }
 
 impl EllipseBuilder {
-    /// The current state as rectangle
+    /// The current state as ellipse
     pub fn state_as_ellipse(&self) -> Ellipse {
         let transform = Transform::new_w_isometry(na::Isometry2::new(self.start, 0.0));
         let radii = (self.current - self.start).abs();

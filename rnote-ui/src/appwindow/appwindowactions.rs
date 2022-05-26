@@ -561,14 +561,14 @@ impl RnoteAppWindow {
                 if let Some(new_pen_style) = new_pen_style {
                     // don't change the style if the current style with override is already the same (e.g. when switched to from the pen button, not by clicking the pen page)
                     if new_pen_style != appwindow.canvas().engine().borrow().penholder.current_style_w_override() {
-                        let mut surface_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(
+                        let mut widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(
                             new_pen_style,
                         );
-                        surface_flags = surface_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().change_pen_style_override(
+                        widget_flags = widget_flags.merged_with_other(appwindow.canvas().engine().borrow_mut().change_pen_style_override(
                             None,
                         ));
 
-                        appwindow.handle_surface_flags(surface_flags);
+                        appwindow.handle_widget_flags(widget_flags);
                     }
                 }
             }),
@@ -609,10 +609,10 @@ impl RnoteAppWindow {
                 };
 
                 if let Some(new_pen_style_override) = new_pen_style_override {
-                    let surface_flags = appwindow.canvas().engine().borrow_mut().change_pen_style_override(
+                    let widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style_override(
                         new_pen_style_override,
                     );
-                    appwindow.handle_surface_flags(surface_flags);
+                    appwindow.handle_widget_flags(widget_flags);
                 }
             }),
         );
@@ -866,8 +866,8 @@ impl RnoteAppWindow {
 
                 // Shaper
                 {
-                    let builder_type = appwindow.canvas().engine().borrow().penholder.shaper.builder_type.clone();
-                    let style = appwindow.canvas().engine().borrow().penholder.shaper.style.clone();
+                    let builder_type = appwindow.canvas().engine().borrow().penholder.shaper.builder_type;
+                    let style = appwindow.canvas().engine().borrow().penholder.shaper.style;
                     let rough_options = appwindow.canvas().engine().borrow().penholder.shaper.rough_options.clone();
                     let smooth_options = appwindow.canvas().engine().borrow().penholder.shaper.smooth_options.clone();
 
@@ -969,8 +969,8 @@ impl RnoteAppWindow {
         // Trash Selection
         action_selection_trash.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_trash, _| {
-                let surface_flags = appwindow.canvas().engine().borrow_mut().record();
-                appwindow.handle_surface_flags(surface_flags);
+                let widget_flags = appwindow.canvas().engine().borrow_mut().record();
+                appwindow.handle_widget_flags(widget_flags);
 
                 let selection_keys = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_trashed_keys(&selection_keys, true);
@@ -984,8 +984,8 @@ impl RnoteAppWindow {
         // Duplicate Selection
         action_selection_duplicate.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_duplicate, _| {
-                let surface_flags = appwindow.canvas().engine().borrow_mut().record();
-                appwindow.handle_surface_flags(surface_flags);
+                let widget_flags = appwindow.canvas().engine().borrow_mut().record();
+                appwindow.handle_widget_flags(widget_flags);
 
                 let new_selected = appwindow.canvas().engine().borrow_mut().store.duplicate_selection();
                 appwindow.canvas().engine().borrow_mut().store.update_geometry_for_strokes(&new_selected);
@@ -1000,14 +1000,14 @@ impl RnoteAppWindow {
         // select all strokes
         action_selection_select_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_select_all, _| {
-                let surface_flags = appwindow.canvas().engine().borrow_mut().record();
-                appwindow.handle_surface_flags(surface_flags);
+                let widget_flags = appwindow.canvas().engine().borrow_mut().record();
+                appwindow.handle_widget_flags(widget_flags);
 
                 let all_strokes = appwindow.canvas().engine().borrow().store.stroke_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, true);
 
-                let surface_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
-                appwindow.handle_surface_flags(surface_flags);
+                let widget_flags = appwindow.canvas().engine().borrow_mut().change_pen_style(PenStyle::Selector);
+                appwindow.handle_widget_flags(widget_flags);
 
                 appwindow.canvas().engine().borrow_mut().resize_autoexpand();
                 appwindow.canvas().engine().borrow_mut().update_pens_states();
@@ -1018,8 +1018,8 @@ impl RnoteAppWindow {
         // deselect all strokes
         action_selection_deselect_all.connect_activate(
             clone!(@weak self as appwindow => move |_action_selection_deselect_all, _| {
-                let surface_flags = appwindow.canvas().engine().borrow_mut().record();
-                appwindow.handle_surface_flags(surface_flags);
+                let widget_flags = appwindow.canvas().engine().borrow_mut().record();
+                appwindow.handle_widget_flags(widget_flags);
 
                 let all_strokes = appwindow.canvas().engine().borrow().store.selection_keys_as_rendered();
                 appwindow.canvas().engine().borrow_mut().store.set_selected_keys(&all_strokes, false);
@@ -1037,16 +1037,16 @@ impl RnoteAppWindow {
 
         // Undo stroke
         action_undo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let surface_flags =appwindow.canvas().engine().borrow_mut().undo();
-            appwindow.handle_surface_flags(surface_flags);
+            let widget_flags =appwindow.canvas().engine().borrow_mut().undo();
+            appwindow.handle_widget_flags(widget_flags);
 
             appwindow.canvas().update_engine_rendering();
         }));
 
         // Redo stroke
         action_redo_stroke.connect_activate(clone!(@weak self as appwindow => move |_,_| {
-            let surface_flags =appwindow.canvas().engine().borrow_mut().redo();
-            appwindow.handle_surface_flags(surface_flags);
+            let widget_flags =appwindow.canvas().engine().borrow_mut().redo();
+            appwindow.handle_widget_flags(widget_flags);
 
             appwindow.canvas().update_engine_rendering();
         }));
@@ -1366,11 +1366,11 @@ impl RnoteAppWindow {
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
-                            let surface_flags = appwindow.canvas().engine().borrow_mut().paste_clipboard_content(
+                            let widget_flags = appwindow.canvas().engine().borrow_mut().paste_clipboard_content(
                                 text.as_bytes(),
-                                content_formats.mime_types().into_iter().map(|mime_type| String::from(mime_type)).collect::<Vec<String>>()
+                                content_formats.mime_types().into_iter().map(String::from).collect::<Vec<String>>()
                             );
-                            appwindow.handle_surface_flags(surface_flags);
+                            appwindow.handle_widget_flags(widget_flags);
                         }
                         Ok(None) => {}
                         Err(e) => {

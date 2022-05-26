@@ -4,7 +4,7 @@ use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
 use crate::AudioPlayer;
-use crate::{DrawOnDocBehaviour, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
@@ -80,8 +80,8 @@ impl PenBehaviour for Brush {
         &mut self,
         event: PenEvent,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags) {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
         let style = self.style;
 
         let pen_progress = match (&mut self.state, event) {
@@ -95,7 +95,7 @@ impl PenBehaviour for Brush {
                 if !element
                     .filter_by_bounds(engine_view.doc.bounds().loosened(Self::INPUT_OVERSHOOT))
                 {
-                    surface_flags.merge_with_other(engine_view.store.record());
+                    widget_flags.merge_with_other(engine_view.store.record());
 
                     Self::start_audio(style, engine_view.audioplayer);
 
@@ -124,8 +124,8 @@ impl PenBehaviour for Brush {
                         current_stroke_key,
                     };
 
-                    surface_flags.redraw = true;
-                    surface_flags.hide_scrollbars = Some(true);
+                    widget_flags.redraw = true;
+                    widget_flags.hide_scrollbars = Some(true);
 
                     PenProgress::InProgress
                 } else {
@@ -158,10 +158,10 @@ impl PenBehaviour for Brush {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.indicate_changed_store = true;
-                surface_flags.hide_scrollbars = Some(false);
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
+                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
@@ -174,7 +174,7 @@ impl PenBehaviour for Brush {
             ) => {
                 match path_builder.handle_event(pen_event) {
                     BuilderProgress::InProgress => {
-                        surface_flags.redraw = true;
+                        widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
@@ -189,7 +189,7 @@ impl PenBehaviour for Brush {
                                         new_segment,
                                     );
                                     n_segments += 1;
-                                    surface_flags.indicate_changed_store = true;
+                                    widget_flags.indicate_changed_store = true;
                                 }
                                 _ => {
                                     // not reachable, pen builder should only produce segments
@@ -206,7 +206,7 @@ impl PenBehaviour for Brush {
                         ) {
                             log::error!("append_rendering_last_segments() for penevent down in brush failed with Err {}", e);
                         }
-                        surface_flags.redraw = true;
+                        widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
@@ -218,7 +218,7 @@ impl PenBehaviour for Brush {
                                         *current_stroke_key,
                                         new_segment,
                                     );
-                                    surface_flags.indicate_changed_store = true;
+                                    widget_flags.indicate_changed_store = true;
                                 }
                                 _ => {
                                     // not reachable, pen builder should only produce segments
@@ -245,10 +245,10 @@ impl PenBehaviour for Brush {
                             .doc
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                        surface_flags.redraw = true;
-                        surface_flags.resize = true;
-                        surface_flags.indicate_changed_store = true;
-                        surface_flags.hide_scrollbars = Some(false);
+                        widget_flags.redraw = true;
+                        widget_flags.resize = true;
+                        widget_flags.indicate_changed_store = true;
+                        widget_flags.hide_scrollbars = Some(false);
 
                         PenProgress::Finished
                     }
@@ -256,7 +256,7 @@ impl PenBehaviour for Brush {
             }
         };
 
-        (pen_progress, surface_flags)
+        (pen_progress, widget_flags)
     }
 }
 

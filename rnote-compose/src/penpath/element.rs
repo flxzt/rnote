@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[serde(default, rename = "element")]
 pub struct Element {
     #[serde(rename = "pos")]
-    /// The position for the element
+    /// The position of the element
     pub pos: na::Vector2<f64>,
     #[serde(rename = "pressure")]
     /// The pen pressure. The valid range is [0.0, 1.0]

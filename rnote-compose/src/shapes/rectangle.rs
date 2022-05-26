@@ -16,7 +16,7 @@ pub struct Rectangle {
     /// The cuboid, consisting of half extents.
     pub cuboid: p2d::shape::Cuboid,
     #[serde(rename = "transform")]
-    /// The transform to place the rect in a coordinate space
+    /// The transform of the center of the cuboid
     pub transform: Transform,
 }
 
@@ -46,8 +46,7 @@ impl ShapeBehaviour for Rectangle {
     fn hitboxes(&self) -> Vec<AABB> {
         self.outline_lines()
             .into_iter()
-            .map(|line| line.hitboxes())
-            .flatten()
+            .flat_map(|line| line.hitboxes())
             .collect()
     }
 }

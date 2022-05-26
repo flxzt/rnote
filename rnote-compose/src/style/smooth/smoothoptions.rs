@@ -3,7 +3,7 @@ use crate::Color;
 
 use serde::{Deserialize, Serialize};
 
-/// Options for shapes that can be drawn smoothly (plain)
+/// Options for shapes that can be drawn smoothly
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "smooth_options")]
 pub struct SmoothOptions {

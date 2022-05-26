@@ -2,7 +2,7 @@ use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
 use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
-use crate::{DrawOnDocBehaviour, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
@@ -79,8 +79,8 @@ impl PenBehaviour for Shaper {
         &mut self,
         event: PenEvent,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags) {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
             (ShaperState::Idle, PenEvent::Down { element, .. }) => {
@@ -121,7 +121,7 @@ impl PenBehaviour for Shaper {
                     }
                 }
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::InProgress
             }
@@ -129,13 +129,13 @@ impl PenBehaviour for Shaper {
             (ShaperState::BuildShape { .. }, PenEvent::Cancel) => {
                 self.state = ShaperState::Idle;
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
                 PenProgress::Finished
             }
             (ShaperState::BuildShape { builder }, event) => {
                 match builder.handle_event(event) {
                     BuilderProgress::InProgress => {
-                        surface_flags.redraw = true;
+                        widget_flags.redraw = true;
 
                         PenProgress::InProgress
                     }
@@ -144,7 +144,7 @@ impl PenBehaviour for Shaper {
 
                         if !shapes.is_empty() {
                             // Only record if new shapes actually were emitted
-                            surface_flags.merge_with_other(engine_view.store.record());
+                            widget_flags.merge_with_other(engine_view.store.record());
                         }
 
                         for shape in shapes {
@@ -160,8 +160,8 @@ impl PenBehaviour for Shaper {
                             }
                         }
 
-                        surface_flags.redraw = true;
-                        surface_flags.indicate_changed_store = true;
+                        widget_flags.redraw = true;
+                        widget_flags.indicate_changed_store = true;
 
                         PenProgress::InProgress
                     }
@@ -170,7 +170,7 @@ impl PenBehaviour for Shaper {
 
                         if !shapes.is_empty() {
                             // Only record if new shapes actually were emitted
-                            surface_flags.merge_with_other(engine_view.store.record());
+                            widget_flags.merge_with_other(engine_view.store.record());
                         }
 
                         if !shapes.is_empty() {
@@ -178,8 +178,8 @@ impl PenBehaviour for Shaper {
                                 .doc
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                            surface_flags.resize = true;
-                            surface_flags.indicate_changed_store = true;
+                            widget_flags.resize = true;
+                            widget_flags.indicate_changed_store = true;
                         }
 
                         for shape in shapes {
@@ -197,7 +197,7 @@ impl PenBehaviour for Shaper {
 
                         self.state = ShaperState::Idle;
 
-                        surface_flags.redraw = true;
+                        widget_flags.redraw = true;
 
                         PenProgress::Finished
                     }
@@ -205,7 +205,7 @@ impl PenBehaviour for Shaper {
             }
         };
 
-        (pen_progress, surface_flags)
+        (pen_progress, widget_flags)
     }
 }
 

@@ -13,7 +13,7 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
 use crate::strokes::textstroke::{RangedTextAttribute, TextAttribute, TextStyle};
 use crate::strokes::{Stroke, TextStroke};
-use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, StrokeStore, WidgetFlags};
 
 use super::penbehaviour::PenProgress;
 use super::PenBehaviour;
@@ -345,10 +345,10 @@ impl PenBehaviour for Typewriter {
         &mut self,
         event: PenEvent,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags) {
+    ) -> (PenProgress, WidgetFlags) {
         //log::debug!("typewriter handle_event: state: {:#?}, event: {:#?}", self.state, event);
 
-        let mut surface_flags = SurfaceFlags::default();
+        let mut widget_flags = WidgetFlags::default();
         let typewriter_bounds = self.bounds_on_doc(&engine_view.as_im());
 
         let pen_progress = match (&mut self.state, event) {
@@ -397,8 +397,8 @@ impl PenBehaviour for Typewriter {
                     // Update typewriter state for the current textstroke, and indicate that the penholder has changed, to update the UI
                     self.update_internal_state(&engine_view.as_im());
 
-                    surface_flags.redraw = true;
-                    surface_flags.refresh_ui = true;
+                    widget_flags.redraw = true;
+                    widget_flags.refresh_ui = true;
                 }
 
                 PenProgress::InProgress
@@ -410,7 +410,7 @@ impl PenBehaviour for Typewriter {
             (TypewriterState::Start(pos), PenEvent::KeyPressed { keyboard_key, .. }) => {
                 match keyboard_key {
                     KeyboardKey::Unicode(keychar) => {
-                        surface_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge_with_other(engine_view.store.record());
 
                         let mut text_style = self.text_style.clone();
                         if self.max_width_enabled {
@@ -447,14 +447,14 @@ impl PenBehaviour for Typewriter {
                     _ => {}
                 }
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::InProgress
             }
             (TypewriterState::Start(_), PenEvent::Cancel) => {
                 self.state = TypewriterState::Idle;
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::Finished
             }
@@ -476,7 +476,7 @@ impl PenBehaviour for Typewriter {
                         .contains_local_point(&na::Point2::from(element.pos))
                     {
                         // switch to translating the text field
-                        surface_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge_with_other(engine_view.store.record());
 
                         self.state = TypewriterState::Translating {
                             stroke_key: *stroke_key,
@@ -493,7 +493,7 @@ impl PenBehaviour for Typewriter {
                     )
                     .contains_local_point(&na::Point2::from(element.pos))
                     {
-                        surface_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge_with_other(engine_view.store.record());
 
                         // Clicking on the adjust text width node
                         self.state = TypewriterState::AdjustTextWidth {
@@ -534,7 +534,7 @@ impl PenBehaviour for Typewriter {
                     }
                 }
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 pen_progress
             }
@@ -561,7 +561,7 @@ impl PenBehaviour for Typewriter {
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
                     let mut update_stroke = |store: &mut StrokeStore| {
-                        surface_flags.merge_with_other(store.record());
+                        widget_flags.merge_with_other(store.record());
 
                         store.update_geometry_for_stroke(*stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
@@ -573,9 +573,9 @@ impl PenBehaviour for Typewriter {
 
                         engine_view.doc.resize_autoexpand(store, engine_view.camera);
 
-                        surface_flags.redraw = true;
-                        surface_flags.resize = true;
-                        surface_flags.indicate_changed_store = true;
+                        widget_flags.redraw = true;
+                        widget_flags.resize = true;
+                        widget_flags.indicate_changed_store = true;
                     };
 
                     // Handling keyboard input
@@ -701,7 +701,7 @@ impl PenBehaviour for Typewriter {
 
                     *down = false;
 
-                    surface_flags.redraw = true;
+                    widget_flags.redraw = true;
 
                     if let Some(new_state) = new_state {
                         self.state = new_state;
@@ -713,7 +713,7 @@ impl PenBehaviour for Typewriter {
             (TypewriterState::Modifying { .. }, PenEvent::Cancel) => {
                 self.state = TypewriterState::Idle;
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::Finished
             }
@@ -733,7 +733,7 @@ impl PenBehaviour for Typewriter {
                     if Self::translate_node_bounds(typewriter_bounds, engine_view.camera)
                         .contains_local_point(&na::Point2::from(element.pos))
                     {
-                        surface_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge_with_other(engine_view.store.record());
 
                         self.state = TypewriterState::Translating {
                             stroke_key: *stroke_key,
@@ -774,7 +774,7 @@ impl PenBehaviour for Typewriter {
                     }
                 }
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 pen_progress
             }
@@ -782,7 +782,7 @@ impl PenBehaviour for Typewriter {
                 // finished when drag ended
                 *finished = true;
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::InProgress
             }
@@ -804,7 +804,7 @@ impl PenBehaviour for Typewriter {
                     engine_view.store.get_stroke_mut(*stroke_key)
                 {
                     let mut update_stroke = |store: &mut StrokeStore| {
-                        surface_flags.merge_with_other(store.record());
+                        widget_flags.merge_with_other(store.record());
 
                         store.update_geometry_for_stroke(*stroke_key);
                         store.regenerate_rendering_for_stroke_threaded(
@@ -816,9 +816,9 @@ impl PenBehaviour for Typewriter {
 
                         engine_view.doc.resize_autoexpand(store, engine_view.camera);
 
-                        surface_flags.redraw = true;
-                        surface_flags.resize = true;
-                        surface_flags.indicate_changed_store = true;
+                        widget_flags.redraw = true;
+                        widget_flags.resize = true;
+                        widget_flags.indicate_changed_store = true;
                     };
 
                     // Handle keyboard keys
@@ -920,7 +920,7 @@ impl PenBehaviour for Typewriter {
                     }
                 }
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::InProgress
             }
@@ -931,7 +931,7 @@ impl PenBehaviour for Typewriter {
             (TypewriterState::Selecting { .. }, PenEvent::Cancel) => {
                 self.state = TypewriterState::Idle;
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::Finished
             }
@@ -963,8 +963,8 @@ impl PenBehaviour for Typewriter {
 
                     *current_pos = element.pos;
 
-                    surface_flags.redraw = true;
-                    surface_flags.indicate_changed_store = true;
+                    widget_flags.redraw = true;
+                    widget_flags.indicate_changed_store = true;
                 }
 
                 PenProgress::InProgress
@@ -996,9 +996,9 @@ impl PenBehaviour for Typewriter {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -1043,8 +1043,8 @@ impl PenBehaviour for Typewriter {
 
                 *current_pos = element.pos;
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -1075,9 +1075,9 @@ impl PenBehaviour for Typewriter {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -1088,13 +1088,13 @@ impl PenBehaviour for Typewriter {
             (TypewriterState::AdjustTextWidth { .. }, PenEvent::Cancel) => {
                 self.state = TypewriterState::Idle;
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::Finished
             }
         };
 
-        (pen_progress, surface_flags)
+        (pen_progress, widget_flags)
     }
 
     fn paste_clipboard_content(
@@ -1102,8 +1102,8 @@ impl PenBehaviour for Typewriter {
         clipboard_content: &[u8],
         mime_types: Vec<String>,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags) {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
 
         let pen_progress = match &mut self.state {
             TypewriterState::Start(pos) => {
@@ -1114,7 +1114,7 @@ impl PenBehaviour for Typewriter {
                     if let Ok(clipboard_text) = String::from_utf8(clipboard_content.to_vec()) {
                         let text_len = clipboard_text.len();
 
-                        surface_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge_with_other(engine_view.store.record());
 
                         let mut text_style = self.text_style.clone();
                         if self.max_width_enabled {
@@ -1147,7 +1147,7 @@ impl PenBehaviour for Typewriter {
                             pen_down: false,
                         };
 
-                        surface_flags.redraw = true;
+                        widget_flags.redraw = true;
                     }
                 }
 
@@ -1160,7 +1160,7 @@ impl PenBehaviour for Typewriter {
                     .iter()
                     .any(|mime_type| mime_type.contains("text/plain"))
                 {
-                    surface_flags.merge_with_other(engine_view.store.record());
+                    widget_flags.merge_with_other(engine_view.store.record());
 
                     if let (Some(Stroke::TextStroke(textstroke)), Ok(clipboard_text)) = (
                         engine_view.store.get_stroke_mut(*stroke_key),
@@ -1180,9 +1180,9 @@ impl PenBehaviour for Typewriter {
                             .doc
                             .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                        surface_flags.redraw = true;
-                        surface_flags.resize = true;
-                        surface_flags.indicate_changed_store = true;
+                        widget_flags.redraw = true;
+                        widget_flags.resize = true;
+                        widget_flags.indicate_changed_store = true;
                     }
                 }
 
@@ -1198,7 +1198,7 @@ impl PenBehaviour for Typewriter {
                     .iter()
                     .any(|mime_type| mime_type.contains("text/plain"))
                 {
-                    surface_flags.merge_with_other(engine_view.store.record());
+                    widget_flags.merge_with_other(engine_view.store.record());
 
                     if let (Some(Stroke::TextStroke(textstroke)), Ok(clipboard_text)) = (
                         engine_view.store.get_stroke_mut(*stroke_key),
@@ -1227,9 +1227,9 @@ impl PenBehaviour for Typewriter {
                             pen_down: false,
                         };
 
-                        surface_flags.resize = true;
-                        surface_flags.redraw = true;
-                        surface_flags.indicate_changed_store = true;
+                        widget_flags.resize = true;
+                        widget_flags.redraw = true;
+                        widget_flags.indicate_changed_store = true;
                     }
                 }
 
@@ -1243,7 +1243,7 @@ impl PenBehaviour for Typewriter {
             }
         };
 
-        (pen_progress, surface_flags)
+        (pen_progress, widget_flags)
     }
 
     fn fetch_clipboard_content(
@@ -1444,18 +1444,18 @@ impl Typewriter {
         &mut self,
         modify_func: F,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags
+    ) -> WidgetFlags
     where
         F: FnOnce(&mut TextStyle),
     {
-        let mut surface_flags = SurfaceFlags::default();
+        let mut widget_flags = WidgetFlags::default();
 
         if let TypewriterState::Modifying { stroke_key, .. }
         | TypewriterState::Selecting { stroke_key, .. }
         | TypewriterState::Translating { stroke_key, .. }
         | TypewriterState::AdjustTextWidth { stroke_key, .. } = &mut self.state
         {
-            surface_flags.merge_with_other(engine_view.store.record());
+            widget_flags.merge_with_other(engine_view.store.record());
 
             if let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(*stroke_key)
@@ -1471,22 +1471,22 @@ impl Typewriter {
                     log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
                 }
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
             }
         }
 
-        surface_flags
+        widget_flags
     }
 
     pub fn remove_text_attributes_current_selection(
         &mut self,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if let Some((selection_range, stroke_key)) = self.selection_range() {
-            surface_flags.merge_with_other(engine_view.store.record());
+            widget_flags.merge_with_other(engine_view.store.record());
 
             if let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
@@ -1502,23 +1502,23 @@ impl Typewriter {
                     log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
                 }
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
             }
         }
 
-        surface_flags
+        widget_flags
     }
 
     pub fn add_text_attribute_current_selection(
         &mut self,
         text_attribute: TextAttribute,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if let Some((selection_range, stroke_key)) = self.selection_range() {
-            surface_flags.merge_with_other(engine_view.store.record());
+            widget_flags.merge_with_other(engine_view.store.record());
 
             if let Some(Stroke::TextStroke(textstroke)) =
                 engine_view.store.get_stroke_mut(stroke_key)
@@ -1540,11 +1540,11 @@ impl Typewriter {
                     log::error!("regenerate_rendering_for_stroke() failed with Err {}", e);
                 }
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
             }
         }
 
-        surface_flags
+        widget_flags
     }
 }

@@ -18,6 +18,7 @@ pub enum ShortcutAction {
     },
 }
 
+/// holds the registered shortcut actions for the given shortcut keys
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename = "shortcuts")]
 pub struct Shortcuts(HashMap<ShortcutKey, ShortcutAction>);

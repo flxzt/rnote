@@ -91,7 +91,7 @@ impl Document {
         )
     }
 
-    // Generates bounds for each page for the doc size, extended to fit the format. May contain many empty pages (in infinite mode)
+    // Generates bounds for each page for the doc bounds, extended to fit the format. May contain many empty pages (in infinite mode)
     pub fn pages_bounds(&self) -> Vec<AABB> {
         let doc_bounds = self.bounds();
 
@@ -148,8 +148,7 @@ impl Document {
 
         let new_width = self.format.width;
         // +1.0 because then 'fraction'.ceil() is at least 1
-        let new_height = (f64::from(store.calc_height() + 1.0) / f64::from(format_height)).ceil()
-            * format_height;
+        let new_height = ((store.calc_height() + 1.0) / format_height).ceil() * format_height;
 
         self.x = 0.0;
         self.y = 0.0;
@@ -214,9 +213,9 @@ impl Document {
 
         let rounded_rect = gsk::RoundedRect::new(
             graphene::Rect::from_p2d_aabb(bounds),
-            corner_radius.clone(),
-            corner_radius.clone(),
-            corner_radius.clone(),
+            corner_radius,
+            corner_radius,
+            corner_radius,
             corner_radius,
         );
 

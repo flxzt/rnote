@@ -33,7 +33,7 @@ impl AudioPlayer {
         let mut marker_sounds = vec![];
         let mut brush_sound = None;
 
-        for mut path in system_data_dirs.clone() {
+        for mut path in system_data_dirs {
             path.push("rnote/sounds/");
             if path.exists() {
                 // Init marker sounds

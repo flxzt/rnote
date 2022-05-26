@@ -516,13 +516,11 @@ impl SettingsPanel {
 
         self.format_width_unitentry()
             .set_unit(format::MeasureUnit::Px);
-        self.format_width_unitentry()
-            .set_value(f64::from(format.width));
+        self.format_width_unitentry().set_value(format.width);
 
         self.format_height_unitentry()
             .set_unit(format::MeasureUnit::Px);
-        self.format_height_unitentry()
-            .set_value(f64::from(format.height));
+        self.format_height_unitentry().set_value(format.height);
     }
 
     pub fn load_background(&self, appwindow: &RnoteAppWindow) {
@@ -568,21 +566,21 @@ impl SettingsPanel {
 
         current_shortcuts
             .into_iter()
-            .for_each(|(key, action)| match key.clone() {
+            .for_each(|(key, action)| match key {
                 ShortcutKey::StylusPrimaryButton => {
                     self.imp()
                         .penshortcut_stylus_button_primary_row
-                        .set_action(action.clone());
+                        .set_action(action);
                 }
                 ShortcutKey::StylusSecondaryButton => {
                     self.imp()
                         .penshortcut_stylus_button_secondary_row
-                        .set_action(action.clone());
+                        .set_action(action);
                 }
                 ShortcutKey::MouseSecondaryButton => {
                     self.imp()
                         .penshortcut_mouse_button_secondary_row
-                        .set_action(action.clone());
+                        .set_action(action);
                 }
                 _ => {}
             });
@@ -662,9 +660,9 @@ impl SettingsPanel {
 
                 // Setting the entries, which have callbacks to update the temporary format
                 settings_panel.format_width_unitentry()
-                    .set_value(f64::from(revert_format.width));
+                    .set_value(revert_format.width);
                 settings_panel.format_height_unitentry()
-                    .set_value(f64::from(revert_format.height));
+                    .set_value(revert_format.height);
             }));
 
         // Apply format
@@ -736,7 +734,7 @@ impl SettingsPanel {
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
                     let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
-                    pattern_size[0] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
+                    pattern_size[0] = settings_panel.background_pattern_width_unitentry().value_in_px();
 
                     appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
@@ -751,7 +749,7 @@ impl SettingsPanel {
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
                     let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
-                    pattern_size[1] = f64::from(settings_panel.background_pattern_height_unitentry().value_in_px());
+                    pattern_size[1] = settings_panel.background_pattern_height_unitentry().value_in_px();
 
                     appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 

@@ -12,7 +12,7 @@ use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::ShapeBuilderBehaviour;
 
 #[derive(Debug, Clone)]
-/// The state
+/// The foci ellipse builder state
 pub enum FociEllipseBuilderState {
     /// first
     First(na::Vector2<f64>),

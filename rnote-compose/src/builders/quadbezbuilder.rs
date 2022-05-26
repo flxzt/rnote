@@ -11,18 +11,18 @@ use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::ShapeBuilderBehaviour;
 
 #[derive(Debug, Clone)]
-/// The state
+/// The quadbez builder state
 pub enum QuadBezBuilderState {
-    /// start
+    /// setting the start point of the new quadbez
     Start(na::Vector2<f64>),
-    /// control point
+    /// setting the control point of the new quadbez
     Cp {
         /// start
         start: na::Vector2<f64>,
         /// control point
         cp: na::Vector2<f64>,
     },
-    /// end
+    /// setting the end point of the new quadbez
     End {
         /// start
         start: na::Vector2<f64>,
@@ -34,7 +34,7 @@ pub enum QuadBezBuilderState {
 }
 
 #[derive(Debug, Clone)]
-/// building quadratic bezier
+/// quadratic bezier builder
 pub struct QuadBezBuilder {
     /// the state
     pub state: QuadBezBuilderState,
@@ -56,13 +56,6 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
             (QuadBezBuilderState::Start(start), PenEvent::Down { element, .. }) => {
                 *start = element.pos;
 
-                self.state = QuadBezBuilderState::Cp {
-                    start: *start,
-                    cp: element.pos,
-                };
-            }
-            (QuadBezBuilderState::Start(start), PenEvent::Up { element, .. }) => {
-                // should not be reachable, but just in case we transition here too
                 self.state = QuadBezBuilderState::Cp {
                     start: *start,
                     cp: element.pos,

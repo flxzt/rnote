@@ -1,5 +1,6 @@
 #![warn(missing_debug_implementations)]
 #![warn(missing_docs)]
+#![allow(clippy::single_match)]
 
 //! The rnote-fileformats crate is a helper crate for loading / saving from and to various file formats used by note taking and drawing applications.
 //!

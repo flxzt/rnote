@@ -1,17 +1,16 @@
 use rnote_compose::penhelpers::PenEvent;
 
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawOnDocBehaviour, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 
 /// types that are pens and can handle pen events
 pub trait PenBehaviour: DrawOnDocBehaviour {
     /// Handles a pen event
-    #[must_use]
     fn handle_event(
         &mut self,
         event: PenEvent,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags);
+    ) -> (PenProgress, WidgetFlags);
 
     /// fetches clipboard content from the pen
     fn fetch_clipboard_content(
@@ -27,8 +26,8 @@ pub trait PenBehaviour: DrawOnDocBehaviour {
         _clipboard_content: &[u8],
         _mime_types: Vec<String>,
         _engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags) {
-        (PenProgress::Idle, SurfaceFlags::default())
+    ) -> (PenProgress, WidgetFlags) {
+        (PenProgress::Idle, WidgetFlags::default())
     }
 
     /// Updates the internal state of the pen ( called for example when the engine state has changed outside of pen events )

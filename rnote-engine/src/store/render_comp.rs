@@ -44,6 +44,7 @@ impl Default for RenderComponent {
 }
 
 impl StrokeStore {
+    /// Reloads the slotmap with empty render components from the keys returned from the primary map, stroke_components.
     pub fn reload_render_components_slotmap(&mut self) {
         self.render_components = slotmap::SecondaryMap::new();
         self.stroke_components.keys().for_each(|key| {

@@ -37,11 +37,9 @@ impl StrokeStore {
     }
 
     pub fn selected(&self, key: StrokeKey) -> Option<bool> {
-        if let Some(selection_comp) = self.selection_components.get(key) {
-            Some(selection_comp.selected)
-        } else {
-            None
-        }
+        self.selection_components
+            .get(key)
+            .map(|selection_comp| selection_comp.selected)
     }
 
     /// Sets if the stroke is currently selected

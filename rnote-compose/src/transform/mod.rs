@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::helpers::{AABBHelpers, Affine2Helpers};
 
-/// To be used as state in a stroke to help implement the StrokeBehaviour trait
+/// A (affine) transform
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "transform")]
 pub struct Transform {
@@ -132,7 +132,7 @@ impl Transform {
         )
     }
 
-    /// To kurbo affine
+    /// to kurbo affine
     pub fn to_kurbo(&self) -> kurbo::Affine {
         self.affine.to_kurbo()
     }

@@ -22,7 +22,7 @@ pub(crate) enum PenPathBuilderState {
 /// The pen path builder
 pub struct PenPathBuilder {
     pub(crate) state: PenPathBuilderState,
-    /// Buffered elements, which is filled up by new pen events and used to try to build path segments
+    /// Buffered elements, which are filled up by new pen events and used to try to build path segments
     pub buffer: VecDeque<Element>,
 }
 
@@ -121,7 +121,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
 
 impl PenPathBuilder {
     fn try_build_segments_start(&mut self) -> Option<Vec<Shape>> {
-        let segments = match self.buffer.len() {
+        match self.buffer.len() {
             3.. => {
                 // Here we have enough elements to switch into during state
                 self.state = PenPathBuilderState::During;
@@ -132,13 +132,11 @@ impl PenPathBuilder {
                 })])
             }
             _ => None,
-        };
-
-        segments
+        }
     }
 
     fn try_build_segments_during(&mut self) -> Option<Vec<Shape>> {
-        let segments = match self.buffer.len() {
+        match self.buffer.len() {
             4.. => {
                 if let Some(cubbez) = CubicBezier::new_w_catmull_rom(
                     self.buffer[0].pos,
@@ -174,9 +172,7 @@ impl PenPathBuilder {
                 }
             }
             _ => None,
-        };
-
-        segments
+        }
     }
 
     fn try_build_segments_end(&mut self) -> Vec<Shape> {
@@ -221,7 +217,7 @@ impl PenPathBuilder {
                         },
                     });
 
-                    // Only remove one element as more segments can be build
+                    // Only remove one element as more segments can be built
                     self.buffer.pop_front();
 
                     Some(vec![segment])

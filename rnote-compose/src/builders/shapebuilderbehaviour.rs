@@ -15,7 +15,7 @@ pub enum BuilderProgress {
     Finished(Vec<Shape>),
 }
 
-/// Creates a shape builder (separate trait cause trait object traits can't return Self)
+/// Creates a shape builder (separate trait because we use the ShapeBuilderBehaviour as trait object, so we can't have a method returning Self there.)
 pub trait ShapeBuilderCreator {
     /// Start the builder
     fn start(element: Element) -> Self;
@@ -24,7 +24,8 @@ pub trait ShapeBuilderCreator {
 /// Types that are shape builders.
 /// They receive pen events, and return builded shapes. They usually are drawn while building the shape, and are state machines.
 pub trait ShapeBuilderBehaviour: std::fmt::Debug {
-    /// handles a pen event. Returns None if no shapes can be built in the current state. Returns Some() when a /multiple shapes was/were successfully built.
+    /// handles a pen event. Returns None if no shapes can be built in the current state.
+    /// Returns the builder progress which can contain the builded shapes.
     fn handle_event(&mut self, event: PenEvent) -> BuilderProgress;
 
     /// the bounds

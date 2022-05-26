@@ -4,7 +4,7 @@ use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penhelpers::ShortcutKey;
 use rnote_compose::penpath::Element;
 use rnote_engine::pens::PenMode;
-use rnote_engine::SurfaceFlags;
+use rnote_engine::WidgetFlags;
 use std::collections::VecDeque;
 
 use crate::appwindow::RnoteAppWindow;
@@ -197,7 +197,7 @@ pub fn process_pen_down(
     pen_mode: Option<PenMode>,
     appwindow: &RnoteAppWindow,
 ) {
-    let mut surface_flags = SurfaceFlags::default();
+    let mut widget_flags = WidgetFlags::default();
 
     appwindow
         .canvas()
@@ -207,7 +207,7 @@ pub fn process_pen_down(
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
     // TODO: handle this better
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
-        surface_flags.merge_with_other(
+        widget_flags.merge_with_other(
             appwindow
                 .canvas()
                 .engine()
@@ -215,11 +215,11 @@ pub fn process_pen_down(
                 .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton),
         );
 
-        appwindow.handle_surface_flags(surface_flags);
+        appwindow.handle_widget_flags(widget_flags);
         return;
     }
     if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
-        surface_flags.merge_with_other(
+        widget_flags.merge_with_other(
             appwindow
                 .canvas()
                 .engine()
@@ -227,12 +227,12 @@ pub fn process_pen_down(
                 .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton),
         );
 
-        appwindow.handle_surface_flags(surface_flags);
+        appwindow.handle_widget_flags(widget_flags);
         return;
     }
 
     // Handle all other events as pen down
-    surface_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
         PenEvent::Down {
             element,
             shortcut_keys,
@@ -240,7 +240,7 @@ pub fn process_pen_down(
         pen_mode,
     ));
 
-    appwindow.handle_surface_flags(surface_flags);
+    appwindow.handle_widget_flags(widget_flags);
 }
 
 /// Process "Pen up"
@@ -250,7 +250,7 @@ pub fn process_pen_up(
     pen_mode: Option<PenMode>,
     appwindow: &RnoteAppWindow,
 ) {
-    let mut surface_flags = SurfaceFlags::default();
+    let mut widget_flags = WidgetFlags::default();
 
     appwindow
         .canvas()
@@ -260,7 +260,7 @@ pub fn process_pen_up(
     // so we skip handling those as a Pen Events and emit pressed shortcut key events
     // TODO: handle this better
     if shortcut_keys.contains(&ShortcutKey::StylusPrimaryButton) {
-        surface_flags.merge_with_other(
+        widget_flags.merge_with_other(
             appwindow
                 .canvas()
                 .engine()
@@ -268,11 +268,11 @@ pub fn process_pen_up(
                 .handle_pen_pressed_shortcut_key(ShortcutKey::StylusPrimaryButton),
         );
 
-        appwindow.handle_surface_flags(surface_flags);
+        appwindow.handle_widget_flags(widget_flags);
         return;
     }
     if shortcut_keys.contains(&ShortcutKey::StylusSecondaryButton) {
-        surface_flags.merge_with_other(
+        widget_flags.merge_with_other(
             appwindow
                 .canvas()
                 .engine()
@@ -280,12 +280,12 @@ pub fn process_pen_up(
                 .handle_pen_pressed_shortcut_key(ShortcutKey::StylusSecondaryButton),
         );
 
-        appwindow.handle_surface_flags(surface_flags);
+        appwindow.handle_widget_flags(widget_flags);
         return;
     }
 
     // Handle all other events as pen up
-    surface_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
         PenEvent::Up {
             element,
             shortcut_keys,
@@ -293,7 +293,7 @@ pub fn process_pen_up(
         pen_mode,
     ));
 
-    appwindow.handle_surface_flags(surface_flags);
+    appwindow.handle_widget_flags(widget_flags);
 }
 
 /// Process "Pen proximity"
@@ -303,29 +303,29 @@ pub fn process_pen_proximity(
     pen_mode: Option<PenMode>,
     appwindow: &RnoteAppWindow,
 ) {
-    let mut surface_flags = SurfaceFlags::default();
+    let mut widget_flags = WidgetFlags::default();
 
-    surface_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    widget_flags.merge_with_other(appwindow.canvas().engine().borrow_mut().handle_pen_event(
         PenEvent::Proximity {
             element,
-            shortcut_keys: shortcut_keys.clone(),
+            shortcut_keys,
         },
         pen_mode,
     ));
 
-    appwindow.handle_surface_flags(surface_flags);
+    appwindow.handle_widget_flags(widget_flags);
 }
 
 /// Process shortcut key pressed
 #[allow(unused)]
 pub fn process_shortcut_key_pressed(shortcut_key: ShortcutKey, appwindow: &RnoteAppWindow) {
-    let surface_flags = appwindow
+    let widget_flags = appwindow
         .canvas()
         .engine()
         .borrow_mut()
         .handle_pen_pressed_shortcut_key(shortcut_key);
 
-    appwindow.handle_surface_flags(surface_flags);
+    appwindow.handle_widget_flags(widget_flags);
 }
 
 /// Process keyboard key pressed
@@ -334,7 +334,7 @@ pub fn process_keyboard_key_pressed(
     shortcut_keys: Vec<ShortcutKey>,
     appwindow: &RnoteAppWindow,
 ) {
-    let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(
+    let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(
         PenEvent::KeyPressed {
             keyboard_key,
             shortcut_keys,
@@ -342,5 +342,5 @@ pub fn process_keyboard_key_pressed(
         None,
     );
 
-    appwindow.handle_surface_flags(surface_flags);
+    appwindow.handle_widget_flags(widget_flags);
 }

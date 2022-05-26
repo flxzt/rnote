@@ -162,7 +162,7 @@ impl RnoteAppWindow {
                 colors.0, colors.1, colors.2, colors.3, colors.4, colors.5, colors.6, colors.7,
             ]
             .into_iter()
-            .map(|color| Color::from(color))
+            .map(Color::from)
             .collect::<Vec<Color>>();
             self.penssidebar()
                 .brush_page()
@@ -175,7 +175,7 @@ impl RnoteAppWindow {
             let colors = self.app_settings().get::<(u32, u32)>("shaperpage-colors");
             let colors = [colors.0, colors.1]
                 .into_iter()
-                .map(|color| Color::from(color))
+                .map(Color::from)
                 .collect::<Vec<Color>>();
             self.penssidebar()
                 .shaper_page()
@@ -187,7 +187,7 @@ impl RnoteAppWindow {
             let fill_colors = self.app_settings().get::<(u32, u32)>("shaperpage-fills");
             let fill_colors = [fill_colors.0, fill_colors.1]
                 .into_iter()
-                .map(|color| Color::from(color))
+                .map(Color::from)
                 .collect::<Vec<Color>>();
             self.penssidebar()
                 .shaper_page()
@@ -202,7 +202,7 @@ impl RnoteAppWindow {
                 .get::<(u32, u32)>("typewriterpage-colors");
             let colors = [colors.0, colors.1]
                 .into_iter()
-                .map(|color| Color::from(color))
+                .map(Color::from)
                 .collect::<Vec<Color>>();
             self.penssidebar()
                 .typewriter_page()

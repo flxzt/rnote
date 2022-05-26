@@ -20,8 +20,8 @@ pub struct ShapeStroke {
     #[serde(rename = "style")]
     pub style: Style,
     #[serde(skip)]
-    // since the path can have many hitboxes, we store them for faster queries and update them when we the stroke geometry changes
-    pub hitboxes: Vec<AABB>,
+    // since the shape can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
+    hitboxes: Vec<AABB>,
 }
 
 impl StrokeBehaviour for ShapeStroke {
@@ -52,22 +52,20 @@ impl StrokeBehaviour for ShapeStroke {
                     image_scale,
                 )?,
             ]))
+        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![render::Image::gen_with_piet(
+                    |piet_cx| self.draw(piet_cx, image_scale),
+                    intersection_bounds,
+                    image_scale,
+                )?],
+                viewport,
+            })
         } else {
-            if let Some(intersection_bounds) = viewport.intersection(&bounds) {
-                Ok(GeneratedStrokeImages::Partial {
-                    images: vec![render::Image::gen_with_piet(
-                        |piet_cx| self.draw(piet_cx, image_scale),
-                        intersection_bounds,
-                        image_scale,
-                    )?],
-                    viewport,
-                })
-            } else {
-                Ok(GeneratedStrokeImages::Partial {
-                    images: vec![],
-                    viewport,
-                })
-            }
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![],
+                viewport,
+            })
         }
     }
 }

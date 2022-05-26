@@ -125,7 +125,7 @@ impl Composer<SmoothOptions> for Ellipse {
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(ellipse.clone(), &fill_brush);
+            cx.fill(ellipse, &fill_brush);
         }
 
         if let Some(stroke_color) = options.stroke_color {
@@ -147,7 +147,7 @@ impl Composer<SmoothOptions> for QuadraticBezier {
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(quadbez.clone(), &fill_brush);
+            cx.fill(quadbez, &fill_brush);
         }
 
         if let Some(stroke_color) = options.stroke_color {
@@ -165,16 +165,16 @@ impl Composer<SmoothOptions> for CubicBezier {
 
     fn draw_composed(&self, cx: &mut impl piet::RenderContext, options: &SmoothOptions) {
         cx.save().unwrap();
-        let quadbez = self.to_kurbo();
+        let cubbez = self.to_kurbo();
 
         if let Some(fill_color) = options.fill_color {
             let fill_brush = cx.solid_brush(fill_color.into());
-            cx.fill(quadbez.clone(), &fill_brush);
+            cx.fill(cubbez, &fill_brush);
         }
 
         if let Some(stroke_color) = options.stroke_color {
             let stroke_brush = cx.solid_brush(stroke_color.into());
-            cx.stroke(quadbez, &stroke_brush, options.stroke_width);
+            cx.stroke(cubbez, &stroke_brush, options.stroke_width);
         }
         cx.restore().unwrap();
     }
@@ -214,7 +214,7 @@ impl Composer<SmoothOptions> for Segment {
                         end.pos,
                         width_start,
                         width_end,
-                        &options,
+                        options,
                     )
                 }
                 Segment::QuadBez { start, cp, end } => {
@@ -241,7 +241,7 @@ impl Composer<SmoothOptions> for Segment {
                     lines
                         .iter()
                         .enumerate()
-                        .map(|(i, line)| {
+                        .flat_map(|(i, line)| {
                             // splitted line start / end widths are a linear interpolation between the start and end width / n splits.
                             let line_start_width = width_start
                                 + (width_end - width_start)
@@ -255,10 +255,9 @@ impl Composer<SmoothOptions> for Segment {
                                 line.end,
                                 line_start_width,
                                 line_end_width,
-                                &options,
+                                options,
                             )
                         })
-                        .flatten()
                         .collect::<kurbo::BezPath>()
                 }
                 Segment::CubBez {
@@ -290,7 +289,7 @@ impl Composer<SmoothOptions> for Segment {
                     lines
                         .iter()
                         .enumerate()
-                        .map(|(i, line)| {
+                        .flat_map(|(i, line)| {
                             // splitted line start / end widths are a linear interpolation between the start and end width / n splits.
                             let line_start_width = width_start
                                 + (width_end - width_start)
@@ -304,10 +303,9 @@ impl Composer<SmoothOptions> for Segment {
                                 line.end,
                                 line_start_width,
                                 line_end_width,
-                                &options,
+                                options,
                             )
                         })
-                        .flatten()
                         .collect::<kurbo::BezPath>()
                 }
             }

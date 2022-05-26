@@ -1,4 +1,6 @@
 #![warn(missing_debug_implementations)]
+#![allow(clippy::field_reassign_with_default)]
+#![allow(clippy::single_match)]
 //#![warn(missing_docs)]
 
 //! The rnote-engine crate is the core of rnote. It holds the strokes store, the pens, has methods for importing / exporting, rendering, etc..
@@ -13,8 +15,8 @@ pub mod pens;
 pub mod render;
 pub mod store;
 pub mod strokes;
-pub mod surfaceflags;
 pub mod utils;
+pub mod widgetflags;
 
 // Re-exports
 pub use audioplayer::AudioPlayer;
@@ -25,7 +27,7 @@ pub use drawbehaviour::DrawOnDocBehaviour;
 pub use engine::RnoteEngine;
 pub use pens::PenHolder;
 pub use store::StrokeStore;
-pub use surfaceflags::SurfaceFlags;
+pub use widgetflags::WidgetFlags;
 
 extern crate nalgebra as na;
 extern crate parry2d_f64 as p2d;

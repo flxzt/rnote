@@ -51,7 +51,7 @@ pub struct RnotefileMaj0Min5 {
 
 impl FileFormatLoader for RnotefileMaj0Min5 {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<RnotefileMaj0Min5> {
-        let decompressed = String::from_utf8(decompress_from_gzip(&bytes)?)?;
+        let decompressed = String::from_utf8(decompress_from_gzip(bytes)?)?;
 
         let wrapped_rnote_file = serde_json::from_str::<RnotefileWrapper>(decompressed.as_str())?;
 

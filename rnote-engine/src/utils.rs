@@ -181,6 +181,6 @@ pub mod base64 {
     /// Deserialize base64 encoded Vec<u8>
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u8>, D::Error> {
         let base64 = String::deserialize(d)?;
-        base64::decode(base64.as_bytes()).map_err(|e| serde::de::Error::custom(e))
+        base64::decode(base64.as_bytes()).map_err(serde::de::Error::custom)
     }
 }

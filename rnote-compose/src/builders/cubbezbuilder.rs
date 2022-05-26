@@ -11,18 +11,18 @@ use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
 use super::ShapeBuilderBehaviour;
 
 #[derive(Debug, Clone)]
-/// The state
+/// The cubbez builder state
 pub enum CubBezBuilderState {
-    /// start
+    /// setting the start of the new cubbez
     Start(na::Vector2<f64>),
-    /// first control point
+    /// setting the first control point of the new cubbez
     Cp1 {
         /// start
         start: na::Vector2<f64>,
         /// first control point
         cp1: na::Vector2<f64>,
     },
-    /// second control point
+    /// setting the second control point of the new cubbez
     Cp2 {
         /// start
         start: na::Vector2<f64>,
@@ -31,7 +31,7 @@ pub enum CubBezBuilderState {
         /// second control point
         cp2: na::Vector2<f64>,
     },
-    /// end
+    /// setting the end of the new cubbez
     End {
         /// start
         start: na::Vector2<f64>,
@@ -45,7 +45,7 @@ pub enum CubBezBuilderState {
 }
 
 #[derive(Debug, Clone)]
-/// building cubic bezier
+/// cubic bezier builder
 pub struct CubBezBuilder {
     /// the state
     pub state: CubBezBuilderState,
@@ -67,13 +67,6 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
             (CubBezBuilderState::Start(start), PenEvent::Down { element, .. }) => {
                 *start = element.pos;
 
-                self.state = CubBezBuilderState::Cp1 {
-                    start: *start,
-                    cp1: element.pos,
-                };
-            }
-            (CubBezBuilderState::Start(start), PenEvent::Up { element, .. }) => {
-                // should not be reachable, but just in case we transition here too
                 self.state = CubBezBuilderState::Cp1 {
                     start: *start,
                     cp1: element.pos,

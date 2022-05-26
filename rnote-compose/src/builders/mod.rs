@@ -1,4 +1,4 @@
-/// Cubi bezier builder
+/// cubic bezier builder
 pub mod cubbezbuilder;
 /// ellipse builder
 pub mod ellipsebuilder;
@@ -6,11 +6,11 @@ pub mod ellipsebuilder;
 pub mod fociellipsebuilder;
 /// line builder
 pub mod linebuilder;
-/// The pen path builder.
+/// pen path builder
 pub mod penpathbuilder;
-/// Quadratic bezier builder
+/// quadratic bezier builder
 pub mod quadbezbuilder;
-/// Rectangle builder
+/// rectangle builder
 pub mod rectanglebuilder;
 /// shape builder behaviour
 pub mod shapebuilderbehaviour;
@@ -29,7 +29,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 #[serde(rename = "shape_type")]
-/// A choice of a shape builder type
+/// A choice for a shape builder type
 pub enum ShapeBuilderType {
     #[serde(rename = "line")]
     /// A line builder
@@ -41,7 +41,7 @@ pub enum ShapeBuilderType {
     /// An ellipse builder
     Ellipse,
     #[serde(rename = "foci_ellipse")]
-    /// An foci ellipse builder
+    /// A foci ellipse builder
     FociEllipse,
     #[serde(rename = "quadbez")]
     /// An quadbez builder

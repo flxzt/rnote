@@ -2,7 +2,7 @@ use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::pens::Tools;
 
-use crate::surfaceflags::SurfaceFlags;
+use crate::widgetflags::WidgetFlags;
 use crate::DrawOnDocBehaviour;
 use piet::RenderContext;
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
@@ -63,10 +63,8 @@ impl TryFrom<u32> for PenStyle {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
-            "PenStyle try_from::<u32>() for value {} failed",
-            value
-        ))
+        num_traits::FromPrimitive::from_u32(value)
+            .ok_or_else(|| anyhow::anyhow!("PenStyle try_from::<u32>() for value {} failed", value))
     }
 }
 
@@ -99,7 +97,7 @@ impl PenStyle {
     }
 }
 
-/// This holds the pens and is the main interaction point when changing the pen style / emitting pen events.
+/// This holds the pens and related state and handles pen events.
 #[allow(missing_debug_implementations)]
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
@@ -143,11 +141,6 @@ impl Default for PenHolder {
 }
 
 impl PenHolder {
-    /// Use this to import and overwrite self (e.g. when loading from settings)
-    pub fn import(&mut self, penholder: Self) {
-        *self = penholder;
-    }
-
     /// Registers a new shortcut key and action
     pub fn register_new_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
         self.shortcuts.insert(key, action);
@@ -167,7 +160,7 @@ impl PenHolder {
     pub fn list_current_shortcuts(&self) -> Vec<(ShortcutKey, ShortcutAction)> {
         self.shortcuts
             .iter()
-            .map(|(key, action)| (key.clone(), action.clone()))
+            .map(|(key, action)| (*key, *action))
             .collect()
     }
 
@@ -176,47 +169,49 @@ impl PenHolder {
         self.pen_mode_state.current_style_w_override()
     }
 
-    /// Only to be called when forcing changing the style without any side effects
-    pub fn force_style_without_sideeffects(&mut self, style: PenStyle) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    /// forces a new style without triggering any side effects
+    pub fn force_style_without_sideeffects(&mut self, style: PenStyle) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         self.pen_mode_state.set_style_all_modes(style);
 
-        surface_flags.refresh_ui = true;
-        surface_flags.redraw = true;
+        widget_flags.refresh_ui = true;
+        widget_flags.redraw = true;
 
-        surface_flags
+        widget_flags
     }
 
-    /// Only to be called when forcing changing the style override without any side effects
+    /// forces a new style override without triggering any side effects
     pub fn force_style_override_without_sideeffects(
         &mut self,
         style_override: Option<PenStyle>,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         self.pen_mode_state.set_style_override(style_override);
 
-        surface_flags.refresh_ui = true;
-        surface_flags.redraw = true;
+        widget_flags.refresh_ui = true;
+        widget_flags.redraw = true;
 
-        surface_flags
+        widget_flags
     }
 
+    /// the current pen progress
     pub fn current_pen_progress(&self) -> PenProgress {
         self.pen_progress
     }
 
+    /// change the pen style
     pub fn change_style(
         &mut self,
         new_style: PenStyle,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if self.pen_mode_state.style() != new_style {
             // Cancel current pen
-            surface_flags.merge_with_other(self.handle_pen_event(
+            widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
                 engine_view,
@@ -228,25 +223,26 @@ impl PenHolder {
 
             self.pen_mode_state.set_style(new_style);
 
-            surface_flags.refresh_ui = true;
-            surface_flags.redraw = true;
+            widget_flags.refresh_ui = true;
+            widget_flags.redraw = true;
         }
 
-        surface_flags
+        widget_flags
     }
 
+    /// change the style override
     pub fn change_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         //log::debug!("current_style_override: {:?}, new_style_override: {:?}", self.style_override, new_style_override);
 
         if self.pen_mode_state.style_override() != new_style_override {
             // Cancel current pen
-            surface_flags.merge_with_other(self.handle_pen_event(
+            widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
                 engine_view,
@@ -258,46 +254,48 @@ impl PenHolder {
 
             self.pen_mode_state.set_style_override(new_style_override);
 
-            surface_flags.refresh_ui = true;
-            surface_flags.redraw = true;
+            widget_flags.refresh_ui = true;
+            widget_flags.redraw = true;
         }
 
-        surface_flags
+        widget_flags
     }
 
+    /// change the pen mode (pen, eraser, etc.). Relevant for stylus input
     pub fn change_pen_mode(
         &mut self,
         pen_mode: PenMode,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if self.pen_mode_state.pen_mode() != pen_mode {
-            surface_flags.merge_with_other(self.handle_pen_event(
+            widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
                 engine_view,
             ));
             self.pen_mode_state.set_pen_mode(pen_mode);
 
-            surface_flags.redraw = true;
-            surface_flags.refresh_ui = true;
+            widget_flags.redraw = true;
+            widget_flags.refresh_ui = true;
         }
 
-        surface_flags
+        widget_flags
     }
 
+    /// Handle a pen event
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
         pen_mode: Option<PenMode>,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
-        surface_flags.redraw = true;
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        widget_flags.redraw = true;
 
         if let Some(pen_mode) = pen_mode {
-            surface_flags.merge_with_other(self.change_pen_mode(pen_mode, engine_view));
+            widget_flags.merge_with_other(self.change_pen_mode(pen_mode, engine_view));
         }
 
         /*
@@ -315,7 +313,7 @@ impl PenHolder {
             | PenEvent::Up { shortcut_keys, .. }
             | PenEvent::Proximity { shortcut_keys, .. } => {
                 if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
-                    surface_flags.merge_with_other(self.handle_pressed_shortcut_key(
+                    widget_flags.merge_with_other(self.handle_pressed_shortcut_key(
                         ShortcutKey::MouseSecondaryButton,
                         engine_view,
                     ));
@@ -326,7 +324,7 @@ impl PenHolder {
         }
 
         // Handle the events with the current pen
-        let (pen_progress, other_surface_flags) = match self.current_style_w_override() {
+        let (pen_progress, other_widget_flags) = match self.current_style_w_override() {
             PenStyle::Brush => self.brush.handle_event(event, engine_view),
             PenStyle::Shaper => self.shaper.handle_event(event, engine_view),
             PenStyle::Typewriter => self.typewriter.handle_event(event, engine_view),
@@ -335,48 +333,39 @@ impl PenHolder {
             PenStyle::Tools => self.tools.handle_event(event, engine_view),
         };
 
-        surface_flags.merge_with_other(other_surface_flags);
+        widget_flags.merge_with_other(other_widget_flags);
 
-        surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+        widget_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
-        surface_flags
+        widget_flags
     }
 
-    fn handle_pen_progress(&mut self, pen_progress: PenProgress) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
-        // Handle the new pen progress
+    fn handle_pen_progress(&mut self, pen_progress: PenProgress) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
         match pen_progress {
             PenProgress::Idle => {}
             PenProgress::InProgress => {}
             PenProgress::Finished => {
-                // Disable the style override when pen is finished
+                // take the style override when pen is finished
                 if self.pen_mode_state.take_style_override().is_some() {
-                    surface_flags.refresh_ui = true;
+                    widget_flags.refresh_ui = true;
                 }
             }
         }
 
         self.pen_progress = pen_progress;
 
-        surface_flags
+        widget_flags
     }
 
-    // Updates the penholder and pens internal state
-    pub fn update_internal_state(&mut self, engine_view: &EngineView) {
-        self.brush.update_internal_state(engine_view);
-        self.shaper.update_internal_state(engine_view);
-        self.typewriter.update_internal_state(engine_view);
-        self.eraser.update_internal_state(engine_view);
-        self.selector.update_internal_state(engine_view);
-        self.tools.update_internal_state(engine_view);
-    }
-
+    /// Handle a pressed shortcut key
     pub fn handle_pressed_shortcut_key(
         &mut self,
         shortcut_key: ShortcutKey,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if let Some(action) = self.get_shortcut_action(shortcut_key) {
             match action {
@@ -385,9 +374,9 @@ impl PenHolder {
                     permanent,
                 } => {
                     if permanent {
-                        surface_flags.merge_with_other(self.change_style(new_style, engine_view));
+                        widget_flags.merge_with_other(self.change_style(new_style, engine_view));
                     } else {
-                        surface_flags.merge_with_other(
+                        widget_flags.merge_with_other(
                             self.change_style_override(Some(new_style), engine_view),
                         );
                     }
@@ -395,7 +384,7 @@ impl PenHolder {
             }
         }
 
-        surface_flags
+        widget_flags
     }
 
     /// fetches clipboard content from the current pen
@@ -419,8 +408,8 @@ impl PenHolder {
         clipboard_content: &[u8],
         mime_types: Vec<String>,
         engine_view: &mut EngineViewMut,
-    ) -> SurfaceFlags {
-        let (pen_progress, mut surface_flags) = match self.current_style_w_override() {
+    ) -> WidgetFlags {
+        let (pen_progress, mut widget_flags) = match self.current_style_w_override() {
             PenStyle::Brush => {
                 self.brush
                     .paste_clipboard_content(clipboard_content, mime_types, engine_view)
@@ -447,9 +436,19 @@ impl PenHolder {
             }
         };
 
-        surface_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+        widget_flags.merge_with_other(self.handle_pen_progress(pen_progress));
 
-        surface_flags
+        widget_flags
+    }
+
+    // Updates the penholder and pens internal state
+    pub fn update_internal_state(&mut self, engine_view: &EngineView) {
+        self.brush.update_internal_state(engine_view);
+        self.shaper.update_internal_state(engine_view);
+        self.typewriter.update_internal_state(engine_view);
+        self.eraser.update_internal_state(engine_view);
+        self.selector.update_internal_state(engine_view);
+        self.tools.update_internal_state(engine_view);
     }
 }
 

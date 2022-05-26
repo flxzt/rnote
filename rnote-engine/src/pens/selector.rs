@@ -1,7 +1,7 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
-use crate::{Camera, DrawOnDocBehaviour, SurfaceFlags};
+use crate::{Camera, DrawOnDocBehaviour, WidgetFlags};
 use kurbo::Shape;
 use p2d::query::PointQuery;
 use piet::RenderContext;
@@ -102,14 +102,14 @@ impl PenBehaviour for Selector {
         &mut self,
         event: PenEvent,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags) {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
 
         //log::debug!("selector state: {:?}, event: {:?}", &self.state, &event);
 
         let pen_progress = match (&mut self.state, event) {
             (SelectorState::Idle, PenEvent::Down { element, .. }) => {
-                surface_flags.merge_with_other(engine_view.store.record());
+                widget_flags.merge_with_other(engine_view.store.record());
 
                 // Deselect on start
                 let selection_keys = engine_view
@@ -121,9 +121,9 @@ impl PenBehaviour for Selector {
                     path: vec![element],
                 };
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
-                surface_flags.hide_scrollbars = Some(true);
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
+                widget_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
             }
@@ -154,9 +154,9 @@ impl PenBehaviour for Selector {
                                 .doc
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                            surface_flags.redraw = true;
-                            surface_flags.resize = true;
-                            surface_flags.indicate_changed_store = true;
+                            widget_flags.redraw = true;
+                            widget_flags.resize = true;
+                            widget_flags.indicate_changed_store = true;
                         }
 
                         PenProgress::InProgress
@@ -170,7 +170,7 @@ impl PenBehaviour for Selector {
             (SelectorState::Selecting { path }, PenEvent::Down { element, .. }) => {
                 Self::add_to_select_path(self.style, path, element);
 
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::InProgress
             }
@@ -185,7 +185,7 @@ impl PenBehaviour for Selector {
                                 None
                             } else {
                                 Some(engine_view.store.select_keys_intersecting_polygon_path(
-                                    &path,
+                                    path,
                                     engine_view.camera.viewport(),
                                 ))
                             }
@@ -220,9 +220,9 @@ impl PenBehaviour for Selector {
 
                 self.state = state;
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
-                surface_flags.hide_scrollbars = Some(false);
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
+                widget_flags.hide_scrollbars = Some(false);
 
                 pen_progress
             }
@@ -256,9 +256,9 @@ impl PenBehaviour for Selector {
                                 .doc
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                            surface_flags.redraw = true;
-                            surface_flags.resize = true;
-                            surface_flags.indicate_changed_store = true;
+                            widget_flags.redraw = true;
+                            widget_flags.resize = true;
+                            widget_flags.indicate_changed_store = true;
                         }
 
                         PenProgress::InProgress
@@ -277,9 +277,9 @@ impl PenBehaviour for Selector {
                     .selection_keys_as_rendered_intersecting_bounds(engine_view.camera.viewport());
                 engine_view.store.set_selected_keys(&selection_keys, false);
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
-                surface_flags.hide_scrollbars = Some(false);
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
+                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
@@ -298,7 +298,7 @@ impl PenBehaviour for Selector {
 
                 match modify_state {
                     ModifyState::Up => {
-                        surface_flags.merge_with_other(engine_view.store.record());
+                        widget_flags.merge_with_other(engine_view.store.record());
 
                         if Self::rotate_node_sphere(*selection_bounds, engine_view.camera)
                             .contains_local_point(&na::Point2::from(element.pos))
@@ -490,8 +490,8 @@ impl PenBehaviour for Selector {
                     }
                 }
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
 
                 pen_progress
             }
@@ -504,7 +504,7 @@ impl PenBehaviour for Selector {
                 },
                 PenEvent::Up { .. },
             ) => {
-                engine_view.store.update_geometry_for_strokes(&selection);
+                engine_view.store.update_geometry_for_strokes(selection);
                 engine_view.store.regenerate_rendering_in_viewport_threaded(
                     engine_view.tasks_tx.clone(),
                     false,
@@ -521,9 +521,9 @@ impl PenBehaviour for Selector {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
@@ -538,16 +538,16 @@ impl PenBehaviour for Selector {
                 },
             ) => match keyboard_key {
                 KeyboardKey::Escape => {
-                    engine_view.store.set_selected_keys(&selection, false);
+                    engine_view.store.set_selected_keys(selection, false);
                     self.state = SelectorState::Idle;
 
                     engine_view
                         .doc
                         .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                    surface_flags.redraw = true;
-                    surface_flags.resize = true;
-                    surface_flags.indicate_changed_store = true;
+                    widget_flags.redraw = true;
+                    widget_flags.resize = true;
+                    widget_flags.indicate_changed_store = true;
 
                     PenProgress::Finished
                 }
@@ -571,9 +571,9 @@ impl PenBehaviour for Selector {
                                 .doc
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                            surface_flags.redraw = true;
-                            surface_flags.resize = true;
-                            surface_flags.indicate_changed_store = true;
+                            widget_flags.redraw = true;
+                            widget_flags.resize = true;
+                            widget_flags.indicate_changed_store = true;
                         }
 
                         PenProgress::InProgress
@@ -591,22 +591,22 @@ impl PenBehaviour for Selector {
                 },
                 PenEvent::Cancel,
             ) => {
-                engine_view.store.set_selected_keys(&selection, false);
+                engine_view.store.set_selected_keys(selection, false);
                 self.state = SelectorState::Idle;
 
                 engine_view
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
             }
         };
 
-        (pen_progress, surface_flags)
+        (pen_progress, widget_flags)
     }
 
     fn update_internal_state(&mut self, engine_view: &EngineView) {
@@ -912,7 +912,7 @@ impl Selector {
 
         piet_cx.clip(clip_path);
 
-        piet_cx.fill(selection_rect.clone(), &Selector::SELECTION_FILL_COLOR);
+        piet_cx.fill(selection_rect, &Selector::SELECTION_FILL_COLOR);
         piet_cx.stroke(
             selection_rect,
             &Selector::OUTLINE_COLOR,

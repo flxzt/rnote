@@ -1,6 +1,6 @@
 use crate::engine::{EngineView, EngineViewMut};
 use crate::store::StrokeKey;
-use crate::{DrawOnDocBehaviour, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Vector2Helpers};
@@ -268,8 +268,8 @@ impl PenBehaviour for Tools {
         &mut self,
         event: PenEvent,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags) {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
             (
@@ -279,7 +279,7 @@ impl PenBehaviour for Tools {
                     shortcut_keys: _,
                 },
             ) => {
-                surface_flags.merge_with_other(engine_view.store.record());
+                widget_flags.merge_with_other(engine_view.store.record());
 
                 match self.style {
                     ToolsStyle::VerticalSpace => {
@@ -305,10 +305,10 @@ impl PenBehaviour for Tools {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.indicate_changed_store = true;
-                surface_flags.hide_scrollbars = Some(true);
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
+                widget_flags.hide_scrollbars = Some(true);
 
                 PenProgress::InProgress
             }
@@ -381,16 +381,16 @@ impl PenBehaviour for Tools {
                                 .doc
                                 .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                            surface_flags.resize = true;
-                            surface_flags.update_view = true;
+                            widget_flags.resize = true;
+                            widget_flags.update_view = true;
                         }
 
                         PenProgress::InProgress
                     }
                 };
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
 
                 pen_progress
             }
@@ -418,10 +418,10 @@ impl PenBehaviour for Tools {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.indicate_changed_store = true;
-                surface_flags.hide_scrollbars = Some(false);
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
+                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
@@ -435,16 +435,16 @@ impl PenBehaviour for Tools {
                     .doc
                     .resize_autoexpand(engine_view.store, engine_view.camera);
 
-                surface_flags.redraw = true;
-                surface_flags.resize = true;
-                surface_flags.indicate_changed_store = true;
-                surface_flags.hide_scrollbars = Some(false);
+                widget_flags.redraw = true;
+                widget_flags.resize = true;
+                widget_flags.indicate_changed_store = true;
+                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
         };
 
-        (pen_progress, surface_flags)
+        (pen_progress, widget_flags)
     }
 }
 

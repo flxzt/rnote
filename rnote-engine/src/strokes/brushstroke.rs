@@ -21,8 +21,8 @@ pub struct BrushStroke {
     #[serde(rename = "style")]
     pub style: Style,
     #[serde(skip)]
-    // since the path can have many hitboxes, we store them for faster queries and update them when we the stroke geometry changes
-    pub hitboxes: Vec<AABB>,
+    // since the path can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
+    hitboxes: Vec<AABB>,
 }
 
 impl Default for BrushStroke {
@@ -141,9 +141,7 @@ impl StrokeBehaviour for BrushStroke {
                     self.path
                         .iter()
                         .filter_map(|segment| {
-                            options.seed = options
-                                .seed
-                                .map(|seed| rnote_compose::utils::seed_advance(seed));
+                            options.seed = options.seed.map(rnote_compose::utils::seed_advance);
 
                             let image = render::Image::gen_with_piet(
                                 |piet_cx| {
@@ -266,13 +264,12 @@ impl BrushStroke {
 
         self.path
             .iter()
-            .map(|segment| {
+            .flat_map(|segment| {
                 segment
                     .hitboxes()
                     .into_iter()
                     .map(|hitbox| hitbox.loosened(stroke_width * 0.5))
             })
-            .flatten()
             .collect()
     }
 
@@ -317,10 +314,9 @@ impl BrushStroke {
                 .rev()
                 .filter_map(|(i, segment)| {
                     let mut options = options.clone();
+
                     (0..=i).for_each(|_| {
-                        options.seed = options
-                            .seed
-                            .map(|seed| rnote_compose::utils::seed_advance(seed))
+                        options.seed = options.seed.map(rnote_compose::utils::seed_advance)
                     });
 
                     let image = render::Image::gen_with_piet(

@@ -44,10 +44,9 @@ impl TryFrom<u32> for PatternStyle {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
-            "PatternStyle try_from::<u32>() for value {} failed",
-            value
-        ))
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("PatternStyle try_from::<u32>() for value {} failed", value)
+        })
     }
 }
 
@@ -226,8 +225,8 @@ impl Background {
         a: 1.0,
     };
 
+    /// Calculates the tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
     fn tile_size(&self) -> na::Vector2<f64> {
-        // Calculate tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
         let tile_factor =
             na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
@@ -326,7 +325,7 @@ impl Background {
         let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
         if let Some(image) = &self.image {
-            // Only creat the texture once, it is expensive
+            // Only create the texture once, it is expensive
             let new_texture = image
                 .to_memtexture()
                 .context("image to_memtexture() failed in gen_rendernode() of background.")?;

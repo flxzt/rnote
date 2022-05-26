@@ -38,7 +38,7 @@ pub struct XoppFile {
 
 impl FileFormatLoader for XoppFile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
-        let decompressed = String::from_utf8(decompress_from_gzip(&bytes)?)?;
+        let decompressed = String::from_utf8(decompress_from_gzip(bytes)?)?;
 
         let options = roxmltree::ParsingOptions::default();
         let parsed_doc = roxmltree::Document::parse_with_options(decompressed.as_str(), options)?;
@@ -491,7 +491,7 @@ impl AsXmlAttributeValue for XoppColor {
 impl XoppColor {
     /// Parsing from a attribute avlue that is the format #RRGGBBAA
     fn from_hexcolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
-        let s = s.trim().replace("#", "");
+        let s = s.trim().replace('#', "");
 
         let value = u32::from_str_radix(s.as_str(), 16)?;
 
@@ -696,7 +696,7 @@ impl XmlLoadable for XoppStroke {
                     node.id()
                 )
             })?
-            .split(" ")
+            .split(' ')
             .filter_map(|splitted| splitted.parse::<f64>().ok())
             .collect::<Vec<f64>>();
 
@@ -716,7 +716,7 @@ impl XmlLoadable for XoppStroke {
             let coords = coords
                 .trim_start_matches(&[' ', '\n'])
                 .trim_end_matches(&[' ', '\n'])
-                .split(" ")
+                .split(' ')
                 .filter_map(|splitted| splitted.parse::<f64>().ok());
 
             self.coords = coords

@@ -33,7 +33,7 @@ use rnote_engine::{
     engine::EngineTask,
     pens::penholder::PenStyle,
     strokes::{BitmapImage, VectorImage},
-    Camera, SurfaceFlags,
+    Camera, WidgetFlags,
 };
 
 mod imp {
@@ -317,12 +317,10 @@ mod imp {
 
                     if autosave {
                         self.update_autosave_handler(obj);
-                    } else {
-                        if let Some(autosave_source_id) =
-                            self.autosave_source_id.borrow_mut().take()
-                        {
-                            autosave_source_id.remove();
-                        }
+                    } else if let Some(autosave_source_id) =
+                        self.autosave_source_id.borrow_mut().take()
+                    {
+                        autosave_source_id.remove();
                     }
                 }
                 "autosave-interval-secs" => {
@@ -751,29 +749,29 @@ impl RnoteAppWindow {
     }
 
     // Returns true if the flags indicate that any loop that handles the flags should be quit. (Mainloop, or event loop in another thread)
-    pub fn handle_surface_flags(&self, surface_flags: SurfaceFlags) -> bool {
-        if surface_flags.quit {
+    pub fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
+        if widget_flags.quit {
             return true;
         }
-        if surface_flags.redraw {
+        if widget_flags.redraw {
             self.canvas().queue_draw();
         }
-        if surface_flags.resize {
+        if widget_flags.resize {
             self.canvas().queue_resize();
         }
-        if surface_flags.refresh_ui {
+        if widget_flags.refresh_ui {
             adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
         }
-        if surface_flags.indicate_changed_store {
+        if widget_flags.indicate_changed_store {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
         }
-        if surface_flags.update_view {
+        if widget_flags.update_view {
             let camera_offset = self.canvas().engine().borrow().camera.offset;
             // this updates the canvas adjustment values with the ones from the camera
             self.canvas().update_camera_offset(camera_offset);
         }
-        if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
+        if let Some(hide_scrollbars) = widget_flags.hide_scrollbars {
             if hide_scrollbars {
                 self.canvas_scroller()
                     .set_policy(PolicyType::Never, PolicyType::Never);
@@ -782,10 +780,10 @@ impl RnoteAppWindow {
                     .set_policy(PolicyType::Automatic, PolicyType::Automatic);
             }
         }
-        if let Some(hide_undo) = surface_flags.hide_undo {
+        if let Some(hide_undo) = widget_flags.hide_undo {
             self.undo_button().set_sensitive(!hide_undo);
         }
-        if let Some(hide_redo) = surface_flags.hide_redo {
+        if let Some(hide_redo) = widget_flags.hide_redo {
             self.redo_button().set_sensitive(!hide_redo);
         }
 
@@ -986,8 +984,8 @@ impl RnoteAppWindow {
 
                     // Only cancel the current pen when touch drawing is enabled
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_surface_flags(surface_flags);
+                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
+                        appwindow.handle_widget_flags(widget_flags);
                     }
 
                     zoom_begin.set(current_zoom);
@@ -1033,8 +1031,8 @@ impl RnoteAppWindow {
                     bbcenter_begin.set(None);
 
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_surface_flags(surface_flags);
+                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
+                        appwindow.handle_widget_flags(widget_flags);
                     }
 
                     appwindow.canvas().update_engine_rendering();
@@ -1050,8 +1048,8 @@ impl RnoteAppWindow {
                     bbcenter_begin.set(None);
 
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_surface_flags(surface_flags);
+                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
+                        appwindow.handle_widget_flags(widget_flags);
                     }
 
                     appwindow.canvas().update_engine_rendering();
@@ -1113,13 +1111,11 @@ impl RnoteAppWindow {
 
                 if self.unsaved_changes() {
                     dialogs::dialog_open_overwrite(self);
-                } else {
-                    if let Err(e) = self.load_in_file(file, target_pos) {
-                        log::error!(
-                            "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
-                            e
-                        );
-                    }
+                } else if let Err(e) = self.load_in_file(file, target_pos) {
+                    log::error!(
+                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
+                        e
+                    );
                 }
             }
             utils::FileType::VectorImageFile
@@ -1364,12 +1360,12 @@ impl RnoteAppWindow {
             .generate_vectorimage_from_bytes(pos, bytes);
         let vectorimage = vectorimage_receiver.await??;
 
-        let surface_flags = self
+        let widget_flags = self
             .canvas()
             .engine()
             .borrow_mut()
             .import_generated_strokes(vec![Stroke::VectorImage(vectorimage)]);
-        self.handle_surface_flags(surface_flags);
+        self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);
 
@@ -1398,12 +1394,12 @@ impl RnoteAppWindow {
             .generate_bitmapimage_from_bytes(pos, bytes);
         let bitmapimage = bitmapimage_receiver.await??;
 
-        let surface_flags = self
+        let widget_flags = self
             .canvas()
             .engine()
             .borrow_mut()
             .import_generated_strokes(vec![Stroke::BitmapImage(bitmapimage)]);
-        self.handle_surface_flags(surface_flags);
+        self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);
 
@@ -1432,12 +1428,12 @@ impl RnoteAppWindow {
             .generate_strokes_from_pdf_bytes(pos, bytes);
         let strokes = strokes_receiver.await??;
 
-        let surface_flags = self
+        let widget_flags = self
             .canvas()
             .engine()
             .borrow_mut()
             .import_generated_strokes(strokes);
-        self.handle_surface_flags(surface_flags);
+        self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);
 

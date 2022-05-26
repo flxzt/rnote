@@ -1,6 +1,6 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use crate::engine::{EngineView, EngineViewMut};
-use crate::{DrawOnDocBehaviour, SurfaceFlags};
+use crate::{DrawOnDocBehaviour, WidgetFlags};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;
@@ -58,8 +58,8 @@ impl PenBehaviour for Eraser {
         &mut self,
         event: PenEvent,
         engine_view: &mut EngineViewMut,
-    ) -> (PenProgress, SurfaceFlags) {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> (PenProgress, WidgetFlags) {
+        let mut widget_flags = WidgetFlags::default();
 
         let pen_progress = match (&mut self.state, event) {
             (
@@ -69,11 +69,11 @@ impl PenBehaviour for Eraser {
                     shortcut_keys: _,
                 },
             ) => {
-                surface_flags.merge_with_other(engine_view.store.record());
+                widget_flags.merge_with_other(engine_view.store.record());
 
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        surface_flags.merge_with_other(engine_view.store.trash_colliding_strokes(
+                        widget_flags.merge_with_other(engine_view.store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             engine_view.camera.viewport(),
                         ));
@@ -96,15 +96,15 @@ impl PenBehaviour for Eraser {
 
                 self.state = EraserState::Down(element);
 
-                surface_flags.redraw = true;
-                surface_flags.hide_scrollbars = Some(true);
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.hide_scrollbars = Some(true);
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
             (EraserState::Up | EraserState::Down { .. }, PenEvent::Proximity { element, .. }) => {
                 self.state = EraserState::Proximity(element);
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::Idle
             }
@@ -115,7 +115,7 @@ impl PenBehaviour for Eraser {
             (EraserState::Down(current_element), PenEvent::Down { element, .. }) => {
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        surface_flags.merge_with_other(engine_view.store.trash_colliding_strokes(
+                        widget_flags.merge_with_other(engine_view.store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             engine_view.camera.viewport(),
                         ));
@@ -138,15 +138,15 @@ impl PenBehaviour for Eraser {
 
                 *current_element = element;
 
-                surface_flags.redraw = true;
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::InProgress
             }
             (EraserState::Down { .. }, PenEvent::Up { element, .. }) => {
                 match &self.style {
                     EraserStyle::TrashCollidingStrokes => {
-                        surface_flags.merge_with_other(engine_view.store.trash_colliding_strokes(
+                        widget_flags.merge_with_other(engine_view.store.trash_colliding_strokes(
                             Self::eraser_bounds(self.width, element),
                             engine_view.camera.viewport(),
                         ));
@@ -169,37 +169,37 @@ impl PenBehaviour for Eraser {
 
                 self.state = EraserState::Up;
 
-                surface_flags.redraw = true;
-                surface_flags.hide_scrollbars = Some(false);
-                surface_flags.indicate_changed_store = true;
+                widget_flags.redraw = true;
+                widget_flags.hide_scrollbars = Some(false);
+                widget_flags.indicate_changed_store = true;
 
                 PenProgress::Finished
             }
             (EraserState::Down(_), PenEvent::KeyPressed { .. }) => PenProgress::InProgress,
             (EraserState::Proximity(_), PenEvent::Up { .. }) => {
                 self.state = EraserState::Up;
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::Idle
             }
             (EraserState::Proximity(current_element), PenEvent::Proximity { element, .. }) => {
                 *current_element = element;
-                surface_flags.redraw = true;
+                widget_flags.redraw = true;
 
                 PenProgress::Idle
             }
             (EraserState::Proximity { .. } | EraserState::Down { .. }, PenEvent::Cancel) => {
                 self.state = EraserState::Up;
 
-                surface_flags.redraw = true;
-                surface_flags.hide_scrollbars = Some(false);
+                widget_flags.redraw = true;
+                widget_flags.hide_scrollbars = Some(false);
 
                 PenProgress::Finished
             }
             (EraserState::Proximity(_), PenEvent::KeyPressed { .. }) => PenProgress::Idle,
         };
 
-        (pen_progress, surface_flags)
+        (pen_progress, widget_flags)
     }
 }
 

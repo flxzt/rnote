@@ -1,5 +1,6 @@
 #![warn(missing_debug_implementations)]
 #![warn(missing_docs)]
+#![allow(clippy::single_match)]
 
 //! the rnote-compose crate provides rnote with building blocks for creating, styling, composing, drawing, transforming shapes and paths.
 

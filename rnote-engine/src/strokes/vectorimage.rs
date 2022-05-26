@@ -193,7 +193,7 @@ impl VectorImage {
                 };
 
                 let x = pos[0];
-                let y = pos[1] + f64::from(i) * (height + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5);
+                let y = pos[1] + f64::from(i) * (height + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5);
 
                 let res = || -> anyhow::Result<String> {
                     let svg_stream: Vec<u8> = vec![];

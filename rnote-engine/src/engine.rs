@@ -152,8 +152,8 @@ impl Default for RnoteEngine {
 impl RnoteEngine {
     /// The default width of imported PDF's in percentage to the document width
     pub const PDF_IMPORT_WIDTH_PERC_DEFAULT: f64 = 50.0;
-    /// The export image scale for bitmap images
-    pub const EXPORT_IMAGE_SCALE: f64 = 3.0;
+    /// The used image scale factor on export
+    pub const EXPORT_IMAGE_SCALE: f64 = 1.5;
 
     #[allow(clippy::new_without_default)]
     pub fn new(data_dir: Option<PathBuf>) -> Self {

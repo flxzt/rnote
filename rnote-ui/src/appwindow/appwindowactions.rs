@@ -4,7 +4,9 @@ use crate::{
     app::RnoteApp,
     {dialogs, RnoteCanvas},
 };
+use piet::RenderContext;
 use rnote_compose::builders::ShapeBuilderType;
+use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
 use rnote_engine::pens::brush::BrushStyle;
 use rnote_engine::pens::eraser::EraserStyle;
@@ -14,7 +16,7 @@ use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::tools::ToolsStyle;
 use rnote_engine::pens::{brush, selector, shaper, tools};
 use rnote_engine::strokes::textstroke::TextAlignment;
-use rnote_engine::{render, Camera};
+use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
 use gtk4::PrintStatus;
@@ -1174,15 +1176,31 @@ impl RnoteAppWindow {
 
         // Print doc
         action_print_doc.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            let doc_bounds = appwindow.canvas().engine().borrow().document.bounds();
+            let format_size = na::vector![appwindow.canvas().engine().borrow().document.format.width, appwindow.canvas().engine().borrow().document.format.height];
+            let store_snapshot = appwindow.canvas().engine().borrow().store.take_store_snapshot();
             let pages_bounds = appwindow.canvas().engine().borrow().pages_bounds_w_content();
             let n_pages = pages_bounds.len();
 
-            if n_pages == 0 {
-                log::debug!("printing aborted, no pages with content.");
-                return;
-            }
+            // TODO: Exposing this as a setting in the print dialog
+            let with_background = true;
 
             appwindow.start_pulsing_canvas_progressbar();
+
+            let background_svg = if with_background {
+                appwindow.canvas().engine().borrow().document
+                    .background
+                    .gen_svg(doc_bounds)
+                    .map_err(|e| {
+                        log::error!(
+                            "background.gen_svg() failed in in the print document action, with Err {}",
+                            e
+                        )
+                    })
+                    .ok()
+            } else {
+                None
+            };
 
             let print_op = PrintOperation::builder()
                 .unit(Unit::None)
@@ -1193,34 +1211,66 @@ impl RnoteAppWindow {
             }));
 
 
-            print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_nr| {
-                let cx = print_cx.cairo_context();
-
+            print_op.connect_draw_page(clone!(@weak appwindow => move |_print_op, print_cx, page_no| {
                 if let Err(e) = || -> anyhow::Result<()> {
+                    let page_bounds = pages_bounds[page_no as usize];
+
+                    let mut page_strokes = appwindow.canvas().engine().borrow()
+                        .store
+                        .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
+                    page_strokes.extend(
+                        appwindow.canvas().engine().borrow().store
+                            .selection_keys_as_rendered_intersecting_bounds(page_bounds),
+                    );
+
                     let print_zoom = {
-                        let width_scale = print_cx.width() / appwindow.canvas().engine().borrow().document.format.width;
-                        let height_scale = print_cx.height() / appwindow.canvas().engine().borrow().document.format.height;
+                        let width_scale = print_cx.width() / format_size[0];
+                        let height_scale = print_cx.height() / format_size[1];
+
                         width_scale.min(height_scale)
                     };
 
-                    let page_bounds = pages_bounds[page_nr as usize];
-                    let page_svg = appwindow.canvas().engine().borrow().gen_doc_svg_with_viewport(page_bounds, true)?;
+                    let cairo_cx = print_cx.cairo_context();
 
-                    cx.scale(print_zoom, print_zoom);
+                    cairo_cx.scale(print_zoom, print_zoom);
 
-                    cx.rectangle(
-                        page_svg.bounds.mins[0],
-                        page_svg.bounds.mins[1],
-                        page_svg.bounds.extents()[0],
-                        page_svg.bounds.extents()[1]
+                    // Clip everything outside page bounds
+                    cairo_cx.rectangle(
+                        0.0,
+                        0.0,
+                        page_bounds.extents()[0],
+                        page_bounds.extents()[1]
                     );
-                    cx.clip();
+                    cairo_cx.clip();
 
-                    render::Svg::draw_svgs_to_cairo_context(&[page_svg], page_bounds, &cx)?;
+                    cairo_cx.save()?;
+                    cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
 
-                    Ok(())
+                    // We can't render the background svg with piet, so we have to do it with cairo.
+                    if let Some(background_svg) = background_svg.to_owned() {
+                        render::Svg::draw_svgs_to_cairo_context(
+                            &[background_svg],
+                            &cairo_cx,
+                        )?;
+                    }
+                    cairo_cx.restore()?;
+
+                    // Draw the strokes with piet
+                    let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+
+                    piet_cx.transform(kurbo::Affine::translate(
+                        -page_bounds.mins.coords.to_kurbo_vec(),
+                    ));
+
+                    for stroke in page_strokes.into_iter() {
+                        if let Some(stroke) = store_snapshot.stroke_components.get(stroke) {
+                            stroke.draw(&mut piet_cx, RnoteEngine::EXPORT_IMAGE_SCALE)?;
+                        }
+                    }
+
+                    piet_cx.finish().map_err(|e| anyhow::anyhow!("piet_cx finish() failed while printing page {}, with Err {}", page_no, e))
                 }() {
-                    log::error!("draw_page() failed while printing page: {}, Err {}", page_nr, e);
+                    log::error!("draw_page() failed while printing page: {}, Err {}", page_no, e);
                 }
             }));
 

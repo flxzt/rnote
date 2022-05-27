@@ -4,7 +4,7 @@ use super::shapestroke::ShapeStroke;
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::vectorimage::VectorImage;
 use super::{StrokeBehaviour, TextStroke};
-use crate::render;
+use crate::{render, RnoteEngine};
 use crate::{utils, DrawBehaviour};
 use rnote_compose::helpers::AABBHelpers;
 use rnote_compose::penpath::{Element, Segment};
@@ -256,9 +256,6 @@ impl Stroke {
     }
 
     pub fn into_xopp(self, current_dpi: f64) -> Option<xoppformat::XoppStrokeType> {
-        // A image scale that is sufficiently large for crisp bitmap pictures
-        let image_scale = 3.0;
-
         match self {
             Stroke::BrushStroke(brushstroke) => {
                 let (width, color): (f64, XoppColor) = match brushstroke.style {
@@ -315,9 +312,10 @@ impl Stroke {
                 ))
             }
             Stroke::ShapeStroke(shapestroke) => {
-                let png_data = match shapestroke
-                    .export_as_bitmapimage_bytes(image::ImageOutputFormat::Png, image_scale)
-                {
+                let png_data = match shapestroke.export_as_bitmapimage_bytes(
+                    image::ImageOutputFormat::Png,
+                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
                         log::error!("export_as_bytes() failed for shapestroke in stroke to_xopp() with Err `{}`", e);
@@ -379,9 +377,10 @@ impl Stroke {
                                     text: textstroke.text.clone(),
                                 }))
                 */
-                let png_data = match textstroke
-                    .export_as_bitmapimage_bytes(image::ImageOutputFormat::Png, image_scale)
-                {
+                let png_data = match textstroke.export_as_bitmapimage_bytes(
+                    image::ImageOutputFormat::Png,
+                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
                         log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err `{}`", e);
@@ -417,9 +416,10 @@ impl Stroke {
                 ))
             }
             Stroke::VectorImage(vectorimage) => {
-                let png_data = match vectorimage
-                    .export_as_bitmapimage_bytes(image::ImageOutputFormat::Png, image_scale)
-                {
+                let png_data = match vectorimage.export_as_bitmapimage_bytes(
+                    image::ImageOutputFormat::Png,
+                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
                         log::error!("export_as_bytes() failed for vectorimage in stroke to_xopp() with Err `{}`", e);
@@ -455,9 +455,10 @@ impl Stroke {
                 ))
             }
             Stroke::BitmapImage(bitmapimage) => {
-                let png_data = match bitmapimage
-                    .export_as_bitmapimage_bytes(image::ImageOutputFormat::Png, image_scale)
-                {
+                let png_data = match bitmapimage.export_as_bitmapimage_bytes(
+                    image::ImageOutputFormat::Png,
+                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                ) {
                     Ok(image_bytes) => image_bytes,
                     Err(e) => {
                         log::error!("export_as_bytes() failed for bitmapimage in stroke to_xopp() with Err `{}`", e);

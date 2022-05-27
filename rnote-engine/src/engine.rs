@@ -6,7 +6,7 @@ use crate::pens::PenMode;
 use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
-use crate::{render, AudioPlayer, DrawOnDocBehaviour, WidgetFlags};
+use crate::{render, AudioPlayer, DrawBehaviour, DrawOnDocBehaviour, WidgetFlags};
 use crate::{Camera, Document, PenHolder, StrokeStore};
 use gtk4::Snapshot;
 use piet::RenderContext;
@@ -150,8 +150,10 @@ impl Default for RnoteEngine {
 }
 
 impl RnoteEngine {
-    // The default width of imported PDF's in percentage to the document width
+    /// The default width of imported PDF's in percentage to the document width
     pub const PDF_IMPORT_WIDTH_PERC_DEFAULT: f64 = 50.0;
+    /// The export image scale for bitmap images
+    pub const EXPORT_IMAGE_SCALE: f64 = 3.0;
 
     #[allow(clippy::new_without_default)]
     pub fn new(data_dir: Option<PathBuf>) -> Self {
@@ -915,9 +917,6 @@ impl RnoteEngine {
     /// The coordinates are translated so that the svg has origin 0.0, 0.0
     /// without root or xml header.
     pub fn gen_doc_svg(&self, with_background: bool) -> Result<render::Svg, anyhow::Error> {
-        // Use a reasonably large image scale for crisp bitmap images
-        let image_scale = 3.0;
-
         let doc_bounds = self.document.bounds();
 
         let mut strokes = self.store.stroke_keys_as_rendered();
@@ -950,8 +949,11 @@ impl RnoteEngine {
                     doc_bounds.mins.coords.to_kurbo_vec(),
                 ));
 
-                self.store
-                    .draw_stroke_keys_to_piet(&strokes, piet_cx, image_scale)
+                self.store.draw_stroke_keys_to_piet(
+                    &strokes,
+                    piet_cx,
+                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                )
             },
             AABB::new(na::point![0.0, 0.0], na::Point2::from(doc_bounds.extents())),
         )?]);
@@ -967,9 +969,6 @@ impl RnoteEngine {
         viewport: AABB,
         with_background: bool,
     ) -> Result<render::Svg, anyhow::Error> {
-        // Use a reasonably large image scale for crisp bitmap images
-        let image_scale = 3.0;
-
         // Background bounds are still doc bounds, for correct alignment of the background pattern
         let mut doc_svg = if with_background {
             let mut background_svg = self.document.background.gen_svg(viewport)?;
@@ -1006,8 +1005,11 @@ impl RnoteEngine {
                     -viewport.mins.coords.to_kurbo_vec(),
                 ));
 
-                self.store
-                    .draw_stroke_keys_to_piet(&strokes_in_viewport, piet_cx, image_scale)
+                self.store.draw_stroke_keys_to_piet(
+                    &strokes_in_viewport,
+                    piet_cx,
+                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                )
             },
             AABB::new(na::point![0.0, 0.0], na::Point2::from(viewport.extents())),
         )?]);
@@ -1022,9 +1024,6 @@ impl RnoteEngine {
         &self,
         with_background: bool,
     ) -> Result<Option<render::Svg>, anyhow::Error> {
-        // Use a reasonably large image scale for crisp bitmap images
-        let image_scale = 3.0;
-
         let selection_keys = self.store.selection_keys_as_rendered();
 
         if selection_keys.is_empty() {
@@ -1067,8 +1066,11 @@ impl RnoteEngine {
                     -selection_bounds.mins.coords.to_kurbo_vec(),
                 ));
 
-                self.store
-                    .draw_stroke_keys_to_piet(&selection_keys, piet_cx, image_scale)
+                self.store.draw_stroke_keys_to_piet(
+                    &selection_keys,
+                    piet_cx,
+                    RnoteEngine::EXPORT_IMAGE_SCALE,
+                )
             },
             AABB::new(
                 na::point![0.0, 0.0],
@@ -1268,20 +1270,40 @@ impl RnoteEngine {
         with_background: bool,
     ) -> oneshot::Receiver<anyhow::Result<Vec<u8>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
+        let doc_bounds = self.document.bounds();
+        let format_size = na::vector![self.document.format.width, self.document.format.height];
+        let store_snapshot = self.store.take_store_snapshot();
 
-        let pages_svgs = self
+        let background_svg = if with_background {
+            self.document
+                .background
+                .gen_svg(doc_bounds)
+                .map_err(|e| {
+                    log::error!(
+                        "background.gen_svg() failed in export_doc_as_pdf_bytes() with Err {}",
+                        e
+                    )
+                })
+                .ok()
+        } else {
+            None
+        };
+
+        let pages_strokes = self
             .pages_bounds_w_content()
             .into_iter()
-            .filter_map(|page_bounds| {
-                Some((
-                    page_bounds,
-                    self.gen_doc_svg_with_viewport(page_bounds, with_background)
-                        .ok()?,
-                ))
-            })
-            .collect::<Vec<(AABB, render::Svg)>>();
+            .map(|page_bounds| {
+                let mut strokes_in_viewport = self
+                    .store
+                    .stroke_keys_as_rendered_intersecting_bounds(page_bounds);
+                strokes_in_viewport.extend(
+                    self.store
+                        .selection_keys_as_rendered_intersecting_bounds(page_bounds),
+                );
 
-        let format_size = na::vector![self.document.format.width, self.document.format.height];
+                (page_bounds, strokes_in_viewport)
+            })
+            .collect::<Vec<(AABB, Vec<StrokeKey>)>>();
 
         // Fill the pdf surface on a new thread to avoid blocking
         rayon::spawn(move || {
@@ -1305,14 +1327,38 @@ impl RnoteEngine {
                     let cairo_cx =
                         cairo::Context::new(&surface).context("cario cx new() failed")?;
 
-                    for (page_bounds, page_svg) in pages_svgs.into_iter() {
-                        render::Svg::draw_svgs_to_cairo_context(
-                            &[page_svg],
-                            page_bounds,
-                            &cairo_cx,
-                        )?;
+                    for (i, (page_bounds, page_strokes)) in pages_strokes.into_iter().enumerate() {
+                        // We can't render the background svg with piet, so we have to do it with cairo.
+                        cairo_cx.save()?;
+                        cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
 
-                        cairo_cx.show_page().context("show page failed")?;
+                        if let Some(background_svg) = background_svg.clone() {
+                            render::Svg::draw_svgs_to_cairo_context(&[background_svg], &cairo_cx)?;
+                        }
+                        cairo_cx.restore()?;
+
+                        // Draw the strokes with piet
+                        let mut piet_cx = piet_cairo::CairoRenderContext::new(&cairo_cx);
+                        piet_cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
+                        piet_cx.transform(kurbo::Affine::translate(
+                            -page_bounds.mins.coords.to_kurbo_vec(),
+                        ));
+
+                        for stroke in page_strokes.into_iter() {
+                            if let Some(stroke) = store_snapshot.stroke_components.get(stroke) {
+                                stroke.draw(&mut piet_cx, RnoteEngine::EXPORT_IMAGE_SCALE)?;
+                            }
+                        }
+
+                        cairo_cx.show_page().map_err(|e| {
+                            anyhow::anyhow!(
+                                "show_page() failed when exporting page {} as pdf, Err {}",
+                                i,
+                                e
+                            )
+                        })?;
+
+                        piet_cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;
                     }
                 }
                 let data = *surface
@@ -1343,7 +1389,11 @@ impl RnoteEngine {
     }
 
     /// Draws the entire engine (doc, pens, strokes, selection, ..) on a GTK snapshot.
-    pub fn draw(&self, snapshot: &Snapshot, surface_bounds: AABB) -> anyhow::Result<()> {
+    pub fn draw_on_snapshot(
+        &self,
+        snapshot: &Snapshot,
+        surface_bounds: AABB,
+    ) -> anyhow::Result<()> {
         let doc_bounds = self.document.bounds();
         let viewport = self.camera.viewport();
 

@@ -323,7 +323,9 @@ mod imp {
                 snapshot.save();
 
                 // Draw the entire engine
-                self.engine.borrow().draw(snapshot, widget.bounds())?;
+                self.engine
+                    .borrow()
+                    .draw_on_snapshot(snapshot, widget.bounds())?;
 
                 // Restore original coordinate space
                 snapshot.restore();

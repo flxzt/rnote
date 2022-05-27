@@ -743,14 +743,7 @@ impl Svg {
         Ok(Self { svg_data, bounds })
     }
 
-    pub fn draw_svgs_to_cairo_context(
-        svgs: &[Self],
-        mut bounds: AABB,
-        cx: &cairo::Context,
-    ) -> anyhow::Result<()> {
-        bounds.ensure_positive();
-        bounds.assert_valid()?;
-
+    pub fn draw_svgs_to_cairo_context(svgs: &[Self], cx: &cairo::Context) -> anyhow::Result<()> {
         for svg in svgs {
             let svg_data = rnote_compose::utils::wrap_svg_root(
                 svg.svg_data.as_str(),
@@ -800,7 +793,7 @@ impl Svg {
         let new_caironode = gsk::CairoNode::new(&graphene::Rect::from_p2d_aabb(self.bounds));
         let cx = new_caironode.draw_context();
 
-        Svg::draw_svgs_to_cairo_context(&[self.to_owned()], self.bounds, &cx)?;
+        Svg::draw_svgs_to_cairo_context(&[self.to_owned()], &cx)?;
 
         Ok(new_caironode)
     }

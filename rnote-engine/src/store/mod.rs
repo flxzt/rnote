@@ -29,13 +29,13 @@ slotmap::new_key_type! {
 #[serde(default, rename = "history_entry")]
 pub struct HistoryEntry {
     #[serde(rename = "stroke_components")]
-    stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "trash_components")]
-    trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
+    pub trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
     #[serde(rename = "selection_components")]
-    selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
+    pub selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
     #[serde(rename = "chrono_components")]
-    chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
 
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,

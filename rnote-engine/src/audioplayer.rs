@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::path::PathBuf;
 use std::time::{self, Duration};
@@ -13,24 +14,15 @@ pub struct AudioPlayer {
     /// enables / disables the player
     pub(super) enabled: bool,
 
-    marker_sounds: Vec<rodio::source::Buffered<Decoder<File>>>,
-    // we need to hold the outputstreams
+    // we need to hold the output streams too
     marker_outputstream: rodio::OutputStream,
     marker_outputstream_handle: rodio::OutputStreamHandle,
-
-    brush_sound: rodio::source::Buffered<Decoder<File>>,
-    // we need to hold the outputstreams
     brush_outputstream: rodio::OutputStream,
     brush_outputstream_handle: rodio::OutputStreamHandle,
-
-    typewriter_key_sounds: Vec<rodio::source::Buffered<Decoder<File>>>,
-    typewriter_insert_sound: rodio::source::Buffered<Decoder<File>>,
-    typewriter_thump_sound: rodio::source::Buffered<Decoder<File>>,
-    typewriter_bell_sound: rodio::source::Buffered<Decoder<File>>,
-    typewriter_linefeed_sound: rodio::source::Buffered<Decoder<File>>,
-    // we need to hold the outputstreams
     typewriter_outputstream: rodio::OutputStream,
     typewriter_outputstream_handle: rodio::OutputStreamHandle,
+
+    sounds: HashMap<String, rodio::source::Buffered<Decoder<File>>>,
 
     brush_sink: Option<rodio::Sink>,
 }
@@ -48,130 +40,88 @@ impl AudioPlayer {
     pub fn new(mut data_dir: PathBuf) -> Result<Self, anyhow::Error> {
         data_dir.push("sounds/");
 
-        // Init marker sounds
-        let marker_sounds = {
-            let mut marker_sounds = Vec::with_capacity(Self::MARKER_N_FILES);
+        let mut sounds = HashMap::new();
 
-            for i in 0..Self::MARKER_N_FILES {
-                let mut file_path = data_dir.clone();
-                file_path.push(format!("marker_{:02}.wav", i));
+        let load_sound_from_path =
+            |sounds: &mut HashMap<String, rodio::source::Buffered<Decoder<File>>>,
+             mut resource_path: PathBuf,
+             sound_name: String,
+             ending: &str|
+             -> anyhow::Result<()> {
+                resource_path.push(format!("{sound_name}.{ending}"));
 
-                if file_path.exists() {
+                if resource_path.exists() {
                     let buffered =
-                        rodio::Decoder::new(File::open(file_path.clone()).with_context(|| {
-                            anyhow::anyhow!("file open() for path {:?} failed", file_path,)
-                        })?)?
+                        rodio::Decoder::new(File::open(resource_path.clone()).with_context(
+                            || anyhow::anyhow!("file open() for path {:?} failed", resource_path,),
+                        )?)?
                         .buffered();
+
                     // Making sure buffer is initialized
                     buffered.clone().for_each(|_| {});
 
-                    marker_sounds.push(buffered);
+                    sounds.insert(sound_name, buffered);
                 } else {
                     return Err(anyhow::Error::msg(format!(
                         "failed to init audioplayer. File `{:?}` is missing.",
-                        file_path
+                        resource_path
                     )));
                 }
-            }
+                Ok(())
+            };
 
-            marker_sounds
-        };
+        // Init marker sounds
+        for i in 0..Self::MARKER_N_FILES {
+            load_sound_from_path(
+                &mut sounds,
+                data_dir.clone(),
+                format!("marker_{:02}", i),
+                "wav",
+            )?;
+        }
 
         // Init brush sounds
-        let brush_sound = {
-            let mut file_path = data_dir.clone();
-            file_path.push("brush.wav");
-            let buffered =
-                rodio::Decoder::new(File::open(file_path.clone()).with_context(|| {
-                    anyhow::anyhow!("file open() for path {:?} failed", file_path,)
-                })?)?
-                .buffered();
-            buffered.clone().for_each(|_| {});
-
-            buffered
-        };
+        load_sound_from_path(&mut sounds, data_dir.clone(), format!("brush"), "wav")?;
 
         // Init typewriter sounds
-        // First the enumerated key sounds
-        let typewriter_key_sounds = {
-            let mut typewriter_key_sounds = Vec::with_capacity(Self::TYPEWRITER_N_FILES);
+        // the enumerated key sounds
+        for i in 0..Self::TYPEWRITER_N_FILES {
+            load_sound_from_path(
+                &mut sounds,
+                data_dir.clone(),
+                format!("typewriter_{:02}", i),
+                "wav",
+            )?;
+        }
 
-            for i in 0..Self::TYPEWRITER_N_FILES {
-                let mut file_path = data_dir.clone();
-                file_path.push(format!("typewriter_{:02}.wav", i));
+        // the custom sounds
+        load_sound_from_path(
+            &mut sounds,
+            data_dir.clone(),
+            format!("typewriter_insert"),
+            "wav",
+        )?;
 
-                if file_path.exists() {
-                    let buffered =
-                        rodio::Decoder::new(File::open(file_path.clone()).with_context(|| {
-                            anyhow::anyhow!("file open() for path {:?} failed", file_path,)
-                        })?)?
-                        .buffered();
-                    buffered.clone().for_each(|_| {});
+        load_sound_from_path(
+            &mut sounds,
+            data_dir.clone(),
+            format!("typewriter_thump"),
+            "wav",
+        )?;
 
-                    typewriter_key_sounds.push(buffered);
-                } else {
-                    return Err(anyhow::Error::msg(format!(
-                        "failed to init audioplayer. File `{:?}` is missing.",
-                        file_path
-                    )));
-                }
-            }
+        load_sound_from_path(
+            &mut sounds,
+            data_dir.clone(),
+            format!("typewriter_bell"),
+            "wav",
+        )?;
 
-            typewriter_key_sounds
-        };
-
-        // then the custom sounds
-        let typewriter_insert_sound = {
-            let mut file_path = data_dir.clone();
-            file_path.push("typewriter_insert.wav");
-            let buffered =
-                rodio::Decoder::new(File::open(file_path.clone()).with_context(|| {
-                    anyhow::anyhow!("file open() for path {:?} failed", file_path,)
-                })?)?
-                .buffered();
-            buffered.clone().for_each(|_| {});
-
-            buffered
-        };
-
-        let typewriter_thump_sound = {
-            let mut file_path = data_dir.clone();
-            file_path.push("typewriter_thump.wav");
-            let buffered =
-                rodio::Decoder::new(File::open(file_path.clone()).with_context(|| {
-                    anyhow::anyhow!("file open() for path {:?} failed", file_path,)
-                })?)?
-                .buffered();
-            buffered.clone().for_each(|_| {});
-
-            buffered
-        };
-
-        let typewriter_bell_sound = {
-            let mut file_path = data_dir.clone();
-            file_path.push("typewriter_bell.wav");
-            let buffered =
-                rodio::Decoder::new(File::open(file_path.clone()).with_context(|| {
-                    anyhow::anyhow!("file open() for path {:?} failed", file_path,)
-                })?)?
-                .buffered();
-            buffered.clone().for_each(|_| {});
-
-            buffered
-        };
-
-        let typewriter_linefeed_sound = {
-            let mut file_path = data_dir.clone();
-            file_path.push("typewriter_linefeed.wav");
-            let buffered =
-                rodio::Decoder::new(File::open(file_path.clone()).with_context(|| {
-                    anyhow::anyhow!("file open() for path {:?} failed", file_path,)
-                })?)?
-                .buffered();
-            buffered.clone().for_each(|_| {});
-
-            buffered
-        };
+        load_sound_from_path(
+            &mut sounds,
+            data_dir.clone(),
+            format!("typewriter_linefeed"),
+            "wav",
+        )?;
 
         let (brush_outputstream, brush_outputstream_handle) = rodio::OutputStream::try_default()?;
         let (marker_outputstream, marker_outputstream_handle) = rodio::OutputStream::try_default()?;
@@ -181,21 +131,14 @@ impl AudioPlayer {
         Ok(Self {
             enabled: true,
 
-            marker_sounds,
             marker_outputstream,
             marker_outputstream_handle,
-
-            brush_sound,
             brush_outputstream,
             brush_outputstream_handle,
-
-            typewriter_key_sounds,
-            typewriter_insert_sound,
-            typewriter_thump_sound,
-            typewriter_bell_sound,
-            typewriter_linefeed_sound,
             typewriter_outputstream,
             typewriter_outputstream_handle,
+
+            sounds,
 
             brush_sink: None,
         })
@@ -211,7 +154,7 @@ impl AudioPlayer {
 
         match rodio::Sink::try_new(&self.marker_outputstream_handle) {
             Ok(sink) => {
-                sink.append(self.marker_sounds[marker_sound_index].clone());
+                sink.append(self.sounds[&format!("marker_{:02}", marker_sound_index)].clone());
                 sink.detach();
             }
             Err(e) => log::error!(
@@ -231,12 +174,15 @@ impl AudioPlayer {
 
         match rodio::Sink::try_new(&self.brush_outputstream_handle) {
             Ok(sink) => {
-                sink.append(self.brush_sound.clone().repeat_infinite().skip_duration(
-                    Duration::from_millis(
-                        (Self::BRUSH_SEEK_TIMES_SEC[brush_sound_seek_time_index] * 1000.0).round()
-                            as u64,
-                    ),
-                ));
+                sink.append(
+                    self.sounds["brush"]
+                        .clone()
+                        .repeat_infinite()
+                        .skip_duration(Duration::from_millis(
+                            (Self::BRUSH_SEEK_TIMES_SEC[brush_sound_seek_time_index] * 1000.0)
+                                .round() as u64,
+                        )),
+                );
 
                 self.brush_sink = Some(sink);
             }
@@ -262,8 +208,8 @@ impl AudioPlayer {
             Ok(sink) => match keyboard_key {
                 KeyboardKey::Linefeed => {
                     sink.append(
-                        self.typewriter_bell_sound.clone().mix(
-                            self.typewriter_linefeed_sound
+                        self.sounds["typewriter_bell"].clone().mix(
+                            self.sounds["typewriter_linefeed"]
                                 .clone()
                                 .delay(Duration::from_millis(200)),
                         ),
@@ -278,11 +224,13 @@ impl AudioPlayer {
                     let mut rng = rand::thread_rng();
                     let typewriter_sound_index = rng.gen_range(0..Self::TYPEWRITER_N_FILES);
 
-                    sink.append(self.typewriter_key_sounds[typewriter_sound_index].clone());
+                    sink.append(
+                        self.sounds[&format!("typewriter_{:02}", typewriter_sound_index)].clone(),
+                    );
                     sink.detach();
                 }
                 _ => {
-                    sink.append(self.typewriter_thump_sound.clone());
+                    sink.append(self.sounds["typewriter_thump"].clone());
                     sink.detach();
                 }
             },

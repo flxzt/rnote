@@ -888,6 +888,8 @@ impl RnoteEngine {
         let all_strokes = self.store.keys_unordered();
         self.store.set_selected_keys(&all_strokes, false);
 
+        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
+
         let inserted = strokes
             .into_iter()
             .map(|stroke| self.store.insert_stroke(stroke))
@@ -899,8 +901,6 @@ impl RnoteEngine {
         inserted.into_iter().for_each(|key| {
             self.store.set_selected(key, true);
         });
-
-        widget_flags.merge_with_other(self.change_pen_style(PenStyle::Selector));
 
         self.update_pens_states();
         self.update_rendering_current_viewport();

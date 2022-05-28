@@ -318,7 +318,9 @@ impl RnoteEngine {
     ///           loop {
     ///              if let Some(task) = task_rx.next().await {
     ///                    let widget_flags = canvas.engine().borrow_mut().process_received_task(task);
-    ///                    appwindow.handle_widget_flags(widget_flags);
+    ///                    if appwindow.handle_widget_flags(widget_flags) {
+    ///                         break;
+    ///                    }
     ///                }
     ///            }
     ///        }));

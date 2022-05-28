@@ -453,6 +453,7 @@ impl RnoteCanvas {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
+        // receiving and handling engine tasks
         glib::MainContext::default().spawn_local(
             clone!(@strong self as canvas, @strong appwindow => async move {
                 let mut task_rx = canvas.engine().borrow_mut().tasks_rx.take().unwrap();
@@ -460,7 +461,9 @@ impl RnoteCanvas {
                 loop {
                     if let Some(task) = task_rx.next().await {
                         let widget_flags = canvas.engine().borrow_mut().process_received_task(task);
-                        appwindow.handle_widget_flags(widget_flags);
+                        if appwindow.handle_widget_flags(widget_flags) {
+                            break;
+                        }
                     }
                 }
             }),

@@ -10,10 +10,11 @@ use std::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, CompositeTemplate,
-    CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
-    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
-    ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
+    gdk, gio, glib, glib::clone, subclass::prelude::*, Align, Application, ArrowType, Box, Button,
+    CompositeTemplate, CornerType, CssProvider, EventControllerScroll, EventControllerScrollFlags,
+    EventSequenceState, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit,
+    PackType, PolicyType, PositionType, ProgressBar, PropagationPhase, Revealer, ScrolledWindow,
+    Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penhelpers::PenEvent;
@@ -340,6 +341,8 @@ mod imp {
                         .expect("The value needs to be of type `bool`.");
 
                     self.righthanded.replace(righthanded);
+
+                    self.handle_righthanded_property(righthanded);
                 }
                 _ => unimplemented!(),
             }
@@ -546,6 +549,182 @@ mod imp {
                 }),
             );
         }
+
+        fn handle_righthanded_property(&self, righthanded: bool) {
+            let appwindow = self.instance();
+
+            if righthanded {
+                appwindow.flap().set_flap_position(PackType::Start);
+                appwindow.main_grid().remove(&appwindow.sidebar_grid());
+                appwindow.main_grid().remove(&appwindow.sidebar_sep());
+                appwindow
+                    .main_grid()
+                    .remove(&appwindow.narrow_pens_toggles_revealer());
+                appwindow.main_grid().remove(&appwindow.canvas_box());
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.sidebar_grid(), 0, 1, 1, 2);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.canvas_box(), 2, 2, 1, 1);
+                appwindow.canvas_quickactions_box().set_halign(Align::End);
+                appwindow
+                    .mainheader()
+                    .appmenu()
+                    .righthanded_toggle()
+                    .set_active(true);
+                appwindow
+                    .mainheader()
+                    .headerbar()
+                    .remove(&appwindow.mainheader().pens_toggles_squeezer());
+                appwindow
+                    .mainheader()
+                    .headerbar()
+                    .pack_start(&appwindow.mainheader().pens_toggles_squeezer());
+
+                appwindow
+                    .canvas_scroller()
+                    .set_window_placement(CornerType::BottomLeft);
+                appwindow
+                    .sidebar_scroller()
+                    .set_window_placement(CornerType::TopRight);
+                appwindow
+                    .settings_panel()
+                    .settings_scroller()
+                    .set_window_placement(CornerType::TopRight);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .brushconfig_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .brushstyle_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .colorpicker()
+                    .set_property("position", PositionType::Left.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_colorpicker()
+                    .set_property("position", PositionType::Left.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .fill_colorpicker()
+                    .set_property("position", PositionType::Left.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shapeconfig_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shapebuildertype_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .typewriter_page()
+                    .colorpicker()
+                    .set_property("position", PositionType::Left.to_value());
+            } else {
+                appwindow.flap().set_flap_position(PackType::End);
+                appwindow.main_grid().remove(&appwindow.canvas_box());
+                appwindow
+                    .main_grid()
+                    .remove(&appwindow.narrow_pens_toggles_revealer());
+                appwindow.main_grid().remove(&appwindow.sidebar_sep());
+                appwindow.main_grid().remove(&appwindow.sidebar_grid());
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.canvas_box(), 0, 2, 1, 1);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.narrow_pens_toggles_revealer(), 0, 1, 1, 1);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.sidebar_grid(), 2, 1, 1, 2);
+                appwindow.canvas_quickactions_box().set_halign(Align::Start);
+                appwindow
+                    .mainheader()
+                    .appmenu()
+                    .lefthanded_toggle()
+                    .set_active(true);
+                appwindow
+                    .mainheader()
+                    .headerbar()
+                    .remove(&appwindow.mainheader().pens_toggles_squeezer());
+                appwindow
+                    .mainheader()
+                    .headerbar()
+                    .pack_end(&appwindow.mainheader().pens_toggles_squeezer());
+
+                appwindow
+                    .canvas_scroller()
+                    .set_window_placement(CornerType::BottomRight);
+                appwindow
+                    .sidebar_scroller()
+                    .set_window_placement(CornerType::TopLeft);
+                appwindow
+                    .settings_panel()
+                    .settings_scroller()
+                    .set_window_placement(CornerType::TopLeft);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .brushconfig_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .brushstyle_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .colorpicker()
+                    .set_property("position", PositionType::Right.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_colorpicker()
+                    .set_property("position", PositionType::Right.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .fill_colorpicker()
+                    .set_property("position", PositionType::Right.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shapeconfig_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shapebuildertype_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .typewriter_page()
+                    .colorpicker()
+                    .set_property("position", PositionType::Right.to_value());
+            }
+        }
     }
 }
 
@@ -748,7 +927,7 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get()
     }
 
-    // Returns true if the flags indicate that any loop that handles the flags should be quit. (Mainloop, or event loop in another thread)
+    // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
     pub fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
         if widget_flags.quit {
             return true;

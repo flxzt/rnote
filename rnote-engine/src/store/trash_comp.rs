@@ -58,13 +58,9 @@ impl StrokeStore {
 
     pub fn set_trashed_keys(&mut self, keys: &[StrokeKey], trash: bool) {
         keys.iter().for_each(|&key| {
-            if let Some(selected) = self.selected(key) {
-                if selected {
-                    self.set_selected(key, false);
-                    self.set_trashed(key, trash);
-                    self.update_chrono_to_last(key);
-                }
-            }
+            self.set_selected(key, false);
+            self.set_trashed(key, trash);
+            self.update_chrono_to_last(key);
         });
     }
 

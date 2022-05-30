@@ -616,20 +616,6 @@ impl PenBehaviour for Selector {
                     shortcut_keys,
                 },
             ) => match keyboard_key {
-                KeyboardKey::Escape => {
-                    engine_view.store.set_selected_keys(selection, false);
-                    self.state = SelectorState::Idle;
-
-                    engine_view
-                        .doc
-                        .resize_autoexpand(engine_view.store, engine_view.camera);
-
-                    widget_flags.redraw = true;
-                    widget_flags.resize = true;
-                    widget_flags.indicate_changed_store = true;
-
-                    PenProgress::Finished
-                }
                 KeyboardKey::Unicode('a') => {
                     // Select all keys
                     if shortcut_keys.contains(&ShortcutKey::KeyboardCtrl) {
@@ -659,6 +645,34 @@ impl PenBehaviour for Selector {
                     } else {
                         PenProgress::InProgress
                     }
+                }
+                KeyboardKey::Delete | KeyboardKey::BackSpace => {
+                    engine_view.store.set_trashed_keys(selection, true);
+                    self.state = SelectorState::Idle;
+
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                    widget_flags.redraw = true;
+                    widget_flags.resize = true;
+                    widget_flags.indicate_changed_store = true;
+
+                    PenProgress::Finished
+                }
+                KeyboardKey::Escape => {
+                    engine_view.store.set_selected_keys(selection, false);
+                    self.state = SelectorState::Idle;
+
+                    engine_view
+                        .doc
+                        .resize_autoexpand(engine_view.store, engine_view.camera);
+
+                    widget_flags.redraw = true;
+                    widget_flags.resize = true;
+                    widget_flags.indicate_changed_store = true;
+
+                    PenProgress::Finished
                 }
                 _ => PenProgress::InProgress,
             },

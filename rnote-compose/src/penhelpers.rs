@@ -49,6 +49,8 @@ pub enum KeyboardKey {
     HorizontalTab,
     /// Line feed
     Linefeed,
+    /// Carriage return
+    CarriageReturn,
     /// Escape
     Escape,
     /// delete
@@ -82,10 +84,8 @@ impl KeyboardKey {
                     match keychar as u32 {
                         0x08 => Self::BackSpace,
                         0x09 => Self::HorizontalTab,
-                        // 0x0a is Line Feed
                         0x0a => Self::Linefeed,
-                        // 0x0d is Carriage Return, but we only need LF
-                        0x0d => Self::Linefeed,
+                        0x0d => Self::CarriageReturn,
                         0x1b => Self::Escape,
                         0x7f => Self::Delete,
                         _ => Self::Unsupported,

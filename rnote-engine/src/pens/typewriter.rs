@@ -620,7 +620,7 @@ impl PenBehaviour for Typewriter {
                             update_stroke(engine_view.store);
                             None
                         }
-                        KeyboardKey::Linefeed => {
+                        KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
                             textstroke.insert_text_after_cursor("\n", cursor);
                             update_stroke(engine_view.store);
 
@@ -879,7 +879,7 @@ impl PenBehaviour for Typewriter {
                                 true
                             }
                         }
-                        KeyboardKey::Linefeed => {
+                        KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
                             textstroke.replace_text_between_selection_cursors(
                                 cursor,
                                 selection_cursor,

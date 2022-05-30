@@ -206,7 +206,7 @@ impl AudioPlayer {
 
         match rodio::Sink::try_new(&self.typewriter_outputstream_handle) {
             Ok(sink) => match keyboard_key {
-                KeyboardKey::Linefeed => {
+                KeyboardKey::CarriageReturn | KeyboardKey::Linefeed => {
                     sink.append(
                         self.sounds["typewriter_bell"].clone().mix(
                             self.sounds["typewriter_linefeed"]

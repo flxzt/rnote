@@ -35,3 +35,4 @@ kurbo = {version = "0.8.2", features = ["serde"] }
 piet = { path = "../piet/piet", features = ["serde"]}
 piet-svg = { path = "../piet/piet-svg"}
 piet-cairo = { path = "../piet/piet-cairo"}
+url = "2.2.2"

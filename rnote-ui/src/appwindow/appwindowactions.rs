@@ -21,6 +21,7 @@ use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 use gettextrs::gettext;
 use gtk4::PrintStatus;
 use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
+use std::path::PathBuf;
 
 impl RnoteAppWindow {
     /// Boolean actions have no target, and a boolean state. They have a default implementation for the activate signal, which requests the state to be inverted, and the default implementation for change_state, which sets the state to the request.
@@ -1203,10 +1204,24 @@ impl RnoteAppWindow {
                 glib::MainContext::default().spawn_local(clone!(@strong appwindow => async move {
                     match appwindow.clipboard().read_text_future().await {
                         Ok(Some(text)) => {
-                            let path = std::path::Path::new(text.as_str());
+                            let file_paths = text.lines().filter_map(|line| {
+                                let file_path = if let Ok(path_uri) = url::Url::parse(&line) {
+                                    path_uri.to_file_path().ok()?
+                                } else {
+                                    PathBuf::from(&line)
+                                };
 
-                            if path.exists() {
-                                appwindow.open_file_w_dialogs(&gio::File::for_path(&path), None);
+                                if file_path.exists() {
+                                    Some(file_path)
+                                } else {
+                                    None
+                                }
+                            }).collect::<Vec<PathBuf>>();
+
+                            for file_path in file_paths {
+                                log::debug!("pasting from path: {:?}", file_path);
+                                // Offsetting 
+                                appwindow.open_file_w_dialogs(&gio::File::for_path(&file_path), None);
                             }
                         }
                         Ok(None) => {}

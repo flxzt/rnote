@@ -3,8 +3,10 @@ use super::StrokeKey;
 use crate::pens::tools::DragProximityTool;
 use crate::strokes::Stroke;
 use crate::{render, StrokeStore};
+use geo::intersects::Intersects;
+use geo::prelude::Contains;
 use rnote_compose::helpers;
-use rnote_compose::penpath::Segment;
+use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 
@@ -23,6 +25,13 @@ impl StrokeStore {
         Arc::make_mut(&mut self.stroke_components)
             .get_mut(key)
             .map(Arc::make_mut)
+    }
+
+    /// Gets a reference to the strokes
+    pub fn get_strokes_ref(&self, keys: &[StrokeKey]) -> Vec<&Stroke> {
+        keys.into_iter()
+            .filter_map(|&key| self.stroke_components.get(key).map(|stroke| &**stroke))
+            .collect::<Vec<&Stroke>>()
     }
 
     /// Adds a segment to the brush stroke. If the stroke is not a brushstroke this does nothing.
@@ -404,8 +413,138 @@ impl StrokeStore {
         });
     }
 
-    /// returns Some(key) if coord is inside at least one of the stroke hitboxes
-    pub fn query_stroke_hitboxes_contain_coord(
+    /// returns the strokes whose hitboxes are contained in the given polygon path.
+    pub fn strokes_hitboxes_contained_in_path_polygon(
+        &mut self,
+        path: &[Element],
+        viewport: AABB,
+    ) -> Vec<StrokeKey> {
+        let selector_polygon = {
+            let selector_path_points = path
+                .iter()
+                .map(|element| geo::Coordinate {
+                    x: element.pos[0],
+                    y: element.pos[1],
+                })
+                .collect::<Vec<geo::Coordinate<f64>>>();
+
+            geo::Polygon::new(selector_path_points.into(), vec![])
+        };
+
+        self.keys_sorted_chrono_intersecting_bounds(viewport)
+            .into_iter()
+            .filter_map(|key| {
+                // skip if stroke is trashed
+                if self.trashed(key)? {
+                    return None;
+                }
+
+                let stroke = self.stroke_components.get(key)?;
+                let stroke_bounds = stroke.bounds();
+
+                if selector_polygon.contains(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                {
+                    return Some(key);
+                } else if selector_polygon
+                    .intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                {
+                    for &hitbox_elem in stroke.hitboxes().iter() {
+                        if !selector_polygon
+                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
+                        {
+                            return None;
+                        }
+                    }
+
+                    return Some(key);
+                }
+
+                None
+            })
+            .collect()
+    }
+
+    /// returns the strokes whose hitboxes intersect in the given path.
+    pub fn strokes_hitboxes_intersect_path(
+        &mut self,
+        path: &[Element],
+        viewport: AABB,
+    ) -> Vec<StrokeKey> {
+        let path_linestring = {
+            let selector_path_points = path
+                .iter()
+                .map(|element| geo::Coordinate {
+                    x: element.pos[0],
+                    y: element.pos[1],
+                })
+                .collect::<Vec<geo::Coordinate<f64>>>();
+
+            geo::LineString::new(selector_path_points.into())
+        };
+
+        self.keys_sorted_chrono_intersecting_bounds(viewport)
+            .into_iter()
+            .filter_map(|key| {
+                // skip if stroke is trashed
+                if self.trashed(key)? {
+                    return None;
+                }
+
+                let stroke = self.stroke_components.get(key)?;
+                let stroke_bounds = stroke.bounds();
+
+                if path_linestring.intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                {
+                    for &hitbox_elem in stroke.hitboxes().iter() {
+                        if path_linestring
+                            .intersects(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
+                        {
+                            return Some(key);
+                        }
+                    }
+                }
+
+                None
+            })
+            .collect()
+    }
+
+    /// returns the keys to the strokes whose hitboxes are contained in the given aabb
+    pub fn strokes_hitboxes_contained_in_aabb(
+        &mut self,
+        aabb: AABB,
+        viewport: AABB,
+    ) -> Vec<StrokeKey> {
+        self.keys_sorted_chrono_intersecting_bounds(viewport)
+            .into_iter()
+            .filter_map(|key| {
+                // skip if stroke is trashed
+                if self.trashed(key)? {
+                    return None;
+                }
+
+                let stroke = self.stroke_components.get(key)?;
+                let stroke_bounds = stroke.bounds();
+
+                if aabb.contains(&stroke_bounds) {
+                    return Some(key);
+                } else if aabb.intersects(&stroke_bounds) {
+                    for &hitbox_elem in stroke.hitboxes().iter() {
+                        if !aabb.contains(&hitbox_elem) {
+                            return None;
+                        }
+                    }
+
+                    return Some(key);
+                }
+
+                None
+            })
+            .collect()
+    }
+
+    /// returns the key if coord is inside at least one of the stroke hitboxes
+    pub fn stroke_hitboxes_contain_coord(
         &self,
         viewport: AABB,
         coord: na::Vector2<f64>,
@@ -456,6 +595,6 @@ impl StrokeStore {
             (1.0 - (pos - tool_pos).magnitude() / radius).clamp(0.0, 1.0)
         }
 
-        unimplemented!()
+        todo!()
     }
 }

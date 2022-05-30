@@ -361,7 +361,7 @@ impl PenBehaviour for Typewriter {
 
                 if let Some(stroke_key) = engine_view
                     .store
-                    .query_stroke_hitboxes_contain_coord(engine_view.camera.viewport(), element.pos)
+                    .stroke_hitboxes_contain_coord(engine_view.camera.viewport(), element.pos)
                 {
                     // When clicked on a textstroke, we start modifying it
                     if let Some(Stroke::TextStroke(textstroke)) =

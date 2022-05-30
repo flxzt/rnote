@@ -11,7 +11,7 @@ use rnote_engine::document::Layout;
 use rnote_engine::pens::brush::BrushStyle;
 use rnote_engine::pens::eraser::EraserStyle;
 use rnote_engine::pens::penholder::PenStyle;
-use rnote_engine::pens::selector::SelectorType;
+use rnote_engine::pens::selector::SelectorStyle;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::tools::ToolsStyle;
 use rnote_engine::pens::{brush, selector, shaper, tools};
@@ -553,10 +553,16 @@ impl RnoteAppWindow {
 
             match selector_style {
                 "polygon" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorType::Polygon;
+                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorStyle::Polygon;
                 },
                 "rectangle" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorType::Rectangle;
+                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorStyle::Rectangle;
+                },
+                "apiece" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorStyle::Apiece;
+                },
+                "intersectingpath" => {
+                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorStyle::IntersectingPath;
                 },
                 _ => { log::error!("set invalid state of action `selector-style`")}
             }
@@ -774,8 +780,10 @@ impl RnoteAppWindow {
 
                 // Selector
                 match selector.style {
-                    SelectorType::Polygon => appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true),
-                    SelectorType::Rectangle => appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true),
+                    SelectorStyle::Polygon => appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true),
+                    SelectorStyle::Rectangle => appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true),
+                    SelectorStyle::Apiece => appwindow.penssidebar().selector_page().selectorstyle_apiece_toggle().set_active(true),
+                    SelectorStyle::IntersectingPath => appwindow.penssidebar().selector_page().selectorstyle_intersectingpath_toggle().set_active(true),
                 }
                 appwindow.penssidebar().selector_page().resize_lock_aspectratio_togglebutton().set_active(selector.resize_lock_aspectratio);
 

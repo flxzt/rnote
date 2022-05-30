@@ -13,6 +13,10 @@ mod imp {
         #[template_child]
         pub selectorstyle_rect_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub selectorstyle_apiece_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
+        pub selectorstyle_intersectingpath_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub resize_lock_aspectratio_togglebutton: TemplateChild<ToggleButton>,
     }
 
@@ -70,6 +74,14 @@ impl SelectorPage {
         self.imp().selectorstyle_rect_toggle.get()
     }
 
+    pub fn selectorstyle_apiece_toggle(&self) -> ToggleButton {
+        self.imp().selectorstyle_apiece_toggle.get()
+    }
+
+    pub fn selectorstyle_intersectingpath_toggle(&self) -> ToggleButton {
+        self.imp().selectorstyle_intersectingpath_toggle.get()
+    }
+
     pub fn resize_lock_aspectratio_togglebutton(&self) -> ToggleButton {
         self.imp().resize_lock_aspectratio_togglebutton.get()
     }
@@ -85,6 +97,18 @@ impl SelectorPage {
         self.selectorstyle_rect_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_rect_toggle| {
             if selectorstyle_rect_toggle.is_active() {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "selector-style", Some(&"rectangle".to_variant()));
+            }
+        }));
+
+        self.selectorstyle_apiece_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_apiece_toggle| {
+            if selectorstyle_apiece_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "selector-style", Some(&"apiece".to_variant()));
+            }
+        }));
+
+        self.selectorstyle_intersectingpath_toggle().connect_toggled(clone!(@weak appwindow => move |selectorstyle_intersectingpath_toggle| {
+            if selectorstyle_intersectingpath_toggle.is_active() {
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "selector-style", Some(&"intersectingpath".to_variant()));
             }
         }));
 

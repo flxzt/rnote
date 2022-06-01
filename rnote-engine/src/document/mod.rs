@@ -78,12 +78,7 @@ impl Document {
         self.layout
     }
 
-    pub(crate) fn set_layout(
-        &mut self,
-        layout: Layout,
-        store: &StrokeStore,
-        camera: &Camera,
-    ) {
+    pub(crate) fn set_layout(&mut self, layout: Layout, store: &StrokeStore, camera: &Camera) {
         self.layout = layout;
 
         self.resize_to_fit_strokes(store, camera);

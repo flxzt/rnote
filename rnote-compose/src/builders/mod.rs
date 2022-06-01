@@ -15,7 +15,7 @@ pub mod rectanglebuilder;
 /// shape builder behaviour
 pub mod shapebuilderbehaviour;
 
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 // Re-exports
 pub use cubbezbuilder::CubBezBuilder;
@@ -59,29 +59,27 @@ impl Default for ShapeBuilderType {
     }
 }
 
+/// constraints
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(default, rename = "constraints")]
 pub struct Constraints {
+    /// Whether constraints are enabled
     #[serde(rename = "enabled")]
     pub enabled: bool,
+    /// stores the constraint ratios
     #[serde(rename = "ratios")]
-    pub ratios: HashMap<ConstraintRatio, bool>,
+    pub ratios: HashSet<ConstraintRatio>,
 }
 
 impl Constraints {
+    /// constrain the coordinates of a vector by the current stored contraint ratios
     pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
         if !self.enabled {
             return pos;
         }
         self.ratios
             .iter()
-            .filter_map(|(ratio, &enabled)| {
-                if enabled {
-                    Some(((ratio.constrain(pos) - pos).norm(), ratio.constrain(pos)))
-                } else {
-                    None
-                }
-            })
+            .map(|ratio| ((ratio.constrain(pos) - pos).norm(), ratio.constrain(pos)))
             .reduce(|(acc_dist, acc_posi), (dist, posi)| {
                 if dist <= acc_dist {
                     (dist, posi)
@@ -94,6 +92,7 @@ impl Constraints {
     }
 }
 
+/// the constraint ratio
 #[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename = "constraint_ratio")]
 pub enum ConstraintRatio {
@@ -115,11 +114,14 @@ pub enum ConstraintRatio {
 }
 
 impl ConstraintRatio {
+    /// the golden ratio
     pub const GOLDEN_RATIO: f64 = 1.618;
 
+    /// Constrain the coordinates of a vector by the constraint ratio
     pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
         let dx = pos[0];
         let dy = pos[1];
+
         match self {
             ConstraintRatio::Horizontal => na::vector![dx, 0.0],
             ConstraintRatio::Vertical => na::vector![0.0, dy],
@@ -141,7 +143,7 @@ impl ConstraintRatio {
                 if dx.abs() > dy.abs() {
                     na::vector![dx, (dx / Self::GOLDEN_RATIO).abs() * dy.signum()]
                 } else {
-                    na::vector![(dy / Self::GOLDEN_RATIO) * dx.signum(), dy]
+                    na::vector![(dy / Self::GOLDEN_RATIO).abs() * dx.signum(), dy]
                 }
             }
         }

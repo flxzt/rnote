@@ -775,7 +775,10 @@ impl RnoteCanvas {
             ]
         } else {
             // If the zoomed format width is larger than the displayed surface, we zoom to a fixed origin
-            na::vector![-Document::SHADOW_WIDTH * zoom, -Document::SHADOW_WIDTH * zoom]
+            na::vector![
+                -Document::SHADOW_WIDTH * zoom,
+                -Document::SHADOW_WIDTH * zoom
+            ]
         };
 
         self.update_camera_offset(new_offset);

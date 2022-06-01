@@ -1,7 +1,7 @@
 use rnote_compose::penhelpers::PenEvent;
 
-use crate::engine::EngineTaskSender;
 use crate::document::Document;
+use crate::engine::EngineTaskSender;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
 use super::AudioPlayer;

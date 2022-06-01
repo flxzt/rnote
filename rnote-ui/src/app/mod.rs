@@ -4,10 +4,8 @@ use std::{cell::RefCell, path};
 
 use adw::subclass::prelude::AdwApplicationImpl;
 use gtk4::{gio, glib, prelude::*, subclass::prelude::*};
+use rnote_engine::document::format::MeasureUnit;
 use rnote_engine::pens::penholder::PenStyle;
-use rnote_engine::{
-    document::format::MeasureUnit,
-};
 
 use crate::{
     colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,

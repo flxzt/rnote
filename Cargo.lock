@@ -2902,7 +2902,6 @@ dependencies = [
  "once_cell",
  "parry2d-f64",
  "piet",
- "piet-cairo",
  "piet-svg",
  "pretty_env_logger",
  "rand 0.8.5",

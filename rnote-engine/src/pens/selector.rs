@@ -1,7 +1,7 @@
 use super::penbehaviour::{PenBehaviour, PenProgress};
 use super::AudioPlayer;
-use crate::engine::EngineTaskSender;
 use crate::document::Document;
+use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use kurbo::Shape;

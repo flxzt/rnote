@@ -1,5 +1,5 @@
-use crate::engine::EngineTaskSender;
 use crate::document::Document;
+use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
@@ -208,9 +208,10 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
             cx.transform(kurbo::Affine::translate(bounds.mins.coords.to_kurbo_vec()));
             cx.transform(kurbo::Affine::scale(1.0 / camera.total_zoom()));
 
-            let bez_path =
-                kurbo::BezPath::from_svg(include_str!("../../data/images/offsetcameratool-path.txt"))
-                    .unwrap();
+            let bez_path = kurbo::BezPath::from_svg(include_str!(
+                "../../data/images/offsetcameratool-path.txt"
+            ))
+            .unwrap();
 
             cx.stroke(bez_path.clone(), &Self::OUTLINE_COLOR, Self::PATH_WIDTH);
             cx.fill(bez_path, &Self::FILL_COLOR);
@@ -446,9 +447,9 @@ impl DrawOnDocBehaviour for Tools {
                 ToolsStyle::VerticalSpace => {
                     self.verticalspace_tool.bounds_on_doc(doc_bounds, camera)
                 }
-                ToolsStyle::DragProximity => self
-                    .dragproximity_tool
-                    .bounds_on_doc(doc_bounds, camera),
+                ToolsStyle::DragProximity => {
+                    self.dragproximity_tool.bounds_on_doc(doc_bounds, camera)
+                }
                 ToolsStyle::OffsetCamera => {
                     self.offsetcamera_tool.bounds_on_doc(doc_bounds, camera)
                 }
@@ -475,8 +476,7 @@ impl DrawOnDocBehaviour for Tools {
                     .draw_on_doc(cx, doc_bounds, camera)?;
             }
             ToolsStyle::OffsetCamera => {
-                self.offsetcamera_tool
-                    .draw_on_doc(cx, doc_bounds, camera)?;
+                self.offsetcamera_tool.draw_on_doc(cx, doc_bounds, camera)?;
             }
         }
 

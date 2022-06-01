@@ -96,7 +96,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
         }
     }
 
-    fn bounds(&self, style: &Style, zoom: f64, _constraints: Constraints) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
         let stroke_width = style.stroke_width();
 
         self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
@@ -105,13 +105,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
         })
     }
 
-    fn draw_styled(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        style: &Style,
-        _zoom: f64,
-        _constraints: Constraints,
-    ) {
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
         cx.save().unwrap();
         let penpath = match &self.state {
             PenPathBuilderState::Start => self

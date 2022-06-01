@@ -33,12 +33,10 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
     fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
-                self.current = element.pos;
+                self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Rectangle(
-                    self.state_as_rect(constraints),
-                )]);
+                return BuilderProgress::Finished(vec![Shape::Rectangle(self.state_as_rect())]);
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}
@@ -47,21 +45,15 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64, constraints: Constraints) -> AABB {
-        self.state_as_rect(constraints)
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+        self.state_as_rect()
             .composed_bounds(style)
             .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
     }
 
-    fn draw_styled(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        style: &Style,
-        zoom: f64,
-        constraints: Constraints,
-    ) {
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         cx.save().unwrap();
-        let rect = self.state_as_rect(constraints);
+        let rect = self.state_as_rect();
         rect.draw_composed(cx, style);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
@@ -72,13 +64,10 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
 
 impl RectangleBuilder {
     /// The current state as rectangle
-    pub fn state_as_rect(&self, constraints: Constraints) -> Rectangle {
-        let relative_extents = constraints.constrain(self.current - self.start);
-        let current = relative_extents + self.start;
-
-        let center = (self.start + current) * 0.5;
+    pub fn state_as_rect(&self) -> Rectangle {
+        let center = (self.start + self.current) * 0.5;
         let transform = Transform::new_w_isometry(na::Isometry2::new(center, 0.0));
-        let half_extents = relative_extents * 0.5;
+        let half_extents = (self.current - self.start) * 0.5;
         let cuboid = Cuboid::new(half_extents);
 
         Rectangle { cuboid, transform }

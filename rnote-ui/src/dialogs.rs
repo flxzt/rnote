@@ -275,11 +275,7 @@ pub fn dialog_save_doc_as(appwindow: &RnoteAppWindow) {
     dialog_save_doc_as.add_filter(&filter);
 
     dialog_save_doc_as.set_current_name(
-        format!(
-            "{}_doc.rnote",
-            rnote_engine::utils::now_formatted_string()
-        )
-        .as_str(),
+        format!("{}_doc.rnote", rnote_engine::utils::now_formatted_string()).as_str(),
     );
 
     dialog_save_doc_as.connect_response(

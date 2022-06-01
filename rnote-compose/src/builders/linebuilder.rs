@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 /// line builder
 #[derive(Debug, Clone)]
@@ -29,15 +29,17 @@ impl ShapeBuilderCreator for LineBuilder {
 }
 
 impl ShapeBuilderBehaviour for LineBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, mut constraints: Constraints) -> BuilderProgress {
+        // we always want to allow horizontal and vertical constraints while building a line
+        constraints.ratios.insert(ConstraintRatio::Horizontal);
+        constraints.ratios.insert(ConstraintRatio::Vertical);
+
         match event {
             PenEvent::Down { element, .. } => {
-                self.current = element.pos;
+                self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Line(
-                    self.state_as_line(constraints),
-                )]);
+                return BuilderProgress::Finished(vec![Shape::Line(self.state_as_line())]);
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}
@@ -46,21 +48,15 @@ impl ShapeBuilderBehaviour for LineBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64, constraints: Constraints) -> AABB {
-        self.state_as_line(constraints)
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+        self.state_as_line()
             .composed_bounds(style)
             .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
     }
 
-    fn draw_styled(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        style: &Style,
-        zoom: f64,
-        constraints: Constraints,
-    ) {
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         cx.save().unwrap();
-        let line = self.state_as_line(constraints);
+        let line = self.state_as_line();
         line.draw_composed(cx, style);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
@@ -71,10 +67,10 @@ impl ShapeBuilderBehaviour for LineBuilder {
 
 impl LineBuilder {
     /// The current state as line
-    pub fn state_as_line(&self, constraints: Constraints) -> Line {
+    pub fn state_as_line(&self) -> Line {
         Line {
             start: self.start,
-            end: constraints.constrain(self.current - self.start) + self.start,
+            end: self.current,
         }
     }
 }

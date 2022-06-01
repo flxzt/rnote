@@ -420,26 +420,6 @@
                   </child>
                 </object>
               </child>
-              <child>
-                <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Horizontal</property>
-                  <child type="suffix">
-                    <object class="GtkSwitch" id="constraint_horizontal_switch">
-                      <property name="valign">center</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="AdwActionRow">
-                  <property name="title" translatable="yes">Vertical</property>
-                  <child type="suffix">
-                    <object class="GtkSwitch" id="constraint_vertical_switch">
-                      <property name="valign">center</property>
-                    </object>
-                  </child>
-                </object>
-              </child>
             </object>
           </child>
         </object>

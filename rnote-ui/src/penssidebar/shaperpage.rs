@@ -3,7 +3,7 @@ use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, Image, ListBox,
     MenuButton, Popover, SpinButton, Switch,
 };
-use rnote_compose::builders::ConstraintRatio;
+use rnote_compose::builders::{ConstraintRatio, ShapeBuilderType};
 use rnote_compose::style::rough::RoughOptions;
 use rnote_engine::pens::shaper::ShaperStyle;
 use rnote_engine::pens::Shaper;
@@ -69,10 +69,6 @@ mod imp {
         pub constraint_three_to_two_switch: TemplateChild<Switch>,
         #[template_child]
         pub constraint_golden_switch: TemplateChild<Switch>,
-        #[template_child]
-        pub constraint_horizontal_switch: TemplateChild<Switch>,
-        #[template_child]
-        pub constraint_vertical_switch: TemplateChild<Switch>,
     }
 
     #[glib::object_subclass]
@@ -354,47 +350,39 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.enabled = switch.state();
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-enabled", Some(switch.state().to_variant()));
             }));
 
         self.imp()
             .constraint_one_to_one_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::OneToOne, switch.state());
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-one-to-one", Some(switch.state().to_variant()));
+                if switch.state() {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::OneToOne);
+                } else {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::OneToOne);
+                }
             }));
 
         self.imp()
             .constraint_three_to_two_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::ThreeToTwo, switch.state());
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-three-to-two", Some(switch.state().to_variant()));
+                if switch.state() {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::ThreeToTwo);
+                } else {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
+                }
             }));
 
         self.imp()
             .constraint_golden_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::Golden, switch.state());
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-golden", Some(switch.state().to_variant()));
-            }));
-
-        self.imp()
-            .constraint_horizontal_switch
-            .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::Horizontal, switch.state());
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-horizontal", Some(switch.state().to_variant()));
-            }));
-
-        self.imp()
-            .constraint_vertical_switch
-            .get()
-            .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::Vertical, switch.state());
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-vertical", Some(switch.state().to_variant()));
+                if switch.state() {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::Golden);
+                } else {
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::Golden);
+                }
             }));
 
         // shape builder type
@@ -431,5 +419,159 @@ impl ShaperPage {
                 }
             }),
         );
+    }
+
+    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        // Avoiding borrow errors by cloning. Unfortunately we can't clone the entire shaper struct, because it holds the builder trait object
+        let builder_type = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .shaper
+            .builder_type
+            .clone();
+        let style = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .shaper
+            .style
+            .clone();
+        let rough_options = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .shaper
+            .rough_options
+            .clone();
+        let smooth_options = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .shaper
+            .smooth_options
+            .clone();
+        let constraints = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .shaper
+            .constraints
+            .clone();
+
+        // style config
+        self.roughconfig_roughness_spinbutton()
+            .set_value(rough_options.roughness);
+        self.roughconfig_bowing_spinbutton()
+            .set_value(rough_options.bowing);
+        self.roughconfig_curvestepcount_spinbutton()
+            .set_value(rough_options.curve_stepcount);
+        self.roughconfig_multistroke_switch()
+            .set_active(!rough_options.disable_multistroke);
+
+        // constraints
+        self.imp()
+            .constraint_enabled_switch
+            .set_state(constraints.enabled);
+        self.imp()
+            .constraint_one_to_one_switch
+            .set_state(constraints.ratios.get(&ConstraintRatio::OneToOne).is_some());
+        self.imp().constraint_three_to_two_switch.set_state(
+            constraints
+                .ratios
+                .get(&ConstraintRatio::ThreeToTwo)
+                .is_some(),
+        );
+        self.imp()
+            .constraint_golden_switch
+            .set_state(constraints.ratios.get(&ConstraintRatio::Golden).is_some());
+
+        // builder type
+        match builder_type {
+            ShapeBuilderType::Line => {
+                self.shapebuildertype_listbox().select_row(Some(
+                    &appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .shapebuildertype_line_row(),
+                ));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-line-symbolic"));
+            }
+            ShapeBuilderType::Rectangle => {
+                self.shapebuildertype_listbox().select_row(Some(
+                    &appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .shapebuildertype_rectangle_row(),
+                ));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-rectangle-symbolic"));
+            }
+            ShapeBuilderType::Ellipse => {
+                self.shapebuildertype_listbox()
+                    .select_row(Some(&self.shapebuildertype_ellipse_row()));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-ellipse-symbolic"));
+            }
+            ShapeBuilderType::FociEllipse => {
+                self.shapebuildertype_listbox()
+                    .select_row(Some(&self.shapebuildertype_fociellipse_row()));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-fociellipse-symbolic"));
+            }
+            ShapeBuilderType::QuadBez => {
+                self.shapebuildertype_listbox().select_row(Some(
+                    &appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .shapebuildertype_quadbez_row(),
+                ));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-quadbez-symbolic"));
+            }
+            ShapeBuilderType::CubBez => {
+                self.shapebuildertype_listbox().select_row(Some(
+                    &appwindow
+                        .penssidebar()
+                        .shaper_page()
+                        .shapebuildertype_cubbez_row(),
+                ));
+                self.shapebuildertype_image()
+                    .set_icon_name(Some("shape-cubbez-symbolic"));
+            }
+        }
+
+        match style {
+            ShaperStyle::Smooth => {
+                self.shaperstyle_listbox()
+                    .select_row(Some(&self.shaperstyle_smooth_row()));
+                self.width_spinbutton()
+                    .set_value(smooth_options.stroke_width);
+                self.stroke_colorpicker()
+                    .set_current_color(smooth_options.stroke_color);
+                self.fill_colorpicker()
+                    .set_current_color(smooth_options.fill_color);
+                self.shaperstyle_image()
+                    .set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
+            }
+            ShaperStyle::Rough => {
+                self.shaperstyle_listbox()
+                    .select_row(Some(&self.shaperstyle_rough_row()));
+                self.width_spinbutton()
+                    .set_value(rough_options.stroke_width);
+                self.stroke_colorpicker()
+                    .set_current_color(rough_options.stroke_color);
+                self.fill_colorpicker()
+                    .set_current_color(rough_options.fill_color);
+                self.shaperstyle_image()
+                    .set_icon_name(Some("pen-shaper-style-rough-symbolic"));
+            }
+        }
     }
 }

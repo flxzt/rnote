@@ -9,7 +9,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state
@@ -43,7 +43,7 @@ impl ShapeBuilderCreator for FociEllipseBuilder {
 }
 
 impl ShapeBuilderBehaviour for FociEllipseBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, mut constraints: Constraints) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
@@ -55,6 +55,10 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             }
             (FociEllipseBuilderState::First(_), _) => {}
             (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
+                // we want to allow horizontal and vertical constraints while setting the second foci
+                constraints.ratios.insert(ConstraintRatio::Horizontal);
+                constraints.ratios.insert(ConstraintRatio::Vertical);
+
                 foci[1] = constraints.constrain(element.pos - foci[0]) + foci[0];
             }
             (FociEllipseBuilderState::Foci(foci), PenEvent::Up { element, .. }) => {
@@ -81,7 +85,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64, _constraints: Constraints) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
         let stroke_width = style.stroke_width();
 
         match &self.state {
@@ -102,13 +106,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         }
     }
 
-    fn draw_styled(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        style: &Style,
-        zoom: f64,
-        _constraints: Constraints,
-    ) {
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         cx.save().unwrap();
         match &self.state {
             FociEllipseBuilderState::First(point) => {

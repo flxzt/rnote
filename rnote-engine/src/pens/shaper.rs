@@ -6,7 +6,6 @@ use crate::strokes::ShapeStroke;
 use crate::strokes::Stroke;
 use crate::{Camera, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 
-use gtk4::glib;
 use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
@@ -240,7 +239,7 @@ impl DrawOnDocBehaviour for Shaper {
         match &self.state {
             ShaperState::Idle => None,
             ShaperState::BuildShape { builder } => {
-                Some(builder.bounds(&style, camera.total_zoom(), self.constraints.clone()))
+                Some(builder.bounds(&style, camera.total_zoom()))
             }
         }
     }
@@ -257,7 +256,7 @@ impl DrawOnDocBehaviour for Shaper {
         match &self.state {
             ShaperState::Idle => {}
             ShaperState::BuildShape { builder } => {
-                builder.draw_styled(cx, &style, camera.total_zoom(), self.constraints.clone())
+                builder.draw_styled(cx, &style, camera.total_zoom())
             }
         }
 

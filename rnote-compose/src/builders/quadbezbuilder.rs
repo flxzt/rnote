@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraints, ShapeBuilderBehaviour};
+use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state
@@ -49,8 +49,13 @@ impl ShapeBuilderCreator for QuadBezBuilder {
 }
 
 impl ShapeBuilderBehaviour for QuadBezBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, mut constraints: Constraints) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
+
+        // we always want to allow horizontal and vertical constraints while building a quadbez
+        constraints.ratios.insert(ConstraintRatio::Horizontal);
+        constraints.ratios.insert(ConstraintRatio::Vertical);
+
         match (&mut self.state, event) {
             (QuadBezBuilderState::Start(start), PenEvent::Down { element, .. }) => {
                 *start = element.pos;
@@ -95,7 +100,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64, _constraints: Constraints) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
         let stroke_width = style.stroke_width();
 
         match &self.state {
@@ -119,13 +124,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         }
     }
 
-    fn draw_styled(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        style: &Style,
-        zoom: f64,
-        _constraints: Constraints,
-    ) {
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         match &self.state {
             QuadBezBuilderState::Start(start) => {
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, zoom);

@@ -1,5 +1,5 @@
 use crate::engine::EngineTaskSender;
-use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
+use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::color;
 use rnote_compose::helpers::AABBHelpers;

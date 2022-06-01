@@ -1,5 +1,5 @@
-use crate::Color;
 use crate::style::PressureCurve;
+use crate::Color;
 
 use serde::{Deserialize, Serialize};
 

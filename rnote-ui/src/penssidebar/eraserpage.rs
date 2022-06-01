@@ -1,7 +1,7 @@
 use crate::appwindow::RnoteAppWindow;
 use adw::prelude::*;
 use gtk4::{glib, glib::clone, subclass::prelude::*, CompositeTemplate, SpinButton, ToggleButton};
-use rnote_engine::pens::eraser::Eraser;
+use rnote_engine::pens::eraser::{Eraser, EraserStyle};
 
 mod imp {
     use super::*;
@@ -98,5 +98,25 @@ impl EraserPage {
                 appwindow.canvas().engine().borrow_mut().penholder.eraser.width = width_spinbutton.value();
             }),
         );
+    }
+
+    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let eraser = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .eraser
+            .clone();
+
+        self.width_spinbutton().set_value(eraser.width);
+        match eraser.style {
+            EraserStyle::TrashCollidingStrokes => self
+                .eraserstyle_trash_colliding_strokes_toggle()
+                .set_active(true),
+            EraserStyle::SplitCollidingStrokes => self
+                .eraserstyle_split_colliding_strokes_toggle()
+                .set_active(true),
+        }
     }
 }

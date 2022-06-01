@@ -32,12 +32,10 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
     fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
-                self.current = element.pos;
+                self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Ellipse(
-                    self.state_as_ellipse(constraints),
-                )]);
+                return BuilderProgress::Finished(vec![Shape::Ellipse(self.state_as_ellipse())]);
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}
@@ -46,21 +44,15 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &crate::Style, zoom: f64, constraints: Constraints) -> AABB {
-        self.state_as_ellipse(constraints)
+    fn bounds(&self, style: &crate::Style, zoom: f64) -> AABB {
+        self.state_as_ellipse()
             .composed_bounds(style)
             .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
     }
 
-    fn draw_styled(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        style: &Style,
-        zoom: f64,
-        constraints: Constraints,
-    ) {
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
         cx.save().unwrap();
-        let ellipse = self.state_as_ellipse(constraints);
+        let ellipse = self.state_as_ellipse();
         ellipse.draw_composed(cx, style);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
@@ -71,9 +63,9 @@ impl ShapeBuilderBehaviour for EllipseBuilder {
 
 impl EllipseBuilder {
     /// The current state as rectangle
-    pub fn state_as_ellipse(&self, constraints: Constraints) -> Ellipse {
+    pub fn state_as_ellipse(&self) -> Ellipse {
         let transform = Transform::new_w_isometry(na::Isometry2::new(self.start, 0.0));
-        let radii = constraints.constrain(self.current - self.start).abs();
+        let radii = (self.current - self.start).abs();
 
         Ellipse { radii, transform }
     }

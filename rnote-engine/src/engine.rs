@@ -1,10 +1,10 @@
+use crate::document::{background, Background, Format, Layout};
 use crate::pens::penholder::{PenHolderEvent, PenStyle};
-use crate::document::{background, Background, Layout, Format};
 use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::strokebehaviour::GeneratedStrokeImages;
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{render, DrawOnDocBehaviour, SurfaceFlags};
-use crate::{Camera, PenHolder, Document, StrokeStore};
+use crate::{Camera, Document, PenHolder, StrokeStore};
 use gtk4::Snapshot;
 use itertools::Itertools;
 use rnote_compose::helpers::AABBHelpers;
@@ -370,14 +370,14 @@ impl RnoteEngine {
     }
 
     pub fn set_doc_layout(&mut self, layout: Layout) {
-        self.document
-            .set_layout(layout, &self.store, &self.camera);
+        self.document.set_layout(layout, &self.store, &self.camera);
     }
 
     /// resizes the doc to the format and to fit all strokes
     /// Document background rendering then needs to be updated.
     pub fn resize_to_fit_strokes(&mut self) {
-        self.document.resize_to_fit_strokes(&self.store, &self.camera);
+        self.document
+            .resize_to_fit_strokes(&self.store, &self.camera);
     }
 
     /// resize the doc when in autoexpanding layouts. called e.g. when finishing a new stroke
@@ -396,7 +396,8 @@ impl RnoteEngine {
                 // Does not resize in fixed size mode, use resize_doc_to_fit_strokes() for it.
             }
             Layout::ContinuousVertical => {
-                self.document.resize_doc_continuous_vertical_layout(&self.store);
+                self.document
+                    .resize_doc_continuous_vertical_layout(&self.store);
             }
             Layout::Infinite => {
                 // only expand, don't resize to fit strokes
@@ -656,7 +657,8 @@ impl RnoteEngine {
     ) -> oneshot::Receiver<anyhow::Result<Vec<Stroke>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Stroke>>>();
 
-        let page_width = (f64::from(self.document.format.width) * (self.pdf_import_width_perc / 100.0))
+        let page_width = (f64::from(self.document.format.width)
+            * (self.pdf_import_width_perc / 100.0))
             .round() as i32;
 
         let pdf_import_as_vector = self.pdf_import_as_vector;
@@ -929,11 +931,7 @@ impl RnoteEngine {
 
                     for (page_bounds, page_svgs) in pages.into_iter() {
                         cairo_cx.translate(-page_bounds.mins[0], -page_bounds.mins[1]);
-                        render::Svg::draw_svgs_to_cairo_context(
-                            &page_svgs,
-                            doc_bounds,
-                            &cairo_cx,
-                        )?;
+                        render::Svg::draw_svgs_to_cairo_context(&page_svgs, doc_bounds, &cairo_cx)?;
                         cairo_cx.show_page().context("show page failed")?;
                         cairo_cx.translate(page_bounds.mins[0], page_bounds.mins[1]);
                     }

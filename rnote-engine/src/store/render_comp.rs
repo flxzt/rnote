@@ -402,12 +402,7 @@ impl StrokeStore {
     }
 
     /// Draws the selection
-    pub fn draw_selection_snapshot(
-        &self,
-        snapshot: &Snapshot,
-        _doc_bounds: AABB,
-        viewport: AABB,
-    ) {
+    pub fn draw_selection_snapshot(&self, snapshot: &Snapshot, _doc_bounds: AABB, viewport: AABB) {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {

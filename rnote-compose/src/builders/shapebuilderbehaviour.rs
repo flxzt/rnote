@@ -30,14 +30,8 @@ pub trait ShapeBuilderBehaviour: std::fmt::Debug {
     fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress;
 
     /// the bounds
-    fn bounds(&self, style: &Style, zoom: f64, constraints: Constraints) -> AABB;
+    fn bounds(&self, style: &Style, zoom: f64) -> AABB;
 
     /// draw with a style
-    fn draw_styled(
-        &self,
-        cx: &mut piet_cairo::CairoRenderContext,
-        style: &Style,
-        zoom: f64,
-        constraints: Constraints,
-    );
+    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64);
 }

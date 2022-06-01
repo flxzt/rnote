@@ -353,42 +353,48 @@ impl ShaperPage {
             .constraint_enabled_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.enabled = switch.state();
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.enabled = switch.state();
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-enabled", Some(switch.state().to_variant()));
             }));
 
         self.imp()
             .constraint_one_to_one_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::OneToOne, switch.state());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::OneToOne, switch.state());
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-one-to-one", Some(switch.state().to_variant()));
             }));
 
         self.imp()
             .constraint_three_to_two_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::ThreeToTwo, switch.state());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::ThreeToTwo, switch.state());
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-three-to-two", Some(switch.state().to_variant()));
             }));
 
         self.imp()
             .constraint_golden_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::Golden, switch.state());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::Golden, switch.state());
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-golden", Some(switch.state().to_variant()));
             }));
 
         self.imp()
             .constraint_horizontal_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::Horizontal, switch.state());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::Horizontal, switch.state());
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-horizontal", Some(switch.state().to_variant()));
             }));
 
         self.imp()
             .constraint_vertical_switch
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
-                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraint.ratio.insert(ConstraintRatio::Vertical, switch.state());
+                appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::Vertical, switch.state());
+                adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-constraints-vertical", Some(switch.state().to_variant()));
             }));
 
         // shape builder type

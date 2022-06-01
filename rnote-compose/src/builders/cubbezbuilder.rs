@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraint, ConstraintRatio, ShapeBuilderBehaviour};
+use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state
@@ -60,7 +60,7 @@ impl ShapeBuilderCreator for CubBezBuilder {
 }
 
 impl ShapeBuilderBehaviour for CubBezBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
@@ -81,7 +81,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
             }
             (CubBezBuilderState::Start(_), ..) => {}
             (CubBezBuilderState::Cp1 { start, cp1, .. }, PenEvent::Down { element, .. }) => {
-                *cp1 = constraint.constrain(element.pos - *start) + *start;
+                *cp1 = constraints.constrain(element.pos - *start) + *start;
             }
             (CubBezBuilderState::Cp1 { start, cp1 }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::Cp2 {
@@ -92,7 +92,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
             }
             (CubBezBuilderState::Cp1 { .. }, ..) => {}
             (CubBezBuilderState::Cp2 { cp1, cp2, .. }, PenEvent::Down { element, .. }) => {
-                *cp2 = constraint.constrain(element.pos - *cp1) + *cp1;
+                *cp2 = constraints.constrain(element.pos - *cp1) + *cp1;
             }
             (CubBezBuilderState::Cp2 { start, cp1, cp2 }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::End {
@@ -104,7 +104,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
             }
             (CubBezBuilderState::Cp2 { .. }, ..) => {}
             (CubBezBuilderState::End { cp2, end, .. }, PenEvent::Down { element, .. }) => {
-                *end = constraint.constrain(element.pos - *cp2) + *cp2;
+                *end = constraints.constrain(element.pos - *cp2) + *cp2;
             }
             (
                 CubBezBuilderState::End {
@@ -128,7 +128,7 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64, _constraints: Constraints) -> AABB {
         let stroke_width = style.stroke_width();
 
         match &self.state {
@@ -159,7 +159,13 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         }
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+    fn draw_styled(
+        &self,
+        cx: &mut piet_cairo::CairoRenderContext,
+        style: &Style,
+        zoom: f64,
+        _constraints: Constraints,
+    ) {
         match &self.state {
             CubBezBuilderState::Start(start) => {
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, zoom);

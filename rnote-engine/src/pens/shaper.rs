@@ -11,7 +11,7 @@ use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use rnote_compose::builders::{Constraint, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
+use rnote_compose::builders::{Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{
     EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
@@ -55,9 +55,8 @@ pub struct Shaper {
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
     pub rough_options: RoughOptions,
-
-    #[serde(skip)]
-    pub constraint: Constraint,
+    #[serde(rename = "constraints")]
+    pub constraints: Constraints,
     #[serde(skip)]
     state: ShaperState,
 }
@@ -74,7 +73,7 @@ impl Default for Shaper {
             style: ShaperStyle::default(),
             smooth_options,
             rough_options,
-            constraint: Constraint::default(),
+            constraints: Constraints::default(),
             state: ShaperState::Idle,
         }
     }
@@ -144,21 +143,21 @@ impl PenBehaviour for Shaper {
             }
             (ShaperState::BuildShape { builder }, event) => {
                 // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
-                let mut constraint = self.constraint.clone();
-                constraint.enabled = match event {
+                let mut constraints = self.constraints.clone();
+                constraints.enabled = match event {
                     PenEvent::Down {
                         ref shortcut_keys, ..
-                    } => constraint.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
+                    } => constraints.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
                     PenEvent::Up {
                         ref shortcut_keys, ..
-                    } => constraint.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
+                    } => constraints.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
                     PenEvent::Proximity {
                         ref shortcut_keys, ..
-                    } => constraint.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
+                    } => constraints.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
                     PenEvent::Cancel => false,
                 };
 
-                match builder.handle_event(event, constraint) {
+                match builder.handle_event(event, constraints) {
                     BuilderProgress::InProgress => {
                         surface_flags.redraw = true;
 
@@ -241,7 +240,7 @@ impl DrawOnDocBehaviour for Shaper {
         match &self.state {
             ShaperState::Idle => None,
             ShaperState::BuildShape { builder } => {
-                Some(builder.bounds(&style, camera.total_zoom()))
+                Some(builder.bounds(&style, camera.total_zoom(), self.constraints.clone()))
             }
         }
     }
@@ -258,7 +257,7 @@ impl DrawOnDocBehaviour for Shaper {
         match &self.state {
             ShaperState::Idle => {}
             ShaperState::BuildShape { builder } => {
-                builder.draw_styled(cx, &style, camera.total_zoom())
+                builder.draw_styled(cx, &style, camera.total_zoom(), self.constraints.clone())
             }
         }
 

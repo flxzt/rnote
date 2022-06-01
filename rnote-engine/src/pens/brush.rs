@@ -2,11 +2,11 @@ use crate::engine::EngineTaskSender;
 use crate::store::StrokeKey;
 use crate::strokes::BrushStroke;
 use crate::strokes::Stroke;
-use crate::{Camera, DrawOnDocBehaviour, Document, StrokeStore, SurfaceFlags};
+use crate::{Camera, Document, DrawOnDocBehaviour, StrokeStore, SurfaceFlags};
 use piet::RenderContext;
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use rnote_compose::builders::Constraint;
 use rnote_compose::builders::ConstraintRatio;
+use rnote_compose::builders::Constraints;
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
@@ -173,7 +173,7 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event, Constraint::default()) {
+                match path_builder.handle_event(pen_event, Constraints::default()) {
                     BuilderProgress::InProgress => {
                         surface_flags.redraw = true;
 
@@ -264,7 +264,7 @@ impl DrawOnDocBehaviour for Brush {
         match &self.state {
             BrushState::Idle => None,
             BrushState::Drawing { path_builder, .. } => {
-                Some(path_builder.bounds(&style, camera.zoom()))
+                Some(path_builder.bounds(&style, camera.zoom(), Constraints::default()))
             }
         }
     }
@@ -281,7 +281,7 @@ impl DrawOnDocBehaviour for Brush {
             BrushState::Idle => {}
             BrushState::Drawing { path_builder, .. } => {
                 let style = self.gen_style_for_current_options();
-                path_builder.draw_styled(cx, &style, camera.total_zoom());
+                path_builder.draw_styled(cx, &style, camera.total_zoom(), Constraints::default());
             }
         }
 

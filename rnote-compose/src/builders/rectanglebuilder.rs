@@ -9,7 +9,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style, Transform};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraint, ShapeBuilderBehaviour};
+use super::{Constraints, ShapeBuilderBehaviour};
 
 /// rect builder
 #[derive(Debug, Clone)]
@@ -18,8 +18,6 @@ pub struct RectangleBuilder {
     pub start: na::Vector2<f64>,
     /// the current position
     pub current: na::Vector2<f64>,
-
-    constraint: Constraint,
 }
 
 impl ShapeBuilderCreator for RectangleBuilder {
@@ -27,21 +25,20 @@ impl ShapeBuilderCreator for RectangleBuilder {
         Self {
             start: element.pos,
             current: element.pos,
-            constraint: Constraint::default(),
         }
     }
 }
 
 impl ShapeBuilderBehaviour for RectangleBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
-        self.constraint = constraint;
-
+    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
                 self.current = element.pos;
             }
             PenEvent::Up { .. } => {
-                return BuilderProgress::Finished(vec![Shape::Rectangle(self.state_as_rect())]);
+                return BuilderProgress::Finished(vec![Shape::Rectangle(
+                    self.state_as_rect(constraints),
+                )]);
             }
             PenEvent::Proximity { .. } => {}
             PenEvent::Cancel => {}
@@ -50,15 +47,21 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
-        self.state_as_rect()
+    fn bounds(&self, style: &Style, zoom: f64, constraints: Constraints) -> AABB {
+        self.state_as_rect(constraints)
             .composed_bounds(style)
             .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+    fn draw_styled(
+        &self,
+        cx: &mut piet_cairo::CairoRenderContext,
+        style: &Style,
+        zoom: f64,
+        constraints: Constraints,
+    ) {
         cx.save().unwrap();
-        let rect = self.state_as_rect();
+        let rect = self.state_as_rect(constraints);
         rect.draw_composed(cx, style);
 
         drawhelpers::draw_pos_indicator(cx, PenState::Up, self.start, zoom);
@@ -69,8 +72,8 @@ impl ShapeBuilderBehaviour for RectangleBuilder {
 
 impl RectangleBuilder {
     /// The current state as rectangle
-    pub fn state_as_rect(&self) -> Rectangle {
-        let relative_extents = self.constraint.constrain(self.current - self.start);
+    pub fn state_as_rect(&self, constraints: Constraints) -> Rectangle {
+        let relative_extents = constraints.constrain(self.current - self.start);
         let current = relative_extents + self.start;
 
         let center = (self.start + current) * 0.5;

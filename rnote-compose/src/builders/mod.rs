@@ -59,18 +59,21 @@ impl Default for ShapeBuilderType {
     }
 }
 
-#[derive(Debug, Clone, Default)]
-pub struct Constraint {
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(default, rename = "constraints")]
+pub struct Constraints {
+    #[serde(rename = "enabled")]
     pub enabled: bool,
-    pub ratio: HashMap<ConstraintRatio, bool>,
+    #[serde(rename = "ratios")]
+    pub ratios: HashMap<ConstraintRatio, bool>,
 }
 
-impl Constraint {
+impl Constraints {
     pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
         if !self.enabled {
             return pos;
         }
-        self.ratio
+        self.ratios
             .iter()
             .filter_map(|(ratio, &enabled)| {
                 if enabled {
@@ -91,24 +94,32 @@ impl Constraint {
     }
 }
 
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename = "constraint_ratio")]
 pub enum ConstraintRatio {
+    #[serde(rename = "horizontal")]
     /// Horizontal axis
     Horizontal,
+    #[serde(rename = "vertical")]
     /// Vertical axis
     Vertical,
+    #[serde(rename = "one_to_one")]
     /// 1:1 (enables drawing circles, squares, etc.)
     OneToOne,
+    #[serde(rename = "three_to_two")]
     /// 3:2
     ThreeToTwo,
+    #[serde(rename = "golden")]
     /// Golden ratio
     Golden,
 }
 
 impl ConstraintRatio {
+    pub const GOLDEN_RATIO: f64 = 1.618;
+
     pub fn constrain(&self, pos: na::Vector2<f64>) -> na::Vector2<f64> {
-        let dx = *pos.index((0, 0));
-        let dy = *pos.index((1, 0));
+        let dx = pos[0];
+        let dy = pos[1];
         match self {
             ConstraintRatio::Horizontal => na::vector![dx, 0.0],
             ConstraintRatio::Vertical => na::vector![0.0, dy],
@@ -128,9 +139,9 @@ impl ConstraintRatio {
             }
             ConstraintRatio::Golden => {
                 if dx.abs() > dy.abs() {
-                    na::vector![dx, (dx / 1.618).abs() * dy.signum()]
+                    na::vector![dx, (dx / Self::GOLDEN_RATIO).abs() * dy.signum()]
                 } else {
-                    na::vector![(dy / 1.618) * dx.signum(), dy]
+                    na::vector![(dy / Self::GOLDEN_RATIO) * dx.signum(), dy]
                 }
             }
         }

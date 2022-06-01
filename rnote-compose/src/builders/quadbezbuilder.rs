@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraint, ShapeBuilderBehaviour};
+use super::{Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state
@@ -49,7 +49,7 @@ impl ShapeBuilderCreator for QuadBezBuilder {
 }
 
 impl ShapeBuilderBehaviour for QuadBezBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
         match (&mut self.state, event) {
             (QuadBezBuilderState::Start(start), PenEvent::Down { element, .. }) => {
@@ -69,7 +69,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
             }
             (QuadBezBuilderState::Start(_), ..) => {}
             (QuadBezBuilderState::Cp { start, cp }, PenEvent::Down { element, .. }) => {
-                *cp = constraint.constrain(element.pos - *start) + *start;
+                *cp = constraints.constrain(element.pos - *start) + *start;
             }
             (QuadBezBuilderState::Cp { start, cp }, PenEvent::Up { element, .. }) => {
                 self.state = QuadBezBuilderState::End {
@@ -80,7 +80,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
             }
             (QuadBezBuilderState::Cp { .. }, ..) => {}
             (QuadBezBuilderState::End { end, cp, .. }, PenEvent::Down { element, .. }) => {
-                *end = constraint.constrain(element.pos - *cp) + *cp;
+                *end = constraints.constrain(element.pos - *cp) + *cp;
             }
             (QuadBezBuilderState::End { start, cp, end }, PenEvent::Up { .. }) => {
                 return BuilderProgress::Finished(vec![Shape::QuadraticBezier(QuadraticBezier {
@@ -95,7 +95,7 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64, _constraints: Constraints) -> AABB {
         let stroke_width = style.stroke_width();
 
         match &self.state {
@@ -119,7 +119,13 @@ impl ShapeBuilderBehaviour for QuadBezBuilder {
         }
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+    fn draw_styled(
+        &self,
+        cx: &mut piet_cairo::CairoRenderContext,
+        style: &Style,
+        zoom: f64,
+        _constraints: Constraints,
+    ) {
         match &self.state {
             QuadBezBuilderState::Start(start) => {
                 drawhelpers::draw_pos_indicator(cx, PenState::Down, *start, zoom);

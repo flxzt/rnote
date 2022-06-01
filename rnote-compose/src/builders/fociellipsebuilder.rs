@@ -9,7 +9,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraint, ShapeBuilderBehaviour};
+use super::{Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The state
@@ -43,7 +43,7 @@ impl ShapeBuilderCreator for FociEllipseBuilder {
 }
 
 impl ShapeBuilderBehaviour for FociEllipseBuilder {
-    fn handle_event(&mut self, event: PenEvent, constraint: Constraint) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
@@ -55,7 +55,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             }
             (FociEllipseBuilderState::First(_), _) => {}
             (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
-                foci[1] = constraint.constrain(element.pos - foci[0]) + foci[0];
+                foci[1] = constraints.constrain(element.pos - foci[0]) + foci[0];
             }
             (FociEllipseBuilderState::Foci(foci), PenEvent::Up { element, .. }) => {
                 self.state = FociEllipseBuilderState::FociAndPoint {
@@ -81,7 +81,7 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64, _constraints: Constraints) -> AABB {
         let stroke_width = style.stroke_width();
 
         match &self.state {
@@ -102,7 +102,13 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         }
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {
+    fn draw_styled(
+        &self,
+        cx: &mut piet_cairo::CairoRenderContext,
+        style: &Style,
+        zoom: f64,
+        _constraints: Constraints,
+    ) {
         cx.save().unwrap();
         match &self.state {
             FociEllipseBuilderState::First(point) => {

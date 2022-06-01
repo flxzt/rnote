@@ -10,7 +10,7 @@ use crate::style::Composer;
 use crate::{PenPath, Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::{Constraint, ShapeBuilderBehaviour};
+use super::{Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum PenPathBuilderState {
@@ -39,7 +39,7 @@ impl ShapeBuilderCreator for PenPathBuilder {
 }
 
 impl ShapeBuilderBehaviour for PenPathBuilder {
-    fn handle_event(&mut self, event: PenEvent, _constraint: Constraint) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, _constraint: Constraints) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,
@@ -96,7 +96,7 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
         }
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64, _constraints: Constraints) -> AABB {
         let stroke_width = style.stroke_width();
 
         self.buffer.iter().fold(AABB::new_invalid(), |mut acc, x| {
@@ -105,7 +105,13 @@ impl ShapeBuilderBehaviour for PenPathBuilder {
         })
     }
 
-    fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, _zoom: f64) {
+    fn draw_styled(
+        &self,
+        cx: &mut piet_cairo::CairoRenderContext,
+        style: &Style,
+        _zoom: f64,
+        _constraints: Constraints,
+    ) {
         cx.save().unwrap();
         let penpath = match &self.state {
             PenPathBuilderState::Start => self

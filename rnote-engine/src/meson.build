@@ -8,6 +8,7 @@ rnote_engine_sources = files(
     'widgetflags.rs',
     'camera.rs',
     'audioplayer.rs',
+    'import.rs',
     'pens/mod.rs',
     'pens/penbehaviour.rs',
     'pens/penholder.rs',

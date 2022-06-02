@@ -1307,7 +1307,7 @@ impl RnoteAppWindow {
                 // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
-                dialogs::dialog_import_pdf_w_prefs(self);
+                dialogs::dialog_import_pdf_w_prefs(self, target_pos);
             }
             utils::FileType::Folder => {
                 if let Some(path) = file.path() {

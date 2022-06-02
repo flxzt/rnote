@@ -185,8 +185,8 @@ impl VectorImage {
         let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
-        let svgs = page_range.enumerate().filter_map(|(i, page)| {
-            let page = doc.page(page as i32)?;
+        let svgs = page_range.enumerate().filter_map(|(i, page_i)| {
+            let page = doc.page(page_i as i32)?;
                 let (intrinsic_width, intrinsic_height) = (page.size().0, page.size().1);
 
                 let (width, height) = if let Some(page_width) = page_width {
@@ -261,7 +261,7 @@ impl VectorImage {
                         bounds: AABB::new(na::point![x, y], na::point![x + width, y + height])
                     }),
                     Err(e) => {
-                        log::error!("importing page {} from pdf failed with Err {}", i, e);
+                        log::error!("importing page {} from pdf failed with Err {}", page, e);
                         None
                     }
                 }

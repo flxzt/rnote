@@ -5,6 +5,7 @@ use super::StrokeBehaviour;
 use crate::render;
 use crate::DrawBehaviour;
 use piet::RenderContext;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
 use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
 use rnote_compose::shapes::Rectangle;
@@ -162,12 +163,12 @@ impl BitmapImage {
         let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
-        let images = page_range
+        let pngs = page_range
             .into_iter()
             .enumerate()
-            .filter_map(|(i, page)| {
-                let page = doc.page(page as i32)?;
-                let result = || -> anyhow::Result<BitmapImage> {
+            .filter_map(|(i, page_i)| {
+                let page = doc.page(page_i as i32)?;
+                let result = || -> anyhow::Result<(Vec<u8>, na::Vector2<f64>)> {
                     let intrinsic_size = page.size();
 
                     let (width, height, zoom) = if let Some(page_width) = page_width {
@@ -185,8 +186,7 @@ impl BitmapImage {
                     let x = pos[0];
                     let y = pos[1]
                         + f64::from(i as u32)
-                            * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1])
-                            * 0.5;
+                            * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5);
 
                     let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                         .map_err(|e| {
@@ -233,19 +233,33 @@ impl BitmapImage {
                     let mut png_data: Vec<u8> = Vec::new();
                     surface.write_to_png(&mut png_data)?;
 
-                    Self::import_from_image_bytes(&png_data, na::vector![x, y])
+                    Ok((png_data, na::vector![x, y]))
                 };
 
                 match result() {
-                    Ok(bitmapimage) => Some(bitmapimage),
+                    Ok(ret) => Some(ret),
                     Err(e) => {
-                        log::error!("{}", e);
+                        log::error!("bitmapimage import_from_pdf_bytes() failed with Err {}", e);
                         None
                     }
                 }
             })
-            .collect::<Vec<BitmapImage>>();
+            .collect::<Vec<(Vec<u8>, na::Vector2<f64>)>>();
 
-        Ok(images)
+        Ok(pngs
+            .into_par_iter()
+            .filter_map(|(png_data, pos)| {
+                match Self::import_from_image_bytes(
+                    &png_data,
+                    pos
+                ) {
+                    Ok(bitmapimage) => Some(bitmapimage),
+                    Err(e) => {
+                        log::error!("import_from_image_bytes() failed in bitmapimage import_from_pdf_bytes() with Err {}", e);
+                        None
+                    }
+                }
+            })
+            .collect())
     }
 }

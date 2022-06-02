@@ -1,9 +1,10 @@
 use gettextrs::gettext;
 use gtk4::{
     gio, AboutDialog, Dialog, FileChooserAction, FileChooserNative, FileFilter, Label,
-    MessageDialog, ResponseType, ShortcutsWindow, SpinButton,
+    MessageDialog, ResponseType, ShortcutsWindow, SpinButton, ToggleButton,
 };
 use gtk4::{glib, glib::clone, prelude::*, Builder};
+use rnote_engine::import::{PdfImportPagesType, PdfImportPrefs};
 
 use crate::appwindow::RnoteAppWindow;
 use crate::{app::RnoteApp, config};
@@ -181,7 +182,7 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
     dialog_open_input_file.show();
 }
 
-pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow) {
+pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<na::Vector2<f64>>) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
     let dialog_import_pdf: Dialog = builder.object("dialog_import_pdf_w_prefs").unwrap();
@@ -189,6 +190,21 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow) {
         builder.object("pdf_page_start_spinbutton").unwrap();
     let pdf_page_end_spinbutton: SpinButton = builder.object("pdf_page_end_spinbutton").unwrap();
     let pdf_info_label: Label = builder.object("pdf_info_label").unwrap();
+    let pdf_import_width_perc_spinbutton: SpinButton =
+        builder.object("pdf_import_width_perc_spinbutton").unwrap();
+    let pdf_import_as_bitmap_toggle: ToggleButton =
+        builder.object("pdf_import_as_bitmap_toggle").unwrap();
+    let pdf_import_as_vector_toggle: ToggleButton =
+        builder.object("pdf_import_as_vector_toggle").unwrap();
+
+    let pdf_import_prefs = appwindow.canvas().engine().borrow().pdf_import_prefs;
+
+    // Set the widget state from the pdf import prefs
+    pdf_import_width_perc_spinbutton.set_value(pdf_import_prefs.page_width_perc);
+    match pdf_import_prefs.pages_type {
+        PdfImportPagesType::Bitmap => pdf_import_as_bitmap_toggle.set_active(true),
+        PdfImportPagesType::Vector => pdf_import_as_vector_toggle.set_active(true),
+    }
 
     pdf_page_start_spinbutton.set_increments(1.0, 2.0);
     pdf_page_end_spinbutton.set_increments(1.0, 2.0);
@@ -210,9 +226,10 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow) {
         if let Ok(poppler_doc) =
             poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)
         {
-            let file_name = input_file
-                .basename()
-                .map_or_else(|| gettext("- no file name -"), |s| s.to_string_lossy().to_string());
+            let file_name = input_file.basename().map_or_else(
+                || gettext("- no file name -"),
+                |s| s.to_string_lossy().to_string(),
+            );
             let title = poppler_doc
                 .title()
                 .map_or_else(|| gettext("- no title -"), |s| s.to_string());
@@ -255,9 +272,7 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow) {
             pdf_page_start_spinbutton.set_range(1.into(), n_pages.into());
             pdf_page_start_spinbutton.set_value(1.into());
 
-            pdf_page_end_spinbutton
-                .adjustment()
-                .set_upper(n_pages.into());
+            pdf_page_end_spinbutton.set_range(1.into(), n_pages.into());
             pdf_page_end_spinbutton.set_value(n_pages.into());
         }
 
@@ -269,11 +284,22 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow) {
 
                     let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)..pdf_page_end_spinbutton.value() as u32;
 
+                    // Save the preferences into the engine before loading the file
+                    let pages_type = if pdf_import_as_bitmap_toggle.is_active() {
+                        PdfImportPagesType::Bitmap
+                    } else {
+                        PdfImportPagesType::Vector
+                    };
+                    appwindow.canvas().engine().borrow_mut().pdf_import_prefs = PdfImportPrefs {
+                        page_width_perc: pdf_import_width_perc_spinbutton.value(),
+                        pages_type
+                    };
+
                     glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
                         let result = input_file.load_bytes_future().await;
 
                         if let Ok((file_bytes, _)) = result {
-                            if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), None, Some(page_range)).await {
+                            if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
                                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
                                 log::error!(
                                     "load_in_rnote_bytes() failed in dialog import pdf with Err {}",

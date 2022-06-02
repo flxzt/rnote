@@ -8,14 +8,9 @@ use piet::RenderContext;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
-use rnote_engine::pens::brush::BrushStyle;
 use rnote_engine::pens::eraser::EraserStyle;
 use rnote_engine::pens::penholder::PenStyle;
-use rnote_engine::pens::selector::SelectorStyle;
-use rnote_engine::pens::shaper::ShaperStyle;
-use rnote_engine::pens::tools::ToolsStyle;
 use rnote_engine::pens::{brush, selector, shaper, tools};
-use rnote_engine::strokes::textstroke::TextAlignment;
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
@@ -316,7 +311,7 @@ impl RnoteAppWindow {
 
                 appwindow.canvas().engine().borrow_mut().pdf_import_width_perc = pdf_import_width_perc;
 
-                appwindow.settings_panel().refresh_for_engine(&appwindow);
+                appwindow.settings_panel().refresh_ui(&appwindow);
             }),
         );
 
@@ -327,7 +322,7 @@ impl RnoteAppWindow {
 
                 appwindow.canvas().engine().borrow_mut().pdf_import_as_vector = pdf_import_as_vector;
 
-                appwindow.settings_panel().refresh_for_engine(&appwindow);
+                appwindow.settings_panel().refresh_ui(&appwindow);
             }),
         );
 
@@ -467,7 +462,6 @@ impl RnoteAppWindow {
                 _ => { log::error!("set invalid state of action `brush-style`")}
             }
 
-
             adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
         }),
         );
@@ -595,210 +589,91 @@ impl RnoteAppWindow {
         );
 
         // Refresh UI state
-        action_refresh_ui_for_engine.connect_activate(
-            clone!(
-                @weak self as appwindow,
-                @strong action_pen_sounds,
-                @strong action_doc_layout,
-                @strong action_format_borders,
-                @strong action_pdf_import_width_perc,
-                @strong action_pdf_import_as_vector
-                => move |_action_refresh_ui_for_engine, _| {
-                // Avoids borrow errors
-                let format = appwindow.canvas().engine().borrow().document.format.clone();
-                let doc_layout = appwindow.canvas().engine().borrow().doc_layout();
-                let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
-                let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
-                let pen_sounds = appwindow.canvas().engine().borrow().pen_sounds();
-                let pen_style = appwindow.canvas().engine().borrow().penholder.current_style_w_override();
-                let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
-                let typewriter = appwindow.canvas().engine().borrow().penholder.typewriter.clone();
-                let eraser = appwindow.canvas().engine().borrow().penholder.eraser.clone();
-                let selector = appwindow.canvas().engine().borrow().penholder.selector.clone();
-                let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
+        action_refresh_ui_for_engine.connect_activate(clone!(
+            @weak self as appwindow,
+            @strong action_pen_sounds,
+            @strong action_doc_layout,
+            @strong action_format_borders,
+            @strong action_pdf_import_width_perc,
+            @strong action_pdf_import_as_vector
+            => move |_action_refresh_ui_for_engine, _| {
+            // Avoids borrow errors
+            let format = appwindow.canvas().engine().borrow().document.format.clone();
+            let doc_layout = appwindow.canvas().engine().borrow().doc_layout();
+            let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
+            let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
+            let pen_sounds = appwindow.canvas().engine().borrow().pen_sounds();
+            let pen_style = appwindow.canvas().engine().borrow().penholder.current_style_w_override();
 
-                {
-                    // Engine
-                    let doc_layout = match doc_layout {
-                        Layout::FixedSize => "fixed-size",
-                        Layout::ContinuousVertical => "continuous-vertical",
-                        Layout::Infinite => "infinite",
-                    };
-                    // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
-                    action_doc_layout.activate(Some(&doc_layout.to_variant()));
-                    action_pdf_import_as_vector.activate(Some(&pdf_import_as_vector.to_variant()));
-                    action_pdf_import_width_perc.activate(Some(&pdf_import_width_perc.to_variant()));
-                    action_pen_sounds.change_state(&pen_sounds.to_variant());
-                    action_format_borders.change_state(&format.show_borders.to_variant());
+            {
+                // actions state
+                let doc_layout = match doc_layout {
+                    Layout::FixedSize => "fixed-size",
+                    Layout::ContinuousVertical => "continuous-vertical",
+                    Layout::Infinite => "infinite",
+                };
+                action_doc_layout.activate(Some(&doc_layout.to_variant()));
+                action_pdf_import_as_vector.activate(Some(&pdf_import_as_vector.to_variant()));
+                action_pdf_import_width_perc.activate(Some(&pdf_import_width_perc.to_variant()));
+                action_pen_sounds.change_state(&pen_sounds.to_variant());
+                action_format_borders.change_state(&format.show_borders.to_variant());
+            }
+
+            // Current pen
+            match pen_style {
+                PenStyle::Brush => {
+                    appwindow.mainheader().brush_toggle().set_active(true);
+                    appwindow.narrow_brush_toggle().set_active(true);
+                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
                 }
-
-                // Current pen
-                match pen_style {
-                    PenStyle::Brush => {
-                        appwindow.mainheader().brush_toggle().set_active(true);
-                        appwindow.narrow_brush_toggle().set_active(true);
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("brush_page");
-                    }
-                    PenStyle::Shaper => {
-                        appwindow.mainheader().shaper_toggle().set_active(true);
-                        appwindow.narrow_shaper_toggle().set_active(true);
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
-                    }
-                    PenStyle::Typewriter => {
-                        appwindow.mainheader().typewriter_toggle().set_active(true);
-                        appwindow.narrow_typewriter_toggle().set_active(true);
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
-                    }
-                    PenStyle::Eraser => {
-                        appwindow.mainheader().eraser_toggle().set_active(true);
-                        appwindow.narrow_eraser_toggle().set_active(true);
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
-                    }
-                    PenStyle::Selector => {
-                        appwindow.mainheader().selector_toggle().set_active(true);
-                        appwindow.narrow_selector_toggle().set_active(true);
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
-                    }
-                    PenStyle::Tools => {
-                        appwindow.mainheader().tools_toggle().set_active(true);
-                        appwindow.narrow_tools_toggle().set_active(true);
-                        appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
-                    }
+                PenStyle::Shaper => {
+                    appwindow.mainheader().shaper_toggle().set_active(true);
+                    appwindow.narrow_shaper_toggle().set_active(true);
+                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("shaper_page");
                 }
-
-                // Brush
-                appwindow.penssidebar().brush_page().set_solidstyle_pressure_curve(brush.smooth_options.pressure_curve);
-                appwindow.penssidebar().brush_page().texturedstyle_density_spinbutton()
-                    .set_value(brush.textured_options.density);
-                appwindow.penssidebar().brush_page().texturedstyle_radius_x_spinbutton()
-                    .set_value(brush.textured_options.radii[0]);
-                appwindow.penssidebar().brush_page().texturedstyle_radius_y_spinbutton()
-                    .set_value(brush.textured_options.radii[1]);
-                appwindow.penssidebar().brush_page().set_texturedstyle_distribution_variant(brush.textured_options.distribution);
-                match brush.style {
-                    BrushStyle::Marker => {
-                        appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_marker_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.stroke_width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
-                        appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-marker-symbolic"));
-                    },
-                    BrushStyle::Solid => {
-                        appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_solid_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.smooth_options.stroke_width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.smooth_options.stroke_color);
-                        appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-solid-symbolic"));
-                    },
-                    BrushStyle::Textured => {
-                        appwindow.penssidebar().brush_page().brushstyle_listbox().select_row(Some(&appwindow.penssidebar().brush_page().brushstyle_textured_row()));
-                        appwindow.penssidebar().brush_page().width_spinbutton().set_value(brush.textured_options.stroke_width);
-                        appwindow.penssidebar().brush_page().colorpicker().set_current_color(brush.textured_options.stroke_color);
-                        appwindow.penssidebar().brush_page().brushstyle_image().set_icon_name(Some("pen-brush-style-textured-symbolic"));
-                    },
+                PenStyle::Typewriter => {
+                    appwindow.mainheader().typewriter_toggle().set_active(true);
+                    appwindow.narrow_typewriter_toggle().set_active(true);
+                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("typewriter_page");
                 }
-
-                // Shaper
-                {
-                    let builder_type = appwindow.canvas().engine().borrow().penholder.shaper.builder_type;
-                    let style = appwindow.canvas().engine().borrow().penholder.shaper.style;
-                    let rough_options = appwindow.canvas().engine().borrow().penholder.shaper.rough_options.clone();
-                    let smooth_options = appwindow.canvas().engine().borrow().penholder.shaper.smooth_options.clone();
-
-                    appwindow.penssidebar().shaper_page()
-                        .roughconfig_roughness_spinbutton()
-                        .set_value(rough_options.roughness);
-                    appwindow.penssidebar().shaper_page()
-                        .roughconfig_bowing_spinbutton()
-                        .set_value(rough_options.bowing);
-                    appwindow.penssidebar().shaper_page()
-                        .roughconfig_curvestepcount_spinbutton()
-                        .set_value(rough_options.curve_stepcount);
-                    appwindow.penssidebar().shaper_page()
-                        .roughconfig_multistroke_switch()
-                        .set_active(!rough_options.disable_multistroke);
-
-                    match builder_type {
-                        ShapeBuilderType::Line => {
-                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_line_row()));
-                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-line-symbolic"));
-                        }
-                        ShapeBuilderType::Rectangle => {
-                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_rectangle_row()));
-                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-rectangle-symbolic"));
-                        }
-                        ShapeBuilderType::Ellipse => {
-                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_ellipse_row()));
-                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-ellipse-symbolic"));
-                        }
-                        ShapeBuilderType::FociEllipse => {
-                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_fociellipse_row()));
-                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-fociellipse-symbolic"));
-                        }
-                        ShapeBuilderType::QuadBez => {
-                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_quadbez_row()));
-                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-quadbez-symbolic"));
-                        }
-                        ShapeBuilderType::CubBez => {
-                            appwindow.penssidebar().shaper_page().shapebuildertype_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shapebuildertype_cubbez_row()));
-                            appwindow.penssidebar().shaper_page().shapebuildertype_image().set_icon_name(Some("shape-cubbez-symbolic"));
-                        }
-                    }
-
-                    match style {
-                        ShaperStyle::Smooth => {
-                            appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_smooth_row()));
-                            appwindow.penssidebar().shaper_page().width_spinbutton().set_value(smooth_options.stroke_width);
-                            appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(smooth_options.stroke_color);
-                            appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(smooth_options.fill_color);
-                            appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-smooth-symbolic"));
-                        },
-                        ShaperStyle::Rough => {
-                            appwindow.penssidebar().shaper_page().shaperstyle_listbox().select_row(Some(&appwindow.penssidebar().shaper_page().shaperstyle_rough_row()));
-                            appwindow.penssidebar().shaper_page().width_spinbutton().set_value(rough_options.stroke_width);
-                            appwindow.penssidebar().shaper_page().stroke_colorpicker().set_current_color(rough_options.stroke_color);
-                            appwindow.penssidebar().shaper_page().fill_colorpicker().set_current_color(rough_options.fill_color);
-                            appwindow.penssidebar().shaper_page().shaperstyle_image().set_icon_name(Some("pen-shaper-style-rough-symbolic"));
-                        },
-                    }
+                PenStyle::Eraser => {
+                    appwindow.mainheader().eraser_toggle().set_active(true);
+                    appwindow.narrow_eraser_toggle().set_active(true);
+                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("eraser_page");
                 }
-
-                // Typewriter
-                appwindow.penssidebar().typewriter_page().fontchooser().set_font_desc(&typewriter.text_style.extract_pango_font_desc());
-                appwindow.penssidebar().typewriter_page().font_size_spinbutton().set_value(typewriter.text_style.font_size);
-                appwindow.penssidebar().typewriter_page().colorpicker().set_current_color(Some(typewriter.text_style.color));
-                match typewriter.text_style.alignment {
-                    TextAlignment::Start => appwindow.penssidebar().typewriter_page().text_align_start_togglebutton().set_active(true),
-                    TextAlignment::Center => appwindow.penssidebar().typewriter_page().text_align_center_togglebutton().set_active(true),
-                    TextAlignment::End => appwindow.penssidebar().typewriter_page().text_align_end_togglebutton().set_active(true),
-                    TextAlignment::Fill => appwindow.penssidebar().typewriter_page().text_align_fill_togglebutton().set_active(true),
+                PenStyle::Selector => {
+                    appwindow.mainheader().selector_toggle().set_active(true);
+                    appwindow.narrow_selector_toggle().set_active(true);
+                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("selector_page");
                 }
-
-                // Eraser
-                appwindow.penssidebar().eraser_page().width_spinbutton().set_value(eraser.width);
-                match eraser.style {
-                    EraserStyle::TrashCollidingStrokes => appwindow.penssidebar().eraser_page().eraserstyle_trash_colliding_strokes_toggle().set_active(true),
-                    EraserStyle::SplitCollidingStrokes => appwindow.penssidebar().eraser_page().eraserstyle_split_colliding_strokes_toggle().set_active(true),
+                PenStyle::Tools => {
+                    appwindow.mainheader().tools_toggle().set_active(true);
+                    appwindow.narrow_tools_toggle().set_active(true);
+                    appwindow.penssidebar().sidebar_stack().set_visible_child_name("tools_page");
                 }
+            }
 
-                // Selector
-                match selector.style {
-                    SelectorStyle::Polygon => appwindow.penssidebar().selector_page().selectorstyle_polygon_toggle().set_active(true),
-                    SelectorStyle::Rectangle => appwindow.penssidebar().selector_page().selectorstyle_rect_toggle().set_active(true),
-                    SelectorStyle::Apiece => appwindow.penssidebar().selector_page().selectorstyle_apiece_toggle().set_active(true),
-                    SelectorStyle::IntersectingPath => appwindow.penssidebar().selector_page().selectorstyle_intersectingpath_toggle().set_active(true),
-                }
-                appwindow.penssidebar().selector_page().resize_lock_aspectratio_togglebutton().set_active(selector.resize_lock_aspectratio);
+            // Brush page
+            appwindow.penssidebar().brush_page().refresh_ui(&appwindow);
 
-                // Tools
-                match tools.style {
-                    ToolsStyle::VerticalSpace => appwindow.penssidebar().tools_page().toolstyle_verticalspace_toggle().set_active(true),
-                    ToolsStyle::DragProximity => appwindow.penssidebar().tools_page().toolstyle_dragproximity_toggle().set_active(true),
-                    ToolsStyle::OffsetCamera => appwindow.penssidebar().tools_page().toolstyle_offsetcamera_toggle().set_active(true),
-                }
+            // Shaper page
+            appwindow.penssidebar().shaper_page().refresh_ui(&appwindow);
 
-                // Settings panel
-                appwindow.settings_panel().refresh_for_engine(&appwindow);
-            }),
-        );
+            // Typewriter page
+            appwindow.penssidebar().typewriter_page().refresh_ui(&appwindow);
+
+            // Eraser page
+            appwindow.penssidebar().eraser_page().refresh_ui(&appwindow);
+
+            // Selector
+            appwindow.penssidebar().selector_page().refresh_ui(&appwindow);
+
+            // Tools page
+            appwindow.penssidebar().tools_page().refresh_ui(&appwindow);
+
+            // Settings panel
+            appwindow.settings_panel().refresh_ui(&appwindow);
+        }));
 
         // Trash Selection
         action_selection_trash.connect_activate(

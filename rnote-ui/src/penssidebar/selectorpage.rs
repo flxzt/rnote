@@ -1,4 +1,5 @@
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+use rnote_engine::pens::selector::SelectorStyle;
 
 use crate::appwindow::RnoteAppWindow;
 
@@ -115,5 +116,26 @@ impl SelectorPage {
         self.resize_lock_aspectratio_togglebutton().connect_toggled(clone!(@weak appwindow = > move |resize_lock_aspectratio_togglebutton| {
             appwindow.canvas().engine().borrow_mut().penholder.selector.resize_lock_aspectratio = resize_lock_aspectratio_togglebutton.is_active();
         }));
+    }
+
+    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let selector = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .selector
+            .clone();
+
+        match selector.style {
+            SelectorStyle::Polygon => self.selectorstyle_polygon_toggle().set_active(true),
+            SelectorStyle::Rectangle => self.selectorstyle_rect_toggle().set_active(true),
+            SelectorStyle::Apiece => self.selectorstyle_apiece_toggle().set_active(true),
+            SelectorStyle::IntersectingPath => self
+                .selectorstyle_intersectingpath_toggle()
+                .set_active(true),
+        }
+        self.resize_lock_aspectratio_togglebutton()
+            .set_active(selector.resize_lock_aspectratio);
     }
 }

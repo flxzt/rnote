@@ -9,7 +9,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::ShapeBuilderBehaviour;
+use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
 /// The foci ellipse builder state
@@ -43,7 +43,7 @@ impl ShapeBuilderCreator for FociEllipseBuilder {
 }
 
 impl ShapeBuilderBehaviour for FociEllipseBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, mut constraints: Constraints) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
@@ -55,7 +55,11 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             }
             (FociEllipseBuilderState::First(_), _) => {}
             (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
-                foci[1] = element.pos;
+                // we want to allow horizontal and vertical constraints while setting the second foci
+                constraints.ratios.insert(ConstraintRatio::Horizontal);
+                constraints.ratios.insert(ConstraintRatio::Vertical);
+
+                foci[1] = constraints.constrain(element.pos - foci[0]) + foci[0];
             }
             (FociEllipseBuilderState::Foci(foci), PenEvent::Up { element, .. }) => {
                 self.state = FociEllipseBuilderState::FociAndPoint {

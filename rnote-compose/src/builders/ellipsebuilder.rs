@@ -8,7 +8,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style, Transform};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::ShapeBuilderBehaviour;
+use super::{Constraints, ShapeBuilderBehaviour};
 
 /// ellipse builder
 #[derive(Debug, Clone)]
@@ -29,10 +29,10 @@ impl ShapeBuilderCreator for EllipseBuilder {
 }
 
 impl ShapeBuilderBehaviour for EllipseBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
-                self.current = element.pos;
+                self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
                 return BuilderProgress::Finished(vec![Shape::Ellipse(self.state_as_ellipse())]);

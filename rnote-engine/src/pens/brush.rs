@@ -6,6 +6,7 @@ use crate::strokes::Stroke;
 use crate::AudioPlayer;
 use crate::{DrawOnDocBehaviour, WidgetFlags};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
+use rnote_compose::builders::Constraints;
 use rnote_compose::builders::{PenPathBuilder, ShapeBuilderBehaviour};
 use rnote_compose::penhelpers::PenEvent;
 use rnote_compose::penpath::Segment;
@@ -172,7 +173,7 @@ impl PenBehaviour for Brush {
                 },
                 pen_event,
             ) => {
-                match path_builder.handle_event(pen_event) {
+                match path_builder.handle_event(pen_event, Constraints::default()) {
                     BuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 

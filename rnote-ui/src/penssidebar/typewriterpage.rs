@@ -444,4 +444,28 @@ impl TypewriterPage {
             }),
         );
     }
+
+    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let typewriter = appwindow
+            .canvas()
+            .engine()
+            .borrow()
+            .penholder
+            .typewriter
+            .clone();
+
+        self.fontchooser()
+            .set_font_desc(&typewriter.text_style.extract_pango_font_desc());
+        self.font_size_spinbutton()
+            .set_value(typewriter.text_style.font_size);
+        self.colorpicker()
+            .set_current_color(Some(typewriter.text_style.color));
+
+        match typewriter.text_style.alignment {
+            TextAlignment::Start => self.text_align_start_togglebutton().set_active(true),
+            TextAlignment::Center => self.text_align_center_togglebutton().set_active(true),
+            TextAlignment::End => self.text_align_end_togglebutton().set_active(true),
+            TextAlignment::Fill => self.text_align_fill_togglebutton().set_active(true),
+        }
+    }
 }

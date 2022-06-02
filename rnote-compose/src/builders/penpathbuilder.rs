@@ -10,7 +10,7 @@ use crate::style::Composer;
 use crate::{PenPath, Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::ShapeBuilderBehaviour;
+use super::{Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) enum PenPathBuilderState {
@@ -39,7 +39,7 @@ impl ShapeBuilderCreator for PenPathBuilder {
 }
 
 impl ShapeBuilderBehaviour for PenPathBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, _constraint: Constraints) -> BuilderProgress {
         /*         log::debug!(
             "event: {:?}; buffer.len(): {}, state: {:?}",
             event,

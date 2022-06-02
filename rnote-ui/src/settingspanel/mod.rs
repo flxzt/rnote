@@ -479,7 +479,7 @@ impl SettingsPanel {
         self.imp().background_pattern_height_unitentry.clone()
     }
 
-    pub fn refresh_for_engine(&self, appwindow: &RnoteAppWindow) {
+    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         self.load_general(appwindow);
         self.load_format(appwindow);
         self.load_background(appwindow);

@@ -4,6 +4,8 @@ use crate::penhelpers::PenEvent;
 use crate::penpath::Element;
 use crate::{Shape, Style};
 
+use super::Constraints;
+
 #[derive(Debug, Clone)]
 /// the builder progress
 pub enum BuilderProgress {
@@ -24,9 +26,9 @@ pub trait ShapeBuilderCreator {
 /// Types that are shape builders.
 /// They receive pen events, and return builded shapes. They usually are drawn while building the shape, and are state machines.
 pub trait ShapeBuilderBehaviour: std::fmt::Debug {
-    /// handles a pen event. Returns None if no shapes can be built in the current state.
-    /// Returns the builder progress which can contain the builded shapes.
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress;
+    /// handles a pen event.
+    /// Returns the builder progress.
+    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress;
 
     /// the bounds
     fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB>;

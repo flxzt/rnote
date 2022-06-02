@@ -320,4 +320,49 @@ impl BrushPage {
             appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.distribution = brushpage.texturedstyle_dots_distribution();
         }));
     }
+
+    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let brush = appwindow.canvas().engine().borrow().penholder.brush.clone();
+
+        self.set_solidstyle_pressure_curve(brush.smooth_options.pressure_curve);
+        self.texturedstyle_density_spinbutton()
+            .set_value(brush.textured_options.density);
+        self.texturedstyle_radius_x_spinbutton()
+            .set_value(brush.textured_options.radii[0]);
+        self.texturedstyle_radius_y_spinbutton()
+            .set_value(brush.textured_options.radii[1]);
+        self.set_texturedstyle_distribution_variant(brush.textured_options.distribution);
+        match brush.style {
+            BrushStyle::Marker => {
+                self.brushstyle_listbox()
+                    .select_row(Some(&self.brushstyle_marker_row()));
+                self.width_spinbutton()
+                    .set_value(brush.smooth_options.stroke_width);
+                self.colorpicker()
+                    .set_current_color(brush.smooth_options.stroke_color);
+                self.brushstyle_image()
+                    .set_icon_name(Some("pen-brush-style-marker-symbolic"));
+            }
+            BrushStyle::Solid => {
+                self.brushstyle_listbox()
+                    .select_row(Some(&self.brushstyle_solid_row()));
+                self.width_spinbutton()
+                    .set_value(brush.smooth_options.stroke_width);
+                self.colorpicker()
+                    .set_current_color(brush.smooth_options.stroke_color);
+                self.brushstyle_image()
+                    .set_icon_name(Some("pen-brush-style-solid-symbolic"));
+            }
+            BrushStyle::Textured => {
+                self.brushstyle_listbox()
+                    .select_row(Some(&self.brushstyle_textured_row()));
+                self.width_spinbutton()
+                    .set_value(brush.textured_options.stroke_width);
+                self.colorpicker()
+                    .set_current_color(brush.textured_options.stroke_color);
+                self.brushstyle_image()
+                    .set_icon_name(Some("pen-brush-style-textured-symbolic"));
+            }
+        }
+    }
 }

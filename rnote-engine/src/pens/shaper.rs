@@ -8,11 +8,11 @@ use p2d::bounding_volume::AABB;
 use piet::RenderContext;
 use rand::{Rng, SeedableRng};
 use rnote_compose::builders::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use rnote_compose::builders::{CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
+use rnote_compose::builders::{Constraints, CubBezBuilder, QuadBezBuilder, ShapeBuilderType};
 use rnote_compose::builders::{
     EllipseBuilder, FociEllipseBuilder, LineBuilder, RectangleBuilder, ShapeBuilderBehaviour,
 };
-use rnote_compose::penhelpers::PenEvent;
+use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 use rnote_compose::style::rough::RoughOptions;
 use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::Style;
@@ -52,7 +52,8 @@ pub struct Shaper {
     pub smooth_options: SmoothOptions,
     #[serde(rename = "rough_options")]
     pub rough_options: RoughOptions,
-
+    #[serde(rename = "constraints")]
+    pub constraints: Constraints,
     #[serde(skip)]
     state: ShaperState,
 }
@@ -69,6 +70,7 @@ impl Default for Shaper {
             style: ShaperStyle::default(),
             smooth_options,
             rough_options,
+            constraints: Constraints::default(),
             state: ShaperState::Idle,
         }
     }
@@ -133,7 +135,25 @@ impl PenBehaviour for Shaper {
                 PenProgress::Finished
             }
             (ShaperState::BuildShape { builder }, event) => {
-                match builder.handle_event(event) {
+                // Use Ctrl to temporarily enable/disable constraints when the switch is off/on
+                let mut constraints = self.constraints.clone();
+                constraints.enabled = match event {
+                    PenEvent::Down {
+                        ref shortcut_keys, ..
+                    }
+                    | PenEvent::Up {
+                        ref shortcut_keys, ..
+                    }
+                    | PenEvent::Proximity {
+                        ref shortcut_keys, ..
+                    }
+                    | PenEvent::KeyPressed {
+                        ref shortcut_keys, ..
+                    } => constraints.enabled ^ shortcut_keys.contains(&ShortcutKey::KeyboardCtrl),
+                    PenEvent::Cancel => false,
+                };
+
+                match builder.handle_event(event, constraints) {
                     BuilderProgress::InProgress => {
                         widget_flags.redraw = true;
 
@@ -174,18 +194,17 @@ impl PenBehaviour for Shaper {
                         }
 
                         if !shapes.is_empty() {
-                            engine_view
-                                .doc
-                                .resize_autoexpand(engine_view.store, engine_view.camera);
+                            engine_view.doc.resize_autoexpand(engine_view.store, engine_view.camera);
 
                             widget_flags.resize = true;
                             widget_flags.indicate_changed_store = true;
                         }
 
                         for shape in shapes {
-                            let key = engine_view.store.insert_stroke(Stroke::ShapeStroke(
-                                ShapeStroke::new(shape, drawstyle.clone()),
-                            ));
+                            let key = engine_view.store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
+                                shape,
+                                drawstyle.clone(),
+                            )));
                             if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),

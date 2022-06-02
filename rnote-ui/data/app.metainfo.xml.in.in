@@ -69,7 +69,9 @@
         <p>this release changes: (DRAFT)</p>
         <ul>
           <li>A new app icon and symbolic! (based on @bertob's design and with his help. Thanks a ton!)</li>
-          <li>import bitmap images (e.g. screenshots) from the clipboard (thanks @ RickStanley!)</li>
+          <li>long awaited: write and edit text with the typewriter</li>
+          <li>import bitmap images (e.g. screenshots) from the clipboard (thanks @RickStanley!)</li>
+          <li>proportial shapes / input constraints (thanks @sei0o!)</li>
         </ul>
       </description>
     </release>

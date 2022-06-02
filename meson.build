@@ -12,7 +12,10 @@ app_name = 'rnote'
 app_name_capitalized = 'Rnote'
 base_id = 'com.github.flxzt.' + app_name
 app_website = 'https://github.com/flxzt/rnote'
-app_authors = 'Felix Zwettler'
+
+app_authors = run_command(
+  'cat', meson.project_source_root() / 'AUTHORS',
+).stdout().strip()
 
 if get_option('profile') == 'devel'
   profile = 'devel'

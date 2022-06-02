@@ -214,6 +214,10 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
     pdf_page_start_spinbutton.set_increments(1.0, 2.0);
     pdf_page_end_spinbutton.set_increments(1.0, 2.0);
 
+    pdf_page_start_spinbutton
+        .bind_property("value", &pdf_page_end_spinbutton.adjustment(), "lower")
+        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .build();
     pdf_page_end_spinbutton
         .bind_property("value", &pdf_page_start_spinbutton.adjustment(), "upper")
         .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)

@@ -255,6 +255,20 @@
                     </child>
                   </object>
                 </child>
+                <child>
+                  <object class="AdwComboRow" id="pdf_import_page_spacing_row">
+                    <property name="title" translatable="yes">PDF page spacing</property>
+                    <property name="subtitle" translatable="yes">Set how PDF pages are spaced</property>
+                    <property name="model">
+                      <object class="GtkStringList">
+                        <items>
+                          <item translatable="yes">Continuous</item>
+                          <item translatable="yes">One PDF page per document page</item>
+                        </items>
+                      </object>
+                    </property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>

@@ -2,6 +2,8 @@ use std::ops::Range;
 
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
+use crate::document::Format;
+use crate::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
 use crate::DrawBehaviour;
 use piet::RenderContext;
@@ -156,37 +158,44 @@ impl BitmapImage {
 
     pub fn import_from_pdf_bytes(
         to_be_read: &[u8],
-        pos: na::Vector2<f64>,
-        page_width: Option<i32>,
+        pdf_import_prefs: PdfImportPrefs,
+        insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
+        format: &Format,
     ) -> Result<Vec<Self>, anyhow::Error> {
         let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
         let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
+        let page_width = format.width * (pdf_import_prefs.page_width_perc / 100.0);
+
         let pngs = page_range
-            .into_iter()
             .enumerate()
             .filter_map(|(i, page_i)| {
                 let page = doc.page(page_i as i32)?;
                 let result = || -> anyhow::Result<(Vec<u8>, na::Vector2<f64>)> {
                     let intrinsic_size = page.size();
 
-                    let (width, height, zoom) = if let Some(page_width) = page_width {
-                        let zoom = f64::from(page_width) / intrinsic_size.0;
+                    let (width, height, zoom) = {
+                        let zoom = page_width / intrinsic_size.0;
 
-                        (page_width, (intrinsic_size.1 * zoom).round() as i32, zoom)
-                    } else {
                         (
-                            intrinsic_size.0.round() as i32,
-                            intrinsic_size.1.round() as i32,
-                            1.0,
+                            page_width.round() as i32,
+                            (intrinsic_size.1 * zoom).round() as i32,
+                            zoom,
                         )
                     };
 
-                    let x = pos[0];
-                    let y = pos[1]
-                        + f64::from(i as u32)
-                            * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5);
+                    let x = insert_pos[0];
+                    let y = match pdf_import_prefs.page_spacing {
+                        PdfImportPageSpacing::Continuous => {
+                            insert_pos[1]
+                                + f64::from(i as u32)
+                                    * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5)
+                        }
+                        PdfImportPageSpacing::OnePdfPagePerPage => {
+                            insert_pos[1] + f64::from(i as u32) * format.height
+                        }
+                    };
 
                     let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
                         .map_err(|e| {

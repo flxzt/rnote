@@ -1,10 +1,12 @@
+use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
     gio, AboutDialog, Dialog, FileChooserAction, FileChooserNative, FileFilter, Label,
     MessageDialog, ResponseType, ShortcutsWindow, SpinButton, ToggleButton,
 };
-use gtk4::{glib, glib::clone, prelude::*, Builder};
-use rnote_engine::import::{PdfImportPagesType, PdfImportPrefs};
+use gtk4::{glib, glib::clone, Builder};
+use num_traits::ToPrimitive;
+use rnote_engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
 
 use crate::appwindow::RnoteAppWindow;
 use crate::{app::RnoteApp, config};
@@ -196,6 +198,8 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
         builder.object("pdf_import_as_bitmap_toggle").unwrap();
     let pdf_import_as_vector_toggle: ToggleButton =
         builder.object("pdf_import_as_vector_toggle").unwrap();
+    let pdf_import_page_spacing_row: adw::ComboRow =
+        builder.object("pdf_import_page_spacing_row").unwrap();
 
     let pdf_import_prefs = appwindow.canvas().engine().borrow().pdf_import_prefs;
 
@@ -205,6 +209,7 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
         PdfImportPagesType::Bitmap => pdf_import_as_bitmap_toggle.set_active(true),
         PdfImportPagesType::Vector => pdf_import_as_vector_toggle.set_active(true),
     }
+    pdf_import_page_spacing_row.set_selected(pdf_import_prefs.page_spacing.to_u32().unwrap());
 
     pdf_page_start_spinbutton.set_increments(1.0, 2.0);
     pdf_page_end_spinbutton.set_increments(1.0, 2.0);
@@ -290,12 +295,17 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
                     } else {
                         PdfImportPagesType::Vector
                     };
+                    let page_spacing = PdfImportPageSpacing::try_from(pdf_import_page_spacing_row.selected()).unwrap();
+
                     appwindow.canvas().engine().borrow_mut().pdf_import_prefs = PdfImportPrefs {
                         page_width_perc: pdf_import_width_perc_spinbutton.value(),
-                        pages_type
+                        pages_type,
+                        page_spacing,
                     };
 
                     glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
+                        appwindow.start_pulsing_canvas_progressbar();
+
                         let result = input_file.load_bytes_future().await;
 
                         if let Ok((file_bytes, _)) = result {
@@ -307,6 +317,8 @@ pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<
                                 );
                             }
                         }
+
+                        appwindow.finish_canvas_progressbar();
                     }));
                 }
                 ResponseType::Cancel => {

@@ -10,11 +10,13 @@ use crate::store::{StoreSnapshot, StrokeKey};
 use crate::strokes::{BitmapImage, Stroke, VectorImage};
 use crate::{Document, RnoteEngine, StrokeStore, WidgetFlags};
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
 #[serde(rename = "pdf_import_pages_type")]
 pub enum PdfImportPagesType {
     #[serde(rename = "bitmap")]
-    Bitmap,
+    Bitmap = 0,
     #[serde(rename = "vector")]
     Vector,
 }
@@ -22,6 +24,49 @@ pub enum PdfImportPagesType {
 impl Default for PdfImportPagesType {
     fn default() -> Self {
         Self::Vector
+    }
+}
+
+impl TryFrom<u32> for PdfImportPagesType {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "PdfImportPagesType try_from::<u32>() for value {} failed",
+                value
+            )
+        })
+    }
+}
+
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
+#[serde(rename = "pdf_import_page_spacing")]
+pub enum PdfImportPageSpacing {
+    #[serde(rename = "continuous")]
+    Continuous = 0,
+    #[serde(rename = "one_pdf_page_per_page")]
+    OnePdfPagePerPage,
+}
+
+impl Default for PdfImportPageSpacing {
+    fn default() -> Self {
+        Self::Continuous
+    }
+}
+
+impl TryFrom<u32> for PdfImportPageSpacing {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "PdfImportPageSpacing try_from::<u32>() for value {} failed",
+                value
+            )
+        })
     }
 }
 
@@ -34,6 +79,9 @@ pub struct PdfImportPrefs {
     /// The pdf page width in percentage to the format width
     #[serde(rename = "page_width_perc")]
     pub page_width_perc: f64,
+    /// The pdf page spacing
+    #[serde(rename = "page_spacing")]
+    pub page_spacing: PdfImportPageSpacing,
 }
 
 impl Default for PdfImportPrefs {
@@ -41,6 +89,7 @@ impl Default for PdfImportPrefs {
         Self {
             pages_type: PdfImportPagesType::default(),
             page_width_perc: 50.0,
+            page_spacing: PdfImportPageSpacing::default(),
         }
     }
 }
@@ -226,14 +275,13 @@ impl RnoteEngine {
     pub fn generate_strokes_from_pdf_bytes(
         &self,
         bytes: Vec<u8>,
-        pos: na::Vector2<f64>,
+        insert_pos: na::Vector2<f64>,
         page_range: Option<Range<u32>>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<Stroke>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Stroke>>>();
         let pdf_import_prefs = self.pdf_import_prefs;
 
-        let page_width = (self.document.format.width * (pdf_import_prefs.page_width_perc / 100.0))
-            .round() as i32;
+        let format = self.document.format.clone();
 
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<Stroke>> {
@@ -241,9 +289,10 @@ impl RnoteEngine {
                     PdfImportPagesType::Bitmap => {
                         let bitmapimages = BitmapImage::import_from_pdf_bytes(
                             &bytes,
-                            pos,
-                            Some(page_width),
+                            pdf_import_prefs,
+                            insert_pos,
                             page_range,
+                            &format,
                         )?
                         .into_iter()
                         .map(Stroke::BitmapImage)
@@ -253,9 +302,10 @@ impl RnoteEngine {
                     PdfImportPagesType::Vector => {
                         let vectorimages = VectorImage::import_from_pdf_bytes(
                             &bytes,
-                            pos,
-                            Some(page_width),
+                            pdf_import_prefs,
+                            insert_pos,
                             page_range,
+                            &format,
                         )?
                         .into_iter()
                         .map(Stroke::VectorImage)

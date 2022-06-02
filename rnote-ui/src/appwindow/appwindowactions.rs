@@ -62,16 +62,6 @@ impl RnoteAppWindow {
         self.add_action(&action_touch_drawing);
 
         // Engine actions
-        let action_pdf_import_width_perc = gio::SimpleAction::new(
-            "pdf-import-width-perc",
-            Some(&glib::VariantType::new("d").unwrap()),
-        );
-        self.add_action(&action_pdf_import_width_perc);
-        let action_pdf_import_as_vector = gio::SimpleAction::new(
-            "pdf-import-as-vector",
-            Some(&glib::VariantType::new("b").unwrap()),
-        );
-        self.add_action(&action_pdf_import_as_vector);
         let action_pen_sounds =
             gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
@@ -303,28 +293,6 @@ impl RnoteAppWindow {
 
                 action_doc_layout.set_state(&doc_layout.to_variant());
             }));
-
-        // Pdf import width perc
-        action_pdf_import_width_perc.connect_activate(
-            clone!(@weak self as appwindow => move |_action_pdf_import_width_perc, target| {
-                let pdf_import_width_perc = target.unwrap().get::<f64>().unwrap();
-
-                appwindow.canvas().engine().borrow_mut().pdf_import_width_perc = pdf_import_width_perc;
-
-                appwindow.settings_panel().refresh_ui(&appwindow);
-            }),
-        );
-
-        // Pdf import as vector
-        action_pdf_import_as_vector.connect_activate(
-            clone!(@weak self as appwindow => move |_action_pdf_import_as_vector, target| {
-                let pdf_import_as_vector = target.unwrap().get::<bool>().unwrap();
-
-                appwindow.canvas().engine().borrow_mut().pdf_import_as_vector = pdf_import_as_vector;
-
-                appwindow.settings_panel().refresh_ui(&appwindow);
-            }),
-        );
 
         // Pen sounds
         action_pen_sounds.connect_change_state(
@@ -594,30 +562,26 @@ impl RnoteAppWindow {
             @strong action_pen_sounds,
             @strong action_doc_layout,
             @strong action_format_borders,
-            @strong action_pdf_import_width_perc,
-            @strong action_pdf_import_as_vector
             => move |_action_refresh_ui_for_engine, _| {
             // Avoids borrow errors
             let format = appwindow.canvas().engine().borrow().document.format.clone();
             let doc_layout = appwindow.canvas().engine().borrow().doc_layout();
-            let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
-            let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
             let pen_sounds = appwindow.canvas().engine().borrow().pen_sounds();
             let pen_style = appwindow.canvas().engine().borrow().penholder.current_style_w_override();
 
             {
-                // actions state
+                // Engine
                 let doc_layout = match doc_layout {
                     Layout::FixedSize => "fixed-size",
                     Layout::ContinuousVertical => "continuous-vertical",
                     Layout::Infinite => "infinite",
                 };
+                // we change the state through the actions, because they themselves hold state. ( e.g. used to display tickboxes for boolean actions )
                 action_doc_layout.activate(Some(&doc_layout.to_variant()));
-                action_pdf_import_as_vector.activate(Some(&pdf_import_as_vector.to_variant()));
-                action_pdf_import_width_perc.activate(Some(&pdf_import_width_perc.to_variant()));
                 action_pen_sounds.change_state(&pen_sounds.to_variant());
                 action_format_borders.change_state(&format.show_borders.to_variant());
             }
+
 
             // Current pen
             match pen_style {

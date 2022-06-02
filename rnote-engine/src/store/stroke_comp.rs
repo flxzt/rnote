@@ -124,43 +124,27 @@ impl StrokeStore {
         });
     }
 
-    /// Calculates the width needed to fit all strokes
-    pub fn calc_width(&self) -> f64 {
-        let new_width = if let Some(stroke) = self
-            .stroke_components
-            .iter()
-            .filter_map(|(key, stroke)| {
-                if let Some(trash_comp) = self.trash_components.get(key) {
-                    if !trash_comp.trashed {
-                        return Some(stroke);
-                    }
-                }
-                None
-            })
-            .max_by_key(|&stroke| stroke.bounds().maxs[0].round() as i32)
-        {
-            // max_by_key() returns the element, so we need to extract the width again
-            stroke.bounds().maxs[0]
-        } else {
-            0.0
-        };
-
-        new_width
-    }
-
     /// Calculates the height needed to fit all strokes
     pub fn calc_height(&self) -> f64 {
-        if let Some(stroke) = self
-            .stroke_keys_unordered()
-            .into_iter()
-            .filter_map(|key| self.stroke_components.get(key))
-            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
-        {
-            // max_by_key() returns the element, so we need to extract the height again
-            stroke.bounds().maxs[1]
-        } else {
-            0.0
-        }
+        let strokes_iter = self.stroke_keys_unordered().into_iter().filter_map(|key| {
+            let stroke = self.stroke_components.get(key)?;
+            let trash_comp = self.trash_components.get(key)?;
+
+            if !trash_comp.trashed {
+                Some(stroke)
+            } else {
+                None
+            }
+        });
+
+        let strokes_min_y = strokes_iter
+            .clone()
+            .fold(0.0, |acc, stroke| stroke.bounds().mins[1].min(acc));
+        let strokes_max_y = strokes_iter
+            .clone()
+            .fold(0.0, |acc, stroke| stroke.bounds().maxs[1].max(acc));
+
+        strokes_max_y - strokes_min_y
     }
 
     /// Generates the enclosing bounds for the given stroke keys

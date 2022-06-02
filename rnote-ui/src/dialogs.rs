@@ -1,9 +1,12 @@
+use adw::prelude::*;
 use gettextrs::gettext;
-use gtk4::{glib, glib::clone, prelude::*, Builder};
 use gtk4::{
-    AboutDialog, FileChooserAction, FileChooserNative, FileFilter, MessageDialog, ResponseType,
-    ShortcutsWindow,
+    gio, AboutDialog, Dialog, FileChooserAction, FileChooserNative, FileFilter, Label,
+    MessageDialog, ResponseType, ShortcutsWindow, SpinButton, ToggleButton,
 };
+use gtk4::{glib, glib::clone, Builder};
+use num_traits::ToPrimitive;
+use rnote_engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
 
 use crate::appwindow::RnoteAppWindow;
 use crate::{app::RnoteApp, config};
@@ -181,6 +184,165 @@ pub fn dialog_open_overwrite(appwindow: &RnoteAppWindow) {
     dialog_open_input_file.show();
 }
 
+pub fn dialog_import_pdf_w_prefs(appwindow: &RnoteAppWindow, target_pos: Option<na::Vector2<f64>>) {
+    let builder =
+        Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
+    let dialog_import_pdf: Dialog = builder.object("dialog_import_pdf_w_prefs").unwrap();
+    let pdf_page_start_spinbutton: SpinButton =
+        builder.object("pdf_page_start_spinbutton").unwrap();
+    let pdf_page_end_spinbutton: SpinButton = builder.object("pdf_page_end_spinbutton").unwrap();
+    let pdf_info_label: Label = builder.object("pdf_info_label").unwrap();
+    let pdf_import_width_perc_spinbutton: SpinButton =
+        builder.object("pdf_import_width_perc_spinbutton").unwrap();
+    let pdf_import_as_bitmap_toggle: ToggleButton =
+        builder.object("pdf_import_as_bitmap_toggle").unwrap();
+    let pdf_import_as_vector_toggle: ToggleButton =
+        builder.object("pdf_import_as_vector_toggle").unwrap();
+    let pdf_import_page_spacing_row: adw::ComboRow =
+        builder.object("pdf_import_page_spacing_row").unwrap();
+
+    let pdf_import_prefs = appwindow.canvas().engine().borrow().pdf_import_prefs;
+
+    // Set the widget state from the pdf import prefs
+    pdf_import_width_perc_spinbutton.set_value(pdf_import_prefs.page_width_perc);
+    match pdf_import_prefs.pages_type {
+        PdfImportPagesType::Bitmap => pdf_import_as_bitmap_toggle.set_active(true),
+        PdfImportPagesType::Vector => pdf_import_as_vector_toggle.set_active(true),
+    }
+    pdf_import_page_spacing_row.set_selected(pdf_import_prefs.page_spacing.to_u32().unwrap());
+
+    pdf_page_start_spinbutton.set_increments(1.0, 2.0);
+    pdf_page_end_spinbutton.set_increments(1.0, 2.0);
+
+    pdf_page_start_spinbutton
+        .bind_property("value", &pdf_page_end_spinbutton.adjustment(), "lower")
+        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .build();
+    pdf_page_end_spinbutton
+        .bind_property("value", &pdf_page_start_spinbutton.adjustment(), "upper")
+        .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::DEFAULT)
+        .build();
+
+    dialog_import_pdf.set_transient_for(Some(appwindow));
+
+    if let Some(input_file) = appwindow
+        .application()
+        .unwrap()
+        .downcast::<RnoteApp>()
+        .unwrap()
+        .input_file()
+    {
+        if let Ok(poppler_doc) =
+            poppler::Document::from_gfile(&input_file, None, None::<&gio::Cancellable>)
+        {
+            let file_name = input_file.basename().map_or_else(
+                || gettext("- no file name -"),
+                |s| s.to_string_lossy().to_string(),
+            );
+            let title = poppler_doc
+                .title()
+                .map_or_else(|| gettext("- no title -"), |s| s.to_string());
+            let author = poppler_doc
+                .author()
+                .map_or_else(|| gettext("- no author -"), |s| s.to_string());
+            let mod_date = poppler_doc
+                .mod_datetime()
+                .and_then(|dt| dt.format("%F").ok())
+                .map_or_else(|| gettext("- no date -"), |s| s.to_string());
+            let n_pages = poppler_doc.n_pages();
+
+            // pdf info
+            pdf_info_label.set_label(
+                (String::from("")
+                    + "<b>"
+                    + &gettext("File name:")
+                    + "  </b>"
+                    + &format!("{file_name}\n")
+                    + "<b>"
+                    + &gettext("Title:")
+                    + "  </b>"
+                    + &format!("{title}\n")
+                    + "<b>"
+                    + &gettext("Author:")
+                    + "  </b>"
+                    + &format!("{author}\n")
+                    + "<b>"
+                    + &gettext("Modification date:")
+                    + "  </b>"
+                    + &format!("{mod_date}\n")
+                    + "<b>"
+                    + &gettext("Pages:")
+                    + "  </b>"
+                    + &format!("{n_pages}\n"))
+                    .as_str(),
+            );
+
+            // Configure pages spinners
+            pdf_page_start_spinbutton.set_range(1.into(), n_pages.into());
+            pdf_page_start_spinbutton.set_value(1.into());
+
+            pdf_page_end_spinbutton.set_range(1.into(), n_pages.into());
+            pdf_page_end_spinbutton.set_value(n_pages.into());
+        }
+
+        dialog_import_pdf.connect_response(
+        clone!(@weak appwindow => move |dialog_import_pdf, responsetype| {
+            match responsetype {
+                ResponseType::Apply => {
+                    dialog_import_pdf.close();
+
+                    let page_range = (pdf_page_start_spinbutton.value() as u32 - 1)..pdf_page_end_spinbutton.value() as u32;
+
+                    // Save the preferences into the engine before loading the file
+                    let pages_type = if pdf_import_as_bitmap_toggle.is_active() {
+                        PdfImportPagesType::Bitmap
+                    } else {
+                        PdfImportPagesType::Vector
+                    };
+                    let page_spacing = PdfImportPageSpacing::try_from(pdf_import_page_spacing_row.selected()).unwrap();
+
+                    appwindow.canvas().engine().borrow_mut().pdf_import_prefs = PdfImportPrefs {
+                        page_width_perc: pdf_import_width_perc_spinbutton.value(),
+                        pages_type,
+                        page_spacing,
+                    };
+
+                    glib::MainContext::default().spawn_local(clone!(@strong input_file, @strong appwindow => async move {
+                        appwindow.start_pulsing_canvas_progressbar();
+
+                        let result = input_file.load_bytes_future().await;
+
+                        if let Ok((file_bytes, _)) = result {
+                            if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, Some(page_range)).await {
+                                adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
+                                log::error!(
+                                    "load_in_rnote_bytes() failed in dialog import pdf with Err {}",
+                                    e
+                                );
+                            }
+                        }
+
+                        appwindow.finish_canvas_progressbar();
+                    }));
+                }
+                ResponseType::Cancel => {
+                    dialog_import_pdf.close();
+
+                    appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
+                }
+                _ => {
+                    dialog_import_pdf.close();
+
+                    appwindow.application().unwrap().downcast::<RnoteApp>().unwrap().set_input_file(None);
+                }
+            }
+        }),
+    );
+
+        dialog_import_pdf.show();
+    }
+}
+
 // FileChooserNative Dialogs
 
 pub fn dialog_open_doc(appwindow: &RnoteAppWindow) {
@@ -339,10 +501,7 @@ pub fn dialog_import_file(appwindow: &RnoteAppWindow) {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(file) = dialog_import_file.file() {
-                        if let Err(e) = appwindow.load_in_file(&file, None) {
-                            log::error!("load_in_file() failed while import file, Err {}", e);
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Importing file failed.").to_variant()));
-                        }
+                        appwindow.open_file_w_dialogs(&file, None);
                     }
                 }
                 _ => {

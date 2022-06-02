@@ -2912,6 +2912,7 @@ dependencies = [
  "piet",
  "piet-cairo",
  "piet-svg",
+ "poppler-rs",
  "pretty_env_logger",
  "rand 0.8.5",
  "rand_distr",

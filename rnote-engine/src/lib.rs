@@ -17,6 +17,8 @@ pub mod store;
 pub mod strokes;
 pub mod utils;
 pub mod widgetflags;
+/// module concerned with importing data into the engine
+pub mod import;
 
 // Re-exports
 pub use audioplayer::AudioPlayer;

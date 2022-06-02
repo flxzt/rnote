@@ -1,6 +1,7 @@
 mod appsettings;
 mod appwindowactions;
 
+use std::ops::Range;
 use std::{
     cell::{Cell, RefCell},
     path::Path,
@@ -1285,7 +1286,7 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
         match utils::FileType::lookup_file_type(file) {
             utils::FileType::RnoteFile | utils::FileType::XoppFile => {
-                // Setting input file to hand it to the open overwrite dialog
+                // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
                 if self.unsaved_changes() {
@@ -1297,12 +1298,16 @@ impl RnoteAppWindow {
                     );
                 }
             }
-            utils::FileType::VectorImageFile
-            | utils::FileType::BitmapImageFile
-            | utils::FileType::PdfFile => {
+            utils::FileType::VectorImageFile | utils::FileType::BitmapImageFile => {
                 if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
                 }
+            }
+            utils::FileType::PdfFile => {
+                // Set as input file to hand it to the dialog
+                app.set_input_file(Some(file.clone()));
+
+                dialogs::dialog_import_pdf_w_prefs(self, target_pos);
             }
             utils::FileType::Folder => {
                 if let Some(path) = file.path() {
@@ -1409,7 +1414,7 @@ impl RnoteAppWindow {
                     let result = file.load_bytes_future().await;
 
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos).await {
+                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, None).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
@@ -1591,6 +1596,7 @@ impl RnoteAppWindow {
         bytes: Vec<u8>,
         // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
+        page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
@@ -1604,7 +1610,7 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow_mut()
-            .generate_strokes_from_pdf_bytes(pos, bytes);
+            .generate_strokes_from_pdf_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
 
         let widget_flags = self

@@ -1,3 +1,4 @@
+use std::ops::Range;
 use std::path::PathBuf;
 
 use crate::document::{background, Background, Format, Layout};
@@ -846,8 +847,9 @@ impl RnoteEngine {
     //// generates strokes for each page for the bytes ( from a PDF file )
     pub fn generate_strokes_from_pdf_bytes(
         &self,
-        pos: na::Vector2<f64>,
         bytes: Vec<u8>,
+        pos: na::Vector2<f64>,
+        page_range: Option<Range<u32>>,
     ) -> oneshot::Receiver<anyhow::Result<Vec<Stroke>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<Stroke>>>();
 
@@ -859,18 +861,26 @@ impl RnoteEngine {
         rayon::spawn(move || {
             let result = || -> anyhow::Result<Vec<Stroke>> {
                 if pdf_import_as_vector {
-                    let vectorimages =
-                        VectorImage::import_from_pdf_bytes(&bytes, pos, Some(page_width))?
-                            .into_iter()
-                            .map(Stroke::VectorImage)
-                            .collect::<Vec<Stroke>>();
+                    let vectorimages = VectorImage::import_from_pdf_bytes(
+                        &bytes,
+                        pos,
+                        Some(page_width),
+                        page_range,
+                    )?
+                    .into_iter()
+                    .map(Stroke::VectorImage)
+                    .collect::<Vec<Stroke>>();
                     Ok(vectorimages)
                 } else {
-                    let bitmapimages =
-                        BitmapImage::import_from_pdf_bytes(&bytes, pos, Some(page_width))?
-                            .into_iter()
-                            .map(Stroke::BitmapImage)
-                            .collect::<Vec<Stroke>>();
+                    let bitmapimages = BitmapImage::import_from_pdf_bytes(
+                        &bytes,
+                        pos,
+                        Some(page_width),
+                        page_range,
+                    )?
+                    .into_iter()
+                    .map(Stroke::BitmapImage)
+                    .collect::<Vec<Stroke>>();
                     Ok(bitmapimages)
                 }
             };

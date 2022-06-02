@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, DrawBehaviour};
@@ -9,6 +11,7 @@ use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 
+use gtk4::glib;
 use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
 
@@ -177,11 +180,13 @@ impl VectorImage {
         to_be_read: &[u8],
         pos: na::Vector2<f64>,
         page_width: Option<i32>,
+        page_range: Option<Range<u32>>,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        let doc = poppler::Document::from_data(to_be_read, None)?;
+        let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
+        let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
-        let svgs = (0..doc.n_pages()).filter_map(|i| {
-            let page = doc.page(i)?;
+        let svgs = page_range.enumerate().filter_map(|(i, page)| {
+            let page = doc.page(page as i32)?;
                 let (intrinsic_width, intrinsic_height) = (page.size().0, page.size().1);
 
                 let (width, height) = if let Some(page_width) = page_width {
@@ -193,7 +198,7 @@ impl VectorImage {
                 };
 
                 let x = pos[0];
-                let y = pos[1] + f64::from(i) * (height + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5);
+                let y = pos[1] + f64::from(i as u32) * (height + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5);
 
                 let res = || -> anyhow::Result<String> {
                     let svg_stream: Vec<u8> = vec![];

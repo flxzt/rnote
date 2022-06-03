@@ -47,8 +47,8 @@ impl TryFrom<u32> for PdfImportPagesType {
 pub enum PdfImportPageSpacing {
     #[serde(rename = "continuous")]
     Continuous = 0,
-    #[serde(rename = "one_pdf_page_per_page")]
-    OnePdfPagePerPage,
+    #[serde(rename = "one_per_document_page")]
+    OnePerDocumentPage,
 }
 
 impl Default for PdfImportPageSpacing {

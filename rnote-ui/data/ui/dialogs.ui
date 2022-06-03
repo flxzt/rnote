@@ -177,7 +177,7 @@
                 <property name="halign">fill</property>
                 <child>
                   <object class="AdwActionRow">
-                    <property name="title">PDF page start</property>
+                    <property name="title">Start page</property>
                     <child type="suffix">
                       <object class="GtkSpinButton" id="pdf_page_start_spinbutton">
                         <property name="valign">center</property>
@@ -192,7 +192,7 @@
                 </child>
                 <child>
                   <object class="AdwActionRow">
-                    <property name="title">PDF page end</property>
+                    <property name="title">End page</property>
                     <child type="suffix">
                       <object class="GtkSpinButton" id="pdf_page_end_spinbutton">
                         <property name="valign">center</property>
@@ -206,30 +206,9 @@
                   </object>
                 </child>
                 <child>
-                  <object class="AdwActionRow" id="pdf_import_width_row">
-                    <property name="title" translatable="yes">PDF import width (%)</property>
-                    <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the format width</property>
-                    <child type="suffix">
-                      <object class="GtkAdjustment" id="pdf_import_width_perc_adj">
-                        <property name="step-increment">1</property>
-                        <property name="upper">100</property>
-                        <property name="lower">1</property>
-                        <property name="value">50</property>
-                      </object>
-                      <object class="GtkSpinButton" id="pdf_import_width_perc_spinbutton">
-                        <property name="adjustment">pdf_import_width_perc_adj</property>
-                        <property name="orientation">horizontal</property>
-                        <property name="vexpand">false</property>
-                        <property name="valign">center</property>
-                        <property name="digits">0</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
                   <object class="AdwActionRow" id="pdf_import_pages_type_row">
-                    <property name="title" translatable="yes">PDF import pages type</property>
-                    <property name="subtitle" translatable="yes">Set wether PDFs should be imported as vector or bitmap images</property>
+                    <property name="title" translatable="yes">Pages type</property>
+                    <property name="subtitle" translatable="yes">Set whether PDFs should be imported as vector or bitmap images</property>
                     <child type="suffix">
                       <object class="GtkBox">
                         <property name="orientation">horizontal</property>
@@ -256,14 +235,35 @@
                   </object>
                 </child>
                 <child>
+                  <object class="AdwActionRow" id="pdf_import_width_row">
+                    <property name="title" translatable="yes">Page width (%)</property>
+                    <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the format width</property>
+                    <child type="suffix">
+                      <object class="GtkAdjustment" id="pdf_import_width_perc_adj">
+                        <property name="step-increment">1</property>
+                        <property name="upper">100</property>
+                        <property name="lower">1</property>
+                        <property name="value">50</property>
+                      </object>
+                      <object class="GtkSpinButton" id="pdf_import_width_perc_spinbutton">
+                        <property name="adjustment">pdf_import_width_perc_adj</property>
+                        <property name="orientation">horizontal</property>
+                        <property name="vexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="digits">0</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
                   <object class="AdwComboRow" id="pdf_import_page_spacing_row">
-                    <property name="title" translatable="yes">PDF page spacing</property>
-                    <property name="subtitle" translatable="yes">Set how PDF pages are spaced</property>
+                    <property name="title" translatable="yes">Page spacing</property>
+                    <property name="subtitle" translatable="yes">How PDF pages are spaced</property>
                     <property name="model">
                       <object class="GtkStringList">
                         <items>
                           <item translatable="yes">Continuous</item>
-                          <item translatable="yes">One PDF page per document page</item>
+                          <item translatable="yes">One per document page</item>
                         </items>
                       </object>
                     </property>

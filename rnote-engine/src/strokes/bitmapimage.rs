@@ -192,7 +192,7 @@ impl BitmapImage {
                                 + f64::from(i as u32)
                                     * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5)
                         }
-                        PdfImportPageSpacing::OnePdfPagePerPage => {
+                        PdfImportPageSpacing::OnePerDocumentPage => {
                             insert_pos[1] + f64::from(i as u32) * format.height
                         }
                     };

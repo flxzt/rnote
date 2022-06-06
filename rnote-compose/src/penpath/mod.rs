@@ -41,10 +41,7 @@ impl ShapeBehaviour for PenPath {
     }
 
     fn hitboxes(&self) -> Vec<AABB> {
-        self.iter()
-            .map(|segment| segment.hitboxes())
-            .flatten()
-            .collect()
+        self.iter().flat_map(|segment| segment.hitboxes()).collect()
     }
 }
 
@@ -86,7 +83,7 @@ impl PenPath {
     pub fn into_elements(self) -> Vec<Element> {
         self.0
             .into_iter()
-            .map(|segment| match segment {
+            .flat_map(|segment| match segment {
                 Segment::Dot { element: pos } => vec![pos],
                 Segment::Line { start, end } => vec![start, end],
                 Segment::QuadBez { start, cp: _, end } => vec![start, end],
@@ -97,7 +94,6 @@ impl PenPath {
                     end,
                 } => vec![start, end],
             })
-            .flatten()
             .collect()
     }
 }

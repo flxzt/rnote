@@ -101,6 +101,15 @@ impl RnoteAppWindow {
                 "selected",
             )
             .build();
+
+        // Typewriter page
+        self.app_settings()
+            .bind(
+                "typewriterpage-selected-color",
+                &self.penssidebar().typewriter_page().colorpicker(),
+                "selected",
+            )
+            .build();
     }
 
     /// load settings at start that are not bound in setup_settings. Setting changes through gsettings / dconf might not be applied until app restarts
@@ -153,7 +162,7 @@ impl RnoteAppWindow {
                 colors.0, colors.1, colors.2, colors.3, colors.4, colors.5, colors.6, colors.7,
             ]
             .into_iter()
-            .map(|color| Color::from(color))
+            .map(Color::from)
             .collect::<Vec<Color>>();
             self.penssidebar()
                 .brush_page()
@@ -166,7 +175,7 @@ impl RnoteAppWindow {
             let colors = self.app_settings().get::<(u32, u32)>("shaperpage-colors");
             let colors = [colors.0, colors.1]
                 .into_iter()
-                .map(|color| Color::from(color))
+                .map(Color::from)
                 .collect::<Vec<Color>>();
             self.penssidebar()
                 .shaper_page()
@@ -178,12 +187,27 @@ impl RnoteAppWindow {
             let fill_colors = self.app_settings().get::<(u32, u32)>("shaperpage-fills");
             let fill_colors = [fill_colors.0, fill_colors.1]
                 .into_iter()
-                .map(|color| Color::from(color))
+                .map(Color::from)
                 .collect::<Vec<Color>>();
             self.penssidebar()
                 .shaper_page()
                 .fill_colorpicker()
                 .load_colors(&fill_colors);
+        }
+
+        {
+            // Typewriter page
+            let colors = self
+                .app_settings()
+                .get::<(u32, u32)>("typewriterpage-colors");
+            let colors = [colors.0, colors.1]
+                .into_iter()
+                .map(Color::from)
+                .collect::<Vec<Color>>();
+            self.penssidebar()
+                .typewriter_page()
+                .colorpicker()
+                .load_colors(&colors);
         }
 
         {
@@ -269,6 +293,22 @@ impl RnoteAppWindow {
             let fills = (fills[0], fills[1]);
             self.app_settings()
                 .set_value("shaperpage-fills", &fills.to_variant())?;
+        }
+
+        {
+            // Typewriter page colors
+
+            let colors = self
+                .penssidebar()
+                .typewriter_page()
+                .colorpicker()
+                .fetch_all_colors()
+                .into_iter()
+                .map(|color| color.into())
+                .collect::<Vec<u32>>();
+            let colors = (colors[0], colors[1]);
+            self.app_settings()
+                .set_value("typewriterpage-colors", &colors.to_variant())?;
         }
 
         {

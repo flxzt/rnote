@@ -71,8 +71,8 @@ impl ShapeBehaviour for CubicBezier {
 
 impl CubicBezier {
     /// tries to create a new cubic curve with the catmull-rom spline algorithm. Subsequent curves ( meaning, advancing the elements by one) have a smooth transition betwen them,
-    /// and only being only affected by their four points (locality), so are easily calculated and easy to work with.
-    /// making it a good spline to represent pen paths.
+    /// and only being affected by their four points (locality), so are easily calculated and easy to work with.
+    /// making them a good spline to represent pen paths.
     /// See 'Conversion between Cubic Bezier Curves and Catmull-Rom Splines'
     pub fn new_w_catmull_rom(
         first: na::Vector2<f64>,
@@ -96,7 +96,7 @@ impl CubicBezier {
             end,
         };
 
-        // returns early when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
+        // returnsing None when the cubbez does not have a length to prevent NaN when calculating the normals for segments with variable width
         if (cubbez.end - cubbez.start).magnitude() == 0.0 {
             return None;
         }

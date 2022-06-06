@@ -38,7 +38,7 @@ pub struct XoppFile {
 
 impl FileFormatLoader for XoppFile {
     fn load_from_bytes(bytes: &[u8]) -> anyhow::Result<Self> {
-        let decompressed = String::from_utf8(decompress_from_gzip(&bytes)?)?;
+        let decompressed = String::from_utf8(decompress_from_gzip(bytes)?)?;
 
         let options = roxmltree::ParsingOptions::default();
         let parsed_doc = roxmltree::Document::parse_with_options(decompressed.as_str(), options)?;
@@ -97,7 +97,10 @@ impl XmlLoadable for XoppRoot {
                     }
                     "preview" => {
                         if let Some(preview) = child.text() {
-                            self.preview = preview.to_string();
+                            self.preview = preview
+                                .trim_start_matches(&[' ', '\n'])
+                                .trim_end_matches(&[' ', '\n'])
+                                .to_string();
                         }
                     }
                     "page" => {
@@ -116,15 +119,19 @@ impl XmlLoadable for XoppRoot {
 
 impl XmlWritable for XoppRoot {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
+        w.set_preserve_whitespaces(true);
         w.start_element("xournal");
         w.write_attribute("fileversion", &self.fileversion);
         w.start_element("title");
+
         w.write_text(&self.title);
+
         w.end_element();
         for page in self.pages.iter() {
             page.write_to_xml(w);
         }
         w.end_element();
+        w.set_preserve_whitespaces(false);
     }
 }
 
@@ -484,7 +491,7 @@ impl AsXmlAttributeValue for XoppColor {
 impl XoppColor {
     /// Parsing from a attribute avlue that is the format #RRGGBBAA
     fn from_hexcolor_attr_value(s: &str) -> Result<Self, anyhow::Error> {
-        let s = s.trim().replace("#", "");
+        let s = s.trim().replace('#', "");
 
         let value = u32::from_str_radix(s.as_str(), 16)?;
 
@@ -689,7 +696,7 @@ impl XmlLoadable for XoppStroke {
                     node.id()
                 )
             })?
-            .split(" ")
+            .split(' ')
             .filter_map(|splitted| splitted.parse::<f64>().ok())
             .collect::<Vec<f64>>();
 
@@ -707,7 +714,9 @@ impl XmlLoadable for XoppStroke {
 
         if let Some(coords) = node.text() {
             let coords = coords
-                .split(" ")
+                .trim_start_matches(&[' ', '\n'])
+                .trim_end_matches(&[' ', '\n'])
+                .split(' ')
                 .filter_map(|splitted| splitted.parse::<f64>().ok());
 
             self.coords = coords
@@ -724,6 +733,7 @@ impl XmlLoadable for XoppStroke {
 
 impl XmlWritable for XoppStroke {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
+        w.set_preserve_whitespaces(true);
         w.start_element("stroke");
         w.write_attribute("tool", &self.tool.as_xml_attr_value());
         w.write_attribute("color", &self.color.as_xml_attr_value());
@@ -739,6 +749,7 @@ impl XmlWritable for XoppStroke {
                 .collect::<Vec<String>>()
                 .join(" "),
         );
+
         w.write_text(
             &self
                 .coords
@@ -747,7 +758,9 @@ impl XmlWritable for XoppStroke {
                 .collect::<Vec<String>>()
                 .join(" "),
         );
+
         w.end_element();
+        w.set_preserve_whitespaces(false);
     }
 }
 
@@ -784,7 +797,7 @@ pub struct XoppText {
     /// The text font
     pub font: String,
     /// The text size
-    pub size: u32,
+    pub size: f64,
     /// The x position of the upper left corner
     pub x: f64,
     /// The y position of the upper left corner
@@ -815,7 +828,7 @@ impl XmlLoadable for XoppText {
                     node.id()
                 )
             })?
-            .parse::<u32>()?;
+            .parse::<f64>()?;
 
         self.x = node
             .attribute("x")
@@ -855,13 +868,17 @@ impl XmlLoadable for XoppText {
 
 impl XmlWritable for XoppText {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
+        w.set_preserve_whitespaces(true);
         w.start_element("text");
         w.write_attribute("font", &self.font);
+        w.write_attribute("size", &self.size);
         w.write_attribute("x", &self.x);
         w.write_attribute("y", &self.y);
         w.write_attribute("color", &self.color.as_xml_attr_value());
+
         w.write_text(&self.text);
         w.end_element();
+        w.set_preserve_whitespaces(false);
     }
 }
 
@@ -928,7 +945,10 @@ impl XmlLoadable for XoppImage {
 
         // Data
         if let Some(data) = node.text() {
-            self.data = data.to_string();
+            self.data = data
+                .trim_start_matches(&[' ', '\n'])
+                .trim_end_matches(&[' ', '\n'])
+                .to_string();
         }
 
         Ok(())
@@ -937,6 +957,7 @@ impl XmlLoadable for XoppImage {
 
 impl XmlWritable for XoppImage {
     fn write_to_xml(&self, w: &mut xmlwriter::XmlWriter) {
+        w.set_preserve_whitespaces(true);
         w.start_element("image");
         w.write_attribute("left", &self.left);
         w.write_attribute("top", &self.top);
@@ -944,6 +965,7 @@ impl XmlWritable for XoppImage {
         w.write_attribute("bottom", &self.bottom);
         w.write_text(&self.data);
         w.end_element();
+        w.set_preserve_whitespaces(false);
     }
 }
 

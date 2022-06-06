@@ -1,4 +1,5 @@
 #![warn(missing_debug_implementations)]
+#![allow(clippy::single_match)]
 
 pub mod config;
 pub mod dialogs;

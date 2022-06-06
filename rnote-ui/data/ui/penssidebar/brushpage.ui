@@ -285,7 +285,6 @@
     </child>
     <child>
       <object class="ColorPicker" id="colorpicker">
-        <property name="height_request">360</property>
         <property name="amount-colorbuttons">8</property>
       </object>
     </child>

@@ -6,7 +6,7 @@
 
 in a msys2 terminal, install git and the dependencies:
 ```
-pacman -S git mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data
+pacman -S git mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-desktop-file-utils mingw-w64-x86_64-appstream-glib mingw-w64-x86_64-gtk4 mingw-w64-x86_64-libadwaita mingw-w64-x86_64-poppler mingw-w64-x86_64-poppler-data
 ```
 
 Add rust binary path to msys2's bash path: in `~/.bashrc`
@@ -20,13 +20,13 @@ rustup toolchain install stable-gnu
 rustup default stable-gnu
 ```
 
-then clone the repo somwhere and also fetch the submodules
+then clone the repo somwhere and also init the submodules
 ```
 git clone https://github.com/flxzt/rnote
 git submodule update --init --recursive
 ```
 
-in the repo `build-aux/meson_post_install.py` must be overwritten with ( removing the desktop file check ):
+in the repo `build-aux/meson_post_install.py` must be overwritten with ( renaming the executables ):
 ```
 #!/usr/bin/env python3
 
@@ -36,13 +36,15 @@ from subprocess import call
 if not environ.get('DESTDIR', ''):
     PREFIX = environ.get('MESON_INSTALL_PREFIX', '/usr/local')
     DATA_DIR = path.join(PREFIX, 'share')
-    print(DATA_DIR)
     print('Updating icon cache...')
     call(['gtk-update-icon-cache-3.0.exe', '-qtf', path.join(DATA_DIR, 'icons/hicolor')])
     print("Compiling new schemas...")
     call(["glib-compile-schemas.exe", path.join(DATA_DIR, 'glib-2.0/schemas')])
+    print("Updating desktop database...")
+    call(["update-desktop-database.exe", path.join(DATA_DIR, 'applications')])
     print("Updating MIME-type database...")
     call(["update-mime-database.exe", path.join(DATA_DIR, 'mime')])
+
 ```
 
 then Rnote can built with meson inside a **mingw64 shell**:

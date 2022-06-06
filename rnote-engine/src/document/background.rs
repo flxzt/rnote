@@ -4,6 +4,7 @@ use p2d::bounding_volume::AABB;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use svg::node::element;
+use svg::Node;
 
 use crate::utils::{GdkRGBAHelpers, GrapheneRectHelpers};
 use crate::{render, Camera};
@@ -43,10 +44,9 @@ impl TryFrom<u32> for PatternStyle {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
-            "PatternStyle try_from::<u32>() for value {} failed",
-            value
-        ))
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("PatternStyle try_from::<u32>() for value {} failed", value)
+        })
     }
 }
 
@@ -173,12 +173,12 @@ pub fn gen_dots_pattern(
             ),
     );
 
-    let rect = element::Rectangle::new()
-        .set("x", bounds.mins[0])
-        .set("y", bounds.mins[1])
-        .set("width", bounds.extents()[0])
-        .set("height", bounds.extents()[1])
-        .set("fill", format!("url(#{})", pattern_id));
+    let mut rect = element::Rectangle::new().set("fill", format!("url(#{})", pattern_id));
+
+    rect.assign("x", format!("{}px", bounds.mins[0]));
+    rect.assign("y", format!("{}px", bounds.mins[1]));
+    rect.assign("width", format!("{}px", bounds.extents()[0]));
+    rect.assign("height", format!("{}px", bounds.extents()[1]));
 
     let group = element::Group::new().add(pattern).add(rect);
     group.into()
@@ -225,8 +225,8 @@ impl Background {
         a: 1.0,
     };
 
-    pub fn tile_size(&self) -> na::Vector2<f64> {
-        // Calculate tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
+    /// Calculates the tile size as multiple of pattern_size with max size TITLE_MAX_SIZE
+    fn tile_size(&self) -> na::Vector2<f64> {
         let tile_factor =
             na::Vector2::from_element(Self::TILE_MAX_SIZE).component_div(&self.pattern_size);
 
@@ -244,8 +244,7 @@ impl Background {
         na::vector![tile_width, tile_height]
     }
 
-    /// Generates the background svg, without xml header or svg root
-    pub fn gen_svg(&self, bounds: AABB) -> Result<render::Svg, anyhow::Error> {
+    fn gen_svg_element(&self, bounds: AABB) -> svg::node::element::Element {
         let mut group = element::Group::new();
 
         // background color
@@ -286,7 +285,24 @@ impl Background {
                 ));
             }
         }
-        let svg_data = rnote_compose::utils::svg_node_to_string(&group)
+
+        group.into()
+    }
+
+    pub fn draw_to_piet_svg(
+        &self,
+        piet_svg_cx: &mut piet_svg::RenderContext,
+        bounds: AABB,
+    ) -> anyhow::Result<()> {
+        piet_svg_cx.append_svg_node(self.gen_svg_element(bounds));
+        Ok(())
+    }
+
+    /// Generates the background svg, without xml header or svg root
+    pub fn gen_svg(&self, bounds: AABB) -> Result<render::Svg, anyhow::Error> {
+        let svg_element = self.gen_svg_element(bounds);
+
+        let svg_data = rnote_compose::utils::svg_node_to_string(&svg_element)
             .map_err(|e| anyhow::anyhow!("node_to_string() failed for background, {}", e))?;
 
         Ok(render::Svg { svg_data, bounds })
@@ -309,7 +325,7 @@ impl Background {
         let mut rendernodes: Vec<gsk::RenderNode> = vec![];
 
         if let Some(image) = &self.image {
-            // Only creat the texture once, it is expensive
+            // Only create the texture once, it is expensive
             let new_texture = image
                 .to_memtexture()
                 .context("image to_memtexture() failed in gen_rendernode() of background.")?;

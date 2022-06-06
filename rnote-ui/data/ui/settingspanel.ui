@@ -72,56 +72,6 @@
                       </object>
                     </child>
                     <child>
-                      <object class="AdwActionRow" id="general_pdf_import_width_row">
-                        <property name="title" translatable="yes">PDF import width (%)</property>
-                        <property name="subtitle" translatable="yes">Set the width of imported PDF's in percentage to the format width</property>
-                        <child type="suffix">
-                          <object class="GtkAdjustment" id="general_pdf_import_width_adj">
-                            <property name="step-increment">1</property>
-                            <property name="upper">100</property>
-                            <property name="lower">1</property>
-                            <property name="value">50</property>
-                          </object>
-                          <object class="GtkSpinButton" id="general_pdf_import_width_spinbutton">
-                            <property name="adjustment">general_pdf_import_width_adj</property>
-                            <property name="orientation">horizontal</property>
-                            <property name="vexpand">false</property>
-                            <property name="valign">center</property>
-                            <property name="digits">0</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="AdwActionRow" id="general_pdf_import_image_type_row">
-                        <property name="title" translatable="yes">PDF import image type</property>
-                        <property name="subtitle" translatable="yes">Set wether PDFs should be imported as vector or bitmap images</property>
-                        <child type="suffix">
-                          <object class="GtkBox">
-                            <property name="orientation">horizontal</property>
-                            <property name="homogeneous">true</property>
-                            <property name="vexpand">false</property>
-                            <property name="valign">center</property>
-                            <style>
-                              <class name="linked" />
-                            </style>
-                            <child>
-                              <object class="GtkToggleButton" id="general_pdf_import_as_vector_toggle">
-                                <property name="label" translatable="yes">Vector</property>
-                                <property name="active">true</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkToggleButton" id="general_pdf_import_as_bitmap_toggle">
-                                <property name="group">general_pdf_import_as_vector_toggle</property>
-                                <property name="label" translatable="yes">Bitmap</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <child>
                       <object class="AdwActionRow" id="general_format_border_color_row">
                         <property name="title" translatable="yes">Format border color</property>
                         <property name="subtitle" translatable="yes">Set the format border color</property>

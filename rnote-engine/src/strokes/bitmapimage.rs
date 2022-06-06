@@ -1,16 +1,22 @@
+use std::ops::Range;
+
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
+use crate::document::Format;
+use crate::import::{PdfImportPageSpacing, PdfImportPrefs};
 use crate::render;
 use crate::DrawBehaviour;
+use piet::RenderContext;
+use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use rnote_compose::color;
-use rnote_compose::helpers::{AABBHelpers, Affine2Helpers};
+use rnote_compose::helpers::{AABBHelpers, Affine2Helpers, Vector2Helpers};
 use rnote_compose::shapes::Rectangle;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::Transform;
 use rnote_compose::transform::TransformBehaviour;
 
 use anyhow::Context;
-use gtk4::cairo;
+use gtk4::{cairo, glib};
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use serde::{Deserialize, Serialize};
 
@@ -36,15 +42,14 @@ impl Default for BitmapImage {
 impl StrokeBehaviour for BitmapImage {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let bounds = self.bounds();
-        let mut cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
-            bounds.extents()[0],
-            bounds.extents()[1],
-        ));
 
-        self.draw(&mut cx, 1.0)?;
-        let svg_data = rnote_compose::utils::piet_svg_cx_to_svg(cx)?;
-
-        Ok(render::Svg { svg_data, bounds })
+        render::Svg::gen_with_piet_svg_backend_no_text(
+            |cx| {
+                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
+                self.draw(cx, 1.0)
+            },
+            bounds,
+        )
     }
 
     fn gen_images(
@@ -62,13 +67,18 @@ impl StrokeBehaviour for BitmapImage {
                     image_scale,
                 )?,
             ]))
-        } else {
+        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
             Ok(GeneratedStrokeImages::Partial {
                 images: vec![render::Image::gen_with_piet(
                     |piet_cx| self.draw(piet_cx, image_scale),
-                    viewport,
+                    intersection_bounds,
                     image_scale,
                 )?],
+                viewport,
+            })
+        } else {
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![],
                 viewport,
             })
         }
@@ -148,82 +158,117 @@ impl BitmapImage {
 
     pub fn import_from_pdf_bytes(
         to_be_read: &[u8],
-        pos: na::Vector2<f64>,
-        page_width: Option<i32>,
+        pdf_import_prefs: PdfImportPrefs,
+        insert_pos: na::Vector2<f64>,
+        page_range: Option<Range<u32>>,
+        format: &Format,
     ) -> Result<Vec<Self>, anyhow::Error> {
-        let doc = poppler::Document::from_data(to_be_read, None)?;
+        let doc = poppler::Document::from_bytes(&glib::Bytes::from(to_be_read), None)?;
+        let page_range = page_range.unwrap_or(0..doc.n_pages() as u32);
 
-        let mut images = Vec::new();
+        let page_width = format.width * (pdf_import_prefs.page_width_perc / 100.0);
 
-        for i in 0..doc.n_pages() {
-            if let Some(page) = doc.page(i) {
-                let intrinsic_size = page.size();
+        let pngs = page_range
+            .enumerate()
+            .filter_map(|(i, page_i)| {
+                let page = doc.page(page_i as i32)?;
+                let result = || -> anyhow::Result<(Vec<u8>, na::Vector2<f64>)> {
+                    let intrinsic_size = page.size();
 
-                let (width, height, zoom) = if let Some(page_width) = page_width {
-                    let zoom = f64::from(page_width) / intrinsic_size.0;
+                    let (width, height, zoom) = {
+                        let zoom = page_width / intrinsic_size.0;
 
-                    (page_width, (intrinsic_size.1 * zoom).round() as i32, zoom)
-                } else {
-                    (
-                        intrinsic_size.0.round() as i32,
-                        intrinsic_size.1.round() as i32,
-                        1.0,
-                    )
+                        (
+                            page_width.round() as i32,
+                            (intrinsic_size.1 * zoom).round() as i32,
+                            zoom,
+                        )
+                    };
+
+                    let x = insert_pos[0];
+                    let y = match pdf_import_prefs.page_spacing {
+                        PdfImportPageSpacing::Continuous => {
+                            insert_pos[1]
+                                + f64::from(i as u32)
+                                    * (f64::from(height) + Self::IMPORT_OFFSET_DEFAULT[1] * 0.5)
+                        }
+                        PdfImportPageSpacing::OnePerDocumentPage => {
+                            insert_pos[1] + f64::from(i as u32) * format.height
+                        }
+                    };
+
+                    let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
+                        .map_err(|e| {
+                            anyhow::anyhow!(
+                                "create ImageSurface with dimensions ({}, {}) failed, {}",
+                                width,
+                                height,
+                                e
+                            )
+                        })?;
+
+                    {
+                        let cx =
+                            cairo::Context::new(&surface).context("new cairo::Context failed")?;
+                        cx.scale(zoom, zoom);
+
+                        // Set margin to white
+                        cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
+                        cx.paint()?;
+
+                        page.render(&cx);
+
+                        cx.scale(1.0 / zoom, 1.0 / zoom);
+
+                        // Draw outline around page
+                        cx.set_source_rgba(
+                            color::GNOME_REDS[4].as_rgba().0,
+                            color::GNOME_REDS[4].as_rgba().1,
+                            color::GNOME_REDS[4].as_rgba().2,
+                            1.0,
+                        );
+
+                        let line_width = 1.0;
+                        cx.set_line_width(line_width);
+                        cx.rectangle(
+                            line_width * 0.5,
+                            line_width * 0.5,
+                            f64::from(width) - line_width,
+                            f64::from(height) - line_width,
+                        );
+                        cx.stroke()?;
+                    }
+
+                    let mut png_data: Vec<u8> = Vec::new();
+                    surface.write_to_png(&mut png_data)?;
+
+                    Ok((png_data, na::vector![x, y]))
                 };
 
-                let x = pos[0];
-                let y = pos[1]
-                    + f64::from(i)
-                        * (f64::from(height) + f64::from(Self::IMPORT_OFFSET_DEFAULT[1]) * 0.5);
-
-                let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height)
-                    .map_err(|e| {
-                        anyhow::anyhow!(
-                            "create ImageSurface with dimensions ({}, {}) failed, {}",
-                            width,
-                            height,
-                            e
-                        )
-                    })?;
-
-                {
-                    let cx = cairo::Context::new(&surface).context("new cairo::Context failed")?;
-                    cx.scale(zoom, zoom);
-
-                    // Set margin to white
-                    cx.set_source_rgba(1.0, 1.0, 1.0, 1.0);
-                    cx.paint()?;
-
-                    page.render(&cx);
-
-                    cx.scale(1.0 / zoom, 1.0 / zoom);
-
-                    // Draw outline around page
-                    cx.set_source_rgba(
-                        color::GNOME_REDS[4].as_rgba().0,
-                        color::GNOME_REDS[4].as_rgba().1,
-                        color::GNOME_REDS[4].as_rgba().2,
-                        1.0,
-                    );
-
-                    let line_width = 1.0;
-                    cx.set_line_width(line_width);
-                    cx.rectangle(
-                        line_width * 0.5,
-                        line_width * 0.5,
-                        f64::from(width) - line_width,
-                        f64::from(height) - line_width,
-                    );
-                    cx.stroke()?;
+                match result() {
+                    Ok(ret) => Some(ret),
+                    Err(e) => {
+                        log::error!("bitmapimage import_from_pdf_bytes() failed with Err {}", e);
+                        None
+                    }
                 }
+            })
+            .collect::<Vec<(Vec<u8>, na::Vector2<f64>)>>();
 
-                let mut png_data: Vec<u8> = Vec::new();
-                surface.write_to_png(&mut png_data)?;
-
-                images.push(Self::import_from_image_bytes(&png_data, na::vector![x, y])?);
-            }
-        }
-
-        Ok(images)
+        Ok(pngs
+            .into_par_iter()
+            .filter_map(|(png_data, pos)| {
+                match Self::import_from_image_bytes(
+                    &png_data,
+                    pos
+                ) {
+                    Ok(bitmapimage) => Some(bitmapimage),
+                    Err(e) => {
+                        log::error!("import_from_image_bytes() failed in bitmapimage import_from_pdf_bytes() with Err {}", e);
+                        None
+                    }
+                }
+            })
+            .collect())
     }
 }

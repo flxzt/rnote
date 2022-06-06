@@ -1,6 +1,8 @@
 use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::{render, DrawBehaviour};
+use piet::RenderContext;
+use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::shapes::Shape;
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::Composer;
@@ -18,22 +20,21 @@ pub struct ShapeStroke {
     #[serde(rename = "style")]
     pub style: Style,
     #[serde(skip)]
-    // since the path can have many hitboxes, we store them for faster queries and update them when we the stroke geometry changes
-    pub hitboxes: Vec<AABB>,
+    // since the shape can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
+    hitboxes: Vec<AABB>,
 }
 
 impl StrokeBehaviour for ShapeStroke {
     fn gen_svg(&self) -> Result<crate::render::Svg, anyhow::Error> {
         let bounds = self.bounds();
-        let mut cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
-            bounds.extents()[0],
-            bounds.extents()[1],
-        ));
 
-        self.draw(&mut cx, 1.0)?;
-        let svg_data = rnote_compose::utils::piet_svg_cx_to_svg(cx)?;
-
-        Ok(render::Svg { svg_data, bounds })
+        render::Svg::gen_with_piet_svg_backend_no_text(
+            |cx| {
+                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
+                self.draw(cx, 1.0)
+            },
+            bounds,
+        )
     }
 
     fn gen_images(
@@ -51,13 +52,18 @@ impl StrokeBehaviour for ShapeStroke {
                     image_scale,
                 )?,
             ]))
-        } else {
+        } else if let Some(intersection_bounds) = viewport.intersection(&bounds) {
             Ok(GeneratedStrokeImages::Partial {
                 images: vec![render::Image::gen_with_piet(
                     |piet_cx| self.draw(piet_cx, image_scale),
-                    viewport,
+                    intersection_bounds,
                     image_scale,
                 )?],
+                viewport,
+            })
+        } else {
+            Ok(GeneratedStrokeImages::Partial {
+                images: vec![],
                 viewport,
             })
         }

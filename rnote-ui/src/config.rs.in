@@ -10,5 +10,6 @@ pub const APP_LICENSE: gtk4::License = gtk4::License::Gpl30;
 pub const GETTEXT_PACKAGE: &str = @GETTEXT_PACKAGE@;
 pub const LOCALEDIR: &str = @LOCALEDIR@;
 
+pub const PKG_DATA_DIR: &str = @PKG_DATA_DIR@;
 pub const RESOURCES_FILE: &str = @RESOURCES_FILE@;
 pub const PROFILE: &str = @PROFILE@;

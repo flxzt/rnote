@@ -8,21 +8,21 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::ShapeBuilderBehaviour;
+use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
-/// The state
+/// The cubbez builder state
 pub enum CubBezBuilderState {
-    /// start
+    /// setting the start of the new cubbez
     Start(na::Vector2<f64>),
-    /// first control point
+    /// setting the first control point of the new cubbez
     Cp1 {
         /// start
         start: na::Vector2<f64>,
         /// first control point
         cp1: na::Vector2<f64>,
     },
-    /// second control point
+    /// setting the second control point of the new cubbez
     Cp2 {
         /// start
         start: na::Vector2<f64>,
@@ -31,7 +31,7 @@ pub enum CubBezBuilderState {
         /// second control point
         cp2: na::Vector2<f64>,
     },
-    /// end
+    /// setting the end of the new cubbez
     End {
         /// start
         start: na::Vector2<f64>,
@@ -45,7 +45,7 @@ pub enum CubBezBuilderState {
 }
 
 #[derive(Debug, Clone)]
-/// building cubic bezier
+/// cubic bezier builder
 pub struct CubBezBuilder {
     /// the state
     pub state: CubBezBuilderState,
@@ -60,8 +60,12 @@ impl ShapeBuilderCreator for CubBezBuilder {
 }
 
 impl ShapeBuilderBehaviour for CubBezBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, mut constraints: Constraints) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
+
+        // we always want to allow horizontal and vertical constraints while building a cubbez
+        constraints.ratios.insert(ConstraintRatio::Horizontal);
+        constraints.ratios.insert(ConstraintRatio::Vertical);
 
         match (&mut self.state, event) {
             (CubBezBuilderState::Start(start), PenEvent::Down { element, .. }) => {
@@ -72,16 +76,9 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                     cp1: element.pos,
                 };
             }
-            (CubBezBuilderState::Start(start), PenEvent::Up { element, .. }) => {
-                // should not be reachable, but just in case we transition here too
-                self.state = CubBezBuilderState::Cp1 {
-                    start: *start,
-                    cp1: element.pos,
-                };
-            }
             (CubBezBuilderState::Start(_), ..) => {}
-            (CubBezBuilderState::Cp1 { cp1, .. }, PenEvent::Down { element, .. }) => {
-                *cp1 = element.pos;
+            (CubBezBuilderState::Cp1 { start, cp1, .. }, PenEvent::Down { element, .. }) => {
+                *cp1 = constraints.constrain(element.pos - *start) + *start;
             }
             (CubBezBuilderState::Cp1 { start, cp1 }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::Cp2 {
@@ -91,8 +88,8 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 };
             }
             (CubBezBuilderState::Cp1 { .. }, ..) => {}
-            (CubBezBuilderState::Cp2 { cp2, .. }, PenEvent::Down { element, .. }) => {
-                *cp2 = element.pos;
+            (CubBezBuilderState::Cp2 { cp1, cp2, .. }, PenEvent::Down { element, .. }) => {
+                *cp2 = constraints.constrain(element.pos - *cp1) + *cp1;
             }
             (CubBezBuilderState::Cp2 { start, cp1, cp2 }, PenEvent::Up { element, .. }) => {
                 self.state = CubBezBuilderState::End {
@@ -103,8 +100,8 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 };
             }
             (CubBezBuilderState::Cp2 { .. }, ..) => {}
-            (CubBezBuilderState::End { end, .. }, PenEvent::Down { element, .. }) => {
-                *end = element.pos;
+            (CubBezBuilderState::End { cp2, end, .. }, PenEvent::Down { element, .. }) => {
+                *end = constraints.constrain(element.pos - *cp2) + *cp2;
             }
             (
                 CubBezBuilderState::End {
@@ -128,22 +125,23 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
         let stroke_width = style.stroke_width();
 
         match &self.state {
-            CubBezBuilderState::Start(start) => AABB::from_half_extents(
+            CubBezBuilderState::Start(start) => Some(AABB::from_half_extents(
                 na::Point2::from(*start),
                 na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
-            ),
-            CubBezBuilderState::Cp1 { start, cp1 } => {
+            )),
+            CubBezBuilderState::Cp1 { start, cp1 } => Some(
                 AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp1))
-                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom)
-            }
+                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+            ),
             CubBezBuilderState::Cp2 { start, cp1, cp2 } => {
                 let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*cp2));
                 aabb.take_point(na::Point2::from(*cp1));
-                aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom)
+
+                Some(aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom))
             }
             CubBezBuilderState::End {
                 start,
@@ -154,7 +152,8 @@ impl ShapeBuilderBehaviour for CubBezBuilder {
                 let mut aabb = AABB::new_positive(na::Point2::from(*start), na::Point2::from(*end));
                 aabb.take_point(na::Point2::from(*cp1));
                 aabb.take_point(na::Point2::from(*cp2));
-                aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom)
+
+                Some(aabb.loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom))
             }
         }
     }

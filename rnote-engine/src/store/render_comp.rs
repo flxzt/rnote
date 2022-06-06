@@ -44,6 +44,7 @@ impl Default for RenderComponent {
 }
 
 impl StrokeStore {
+    /// Reloads the slotmap with empty render components from the keys returned from the primary map, stroke_components.
     pub fn reload_render_components_slotmap(&mut self) {
         self.render_components = slotmap::SecondaryMap::new();
         self.stroke_components.keys().for_each(|key| {
@@ -312,7 +313,10 @@ impl StrokeStore {
                     render_comp.images.append(&mut images);
                 }
                 // regenerate everything for strokes that don't support generating svgs for the last added elements
-                Stroke::ShapeStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {
+                Stroke::ShapeStroke(_)
+                | Stroke::TextStroke(_)
+                | Stroke::VectorImage(_)
+                | Stroke::BitmapImage(_) => {
                     self.regenerate_rendering_for_stroke_threaded(
                         tasks_tx,
                         key,
@@ -402,12 +406,7 @@ impl StrokeStore {
     }
 
     /// Draws the selection
-    pub fn draw_selection_snapshot(
-        &self,
-        snapshot: &Snapshot,
-        _doc_bounds: AABB,
-        viewport: AABB,
-    ) {
+    pub fn draw_selection_snapshot(&self, snapshot: &Snapshot, _doc_bounds: AABB, viewport: AABB) {
         self.selection_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
             .for_each(|key| {
@@ -424,6 +423,21 @@ impl StrokeStore {
                     }
                 }
             });
+    }
+
+    // Draws the given strokes on a piet render context. Note that even trashed strokes get drawn
+    pub fn draw_stroke_keys_to_piet(
+        &self,
+        keys: &[StrokeKey],
+        piet_cx: &mut impl piet::RenderContext,
+        image_scale: f64,
+    ) -> anyhow::Result<()> {
+        for &key in keys {
+            if let Some(stroke) = self.stroke_components.get(key) {
+                stroke.draw(piet_cx, image_scale)?;
+            }
+        }
+        Ok(())
     }
 
     /// Draws a placeholder for the given stroke bounds

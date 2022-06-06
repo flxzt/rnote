@@ -9,10 +9,10 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::ShapeBuilderBehaviour;
+use super::{ConstraintRatio, Constraints, ShapeBuilderBehaviour};
 
 #[derive(Debug, Clone)]
-/// The state
+/// The foci ellipse builder state
 pub enum FociEllipseBuilderState {
     /// first
     First(na::Vector2<f64>),
@@ -43,7 +43,7 @@ impl ShapeBuilderCreator for FociEllipseBuilder {
 }
 
 impl ShapeBuilderBehaviour for FociEllipseBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, mut constraints: Constraints) -> BuilderProgress {
         //log::debug!("state: {:?}, event: {:?}", &self.state, &event);
 
         match (&mut self.state, event) {
@@ -55,7 +55,11 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
             }
             (FociEllipseBuilderState::First(_), _) => {}
             (FociEllipseBuilderState::Foci(foci), PenEvent::Down { element, .. }) => {
-                foci[1] = element.pos;
+                // we want to allow horizontal and vertical constraints while setting the second foci
+                constraints.ratios.insert(ConstraintRatio::Horizontal);
+                constraints.ratios.insert(ConstraintRatio::Vertical);
+
+                foci[1] = constraints.constrain(element.pos - foci[0]) + foci[0];
             }
             (FociEllipseBuilderState::Foci(foci), PenEvent::Up { element, .. }) => {
                 self.state = FociEllipseBuilderState::FociAndPoint {
@@ -81,23 +85,26 @@ impl ShapeBuilderBehaviour for FociEllipseBuilder {
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
         let stroke_width = style.stroke_width();
 
         match &self.state {
-            FociEllipseBuilderState::First(point) => AABB::from_half_extents(
+            FociEllipseBuilderState::First(point) => Some(AABB::from_half_extents(
                 na::Point2::from(*point),
                 na::Vector2::repeat(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
-            ),
-            FociEllipseBuilderState::Foci(foci) => {
+            )),
+            FociEllipseBuilderState::Foci(foci) => Some(
                 AABB::new_positive(na::Point2::from(foci[0]), na::Point2::from(foci[1]))
-                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom)
-            }
+                    .loosened(stroke_width.max(drawhelpers::POS_INDICATOR_RADIUS) / zoom),
+            ),
             FociEllipseBuilderState::FociAndPoint { foci, point } => {
                 let ellipse = Ellipse::from_foci_and_point(*foci, *point);
-                ellipse
-                    .composed_bounds(style)
-                    .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
+
+                Some(
+                    ellipse
+                        .composed_bounds(style)
+                        .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+                )
             }
         }
     }

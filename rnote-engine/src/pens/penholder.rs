@@ -1,10 +1,9 @@
-use crate::engine::EngineTaskSender;
+use crate::engine::{EngineView, EngineViewMut};
 use crate::pens::shortcuts::ShortcutAction;
 use crate::pens::Tools;
 
-use crate::document::Document;
-use crate::surfaceflags::SurfaceFlags;
-use crate::{Camera, DrawOnDocBehaviour, StrokeStore};
+use crate::widgetflags::WidgetFlags;
+use crate::DrawOnDocBehaviour;
 use piet::RenderContext;
 use rnote_compose::penhelpers::{PenEvent, ShortcutKey};
 
@@ -14,7 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use super::penbehaviour::PenProgress;
 use super::penmode::PenModeState;
-use super::{AudioPlayer, Brush, Eraser, PenBehaviour, PenMode, Selector, Shaper, Shortcuts};
+use super::{Brush, Eraser, PenBehaviour, PenMode, Selector, Shaper, Shortcuts, Typewriter};
 
 #[derive(
     Eq,
@@ -40,6 +39,9 @@ pub enum PenStyle {
     #[enum_value(name = "Shaper", nick = "shaper")]
     #[serde(rename = "shaper")]
     Shaper,
+    #[enum_value(name = "Typewriter", nick = "typewriter")]
+    #[serde(rename = "typewriter")]
+    Typewriter,
     #[enum_value(name = "Eraser", nick = "eraser")]
     #[serde(rename = "eraser")]
     Eraser,
@@ -61,10 +63,8 @@ impl TryFrom<u32> for PenStyle {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
-            "PenStyle try_from::<u32>() for value {} failed",
-            value
-        ))
+        num_traits::FromPrimitive::from_u32(value)
+            .ok_or_else(|| anyhow::anyhow!("PenStyle try_from::<u32>() for value {} failed", value))
     }
 }
 
@@ -89,6 +89,7 @@ impl PenStyle {
         match self {
             Self::Brush => String::from("pen-brush-symbolic"),
             Self::Shaper => String::from("pen-shaper-symbolic"),
+            Self::Typewriter => String::from("pen-typewriter-symbolic"),
             Self::Eraser => String::from("pen-eraser-symbolic"),
             Self::Selector => String::from("pen-selector-symbolic"),
             Self::Tools => String::from("pen-tools-symbolic"),
@@ -96,15 +97,17 @@ impl PenStyle {
     }
 }
 
-/// This holds the pens and is the main interaction point when changing the pen style / emitting pen events.
+/// This holds the pens and related state and handles pen events.
 #[allow(missing_debug_implementations)]
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 #[serde(default, rename = "penholder")]
 pub struct PenHolder {
     #[serde(rename = "brush")]
     pub brush: Brush,
     #[serde(rename = "shaper")]
     pub shaper: Shaper,
+    #[serde(rename = "typewriter")]
+    pub typewriter: Typewriter,
     #[serde(rename = "eraser")]
     pub eraser: Eraser,
     #[serde(rename = "selector")]
@@ -118,53 +121,26 @@ pub struct PenHolder {
 
     #[serde(skip)]
     pen_progress: PenProgress,
-    #[serde(rename = "pen_sounds")]
-    // we need this outside of the audioplayer, because we skip (de) serializing it.
-    pen_sounds: bool,
-    #[serde(skip)]
-    audioplayer: Option<AudioPlayer>,
 }
 
 impl Default for PenHolder {
     fn default() -> Self {
-        let pen_sounds = false;
-        let audioplayer = AudioPlayer::new()
-            .map_err(|e| {
-                log::error!(
-                    "failed to create a new audio player in PenHolder::default(), Err {}",
-                    e
-                );
-            })
-            .map(|mut audioplayer| {
-                audioplayer.enabled = pen_sounds;
-                audioplayer
-            })
-            .ok();
-
         Self {
             brush: Brush::default(),
             shaper: Shaper::default(),
             eraser: Eraser::default(),
             selector: Selector::default(),
+            typewriter: Typewriter::default(),
             tools: Tools::default(),
             pen_mode_state: PenModeState::default(),
             shortcuts: Shortcuts::default(),
 
             pen_progress: PenProgress::Idle,
-            pen_sounds,
-            audioplayer,
         }
     }
 }
 
 impl PenHolder {
-    /// Use this to import and overwrite self (e.g. when loading from settings)
-    pub fn import(&mut self, penholder: Self) {
-        *self = penholder;
-        // Set the pen sounds to update the audioplayer
-        self.set_pen_sounds(self.pen_sounds)
-    }
-
     /// Registers a new shortcut key and action
     pub fn register_new_shortcut(&mut self, key: ShortcutKey, action: ShortcutAction) {
         self.shortcuts.insert(key, action);
@@ -175,6 +151,7 @@ impl PenHolder {
         self.shortcuts.remove(&key)
     }
 
+    // Gets the current registered action the the given shortcut key
     pub fn get_shortcut_action(&self, key: ShortcutKey) -> Option<ShortcutAction> {
         self.shortcuts.get(&key).cloned()
     }
@@ -183,7 +160,7 @@ impl PenHolder {
     pub fn list_current_shortcuts(&self) -> Vec<(ShortcutKey, ShortcutAction)> {
         self.shortcuts
             .iter()
-            .map(|(key, action)| (key.clone(), action.clone()))
+            .map(|(key, action)| (*key, *action))
             .collect()
     }
 
@@ -192,168 +169,133 @@ impl PenHolder {
         self.pen_mode_state.current_style_w_override()
     }
 
-    /// Only to be called when forcing changing the style without any side effects
-    pub fn force_style_without_sideeffects(&mut self, style: PenStyle) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    /// forces a new style without triggering any side effects
+    pub fn force_style_without_sideeffects(&mut self, style: PenStyle) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         self.pen_mode_state.set_style_all_modes(style);
 
-        surface_flags.penholder_changed = true;
-        surface_flags.redraw = true;
+        widget_flags.refresh_ui = true;
+        widget_flags.redraw = true;
 
-        surface_flags
+        widget_flags
     }
 
-    /// Only to be called when forcing changing the style override without any side effects
+    /// forces a new style override without triggering any side effects
     pub fn force_style_override_without_sideeffects(
         &mut self,
         style_override: Option<PenStyle>,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         self.pen_mode_state.set_style_override(style_override);
 
-        surface_flags.penholder_changed = true;
-        surface_flags.redraw = true;
+        widget_flags.refresh_ui = true;
+        widget_flags.redraw = true;
 
-        surface_flags
+        widget_flags
     }
 
-    /// wether pen sounds are enabled
-    pub fn pen_sounds(&self) -> bool {
-        self.pen_sounds
-    }
-
-    /// enables / disables the pen sounds
-    pub fn set_pen_sounds(&mut self, pen_sounds: bool) {
-        self.pen_sounds = pen_sounds;
-        if let Some(audioplayer) = self.audioplayer.as_mut() {
-            audioplayer.enabled = pen_sounds;
-        }
-    }
-
+    /// the current pen progress
     pub fn current_pen_progress(&self) -> PenProgress {
         self.pen_progress
     }
 
+    /// change the pen style
     pub fn change_style(
         &mut self,
         new_style: PenStyle,
-        tasks_tx: EngineTaskSender,
-        doc: &mut crate::document::Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if self.pen_mode_state.style() != new_style {
             // Cancel current pen
-            surface_flags.merge_with_other(self.handle_pen_event(
+            widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
-                tasks_tx,
-                doc,
-                store,
-                camera,
+                engine_view,
             ));
 
             // Deselecting when changing the style
-            let all_strokes = store.selection_keys_as_rendered();
-            store.set_selected_keys(&all_strokes, false);
+            let all_strokes = engine_view.store.selection_keys_as_rendered();
+            engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style(new_style);
 
-            surface_flags.penholder_changed = true;
-            surface_flags.redraw = true;
+            widget_flags.refresh_ui = true;
+            widget_flags.redraw = true;
         }
 
-        surface_flags
+        widget_flags
     }
 
+    /// change the style override
     pub fn change_style_override(
         &mut self,
         new_style_override: Option<PenStyle>,
-        tasks_tx: EngineTaskSender,
-        doc: &mut crate::document::Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         //log::debug!("current_style_override: {:?}, new_style_override: {:?}", self.style_override, new_style_override);
 
         if self.pen_mode_state.style_override() != new_style_override {
             // Cancel current pen
-            surface_flags.merge_with_other(self.handle_pen_event(
+            widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
-                tasks_tx,
-                doc,
-                store,
-                camera,
+                engine_view,
             ));
 
             // Deselecting when changing the style override
-            let all_strokes = store.selection_keys_as_rendered();
-            store.set_selected_keys(&all_strokes, false);
+            let all_strokes = engine_view.store.selection_keys_as_rendered();
+            engine_view.store.set_selected_keys(&all_strokes, false);
 
             self.pen_mode_state.set_style_override(new_style_override);
 
-            surface_flags.penholder_changed = true;
-            surface_flags.redraw = true;
+            widget_flags.refresh_ui = true;
+            widget_flags.redraw = true;
         }
 
-        surface_flags
+        widget_flags
     }
 
+    /// change the pen mode (pen, eraser, etc.). Relevant for stylus input
     pub fn change_pen_mode(
         &mut self,
         pen_mode: PenMode,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if self.pen_mode_state.pen_mode() != pen_mode {
-            surface_flags.merge_with_other(self.handle_pen_event(
+            widget_flags.merge_with_other(self.handle_pen_event(
                 PenEvent::Cancel,
                 None,
-                tasks_tx,
-                doc,
-                store,
-                camera,
+                engine_view,
             ));
             self.pen_mode_state.set_pen_mode(pen_mode);
 
-            surface_flags.redraw = true;
-            surface_flags.penholder_changed = true;
+            widget_flags.redraw = true;
+            widget_flags.refresh_ui = true;
         }
 
-        surface_flags
+        widget_flags
     }
 
+    /// Handle a pen event
     pub fn handle_pen_event(
         &mut self,
         event: PenEvent,
         pen_mode: Option<PenMode>,
-        tasks_tx: EngineTaskSender,
-        doc: &mut Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
-        surface_flags.redraw = true;
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+        widget_flags.redraw = true;
 
         if let Some(pen_mode) = pen_mode {
-            surface_flags.merge_with_other(self.change_pen_mode(
-                pen_mode,
-                tasks_tx.clone(),
-                doc,
-                store,
-                camera,
-            ));
+            widget_flags.merge_with_other(self.change_pen_mode(pen_mode, engine_view));
         }
 
         /*
@@ -371,90 +313,59 @@ impl PenHolder {
             | PenEvent::Up { shortcut_keys, .. }
             | PenEvent::Proximity { shortcut_keys, .. } => {
                 if shortcut_keys.contains(&ShortcutKey::MouseSecondaryButton) {
-                    surface_flags.merge_with_other(self.handle_pressed_shortcut_key(
+                    widget_flags.merge_with_other(self.handle_pressed_shortcut_key(
                         ShortcutKey::MouseSecondaryButton,
-                        tasks_tx.clone(),
-                        doc,
-                        store,
-                        camera,
+                        engine_view,
                     ));
                 }
             }
+            PenEvent::KeyPressed { .. } => {}
             PenEvent::Cancel => {}
         }
 
         // Handle the events with the current pen
-        let (pen_progress, other_surface_flags) = match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Shaper => self.shaper.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Eraser => self.eraser.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Selector => self.selector.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
-            PenStyle::Tools => self.tools.handle_event(
-                event,
-                tasks_tx,
-                doc,
-                store,
-                camera,
-                self.audioplayer.as_mut(),
-            ),
+        let (pen_progress, other_widget_flags) = match self.current_style_w_override() {
+            PenStyle::Brush => self.brush.handle_event(event, engine_view),
+            PenStyle::Shaper => self.shaper.handle_event(event, engine_view),
+            PenStyle::Typewriter => self.typewriter.handle_event(event, engine_view),
+            PenStyle::Eraser => self.eraser.handle_event(event, engine_view),
+            PenStyle::Selector => self.selector.handle_event(event, engine_view),
+            PenStyle::Tools => self.tools.handle_event(event, engine_view),
         };
 
-        surface_flags.merge_with_other(other_surface_flags);
+        widget_flags.merge_with_other(other_widget_flags);
 
-        // Handle the new pen progress
+        widget_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+
+        widget_flags
+    }
+
+    fn handle_pen_progress(&mut self, pen_progress: PenProgress) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
+
         match pen_progress {
             PenProgress::Idle => {}
             PenProgress::InProgress => {}
             PenProgress::Finished => {
-                // Disable the style override when pen is finished
+                // take the style override when pen is finished
                 if self.pen_mode_state.take_style_override().is_some() {
-                    surface_flags.penholder_changed = true;
+                    widget_flags.refresh_ui = true;
                 }
             }
         }
 
         self.pen_progress = pen_progress;
 
-        surface_flags
+        widget_flags
     }
 
+    /// Handle a pressed shortcut key
     pub fn handle_pressed_shortcut_key(
         &mut self,
         shortcut_key: ShortcutKey,
-        tasks_tx: EngineTaskSender,
-        doc: &mut crate::document::Document,
-        store: &mut StrokeStore,
-        camera: &mut Camera,
-    ) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         if let Some(action) = self.get_shortcut_action(shortcut_key) {
             match action {
@@ -463,50 +374,109 @@ impl PenHolder {
                     permanent,
                 } => {
                     if permanent {
-                        surface_flags.merge_with_other(
-                            self.change_style(new_style, tasks_tx, doc, store, camera),
-                        );
+                        widget_flags.merge_with_other(self.change_style(new_style, engine_view));
                     } else {
-                        surface_flags.merge_with_other(self.change_style_override(
-                            Some(new_style),
-                            tasks_tx,
-                            doc,
-                            store,
-                            camera,
-                        ));
+                        widget_flags.merge_with_other(
+                            self.change_style_override(Some(new_style), engine_view),
+                        );
                     }
                 }
             }
         }
 
-        surface_flags
+        widget_flags
+    }
+
+    /// fetches clipboard content from the current pen
+    pub fn fetch_clipboard_content(
+        &self,
+        engine_view: &EngineView,
+    ) -> anyhow::Result<Option<(Vec<u8>, String)>> {
+        match self.current_style_w_override() {
+            PenStyle::Brush => self.brush.fetch_clipboard_content(engine_view),
+            PenStyle::Shaper => self.shaper.fetch_clipboard_content(engine_view),
+            PenStyle::Typewriter => self.typewriter.fetch_clipboard_content(engine_view),
+            PenStyle::Eraser => self.eraser.fetch_clipboard_content(engine_view),
+            PenStyle::Selector => self.selector.fetch_clipboard_content(engine_view),
+            PenStyle::Tools => self.tools.fetch_clipboard_content(engine_view),
+        }
+    }
+
+    /// Pastes the clipboard content into the current pen
+    pub fn paste_clipboard_content(
+        &mut self,
+        clipboard_content: &[u8],
+        mime_types: Vec<String>,
+        engine_view: &mut EngineViewMut,
+    ) -> WidgetFlags {
+        let (pen_progress, mut widget_flags) = match self.current_style_w_override() {
+            PenStyle::Brush => {
+                self.brush
+                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
+            }
+            PenStyle::Shaper => {
+                self.shaper
+                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
+            }
+            PenStyle::Typewriter => {
+                self.typewriter
+                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
+            }
+            PenStyle::Eraser => {
+                self.eraser
+                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
+            }
+            PenStyle::Selector => {
+                self.selector
+                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
+            }
+            PenStyle::Tools => {
+                self.tools
+                    .paste_clipboard_content(clipboard_content, mime_types, engine_view)
+            }
+        };
+
+        widget_flags.merge_with_other(self.handle_pen_progress(pen_progress));
+
+        widget_flags
+    }
+
+    // Updates the penholder and pens internal state
+    pub fn update_internal_state(&mut self, engine_view: &EngineView) {
+        self.brush.update_internal_state(engine_view);
+        self.shaper.update_internal_state(engine_view);
+        self.typewriter.update_internal_state(engine_view);
+        self.eraser.update_internal_state(engine_view);
+        self.selector.update_internal_state(engine_view);
+        self.tools.update_internal_state(engine_view);
     }
 }
 
 impl DrawOnDocBehaviour for PenHolder {
-    fn bounds_on_doc(&self, doc_bounds: AABB, camera: &Camera) -> Option<AABB> {
+    fn bounds_on_doc(&self, engine_view: &EngineView) -> Option<AABB> {
         match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.bounds_on_doc(doc_bounds, camera),
-            PenStyle::Shaper => self.shaper.bounds_on_doc(doc_bounds, camera),
-            PenStyle::Eraser => self.eraser.bounds_on_doc(doc_bounds, camera),
-            PenStyle::Selector => self.selector.bounds_on_doc(doc_bounds, camera),
-            PenStyle::Tools => self.tools.bounds_on_doc(doc_bounds, camera),
+            PenStyle::Brush => self.brush.bounds_on_doc(engine_view),
+            PenStyle::Shaper => self.shaper.bounds_on_doc(engine_view),
+            PenStyle::Typewriter => self.typewriter.bounds_on_doc(engine_view),
+            PenStyle::Eraser => self.eraser.bounds_on_doc(engine_view),
+            PenStyle::Selector => self.selector.bounds_on_doc(engine_view),
+            PenStyle::Tools => self.tools.bounds_on_doc(engine_view),
         }
     }
     fn draw_on_doc(
         &self,
         cx: &mut piet_cairo::CairoRenderContext,
-        doc_bounds: AABB,
-        camera: &Camera,
+        engine_view: &EngineView,
     ) -> anyhow::Result<()> {
         cx.save().map_err(|e| anyhow::anyhow!("{}", e))?;
 
         match self.current_style_w_override() {
-            PenStyle::Brush => self.brush.draw_on_doc(cx, doc_bounds, camera),
-            PenStyle::Shaper => self.shaper.draw_on_doc(cx, doc_bounds, camera),
-            PenStyle::Eraser => self.eraser.draw_on_doc(cx, doc_bounds, camera),
-            PenStyle::Selector => self.selector.draw_on_doc(cx, doc_bounds, camera),
-            PenStyle::Tools => self.tools.draw_on_doc(cx, doc_bounds, camera),
+            PenStyle::Brush => self.brush.draw_on_doc(cx, engine_view),
+            PenStyle::Shaper => self.shaper.draw_on_doc(cx, engine_view),
+            PenStyle::Typewriter => self.typewriter.draw_on_doc(cx, engine_view),
+            PenStyle::Eraser => self.eraser.draw_on_doc(cx, engine_view),
+            PenStyle::Selector => self.selector.draw_on_doc(cx, engine_view),
+            PenStyle::Tools => self.tools.draw_on_doc(cx, engine_view),
         }?;
 
         cx.restore().map_err(|e| anyhow::anyhow!("{}", e))?;

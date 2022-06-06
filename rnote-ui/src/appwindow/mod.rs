@@ -1,6 +1,7 @@
 mod appsettings;
 mod appwindowactions;
 
+use std::ops::Range;
 use std::{
     cell::{Cell, RefCell},
     path::Path,
@@ -10,10 +11,11 @@ use std::{
 use adw::{prelude::*, subclass::prelude::*};
 use gettextrs::gettext;
 use gtk4::{
-    gdk, gio, glib, glib::clone, subclass::prelude::*, Application, Box, Button, CompositeTemplate,
-    CssProvider, EventControllerScroll, EventControllerScrollFlags, EventSequenceState,
-    FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit, PackType, PolicyType,
-    ProgressBar, PropagationPhase, Revealer, ScrolledWindow, Separator, StyleContext, ToggleButton,
+    gdk, gio, glib, glib::clone, subclass::prelude::*, Align, Application, ArrowType, Box, Button,
+    CompositeTemplate, CornerType, CssProvider, EventControllerScroll, EventControllerScrollFlags,
+    EventSequenceState, FileChooserNative, GestureDrag, GestureZoom, Grid, IconTheme, Inhibit,
+    PackType, PolicyType, PositionType, ProgressBar, PropagationPhase, Revealer, ScrolledWindow,
+    Separator, StyleContext, ToggleButton,
 };
 use once_cell::sync::Lazy;
 use rnote_compose::penhelpers::PenEvent;
@@ -33,7 +35,7 @@ use rnote_engine::{
     engine::EngineTask,
     pens::penholder::PenStyle,
     strokes::{BitmapImage, VectorImage},
-    Camera, SurfaceFlags,
+    Camera, WidgetFlags,
 };
 
 mod imp {
@@ -112,6 +114,8 @@ mod imp {
         #[template_child]
         pub narrow_selector_toggle: TemplateChild<ToggleButton>,
         #[template_child]
+        pub narrow_typewriter_toggle: TemplateChild<ToggleButton>,
+        #[template_child]
         pub narrow_tools_toggle: TemplateChild<ToggleButton>,
         #[template_child]
         pub penssidebar: TemplateChild<PensSideBar>,
@@ -157,6 +161,7 @@ mod imp {
                 narrow_pens_toggles_revealer: TemplateChild::<Revealer>::default(),
                 narrow_brush_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_shaper_toggle: TemplateChild::<ToggleButton>::default(),
+                narrow_typewriter_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_eraser_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_selector_toggle: TemplateChild::<ToggleButton>::default(),
                 narrow_tools_toggle: TemplateChild::<ToggleButton>::default(),
@@ -213,6 +218,12 @@ mod imp {
             self.narrow_shaper_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_shaper_toggle| {
                 if narrow_shaper_toggle.is_active() {
                     adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Shaper.nick().to_variant()));
+                }
+            }));
+
+            self.narrow_typewriter_toggle.connect_toggled(clone!(@weak obj as appwindow => move |narrow_typewriter_toggle| {
+                if narrow_typewriter_toggle.is_active() {
+                    adw::prelude::ActionGroupExt::activate_action(&appwindow, "pen-style", Some(&PenStyle::Typewriter.nick().to_variant()));
                 }
             }));
 
@@ -308,12 +319,10 @@ mod imp {
 
                     if autosave {
                         self.update_autosave_handler(obj);
-                    } else {
-                        if let Some(autosave_source_id) =
-                            self.autosave_source_id.borrow_mut().take()
-                        {
-                            autosave_source_id.remove();
-                        }
+                    } else if let Some(autosave_source_id) =
+                        self.autosave_source_id.borrow_mut().take()
+                    {
+                        autosave_source_id.remove();
                     }
                 }
                 "autosave-interval-secs" => {
@@ -333,6 +342,8 @@ mod imp {
                         .expect("The value needs to be of type `bool`.");
 
                     self.righthanded.replace(righthanded);
+
+                    self.handle_righthanded_property(righthanded);
                 }
                 _ => unimplemented!(),
             }
@@ -476,7 +487,7 @@ mod imp {
 
                         appwindow.flap_header().remove(&appwindow.flap_close_button());
                         appwindow.flap_header().pack_end(&appwindow.flap_close_button());
-                        appwindow.flap_close_button().set_icon_name("arrow1-left-symbolic");
+                        appwindow.flap_close_button().set_icon_name("left-symbolic");
                     } else if flap.flap_position() == PackType::End {
                         workspace_headerbar.set_show_start_title_buttons(false);
                         workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
@@ -485,7 +496,7 @@ mod imp {
 
                         appwindow.flap_header().remove(&appwindow.flap_close_button());
                         appwindow.flap_header().pack_start(&appwindow.flap_close_button());
-                        appwindow.flap_close_button().set_icon_name("arrow1-right-symbolic");
+                        appwindow.flap_close_button().set_icon_name("right-symbolic");
                     }
                 }),
             );
@@ -538,6 +549,182 @@ mod imp {
                     }
                 }),
             );
+        }
+
+        fn handle_righthanded_property(&self, righthanded: bool) {
+            let appwindow = self.instance();
+
+            if righthanded {
+                appwindow.flap().set_flap_position(PackType::Start);
+                appwindow.main_grid().remove(&appwindow.sidebar_grid());
+                appwindow.main_grid().remove(&appwindow.sidebar_sep());
+                appwindow
+                    .main_grid()
+                    .remove(&appwindow.narrow_pens_toggles_revealer());
+                appwindow.main_grid().remove(&appwindow.canvas_box());
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.sidebar_grid(), 0, 1, 1, 2);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.narrow_pens_toggles_revealer(), 2, 1, 1, 1);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.canvas_box(), 2, 2, 1, 1);
+                appwindow.canvas_quickactions_box().set_halign(Align::End);
+                appwindow
+                    .mainheader()
+                    .appmenu()
+                    .righthanded_toggle()
+                    .set_active(true);
+                appwindow
+                    .mainheader()
+                    .headerbar()
+                    .remove(&appwindow.mainheader().pens_toggles_squeezer());
+                appwindow
+                    .mainheader()
+                    .headerbar()
+                    .pack_start(&appwindow.mainheader().pens_toggles_squeezer());
+
+                appwindow
+                    .canvas_scroller()
+                    .set_window_placement(CornerType::BottomLeft);
+                appwindow
+                    .sidebar_scroller()
+                    .set_window_placement(CornerType::TopRight);
+                appwindow
+                    .settings_panel()
+                    .settings_scroller()
+                    .set_window_placement(CornerType::TopRight);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .brushconfig_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .brushstyle_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .colorpicker()
+                    .set_property("position", PositionType::Left.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_colorpicker()
+                    .set_property("position", PositionType::Left.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .fill_colorpicker()
+                    .set_property("position", PositionType::Left.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shapeconfig_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shapebuildertype_menubutton()
+                    .set_direction(ArrowType::Right);
+                appwindow
+                    .penssidebar()
+                    .typewriter_page()
+                    .colorpicker()
+                    .set_property("position", PositionType::Left.to_value());
+            } else {
+                appwindow.flap().set_flap_position(PackType::End);
+                appwindow.main_grid().remove(&appwindow.canvas_box());
+                appwindow
+                    .main_grid()
+                    .remove(&appwindow.narrow_pens_toggles_revealer());
+                appwindow.main_grid().remove(&appwindow.sidebar_sep());
+                appwindow.main_grid().remove(&appwindow.sidebar_grid());
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.canvas_box(), 0, 2, 1, 1);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.narrow_pens_toggles_revealer(), 0, 1, 1, 1);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.sidebar_sep(), 1, 1, 1, 2);
+                appwindow
+                    .main_grid()
+                    .attach(&appwindow.sidebar_grid(), 2, 1, 1, 2);
+                appwindow.canvas_quickactions_box().set_halign(Align::Start);
+                appwindow
+                    .mainheader()
+                    .appmenu()
+                    .lefthanded_toggle()
+                    .set_active(true);
+                appwindow
+                    .mainheader()
+                    .headerbar()
+                    .remove(&appwindow.mainheader().pens_toggles_squeezer());
+                appwindow
+                    .mainheader()
+                    .headerbar()
+                    .pack_end(&appwindow.mainheader().pens_toggles_squeezer());
+
+                appwindow
+                    .canvas_scroller()
+                    .set_window_placement(CornerType::BottomRight);
+                appwindow
+                    .sidebar_scroller()
+                    .set_window_placement(CornerType::TopLeft);
+                appwindow
+                    .settings_panel()
+                    .settings_scroller()
+                    .set_window_placement(CornerType::TopLeft);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .brushconfig_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .brushstyle_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .brush_page()
+                    .colorpicker()
+                    .set_property("position", PositionType::Right.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .stroke_colorpicker()
+                    .set_property("position", PositionType::Right.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .fill_colorpicker()
+                    .set_property("position", PositionType::Right.to_value());
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shapeconfig_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .shaper_page()
+                    .shapebuildertype_menubutton()
+                    .set_direction(ArrowType::Left);
+                appwindow
+                    .penssidebar()
+                    .typewriter_page()
+                    .colorpicker()
+                    .set_property("position", PositionType::Right.to_value());
+            }
         }
     }
 }
@@ -721,6 +908,10 @@ impl RnoteAppWindow {
         self.imp().narrow_shaper_toggle.get()
     }
 
+    pub fn narrow_typewriter_toggle(&self) -> ToggleButton {
+        self.imp().narrow_typewriter_toggle.get()
+    }
+
     pub fn narrow_eraser_toggle(&self) -> ToggleButton {
         self.imp().narrow_eraser_toggle.get()
     }
@@ -737,30 +928,30 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get()
     }
 
-    // Returns true if the flags indicate that any loop that handles the flags should be quit. (Mainloop, or event loop in another thread)
-    pub fn handle_surface_flags(&self, surface_flags: SurfaceFlags) -> bool {
-        if surface_flags.quit {
+    // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
+    pub fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
+        if widget_flags.quit {
             return true;
         }
-        if surface_flags.redraw {
+        if widget_flags.redraw {
             self.canvas().queue_draw();
         }
-        if surface_flags.resize {
+        if widget_flags.resize {
             self.canvas().queue_resize();
         }
-        if surface_flags.penholder_changed {
+        if widget_flags.refresh_ui {
             adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
         }
-        if surface_flags.store_changed {
+        if widget_flags.indicate_changed_store {
             self.canvas().set_unsaved_changes(true);
             self.canvas().set_empty(false);
         }
-        if surface_flags.camera_changed {
+        if widget_flags.update_view {
             let camera_offset = self.canvas().engine().borrow().camera.offset;
             // this updates the canvas adjustment values with the ones from the camera
             self.canvas().update_camera_offset(camera_offset);
         }
-        if let Some(hide_scrollbars) = surface_flags.hide_scrollbars {
+        if let Some(hide_scrollbars) = widget_flags.hide_scrollbars {
             if hide_scrollbars {
                 self.canvas_scroller()
                     .set_policy(PolicyType::Never, PolicyType::Never);
@@ -769,10 +960,10 @@ impl RnoteAppWindow {
                     .set_policy(PolicyType::Automatic, PolicyType::Automatic);
             }
         }
-        if let Some(hide_undo) = surface_flags.hide_undo {
+        if let Some(hide_undo) = widget_flags.hide_undo {
             self.undo_button().set_sensitive(!hide_undo);
         }
-        if let Some(hide_redo) = surface_flags.hide_redo {
+        if let Some(hide_redo) = widget_flags.hide_redo {
             self.redo_button().set_sensitive(!hide_redo);
         }
 
@@ -789,6 +980,7 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get().init(self);
         self.imp().penssidebar.get().brush_page().init(self);
         self.imp().penssidebar.get().shaper_page().init(self);
+        self.imp().penssidebar.get().typewriter_page().init(self);
         self.imp().penssidebar.get().eraser_page().init(self);
         self.imp().penssidebar.get().selector_page().init(self);
         self.imp().penssidebar.get().tools_page().init(self);
@@ -972,8 +1164,8 @@ impl RnoteAppWindow {
 
                     // Only cancel the current pen when touch drawing is enabled
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_surface_flags(surface_flags);
+                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
+                        appwindow.handle_widget_flags(widget_flags);
                     }
 
                     zoom_begin.set(current_zoom);
@@ -1019,8 +1211,8 @@ impl RnoteAppWindow {
                     bbcenter_begin.set(None);
 
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_surface_flags(surface_flags);
+                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
+                        appwindow.handle_widget_flags(widget_flags);
                     }
 
                     appwindow.canvas().update_engine_rendering();
@@ -1036,8 +1228,8 @@ impl RnoteAppWindow {
                     bbcenter_begin.set(None);
 
                     if appwindow.canvas().touch_drawing() {
-                        let surface_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
-                        appwindow.handle_surface_flags(surface_flags);
+                        let widget_flags = appwindow.canvas().engine().borrow_mut().handle_pen_event(PenEvent::Cancel, None);
+                        appwindow.handle_widget_flags(widget_flags);
                     }
 
                     appwindow.canvas().update_engine_rendering();
@@ -1094,26 +1286,28 @@ impl RnoteAppWindow {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
         match utils::FileType::lookup_file_type(file) {
             utils::FileType::RnoteFile | utils::FileType::XoppFile => {
-                // Setting input file to hand it to the open overwrite dialog
+                // Set as input file to hand it to the dialog
                 app.set_input_file(Some(file.clone()));
 
                 if self.unsaved_changes() {
                     dialogs::dialog_open_overwrite(self);
-                } else {
-                    if let Err(e) = self.load_in_file(file, target_pos) {
-                        log::error!(
-                            "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
-                            e
-                        );
-                    }
+                } else if let Err(e) = self.load_in_file(file, target_pos) {
+                    log::error!(
+                        "failed to load in file with FileType::RnoteFile | FileType::XoppFile, {}",
+                        e
+                    );
                 }
             }
-            utils::FileType::VectorImageFile
-            | utils::FileType::BitmapImageFile
-            | utils::FileType::PdfFile => {
+            utils::FileType::VectorImageFile | utils::FileType::BitmapImageFile => {
                 if let Err(e) = self.load_in_file(file, target_pos) {
                     log::error!("failed to load in file with FileType::VectorImageFile / FileType::BitmapImageFile / FileType::Pdf, {}", e);
                 }
+            }
+            utils::FileType::PdfFile => {
+                // Set as input file to hand it to the dialog
+                app.set_input_file(Some(file.clone()));
+
+                dialogs::dialog_import_pdf_w_prefs(self, target_pos);
             }
             utils::FileType::Folder => {
                 if let Some(path) = file.path() {
@@ -1220,7 +1414,7 @@ impl RnoteAppWindow {
                     let result = file.load_bytes_future().await;
 
                     if let Ok((file_bytes, _)) = result {
-                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos).await {
+                        if let Err(e) = appwindow.load_in_pdf_bytes(file_bytes.to_vec(), target_pos, None).await {
                             adw::prelude::ActionGroupExt::activate_action(&appwindow, "error-toast", Some(&gettext("Opening PDF file failed.").to_variant()));
                             log::error!(
                                 "load_in_rnote_bytes() failed in load_in_file() with Err {}",
@@ -1350,12 +1544,12 @@ impl RnoteAppWindow {
             .generate_vectorimage_from_bytes(pos, bytes);
         let vectorimage = vectorimage_receiver.await??;
 
-        let surface_flags = self
+        let widget_flags = self
             .canvas()
             .engine()
             .borrow_mut()
             .import_generated_strokes(vec![Stroke::VectorImage(vectorimage)]);
-        self.handle_surface_flags(surface_flags);
+        self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);
 
@@ -1384,12 +1578,12 @@ impl RnoteAppWindow {
             .generate_bitmapimage_from_bytes(pos, bytes);
         let bitmapimage = bitmapimage_receiver.await??;
 
-        let surface_flags = self
+        let widget_flags = self
             .canvas()
             .engine()
             .borrow_mut()
             .import_generated_strokes(vec![Stroke::BitmapImage(bitmapimage)]);
-        self.handle_surface_flags(surface_flags);
+        self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);
 
@@ -1402,6 +1596,7 @@ impl RnoteAppWindow {
         bytes: Vec<u8>,
         // In the coordinate space of the doc
         target_pos: Option<na::Vector2<f64>>,
+        page_range: Option<Range<u32>>,
     ) -> anyhow::Result<()> {
         let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
 
@@ -1415,15 +1610,15 @@ impl RnoteAppWindow {
             .canvas()
             .engine()
             .borrow_mut()
-            .generate_strokes_from_pdf_bytes(pos, bytes);
+            .generate_strokes_from_pdf_bytes(bytes, pos, page_range);
         let strokes = strokes_receiver.await??;
 
-        let surface_flags = self
+        let widget_flags = self
             .canvas()
             .engine()
             .borrow_mut()
             .import_generated_strokes(strokes);
-        self.handle_surface_flags(surface_flags);
+        self.handle_widget_flags(widget_flags);
 
         app.set_input_file(None);
 
@@ -1446,22 +1641,69 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
-        let svg_data = self.canvas().engine().borrow().export_doc_as_svg_string()?;
+    pub async fn export_doc_as_svg(
+        &self,
+        file: &gio::File,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
+        let svg_data = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_doc_as_svg_string(with_background)?;
 
         utils::replace_file_future(svg_data.into_bytes(), file).await?;
 
         Ok(())
     }
 
-    pub async fn export_selection_as_svg(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn export_selection_as_svg(
+        &self,
+        file: &gio::File,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
         if let Some(selection_svg_data) = self
             .canvas()
             .engine()
             .borrow()
-            .export_selection_as_svg_string()?
+            .export_selection_as_svg_string(with_background)?
         {
             utils::replace_file_future(selection_svg_data.into_bytes(), file).await?;
+        }
+
+        Ok(())
+    }
+
+    pub async fn export_doc_as_bitmapimage(
+        &self,
+        file: &gio::File,
+        format: image::ImageOutputFormat,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
+        let svg_data = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_doc_as_bitmapimage_bytes(format, with_background)?;
+
+        utils::replace_file_future(svg_data, file).await?;
+
+        Ok(())
+    }
+
+    pub async fn export_selection_as_bitmapimage(
+        &self,
+        file: &gio::File,
+        format: image::ImageOutputFormat,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
+        if let Some(selection_svg_data) = self
+            .canvas()
+            .engine()
+            .borrow()
+            .export_selection_as_bitmapimage_bytes(format, with_background)?
+        {
+            utils::replace_file_future(selection_svg_data, file).await?;
         }
 
         Ok(())
@@ -1481,13 +1723,17 @@ impl RnoteAppWindow {
         Ok(())
     }
 
-    pub async fn export_doc_as_pdf(&self, file: &gio::File) -> anyhow::Result<()> {
+    pub async fn export_doc_as_pdf(
+        &self,
+        file: &gio::File,
+        with_background: bool,
+    ) -> anyhow::Result<()> {
         if let Some(basename) = file.basename() {
             let pdf_data_receiver = self
                 .canvas()
                 .engine()
                 .borrow()
-                .export_doc_as_pdf_bytes(basename.to_string_lossy().to_string());
+                .export_doc_as_pdf_bytes(basename.to_string_lossy().to_string(), with_background);
             let bytes = pdf_data_receiver.await??;
 
             utils::replace_file_future(bytes, file).await?;

@@ -1,5 +1,6 @@
 use crate::appwindow::RnoteAppWindow;
 use gtk4::{glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, ToggleButton};
+use rnote_engine::pens::tools::ToolsStyle;
 
 mod imp {
     use super::*;
@@ -91,5 +92,15 @@ impl ToolsPage {
                 adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"offsetcamera".to_variant()));
             }
         }));
+    }
+
+    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
+        let tools = appwindow.canvas().engine().borrow().penholder.tools.clone();
+
+        match tools.style {
+            ToolsStyle::VerticalSpace => self.toolstyle_verticalspace_toggle().set_active(true),
+            ToolsStyle::DragProximity => self.toolstyle_dragproximity_toggle().set_active(true),
+            ToolsStyle::OffsetCamera => self.toolstyle_offsetcamera_toggle().set_active(true),
+        }
     }
 }

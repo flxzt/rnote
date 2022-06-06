@@ -64,8 +64,8 @@ impl ShapeBehaviour for QuadraticBezier {
 }
 
 impl QuadraticBezier {
-    /// Returns offset distance of a quadratic bezier at t where t > 0.0, < 1.0. Currently a linear interpolation between the start and end offset.
-    /// TODO: finding a better algorithm based on curve length
+    /// Returns offset distance of a quadratic bezier at t with range [0.0, 1.0]. Currently a linear interpolation between the start and end offset.
+    /// TODO: finding a better algorithm based on the actual curve length
     pub fn quadbez_calc_offset_dist_at_t(
         &self,
         start_offset_dist: f64,

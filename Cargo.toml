@@ -8,3 +8,11 @@ members = [
     "rnote-fileformats",
 ]
 exclude = [ "./piet" ]
+
+
+[profile.dev]
+opt-level = 2
+debug = true
+
+[profile.release]
+opt-level = 3

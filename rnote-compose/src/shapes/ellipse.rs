@@ -16,7 +16,7 @@ pub struct Ellipse {
     /// The radii of the ellipse
     #[serde(rename = "radii")]
     pub radii: na::Vector2<f64>,
-    /// The transform
+    /// The transform of the  center of the ellipse
     #[serde(rename = "transform")]
     pub transform: Transform,
 }

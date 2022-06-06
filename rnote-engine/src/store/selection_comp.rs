@@ -1,13 +1,8 @@
-use std::sync::Arc;
-
 use super::{StrokeKey, StrokeStore};
 
-use geo::prelude::*;
-use p2d::bounding_volume::{BoundingVolume, AABB};
-use rayon::prelude::*;
-use rnote_compose::penpath::Element;
-use rnote_compose::shapes::ShapeBehaviour;
+use p2d::bounding_volume::AABB;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "selection_component")]
@@ -37,11 +32,9 @@ impl StrokeStore {
     }
 
     pub fn selected(&self, key: StrokeKey) -> Option<bool> {
-        if let Some(selection_comp) = self.selection_components.get(key) {
-            Some(selection_comp.selected)
-        } else {
-            None
-        }
+        self.selection_components
+            .get(key)
+            .map(|selection_comp| selection_comp.selected)
     }
 
     /// Sets if the stroke is currently selected
@@ -98,7 +91,7 @@ impl StrokeStore {
     /// Generates the bounds that include all selected strokes.
     /// None if no strokes are selected
     pub fn gen_selection_bounds(&self) -> Option<AABB> {
-        self.gen_bounds_for_strokes(&self.selection_keys_unordered())
+        self.bounds_for_strokes(&self.selection_keys_unordered())
     }
 
     /// Duplicates the selected keys
@@ -123,100 +116,5 @@ impl StrokeStore {
         );
 
         new_selected
-    }
-
-    /// selects the strokes intersecting a given polygon path. Already selected keys are **not** deselected.
-    /// Returns the new selected keys.
-    pub fn select_keys_intersecting_polygon_path(
-        &mut self,
-        path: &[Element],
-        viewport: AABB,
-    ) -> Vec<StrokeKey> {
-        let selector_polygon = {
-            let selector_path_points = path
-                .par_iter()
-                .map(|element| geo::Coordinate {
-                    x: element.pos[0],
-                    y: element.pos[1],
-                })
-                .collect::<Vec<geo::Coordinate<f64>>>();
-
-            geo::Polygon::new(selector_path_points.into(), vec![])
-        };
-
-        self.keys_sorted_chrono_intersecting_bounds(viewport)
-            .into_iter()
-            .filter_map(|key| {
-                // skip if stroke is trashed
-                if self.trashed(key)? {
-                    return None;
-                }
-
-                let stroke = self.stroke_components.get(key)?;
-                let stroke_bounds = stroke.bounds();
-
-                if selector_polygon.contains(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
-                {
-                    self.set_selected(key, true);
-                    self.update_chrono_to_last(key);
-
-                    return Some(key);
-                } else if selector_polygon
-                    .intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
-                {
-                    for &hitbox_elem in stroke.hitboxes().iter() {
-                        if !selector_polygon
-                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
-                        {
-                            return None;
-                        }
-                    }
-
-                    self.set_selected(key, true);
-                    self.update_chrono_to_last(key);
-
-                    return Some(key);
-                }
-
-                None
-            })
-            .collect()
-    }
-
-    /// selects the strokes intersecting a given aabb. Already selected keys are **not** deselected.
-    /// Returns the new selected keys
-    pub fn select_keys_intersecting_aabb(&mut self, aabb: AABB, viewport: AABB) -> Vec<StrokeKey> {
-        self.keys_sorted_chrono_intersecting_bounds(viewport)
-            .into_iter()
-            .filter_map(|key| {
-                // skip if stroke is trashed
-                if self.trashed(key)? {
-                    return None;
-                }
-
-                let stroke = self.stroke_components.get(key)?;
-                let stroke_bounds = stroke.bounds();
-
-                if aabb.contains(&stroke_bounds) {
-                    self.set_selected(key, true);
-                    self.update_chrono_to_last(key);
-
-                    return Some(key);
-                } else if aabb.intersects(&stroke_bounds) {
-                    for &hitbox_elem in stroke.hitboxes().iter() {
-                        if !aabb.contains(&hitbox_elem) {
-                            return None;
-                        }
-                    }
-
-                    self.set_selected(key, true);
-                    self.update_chrono_to_last(key);
-
-                    return Some(key);
-                }
-
-                None
-            })
-            .collect()
     }
 }

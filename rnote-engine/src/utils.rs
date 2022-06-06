@@ -1,7 +1,7 @@
 use geo::line_string;
-use gtk4::{gdk, glib, graphene, gsk};
+use gtk4::{gdk, glib, graphene, gsk, pango};
 use p2d::bounding_volume::AABB;
-use rnote_compose::Transform;
+use rnote_compose::{penhelpers::KeyboardKey, Transform};
 
 pub trait GdkRGBAHelpers
 where
@@ -97,6 +97,41 @@ pub fn transform_to_gsk(transform: &Transform) -> gsk::Transform {
     ))
 }
 
+pub fn pango_font_weight_to_raw(pango_font_weight: pango::Weight) -> u16 {
+    match pango_font_weight {
+        pango::Weight::Thin => 100,
+        pango::Weight::Ultralight => 200,
+        pango::Weight::Light => 300,
+        pango::Weight::Semilight => 350,
+        pango::Weight::Book => 380,
+        pango::Weight::Normal => 400,
+        pango::Weight::Medium => 500,
+        pango::Weight::Semibold => 600,
+        pango::Weight::Bold => 700,
+        pango::Weight::Ultrabold => 800,
+        pango::Weight::Heavy => 900,
+        pango::Weight::Ultraheavy => 100,
+        _ => 500,
+    }
+}
+
+pub fn raw_font_weight_to_pango(raw_font_weight: u16) -> pango::Weight {
+    match raw_font_weight {
+        0..=149 => pango::Weight::Thin,
+        150..=249 => pango::Weight::Ultralight,
+        250..=324 => pango::Weight::Light,
+        325..=364 => pango::Weight::Semilight,
+        365..=389 => pango::Weight::Book,
+        390..=449 => pango::Weight::Normal,
+        450..=549 => pango::Weight::Medium,
+        550..=649 => pango::Weight::Semibold,
+        650..=749 => pango::Weight::Bold,
+        750..=849 => pango::Weight::Ultrabold,
+        850..=949 => pango::Weight::Heavy,
+        950.. => pango::Weight::Ultraheavy,
+    }
+}
+
 /// Converts a AABB to a geo::Polygon
 pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
     let line_string = line_string![
@@ -107,6 +142,30 @@ pub fn p2d_aabb_to_geo_polygon(aabb: AABB) -> geo::Polygon<f64> {
         (x: aabb.mins[0], y: aabb.mins[1]),
     ];
     geo::Polygon::new(line_string, vec![])
+}
+
+pub fn keyboard_key_from_gdk(gdk_key: gdk::Key) -> KeyboardKey {
+    if let Some(keychar) = gdk_key.to_unicode() {
+        KeyboardKey::Unicode(keychar).filter_convert_unicode_control_chars()
+    } else {
+        match gdk_key {
+            gdk::Key::BackSpace => KeyboardKey::BackSpace,
+            gdk::Key::Tab => KeyboardKey::HorizontalTab,
+            gdk::Key::Linefeed => KeyboardKey::Linefeed,
+            gdk::Key::Return => KeyboardKey::CarriageReturn,
+            gdk::Key::Escape => KeyboardKey::Escape,
+            gdk::Key::Delete => KeyboardKey::Delete,
+            gdk::Key::Down => KeyboardKey::NavDown,
+            gdk::Key::Up => KeyboardKey::NavUp,
+            gdk::Key::Left => KeyboardKey::NavLeft,
+            gdk::Key::Right => KeyboardKey::NavRight,
+            gdk::Key::Shift_L => KeyboardKey::ShiftLeft,
+            gdk::Key::Shift_R => KeyboardKey::ShiftRight,
+            gdk::Key::Control_L => KeyboardKey::CtrlLeft,
+            gdk::Key::Control_R => KeyboardKey::CtrlRight,
+            _ => KeyboardKey::Unsupported,
+        }
+    }
 }
 
 pub mod base64 {
@@ -122,6 +181,6 @@ pub mod base64 {
     /// Deserialize base64 encoded Vec<u8>
     pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u8>, D::Error> {
         let base64 = String::deserialize(d)?;
-        base64::decode(base64.as_bytes()).map_err(|e| serde::de::Error::custom(e))
+        base64::decode(base64.as_bytes()).map_err(serde::de::Error::custom)
     }
 }

@@ -31,6 +31,8 @@ use std::collections::VecDeque;
 use std::time;
 
 mod imp {
+    use std::path::PathBuf;
+
     use super::*;
 
     #[allow(missing_debug_implementations)]
@@ -83,7 +85,7 @@ mod imp {
 
             let key_controller = EventControllerKey::builder()
                 .name("key_controller")
-                .propagation_phase(PropagationPhase::Bubble)
+                .propagation_phase(PropagationPhase::Capture)
                 .build();
 
             // Gesture grouping
@@ -110,6 +112,8 @@ mod imp {
                 gdk::Cursor::from_name("default", None).as_ref(),
             );
 
+            let engine = RnoteEngine::new(Some(PathBuf::from(config::PKG_DATA_DIR)));
+
             Self {
                 hadjustment: RefCell::new(None),
                 hadjustment_signal: RefCell::new(None),
@@ -125,7 +129,7 @@ mod imp {
                 key_controller,
                 zoom_timeout_id: RefCell::new(None),
 
-                engine: Rc::new(RefCell::new(RnoteEngine::default())),
+                engine: Rc::new(RefCell::new(engine)),
 
                 output_file: RefCell::new(None),
                 unsaved_changes: Cell::new(false),
@@ -319,7 +323,9 @@ mod imp {
                 snapshot.save();
 
                 // Draw the entire engine
-                self.engine.borrow().draw(&snapshot, widget.bounds())?;
+                self.engine
+                    .borrow()
+                    .draw_on_snapshot(snapshot, widget.bounds())?;
 
                 // Restore original coordinate space
                 snapshot.restore();
@@ -447,16 +453,21 @@ impl RnoteCanvas {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.setup_input(appwindow);
 
-        glib::MainContext::default().spawn_local(clone!(@strong self as canvas, @strong appwindow => async move {
-            let mut task_rx = canvas.engine().borrow_mut().tasks_rx.take().unwrap();
+        // receiving and handling engine tasks
+        glib::MainContext::default().spawn_local(
+            clone!(@strong self as canvas, @strong appwindow => async move {
+                let mut task_rx = canvas.engine().borrow_mut().tasks_rx.take().unwrap();
 
-            loop {
-                if let Some(task) = task_rx.next().await {
-                    let surface_flags = canvas.engine().borrow_mut().process_received_task(task);
-                    appwindow.handle_surface_flags(surface_flags);
+                loop {
+                    if let Some(task) = task_rx.next().await {
+                        let widget_flags = canvas.engine().borrow_mut().process_received_task(task);
+                        if appwindow.handle_widget_flags(widget_flags) {
+                            break;
+                        }
+                    }
                 }
-            }
-        }));
+            }),
+        );
 
         self.connect_notify_local(
             Some("output-file"),
@@ -500,17 +511,17 @@ impl RnoteCanvas {
         // Stylus Drawing
         self.imp().stylus_drawing_gesture.connect_down(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             //log::debug!("stylus_drawing_gesture down");
-            //input::debug_stylus_gesture(&stylus_drawing_gesture);
+            //input::debug_stylus_gesture(stylus_drawing_gesture);
 
-            if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
+            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
             stylus_drawing_gesture.set_state(EventSequenceState::Claimed);
             canvas.grab_focus();
 
             let mut data_entries = input::retreive_stylus_elements(stylus_drawing_gesture, x, y);
            Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
-            let shortcut_keys = input::retreive_stylus_shortcut_keys(&stylus_drawing_gesture);
-            let pen_mode = input::retreive_stylus_pen_mode(&stylus_drawing_gesture);
+            let shortcut_keys = input::retreive_stylus_shortcut_keys(stylus_drawing_gesture);
+            let pen_mode = input::retreive_stylus_pen_mode(stylus_drawing_gesture);
 
             for element in data_entries {
                 input::process_pen_down(element, shortcut_keys.clone(), pen_mode, &appwindow);
@@ -519,15 +530,15 @@ impl RnoteCanvas {
 
         self.imp().stylus_drawing_gesture.connect_motion(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture, x, y| {
             //log::debug!("stylus_drawing_gesture motion");
-            //input::debug_stylus_gesture(&stylus_drawing_gesture);
+            //input::debug_stylus_gesture(stylus_drawing_gesture);
 
-            if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
+            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
 
             let mut data_entries: VecDeque<Element> = input::retreive_stylus_elements(stylus_drawing_gesture, x, y);
             Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
-            let shortcut_keys = input::retreive_stylus_shortcut_keys(&stylus_drawing_gesture);
-            let pen_mode = input::retreive_stylus_pen_mode(&stylus_drawing_gesture);
+            let shortcut_keys = input::retreive_stylus_shortcut_keys(stylus_drawing_gesture);
+            let pen_mode = input::retreive_stylus_pen_mode(stylus_drawing_gesture);
 
             for element in data_entries {
                 input::process_pen_down(element, shortcut_keys.clone(), pen_mode, &appwindow);
@@ -536,15 +547,15 @@ impl RnoteCanvas {
 
         self.imp().stylus_drawing_gesture.connect_up(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             //log::debug!("stylus_drawing_gesture up");
-            //input::debug_stylus_gesture(&stylus_drawing_gesture);
+            //input::debug_stylus_gesture(stylus_drawing_gesture);
 
-            if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
+            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
 
             let mut data_entries = input::retreive_stylus_elements(stylus_drawing_gesture, x, y);
             Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
-            let shortcut_keys = input::retreive_stylus_shortcut_keys(&stylus_drawing_gesture);
-            let pen_mode = input::retreive_stylus_pen_mode(&stylus_drawing_gesture);
+            let shortcut_keys = input::retreive_stylus_shortcut_keys(stylus_drawing_gesture);
+            let pen_mode = input::retreive_stylus_pen_mode(stylus_drawing_gesture);
 
             if let Some(last) = data_entries.pop_back() {
                 for element in data_entries {
@@ -556,15 +567,15 @@ impl RnoteCanvas {
 
         self.imp().stylus_drawing_gesture.connect_proximity(clone!(@weak self as canvas, @weak appwindow => move |stylus_drawing_gesture,x,y| {
             //log::debug!("stylus_drawing_gesture proximity");
-            //input::debug_stylus_gesture(&stylus_drawing_gesture);
+            //input::debug_stylus_gesture(stylus_drawing_gesture);
 
-            if input::filter_stylus_input(&stylus_drawing_gesture) { return; }
+            if input::filter_stylus_input(stylus_drawing_gesture) { return; }
 
             let mut data_entries = input::retreive_stylus_elements(stylus_drawing_gesture, x, y);
             Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
-            let shortcut_keys = input::retreive_stylus_shortcut_keys(&stylus_drawing_gesture);
-            let pen_mode = input::retreive_stylus_pen_mode(&stylus_drawing_gesture);
+            let shortcut_keys = input::retreive_stylus_shortcut_keys(stylus_drawing_gesture);
+            let pen_mode = input::retreive_stylus_pen_mode(stylus_drawing_gesture);
 
             for element in data_entries {
                 input::process_pen_proximity(element, shortcut_keys.clone(), pen_mode, &appwindow);
@@ -574,7 +585,7 @@ impl RnoteCanvas {
         // Mouse drawing
         self.imp().mouse_drawing_gesture.connect_drag_begin(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture begin");
-            //input::debug_drag_gesture(&mouse_drawing_gesture);
+            //input::debug_drag_gesture(mouse_drawing_gesture);
 
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
             mouse_drawing_gesture.set_state(EventSequenceState::Claimed);
@@ -583,7 +594,7 @@ impl RnoteCanvas {
             let mut data_entries = input::retreive_pointer_elements(mouse_drawing_gesture, x, y);
             Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
-            let shortcut_keys = input::retreive_mouse_shortcut_keys(&mouse_drawing_gesture);
+            let shortcut_keys = input::retreive_mouse_shortcut_keys(mouse_drawing_gesture);
 
             for element in data_entries {
                 input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
@@ -592,7 +603,7 @@ impl RnoteCanvas {
 
         self.imp().mouse_drawing_gesture.connect_drag_update(clone!(@weak self as canvas, @weak appwindow => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture motion");
-            //input::debug_drag_gesture(&mouse_drawing_gesture);
+            //input::debug_drag_gesture(mouse_drawing_gesture);
 
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
 
@@ -600,7 +611,7 @@ impl RnoteCanvas {
                 let mut data_entries = input::retreive_pointer_elements(mouse_drawing_gesture, x, y);
                 Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
 
-                let shortcut_keys = input::retreive_mouse_shortcut_keys(&mouse_drawing_gesture);
+                let shortcut_keys = input::retreive_mouse_shortcut_keys(mouse_drawing_gesture);
 
                 for element in data_entries {
                     input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
@@ -610,7 +621,7 @@ impl RnoteCanvas {
 
         self.imp().mouse_drawing_gesture.connect_drag_end(clone!(@weak self as canvas @weak appwindow => move |mouse_drawing_gesture, x, y| {
             //log::debug!("mouse_drawing_gesture end");
-            //input::debug_drag_gesture(&mouse_drawing_gesture);
+            //input::debug_drag_gesture(mouse_drawing_gesture);
 
             if input::filter_mouse_input(mouse_drawing_gesture) { return; }
 
@@ -618,7 +629,7 @@ impl RnoteCanvas {
                 let mut data_entries = input::retreive_pointer_elements(mouse_drawing_gesture, x, y);
                 Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1) );
 
-                let shortcut_keys = input::retreive_mouse_shortcut_keys(&mouse_drawing_gesture);
+                let shortcut_keys = input::retreive_mouse_shortcut_keys(mouse_drawing_gesture);
 
                 if let Some(last) = data_entries.pop_back() {
                     for element in data_entries {
@@ -640,7 +651,7 @@ impl RnoteCanvas {
             let mut data_entries = input::retreive_pointer_elements(touch_drawing_gesture, x, y);
             Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse());
 
-            let shortcut_keys = input::retreive_touch_shortcut_keys(&touch_drawing_gesture);
+            let shortcut_keys = input::retreive_touch_shortcut_keys(touch_drawing_gesture);
 
             for element in data_entries {
                 input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
@@ -656,7 +667,7 @@ impl RnoteCanvas {
                 let mut data_entries = input::retreive_pointer_elements(touch_drawing_gesture, x, y);
                 Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
 
-                let shortcut_keys = input::retreive_touch_shortcut_keys(&touch_drawing_gesture);
+                let shortcut_keys = input::retreive_touch_shortcut_keys(touch_drawing_gesture);
 
                 for element in data_entries {
                     input::process_pen_down(element, shortcut_keys.clone(), Some(PenMode::Pen), &appwindow);
@@ -673,7 +684,7 @@ impl RnoteCanvas {
                 let mut data_entries = input::retreive_pointer_elements(touch_drawing_gesture, x, y);
                 Element::transform_elements(&mut data_entries, canvas.engine().borrow().camera.transform().inverse() * na::Translation2::new(start_point.0, start_point.1));
 
-                let shortcut_keys = input::retreive_touch_shortcut_keys(&touch_drawing_gesture);
+                let shortcut_keys = input::retreive_touch_shortcut_keys(touch_drawing_gesture);
 
                 if let Some(last) = data_entries.pop_back() {
                     for element in data_entries {
@@ -686,27 +697,40 @@ impl RnoteCanvas {
 
         // Key controller
 
-        // modifiers not really working in connect_key_pressed, use connect_modifiers for it
-        self.imp().key_controller.connect_key_pressed(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, key, _raw, _modifier| {
-            //log::debug!("key_pressed: {:?}, {:?}, {:?}", key.to_unicode(), raw, modifier);
+        self.imp().key_controller.connect_key_pressed(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, key, _raw, modifier| {
+            //log::debug!("key pressed - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+            canvas.grab_focus();
 
-            if let Some(shortcut_key) = input::retreive_keyboard_key_shortcut_key(key) {
-                input::process_keyboard_pressed(shortcut_key, &appwindow);
-            }
-
-            Inhibit(true)
-        }));
-        self.imp().key_controller.connect_modifiers(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
-            //log::debug!("key_controller modifier: {:?}", modifier);
-
+            let keyboard_key = input::retreive_keyboard_key(key);
             let shortcut_keys = input::retreive_modifier_shortcut_key(modifier);
 
+            //log::debug!("keyboard key: {:?}", keyboard_key);
+
+            input::process_keyboard_key_pressed(keyboard_key, shortcut_keys, &appwindow);
+
+            Inhibit(true)
+        }));
+
+        /*
+        self.imp().key_controller.connect_key_released(clone!(@weak self as canvas, @weak appwindow => move |_key_controller, _key, _raw, _modifier| {
+            //log::debug!("key released - key: {:?}, raw: {:?}, modifier: {:?}", key, raw, modifier);
+        }));
+
+        self.imp().key_controller.connect_modifiers(clone!(@weak self as canvas, @weak appwindow => @default-return Inhibit(false), move |_key_controller, modifier| {
+            //log::debug!("key_controller modifier pressed: {:?}", modifier);
+
+            let shortcut_keys = input::retreive_modifier_shortcut_key(modifier);
+            canvas.grab_focus();
+
             for shortcut_key in shortcut_keys {
-                input::process_keyboard_pressed(shortcut_key, &appwindow);
+                log::debug!("shortcut key pressed: {:?}", shortcut_key);
+
+                input::process_shortcut_key_pressed(shortcut_key, &appwindow);
             }
 
             Inhibit(true)
         }));
+        */
 
         // Drop Target
         let drop_target = DropTarget::builder()

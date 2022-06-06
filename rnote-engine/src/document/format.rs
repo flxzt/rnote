@@ -50,10 +50,12 @@ impl TryFrom<u32> for PredefinedFormat {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
-            "PredefinedFormat try_from::<u32>() for value {} failed",
-            value
-        ))
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "PredefinedFormat try_from::<u32>() for value {} failed",
+                value
+            )
+        })
     }
 }
 
@@ -137,7 +139,7 @@ impl Default for Orientation {
     }
 }
 
-#[derive(Debug, Copy, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "format")]
 pub struct Format {
     #[serde(rename = "width")]

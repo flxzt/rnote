@@ -2,6 +2,8 @@ use super::strokebehaviour::GeneratedStrokeImages;
 use super::StrokeBehaviour;
 use crate::render::{self};
 use crate::DrawBehaviour;
+use piet::RenderContext;
+use rnote_compose::helpers::Vector2Helpers;
 use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::style::Composer;
@@ -19,8 +21,8 @@ pub struct BrushStroke {
     #[serde(rename = "style")]
     pub style: Style,
     #[serde(skip)]
-    // since the path can have many hitboxes, we store them for faster queries and update them when we the stroke geometry changes
-    pub hitboxes: Vec<AABB>,
+    // since the path can have many hitboxes, we store them for faster queries and update them when the stroke geometry changes
+    hitboxes: Vec<AABB>,
 }
 
 impl Default for BrushStroke {
@@ -37,15 +39,14 @@ impl Default for BrushStroke {
 impl StrokeBehaviour for BrushStroke {
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error> {
         let bounds = self.bounds();
-        let mut cx = piet_svg::RenderContext::new_no_text(kurbo::Size::new(
-            bounds.extents()[0],
-            bounds.extents()[1],
-        ));
 
-        self.draw(&mut cx, 1.0)?;
-        let svg_data = rnote_compose::utils::piet_svg_cx_to_svg(cx)?;
-
-        Ok(render::Svg { svg_data, bounds })
+        render::Svg::gen_with_piet_svg_backend_no_text(
+            |cx| {
+                cx.transform(kurbo::Affine::translate(-bounds.mins.coords.to_kurbo_vec()));
+                self.draw(cx, 1.0)
+            },
+            bounds,
+        )
     }
 
     fn gen_images(
@@ -140,9 +141,7 @@ impl StrokeBehaviour for BrushStroke {
                     self.path
                         .iter()
                         .filter_map(|segment| {
-                            options.seed = options
-                                .seed
-                                .map(|seed| rnote_compose::utils::seed_advance(seed));
+                            options.seed = options.seed.map(rnote_compose::utils::seed_advance);
 
                             let image = render::Image::gen_with_piet(
                                 |piet_cx| {
@@ -265,13 +264,12 @@ impl BrushStroke {
 
         self.path
             .iter()
-            .map(|segment| {
+            .flat_map(|segment| {
                 segment
                     .hitboxes()
                     .into_iter()
                     .map(|hitbox| hitbox.loosened(stroke_width * 0.5))
             })
-            .flatten()
             .collect()
     }
 
@@ -316,10 +314,9 @@ impl BrushStroke {
                 .rev()
                 .filter_map(|(i, segment)| {
                     let mut options = options.clone();
+
                     (0..=i).for_each(|_| {
-                        options.seed = options
-                            .seed
-                            .map(|seed| rnote_compose::utils::seed_advance(seed))
+                        options.seed = options.seed.map(rnote_compose::utils::seed_advance)
                     });
 
                     let image = render::Image::gen_with_piet(

@@ -36,12 +36,6 @@ mod imp {
         #[template_child]
         pub general_autosave_interval_secs_spinbutton: TemplateChild<SpinButton>,
         #[template_child]
-        pub general_pdf_import_width_adj: TemplateChild<Adjustment>,
-        #[template_child]
-        pub general_pdf_import_as_vector_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
-        pub general_pdf_import_as_bitmap_toggle: TemplateChild<ToggleButton>,
-        #[template_child]
         pub general_format_border_color_choosebutton: TemplateChild<ColorButton>,
         #[template_child]
         pub format_predefined_formats_row: TemplateChild<adw::ComboRow>,
@@ -431,18 +425,6 @@ impl SettingsPanel {
         self.imp().settings_scroller.clone()
     }
 
-    pub fn general_pdf_import_width_adj(&self) -> Adjustment {
-        self.imp().general_pdf_import_width_adj.clone()
-    }
-
-    pub fn general_pdf_import_as_vector_toggle(&self) -> ToggleButton {
-        self.imp().general_pdf_import_as_vector_toggle.clone()
-    }
-
-    pub fn general_pdf_import_as_bitmap_toggle(&self) -> ToggleButton {
-        self.imp().general_pdf_import_as_bitmap_toggle.clone()
-    }
-
     pub fn general_format_border_color_choosebutton(&self) -> ColorButton {
         self.imp().general_format_border_color_choosebutton.clone()
     }
@@ -479,7 +461,7 @@ impl SettingsPanel {
         self.imp().background_pattern_height_unitentry.clone()
     }
 
-    pub fn refresh_for_engine(&self, appwindow: &RnoteAppWindow) {
+    pub fn refresh_ui(&self, appwindow: &RnoteAppWindow) {
         self.load_general(appwindow);
         self.load_format(appwindow);
         self.load_background(appwindow);
@@ -487,8 +469,6 @@ impl SettingsPanel {
     }
 
     pub fn load_general(&self, appwindow: &RnoteAppWindow) {
-        let pdf_import_as_vector = appwindow.canvas().engine().borrow().pdf_import_as_vector;
-        let pdf_import_width_perc = appwindow.canvas().engine().borrow().pdf_import_width_perc;
         let format_border_color = appwindow
             .canvas()
             .engine()
@@ -497,12 +477,6 @@ impl SettingsPanel {
             .format
             .border_color;
 
-        self.general_pdf_import_as_vector_toggle()
-            .set_active(pdf_import_as_vector);
-        self.general_pdf_import_as_bitmap_toggle()
-            .set_active(!pdf_import_as_vector);
-        self.general_pdf_import_width_adj()
-            .set_value(pdf_import_width_perc);
         self.general_format_border_color_choosebutton()
             .set_rgba(&gdk::RGBA::from_compose_color(format_border_color));
     }
@@ -516,13 +490,11 @@ impl SettingsPanel {
 
         self.format_width_unitentry()
             .set_unit(format::MeasureUnit::Px);
-        self.format_width_unitentry()
-            .set_value(f64::from(format.width));
+        self.format_width_unitentry().set_value(format.width);
 
         self.format_height_unitentry()
             .set_unit(format::MeasureUnit::Px);
-        self.format_height_unitentry()
-            .set_value(f64::from(format.height));
+        self.format_height_unitentry().set_value(format.height);
     }
 
     pub fn load_background(&self, appwindow: &RnoteAppWindow) {
@@ -568,21 +540,21 @@ impl SettingsPanel {
 
         current_shortcuts
             .into_iter()
-            .for_each(|(key, action)| match key.clone() {
+            .for_each(|(key, action)| match key {
                 ShortcutKey::StylusPrimaryButton => {
                     self.imp()
                         .penshortcut_stylus_button_primary_row
-                        .set_action(action.clone());
+                        .set_action(action);
                 }
                 ShortcutKey::StylusSecondaryButton => {
                     self.imp()
                         .penshortcut_stylus_button_secondary_row
-                        .set_action(action.clone());
+                        .set_action(action);
                 }
                 ShortcutKey::MouseSecondaryButton => {
                     self.imp()
                         .penshortcut_mouse_button_secondary_row
-                        .set_action(action.clone());
+                        .set_action(action);
                 }
                 _ => {}
             });
@@ -624,28 +596,6 @@ impl SettingsPanel {
             .flags(glib::BindingFlags::SYNC_CREATE | glib::BindingFlags::BIDIRECTIONAL)
             .build();
 
-        // Pdf import width
-        self.imp()
-            .general_pdf_import_width_adj
-            .get()
-            .connect_value_changed(clone!(@weak appwindow => move |general_pdf_import_width_adj| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-width-perc", Some(&general_pdf_import_width_adj.value().to_variant()));
-            }));
-
-        self.imp()
-            .general_pdf_import_as_vector_toggle
-            .get()
-            .connect_active_notify(clone!(@weak appwindow => move |general_pdf_import_as_vector_toggle| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-as-vector", Some(&general_pdf_import_as_vector_toggle.is_active().to_variant()));
-            }));
-
-        self.imp()
-            .general_pdf_import_as_bitmap_toggle
-            .get()
-            .connect_active_notify(clone!(@weak appwindow => move |general_pdf_import_as_bitmap_toggle| {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "pdf-import-as-vector", Some(&(!general_pdf_import_as_bitmap_toggle.is_active()).to_variant()));
-            }));
-
         // revert format
         self.imp().format_revert_button.get().connect_clicked(
             clone!(@weak self as settings_panel, @weak appwindow => move |_format_revert_button| {
@@ -662,9 +612,9 @@ impl SettingsPanel {
 
                 // Setting the entries, which have callbacks to update the temporary format
                 settings_panel.format_width_unitentry()
-                    .set_value(f64::from(revert_format.width));
+                    .set_value(revert_format.width);
                 settings_panel.format_height_unitentry()
-                    .set_value(f64::from(revert_format.height));
+                    .set_value(revert_format.height);
             }));
 
         // Apply format
@@ -736,7 +686,7 @@ impl SettingsPanel {
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
                     let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
-                    pattern_size[0] = f64::from(settings_panel.background_pattern_width_unitentry().value_in_px());
+                    pattern_size[0] = settings_panel.background_pattern_width_unitentry().value_in_px();
 
                     appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 
@@ -751,7 +701,7 @@ impl SettingsPanel {
             false,
             clone!(@weak self as settings_panel, @weak appwindow => @default-return None, move |_args| {
                     let mut pattern_size = appwindow.canvas().engine().borrow().document.background.pattern_size;
-                    pattern_size[1] = f64::from(settings_panel.background_pattern_height_unitentry().value_in_px());
+                    pattern_size[1] = settings_panel.background_pattern_height_unitentry().value_in_px();
 
                     appwindow.canvas().engine().borrow_mut().document.background.pattern_size = pattern_size;
 

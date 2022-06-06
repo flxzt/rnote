@@ -8,16 +8,15 @@ pub mod smooth;
 /// The textured module for textured styles
 pub mod textured;
 
-use crate::penpath::Segment;
-use crate::shapes::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
-use crate::{PenPath, Shape};
-
 // Re exports
 use self::rough::RoughOptions;
 use self::smooth::SmoothOptions;
 use self::textured::TexturedOptions;
 pub use composer::Composer;
 
+use crate::penpath::Segment;
+use crate::shapes::{CubicBezier, Ellipse, Line, QuadraticBezier, Rectangle};
+use crate::{PenPath, Shape};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -211,19 +210,19 @@ pub enum PressureCurve {
     /// Constant
     #[serde(rename = "const")]
     Const = 0,
-    /// Linear pressure
+    /// linear
     #[serde(rename = "linear")]
     Linear,
-    /// Sqrt
+    /// square root
     #[serde(rename = "sqrt")]
     Sqrt,
-    /// Cbrt
+    /// cubic root
     #[serde(rename = "cbrt")]
     Cbrt,
-    /// pow(2)
+    /// quadratic polynomial
     #[serde(rename = "pow2")]
     Pow2,
-    /// pow(3)
+    /// cubic polynomial
     #[serde(rename = "pow3")]
     Pow3,
 }
@@ -252,9 +251,11 @@ impl TryFrom<u32> for PressureCurve {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
-            "PressureProfile try_from::<u32>() for value {} failed",
-            value
-        ))
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "PressureProfile try_from::<u32>() for value {} failed",
+                value
+            )
+        })
     }
 }

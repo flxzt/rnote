@@ -1,6 +1,7 @@
 # Resources
 resource_conf = configuration_data()
 resource_conf.set('APP_IDPATH', app_idpath)
+resource_conf.set('APP_NAME', app_name)
 configure_file(
   input: 'resources.gresource.xml.in',
   output: 'resources.gresource.xml',
@@ -124,6 +125,13 @@ else
     rename: app_id + '.svg',
   )
 endif
+
+# Symbolic App-Icon
+install_data(
+  'icons/symbolic/apps/' + app_name + '-symbolic.svg',
+  install_dir: iconsdir / 'hicolor' / 'symbolic' / 'apps',
+  rename: app_id + '-symbolic.svg',
+)
 
 # MIME-Type
 install_data(

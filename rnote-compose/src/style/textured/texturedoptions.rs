@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 
-use crate::Color;
 use crate::style::PressureCurve;
+use crate::Color;
 
 use super::textureddotsdistribution::TexturedDotsDistribution;
 
-/// The Options of how a textured shape should look
+/// The options for a textured shape
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default, rename = "textured_options")]

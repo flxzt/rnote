@@ -16,7 +16,7 @@ use std::collections::VecDeque;
 use std::sync::Arc;
 
 use crate::strokes::Stroke;
-use crate::SurfaceFlags;
+use crate::WidgetFlags;
 use rnote_compose::shapes::ShapeBehaviour;
 use serde::{Deserialize, Serialize};
 use slotmap::{HopSlotMap, SecondaryMap};
@@ -29,13 +29,13 @@ slotmap::new_key_type! {
 #[serde(default, rename = "history_entry")]
 pub struct HistoryEntry {
     #[serde(rename = "stroke_components")]
-    stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
+    pub stroke_components: Arc<HopSlotMap<StrokeKey, Arc<Stroke>>>,
     #[serde(rename = "trash_components")]
-    trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
+    pub trash_components: Arc<SecondaryMap<StrokeKey, Arc<TrashComponent>>>,
     #[serde(rename = "selection_components")]
-    selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
+    pub selection_components: Arc<SecondaryMap<StrokeKey, Arc<SelectionComponent>>>,
     #[serde(rename = "chrono_components")]
-    chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
+    pub chrono_components: Arc<SecondaryMap<StrokeKey, Arc<ChronoComponent>>>,
 
     #[serde(rename = "chrono_counter")]
     chrono_counter: u32,
@@ -60,8 +60,8 @@ pub type StoreSnapshot = HistoryEntry;
 /// StrokeStore implements a Entity - Component - System pattern.
 /// The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
 ///     * 'stroke_components': Hold geometric data. These components are special in that they are the primary map. A new stroke must have this component. (could also be called geometric components)
-///     * 'trash_components': Hold state wether the strokes are trashed
-///     * 'selection_components': Hold state wether the strokes are selected
+///     * 'trash_components': Hold state whether the strokes are trashed
+///     * 'selection_components': Hold state whether the strokes are selected
 ///     * 'chrono_components': Hold state about the chronological ordering
 ///     * 'render_components': Hold state about the current rendering of the strokes.
 ///
@@ -156,7 +156,7 @@ impl StrokeStore {
     }
 
     /// Returns true if the current state is pointer equal to the given history entry
-    fn ptr_eq_history(&self, history_entry: &Arc<HistoryEntry>) -> bool {
+    fn ptr_eq_w_history_entry(&self, history_entry: &Arc<HistoryEntry>) -> bool {
         Arc::ptr_eq(&self.stroke_components, &history_entry.stroke_components)
             && Arc::ptr_eq(&self.trash_components, &history_entry.trash_components)
             && Arc::ptr_eq(
@@ -177,7 +177,7 @@ impl StrokeStore {
         })
     }
 
-    /// Taking a snapshot of the current state
+    /// Takes a snapshot of the current state
     pub fn take_store_snapshot(&self) -> Arc<StoreSnapshot> {
         self.history_entry_from_current_state()
     }
@@ -193,16 +193,16 @@ impl StrokeStore {
 
         // Since we don't store the tree in the history, we need to reload it.
         self.reload_tree();
-        // render_components are also not stored in the history, but for the duration of the running app we don't ever remove from render_components,
-        // so we can actually skip rebuilding it when importing a history entry. This avoids visual glitches where we have already rebuilt the components
+        // render_components are also not stored in the history, but for the duration of the running app we don't ever remove it,
+        // so we can actually skip rebuilding it when importing a history entry. This avoids flickering where we have already rebuilt the components
         // and can't display anything until the asynchronous rendering is finished
-        //self.reload_render_components_slotmap();
+        // self.reload_render_components_slotmap();
 
         self.set_rendering_dirty_all_keys();
     }
 
     /// records the current state and saves it in the history
-    pub fn record(&mut self) -> SurfaceFlags {
+    pub fn record(&mut self) -> WidgetFlags {
         /*
                log::debug!(
                    "before record - history len: {}, pos: {:?}",
@@ -222,7 +222,7 @@ impl StrokeStore {
 
     /// Undo the latest changes
     /// Should only be called inside the engine undo wrapper function
-    pub(super) fn undo(&mut self) -> SurfaceFlags {
+    pub(super) fn undo(&mut self) -> WidgetFlags {
         /*
                log::debug!(
                    "before undo - history len: {}, pos: {:?}",
@@ -242,7 +242,7 @@ impl StrokeStore {
 
     /// Redo the latest changes. The actual behaviour might differ depending on the history mode (simple style, emacs style, ..)
     /// Should only be called inside the engine redo wrapper function
-    pub(super) fn redo(&mut self) -> SurfaceFlags {
+    pub(super) fn redo(&mut self) -> WidgetFlags {
         /*
                log::debug!(
                    "before redo - history len: {}, pos: {:?}",
@@ -260,8 +260,8 @@ impl StrokeStore {
         */
     }
 
-    fn simple_style_record(&mut self) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    fn simple_style_record(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         // as soon as the current state is recorded, remove the future
         self.history.truncate(
@@ -274,7 +274,7 @@ impl StrokeStore {
         if self
             .history
             .back()
-            .map(|last| !self.ptr_eq_history(last))
+            .map(|last| !self.ptr_eq_w_history_entry(last))
             .unwrap_or(true)
         {
             self.history
@@ -287,14 +287,14 @@ impl StrokeStore {
             log::trace!("state has not changed, no need to record");
         }
 
-        surface_flags.hide_redo = Some(true);
-        surface_flags.hide_undo = Some(false);
+        widget_flags.hide_redo = Some(true);
+        widget_flags.hide_undo = Some(false);
 
-        surface_flags
+        widget_flags
     }
 
-    fn simple_style_undo(&mut self) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    fn simple_style_undo(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         let index = match self.history_pos {
             Some(index) => index,
@@ -313,21 +313,21 @@ impl StrokeStore {
 
             self.history_pos = Some(index - 1);
 
-            surface_flags.hide_redo = Some(false);
+            widget_flags.hide_redo = Some(false);
 
             if index - 1 == 0 {
-                surface_flags.hide_undo = Some(true);
+                widget_flags.hide_undo = Some(true);
             }
         } else {
-            surface_flags.hide_undo = Some(true);
+            widget_flags.hide_undo = Some(true);
             log::debug!("no history, can't undo");
         }
 
-        surface_flags
+        widget_flags
     }
 
-    fn simple_style_redo(&mut self) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    fn simple_style_redo(&mut self) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         let index = self.history_pos.unwrap_or(self.history.len() - 1);
 
@@ -337,17 +337,17 @@ impl StrokeStore {
 
             self.history_pos = Some(index + 1);
 
-            surface_flags.hide_undo = Some(false);
+            widget_flags.hide_undo = Some(false);
 
             if index + 1 == self.history.len() - 1 {
-                surface_flags.hide_redo = Some(true);
+                widget_flags.hide_redo = Some(true);
             }
         } else {
-            surface_flags.hide_redo = Some(true);
+            widget_flags.hide_redo = Some(true);
             log::debug!("no future history entries, can't redo");
         }
 
-        surface_flags
+        widget_flags
     }
 
     /// Saves the current state in the history.
@@ -359,7 +359,7 @@ impl StrokeStore {
         if self
             .history
             .back()
-            .map(|last| !self.ptr_eq_history(last))
+            .map(|last| !self.ptr_eq_w_history_entry(last))
             .unwrap_or(true)
         {
             self.history
@@ -426,6 +426,7 @@ impl StrokeStore {
         key
     }
 
+    /// permanently removes a stroke with the given key from the store
     pub fn remove_stroke(&mut self, key: StrokeKey) -> Option<Stroke> {
         Arc::make_mut(&mut self.trash_components).remove(key);
         Arc::make_mut(&mut self.selection_components).remove(key);

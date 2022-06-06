@@ -9,7 +9,7 @@ use crate::style::{drawhelpers, Composer};
 use crate::{Shape, Style, Transform};
 
 use super::shapebuilderbehaviour::{BuilderProgress, ShapeBuilderCreator};
-use super::ShapeBuilderBehaviour;
+use super::{Constraints, ShapeBuilderBehaviour};
 
 /// rect builder
 #[derive(Debug, Clone)]
@@ -30,25 +30,26 @@ impl ShapeBuilderCreator for RectangleBuilder {
 }
 
 impl ShapeBuilderBehaviour for RectangleBuilder {
-    fn handle_event(&mut self, event: PenEvent) -> BuilderProgress {
+    fn handle_event(&mut self, event: PenEvent, constraints: Constraints) -> BuilderProgress {
         match event {
             PenEvent::Down { element, .. } => {
-                self.current = element.pos;
+                self.current = constraints.constrain(element.pos - self.start) + self.start;
             }
             PenEvent::Up { .. } => {
                 return BuilderProgress::Finished(vec![Shape::Rectangle(self.state_as_rect())]);
             }
-            PenEvent::Proximity { .. } => {}
-            PenEvent::Cancel => {}
+            _ => {}
         }
 
         BuilderProgress::InProgress
     }
 
-    fn bounds(&self, style: &Style, zoom: f64) -> AABB {
-        self.state_as_rect()
-            .composed_bounds(style)
-            .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom)
+    fn bounds(&self, style: &Style, zoom: f64) -> Option<AABB> {
+        Some(
+            self.state_as_rect()
+                .composed_bounds(style)
+                .loosened(drawhelpers::POS_INDICATOR_RADIUS / zoom),
+        )
     }
 
     fn draw_styled(&self, cx: &mut piet_cairo::CairoRenderContext, style: &Style, zoom: f64) {

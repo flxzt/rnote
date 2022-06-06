@@ -182,7 +182,7 @@ pub(super) fn doubleline<R>(
 where
     R: Rng + ?Sized,
 {
-    let mut bez_path = line(start, end, true, false, &options, rng);
+    let mut bez_path = line(start, end, true, false, options, rng);
 
     let mut second_options = options.clone();
     second_options.seed = Some(rng.gen::<u64>());

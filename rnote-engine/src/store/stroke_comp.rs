@@ -2,10 +2,11 @@ use super::render_comp::RenderCompState;
 use super::StrokeKey;
 use crate::pens::tools::DragProximityTool;
 use crate::strokes::Stroke;
-use crate::strokes::StrokeBehaviour;
 use crate::{render, StrokeStore};
+use geo::intersects::Intersects;
+use geo::prelude::Contains;
 use rnote_compose::helpers;
-use rnote_compose::penpath::Segment;
+use rnote_compose::penpath::{Element, Segment};
 use rnote_compose::shapes::ShapeBehaviour;
 use rnote_compose::transform::TransformBehaviour;
 
@@ -14,6 +15,25 @@ use std::sync::Arc;
 
 /// Systems that are related to the stroke components.
 impl StrokeStore {
+    /// Gets a reference to a stroke
+    pub fn get_stroke_ref(&self, key: StrokeKey) -> Option<&Stroke> {
+        self.stroke_components.get(key).map(|stroke| &**stroke)
+    }
+
+    /// Gets a mutable reference to a stroke
+    pub fn get_stroke_mut(&mut self, key: StrokeKey) -> Option<&mut Stroke> {
+        Arc::make_mut(&mut self.stroke_components)
+            .get_mut(key)
+            .map(Arc::make_mut)
+    }
+
+    /// Gets a reference to the strokes
+    pub fn get_strokes_ref(&self, keys: &[StrokeKey]) -> Vec<&Stroke> {
+        keys.into_iter()
+            .filter_map(|&key| self.stroke_components.get(key).map(|stroke| &**stroke))
+            .collect::<Vec<&Stroke>>()
+    }
+
     /// Adds a segment to the brush stroke. If the stroke is not a brushstroke this does nothing.
     /// stroke then needs to update its geometry and its rendering
     pub fn add_segment_to_brushstroke(&mut self, key: StrokeKey, segment: Segment) {
@@ -40,12 +60,8 @@ impl StrokeStore {
     pub fn stroke_keys_unordered(&self) -> Vec<StrokeKey> {
         self.stroke_components
             .keys()
-            .filter_map(|key| {
-                if !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false)) {
-                    Some(key)
-                } else {
-                    None
-                }
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false))
             })
             .collect()
     }
@@ -54,12 +70,8 @@ impl StrokeStore {
     pub fn stroke_keys_as_rendered(&self) -> Vec<StrokeKey> {
         self.keys_sorted_chrono()
             .into_iter()
-            .filter_map(|key| {
-                if !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false)) {
-                    Some(key)
-                } else {
-                    None
-                }
+            .filter(|&key| {
+                !(self.trashed(key).unwrap_or(false)) && !(self.selected(key).unwrap_or(false))
             })
             .collect::<Vec<StrokeKey>>()
     }
@@ -92,19 +104,15 @@ impl StrokeStore {
             match stroke {
                 Stroke::BrushStroke(ref mut brushstroke) => {
                     brushstroke.update_geometry();
-                    self.key_tree.update_with_key(key, stroke.bounds());
-
-                    self.set_rendering_dirty(key);
                 }
                 Stroke::ShapeStroke(shapestroke) => {
                     shapestroke.update_geometry();
-                    self.key_tree.update_with_key(key, stroke.bounds());
-
-                    self.set_rendering_dirty(key);
                 }
-                Stroke::VectorImage(_) => {}
-                Stroke::BitmapImage(_) => {}
+                Stroke::TextStroke(_) | Stroke::VectorImage(_) | Stroke::BitmapImage(_) => {}
             }
+
+            self.key_tree.update_with_key(key, stroke.bounds());
+            self.set_rendering_dirty(key);
         }
     }
 
@@ -116,49 +124,31 @@ impl StrokeStore {
         });
     }
 
-    /// Calculates the width needed to fit all strokes
-    pub fn calc_width(&self) -> f64 {
-        let new_width = if let Some(stroke) = self
-            .stroke_components
-            .iter()
-            .filter_map(|(key, stroke)| {
-                if let Some(trash_comp) = self.trash_components.get(key) {
-                    if !trash_comp.trashed {
-                        return Some(stroke);
-                    }
-                }
-                None
-            })
-            .max_by_key(|&stroke| stroke.bounds().maxs[0].round() as i32)
-        {
-            // max_by_key() returns the element, so we need to extract the width again
-            stroke.bounds().maxs[0]
-        } else {
-            0.0
-        };
-
-        new_width
-    }
-
     /// Calculates the height needed to fit all strokes
     pub fn calc_height(&self) -> f64 {
-        let new_height = if let Some(stroke) = self
-            .stroke_keys_unordered()
-            .into_iter()
-            .filter_map(|key| self.stroke_components.get(key))
-            .max_by_key(|&stroke| stroke.bounds().maxs[1].round() as i32)
-        {
-            // max_by_key() returns the element, so we need to extract the height again
-            stroke.bounds().maxs[1]
-        } else {
-            0.0
-        };
+        let strokes_iter = self.stroke_keys_unordered().into_iter().filter_map(|key| {
+            let stroke = self.stroke_components.get(key)?;
+            let trash_comp = self.trash_components.get(key)?;
 
-        new_height
+            if !trash_comp.trashed {
+                Some(stroke)
+            } else {
+                None
+            }
+        });
+
+        let strokes_min_y = strokes_iter
+            .clone()
+            .fold(0.0, |acc, stroke| stroke.bounds().mins[1].min(acc));
+        let strokes_max_y = strokes_iter
+            .clone()
+            .fold(0.0, |acc, stroke| stroke.bounds().maxs[1].max(acc));
+
+        strokes_max_y - strokes_min_y
     }
 
     /// Generates the enclosing bounds for the given stroke keys
-    pub fn gen_bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<AABB> {
+    pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Option<AABB> {
         let mut keys_iter = keys.iter();
         if let Some(&key) = keys_iter.next() {
             if let Some(first) = self.stroke_components.get(key) {
@@ -178,30 +168,10 @@ impl StrokeStore {
     }
 
     /// Collects all bounds for the given strokes
-    pub fn bounds_for_strokes(&self, keys: &[StrokeKey]) -> Vec<AABB> {
+    pub fn strokes_bounds(&self, keys: &[StrokeKey]) -> Vec<AABB> {
         keys.iter()
             .filter_map(|&key| Some(self.stroke_components.get(key)?.bounds()))
             .collect::<Vec<AABB>>()
-    }
-
-    /// Generates a Svg for all strokes as drawn onto the canvas without xml headers or svg roots. Does not include the selection.
-    pub fn gen_svgs_for_strokes(&self, keys: &[StrokeKey]) -> Vec<render::Svg> {
-        keys.iter()
-            .filter_map(|&key| {
-                let stroke = self.stroke_components.get(key)?;
-
-                match stroke.gen_svg() {
-                    Ok(svgs) => Some(svgs),
-                    Err(e) => {
-                        log::error!(
-                            "stroke.gen_svg() failed in gen_svg_for_strokes() with Err {}",
-                            e
-                        );
-                        None
-                    }
-                }
-            })
-            .collect::<Vec<render::Svg>>()
     }
 
     /// Translate the strokes with the offset.
@@ -351,7 +321,7 @@ impl StrokeStore {
     /// Resizes the strokes to new bounds.
     /// strokes then need to update their rendering
     pub fn resize_strokes(&mut self, keys: &[StrokeKey], new_bounds: AABB) {
-        let old_bounds = match self.gen_bounds_for_strokes(keys) {
+        let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
             None => return,
         };
@@ -386,7 +356,7 @@ impl StrokeStore {
     }
 
     pub fn resize_strokes_images(&mut self, keys: &[StrokeKey], new_bounds: AABB) {
-        let old_bounds = match self.gen_bounds_for_strokes(keys) {
+        let old_bounds = match self.bounds_for_strokes(keys) {
             Some(old_bounds) => old_bounds,
             None => return,
         };
@@ -427,6 +397,156 @@ impl StrokeStore {
         });
     }
 
+    /// returns the strokes whose hitboxes are contained in the given polygon path.
+    pub fn strokes_hitboxes_contained_in_path_polygon(
+        &mut self,
+        path: &[Element],
+        viewport: AABB,
+    ) -> Vec<StrokeKey> {
+        let selector_polygon = {
+            let selector_path_points = path
+                .iter()
+                .map(|element| geo::Coordinate {
+                    x: element.pos[0],
+                    y: element.pos[1],
+                })
+                .collect::<Vec<geo::Coordinate<f64>>>();
+
+            geo::Polygon::new(selector_path_points.into(), vec![])
+        };
+
+        self.keys_sorted_chrono_intersecting_bounds(viewport)
+            .into_iter()
+            .filter_map(|key| {
+                // skip if stroke is trashed
+                if self.trashed(key)? {
+                    return None;
+                }
+
+                let stroke = self.stroke_components.get(key)?;
+                let stroke_bounds = stroke.bounds();
+
+                if selector_polygon.contains(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                {
+                    return Some(key);
+                } else if selector_polygon
+                    .intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                {
+                    for &hitbox_elem in stroke.hitboxes().iter() {
+                        if !selector_polygon
+                            .contains(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
+                        {
+                            return None;
+                        }
+                    }
+
+                    return Some(key);
+                }
+
+                None
+            })
+            .collect()
+    }
+
+    /// returns the strokes whose hitboxes intersect in the given path.
+    pub fn strokes_hitboxes_intersect_path(
+        &mut self,
+        path: &[Element],
+        viewport: AABB,
+    ) -> Vec<StrokeKey> {
+        let path_linestring = {
+            let selector_path_points = path
+                .iter()
+                .map(|element| geo::Coordinate {
+                    x: element.pos[0],
+                    y: element.pos[1],
+                })
+                .collect::<Vec<geo::Coordinate<f64>>>();
+
+            geo::LineString::new(selector_path_points.into())
+        };
+
+        self.keys_sorted_chrono_intersecting_bounds(viewport)
+            .into_iter()
+            .filter_map(|key| {
+                // skip if stroke is trashed
+                if self.trashed(key)? {
+                    return None;
+                }
+
+                let stroke = self.stroke_components.get(key)?;
+                let stroke_bounds = stroke.bounds();
+
+                if path_linestring.intersects(&crate::utils::p2d_aabb_to_geo_polygon(stroke_bounds))
+                {
+                    for &hitbox_elem in stroke.hitboxes().iter() {
+                        if path_linestring
+                            .intersects(&crate::utils::p2d_aabb_to_geo_polygon(hitbox_elem))
+                        {
+                            return Some(key);
+                        }
+                    }
+                }
+
+                None
+            })
+            .collect()
+    }
+
+    /// returns the keys to the strokes whose hitboxes are contained in the given aabb
+    pub fn strokes_hitboxes_contained_in_aabb(
+        &mut self,
+        aabb: AABB,
+        viewport: AABB,
+    ) -> Vec<StrokeKey> {
+        self.keys_sorted_chrono_intersecting_bounds(viewport)
+            .into_iter()
+            .filter_map(|key| {
+                // skip if stroke is trashed
+                if self.trashed(key)? {
+                    return None;
+                }
+
+                let stroke = self.stroke_components.get(key)?;
+                let stroke_bounds = stroke.bounds();
+
+                if aabb.contains(&stroke_bounds) {
+                    return Some(key);
+                } else if aabb.intersects(&stroke_bounds) {
+                    for &hitbox_elem in stroke.hitboxes().iter() {
+                        if !aabb.contains(&hitbox_elem) {
+                            return None;
+                        }
+                    }
+
+                    return Some(key);
+                }
+
+                None
+            })
+            .collect()
+    }
+
+    /// returns the key if coord is inside at least one of the stroke hitboxes
+    pub fn stroke_hitboxes_contain_coord(
+        &self,
+        viewport: AABB,
+        coord: na::Vector2<f64>,
+    ) -> Option<StrokeKey> {
+        self.stroke_keys_as_rendered_intersecting_bounds(viewport)
+            .into_iter()
+            .find(|&key| {
+                if let Some(stroke) = self.stroke_components.get(key) {
+                    stroke
+                        .hitboxes()
+                        .into_iter()
+                        .any(|hitbox| hitbox.contains_local_point(&na::Point2::from(coord)))
+                } else {
+                    false
+                }
+            })
+    }
+
     /// Returns all keys below the y_pos
     pub fn keys_below_y_pos(&self, y_pos: f64) -> Vec<StrokeKey> {
         self.stroke_components
@@ -459,6 +579,6 @@ impl StrokeStore {
             (1.0 - (pos - tool_pos).magnitude() / radius).clamp(0.0, 1.0)
         }
 
-        unimplemented!()
+        todo!()
     }
 }

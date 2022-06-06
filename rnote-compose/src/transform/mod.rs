@@ -1,13 +1,14 @@
 mod transformbehaviour;
 
+use p2d::bounding_volume::AABB;
 // Re-exports
 pub use transformbehaviour::TransformBehaviour;
 
 use serde::{Deserialize, Serialize};
 
-use crate::helpers::Affine2Helpers;
+use crate::helpers::{AABBHelpers, Affine2Helpers};
 
-/// To be used as state in a stroke to help implement the StrokeBehaviour trait
+/// A (affine) transform
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(default, rename = "transform")]
 pub struct Transform {
@@ -29,8 +30,27 @@ impl From<Transform> for kurbo::Affine {
         let matrix = transform.affine.to_homogeneous();
 
         kurbo::Affine::new([
-            matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5],
+            matrix[(0, 0)],
+            matrix[(1, 0)],
+            matrix[(0, 1)],
+            matrix[(1, 1)],
+            matrix[(0, 2)],
+            matrix[(1, 2)],
         ])
+    }
+}
+
+impl TransformBehaviour for Transform {
+    fn translate(&mut self, offset: na::Vector2<f64>) {
+        self.append_translation_mut(offset)
+    }
+
+    fn rotate(&mut self, angle: f64, center: na::Point2<f64>) {
+        self.append_rotation_wrt_point_mut(angle, center);
+    }
+
+    fn scale(&mut self, scale: na::Vector2<f64>) {
+        self.append_scale_mut(scale);
     }
 }
 
@@ -60,6 +80,21 @@ impl Transform {
     /// transform a vec ( translation will be ignored! )
     pub fn transform_vec(&self, vec: na::Vector2<f64>) -> na::Vector2<f64> {
         self.affine * vec
+    }
+
+    /// Transforms the aabbs vertices and calculates a new that contains them
+    pub fn transform_aabb(&self, aabb: AABB) -> AABB {
+        let p0 = self.affine * na::point![aabb.mins[0], aabb.mins[1]];
+        let p1 = self.affine * na::point![aabb.mins[0], aabb.maxs[1]];
+        let p2 = self.affine * na::point![aabb.maxs[0], aabb.maxs[1]];
+        let p3 = self.affine * na::point![aabb.maxs[0], aabb.mins[1]];
+
+        let min_x = p0[0].min(p1[0]).min(p2[0]).min(p3[0]);
+        let min_y = p0[1].min(p1[1]).min(p2[1]).min(p3[1]);
+        let max_x = p0[0].max(p1[0]).max(p2[0]).max(p3[0]);
+        let max_y = p0[1].max(p1[1]).max(p2[1]).max(p3[1]);
+
+        AABB::new_positive(na::point![min_x, min_y], na::point![max_x, max_y])
     }
 
     /// appends a translation to the transform
@@ -97,7 +132,7 @@ impl Transform {
         )
     }
 
-    /// To kurbo affine
+    /// to kurbo affine
     pub fn to_kurbo(&self) -> kurbo::Affine {
         self.affine.to_kurbo()
     }

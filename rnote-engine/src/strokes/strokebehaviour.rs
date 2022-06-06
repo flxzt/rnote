@@ -17,12 +17,13 @@ pub enum GeneratedStrokeImages {
 }
 
 /// Specifing that a type is a stroke.
-/// Also needs to implement drawbehaviour, as some methods have default implementation based on it.
+/// Also needs to implement drawbehaviour and shapebehaviour.
 pub trait StrokeBehaviour: DrawBehaviour + ShapeBehaviour
 where
     Self: Sized,
 {
     /// generates the svg, without the xml header or the svg root. used for exporting.
+    /// implementors should translate the stroke drawing so that the svg has origin 0.0, 0.0
     fn gen_svg(&self) -> Result<render::Svg, anyhow::Error>;
 
     /// generates pixel images for this stroke
@@ -34,7 +35,7 @@ where
     ) -> Result<GeneratedStrokeImages, anyhow::Error>;
 
     /// Exporting as encoded image bytes (Png / Jpg, etc.)
-    fn export_as_image_bytes(
+    fn export_as_bitmapimage_bytes(
         &self,
         format: image::ImageOutputFormat,
         image_scale: f64,
@@ -45,6 +46,6 @@ where
             image_scale,
         )?;
 
-        Ok(image.into_encoded_bytes(format)?)
+        image.into_encoded_bytes(format)
     }
 }

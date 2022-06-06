@@ -269,7 +269,7 @@ impl Segment {
     }
 }
 
-/// Calculates the number hitbox elems for the given length capped with a maximum no of hitbox elemens
+/// Calculates the number hitbox elems for the given length capped with a maximum no of hitbox elements
 fn hitbox_elems_for_segment_len(len: f64) -> i32 {
     // Maximum hitbox diagonal ( below the threshold )
     const MAX_HITBOX_DIAGONAL: f64 = 15.0;

@@ -1,6 +1,6 @@
 use super::{StrokeKey, StrokeStore};
 use crate::strokes::{BrushStroke, Stroke};
-use crate::SurfaceFlags;
+use crate::WidgetFlags;
 
 use p2d::bounding_volume::{BoundingVolume, AABB};
 use rnote_compose::penpath::Segment;
@@ -58,19 +58,15 @@ impl StrokeStore {
 
     pub fn set_trashed_keys(&mut self, keys: &[StrokeKey], trash: bool) {
         keys.iter().for_each(|&key| {
-            if let Some(selected) = self.selected(key) {
-                if selected {
-                    self.set_selected(key, false);
-                    self.set_trashed(key, trash);
-                    self.update_chrono_to_last(key);
-                }
-            }
+            self.set_selected(key, false);
+            self.set_trashed(key, trash);
+            self.update_chrono_to_last(key);
         });
     }
 
     /// trash strokes that collide with the given bounds
-    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: AABB) -> SurfaceFlags {
-        let mut surface_flags = SurfaceFlags::default();
+    pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: AABB) -> WidgetFlags {
+        let mut widget_flags = WidgetFlags::default();
 
         self.stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
@@ -91,6 +87,9 @@ impl StrokeStore {
                                 }
                             }
                         }
+                        Stroke::TextStroke(_textstroke) => {
+                            // Ignore text strokes when trashing with the Eraser
+                        }
                         Stroke::VectorImage(_vectorimage) => {
                             // Ignore vector images when trashing with the Eraser
                         }
@@ -101,12 +100,12 @@ impl StrokeStore {
                 }
 
                 if trash_current_stroke {
-                    surface_flags.merge_with_other(self.record());
+                    widget_flags.merge_with_other(self.record());
                     self.set_trashed(key, true);
                 }
             });
 
-        surface_flags
+        widget_flags
     }
 
     /// remove colliding stroke segments with the given bounds. The stroke is then split. For strokes that don't have segments, trash the entire stroke.
@@ -122,7 +121,7 @@ impl StrokeStore {
         let new_strokes = self
             .stroke_keys_as_rendered_intersecting_bounds(viewport)
             .into_iter()
-            .map(|key| {
+            .flat_map(|key| {
                 let stroke = match Arc::make_mut(&mut self.stroke_components)
                     .get_mut(key)
                     .map(Arc::make_mut)
@@ -164,7 +163,7 @@ impl StrokeStore {
                                     .into_iter()
                                     .filter_map(|segments| {
                                         let split_penpath =
-                                            PenPath::from_iter(segments.to_owned().into_iter());
+                                            PenPath::from_iter(segments.iter().cloned());
 
                                         if split_penpath.is_empty() {
                                             None
@@ -200,6 +199,9 @@ impl StrokeStore {
                             }
                         }
                     }
+                    Stroke::TextStroke(_textstroke) => {
+                        // Ignore text strokes when trashing with the Eraser
+                    }
                     Stroke::VectorImage(_vectorimage) => {
                         // Ignore vector images when trashing with the Eraser
                     }
@@ -214,7 +216,6 @@ impl StrokeStore {
 
                 new_strokes
             })
-            .flatten()
             .collect::<Vec<Stroke>>();
 
         modified_keys.append(

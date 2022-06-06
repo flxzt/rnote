@@ -367,7 +367,7 @@ impl WorkspaceBrowser {
     }
 
     pub fn set_primary_path(&self, path: Option<&Path>) {
-        let path = path.map(|path| gio::File::for_path(path));
+        let path = path.map(gio::File::for_path);
 
         self.imp().primary_dirlist.set_file(path.as_ref());
     }

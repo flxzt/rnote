@@ -3,16 +3,26 @@ use std::ops::Range;
 use rand_distr::Distribution;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive)]
+#[derive(
+    Debug,
+    Eq,
+    PartialEq,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 /// The distribution for the spread of dots across the width of a textured shape
 pub enum TexturedDotsDistribution {
     /// Uniform distribution
     Uniform = 0,
     /// Normal distribution
     Normal,
-    /// Exponential distribution distribution, from the outline increasing in probability symmetrically to the center
+    /// Exponential distribution distribution, from the outline increasing in probability symmetrical to the center
     Exponential,
-    /// Exponential distribution distribution, from the center increasing in probability symmetrically outwards to the outline
+    /// Exponential distribution distribution, from the center increasing in probability symmetrical outwards to the outline
     ReverseExponential,
 }
 
@@ -26,10 +36,12 @@ impl TryFrom<u32> for TexturedDotsDistribution {
     type Error = anyhow::Error;
 
     fn try_from(value: u32) -> Result<Self, Self::Error> {
-        num_traits::FromPrimitive::from_u32(value).ok_or(anyhow::anyhow!(
-            "TexturedDotsDistribution try_from::<u32>() for value {} failed",
-            value
-        ))
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "TexturedDotsDistribution try_from::<u32>() for value {} failed",
+                value
+            )
+        })
     }
 }
 
@@ -79,7 +91,7 @@ impl TexturedDotsDistribution {
 
         if !range.contains(&sample) {
             // Do a uniform distribution as fallback if sample is out of range
-            rand_distr::Uniform::from(range.clone()).sample(rng)
+            rand_distr::Uniform::from(range).sample(rng)
         } else {
             sample
         }

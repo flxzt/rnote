@@ -65,6 +65,18 @@ $ flatpak mask --remove com.github.flxzt.rnote
 
 Then the documents can be exported as an SVG or PDF and can be re-imported into the newest version of Rnote.
 
+## Screenshots
+![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)
+![main_window_light](./rnote-ui/data/screenshots/main_window_light.png)
+![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)
+![selection](./rnote-ui/data/screenshots/selection.png)
+
+## Pitfalls & known issues
+* Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
+* odd location for current file: when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
+    Again, granting them in Flatseal fixes this issue.
+* Stylus buttons move canvas / are not functional: make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
+
 ## Reviews, media:
 > It's a perfect on-demand user experience that — and this might be controversial — is more akin to professional-grade iPadOS apps than GTK apps.
 > I know this will sound like a minor thing on paper but spatially, within the user experience, it reduces friction, and makes it so much easier to get things done.  
@@ -82,18 +94,6 @@ Then the documents can be exported as an SVG or PDF and can be re-imported into 
 > I'm using a microsoft surface go 3 and an original pen. All functions are working like a charm. Best app i used so far.  
 >
 > -- Leroy, Gnome Software review section
-
-## Screenshots
-![main_window_dark](./rnote-ui/data/screenshots/main_window_dark.png)
-![main_window_light](./rnote-ui/data/screenshots/main_window_light.png)
-![pdf_annotation](./rnote-ui/data/screenshots/pdf_annotation.png)
-![selection](./rnote-ui/data/screenshots/selection.png)
-
-## Pitfalls & known issues
-* Drag & Drop: Make sure Rnote has permissions to the locations you are dragging files from. Can be granted in Flatseal (a Flatpak permissions manager)
-* odd location for current file: when the directory displayed in the header title is something like `/run/user/1000/../`, rnote does not have permissions to access the directory.
-    Again, granting them in Flatseal fixes this issue.
-* Stylus buttons move canvas / are not functional: make sure that the `xf86-input-wacom`, drivers on X11 and `libinput` on Wayland and `libwacom` are installed and loaded.
 
 ## Credits
 - A huge thanks to the contributors, translators and to all that donated. You are the ones that help keep the project going!

@@ -67,11 +67,6 @@ impl Line {
         }
     }
 
-    /// to kurbo
-    pub fn to_kurbo(&self) -> kurbo::Line {
-        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point())
-    }
-
     /// Splits itself given the no splits
     pub fn split(&self, n_splits: i32) -> Vec<Self> {
         (0..n_splits)
@@ -89,5 +84,10 @@ impl Line {
                 }
             })
             .collect::<Vec<Self>>()
+    }
+
+    /// to kurbo
+    pub fn to_kurbo(&self) -> kurbo::Line {
+        kurbo::Line::new(self.start.to_kurbo_point(), self.end.to_kurbo_point())
     }
 }

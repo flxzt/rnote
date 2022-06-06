@@ -41,7 +41,9 @@ mod imp {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
 
-            obj.set_css_classes(&["setter-button"]);
+            obj.set_height_request(38);
+            obj.set_css_classes(&["setter_button"]);
+
             self.css.load_from_data(
                 self.generate_css_string(
                     &gdk::RGBA::from_compose_color(super::ColorSetter::COLOR_DEFAULT),
@@ -167,38 +169,24 @@ mod imp {
                 _ => "",
             });
             let properties_checked_string: String = String::from(match position {
-                PositionType::Left => "border-radius: 0px 5px 5px 0px;",
-                PositionType::Right => "border-radius: 5px 0px 0px 5px;",
-                PositionType::Top => "border-radius: 0px 0px 5px 5px;",
-                PositionType::Bottom => "border-radius: 5px 5px 0px 0px;",
+                PositionType::Left => "border-radius: 0px 4px 4px 0px;",
+                PositionType::Right => "border-radius: 4px 0px 0px 4px;",
+                PositionType::Top => "border-radius: 0px 0px 4px 4px;",
+                PositionType::Bottom => "border-radius: 4px 4px 0px 0px;",
                 _ => "",
             });
-            let parsed = format!(
+            let css_string = format!(
                 "
-.setter-button {{
-    padding: 0 0 0 0;
-    background-blend-mode: screen;
-    background-image:
-        linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188),
-        linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188);
-    background-size: 20px 20px; background-position: 0px 0px, 10px 10px;
-    border-color: @borders;
-    border-style: solid;
-    border-width: 1px;
-    filter: brightness(100%);
+.setter_button {{
     margin{0}: 6px;
     background-color: rgba({3}, {4}, {5}, {6:.3});
-    transition: margin{0} 0.15s ease-out, border-radius 0.15s ease-out, filter 0.15s ease-out;
+    transition: margin{0} 0.15s ease-out;
     {1}
 }}
 
-.setter-button:checked {{
+.setter_button:checked {{
     margin{0}: 0px;
     {2}
-}}
-
-.setter-button:hover {{
-    filter: brightness(90%);
 }}
 ",
                 position_string,
@@ -209,7 +197,8 @@ mod imp {
                 (rgba.blue() * 255.0) as i32,
                 (rgba.alpha() * 1000.0).round() / 1000.0
             );
-            parsed
+
+            css_string
         }
     }
 }

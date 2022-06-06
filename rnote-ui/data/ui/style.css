@@ -1,6 +1,6 @@
 .sidebar_action_button image {
-    margin-left: -2px;
-    margin-right: -2px;
+    margin-left: -4px;
+    margin-right: -4px;
 }
 
 .main_title.unsaved_changes .title {
@@ -67,4 +67,26 @@
 
 .narrow_pens_toggles_box {
     background: linear-gradient(to right, #00000010 0%, #00000000 8%, #00000000 92%, #00000010 100%);
+}
+
+.setter_button {
+    padding: 0 0 0 0;
+    background-blend-mode: screen;
+    background-image:
+        linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188),
+        linear-gradient(45deg, #11111188 25%, transparent 25%, transparent 75%, #11111188 75%, #11111188);
+    background-size: 20px 20px; background-position: 0px 0px, 8px 8px;
+    border-color: @borders;
+    border-style: solid;
+    border-width: 1px;
+    filter: brightness(100%);
+    transition: border-radius 0.15s ease-out, filter 0.15s ease-out;
+}
+
+.setter_button:hover {
+    filter: brightness(90%);
+}
+
+.setter_button:active {
+    filter: brightness(110%);
 }

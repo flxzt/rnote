@@ -151,7 +151,6 @@ or press Enter to select a new font)</property>
     </child>
     <child>
       <object class="ColorPicker" id="colorpicker">
-        <property name="height_request">120</property>
         <property name="amount-colorbuttons">2</property>
       </object>
     </child>

@@ -487,7 +487,7 @@ mod imp {
 
                         appwindow.flap_header().remove(&appwindow.flap_close_button());
                         appwindow.flap_header().pack_end(&appwindow.flap_close_button());
-                        appwindow.flap_close_button().set_icon_name("arrow1-left-symbolic");
+                        appwindow.flap_close_button().set_icon_name("left-symbolic");
                     } else if flap.flap_position() == PackType::End {
                         workspace_headerbar.set_show_start_title_buttons(false);
                         workspace_headerbar.set_show_end_title_buttons(flap.reveals_flap());
@@ -496,7 +496,7 @@ mod imp {
 
                         appwindow.flap_header().remove(&appwindow.flap_close_button());
                         appwindow.flap_header().pack_start(&appwindow.flap_close_button());
-                        appwindow.flap_close_button().set_icon_name("arrow1-right-symbolic");
+                        appwindow.flap_close_button().set_icon_name("right-symbolic");
                     }
                 }),
             );

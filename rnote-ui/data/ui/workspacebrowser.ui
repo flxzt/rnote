@@ -75,7 +75,7 @@
             <property name="margin_bottom">6</property>
             <child>
               <object class="GtkButton" id="workspace_pathup_button">
-                <property name="icon_name">arrow1-up-symbolic</property>
+                <property name="icon_name">up-symbolic</property>
                 <property name="width-request">20</property>
               </object>
             </child>

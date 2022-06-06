@@ -44,7 +44,7 @@
           <property name="margin_end">6</property>
           <child>
             <object class="GtkButton" id="colorchooser_editor_gobackbutton">
-              <property name="icon-name">arrow1-left-symbolic</property>
+              <property name="icon-name">left-symbolic</property>
               <property name="hexpand">false</property>
               <property name="width-request">48</property>
               <property name="halign">start</property>

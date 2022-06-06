@@ -1,7 +1,7 @@
 project(
     'rnote',
     'rust',
-    version: '0.5.3',
+    version: '0.5.4-beta1',
     meson_version: '>= 0.56',
 )
 i18n = import('i18n')
@@ -17,23 +17,25 @@ app_authors = run_command(
   'cat', meson.project_source_root() / 'AUTHORS',
 ).stdout().strip()
 
+version_raw = meson.project_version().split('-')
+version = version_raw[0]
+patch = version_raw[1]
+version_array = version.split('.')
+version_major = version_array[0].to_int()
+version_minor = version_array[1].to_int()
+version_micro = version_array[2].to_int()
+
 if get_option('profile') == 'devel'
   profile = 'devel'
   version_suffix = '-devel'
   app_id = base_id + '.' + 'Devel'
 else
   profile = 'default'
-  version_suffix = ''
   app_id = base_id
+  version_suffix = patch
 endif
 
 app_idpath = '/com/github/flxzt/' + app_name + '/'
-
-version = meson.project_version()
-version_array = version.split('.')
-version_major = version_array[0].to_int()
-version_minor = version_array[1].to_int()
-version_micro = version_array[2].to_int()
 
 prefix = get_option('prefix')
 bindir = prefix / get_option('bindir')

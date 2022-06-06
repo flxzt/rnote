@@ -20,8 +20,8 @@ rand_distr = "0.4.3"
 regex = "1.5"
 nalgebra = { version = "0.31.0", features = ["serde-serialize"] }
 parry2d-f64 = { version = "0.9.0", features = ["serde-serialize"] }
-kurbo = {version = "0.8.2", features = ["serde"] }
-piet = { path = "../piet/piet", features = ["serde"]}
+kurbo = {version = "0.8.3" }
+piet = { path = "../piet/piet"}
 piet-svg = { path = "../piet/piet-svg"}
 piet-cairo = { path = "../piet/piet-cairo"}
 image = "0.23.14"

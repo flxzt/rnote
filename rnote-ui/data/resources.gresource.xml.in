@@ -39,6 +39,7 @@
         <file compressed="true">icons/scalable/actions/reset-state-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-left-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/dock-right-symbolic.svg</file>
+        <file compressed="true">icons/scalable/actions/emojichooser-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvasmenu-symbolic.svg</file>
         <file compressed="true">icons/scalable/actions/canvas-cursor.svg</file>
         <file compressed="true">icons/scalable/actions/canvas-motion-cursor.svg</file>

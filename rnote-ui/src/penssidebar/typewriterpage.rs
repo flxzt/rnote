@@ -2,7 +2,8 @@ use crate::{appwindow::RnoteAppWindow, ColorPicker};
 use gtk4::pango;
 use gtk4::{
     gdk, glib, glib::clone, prelude::*, subclass::prelude::*, Button, CompositeTemplate,
-    FontChooserLevel, FontChooserWidget, Image, MenuButton, Popover, SpinButton, ToggleButton,
+    EmojiChooser, FontChooserLevel, FontChooserWidget, Image, MenuButton, Popover, SpinButton,
+    ToggleButton,
 };
 use rnote_engine::engine::EngineViewMut;
 use rnote_engine::strokes::textstroke::{FontStyle, TextAlignment, TextAttribute};
@@ -28,6 +29,8 @@ mod imp {
         pub fontchooser_selectbutton: TemplateChild<Button>,
         #[template_child]
         pub font_size_spinbutton: TemplateChild<SpinButton>,
+        #[template_child]
+        pub emojichooser: TemplateChild<EmojiChooser>,
         #[template_child]
         pub text_reset_button: TemplateChild<Button>,
         #[template_child]
@@ -245,6 +248,25 @@ impl TypewriterPage {
                     |text_style| {
                         text_style.color = color;
                     },
+                    &mut EngineViewMut {
+                        tasks_tx: engine.tasks_tx(),
+                        doc: &mut engine.document,
+                        store: &mut engine.store,
+                        camera: &mut engine.camera,
+                        audioplayer: &mut engine.audioplayer
+                });
+                appwindow.handle_widget_flags(widget_flags);
+            }),
+        );
+
+        // Emojis
+        self.imp().emojichooser.connect_emoji_picked(
+            clone!(@weak appwindow => move |_emojichooser, emoji_str| {
+                let engine = appwindow.canvas().engine();
+                let engine = &mut *engine.borrow_mut();
+
+                let widget_flags = engine.penholder.typewriter.insert_text_at_current_cursors(
+                    emoji_str.to_string(),
                     &mut EngineViewMut {
                         tasks_tx: engine.tasks_tx(),
                         doc: &mut engine.document,

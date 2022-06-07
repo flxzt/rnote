@@ -9,6 +9,7 @@ use num_traits::ToPrimitive;
 use rnote_engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPrefs};
 
 use crate::appwindow::RnoteAppWindow;
+use crate::globals;
 use crate::{app::RnoteApp, config};
 
 // About Dialog
@@ -28,7 +29,7 @@ pub fn dialog_about(appwindow: &RnoteAppWindow) {
         )
         // TRANSLATORS: 'Name <email@domain.com>' or 'Name https://website.example'
         .translator_credits(&gettext("translator-credits"))
-        .license_type(config::APP_LICENSE)
+        .license_type(globals::APP_LICENSE)
         .version((String::from(config::APP_VERSION) + config::APP_VERSION_SUFFIX).as_str())
         .build();
 

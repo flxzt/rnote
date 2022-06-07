@@ -51,6 +51,10 @@
             <attribute name="action">win.keyboard-shortcuts</attribute>
           </item>
           <item>
+            <attribute name="label" translatable="yes">Donate 💝</attribute>
+            <attribute name="action">win.donate</attribute>
+          </item>
+          <item>
             <attribute name="label" translatable="yes">About Rnote</attribute>
             <attribute name="action">win.about</attribute>
           </item>

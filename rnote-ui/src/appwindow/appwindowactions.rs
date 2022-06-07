@@ -1,9 +1,9 @@
 use super::RnoteAppWindow;
-use crate::config;
 use crate::{
     app::RnoteApp,
     {dialogs, RnoteCanvas},
 };
+use crate::{config, globals};
 use piet::RenderContext;
 use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::helpers::Vector2Helpers;
@@ -14,8 +14,8 @@ use rnote_engine::pens::{brush, selector, shaper, tools};
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
-use gtk4::PrintStatus;
 use gtk4::{gdk, gio, glib, glib::clone, prelude::*, PrintOperation, PrintOperationAction, Unit};
+use gtk4::{PrintStatus, Window};
 use std::path::PathBuf;
 
 impl RnoteAppWindow {
@@ -29,6 +29,8 @@ impl RnoteAppWindow {
         self.add_action(&action_fullscreen);
         let action_about = gio::SimpleAction::new("about", None);
         self.add_action(&action_about);
+        let action_donate = gio::SimpleAction::new("donate", None);
+        self.add_action(&action_donate);
         let action_keyboard_shortcuts_dialog = gio::SimpleAction::new("keyboard-shortcuts", None);
         self.add_action(&action_keyboard_shortcuts_dialog);
         let action_open_canvasmenu = gio::SimpleAction::new("open-canvasmenu", None);
@@ -179,6 +181,11 @@ impl RnoteAppWindow {
         // About Dialog
         action_about.connect_activate(clone!(@weak self as appwindow => move |_, _| {
             dialogs::dialog_about(&appwindow);
+        }));
+
+        // Donate
+        action_donate.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            gtk4::show_uri(None::<&Window>, globals::DONATE_URI, 0);
         }));
 
         // Keyboard shortcuts

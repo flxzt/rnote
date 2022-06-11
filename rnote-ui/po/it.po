@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-01-20 13:00+0100\n"
-"PO-Revision-Date: 2022-02-20 21:00+0100\n"
+"PO-Revision-Date: 2022-06-11 17:00+0100\n"
 "Last-Translator: Albano Battistella <albano_battistella@hotmail.com>\n"
 "Language-Team: Italian <LL@li.org>\n"
 "Language: it\n"
@@ -163,7 +163,6 @@ msgstr "Infinito"
 #: resources/ui/canvasmenu.ui:50
 msgid "Show format borders"
 msgstr "Mostra i bordi del formato"
-
 
 #: resources/ui/canvasmenu.ui:55
 msgid "Pen sounds"

@@ -101,6 +101,11 @@ Then the documents can be exported as an SVG or PDF and can be re-imported into 
 - [Rough.js](https://roughjs.com/) provides the algorithms for implementation of Rnote's rough shapes.
 - [Pizarra](https://pizarra.categulario.tk/en/) is a innovative drawing app with advanced shaping and featuring a infinite zoom. It is a great inspiration of the architecture of Rnote. Go check it out!
 
+## Translations
+A great way to contribute to the project without writing code is adding and maintaining a new translation language. The translations files are located in `rnote-ui/po/`. New translations or updating existing ones can be done in two ways:
+- take `rnote.pot` and generate a new `.po` from it, add the new translation language to `LINGUAS` and submit a PR.
+- use [weblate](https://hosted.weblate.org/projects/rnote/repo/) for an easy way to translate in the browser without having to deal with git.
+
 ## Community
 If you have any questions or want to start a general discussion, open a topic in the [Github Discussions](https://github.com/flxzt/rnote/discussions) section.  
 There is also the [#rnote:matrix.org](https://matrix.to/#/#rnote:matrix.org) chat room.  

@@ -14,7 +14,7 @@
           <class name="linked" />
         </style>
         <child>
-          <object class="ColorSetter" id="currentcolor_setter1">
+          <object class="ColorSetter" id="first_colorsetter">
             <property name="hexpand">true</property>
             <property name="vexpand">true</property>
             <property name="halign">fill</property>

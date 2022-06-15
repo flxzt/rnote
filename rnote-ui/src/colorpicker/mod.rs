@@ -25,7 +25,7 @@ mod imp {
         #[template_child]
         pub setterbox: TemplateChild<Box>,
         #[template_child]
-        pub currentcolor_setter1: TemplateChild<ColorSetter>,
+        pub first_colorsetter: TemplateChild<ColorSetter>,
         #[template_child]
         pub colorpicker_button: TemplateChild<MenuButton>,
         #[template_child]
@@ -40,7 +40,7 @@ mod imp {
         pub position: Cell<PositionType>,
         pub selected: Cell<u32>,
         pub amount_colorbuttons: Cell<u32>,
-        pub currentcolor_setters: Rc<RefCell<Vec<ColorSetter>>>,
+        pub colorsetters: Rc<RefCell<Vec<ColorSetter>>>,
         pub current_color: Cell<gdk::RGBA>,
     }
 
@@ -48,7 +48,7 @@ mod imp {
         fn default() -> Self {
             Self {
                 setterbox: TemplateChild::<Box>::default(),
-                currentcolor_setter1: TemplateChild::<ColorSetter>::default(),
+                first_colorsetter: TemplateChild::<ColorSetter>::default(),
                 colorpicker_button: TemplateChild::<MenuButton>::default(),
                 colorpicker_popover: TemplateChild::<Popover>::default(),
                 colorchooser: TemplateChild::<ColorChooserWidget>::default(),
@@ -61,7 +61,7 @@ mod imp {
                 current_color: Cell::new(gdk::RGBA::from_compose_color(
                     super::ColorPicker::COLOR_DEFAULT,
                 )),
-                currentcolor_setters: Rc::new(RefCell::new(Vec::with_capacity(
+                colorsetters: Rc::new(RefCell::new(Vec::with_capacity(
                     super::ColorPicker::AMOUNT_COLORBUTTONS_DEFAULT as usize,
                 ))),
             }
@@ -88,21 +88,20 @@ mod imp {
             self.parent_constructed(obj);
 
             let colorchooser = self.colorchooser.get();
-            let currentcolor_setter1 = self.currentcolor_setter1.get();
+            let first_colorsetter = self.first_colorsetter.get();
             let colorpicker_popover = self.colorpicker_popover.get();
             let colorchooser_editor_gobackbutton = self.colorchooser_editor_gobackbutton.get();
 
-            self.currentcolor_setter1.connect_clicked(
-                clone!(@weak obj => move |currentcolor_setter1| {
-                    let color = currentcolor_setter1.property::<gdk::RGBA>("color");
+            self.first_colorsetter
+                .connect_clicked(clone!(@weak obj => move |first_colorsetter| {
+                    let color = first_colorsetter.property::<gdk::RGBA>("color");
                     obj.set_property("current-color", &color.to_value());
 
                     // Avoid loops
                     if obj.selected() != 0_u32 {
                         obj.set_selected(0_u32);
                     }
-                }),
-            );
+                }));
 
             self.colorchooser.connect_show_editor_notify(
                 clone!(@weak colorchooser_editor_gobackbutton => move |_colorchooser| {
@@ -123,22 +122,23 @@ mod imp {
                 }),
             );
 
-            self.colorchooser.connect_rgba_notify(clone!(@weak obj, @weak currentcolor_setter1, @weak self.currentcolor_setters as currentcolor_setters => move |colorchooser| {
-                let color = colorchooser.rgba();
-                obj.set_property("current-color", &color.to_value());
+            self.colorchooser
+                .connect_rgba_notify(clone!(@weak obj => move |colorchooser| {
+                    let color = colorchooser.rgba();
+                    obj.set_property("current-color", &color.to_value());
 
-            }));
+                }));
 
-            obj.connect_notify_local(Some("current-color"), clone!(@weak currentcolor_setter1, @weak self.currentcolor_setters as currentcolor_setters => move |obj, _param| {
+            obj.connect_notify_local(Some("current-color"), clone!(@weak first_colorsetter, @weak self.colorsetters as colorsetters => move |obj, _param| {
                 let current_color = obj.current_color();
 
                 // store color in the buttons
-                if currentcolor_setter1.is_active() {
-                    currentcolor_setter1.set_property("color", &gdk::RGBA::from_compose_color(current_color).to_value());
+                if first_colorsetter.is_active() {
+                    first_colorsetter.set_property("color", &gdk::RGBA::from_compose_color(current_color).to_value());
                 } else {
-                    for setter_button in &*currentcolor_setters.borrow() {
-                        if setter_button.is_active() {
-                            setter_button.set_property("color", &gdk::RGBA::from_compose_color(current_color).to_value());
+                    for colorsetter in &*colorsetters.borrow() {
+                        if colorsetter.is_active() {
+                            colorsetter.set_property("color", &gdk::RGBA::from_compose_color(current_color).to_value());
                         }
                     }
                 }
@@ -155,17 +155,11 @@ mod imp {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![
                     glib::ParamSpecEnum::new(
-                        // Name
                         "position",
-                        // Nickname
                         "position",
-                        // Short description
                         "position",
-                        // Enum type
                         PositionType::static_type(),
-                        // Default value
                         PositionType::Right.into_glib(),
-                        // The property can be read and written to
                         glib::ParamFlags::READWRITE,
                     ),
                     glib::ParamSpecUInt::new(
@@ -218,8 +212,8 @@ mod imp {
                         .expect("value not of type `PositionType`");
                     self.position.replace(position);
 
-                    self.currentcolor_setter1.set_property("position", position);
-                    for setter_button in self.currentcolor_setters.borrow().iter() {
+                    self.first_colorsetter.set_property("position", position);
+                    for setter_button in self.colorsetters.borrow().iter() {
                         setter_button.set_property("position", position);
                     }
 
@@ -272,20 +266,20 @@ mod imp {
                     self.selected.set(index);
 
                     if index == 0 {
-                        self.currentcolor_setter1.get().set_active(true);
+                        self.first_colorsetter.get().set_active(true);
                     } else {
                         // index - 1, because vec of colorsetters are not including the first
-                        if let Some(currentcolor_setter) =
-                            self.currentcolor_setters.borrow().get(index as usize - 1)
+                        if let Some(colorsetter) =
+                            self.colorsetters.borrow().get(index as usize - 1)
                         {
-                            currentcolor_setter.set_active(true);
+                            colorsetter.set_active(true);
                         }
                     }
                 }
                 "amount-colorbuttons" => {
                     self.amount_colorbuttons
                         .set(value.get::<u32>().expect("value not of type `u32`"));
-                    self.init_currentcolor_setters(obj);
+                    self.init_colorsetters(obj);
                 }
                 "current-color" => {
                     self.current_color.set(
@@ -312,15 +306,15 @@ mod imp {
     impl WidgetImpl for ColorPicker {}
 
     impl ColorPicker {
-        fn init_currentcolor_setters(&self, obj: &<Self as ObjectSubclass>::Type) {
-            let setterbox = &*self.setterbox;
-            let currentcolor_setter1 = &*self.currentcolor_setter1;
+        fn init_colorsetters(&self, obj: &<Self as ObjectSubclass>::Type) {
+            let setterbox = self.setterbox.get();
+            let first_colorsetter = self.first_colorsetter.get();
 
             // Clearing previous
-            for setter_button in &*self.currentcolor_setters.borrow_mut() {
+            for setter_button in &*self.colorsetters.borrow_mut() {
                 setter_button.unparent();
             }
-            self.currentcolor_setters.borrow_mut().clear();
+            self.colorsetters.borrow_mut().clear();
 
             // init the colorsetters. Index starts at one to skip the first button
             for i in super::ColorPicker::AMOUNT_COLORBUTTONS_MIN..self.amount_colorbuttons.get() {
@@ -331,7 +325,7 @@ mod imp {
                 setter_button.set_halign(Align::Fill);
                 setter_button.set_valign(Align::Fill);
                 setter_button.set_position(obj.position());
-                setter_button.set_group(Some(currentcolor_setter1));
+                setter_button.set_group(Some(&first_colorsetter));
                 setterbox.append(&setter_button);
 
                 setter_button.connect_clicked(clone!(@weak obj => move |setter_button| {
@@ -344,7 +338,7 @@ mod imp {
                     }
                 }));
 
-                self.currentcolor_setters.borrow_mut().push(setter_button);
+                self.colorsetters.borrow_mut().push(setter_button);
             }
 
             self.generate_colors();
@@ -356,7 +350,7 @@ mod imp {
             let rgb_offset = (2.0 / 3.0) * std::f32::consts::PI;
             let color_offset = (5.0 / 4.0) * std::f32::consts::PI + 0.4;
 
-            for (i, setter_button) in self.currentcolor_setters.borrow().iter().rev().enumerate() {
+            for (i, setter_button) in self.colorsetters.borrow().iter().rev().enumerate() {
                 let i = i + 1;
 
                 let color = gdk::RGBA::new(
@@ -437,12 +431,12 @@ impl ColorPicker {
         let mut all_colors = Vec::with_capacity(8);
         all_colors.push(
             self.imp()
-                .currentcolor_setter1
+                .first_colorsetter
                 .get()
                 .color()
                 .into_compose_color(),
         );
-        for colorsetter in self.imp().currentcolor_setters.borrow().iter() {
+        for colorsetter in self.imp().colorsetters.borrow().iter() {
             all_colors.push(colorsetter.color().into_compose_color());
         }
 
@@ -453,12 +447,10 @@ impl ColorPicker {
         let mut all_colors_iter = all_colors.iter();
         if let Some(&first_color) = all_colors_iter.next() {
             self.imp()
-                .currentcolor_setter1
+                .first_colorsetter
                 .set_color(gdk::RGBA::from_compose_color(first_color));
         }
-        for (&color, colorsetter) in
-            all_colors_iter.zip(self.imp().currentcolor_setters.borrow().iter())
-        {
+        for (&color, colorsetter) in all_colors_iter.zip(self.imp().colorsetters.borrow().iter()) {
             colorsetter.set_color(gdk::RGBA::from_compose_color(color));
         }
     }

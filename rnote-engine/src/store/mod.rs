@@ -57,6 +57,25 @@ impl Default for HistoryEntry {
 // the store snapshot, used when saving the store to a file.
 pub type StoreSnapshot = HistoryEntry;
 
+impl StoreSnapshot {
+    /// Processes the snapshot before it is used to save to a file
+    pub fn process_before_saving(&mut self) {
+        // Remove all trashed strokes
+        let trashed_keys = self
+            .trash_components
+            .iter()
+            .filter_map(|(key, trash_comp)| if trash_comp.trashed { Some(key) } else { None })
+            .collect::<Vec<StrokeKey>>();
+
+        for key in trashed_keys {
+            Arc::make_mut(&mut self.stroke_components).remove(key);
+            Arc::make_mut(&mut self.trash_components).remove(key);
+            Arc::make_mut(&mut self.selection_components).remove(key);
+            Arc::make_mut(&mut self.chrono_components).remove(key);
+        }
+    }
+}
+
 /// StrokeStore implements a Entity - Component - System pattern.
 /// The Entities are the StrokeKey's, which represent a stroke. There are different components for them:
 ///     * 'stroke_components': Hold geometric data. These components are special in that they are the primary map. A new stroke must have this component. (could also be called geometric components)

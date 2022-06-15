@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use crate::document::Layout;
 use crate::import::PdfImportPrefs;
@@ -627,8 +628,10 @@ impl RnoteEngine {
     ) -> anyhow::Result<oneshot::Receiver<anyhow::Result<Vec<u8>>>> {
         let (oneshot_sender, oneshot_receiver) = oneshot::channel::<anyhow::Result<Vec<u8>>>();
 
-        let store_snapshot = self.store.take_store_snapshot();
-        // the doc is currently not thread safe, so we have to serialize it before
+        let mut store_snapshot = self.store.take_store_snapshot();
+        Arc::make_mut(&mut store_snapshot).process_before_saving();
+
+        // the doc is currently not thread safe, so we have to serialize it in the same thread that holds the engine
         let doc = serde_json::to_value(&self.document)?;
 
         rayon::spawn(move || {

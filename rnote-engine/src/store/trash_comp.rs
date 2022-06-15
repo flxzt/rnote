@@ -64,6 +64,19 @@ impl StrokeStore {
         });
     }
 
+    pub fn trashed_keys_unordered(&self) -> Vec<StrokeKey> {
+        self.stroke_components
+            .keys()
+            .filter(|&key| self.trashed(key).unwrap_or(false))
+            .collect()
+    }
+
+    pub fn remove_trashed_strokes(&mut self) {
+        for key in self.trashed_keys_unordered() {
+            self.remove_stroke(key);
+        }
+    }
+
     /// trash strokes that collide with the given bounds
     pub fn trash_colliding_strokes(&mut self, eraser_bounds: AABB, viewport: AABB) -> WidgetFlags {
         let mut widget_flags = WidgetFlags::default();

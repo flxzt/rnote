@@ -218,7 +218,19 @@ impl DrawOnDocBehaviour for OffsetCameraTool {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "tools_style")]
 pub enum ToolsStyle {
     #[serde(rename = "verticalspace")]
@@ -232,6 +244,16 @@ pub enum ToolsStyle {
 impl Default for ToolsStyle {
     fn default() -> Self {
         Self::VerticalSpace
+    }
+}
+
+impl TryFrom<u32> for ToolsStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("ToolsStyle try_from::<u32>() for value {} failed", value)
+        })
     }
 }
 

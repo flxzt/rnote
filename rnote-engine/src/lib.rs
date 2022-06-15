@@ -11,14 +11,14 @@ pub mod camera;
 pub mod document;
 mod drawbehaviour;
 pub mod engine;
+/// module concerned with importing data into the engine
+pub mod import;
 pub mod pens;
 pub mod render;
 pub mod store;
 pub mod strokes;
 pub mod utils;
 pub mod widgetflags;
-/// module concerned with importing data into the engine
-pub mod import;
 
 // Re-exports
 pub use audioplayer::AudioPlayer;

@@ -928,48 +928,6 @@ impl RnoteAppWindow {
         self.imp().penssidebar.get()
     }
 
-    // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
-    pub fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
-        if widget_flags.quit {
-            return true;
-        }
-        if widget_flags.redraw {
-            self.canvas().queue_draw();
-        }
-        if widget_flags.resize {
-            self.canvas().queue_resize();
-        }
-        if widget_flags.refresh_ui {
-            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
-        }
-        if widget_flags.indicate_changed_store {
-            self.canvas().set_unsaved_changes(true);
-            self.canvas().set_empty(false);
-        }
-        if widget_flags.update_view {
-            let camera_offset = self.canvas().engine().borrow().camera.offset;
-            // this updates the canvas adjustment values with the ones from the camera
-            self.canvas().update_camera_offset(camera_offset);
-        }
-        if let Some(hide_scrollbars) = widget_flags.hide_scrollbars {
-            if hide_scrollbars {
-                self.canvas_scroller()
-                    .set_policy(PolicyType::Never, PolicyType::Never);
-            } else {
-                self.canvas_scroller()
-                    .set_policy(PolicyType::Automatic, PolicyType::Automatic);
-            }
-        }
-        if let Some(hide_undo) = widget_flags.hide_undo {
-            self.undo_button().set_sensitive(!hide_undo);
-        }
-        if let Some(hide_redo) = widget_flags.hide_redo {
-            self.redo_button().set_sensitive(!hide_redo);
-        }
-
-        false
-    }
-
     // Must be called after application is associated with it else it fails
     pub fn init(&self) {
         self.imp().workspacebrowser.get().init(self);
@@ -1238,6 +1196,56 @@ impl RnoteAppWindow {
                 }),
             );
         }
+    }
+
+    // Returns true if the flags indicate that any loop that handles the flags should be quit. (usually an async event loop)
+    pub fn handle_widget_flags(&self, widget_flags: WidgetFlags) -> bool {
+        if widget_flags.quit {
+            return true;
+        }
+        if widget_flags.redraw {
+            self.canvas().queue_draw();
+        }
+        if widget_flags.resize {
+            self.canvas().queue_resize();
+        }
+        if widget_flags.refresh_ui {
+            adw::prelude::ActionGroupExt::activate_action(self, "refresh-ui-for-engine", None);
+        }
+        if widget_flags.indicate_changed_store {
+            self.canvas().set_unsaved_changes(true);
+            self.canvas().set_empty(false);
+        }
+        if widget_flags.update_view {
+            let camera_offset = self.canvas().engine().borrow().camera.offset;
+            // this updates the canvas adjustment values with the ones from the camera
+            self.canvas().update_camera_offset(camera_offset);
+        }
+        if let Some(hide_scrollbars) = widget_flags.hide_scrollbars {
+            if hide_scrollbars {
+                self.canvas_scroller()
+                    .set_policy(PolicyType::Never, PolicyType::Never);
+            } else {
+                self.canvas_scroller()
+                    .set_policy(PolicyType::Automatic, PolicyType::Automatic);
+            }
+        }
+        if let Some(hide_undo) = widget_flags.hide_undo {
+            self.undo_button().set_sensitive(!hide_undo);
+        }
+        if let Some(hide_redo) = widget_flags.hide_redo {
+            self.redo_button().set_sensitive(!hide_redo);
+        }
+
+        false
+    }
+
+    pub fn save_engine_config(&self) -> anyhow::Result<()> {
+        let engine_config = self.canvas().engine().borrow().save_engine_config()?;
+        self.app_settings()
+            .set_string("engine-config", engine_config.as_str())?;
+
+        Ok(())
     }
 
     pub fn start_pulsing_canvas_progressbar(&self) {

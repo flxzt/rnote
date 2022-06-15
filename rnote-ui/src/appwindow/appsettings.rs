@@ -313,9 +313,7 @@ impl RnoteAppWindow {
 
         {
             // Save engine config
-            let engine_config = self.canvas().engine().borrow().save_engine_config()?;
-            self.app_settings()
-                .set_string("engine-config", engine_config.as_str())?;
+            self.save_engine_config()?;
         }
 
         Ok(())

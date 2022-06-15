@@ -78,13 +78,21 @@ impl EraserPage {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.eraserstyle_trash_colliding_strokes_toggle().connect_toggled(clone!(@weak appwindow => move |eraserstyle_trash_colliding_strokes_toggle| {
             if eraserstyle_trash_colliding_strokes_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "eraser-style", Some(&"trash-colliding-strokes".to_variant()));
+                appwindow.canvas().engine().borrow_mut().penholder.eraser.style = EraserStyle::TrashCollidingStrokes;
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing eraser style, Err `{}`", e);
+                }
             }
         }));
 
         self.eraserstyle_split_colliding_strokes_toggle().connect_toggled(clone!(@weak appwindow => move |eraserstyle_split_colliding_strokes_toggle| {
             if eraserstyle_split_colliding_strokes_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "eraser-style", Some(&"split-colliding-strokes".to_variant()));
+                appwindow.canvas().engine().borrow_mut().penholder.eraser.style = EraserStyle::SplitCollidingStrokes;
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing eraser style, Err `{}`", e);
+                }
             }
         }));
 
@@ -96,6 +104,10 @@ impl EraserPage {
         self.width_spinbutton().connect_value_changed(
             clone!(@weak appwindow => move |width_spinbutton| {
                 appwindow.canvas().engine().borrow_mut().penholder.eraser.width = width_spinbutton.value();
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing eraser width, Err `{}`", e);
+                }
             }),
         );
     }

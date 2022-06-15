@@ -29,13 +29,15 @@ pub use shapebuilderbehaviour::ShapeBuilderBehaviour;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(
+    Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
 #[serde(rename = "shape_type")]
 /// A choice for a shape builder type
 pub enum ShapeBuilderType {
     #[serde(rename = "line")]
     /// A line builder
-    Line,
+    Line = 0,
     #[serde(rename = "rectangle")]
     /// A rectangle builder
     Rectangle,
@@ -56,6 +58,19 @@ pub enum ShapeBuilderType {
 impl Default for ShapeBuilderType {
     fn default() -> Self {
         Self::Line
+    }
+}
+
+impl TryFrom<u32> for ShapeBuilderType {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!(
+                "ShapeBuilderType try_from::<u32>() for value {} failed",
+                value
+            )
+        })
     }
 }
 

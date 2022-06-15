@@ -68,17 +68,45 @@ impl Default for SelectorState {
     }
 }
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    Serialize,
+    Deserialize,
+    PartialEq,
+    Eq,
+    PartialOrd,
+    Ord,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "selector_style")]
 pub enum SelectorStyle {
     #[serde(rename = "polygon")]
-    Polygon,
+    Polygon = 0,
     #[serde(rename = "rectangle")]
     Rectangle,
     #[serde(rename = "apiece")]
     Apiece,
     #[serde(rename = "intersectingpath")]
     IntersectingPath,
+}
+
+impl Default for SelectorStyle {
+    fn default() -> Self {
+        Self::Rectangle
+    }
+}
+
+impl TryFrom<u32> for SelectorStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("SelectorStyle try_from::<u32>() for value {} failed", value)
+        })
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -95,7 +123,7 @@ pub struct Selector {
 impl Default for Selector {
     fn default() -> Self {
         Self {
-            style: SelectorStyle::Rectangle,
+            style: SelectorStyle::default(),
             resize_lock_aspectratio: false,
             state: SelectorState::default(),
         }

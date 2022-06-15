@@ -159,25 +159,29 @@ impl TypewriterPage {
         // or we activate the signal manually elsewhere in the code
         self.fontchooser().connect_font_activated(clone!(@weak fontchooser_popover, @weak appwindow => move |fontchooser, _font| {
             if let Some(Some(font_family)) = fontchooser.font_family().map(|font_family| font_family.name()) {
-                let engine = appwindow.canvas().engine();
-                let engine = &mut *engine.borrow_mut();
+                {
+                    let engine = appwindow.canvas().engine();
+                    let engine = &mut *engine.borrow_mut();
 
-                //log::debug!("font_family: {}", font_family);
+                    engine.penholder.typewriter.text_style.font_family = font_family.to_string();
 
-                engine.penholder.typewriter.text_style.font_family = font_family.to_string();
+                    let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.font_family = font_family.to_string();
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx(),
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_widget_flags(widget_flags);
+                }
 
-                let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
-                    |text_style| {
-                        text_style.font_family = font_family.to_string();
-                    },
-                    &mut EngineViewMut {
-                        tasks_tx: engine.tasks_tx(),
-                        doc: &mut engine.document,
-                        store: &mut engine.store,
-                        camera: &mut engine.camera,
-                        audioplayer: &mut engine.audioplayer
-                });
-                appwindow.handle_widget_flags(widget_flags);
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing typewriter font, Err `{}`", e);
+                }
 
                 fontchooser_popover.popdown();
             }
@@ -194,23 +198,29 @@ impl TypewriterPage {
             clone!(@weak appwindow => move |font_size_spinbutton| {
                 let font_size = font_size_spinbutton.value();
 
-                let engine = appwindow.canvas().engine();
-                let engine = &mut *engine.borrow_mut();
+                {
+                    let engine = appwindow.canvas().engine();
+                    let engine = &mut *engine.borrow_mut();
 
-                engine.penholder.typewriter.text_style.font_size = font_size;
+                    engine.penholder.typewriter.text_style.font_size = font_size;
 
-                let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
-                    |text_style| {
-                        text_style.font_size = font_size;
-                    },
-                    &mut EngineViewMut {
-                        tasks_tx: engine.tasks_tx(),
-                        doc: &mut engine.document,
-                        store: &mut engine.store,
-                        camera: &mut engine.camera,
-                        audioplayer: &mut engine.audioplayer
-                });
-                appwindow.handle_widget_flags(widget_flags);
+                    let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.font_size = font_size;
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx(),
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_widget_flags(widget_flags);
+                }
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing typewriter font size, Err `{}`", e);
+                }
             }),
         );
 
@@ -239,23 +249,29 @@ impl TypewriterPage {
             clone!(@weak appwindow => move |colorpicker, _paramspec| {
                 let color = colorpicker.property::<gdk::RGBA>("current-color").into_compose_color();
 
-                let engine = appwindow.canvas().engine();
-                let engine = &mut *engine.borrow_mut();
+                {
+                    let engine = appwindow.canvas().engine();
+                    let engine = &mut *engine.borrow_mut();
 
-                engine.penholder.typewriter.text_style.color = color;
+                    engine.penholder.typewriter.text_style.color = color;
 
-                let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
-                    |text_style| {
-                        text_style.color = color;
-                    },
-                    &mut EngineViewMut {
-                        tasks_tx: engine.tasks_tx(),
-                        doc: &mut engine.document,
-                        store: &mut engine.store,
-                        camera: &mut engine.camera,
-                        audioplayer: &mut engine.audioplayer
-                });
-                appwindow.handle_widget_flags(widget_flags);
+                    let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                        |text_style| {
+                            text_style.color = color;
+                        },
+                        &mut EngineViewMut {
+                            tasks_tx: engine.tasks_tx(),
+                            doc: &mut engine.document,
+                            store: &mut engine.store,
+                            camera: &mut engine.camera,
+                            audioplayer: &mut engine.audioplayer
+                    });
+                    appwindow.handle_widget_flags(widget_flags);
+                }
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing typewriter color, Err `{}`", e);
+                }
             }),
         );
 
@@ -282,8 +298,6 @@ impl TypewriterPage {
         self.imp().text_reset_button.connect_clicked(clone!(@weak appwindow => move |_text_reset_button| {
             let engine = appwindow.canvas().engine();
             let engine = &mut *engine.borrow_mut();
-
-            engine.penholder.typewriter.text_style.ranged_text_attributes.clear();
 
             let widget_flags = engine.penholder.typewriter.remove_text_attributes_current_selection(
                 &mut EngineViewMut {
@@ -375,93 +389,114 @@ impl TypewriterPage {
         // Alignment
         self.text_align_start_togglebutton().connect_active_notify(
             clone!(@weak appwindow => move |text_align_start_togglebutton| {
-                let engine = appwindow.canvas().engine();
-
                 if text_align_start_togglebutton.is_active() {
-                    let engine = &mut *engine.borrow_mut();
-                    engine.penholder.typewriter.text_style.alignment = TextAlignment::Start;
+                    {
+                        let engine = appwindow.canvas().engine();
+                        let engine = &mut *engine.borrow_mut();
+                        engine.penholder.typewriter.text_style.alignment = TextAlignment::Start;
 
-                    let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
-                        |text_style| {
-                            text_style.alignment = TextAlignment::Start;
-                        },
-                        &mut EngineViewMut {
-                            tasks_tx: engine.tasks_tx(),
-                            doc: &mut engine.document,
-                            store: &mut engine.store,
-                            camera: &mut engine.camera,
-                            audioplayer: &mut engine.audioplayer
-                    });
-                    appwindow.handle_widget_flags(widget_flags);
+                        let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                            |text_style| {
+                                text_style.alignment = TextAlignment::Start;
+                            },
+                            &mut EngineViewMut {
+                                tasks_tx: engine.tasks_tx(),
+                                doc: &mut engine.document,
+                                store: &mut engine.store,
+                                camera: &mut engine.camera,
+                                audioplayer: &mut engine.audioplayer
+                        });
+                        appwindow.handle_widget_flags(widget_flags);
+                    }
+
+                    if let Err(e) = appwindow.save_engine_config() {
+                        log::error!("saving engine config failed after changing typewriter alignment, Err `{}`", e);
+                    }
                 }
+
             }),
         );
         self.text_align_center_togglebutton().connect_active_notify(
             clone!(@weak appwindow => move |text_align_center_togglebutton| {
-                let engine = appwindow.canvas().engine();
-
                 if text_align_center_togglebutton.is_active() {
-                    let engine = &mut *engine.borrow_mut();
-                    engine.penholder.typewriter.text_style.alignment = TextAlignment::Center;
+                    {
+                        let engine = appwindow.canvas().engine();
+                        let engine = &mut *engine.borrow_mut();
+                        engine.penholder.typewriter.text_style.alignment = TextAlignment::Center;
 
-                    let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
-                        |text_style| {
-                            text_style.alignment = TextAlignment::Center;
-                        },
-                        &mut EngineViewMut {
-                            tasks_tx: engine.tasks_tx(),
-                            doc: &mut engine.document,
-                            store: &mut engine.store,
-                            camera: &mut engine.camera,
-                            audioplayer: &mut engine.audioplayer
-                    });
-                    appwindow.handle_widget_flags(widget_flags);
+                        let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                            |text_style| {
+                                text_style.alignment = TextAlignment::Center;
+                            },
+                            &mut EngineViewMut {
+                                tasks_tx: engine.tasks_tx(),
+                                doc: &mut engine.document,
+                                store: &mut engine.store,
+                                camera: &mut engine.camera,
+                                audioplayer: &mut engine.audioplayer
+                        });
+                        appwindow.handle_widget_flags(widget_flags);
+                    }
+
+                    if let Err(e) = appwindow.save_engine_config() {
+                        log::error!("saving engine config failed after changing typewriter alignment, Err `{}`", e);
+                    }
                 }
             }),
         );
         self.text_align_end_togglebutton().connect_active_notify(
             clone!(@weak appwindow => move |text_align_end_togglebutton| {
-                let engine = appwindow.canvas().engine();
-
                 if text_align_end_togglebutton.is_active() {
-                    let engine = &mut *engine.borrow_mut();
-                    engine.penholder.typewriter.text_style.alignment = TextAlignment::End;
+                    {
+                        let engine = appwindow.canvas().engine();
+                        let engine = &mut *engine.borrow_mut();
+                        engine.penholder.typewriter.text_style.alignment = TextAlignment::End;
 
-                    let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
-                        |text_style| {
-                            text_style.alignment = TextAlignment::End;
-                        },
-                        &mut EngineViewMut {
-                            tasks_tx: engine.tasks_tx(),
-                            doc: &mut engine.document,
-                            store: &mut engine.store,
-                            camera: &mut engine.camera,
-                            audioplayer: &mut engine.audioplayer
-                    });
-                    appwindow.handle_widget_flags(widget_flags);
+                        let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                            |text_style| {
+                                text_style.alignment = TextAlignment::End;
+                            },
+                            &mut EngineViewMut {
+                                tasks_tx: engine.tasks_tx(),
+                                doc: &mut engine.document,
+                                store: &mut engine.store,
+                                camera: &mut engine.camera,
+                                audioplayer: &mut engine.audioplayer
+                        });
+                        appwindow.handle_widget_flags(widget_flags);
+                    }
+
+                    if let Err(e) = appwindow.save_engine_config() {
+                        log::error!("saving engine config failed after changing typewriter alignment, Err `{}`", e);
+                    }
                 }
             }),
         );
         self.text_align_fill_togglebutton().connect_active_notify(
             clone!(@weak appwindow => move |text_align_fill_togglebutton| {
-                let engine = appwindow.canvas().engine();
-
                 if text_align_fill_togglebutton.is_active() {
-                    let engine = &mut *engine.borrow_mut();
-                    engine.penholder.typewriter.text_style.alignment = TextAlignment::Fill;
+                    {
+                        let engine = appwindow.canvas().engine();
+                        let engine = &mut *engine.borrow_mut();
+                        engine.penholder.typewriter.text_style.alignment = TextAlignment::Fill;
 
-                    let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
-                        |text_style| {
-                            text_style.alignment = TextAlignment::Fill;
-                        },
-                        &mut EngineViewMut {
-                            tasks_tx: engine.tasks_tx(),
-                            doc: &mut engine.document,
-                            store: &mut engine.store,
-                            camera: &mut engine.camera,
-                            audioplayer: &mut engine.audioplayer
-                    });
-                    appwindow.handle_widget_flags(widget_flags);
+                        let widget_flags = engine.penholder.typewriter.change_text_style_in_modifying_stroke(
+                            |text_style| {
+                                text_style.alignment = TextAlignment::Fill;
+                            },
+                            &mut EngineViewMut {
+                                tasks_tx: engine.tasks_tx(),
+                                doc: &mut engine.document,
+                                store: &mut engine.store,
+                                camera: &mut engine.camera,
+                                audioplayer: &mut engine.audioplayer
+                        });
+                        appwindow.handle_widget_flags(widget_flags);
+                    }
+
+                    if let Err(e) = appwindow.save_engine_config() {
+                        log::error!("saving engine config failed after changing typewriter alignment, Err `{}`", e);
+                    }
                 }
             }),
         );

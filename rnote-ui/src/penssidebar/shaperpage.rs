@@ -226,6 +226,10 @@ impl ShaperPage {
                     ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_width = width_spinbutton.value(),
                     ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_width = width_spinbutton.value(),
                 }
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing shape width, Err `{}`", e);
+                }
             }),
         );
 
@@ -240,6 +244,10 @@ impl ShaperPage {
                     ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_color = Some(color),
                     ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_color= Some(color),
                 }
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing shaper color, Err `{}`", e);
+                }
             }),
         );
 
@@ -253,6 +261,10 @@ impl ShaperPage {
                 match shaper_style {
                     ShaperStyle::Smooth => appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.fill_color = Some(color),
                     ShaperStyle::Rough => appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_color= Some(color),
+                }
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing shaper fill color, Err `{}`", e);
                 }
             }),
         );
@@ -274,6 +286,10 @@ impl ShaperPage {
         self.imp().roughconfig_roughness_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_roughness_spinbutton| {
                 appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.roughness = roughconfig_roughness_spinbutton.value();
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing rough shape roughness, Err `{}`", e);
+                }
             }),
         );
 
@@ -294,6 +310,10 @@ impl ShaperPage {
         self.imp().roughconfig_bowing_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_bowing_spinbutton| {
                 appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.bowing = roughconfig_bowing_spinbutton.value();
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing rough shape bowing, Err `{}`", e);
+                }
             }),
         );
 
@@ -317,6 +337,10 @@ impl ShaperPage {
         self.imp().roughconfig_curvestepcount_spinbutton.get().connect_value_changed(
             clone!(@weak appwindow => move |roughconfig_curvestepcount_spinbutton| {
                 appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.curve_stepcount = roughconfig_curvestepcount_spinbutton.value();
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing rough shape curve stepcount, Err `{}`", e);
+                }
             }),
         );
 
@@ -329,16 +353,21 @@ impl ShaperPage {
         self.shaperstyle_listbox().connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shaperstyle_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    match selected_row.index() {
-                        // Smooth
-                        0 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"smooth".to_variant()));
-                        }
-                        // Rough
-                        1 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shaper-style", Some(&"rough".to_variant()));
-                        }
-                        _ => {}
+                    {
+                        let engine = appwindow.canvas().engine();
+                        let engine = &mut *engine.borrow_mut();
+
+                        engine.penholder.shaper.style = ShaperStyle::try_from(selected_row.index() as u32).unwrap_or_default();
+                        engine.penholder.shaper.smooth_options.stroke_width = shaperpage.width_spinbutton().value();
+                        engine.penholder.shaper.smooth_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color());
+                        engine.penholder.shaper.smooth_options.fill_color = Some(shaperpage.fill_colorpicker().current_color());
+                        engine.penholder.shaper.rough_options.stroke_width = shaperpage.width_spinbutton().value();
+                        engine.penholder.shaper.rough_options.stroke_color = Some(shaperpage.stroke_colorpicker().current_color());
+                        engine.penholder.shaper.rough_options.fill_color = Some(shaperpage.fill_colorpicker().current_color());
+                    }
+
+                    if let Err(e) = appwindow.save_engine_config() {
+                        log::error!("saving engine config failed after changing shaper style, Err `{}`", e);
                     }
                 }
             }),
@@ -350,6 +379,10 @@ impl ShaperPage {
             .get()
             .connect_state_notify(clone!(@weak appwindow => move |switch|  {
                 appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.enabled = switch.state();
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing shaper constraint enabled, Err `{}`", e);
+                }
             }));
 
         self.imp()
@@ -360,6 +393,10 @@ impl ShaperPage {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.insert(ConstraintRatio::OneToOne);
                 } else {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::OneToOne);
+                }
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing shaper one to one constraint, Err `{}`", e);
                 }
             }));
 
@@ -372,6 +409,10 @@ impl ShaperPage {
                 } else {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::ThreeToTwo);
                 }
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing shaper three to two constraint, Err `{}`", e);
+                }
             }));
 
         self.imp()
@@ -383,38 +424,20 @@ impl ShaperPage {
                 } else {
                     appwindow.canvas().engine().borrow_mut().penholder.shaper.constraints.ratios.remove(&ConstraintRatio::Golden);
                 }
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing shaper golden ratio constraint, Err `{}`", e);
+                }
             }));
 
         // shape builder type
         self.shapebuildertype_listbox().connect_row_selected(
             clone!(@weak self as shaperpage, @weak appwindow => move |_shapetype_listbox, selected_row| {
                 if let Some(selected_row) = selected_row.map(|selected_row| {selected_row.downcast_ref::<adw::ActionRow>().unwrap()}) {
-                    match selected_row.index() {
-                        // Line
-                        0 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"line".to_variant()));
-                        }
-                        // Rectangle
-                        1 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"rectangle".to_variant()));
-                        }
-                        // Ellipse
-                        2 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"ellipse".to_variant()));
-                        }
-                        // Foci ellipse
-                        3 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"fociellipse".to_variant()));
-                        }
-                        // Quadbez
-                        4 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"quadbez".to_variant()));
-                        }
-                        // Cubbez
-                        5 => {
-                            adw::prelude::ActionGroupExt::activate_action(&appwindow, "shape-buildertype", Some(&"cubbez".to_variant()));
-                        }
-                        _ => {}
+                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::try_from(selected_row.index() as u32).unwrap_or_default();
+
+                    if let Err(e) = appwindow.save_engine_config() {
+                        log::error!("saving engine config failed after changing shape builder type, Err `{}`", e);
                     }
                 }
             }),

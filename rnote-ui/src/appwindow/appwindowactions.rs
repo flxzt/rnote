@@ -5,12 +5,9 @@ use crate::{
 };
 use crate::{config, globals};
 use piet::RenderContext;
-use rnote_compose::builders::ShapeBuilderType;
 use rnote_compose::helpers::Vector2Helpers;
 use rnote_engine::document::Layout;
-use rnote_engine::pens::eraser::EraserStyle;
 use rnote_engine::pens::penholder::PenStyle;
-use rnote_engine::pens::{brush, selector, shaper, tools};
 use rnote_engine::{render, Camera, DrawBehaviour, RnoteEngine};
 
 use gettextrs::gettext;
@@ -63,7 +60,6 @@ impl RnoteAppWindow {
             gio::PropertyAction::new("touch-drawing", &self.canvas(), "touch-drawing");
         self.add_action(&action_touch_drawing);
 
-        // Engine actions
         let action_pen_sounds =
             gio::SimpleAction::new_stateful("pen-sounds", None, &false.to_variant());
         self.add_action(&action_pen_sounds);
@@ -148,28 +144,7 @@ impl RnoteAppWindow {
         let action_pen_style =
             gio::SimpleAction::new("pen-style", Some(&glib::VariantType::new("s").unwrap()));
         self.add_action(&action_pen_style);
-        let action_brush_style =
-            gio::SimpleAction::new("brush-style", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_brush_style);
-        let action_shape_buildertype = gio::SimpleAction::new(
-            "shape-buildertype",
-            Some(&glib::VariantType::new("s").unwrap()),
-        );
-        self.add_action(&action_shape_buildertype);
-        let action_shaper_style =
-            gio::SimpleAction::new("shaper-style", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_shaper_style);
-        let action_eraser_style =
-            gio::SimpleAction::new("eraser-style", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_eraser_style);
-        let action_selector_style = gio::SimpleAction::new(
-            "selector-style",
-            Some(&glib::VariantType::new("s").unwrap()),
-        );
-        self.add_action(&action_selector_style);
-        let action_tool_style =
-            gio::SimpleAction::new("tool-style", Some(&glib::VariantType::new("s").unwrap()));
-        self.add_action(&action_tool_style);
+
         let action_refresh_ui_for_engine = gio::SimpleAction::new("refresh-ui-for-engine", None);
         self.add_action(&action_refresh_ui_for_engine);
 
@@ -411,156 +386,6 @@ impl RnoteAppWindow {
                     appwindow.handle_widget_flags(widget_flags);
                 }
             }),
-        );
-
-        // Brush Style
-        action_brush_style.connect_activate(
-        clone!(@weak self as appwindow => move |_action_brush_style, target| {
-            let brush_style = target.unwrap().str().unwrap();
-
-            match brush_style {
-                "marker" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Marker;
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
-                },
-                "solid" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Solid;
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.smooth_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
-                },
-                "textured" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.style = brush::BrushStyle::Textured;
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_width = appwindow.penssidebar().brush_page().width_spinbutton().value();
-                    appwindow.canvas().engine().borrow_mut().penholder.brush.textured_options.stroke_color = Some(appwindow.penssidebar().brush_page().colorpicker().current_color());
-                },
-                _ => { log::error!("set invalid state of action `brush-style`")}
-            }
-
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
-        }),
-        );
-
-        // Shape type
-        action_shape_buildertype.connect_activate(
-        clone!(@weak self as appwindow => move |_action_shaper_type, target| {
-            let shape_type = target.unwrap().str().unwrap();
-
-            match shape_type {
-                "line" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::Line;
-                },
-                "rectangle" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::Rectangle;
-                },
-                "ellipse" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::Ellipse;
-                },
-                "fociellipse" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::FociEllipse;
-                },
-                "quadbez" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::QuadBez;
-                },
-                "cubbez" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.builder_type = ShapeBuilderType::CubBez;
-                },
-                _ => { log::error!("set invalid state of action `shape-buildertype`")}
-            }
-
-
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
-        }),
-        );
-
-        // Shaper style
-        action_shaper_style.connect_activate(
-        clone!(@weak self as appwindow => move |_action_shaper_style, target| {
-            let shaper_style = target.unwrap().str().unwrap();
-
-            match shaper_style {
-                "smooth" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.style = shaper::ShaperStyle::Smooth;
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.smooth_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
-                },
-                "rough" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.style = shaper::ShaperStyle::Rough;
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_width = appwindow.penssidebar().shaper_page().width_spinbutton().value();
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.stroke_color = Some(appwindow.penssidebar().shaper_page().stroke_colorpicker().current_color());
-                    appwindow.canvas().engine().borrow_mut().penholder.shaper.rough_options.fill_color = Some(appwindow.penssidebar().shaper_page().fill_colorpicker().current_color());
-                },
-                _ => { log::error!("set invalid state of action `shaper-style`")}
-            }
-
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
-        }));
-
-        // Eraser Style
-        action_eraser_style.connect_activate(
-        clone!(@weak self as appwindow => move |_action_eraser_style, target| {
-            let eraser_style = target.unwrap().str().unwrap();
-
-            match eraser_style {
-                "trash-colliding-strokes" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.eraser.style = EraserStyle::TrashCollidingStrokes;
-                },
-                "split-colliding-strokes" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.eraser.style = EraserStyle::SplitCollidingStrokes;
-                },
-                _ => { log::error!("set invalid state of action `eraser-style`")}
-            }
-
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
-        }),
-        );
-
-        // Selector Style
-        action_selector_style.connect_activate(
-        clone!(@weak self as appwindow => move |_action_selector_style, target| {
-            let selector_style = target.unwrap().str().unwrap();
-
-            match selector_style {
-                "polygon" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorStyle::Polygon;
-                },
-                "rectangle" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorStyle::Rectangle;
-                },
-                "apiece" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorStyle::Apiece;
-                },
-                "intersectingpath" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.selector.style = selector::SelectorStyle::IntersectingPath;
-                },
-                _ => { log::error!("set invalid state of action `selector-style`")}
-            }
-
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
-        }),
-        );
-
-        // Tool Style
-        action_tool_style.connect_activate(
-        clone!(@weak self as appwindow => move |_action_tool_style, target| {
-            let tool_style = target.unwrap().str().unwrap();
-
-            match tool_style {
-                "verticalspace" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::VerticalSpace;
-                },
-                "dragproximity" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::DragProximity;
-                },
-                "offsetcamera" => {
-                    appwindow.canvas().engine().borrow_mut().penholder.tools.style = tools::ToolsStyle::OffsetCamera;
-                },
-                _ => { log::error!("set invalid state of action `tool-style`")}
-            }
-
-            adw::prelude::ActionGroupExt::activate_action(&appwindow, "refresh-ui-for-engine", None);
-        }),
         );
 
         // Refresh UI state

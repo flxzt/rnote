@@ -77,19 +77,31 @@ impl ToolsPage {
     pub fn init(&self, appwindow: &RnoteAppWindow) {
         self.toolstyle_verticalspace_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_verticalspace_toggle| {
             if toolstyle_verticalspace_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"verticalspace".to_variant()));
+                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::VerticalSpace;
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing tool style, Err `{}`", e);
+                }
             }
         }));
 
         self.toolstyle_dragproximity_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_dragproximity_toggle| {
             if toolstyle_dragproximity_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"dragproximity".to_variant()));
+                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::DragProximity;
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing tool style, Err `{}`", e);
+                }
             }
         }));
 
         self.toolstyle_offsetcamera_toggle().connect_toggled(clone!(@weak appwindow => move |toolstyle_offsetcamera_toggle| {
             if toolstyle_offsetcamera_toggle.is_active() {
-                adw::prelude::ActionGroupExt::activate_action(&appwindow, "tool-style", Some(&"offsetcamera".to_variant()));
+                appwindow.canvas().engine().borrow_mut().penholder.tools.style = ToolsStyle::OffsetCamera;
+
+                if let Err(e) = appwindow.save_engine_config() {
+                    log::error!("saving engine config failed after changing tool style, Err `{}`", e);
+                }
             }
         }));
     }

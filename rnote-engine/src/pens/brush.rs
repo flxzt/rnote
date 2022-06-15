@@ -20,11 +20,21 @@ use rand::{Rng, SeedableRng};
 use rnote_compose::style::smooth::SmoothOptions;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(
+    Debug,
+    Copy,
+    Clone,
+    Eq,
+    PartialEq,
+    Serialize,
+    Deserialize,
+    num_derive::FromPrimitive,
+    num_derive::ToPrimitive,
+)]
 #[serde(rename = "brush_style")]
 pub enum BrushStyle {
     #[serde(rename = "marker")]
-    Marker,
+    Marker = 0,
     #[serde(rename = "solid")]
     Solid,
     #[serde(rename = "textured")]
@@ -34,6 +44,16 @@ pub enum BrushStyle {
 impl Default for BrushStyle {
     fn default() -> Self {
         Self::Solid
+    }
+}
+
+impl TryFrom<u32> for BrushStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("BrushStyle try_from::<u32>() for value {} failed", value)
+        })
     }
 }
 

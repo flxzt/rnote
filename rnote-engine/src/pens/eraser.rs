@@ -17,7 +17,9 @@ pub enum EraserState {
     Down(Element),
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(
+    Debug, Clone, Copy, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
 #[serde(rename = "eraser_style")]
 pub enum EraserStyle {
     #[serde(rename = "trash_colliding_strokes")]
@@ -32,6 +34,15 @@ impl Default for EraserStyle {
     }
 }
 
+impl TryFrom<u32> for EraserStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("EraserStyle try_from::<u32>() for value {} failed", value)
+        })
+    }
+}
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(default, rename = "eraser")]
 pub struct Eraser {

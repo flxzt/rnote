@@ -18,11 +18,13 @@ use rnote_compose::style::smooth::SmoothOptions;
 use rnote_compose::Style;
 use serde::{Deserialize, Serialize};
 
-#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
+#[derive(
+    Copy, Clone, Debug, Serialize, Deserialize, num_derive::FromPrimitive, num_derive::ToPrimitive,
+)]
 #[serde(rename = "shaper_style")]
 pub enum ShaperStyle {
     #[serde(rename = "smooth")]
-    Smooth,
+    Smooth = 0,
     #[serde(rename = "rough")]
     Rough,
 }
@@ -30,6 +32,16 @@ pub enum ShaperStyle {
 impl Default for ShaperStyle {
     fn default() -> Self {
         Self::Smooth
+    }
+}
+
+impl TryFrom<u32> for ShaperStyle {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u32) -> Result<Self, Self::Error> {
+        num_traits::FromPrimitive::from_u32(value).ok_or_else(|| {
+            anyhow::anyhow!("ShaperStyle try_from::<u32>() for value {} failed", value)
+        })
     }
 }
 
@@ -194,17 +206,18 @@ impl PenBehaviour for Shaper {
                         }
 
                         if !shapes.is_empty() {
-                            engine_view.doc.resize_autoexpand(engine_view.store, engine_view.camera);
+                            engine_view
+                                .doc
+                                .resize_autoexpand(engine_view.store, engine_view.camera);
 
                             widget_flags.resize = true;
                             widget_flags.indicate_changed_store = true;
                         }
 
                         for shape in shapes {
-                            let key = engine_view.store.insert_stroke(Stroke::ShapeStroke(ShapeStroke::new(
-                                shape,
-                                drawstyle.clone(),
-                            )));
+                            let key = engine_view.store.insert_stroke(Stroke::ShapeStroke(
+                                ShapeStroke::new(shape, drawstyle.clone()),
+                            ));
                             if let Err(e) = engine_view.store.regenerate_rendering_for_stroke(
                                 key,
                                 engine_view.camera.viewport(),

@@ -1165,7 +1165,7 @@ impl PenBehaviour for Typewriter {
 
                     return Ok(Some((
                         selection_text.into_bytes(),
-                        String::from("text/plain"),
+                        String::from("text/plain;charset=utf-8"),
                     )));
                 }
 

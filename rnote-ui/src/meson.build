@@ -56,6 +56,7 @@ rnote_ui_sources = files(
     'penssidebar/toolspage.rs',
     'workspacebrowser/mod.rs',
     'workspacebrowser/filerow.rs',
+    'workspacebrowser/workspacerow.rs',
     'colorpicker/mod.rs',
     'colorpicker/colorsetter.rs',
 )

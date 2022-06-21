@@ -1,16 +1,13 @@
-use std::path::PathBuf;
-
 use crate::app::RnoteApp;
 use crate::appwindow::RnoteAppWindow;
 use rnote_compose::Color;
 
 use adw::prelude::*;
-use gtk4::gio;
 
 impl RnoteAppWindow {
     /// Settings binds
     pub fn setup_settings(&self) {
-        let app = self.application().unwrap().downcast::<RnoteApp>().unwrap();
+        let app = self.app();
 
         // Color scheme
         self.app_settings()
@@ -36,24 +33,6 @@ impl RnoteAppWindow {
                 adw::ColorScheme::ForceLight => Some(String::from("force-light").to_variant()),
                 adw::ColorScheme::ForceDark => Some(String::from("force-dark").to_variant()),
                 _ => None,
-            })
-            .build();
-
-        // Workspace directory
-        self.app_settings()
-            .bind(
-                "workspace-dir",
-                &self.workspacebrowser().primary_dirlist(),
-                "file",
-            )
-            .mapping(|variant, _| {
-                let path = PathBuf::from(variant.get::<String>().unwrap());
-                Some(gio::File::for_path(&path).to_value())
-            })
-            .set_mapping(|value, _| {
-                let file = value.get::<gio::File>().unwrap();
-
-                file.path().map(|path| path.to_string_lossy().to_variant())
             })
             .build();
 
@@ -151,6 +130,12 @@ impl RnoteAppWindow {
                 .dark_theme_toggle()
                 .set_active(true),
             _ => {}
+        }
+
+        {
+            // Workspacebrowser
+            self.workspacebrowser()
+                .load_from_settings(&self.app_settings());
         }
 
         {

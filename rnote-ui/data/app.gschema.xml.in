@@ -29,9 +29,13 @@
         Use the color scheme in the application's UI and in the text area.
       </description>
     </key>
-    <key name="workspace-dir" type="s">
-      <default>"./"</default>
-      <summary>the current workspace directory</summary>
+    <key name="current-workspace-index" type="u">
+      <default>0</default>
+      <summary>the current workspace index</summary>
+    </key>
+    <key name="workspaces" type="as">
+      <default>["./"]</default>
+      <summary>the workspaces</summary>
     </key>
     <key name="autosave" type="b">
       <default>true</default>

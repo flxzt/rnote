@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ### WorkspaceRow ### -->
+<interface>
+  <template class="WorkspaceRow" parent="GtkWidget">
+    <property name="layout-manager">
+      <object class="GtkBinLayout"></object>
+    </property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="margin-top">6</property>
+        <property name="margin-bottom">6</property>
+        <property name="margin-start">6</property>
+        <property name="margin-end">6</property>
+        <style>
+          <class name="linked" />
+        </style>
+        <child>
+          <object class="GtkImage" id="folder_image">
+            <property name="icon_name">folder-symbolic</property>
+            <property name="icon-size">large</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -11,8 +11,8 @@ use crate::{
     colorpicker::ColorSetter, config, penssidebar::BrushPage, penssidebar::EraserPage,
     penssidebar::SelectorPage, penssidebar::ShaperPage, penssidebar::ToolsPage,
     penssidebar::TypewriterPage, settingspanel::PenShortcutRow, utils, workspacebrowser::FileRow,
-    AppMenu, CanvasMenu, ColorPicker, MainHeader, PensSideBar, RnoteAppWindow, RnoteCanvas,
-    SettingsPanel, UnitEntry, WorkspaceBrowser,
+    workspacebrowser::WorkspaceRow, AppMenu, CanvasMenu, ColorPicker, MainHeader, PensSideBar,
+    RnoteAppWindow, RnoteCanvas, SettingsPanel, UnitEntry, WorkspaceBrowser,
 };
 
 mod imp {
@@ -60,6 +60,7 @@ mod imp {
             PenStyle::static_type();
             WorkspaceBrowser::static_type();
             FileRow::static_type();
+            WorkspaceRow::static_type();
             MeasureUnit::static_type();
             UnitEntry::static_type();
             PenShortcutRow::static_type();

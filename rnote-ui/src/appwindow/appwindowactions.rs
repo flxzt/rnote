@@ -114,8 +114,8 @@ impl RnoteAppWindow {
         self.add_action(&action_autosave);
         let action_open_doc = gio::SimpleAction::new("open-doc", None);
         self.add_action(&action_open_doc);
-        let action_open_workspace = gio::SimpleAction::new("open-workspace", None);
-        self.add_action(&action_open_workspace);
+        let action_edit_workspace = gio::SimpleAction::new("edit-workspace", None);
+        self.add_action(&action_edit_workspace);
         let action_print_doc = gio::SimpleAction::new("print-doc", None);
         self.add_action(&action_print_doc);
         let action_import_file = gio::SimpleAction::new("import-file", None);
@@ -638,9 +638,9 @@ impl RnoteAppWindow {
             dialogs::dialog_new_doc(&appwindow);
         }));
 
-        // Open workspace
-        action_open_workspace.connect_activate(clone!(@weak self as appwindow => move |_, _| {
-            dialogs::dialog_open_workspace(&appwindow);
+        // Change workspace
+        action_edit_workspace.connect_activate(clone!(@weak self as appwindow => move |_, _| {
+            dialogs::dialog_edit_workspace(&appwindow);
         }));
 
         // Open doc

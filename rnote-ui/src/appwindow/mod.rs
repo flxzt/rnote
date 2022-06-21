@@ -768,6 +768,10 @@ impl RnoteAppWindow {
         self.destroy();
     }
 
+    pub fn app(&self) -> RnoteApp {
+        self.application().unwrap().downcast::<RnoteApp>().unwrap()
+    }
+
     pub fn app_settings(&self) -> gio::Settings {
         self.imp().app_settings.clone()
     }
@@ -1319,7 +1323,8 @@ impl RnoteAppWindow {
             }
             utils::FileType::Folder => {
                 if let Some(path) = file.path() {
-                    self.workspacebrowser().set_primary_path(Some(&path));
+                    self.workspacebrowser()
+                        .set_current_workspace_dir(&path);
                 }
             }
             utils::FileType::Unsupported => {

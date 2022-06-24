@@ -75,12 +75,6 @@ mod imp {
     impl ObjectImpl for WorkspaceBrowser {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-
-            self.folders_listbox
-                .bind_model(Some(&self.folders_model), |obj| {
-                    let file = obj.downcast_ref::<gio::File>().unwrap();
-                    WorkspaceRow::from_file(file).upcast::<Widget>()
-                });
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -357,6 +351,18 @@ impl WorkspaceBrowser {
                 multisorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }));
+
+            // setup workspace rows
+            let appwindow_c = appwindow.clone();
+            self.imp()
+                .folders_listbox
+                .bind_model(Some(&self.imp().folders_model), move |obj| {
+                    let file = obj.downcast_ref::<gio::File>().unwrap();
+                    let workspace_row = WorkspaceRow::from_file(file);
+                    workspace_row.init(&appwindow_c);
+
+                    workspace_row.upcast::<Widget>()
+                });
         }
     }
 

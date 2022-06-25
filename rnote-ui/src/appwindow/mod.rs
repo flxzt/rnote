@@ -588,6 +588,36 @@ mod imp {
                     .mainheader()
                     .headerbar()
                     .pack_start(&appwindow.mainheader().pens_toggles_squeezer());
+                appwindow
+                    .workspacebrowser()
+                    .grid()
+                    .remove(&appwindow.workspacebrowser().workspace_bar());
+                appwindow
+                    .workspacebrowser()
+                    .grid()
+                    .remove(&appwindow.workspacebrowser().files_scroller());
+                appwindow.workspacebrowser().grid().attach(
+                    &appwindow.workspacebrowser().workspace_bar(),
+                    0,
+                    0,
+                    1,
+                    1,
+                );
+                appwindow.workspacebrowser().grid().attach(
+                    &appwindow.workspacebrowser().files_scroller(),
+                    2,
+                    0,
+                    1,
+                    1,
+                );
+                appwindow
+                    .workspacebrowser()
+                    .files_scroller()
+                    .set_window_placement(CornerType::TopRight);
+                appwindow
+                    .workspacebrowser()
+                    .workspace_scroller()
+                    .set_window_placement(CornerType::TopRight);
 
                 appwindow
                     .canvas_scroller()
@@ -673,6 +703,36 @@ mod imp {
                     .mainheader()
                     .headerbar()
                     .pack_end(&appwindow.mainheader().pens_toggles_squeezer());
+                appwindow
+                    .workspacebrowser()
+                    .grid()
+                    .remove(&appwindow.workspacebrowser().files_scroller());
+                appwindow
+                    .workspacebrowser()
+                    .grid()
+                    .remove(&appwindow.workspacebrowser().workspace_bar());
+                appwindow.workspacebrowser().grid().attach(
+                    &appwindow.workspacebrowser().files_scroller(),
+                    0,
+                    0,
+                    1,
+                    1,
+                );
+                appwindow.workspacebrowser().grid().attach(
+                    &appwindow.workspacebrowser().workspace_bar(),
+                    2,
+                    0,
+                    1,
+                    1,
+                );
+                appwindow
+                    .workspacebrowser()
+                    .files_scroller()
+                    .set_window_placement(CornerType::TopLeft);
+                appwindow
+                    .workspacebrowser()
+                    .workspace_scroller()
+                    .set_window_placement(CornerType::TopLeft);
 
                 appwindow
                     .canvas_scroller()
@@ -1322,9 +1382,8 @@ impl RnoteAppWindow {
                 dialogs::dialog_import_pdf_w_prefs(self, target_pos);
             }
             utils::FileType::Folder => {
-                if let Some(path) = file.path() {
-                    self.workspacebrowser()
-                        .set_current_workspace_dir(&path);
+                if let Some(dir) = file.path() {
+                    self.workspacebrowser().set_current_workspace_dir(dir);
                 }
             }
             utils::FileType::Unsupported => {

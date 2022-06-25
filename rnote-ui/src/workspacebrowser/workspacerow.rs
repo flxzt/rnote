@@ -1,10 +1,12 @@
 use crate::RnoteAppWindow;
 use gtk4::{
-    gdk, gio, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, GestureClick,
-    GestureLongPress, Image, Widget,
+    gdk, glib, glib::clone, prelude::*, subclass::prelude::*, CompositeTemplate, CssProvider,
+    GestureClick, GestureLongPress, Image, Widget,
 };
 use once_cell::sync::Lazy;
 use std::cell::RefCell;
+
+use super::WorkspaceListEntry;
 
 mod imp {
     use super::*;
@@ -12,17 +14,21 @@ mod imp {
     #[derive(Debug, CompositeTemplate)]
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacerow.ui")]
     pub struct WorkspaceRow {
-        pub current_file: RefCell<Option<gio::File>>,
+        pub entry: RefCell<WorkspaceListEntry>,
 
         #[template_child]
         pub folder_image: TemplateChild<Image>,
+
+        pub css: CssProvider,
     }
 
     impl Default for WorkspaceRow {
         fn default() -> Self {
             Self {
-                current_file: RefCell::new(None),
+                entry: RefCell::new(WorkspaceListEntry::default()),
                 folder_image: TemplateChild::<Image>::default(),
+
+                css: CssProvider::new(),
             }
         }
     }
@@ -45,7 +51,11 @@ mod imp {
     impl ObjectImpl for WorkspaceRow {
         fn constructed(&self, obj: &Self::Type) {
             self.parent_constructed(obj);
-            obj.set_widget_name("filerow");
+
+            obj.set_css_classes(&["workspacerow"]);
+
+            obj.style_context()
+                .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
         }
 
         fn dispose(&self, obj: &Self::Type) {
@@ -56,10 +66,10 @@ mod imp {
         fn properties() -> &'static [glib::ParamSpec] {
             static PROPERTIES: Lazy<Vec<glib::ParamSpec>> = Lazy::new(|| {
                 vec![glib::ParamSpecObject::new(
-                    "current-file",
-                    "current-file",
-                    "current-file",
-                    Option::<gio::File>::static_type(),
+                    "entry",
+                    "entry",
+                    "entry",
+                    WorkspaceListEntry::static_type(),
                     glib::ParamFlags::READWRITE,
                 )]
             });
@@ -74,18 +84,34 @@ mod imp {
             pspec: &glib::ParamSpec,
         ) {
             match pspec.name() {
-                "current-file" => {
-                    let current_file = value
-                        .get::<Option<gio::File>>()
-                        .expect("The value needs to be of type `Option<gio::File>`.");
+                "entry" => {
+                    let entry = value
+                        .get::<WorkspaceListEntry>()
+                        .expect("The value needs to be of type `WorkspaceListEntry`.");
 
-                    // Set the tooltip text to the current path
-                    let s = current_file
-                        .as_ref()
-                        .and_then(|f| f.path().map(|p| p.to_string_lossy().to_string()));
-                    obj.set_tooltip_text(s.as_ref().map(|s| s.as_str()));
+                    entry.connect_notify_local(
+                        Some("dir"),
+                        clone!(@strong obj => move |_, _| {
+                            obj.imp().update_apearance();
+                        }),
+                    );
 
-                    self.current_file.replace(current_file);
+                    entry.connect_notify_local(
+                        Some("color"),
+                        clone!(@strong obj => move |_, _| {
+                            obj.imp().update_apearance();
+                        }),
+                    );
+
+                    entry.connect_notify_local(
+                        Some("name"),
+                        clone!(@strong obj => move |_, _| {
+                            obj.imp().update_apearance();
+                        }),
+                    );
+
+                    self.entry.replace(entry);
+                    self.update_apearance();
                 }
                 _ => unimplemented!(),
             }
@@ -93,13 +119,39 @@ mod imp {
 
         fn property(&self, _obj: &Self::Type, _id: usize, pspec: &glib::ParamSpec) -> glib::Value {
             match pspec.name() {
-                "current-file" => self.current_file.borrow().to_value(),
+                "entry" => self.entry.borrow().to_value(),
                 _ => unimplemented!(),
             }
         }
     }
 
     impl WidgetImpl for WorkspaceRow {}
+
+    impl WorkspaceRow {
+        fn update_apearance(&self) {
+            let dir = self.entry.borrow().dir();
+            let color = self.entry.borrow().color();
+            let name = self.entry.borrow().name();
+
+            self.instance()
+                .set_tooltip_text(Some(format!("{}\n{}", name, dir).as_str()));
+
+            let custom_css = format!(
+                "
+.workspacerow {{
+    color: rgba({0}, {1}, {2}, {3:.3});
+    transition: color 0.15s ease-out;
+}}
+            ",
+                (color.red() * 255.0) as i32,
+                (color.green() * 255.0) as i32,
+                (color.blue() * 255.0) as i32,
+                (color.alpha() * 1000.0).round() / 1000.0
+            );
+
+            self.css.load_from_data(custom_css.as_bytes());
+        }
+    }
 }
 
 glib::wrapper! {
@@ -109,26 +161,21 @@ glib::wrapper! {
 
 impl Default for WorkspaceRow {
     fn default() -> Self {
-        Self::new()
+        Self::new(WorkspaceListEntry::default())
     }
 }
 
 impl WorkspaceRow {
-    pub fn new() -> Self {
-        glib::Object::new(&[]).expect("Failed to create `WorkspaceRow`")
+    pub fn new(entry: WorkspaceListEntry) -> Self {
+        glib::Object::new(&[("entry", &entry.to_value())]).expect("Failed to create `WorkspaceRow`")
     }
 
-    pub fn from_file(file: &gio::File) -> Self {
-        glib::Object::new(&[("current-file", &file.to_value())])
-            .expect("Failed to create `WorkspaceRow` from file")
+    pub fn entry(&self) -> WorkspaceListEntry {
+        self.property::<WorkspaceListEntry>("entry")
     }
 
-    pub fn current_file(&self) -> Option<gio::File> {
-        self.property::<Option<gio::File>>("current-file")
-    }
-
-    pub fn set_current_file(&self, current_file: Option<gio::File>) {
-        self.set_property("current-file", current_file.to_value());
+    pub fn set_entry(&self, entry: WorkspaceListEntry) {
+        self.set_property("entry", entry.to_value());
     }
 
     pub fn folder_image(&self) -> Image {

@@ -14,7 +14,7 @@
     <child>
       <object class="GtkImage" id="file_image">
         <property name="name">file_image</property>
-        <property name="margin-start">0</property>
+        <property name="margin-start">6</property>
         <property name="margin-end">12</property>
       </object>
     </child>

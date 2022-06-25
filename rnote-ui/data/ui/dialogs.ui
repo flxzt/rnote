@@ -322,7 +322,36 @@
                 <property name="halign">fill</property>
                 <child>
                   <object class="AdwActionRow">
-                    <property name="title" translatable="yes">Workspace directory</property>
+                    <property name="title" translatable="yes">Name</property>
+                    <property name="subtitle" translatable="yes">Change the workspace name</property>
+                    <child type="suffix">
+                      <object class="GtkEntry" id="change_workspace_name_entry">
+                        <property name="hexpand">false</property>
+                        <property name="hexpand">true</property>
+                        <property name="valign">center</property>
+                        <property name="halign">fill</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Color</property>
+                    <property name="subtitle" translatable="yes">Change the workspace color</property>
+                    <child type="suffix">
+                      <object class="GtkColorButton" id="change_workspace_color_button">
+                        <property name="hexpand">false</property>
+                        <property name="hexpand">false</property>
+                        <property name="valign">center</property>
+                        <property name="halign">end</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="AdwActionRow">
+                    <property name="title" translatable="yes">Directory</property>
+                    <property name="subtitle" translatable="yes">Change the workspace directory</property>
                     <child type="suffix">
                       <object class="GtkBox">
                         <property name="valign">center</property>

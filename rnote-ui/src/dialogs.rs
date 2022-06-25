@@ -1,8 +1,8 @@
 use adw::prelude::*;
 use gettextrs::gettext;
 use gtk4::{
-    gio, AboutDialog, Button, Dialog, FileChooserAction, FileChooserNative, FileFilter, Label,
-    MessageDialog, ResponseType, ShortcutsWindow, SpinButton, ToggleButton,
+    gio, AboutDialog, Button, ColorButton, Dialog, Entry, FileChooserAction, FileChooserNative,
+    FileFilter, Label, MessageDialog, ResponseType, ShortcutsWindow, SpinButton, ToggleButton,
 };
 use gtk4::{glib, glib::clone, Builder};
 use num_traits::ToPrimitive;
@@ -348,6 +348,9 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
     let dialog_edit_workspace: Dialog = builder.object("dialog_edit_workspace").unwrap();
+    let change_workspace_name_entry: Entry = builder.object("change_workspace_name_entry").unwrap();
+    let change_workspace_color_button: ColorButton =
+        builder.object("change_workspace_color_button").unwrap();
     let change_workspace_dir_button: Button =
         builder.object("change_workspace_dir_button").unwrap();
     let change_workspace_dir_label: Label = builder.object("change_workspace_dir_label").unwrap();
@@ -364,11 +367,20 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         .select_multiple(false)
         .build();
 
-    if let Some(p) = appwindow.workspacebrowser().selected_workspace_dir() {
-        if let Err(e) = dialog_change_workspace_dir.set_file(&gio::File::for_path(&p)) {
+    if let Some(row) = appwindow
+        .workspacebrowser()
+        .current_selected_workspace_row()
+    {
+        if let Err(e) =
+            dialog_change_workspace_dir.set_file(&gio::File::for_path(&row.entry().dir()))
+        {
             log::error!("set file in change workspace dialog failed with Err {}", e);
         }
-        change_workspace_dir_label.set_label(&p.to_string_lossy())
+
+        // set initial UI
+        change_workspace_name_entry.set_text(row.entry().name().as_str());
+        change_workspace_color_button.set_rgba(&row.entry().color());
+        change_workspace_dir_label.set_label(&row.entry().dir().as_str());
     }
 
     dialog_change_workspace_dir.connect_response(
@@ -390,11 +402,13 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
     );
 
     dialog_edit_workspace.connect_response(
-        clone!(@weak dialog_change_workspace_dir, @weak appwindow => move |dialog_modify_workspace, responsetype| {
+        clone!(@weak change_workspace_name_entry, @weak change_workspace_color_button, @weak dialog_change_workspace_dir, @weak appwindow => move |dialog_modify_workspace, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
-                    if let Some(path) = dialog_change_workspace_dir.file().and_then(|f| f.path()) {
-                        appwindow.workspacebrowser().set_current_workspace_dir(&path);
+                    if let Some(dir) = dialog_change_workspace_dir.file().and_then(|f| f.path()) {
+                        appwindow.workspacebrowser().set_current_workspace_name(change_workspace_name_entry.text().to_string());
+                        appwindow.workspacebrowser().set_current_workspace_color(change_workspace_color_button.rgba());
+                        appwindow.workspacebrowser().set_current_workspace_dir(dir);
                     }
                 }
                 _ => {}

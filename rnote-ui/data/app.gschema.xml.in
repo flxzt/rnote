@@ -33,9 +33,9 @@
       <default>0</default>
       <summary>the current workspace index</summary>
     </key>
-    <key name="workspaces" type="as">
-      <default>["./"]</default>
-      <summary>the workspaces</summary>
+    <key name="workspace-list" type="a(ayus)">
+      <default>[]</default>
+      <summary>the workspace list</summary>
     </key>
     <key name="autosave" type="b">
       <default>true</default>

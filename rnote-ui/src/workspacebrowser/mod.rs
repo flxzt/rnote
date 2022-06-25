@@ -1,18 +1,22 @@
 mod filerow;
+mod workspacelist;
+mod workspacelistentry;
 mod workspacerow;
 
 // Re-exports
 pub use filerow::FileRow;
+pub use workspacelist::WorkspaceList;
+pub use workspacelistentry::WorkspaceListEntry;
 pub use workspacerow::WorkspaceRow;
 
 use crate::appwindow::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
-    FilterListModel, ListBox, ListItem, ListView, MultiSorter, PropertyExpression,
-    SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
+    FilterListModel, Grid, ListBox, ListItem, ListView, MultiSorter, PropertyExpression,
+    ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
 };
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 mod imp {
     use super::*;
@@ -21,18 +25,26 @@ mod imp {
     #[template(resource = "/com/github/flxzt/rnote/ui/workspacebrowser.ui")]
     pub struct WorkspaceBrowser {
         #[template_child]
+        pub grid: TemplateChild<Grid>,
+        #[template_child]
         pub add_workspace_button: TemplateChild<Button>,
         #[template_child]
         pub remove_workspace_button: TemplateChild<Button>,
         #[template_child]
         pub edit_workspace_button: TemplateChild<Button>,
         #[template_child]
-        pub primary_listview: TemplateChild<ListView>,
-        pub primary_dirlist: DirectoryList,
+        pub files_scroller: TemplateChild<ScrolledWindow>,
+        #[template_child]
+        pub files_listview: TemplateChild<ListView>,
+        pub files_dirlist: DirectoryList,
 
         #[template_child]
-        pub folders_listbox: TemplateChild<ListBox>,
-        pub folders_model: gio::ListStore,
+        pub workspace_bar: TemplateChild<gtk4::Box>,
+        #[template_child]
+        pub workspace_scroller: TemplateChild<ScrolledWindow>,
+        #[template_child]
+        pub workspace_listbox: TemplateChild<ListBox>,
+        pub workspace_list: WorkspaceList,
     }
 
     impl Default for WorkspaceBrowser {
@@ -41,18 +53,18 @@ mod imp {
                 DirectoryList::new(Some("standard::*"), None as Option<&gio::File>);
             primary_dirlist.set_monitored(true);
 
-            let folders_model = gio::ListStore::builder()
-                .item_type(gio::File::static_type())
-                .build();
-
             Self {
+                grid: TemplateChild::<Grid>::default(),
                 add_workspace_button: TemplateChild::<Button>::default(),
                 remove_workspace_button: TemplateChild::<Button>::default(),
                 edit_workspace_button: TemplateChild::<Button>::default(),
-                primary_listview: TemplateChild::<ListView>::default(),
-                primary_dirlist,
-                folders_listbox: TemplateChild::<ListBox>::default(),
-                folders_model,
+                files_scroller: TemplateChild::<ScrolledWindow>::default(),
+                files_listview: TemplateChild::<ListView>::default(),
+                files_dirlist: primary_dirlist,
+                workspace_bar: TemplateChild::<gtk4::Box>::default(),
+                workspace_scroller: TemplateChild::<ScrolledWindow>::default(),
+                workspace_listbox: TemplateChild::<ListBox>::default(),
+                workspace_list: WorkspaceList::default(),
             }
         }
     }
@@ -105,12 +117,28 @@ impl WorkspaceBrowser {
         workspacebrowser
     }
 
-    pub fn primary_dirlist(&self) -> DirectoryList {
-        self.imp().primary_dirlist.clone()
+    pub fn grid(&self) -> Grid {
+        self.imp().grid.clone()
     }
 
-    pub fn primary_listview(&self) -> ListView {
-        self.imp().primary_listview.clone()
+    pub fn files_scroller(&self) -> ScrolledWindow {
+        self.imp().files_scroller.clone()
+    }
+
+    pub fn files_dirlist(&self) -> DirectoryList {
+        self.imp().files_dirlist.clone()
+    }
+
+    pub fn files_listview(&self) -> ListView {
+        self.imp().files_listview.clone()
+    }
+
+    pub fn workspace_bar(&self) -> gtk4::Box {
+        self.imp().workspace_bar.clone()
+    }
+
+    pub fn workspace_scroller(&self) -> ScrolledWindow {
+        self.imp().workspace_scroller.clone()
     }
 
     pub fn init(&self, appwindow: &RnoteAppWindow) {
@@ -118,9 +146,8 @@ impl WorkspaceBrowser {
 
         self.imp().add_workspace_button.get().connect_clicked(
             clone!(@weak self as workspacebrowser, @weak appwindow => move |_add_workspace_button| {
-                if let Some(dir) = workspacebrowser.selected_workspace_dir() {
-                    workspacebrowser.add_workspace(dir);
-                }
+                let dir = workspacebrowser.selected_workspace_dir().unwrap_or(PathBuf::from("./"));
+                workspacebrowser.add_workspace(dir);
             }),
         );
 
@@ -136,16 +163,16 @@ impl WorkspaceBrowser {
             }),
         );
 
-        self.imp().folders_model.connect_items_changed(
+        self.imp().workspace_list.connect_items_changed(
             clone!(@weak self as workspacebrowser, @weak appwindow, @weak remove_workspace_button => move |folders_model, _, _, _| {
                 remove_workspace_button.set_sensitive(folders_model.n_items() > 1);
                 workspacebrowser.save_to_settings(&appwindow.app_settings());
             }),
         );
 
-        self.imp().folders_listbox.connect_selected_rows_changed(clone!(@weak appwindow, @weak self as workspacebrowser => move |_| {
-            if let Some(path) = workspacebrowser.current_selected_workspace_row().and_then(|row| row.current_file().and_then(|f| f.path())) {
-                workspacebrowser.imp().primary_dirlist.set_file(Some(&gio::File::for_path(path)));
+        self.imp().workspace_listbox.connect_selected_rows_changed(clone!(@weak appwindow, @weak self as workspacebrowser => move |_| {
+            if let Some(dir) = workspacebrowser.current_selected_workspace_row().map(|row| row.entry().dir()) {
+                workspacebrowser.imp().files_dirlist.set_file(Some(&gio::File::for_path(dir)));
                 workspacebrowser.save_to_settings(&appwindow.app_settings());
             }
 
@@ -260,7 +287,7 @@ impl WorkspaceBrowser {
             filefilter.add_mime_type("application/pdf");
             filefilter.add_mime_type("inode/directory");
             let filefilter_model =
-                FilterListModel::new(Some(&self.imp().primary_dirlist), Some(&filefilter));
+                FilterListModel::new(Some(&self.imp().files_dirlist), Some(&filefilter));
 
             let folder_sorter = CustomSorter::new(move |obj1, obj2| {
                 let first_fileinfo = obj1
@@ -318,15 +345,15 @@ impl WorkspaceBrowser {
             let primary_selection_model = SingleSelection::new(Some(&multi_sort_model));
 
             self.imp()
-                .primary_listview
+                .files_listview
                 .get()
                 .set_factory(Some(&primary_list_factory));
             self.imp()
-                .primary_listview
+                .files_listview
                 .get()
                 .set_model(Some(&primary_selection_model));
 
-            self.imp().primary_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |primary_listview, position| {
+            self.imp().files_listview.get().connect_activate(clone!(@weak filefilter, @weak multisorter, @weak appwindow => move |primary_listview, position| {
                 let model = primary_listview.model().expect("model for primary_listview does not exist.");
                 let fileinfo = model.item(position).expect("selected item in primary_listview does not exist.").downcast::<gio::FileInfo>().expect("selected item in primary_list is not of Type `gio::FileInfo`");
 
@@ -340,14 +367,14 @@ impl WorkspaceBrowser {
                 filefilter.changed(FilterChange::Different);
             }));
 
-            self.imp().primary_dirlist.connect_file_notify(
+            self.imp().files_dirlist.connect_file_notify(
                 clone!(@weak appwindow, @weak filefilter, @weak multisorter => move |_primary_dirlist| {
                     multisorter.changed(SorterChange::Different);
                     filefilter.changed(FilterChange::Different);
                 }),
             );
 
-            self.imp().primary_dirlist.connect_items_changed(clone!(@weak filefilter, @weak multisorter => move |_primary_dirlist, _position, _removed, _added| {
+            self.imp().files_dirlist.connect_items_changed(clone!(@weak filefilter, @weak multisorter => move |_primary_dirlist, _position, _removed, _added| {
                 multisorter.changed(SorterChange::Different);
                 filefilter.changed(FilterChange::Different);
             }));
@@ -355,10 +382,10 @@ impl WorkspaceBrowser {
             // setup workspace rows
             let appwindow_c = appwindow.clone();
             self.imp()
-                .folders_listbox
-                .bind_model(Some(&self.imp().folders_model), move |obj| {
-                    let file = obj.downcast_ref::<gio::File>().unwrap();
-                    let workspace_row = WorkspaceRow::from_file(file);
+                .workspace_listbox
+                .bind_model(Some(&self.imp().workspace_list), move |obj| {
+                    let entry = obj.to_owned().downcast::<WorkspaceListEntry>().unwrap();
+                    let workspace_row = WorkspaceRow::new(entry);
                     workspace_row.init(&appwindow_c);
 
                     workspace_row.upcast::<Widget>()
@@ -366,32 +393,35 @@ impl WorkspaceBrowser {
         }
     }
 
-    pub fn add_workspace(&self, dir: impl AsRef<Path>) {
-        self.imp().folders_model.append(&gio::File::for_path(dir));
+    pub fn add_workspace(&self, dir: PathBuf) {
+        let entry = WorkspaceListEntry::from_path(dir);
+        self.imp().workspace_list.push(entry);
 
-        let n_items = self.imp().folders_model.n_items();
+        let n_items = self.imp().workspace_list.n_items();
         self.select_workspace_by_index(n_items.saturating_sub(1));
     }
 
     pub fn remove_current_workspace(&self) {
-        let n_items = self.imp().folders_model.n_items();
+        let n_items = self.imp().workspace_list.n_items();
 
         // never remove the last row
         if n_items > 0 {
-            if let Some(i) = self.selected_workspace_index() {
-                self.imp().folders_model.remove(i);
+            let i = self
+                .selected_workspace_index()
+                .unwrap_or_else(|| n_items.saturating_sub(1));
 
-                self.select_workspace_by_index(i.saturating_sub(1));
-            }
+            self.imp().workspace_list.remove(i as usize);
+
+            self.select_workspace_by_index(i);
         }
     }
 
     pub fn select_workspace_by_index(&self, index: u32) {
-        let n_items = self.imp().folders_model.n_items();
+        let n_items = self.imp().workspace_list.n_items();
 
-        self.imp().folders_listbox.select_row(
+        self.imp().workspace_listbox.select_row(
             self.imp()
-                .folders_listbox
+                .workspace_listbox
                 .row_at_index(index.min(n_items.saturating_sub(1)) as i32)
                 .as_ref(),
         );
@@ -399,7 +429,7 @@ impl WorkspaceBrowser {
 
     pub fn selected_workspace_index(&self) -> Option<u32> {
         self.imp()
-            .folders_listbox
+            .workspace_listbox
             .selected_row()
             .map(|r| r.index() as u32)
     }
@@ -407,61 +437,52 @@ impl WorkspaceBrowser {
     pub fn selected_workspace_dir(&self) -> Option<PathBuf> {
         self.selected_workspace_index().and_then(|i| {
             self.imp()
-                .folders_model
+                .workspace_list
                 .item(i)
-                .and_then(|o| o.downcast::<gio::File>().unwrap().path())
+                .map(|o| PathBuf::from(o.downcast::<WorkspaceListEntry>().unwrap().dir()))
         })
     }
 
-    pub fn set_current_workspace_dir(&self, path: impl AsRef<Path>) {
+    pub fn set_current_workspace_dir(&self, dir: PathBuf) {
         let i = self.selected_workspace_index().unwrap_or(0);
-        let file = gio::File::for_path(path);
 
-        self.imp().folders_model.remove(i);
-        self.imp().folders_model.insert(i, &file);
+        let row = self.imp().workspace_list.remove(i as usize);
+        row.set_dir(dir.to_string_lossy().to_string());
+        self.imp().workspace_list.insert(i as usize, row);
+
+        self.select_workspace_by_index(i);
+    }
+
+    pub fn set_current_workspace_color(&self, color: gdk::RGBA) {
+        let i = self.selected_workspace_index().unwrap_or(0);
+
+        let row = self.imp().workspace_list.remove(i as usize);
+        row.set_color(color);
+        self.imp().workspace_list.insert(i as usize, row);
+
+        self.select_workspace_by_index(i);
+    }
+
+    pub fn set_current_workspace_name(&self, name: String) {
+        let i = self.selected_workspace_index().unwrap_or(0);
+
+        let row = self.imp().workspace_list.remove(i as usize);
+        row.set_name(name);
+        self.imp().workspace_list.insert(i as usize, row);
 
         self.select_workspace_by_index(i);
     }
 
     pub fn current_selected_workspace_row(&self) -> Option<WorkspaceRow> {
         self.imp()
-            .folders_listbox
+            .workspace_listbox
             .selected_row()
             .and_then(|row| row.child().map(|w| w.downcast::<WorkspaceRow>().unwrap()))
     }
 
-    pub fn fetch_workspaces(&self) -> Vec<String> {
-        self.imp()
-            .folders_model
-            .snapshot()
-            .into_iter()
-            .filter_map(|o| {
-                Some(
-                    o.downcast::<gio::File>()
-                        .unwrap()
-                        .path()?
-                        .to_string_lossy()
-                        .to_string(),
-                )
-            })
-            .collect::<Vec<String>>()
-    }
-
-    pub fn load_workspaces(&self, workspaces: Vec<String>) {
-        self.imp().folders_model.remove_all();
-
-        for workspace in workspaces {
-            let p = PathBuf::from(workspace);
-            if p.is_dir() {
-                self.imp().folders_model.append(&gio::File::for_path(p));
-            }
-        }
-    }
-
     pub fn save_to_settings(&self, settings: &gio::Settings) {
-        let workspaces = self.fetch_workspaces();
-        if let Err(e) = settings.set("workspaces", &workspaces) {
-            log::error!("saving `workspaces` to settings failed with Err {}", e);
+        if let Err(e) = settings.set("workspace-list", &self.imp().workspace_list) {
+            log::error!("saving `workspace-list` to settings failed with Err {}", e);
         }
 
         if let Err(e) = settings.set(
@@ -476,11 +497,11 @@ impl WorkspaceBrowser {
     }
 
     pub fn load_from_settings(&self, settings: &gio::Settings) {
-        let workspaces = settings.get::<Vec<String>>("workspaces");
+        let workspace_list = settings.get::<WorkspaceList>("workspace-list");
         // Be sure to get the index before loading the workspaces, else the setting gets overriden
         let current_workspace_index = settings.uint("current-workspace-index");
 
-        self.load_workspaces(workspaces);
+        self.imp().workspace_list.replace_self(workspace_list);
 
         // current workspace index
         self.select_workspace_by_index(current_workspace_index);

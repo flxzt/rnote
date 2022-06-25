@@ -214,9 +214,7 @@ impl FileRow {
         action_open_file.connect_activate(
             clone!(@weak self as filerow, @weak appwindow => move |_action_open_file, _| {
                     if let Some(current_file) = filerow.current_file() {
-                                if let Err(e) = appwindow.load_in_file(&current_file, None) {
-                                    log::error!("failed to load_in_file() from filerow, {}", e);
-                                }
+                        appwindow.open_file_w_dialogs(&current_file, None);
                     }
             }),
         );

@@ -10,6 +10,7 @@ use rnote_engine::import::{PdfImportPageSpacing, PdfImportPagesType, PdfImportPr
 
 use crate::appwindow::RnoteAppWindow;
 use crate::globals;
+use crate::workspacebrowser::WorkspaceRow;
 use crate::{app::RnoteApp, config};
 
 // About Dialog
@@ -348,6 +349,8 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
     let builder =
         Builder::from_resource((String::from(config::APP_IDPATH) + "ui/dialogs.ui").as_str());
     let dialog_edit_workspace: Dialog = builder.object("dialog_edit_workspace").unwrap();
+    let edit_workspace_preview_row: WorkspaceRow =
+        builder.object("edit_workspace_preview_row").unwrap();
     let change_workspace_name_entry: Entry = builder.object("change_workspace_name_entry").unwrap();
     let change_workspace_color_button: ColorButton =
         builder.object("change_workspace_color_button").unwrap();
@@ -355,6 +358,7 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         builder.object("change_workspace_dir_button").unwrap();
     let change_workspace_dir_label: Label = builder.object("change_workspace_dir_label").unwrap();
 
+    edit_workspace_preview_row.init(appwindow);
     dialog_edit_workspace.set_transient_for(Some(appwindow));
 
     let dialog_change_workspace_dir: FileChooserNative = FileChooserNative::builder()
@@ -377,20 +381,39 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
             log::error!("set file in change workspace dialog failed with Err {}", e);
         }
 
-        // set initial UI
+        // update dialog UI
+        edit_workspace_preview_row
+            .entry()
+            .replace_data(&row.entry());
         change_workspace_name_entry.set_text(row.entry().name().as_str());
         change_workspace_color_button.set_rgba(&row.entry().color());
         change_workspace_dir_label.set_label(&row.entry().dir().as_str());
     }
 
+    change_workspace_name_entry.connect_changed(
+        clone!(@weak edit_workspace_preview_row => move |entry| {
+            let text = entry.text().to_string();
+            edit_workspace_preview_row.entry().set_name(text);
+        }),
+    );
+
+    change_workspace_color_button.connect_color_set(
+        clone!(@weak edit_workspace_preview_row => move |button| {
+            let color = button.rgba();
+            edit_workspace_preview_row.entry().set_color(color);
+        }),
+    );
+
     dialog_change_workspace_dir.connect_response(
-        clone!(@weak change_workspace_dir_label, @weak dialog_edit_workspace, @weak appwindow => move |dialog_change_workspace_dir, responsetype| {
+        clone!(@weak edit_workspace_preview_row, @weak change_workspace_dir_label, @weak dialog_edit_workspace, @weak appwindow => move |dialog_change_workspace_dir, responsetype| {
             match responsetype {
                 ResponseType::Accept => {
                     if let Some(p) = dialog_change_workspace_dir.file().and_then(|f| f.path()) {
-                        change_workspace_dir_label.set_label(&p.to_string_lossy())
+                        let path_string = p.to_string_lossy().to_string();
+                        change_workspace_dir_label.set_label(&path_string);
+                        edit_workspace_preview_row.entry().set_dir(path_string);
                     } else {
-                        change_workspace_dir_label.set_label(&gettext("- no directory selected -"))
+                        change_workspace_dir_label.set_label(&gettext("- no directory selected -"));
                     }
                 }
                 _ => {}
@@ -405,9 +428,10 @@ pub fn dialog_edit_workspace(appwindow: &RnoteAppWindow) {
         clone!(@weak change_workspace_name_entry, @weak change_workspace_color_button, @weak dialog_change_workspace_dir, @weak appwindow => move |dialog_modify_workspace, responsetype| {
             match responsetype {
                 ResponseType::Apply => {
+                    // update the actual row
+                    appwindow.workspacebrowser().set_current_workspace_name(change_workspace_name_entry.text().to_string());
+                    appwindow.workspacebrowser().set_current_workspace_color(change_workspace_color_button.rgba());
                     if let Some(dir) = dialog_change_workspace_dir.file().and_then(|f| f.path()) {
-                        appwindow.workspacebrowser().set_current_workspace_name(change_workspace_name_entry.text().to_string());
-                        appwindow.workspacebrowser().set_current_workspace_color(change_workspace_color_button.rgba());
                         appwindow.workspacebrowser().set_current_workspace_dir(dir);
                     }
                 }

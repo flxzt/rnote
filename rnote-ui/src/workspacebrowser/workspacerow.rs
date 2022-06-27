@@ -53,6 +53,7 @@ mod imp {
             self.parent_constructed(obj);
 
             obj.set_css_classes(&["workspacerow"]);
+            self.connect_entry();
 
             obj.style_context()
                 .add_provider(&self.css, gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -78,7 +79,7 @@ mod imp {
 
         fn set_property(
             &self,
-            obj: &Self::Type,
+            _obj: &Self::Type,
             _id: usize,
             value: &glib::Value,
             pspec: &glib::ParamSpec,
@@ -89,28 +90,8 @@ mod imp {
                         .get::<WorkspaceListEntry>()
                         .expect("The value needs to be of type `WorkspaceListEntry`.");
 
-                    entry.connect_notify_local(
-                        Some("dir"),
-                        clone!(@strong obj => move |_, _| {
-                            obj.imp().update_apearance();
-                        }),
-                    );
-
-                    entry.connect_notify_local(
-                        Some("color"),
-                        clone!(@strong obj => move |_, _| {
-                            obj.imp().update_apearance();
-                        }),
-                    );
-
-                    entry.connect_notify_local(
-                        Some("name"),
-                        clone!(@strong obj => move |_, _| {
-                            obj.imp().update_apearance();
-                        }),
-                    );
-
                     self.entry.replace(entry);
+                    self.connect_entry();
                     self.update_apearance();
                 }
                 _ => unimplemented!(),
@@ -128,6 +109,31 @@ mod imp {
     impl WidgetImpl for WorkspaceRow {}
 
     impl WorkspaceRow {
+        fn connect_entry(&self) {
+            let obj = self.instance();
+
+            self.entry.borrow().connect_notify_local(
+                Some("dir"),
+                clone!(@strong obj => move |_, _| {
+                    obj.imp().update_apearance();
+                }),
+            );
+
+            self.entry.borrow().connect_notify_local(
+                Some("color"),
+                clone!(@strong obj => move |_, _| {
+                    obj.imp().update_apearance();
+                }),
+            );
+
+            self.entry.borrow().connect_notify_local(
+                Some("name"),
+                clone!(@strong obj => move |_, _| {
+                    obj.imp().update_apearance();
+                }),
+            );
+        }
+
         fn update_apearance(&self) {
             let dir = self.entry.borrow().dir();
             let color = self.entry.borrow().color();
@@ -150,6 +156,7 @@ mod imp {
             );
 
             self.css.load_from_data(custom_css.as_bytes());
+            self.instance().queue_draw();
         }
     }
 }

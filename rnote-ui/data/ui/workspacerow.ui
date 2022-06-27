@@ -12,9 +12,6 @@
         <property name="margin-bottom">6</property>
         <property name="margin-start">6</property>
         <property name="margin-end">6</property>
-        <style>
-          <class name="linked" />
-        </style>
         <child>
           <object class="GtkImage" id="folder_image">
             <property name="icon_name">folder-symbolic</property>

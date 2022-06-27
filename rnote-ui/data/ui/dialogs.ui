@@ -318,6 +318,12 @@
               <class name="background" />
             </style>
             <child>
+              <object class="WorkspaceRow" id="edit_workspace_preview_row">
+                <property name="hexpand">true</property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <child>
               <object class="AdwPreferencesGroup">
                 <property name="halign">fill</property>
                 <child>

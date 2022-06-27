@@ -148,6 +148,12 @@ impl WorkspaceListEntry {
         .expect("Failed to create `WorkspaceEntry`")
     }
 
+    pub fn replace_data(&self, entry: &Self) {
+        self.set_name(entry.name());
+        self.set_color(entry.color());
+        self.set_dir(entry.dir());
+    }
+
     /// Expects a path to a directory
     pub fn from_path(dir: PathBuf) -> Self {
         let mut inner = WorkspaceListEntryInner::default();

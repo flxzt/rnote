@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rnote\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-06-11 14:23+0200\n"
-"PO-Revision-Date: 2022-06-25 16:48+0000\n"
+"PO-Revision-Date: 2022-06-28 07:19+0000\n"
 "Last-Translator: matriz <wboy111@outlook.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "rnote/repo/zh_Hant/>\n"
@@ -408,536 +408,536 @@ msgstr "一般"
 
 #: rnote-ui/data/ui/settingspanel.ui:44
 msgid "Autosave"
-msgstr ""
+msgstr "自動保存"
 
 #: rnote-ui/data/ui/settingspanel.ui:45
 msgid "Enable or disable autosave"
-msgstr ""
+msgstr "啟用／關閉自動保存"
 
 #: rnote-ui/data/ui/settingspanel.ui:55
 msgid "Autosave interval (secs)"
-msgstr ""
+msgstr "自動保存間隔（秒）"
 
 #: rnote-ui/data/ui/settingspanel.ui:56
 msgid "Set the autosave interval in seconds"
-msgstr ""
+msgstr "設置自動保存間隔秒數"
 
 #: rnote-ui/data/ui/settingspanel.ui:76
 msgid "Format border color"
-msgstr ""
+msgstr "格式界綫顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:77
 msgid "Set the format border color"
-msgstr ""
+msgstr "設置格式界綫顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:97
 msgid "Page format"
-msgstr ""
+msgstr "頁面格式"
 
 #: rnote-ui/data/ui/settingspanel.ui:100
 msgid "Format"
-msgstr ""
+msgstr "格式"
 
 #: rnote-ui/data/ui/settingspanel.ui:101
 msgid "Choose a format"
-msgstr ""
+msgstr "選擇格式"
 
 #: rnote-ui/data/ui/settingspanel.ui:105
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #: rnote-ui/data/ui/settingspanel.ui:106
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #: rnote-ui/data/ui/settingspanel.ui:107
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #: rnote-ui/data/ui/settingspanel.ui:108
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #: rnote-ui/data/ui/settingspanel.ui:109
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #: rnote-ui/data/ui/settingspanel.ui:110
 msgid "US letter"
-msgstr ""
+msgstr "US信件"
 
 #: rnote-ui/data/ui/settingspanel.ui:111
 msgid "US legal"
-msgstr ""
+msgstr "US legal"
 
 #: rnote-ui/data/ui/settingspanel.ui:112
 msgid "Custom"
-msgstr ""
+msgstr "自定"
 
 #: rnote-ui/data/ui/settingspanel.ui:120
 msgid "Orientation"
-msgstr ""
+msgstr "方向"
 
 #: rnote-ui/data/ui/settingspanel.ui:121
 msgid "Set the format orientation"
-msgstr ""
+msgstr "設置格式方向"
 
 #: rnote-ui/data/ui/settingspanel.ui:133
 msgid "Portrait"
-msgstr ""
+msgstr "豎立"
 
 #: rnote-ui/data/ui/settingspanel.ui:139
 msgid "Landscape"
-msgstr ""
+msgstr "橫向"
 
 #: rnote-ui/data/ui/settingspanel.ui:149
 msgid "Width"
-msgstr ""
+msgstr "寬度"
 
 #: rnote-ui/data/ui/settingspanel.ui:150
 msgid "Set the format width"
-msgstr ""
+msgstr "設置格式寬度"
 
 #: rnote-ui/data/ui/settingspanel.ui:163
 msgid "Height"
-msgstr ""
+msgstr "高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:164
 msgid "Set the format height"
-msgstr ""
+msgstr "設置紙張高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:177
 msgid "DPI"
-msgstr ""
+msgstr "DPI"
 
 #: rnote-ui/data/ui/settingspanel.ui:178
 msgid "Set the DPI (dots per inch). Defaults to 96"
-msgstr ""
+msgstr "設置DPI，預設96"
 
 #: rnote-ui/data/ui/settingspanel.ui:201
 msgid "Revert"
-msgstr ""
+msgstr "撤銷"
 
 #: rnote-ui/data/ui/settingspanel.ui:210
 #: rnote-ui/src/workspacebrowser/filerow.rs:237
 msgid "Apply"
-msgstr ""
+msgstr "應用"
 
 #: rnote-ui/data/ui/settingspanel.ui:223
 msgid "Document background"
-msgstr ""
+msgstr "文檔背景"
 
 #: rnote-ui/data/ui/settingspanel.ui:226
 msgid "Color"
-msgstr ""
+msgstr "顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:227
 msgid "Set the background color"
-msgstr ""
+msgstr "設置背景顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:244
 msgid "Pattern"
-msgstr ""
+msgstr "紋理"
 
 #: rnote-ui/data/ui/settingspanel.ui:245
 msgid "Choose a background pattern"
-msgstr ""
+msgstr "設置背景紋理"
 
 #: rnote-ui/data/ui/settingspanel.ui:249
 msgid "None"
-msgstr ""
+msgstr "無"
 
 #: rnote-ui/data/ui/settingspanel.ui:250
 msgid "Lines"
-msgstr ""
+msgstr "綫"
 
 #: rnote-ui/data/ui/settingspanel.ui:251
 msgid "Grid"
-msgstr ""
+msgstr "方格"
 
 #: rnote-ui/data/ui/settingspanel.ui:252
 msgid "Dots"
-msgstr ""
+msgstr "點"
 
 #: rnote-ui/data/ui/settingspanel.ui:260
 msgid "Pattern Color"
-msgstr ""
+msgstr "紋理顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:261
 msgid "Set the background pattern color"
-msgstr ""
+msgstr "設置背景紋理顏色"
 
 #: rnote-ui/data/ui/settingspanel.ui:278
 msgid "Pattern Width"
-msgstr ""
+msgstr "紋理寬度"
 
 #: rnote-ui/data/ui/settingspanel.ui:279
 msgid "Set the background pattern width"
-msgstr ""
+msgstr "設置背景紋理寬度"
 
 #: rnote-ui/data/ui/settingspanel.ui:292
 msgid "Pattern Height"
-msgstr ""
+msgstr "紋理高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:293
 msgid "Set the background pattern height"
-msgstr ""
+msgstr "設置背景紋理高度"
 
 #: rnote-ui/data/ui/settingspanel.ui:309
 msgid "Button Shortcuts"
-msgstr ""
+msgstr "按鍵快捷鍵"
 
 #: rnote-ui/data/ui/settingspanel.ui:312
 msgid "Stylus primary button action"
-msgstr ""
+msgstr "手寫筆主按鍵動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:313
 msgid "Set the action for the primary stylus button"
-msgstr ""
+msgstr "設置手寫筆主按鍵動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:324
 msgid "Stylus secondary button action"
-msgstr ""
+msgstr "手寫筆副按鍵動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:325
 msgid "Set the action for the secondary stylus button"
-msgstr ""
+msgstr "設置手寫筆副按鍵動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:336
 msgid "Mouse secondary button action"
-msgstr ""
+msgstr "滑鼠次鍵動作"
 
 #: rnote-ui/data/ui/settingspanel.ui:337
 msgid "Set the action for the secondary mouse button"
-msgstr ""
+msgstr "設置滑鼠次鍵動作"
 
 #: rnote-ui/data/ui/shortcuts.ui:11
 msgctxt "shortcut window"
 msgid "General"
-msgstr ""
+msgstr "一般"
 
 #: rnote-ui/data/ui/shortcuts.ui:14
 msgctxt "shortcut window"
 msgid "Show keyboard shortcuts"
-msgstr ""
+msgstr "顯示快捷鍵"
 
 #: rnote-ui/data/ui/shortcuts.ui:20
 msgctxt "shortcut window"
 msgid "Close the active window"
-msgstr ""
+msgstr "關閉現行視窗"
 
 #: rnote-ui/data/ui/shortcuts.ui:26
 msgctxt "shortcut window"
 msgid "Quit the application"
-msgstr ""
+msgstr "退出應用"
 
 #: rnote-ui/data/ui/shortcuts.ui:32
 msgctxt "shortcut window"
 msgid "Open the canvas menu"
-msgstr ""
+msgstr "開啟畫布選單"
 
 #: rnote-ui/data/ui/shortcuts.ui:38
 msgctxt "shortcut window"
 msgid "Open the app menu"
-msgstr ""
+msgstr "開啟應用選單"
 
 #: rnote-ui/data/ui/shortcuts.ui:44
 msgctxt "shortcut window"
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "全螢幕"
 
 #: rnote-ui/data/ui/shortcuts.ui:52
 msgctxt "shortcut window"
 msgid "Navigation"
-msgstr ""
+msgstr "導航"
 
 #: rnote-ui/data/ui/shortcuts.ui:55 rnote-ui/data/ui/shortcuts.ui:61
 msgctxt "shortcut window"
 msgid "Zoom in"
-msgstr ""
+msgstr "放大"
 
 #: rnote-ui/data/ui/shortcuts.ui:67 rnote-ui/data/ui/shortcuts.ui:73
 msgctxt "shortcut window"
 msgid "Zoom out"
-msgstr ""
+msgstr "縮小"
 
 #: rnote-ui/data/ui/shortcuts.ui:81
 msgctxt "shortcut window"
 msgid "Document"
-msgstr ""
+msgstr "文檔"
 
 #: rnote-ui/data/ui/shortcuts.ui:84
 msgctxt "shortcut window"
 msgid "New document"
-msgstr ""
+msgstr "新檔"
 
 #: rnote-ui/data/ui/shortcuts.ui:90
 msgctxt "shortcut window"
 msgid "Open document"
-msgstr ""
+msgstr "開啟文檔"
 
 #: rnote-ui/data/ui/shortcuts.ui:96
 msgctxt "shortcut window"
 msgid "Save document"
-msgstr ""
+msgstr "儲存"
 
 #: rnote-ui/data/ui/shortcuts.ui:102
 msgctxt "shortcut window"
 msgid "Save document as"
-msgstr ""
+msgstr "另存"
 
 #: rnote-ui/data/ui/shortcuts.ui:108
 msgctxt "shortcut window"
 msgid "Clear document"
-msgstr ""
+msgstr "清空"
 
 #: rnote-ui/data/ui/shortcuts.ui:114
 msgctxt "shortcut window"
 msgid "Print document"
-msgstr ""
+msgstr "列印"
 
 #: rnote-ui/data/ui/shortcuts.ui:120
 msgctxt "shortcut window"
 msgid "Import file"
-msgstr ""
+msgstr "匯入文件"
 
 #: rnote-ui/data/ui/shortcuts.ui:126
 msgctxt "shortcut window"
 msgid "Drawing"
-msgstr ""
+msgstr "繪畫"
 
 #: rnote-ui/data/ui/shortcuts.ui:129
 msgctxt "shortcut window"
 msgid "Copy into clipboard"
-msgstr ""
+msgstr "複製到剪貼簿"
 
 #: rnote-ui/data/ui/shortcuts.ui:135
 msgctxt "shortcut window"
 msgid "Paste clipboard"
-msgstr ""
+msgstr "貼上剪貼簿"
 
 #: rnote-ui/data/ui/shortcuts.ui:141
 msgctxt "shortcut window"
 msgid "Undo"
-msgstr ""
+msgstr "復原"
 
 #: rnote-ui/data/ui/shortcuts.ui:147
 msgctxt "shortcut window"
 msgid "Redo"
-msgstr ""
+msgstr "重做"
 
 #: rnote-ui/data/ui/workspacebrowser.ui:104
 msgid "Change workspace directory"
-msgstr ""
+msgstr "更改工作區目錄"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:33
 msgid "Brush style"
-msgstr ""
+msgstr "畫筆樣式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:57
 msgid "Brush styles"
-msgstr ""
+msgstr "畫筆樣式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:75
 msgid "Marker"
-msgstr ""
+msgstr "記號筆"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:86
 msgid "Solid"
-msgstr ""
+msgstr "硬筆"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:97
 msgid "Textured"
-msgstr ""
+msgstr "紋理"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:120
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:137
 msgid "Brush configuration"
-msgstr ""
+msgstr "畫筆設定"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:147
 msgid "Solid style"
-msgstr ""
+msgstr "硬筆樣式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:150
 msgid "Pressure curve"
-msgstr ""
+msgstr "壓力曲線"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:151
 msgid "Choose a pressure curve"
-msgstr ""
+msgstr "選擇一種壓力曲線"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:155
 msgid "Constant"
-msgstr ""
+msgstr "固定值"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:156
 msgid "Linear"
-msgstr ""
+msgstr "線性"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:157
 msgid "Square root"
-msgstr ""
+msgstr "開方根"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:158
 msgid "Cubic root"
-msgstr ""
+msgstr "立方根"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:159
 msgid "Quadratic Parabola"
-msgstr ""
+msgstr "二次拋物線"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:160
 msgid "Cubic Parabola"
-msgstr ""
+msgstr "三次拋物線"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:171
 msgid "Textured style"
-msgstr ""
+msgstr "紋理樣式"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:174
 msgid "Density"
-msgstr ""
+msgstr "密度"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:175
 msgid "The density is the amount of dots per 10x10 area"
-msgstr ""
+msgstr "密度指的是10x10區域內點的数量"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:190
 msgid "Stroke dots radii"
-msgstr ""
+msgstr "筆畫點陣半徑"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:191
 msgid "The radii of the individual dots in the textured stroke"
-msgstr ""
+msgstr "紋理筆畫中各個點的半徑"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:249
 msgid "Stroke dots position distribution"
-msgstr ""
+msgstr "筆畫點位分佈"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:250
 msgid "Choose a dots position probability distribution"
-msgstr ""
+msgstr "選擇點的分佈概率"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:254
 msgid "Uniform"
-msgstr ""
+msgstr "集中"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:255
 msgid "Normal"
-msgstr ""
+msgstr "正常"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:256
 msgid "Exponential"
-msgstr ""
+msgstr "指數"
 
 #: rnote-ui/data/ui/penssidebar/brushpage.ui:257
 msgid "Reverse Exponential"
-msgstr ""
+msgstr "對數"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:34
 msgid "Trash strokes"
-msgstr ""
+msgstr "消除筆畫"
 
 #: rnote-ui/data/ui/penssidebar/eraserpage.ui:51
 msgid "Split strokes"
-msgstr ""
+msgstr "分割筆畫"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:34
 msgid "Selecting with a polygon"
-msgstr ""
+msgstr "選擇多邊形"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:51
 msgid "Selecting with a rectangle"
-msgstr ""
+msgstr "選擇矩形"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:67
 msgid "Selecting apiece"
-msgstr ""
+msgstr "全選"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:83
 msgid "Select intersecting path"
-msgstr ""
+msgstr "選擇相交路徑"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:110
 msgid "Lock aspectratio while resizing the selection"
-msgstr ""
+msgstr "調整選區大小時鎖定長寬比"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:124
 msgid "Select all strokes"
-msgstr ""
+msgstr "選擇所有筆畫"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:139
 msgid "Deselect all strokes"
-msgstr ""
+msgstr "取消選中所有筆畫"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:154
 msgid "Duplicate selection"
-msgstr ""
+msgstr "複製選項"
 
 #: rnote-ui/data/ui/penssidebar/selectorpage.ui:169
 msgid "Delete selection"
-msgstr ""
+msgstr "消除選項"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:33
 msgid "Shaper style"
-msgstr ""
+msgstr "形狀工具樣式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:57
 msgid "Shaper styles"
-msgstr ""
+msgstr "形狀工具樣式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:75
 msgid "Smooth"
-msgstr ""
+msgstr "平滑"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:86
 msgid "Rough"
-msgstr ""
+msgstr "粗糙"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:109
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:126
 msgid "Shape configuration"
-msgstr ""
+msgstr "形狀設定"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:136
 msgid "Rough style"
-msgstr ""
+msgstr "粗糙樣式"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:139
 msgid "Roughness"
-msgstr ""
+msgstr "粗糙度"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:140
 msgid ""
 "Indicating how rough the drawing is. 0.0 is a smooth line. Defaults to 1.0"
-msgstr ""
+msgstr "表明繪圖的粗糙程度。0.0為平滑，預設1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:155
 msgid "Bowing"
-msgstr ""
+msgstr "彎曲"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:156
 msgid ""
 "How curvy the lines are when drawing a rough shape. 0.0 is a straight line. "
 "Defaults to 1.0"
-msgstr ""
+msgstr "表明粗糙形狀的線條彎曲程度。0.0為平滑，預設1.0"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:171
 msgid "Curve step count"
-msgstr ""
+msgstr "曲線步數"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:172
 msgid "How many steps make up a curve. Defaults to 12"
-msgstr ""
+msgstr "𤖔一條曲線的步數，預設12"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:187
 msgid "Multistroke"
-msgstr ""
+msgstr "多段筆跡"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:188
 msgid "Multiple stroke generation for a sketched look. Defaults to true"
-msgstr ""
+msgstr "生成多條筆跡以獲得擬真的素描效果。預設啟用"
 
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:230
 #: rnote-ui/data/ui/penssidebar/shaperpage.ui:254

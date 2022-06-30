@@ -13,8 +13,9 @@ use crate::appwindow::RnoteAppWindow;
 use gtk4::{
     gdk, gio, glib, glib::clone, glib::closure, prelude::*, subclass::prelude::*, Button,
     CompositeTemplate, ConstantExpression, CustomSorter, DirectoryList, FileFilter, FilterChange,
-    FilterListModel, Grid, ListBox, ListItem, ListView, MultiSorter, PropertyExpression,
-    ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel, SorterChange, Widget,
+    FilterListModel, Grid, ListBox, ListBoxRow, ListItem, ListView, MultiSorter,
+    PropertyExpression, ScrolledWindow, SignalListItemFactory, SingleSelection, SortListModel,
+    SorterChange, Widget,
 };
 use std::path::PathBuf;
 
@@ -34,6 +35,10 @@ mod imp {
         pub edit_workspace_button: TemplateChild<Button>,
         #[template_child]
         pub files_scroller: TemplateChild<ScrolledWindow>,
+        #[template_child]
+        pub files_prefix_listbox: TemplateChild<ListBox>,
+        #[template_child]
+        pub dir_up_row: TemplateChild<ListBoxRow>,
         #[template_child]
         pub files_listview: TemplateChild<ListView>,
         pub files_dirlist: DirectoryList,
@@ -59,6 +64,8 @@ mod imp {
                 remove_workspace_button: TemplateChild::<Button>::default(),
                 edit_workspace_button: TemplateChild::<Button>::default(),
                 files_scroller: TemplateChild::<ScrolledWindow>::default(),
+                files_prefix_listbox: TemplateChild::<ListBox>::default(),
+                dir_up_row: TemplateChild::<ListBoxRow>::default(),
                 files_listview: TemplateChild::<ListView>::default(),
                 files_dirlist: primary_dirlist,
                 workspace_bar: TemplateChild::<gtk4::Box>::default(),
@@ -176,6 +183,16 @@ impl WorkspaceBrowser {
                 workspacebrowser.save_to_settings(&appwindow.app_settings());
             }
 
+        }));
+
+        // Setup prefix listbox
+        self.imp().files_prefix_listbox.connect_row_activated(clone!(@weak self as workspacebrowser, @weak appwindow => move |_, row| {
+            if row == &workspacebrowser.imp().dir_up_row.get() {
+                if let Some(parent_dir) = workspacebrowser.selected_workspace_dir().unwrap_or(PathBuf::from("./")).parent() {
+                    workspacebrowser.set_current_workspace_dir(parent_dir.to_path_buf());
+                }
+
+            }
         }));
 
         // Setup file rows

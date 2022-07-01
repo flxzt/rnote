@@ -314,6 +314,9 @@ impl FromXmlAttributeValue for XoppBackgroundSolidStyle {
             "lined" => Ok(Self::Lined),
             "staves" => Ok(Self::Staves),
             "graph" => Ok(Self::Graph),
+            "dotted" => Ok(Self::Dotted),
+            "isodotted" => Ok(Self::IsometricDotted),
+            "isograph" => Ok(Self::IsometricGraph),
             o => Err(anyhow::anyhow!(
                 "Err while parsing `style` attribute of XoppBackground, {:?} is not a valid value",
                 o

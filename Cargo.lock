@@ -2956,6 +2956,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "flate2",
+ "log",
  "nalgebra 0.31.0",
  "pretty_env_logger",
  "roxmltree",

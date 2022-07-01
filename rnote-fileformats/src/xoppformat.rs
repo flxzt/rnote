@@ -3,6 +3,8 @@ use std::io::{Read, Write};
 use roxmltree::{Node, NodeType};
 use serde::{Deserialize, Serialize};
 
+use crate::FromXmlAttributeValue;
+
 use super::{AsXmlAttributeValue, FileFormatLoader, FileFormatSaver, XmlLoadable, XmlWritable};
 
 /// Compress bytes with gzip
@@ -268,8 +270,16 @@ pub enum XoppBackgroundSolidStyle {
     Lined,
     /// The ruled background style
     Ruled,
+    /// The staves background style
+    Staves,
     /// The graph background style
     Graph,
+    /// The graph background style
+    Dotted,
+    /// The isometric dotted background style
+    IsometricDotted,
+    /// The isometric graph background style
+    IsometricGraph,
 }
 
 impl Default for XoppBackgroundSolidStyle {
@@ -284,7 +294,30 @@ impl AsXmlAttributeValue for XoppBackgroundSolidStyle {
             Self::Plain => String::from("plain"),
             Self::Lined => String::from("lined"),
             Self::Ruled => String::from("ruled"),
+            Self::Staves => String::from("staves"),
             Self::Graph => String::from("graph"),
+            Self::Dotted => String::from("dotted"),
+            Self::IsometricDotted => String::from("isodotted"),
+            Self::IsometricGraph => String::from("isograph"),
+        }
+    }
+}
+
+impl FromXmlAttributeValue for XoppBackgroundSolidStyle {
+    fn from_xml_attr_value(s: &str) -> Result<Self, anyhow::Error>
+    where
+        Self: Sized,
+    {
+        match s {
+            "plain" => Ok(Self::Plain),
+            "ruled" => Ok(Self::Ruled),
+            "lined" => Ok(Self::Lined),
+            "staves" => Ok(Self::Staves),
+            "graph" => Ok(Self::Graph),
+            o => Err(anyhow::anyhow!(
+                "Err while parsing `style` attribute of XoppBackground, {:?} is not a valid value",
+                o
+            )),
         }
     }
 }
@@ -337,15 +370,13 @@ impl XmlLoadable for XoppBackground {
             )
         })? {
             "solid" => {
-                let style = match node.attribute("style").ok_or_else(|| {
+                let style = match XoppBackgroundSolidStyle::from_xml_attr_value(node.attribute("style").ok_or_else(|| {
                     anyhow::anyhow!("failed to parse `style` attribute in XoppBackground with node id {:?}, could not find attribute", node.id())
-                })? {
-                    "plain" => XoppBackgroundSolidStyle::Plain,
-                    "lined" => XoppBackgroundSolidStyle::Lined,
-                    "ruled" => XoppBackgroundSolidStyle::Ruled,
-                    "graph" => XoppBackgroundSolidStyle::Graph,
-                    _ => {
-                        return Err(anyhow::anyhow!("Err while parsing `style` attribute of XoppBackground with node id {:?}, is not a valid value", node.id()));
+                })?) {
+                    Ok(s) => s,
+                    Err(e) => {
+                        log::error!("failed to retreive the XoppBackgroundSolidStyle from `style` attribute, {}", e);
+                        XoppBackgroundSolidStyle::Plain
                     }
                 };
 

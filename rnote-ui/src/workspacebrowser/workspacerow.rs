@@ -10,6 +10,8 @@ use unicode_segmentation::UnicodeSegmentation;
 use super::WorkspaceListEntry;
 
 mod imp {
+    use rnote_engine::utils::GdkRGBAHelpers;
+
     use super::*;
 
     #[derive(Debug, CompositeTemplate)]
@@ -136,7 +138,22 @@ mod imp {
             let color = self.entry.borrow().color();
             let name = self.entry.borrow().name();
 
-            let fg_color = gdk::RGBA::WHITE;
+            let color_str = format!(
+                "rgba({0}, {1}, {2}, {3:.3})",
+                (color.red() * 255.0) as i32,
+                (color.green() * 255.0) as i32,
+                (color.blue() * 255.0) as i32,
+                (color.alpha() * 1000.0).round() / 1000.0,
+            );
+
+            // Check luminosity to either have light or dark fg colors to ensure good contrast
+            let fg_color_str = if color.into_compose_color().luma()
+                < super::WorkspaceRow::FG_LUMINANCE_THRESHOLD
+            {
+                String::from("@light_1")
+            } else {
+                String::from("@dark_5")
+            };
 
             let css = CssProvider::new();
 
@@ -146,15 +163,8 @@ mod imp {
                 .set_tooltip_text(Some(format!("{}\n{}", name, dir).as_str()));
 
             let custom_css = format!(
-                "@define-color workspacerow_color rgba({0}, {1}, {2}, {3:.3});@define-color workspacerow_fg_color rgba({4}, {5}, {6}, {7:.3});",
-                (color.red() * 255.0) as i32,
-                (color.green() * 255.0) as i32,
-                (color.blue() * 255.0) as i32,
-                (color.alpha() * 1000.0).round() / 1000.0,
-                (fg_color.red() * 255.0) as i32,
-                (fg_color.green() * 255.0) as i32,
-                (fg_color.blue() * 255.0) as i32,
-                (fg_color.alpha() * 1000.0).round() / 1000.0
+                "@define-color workspacerow_color {};@define-color workspacerow_fg_color {};",
+                color_str, fg_color_str
             );
 
             css.load_from_data(custom_css.as_bytes());
@@ -180,6 +190,9 @@ impl Default for WorkspaceRow {
 }
 
 impl WorkspaceRow {
+    /// The threshold of the luminance of the workspacerow color, deciding if a light or dark fg color is used. Between 0.0 and 1.0
+    pub const FG_LUMINANCE_THRESHOLD: f64 = 0.7;
+
     pub fn new(entry: WorkspaceListEntry) -> Self {
         glib::Object::new(&[("entry", &entry.to_value())]).expect("Failed to create `WorkspaceRow`")
     }

@@ -106,6 +106,12 @@ impl Color {
         self.a
     }
 
+    /// The luma value, in range [0.0 - 1.0]
+    /// see: https://en.wikipedia.org/wiki/Luma_(video)
+    pub fn luma(&self) -> f64 {
+        0.2126 * self.r + 0.7152 * self.g + 0.0722 * self.b
+    }
+
     /// converts to a css color attribute in the style: `rgb(xxx,xxx,xxx,xxx)`. The values are 8 bit integers, ranging [0, 255]
     pub fn to_css_color_attr(self) -> String {
         format!(
